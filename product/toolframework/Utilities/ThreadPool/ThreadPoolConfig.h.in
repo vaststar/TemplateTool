@@ -1,0 +1,2 @@
+#cmakedefine ThreadPool_VERSION_MAJOR "@ThreadPool_VERSION_MAJOR@"
+#cmakedefine ThreadPool_VERSION_MINOR "@ThreadPool_VERSION_MINOR@"
