@@ -36,18 +36,12 @@ void ThreadPoolControl::createThreadPool(uint32_t maxpool, const std::string& po
     }
 }
 
-static void OutPut(std::string messages){std::ostringstream _oss; _oss << messages;std::cout<<_oss.str()<<std::endl;};
 void ThreadPoolControl::createTask(std::function<void()> func, const std::string& functionTag, uint32_t urgentLevel, const std::string& poolName)
 {
     std::scoped_lock<std::mutex> lo(m_poolMutex);
     if (auto iter = m_threadPools.find(poolName); iter != m_threadPools.end())
     {
-		OutPut("success: "+poolName + " enqueue task:[" + functionTag + "]" + ", level:[" + std::to_string(urgentLevel) + "]");
         iter->second->enqueueFunc(functionTag, urgentLevel, std::move(func));
-    }
-    else
-    {
-		OutPut("falied: " + poolName + " enqueue task:[" + functionTag + "]" + ", level:[" + std::to_string(urgentLevel) + "]");
     }
 }
 }

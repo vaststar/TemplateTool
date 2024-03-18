@@ -1,1 +1,3 @@
+add_subdirectory(common_file)
 add_subdirectory(CoreFramework)
+add_subdirectory(ImageService)

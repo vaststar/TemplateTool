@@ -1,18 +1,17 @@
 cmake_minimum_required(VERSION 3.11)
 
-set(ProjectName "CoreFramework")
-set(ProjectDesc "CoreFramework for app")
-set(ExportProjectNameSpace "CoreFrameworkExport")
+set(ProjectName "ImageService")
+set(ProjectDesc "ImageService for app")
+set(ExportProjectNameSpace "ImageServicekExport")
 
 project(${ProjectName} DESCRIPTION ${ProjectDesc}
                        LANGUAGES CXX
         )
 
 set(TARGET_SOURCE 
-        include/IService.h
-        include/ICoreFramework.h
-        include/CoreFramework.h
-        src/CoreFramework.cpp
+        include/IImageService.h
+        include/ImageService.h
+        src/ImageService.cpp
 )
 
 ##build shared library
@@ -24,14 +23,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC
                                 $<INSTALL_INTERFACE:${PROJECT_NAME}/include>
                                 PRIVATE ${PROJECT_BINARY_DIR}
 )
-target_link_libraries(${PROJECT_NAME}  PRIVATE MasterLog PUBLIC ServiceCommonFile)
+target_link_libraries(${PROJECT_NAME}  PRIVATE CoreFramework PUBLIC ServiceCommonFile)
 ##define macro for windows
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE SERVICE_DLL SERVICE_LIB)
 endif(WIN32)
 
 ## install 
-install(FILES include/ICoreFramework.h include/IService.h  DESTINATION ${PROJECT_NAME}/include)
+install(FILES include/IImageService.h  DESTINATION ${PROJECT_NAME}/include)
 install(TARGETS ${PROJECT_NAME} 
         EXPORT ${PROJECT_NAME}Config
 	RUNTIME DESTINATION ${PROJECT_NAME}/bin

@@ -2,15 +2,14 @@ cmake_minimum_required(VERSION 3.16)
 
 project(tool_windows VERSION 1.0 LANGUAGES CXX)
 
-find_package(Qt6 6.2 COMPONENTS Quick Gui REQUIRED)
+find_package(Qt6 6.5 COMPONENTS Quick Gui REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 qt_add_executable(${PROJECT_NAME}
     main.cpp
-    # cpp/Datas.cpp
-    # datas.h
 )
 
 if(${CMAKE_CXX_COMPILER} MATCHES ".*/(g\\+\\+)(\\..*)")
@@ -20,6 +19,7 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES ".*/(cl)(\\..*)")
 endif()
 
 
+include_directories(common_define)
 
 qt_add_qml_module(${PROJECT_NAME}
     URI mainqml
@@ -30,4 +30,4 @@ qt_add_qml_module(${PROJECT_NAME}
 
 add_subdirectory(mylib)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Gui Qt6::Quick MyQMLplugin MasterLog CoreFramework)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Gui Qt6::Quick MyQMLplugin MasterLog CoreFramework ThreadPool ImageService)

@@ -1,8 +1,14 @@
 #pragma once
-#include "CoreFrameworkExport.h"
+#include "ServiceExport.h"
 #include <string>
-class COREFRAMEWORK_EXPORT ICoreFramework
+#include <memory>
+#include <vector>
+
+class IService;
+
+class SERVICE_EXPORT ICoreFramework
 {
 public:
-    virtual std::string getName() = 0;
+    virtual std::string getName() const = 0;
+    virtual std::vector<std::weak_ptr<IService>> getServices() const = 0;
 };

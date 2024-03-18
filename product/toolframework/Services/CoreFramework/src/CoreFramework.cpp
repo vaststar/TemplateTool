@@ -1,6 +1,19 @@
 #include "CoreFramework.h"
 
-std::string CoreFramework::getName()
+#include "ServiceLogger.h"
+#include "IService.h"
+
+CoreFramework::CoreFramework()
 {
-    return "ass";
+    CORE_LOG_DEBUG("create CoreFramework")
+}
+
+std::string CoreFramework::getName() const
+{
+    return "CoreFramework";
+}
+
+std::vector<std::weak_ptr<IService>> CoreFramework::getServices() const
+{
+    return {};
 }
