@@ -22,7 +22,6 @@ namespace LogLogSpace{
         virtual void processMessage(const std::string& message) = 0;
     private:
         void doWorkFunction();
-        void writeInitLog();
     private:
         int m_loggerLevels;
         std::string m_loggerName;

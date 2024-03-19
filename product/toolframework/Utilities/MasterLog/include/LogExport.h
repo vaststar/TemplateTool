@@ -8,8 +8,8 @@
 #include <vector>
 #include "LogDefine.h"
 
-#ifdef MASTERLOG_DLL
-#ifdef MASTERLOG_LIB
+#ifdef Utilities_DLL
+#ifdef Utilities_LIB
 #define LOG_LIB_API _declspec(dllexport)
 #else
 #define LOG_LIB_API _declspec(dllimport)

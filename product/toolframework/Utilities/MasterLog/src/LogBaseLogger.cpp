@@ -3,8 +3,6 @@
 #include <format>
 #include <functional>
 
-#include "MasterLogConfig.h"
-
 namespace LogLogSpace{
     LogBaseLogger::LogBaseLogger(int loglevels, const std::string& loggerName)
         :m_isInExit(false)
@@ -38,18 +36,7 @@ namespace LogLogSpace{
         std::call_once(start_flag, [&,this]() {
             initialize();
             m_workThread = std::make_unique<std::thread>(std::bind(&LogBaseLogger::doWorkFunction,this));
-            writeInitLog();
         });
-    }
-
-    void LogBaseLogger::writeInitLog()
-    {
-#if defined(MasterLog_VERSION_MAJOR) && defined(MasterLog_VERSION_MINOR)
-        std::scoped_lock<std::mutex> loc(m_dataMutex);
-        // m_logMessages.emplace(std::format("Welcome to MasterLog: {}, version: {}.{}\n",getLoggerName(),MasterLog_VERSION_MAJOR,MasterLog_VERSION_MINOR));
-        m_logMessages.emplace(std::string("Welcome to MasterLog: ").append(getLoggerName()).append(", version: ").append(MasterLog_VERSION_MAJOR).append(".").append(MasterLog_VERSION_MINOR).append("\n"));
-        m_condition.notify_one();
-#endif
     }
 
     void LogBaseLogger::appendLog(int loggerLevel, const std::string& message)

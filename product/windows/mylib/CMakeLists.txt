@@ -13,7 +13,7 @@ qt_add_qml_module(MyQML
 
 target_include_directories(MyQML PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp>
-                                $<INSTALL_INTERFACE:${PROJECT_NAME}/include>
+                                $<INSTALL_INTERFACE:cpp>
                                 PRIVATE ${PROJECT_BINARY_DIR}
 )
 target_link_libraries(MyQML PRIVATE Qt6::Gui Qt6::Quick MasterLog)
