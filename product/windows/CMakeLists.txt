@@ -14,8 +14,10 @@ qt_add_executable(${PROJECT_NAME}
 
 if(${CMAKE_CXX_COMPILER} MATCHES ".*/(g\\+\\+)(\\..*)")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "-mwindows")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "-mwindows")
 elseif(${CMAKE_CXX_COMPILER} MATCHES ".*/(cl)(\\..*)")
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
 
 
