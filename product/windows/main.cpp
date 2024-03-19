@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QtWebEngineQuick>
 
 #include "winLogger.h"
 #include "ICoreFramework.h"
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 
 
 
-
+    QtWebEngineQuick::initialize();
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);

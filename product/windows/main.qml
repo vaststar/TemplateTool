@@ -1,6 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 import mylib 1.0
+
+import QtWebEngine
+
 ApplicationWindow
 {
 
@@ -15,4 +18,8 @@ Datas{id:dd}
         height: 200
     }
 
+    WebEngineView{
+        anchors.fill:parent
+        url:"https://www.baidu.com"
+    }
 }
