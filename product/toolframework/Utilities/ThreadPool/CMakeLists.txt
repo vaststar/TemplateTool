@@ -14,4 +14,6 @@ BuildUtilities(
     INSTALL_PUBLIC_HEADER 
         include/ThreadPoolExport.h 
         include/ThreadPoolUtil.h
+    IDE_FOLDER
+        Utilities
 )

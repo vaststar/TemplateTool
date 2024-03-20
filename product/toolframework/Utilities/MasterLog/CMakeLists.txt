@@ -18,4 +18,6 @@ BuildUtilities(
     INSTALL_PUBLIC_HEADER 
         include/LogDefine.h 
         include/LogExport.h
+    IDE_FOLDER
+        Utilities
 )

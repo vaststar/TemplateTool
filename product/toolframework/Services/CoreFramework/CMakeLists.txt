@@ -15,4 +15,6 @@ BuildService(
     INSTALL_PUBLIC_HEADER 
         include/ICoreFramework.h  
         include/IService.h
+    IDE_FOLDER
+        Services
 )

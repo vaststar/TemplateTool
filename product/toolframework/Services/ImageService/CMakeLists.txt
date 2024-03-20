@@ -13,4 +13,6 @@ BuildService(
         ServiceCommonFile
     INSTALL_PUBLIC_HEADER 
         include/IImageService.h
+    IDE_FOLDER
+        Services
 )
