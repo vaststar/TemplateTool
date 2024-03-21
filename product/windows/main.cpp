@@ -1,12 +1,12 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QtWebEngineQuick>
+//#include <QtWebEngineQuick>
 
 #include "winLogger.h"
-#include "ICoreFramework.h"
-#include "CoreFramework.h"
-#include "ImageService.h"
-#include "ThreadPoolUtil.h"
+#include "CoreFramework/ICoreFramework.h"
+#include "CoreFramework/CoreFramework.h"
+#include "ImageService/ImageService.h"
+#include "ThreadPool/ThreadPoolUtil.h"
 int main(int argc, char *argv[])
 {
 	std::string dirPath = "./app_log";
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
 
 
-    QtWebEngineQuick::initialize();
+    //QtWebEngineQuick::initialize();
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);

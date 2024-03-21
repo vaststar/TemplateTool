@@ -1,0 +1,31 @@
+include(BuildModule)
+
+BuildModule(
+    MODULE_NAME 
+        MasterLog
+    TARGET_SOURCE 
+        include/MasterLog/LogBaseLogger.h
+        src/LogBaseLogger.cpp
+        include/MasterLog/LogConsoleLogger.h
+        src/LogConsoleLogger.cpp
+        include/MasterLog/LogControl.h
+        src/LogControl.cpp
+        include/MasterLog/LogDefine.h
+        include/MasterLog/LogExport.h
+        src/LogExport.cpp
+        include/MasterLog/LogFileLogger.h
+        src/LogFileLogger.cpp
+    PUBLIC_BUILD_INTERFACE_FOLDER
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC_INSTALL_INTERFACE_FOLDER
+        include
+    PRIVATE_BUILD_FOLDER
+        src
+    TARGET_DEFINITIONS
+        ${ADD_UTILITIES_DEFINITIONS}
+    INSTALL_PUBLIC_HEADER 
+        include/MasterLog/LogDefine.h 
+        include/MasterLog/LogExport.h
+    IDE_FOLDER
+        Utilities
+)

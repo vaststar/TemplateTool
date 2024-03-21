@@ -1,0 +1,26 @@
+include(BuildModule)
+
+BuildModule(
+    MODULE_NAME 
+        ImageService
+    TARGET_SOURCE 
+        include/ImageService/IImageService.h
+        include/ImageService/ImageService.h
+        src/ImageService.cpp
+    TARGET_PRIVATE_DEPENDENICES
+        CoreFramework
+    TARGET_PUBLIC_DEPENDENICES
+        ServiceCommonFile
+    PUBLIC_BUILD_INTERFACE_FOLDER
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC_INSTALL_INTERFACE_FOLDER
+        include
+    PRIVATE_BUILD_FOLDER
+        src
+    TARGET_DEFINITIONS
+        ${ADD_SERVICE_DEFINITIONS}
+    INSTALL_PUBLIC_HEADER 
+        include/ImageService/IImageService.h
+    IDE_FOLDER
+        Services
+)

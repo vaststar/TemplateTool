@@ -1,0 +1,6 @@
+if (WIN32)
+    set(ADD_SERVICE_DEFINITIONS SERVICE_DLL SERVICE_LIB)
+endif()
+add_subdirectory(common_file)
+add_subdirectory(CoreFramework)
+add_subdirectory(ImageService)

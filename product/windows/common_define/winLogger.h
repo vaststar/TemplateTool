@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LogExport.h"
+#include "MasterLog/LogExport.h"
 
 #define WIN_LOG_DEBUG(message)     LOG_DEBUG("Windows",message,"APP")
 #define WIN_LOG_INFO(message)      LOG_INFO("Windows",message,"APP")

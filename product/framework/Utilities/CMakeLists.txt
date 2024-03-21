@@ -1,0 +1,5 @@
+if (WIN32)
+    set(ADD_UTILITIES_DEFINITIONS Utilities_DLL Utilities_LIB)
+endif()
+add_subdirectory(ThreadPool)
+add_subdirectory(MasterLog)

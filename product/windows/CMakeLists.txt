@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(tool_windows VERSION 1.0 LANGUAGES CXX)
 
-find_package(Qt6 6.5 COMPONENTS Quick Gui WebEngineQuick REQUIRED)
+find_package(Qt6 6.5 COMPONENTS Quick Gui REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 set(CMAKE_CXX_STANDARD 20)
@@ -32,4 +32,4 @@ qt_add_qml_module(${PROJECT_NAME}
 
 add_subdirectory(mylib)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Gui Qt6::Quick Qt6::WebEngineQuick MyQMLplugin MasterLog CoreFramework ThreadPool ImageService)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Gui Qt6::Quick MyQMLplugin MasterLog CoreFramework ThreadPool ImageService)

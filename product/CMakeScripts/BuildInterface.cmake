@@ -1,0 +1,31 @@
+include (BuildInstallModule)
+function(BuildInterface)
+    message(STATUS "====Start Build Interface====")
+    set(options)
+    set(oneValueArg MODULE_NAME)
+    set(multiValueArgs PUBLIC_BUILD_INTERFACE_FOLDER PUBLIC_INSTALL_INTERFACE_FOLDER INSTALL_PUBLIC_HEADER IDE_FOLDER)
+    cmake_parse_arguments(INTERFACE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
+
+    message(STATUS "Parse Args Results:")
+    message(STATUS "MODULE_NAME: ${INTERFACE_MODULE_NAME}")
+    message(STATUS "PUBLIC_BUILD_INTERFACE_FOLDER: ${INTERFACE_PUBLIC_BUILD_INTERFACE_FOLDER}")
+    message(STATUS "PUBLIC_INSTALL_INTERFACE_FOLDER: ${INTERFACE_PUBLIC_INSTALL_INTERFACE_FOLDER}")
+    message(STATUS "INSTALL_PUBLIC_HEADER: ${INTERFACE_INSTALL_PUBLIC_HEADER}")
+    message(STATUS "IDE_FOLDER: ${INTERFACE_IDE_FOLDER}")
+
+    add_library(${INTERFACE_MODULE_NAME} INTERFACE ${INTERFACE_TARGET_PUBLIC_HEADER})
+
+    if(DEFINED  INTERFACE_IDE_FOLDER)
+        set_target_properties(${INTERFACE_MODULE_NAME} PROPERTIES FOLDER ${INTERFACE_IDE_FOLDER})
+    endif()
+
+    target_include_directories(${INTERFACE_MODULE_NAME} INTERFACE 
+                               $<BUILD_INTERFACE:${INTERFACE_PUBLIC_BUILD_INTERFACE_FOLDER}>
+                               $<INSTALL_INTERFACE:${INTERFACE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
+    )
+    BuildInstallModule(
+            MODULE_NAME ${INTERFACE_MODULE_NAME}
+            TARGET_PUBLIC_HEADER ${INTERFACE_INSTALL_PUBLIC_HEADER}
+    )
+    message(STATUS "====Finish Build Interface: ${INTERFACE_MODULE_NAME}====")
+endfunction()
