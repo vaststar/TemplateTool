@@ -2,16 +2,17 @@ include(BuildModule)
 
 BuildModule(
     MODULE_NAME 
-        CommonHeadFramework
+        ContactService
     TARGET_SOURCE 
-        include/CommonHeadFramework/ICommonHeadFramework.h
-        include/CommonHeadFramework/CommonHeadFramework.h
-        src/CommonHeadFramework.cpp
+        include/ContactService/IContactService.h
+        include/ContactService/ContactService.h
+        src/ContactService.cpp
     TARGET_PRIVATE_DEPENDENICES
+        CoreFramework
         MasterLog
-        # CoreFramework
     TARGET_PUBLIC_DEPENDENICES
-        CommonHeadCommonFile
+        ServiceCommonFile
+        NotificationHelper
     PUBLIC_BUILD_INTERFACE_FOLDER
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC_INSTALL_INTERFACE_FOLDER
@@ -19,9 +20,9 @@ BuildModule(
     PRIVATE_BUILD_FOLDER
         src
     TARGET_DEFINITIONS
-        ${ADD_COMMONHEAD_DEFINITIONS}
+        ${ADD_SERVICE_DEFINITIONS}
     INSTALL_PUBLIC_HEADER 
-        include/CommonHeadFramework/ICommonHeadFramework.h  
+        include/ContactService/IContactService.h
     IDE_FOLDER
-        commonhead
+        framework/Services
 )

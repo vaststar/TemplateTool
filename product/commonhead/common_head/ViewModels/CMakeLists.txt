@@ -1,0 +1,32 @@
+include(BuildModule)
+
+BuildModule(
+    MODULE_NAME 
+        ViewModels
+    TARGET_SOURCE 
+        include/ContactListViewModel/IContactListViewModel.h
+        include/ContactListViewModel/ContactListViewModel.h
+        include/ContactListViewModel/ContactListModel.h
+        src/ContactListViewModel/ContactListViewModel.cpp
+        src/ContactListViewModel/ContactListModel.cpp
+    TARGET_PRIVATE_DEPENDENICES
+        CoreFramework
+        CommonHeadFramework
+        MasterLog
+    TARGET_PUBLIC_DEPENDENICES
+        CommonHeadCommonFile
+        NotificationHelper
+    PUBLIC_BUILD_INTERFACE_FOLDER
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC_INSTALL_INTERFACE_FOLDER
+        include
+    PRIVATE_BUILD_FOLDER
+        src
+    TARGET_DEFINITIONS
+        ${ADD_COMMONHEAD_DEFINITIONS}
+    INSTALL_PUBLIC_HEADER 
+        include/ContactListViewModel/IContactListViewModel.h  
+        include/ContactListViewModel/ContactListModel.h  
+    IDE_FOLDER
+        commonhead
+)

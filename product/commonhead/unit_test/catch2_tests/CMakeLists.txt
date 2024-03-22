@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 
 set(TARGETNAME "common_head_unit_test")
-set(PROJECTFOLDER "unit-test")
+set(PROJECTFOLDER "commonhead/unit-test")
 project(${TARGETNAME})
 
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR} DIR_SRCS)

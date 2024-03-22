@@ -2,11 +2,25 @@
 #include <QQmlApplicationEngine>
 //#include <QtWebEngineQuick>
 
+#include <memory>
 #include "winLogger.h"
 #include "CoreFramework/ICoreFramework.h"
 #include "CoreFramework/CoreFramework.h"
 #include "ImageService/ImageService.h"
+#include "ContactService/IContactService.h"
+
 #include "ThreadPool/ThreadPoolUtil.h"
+#include "CommonHeadFramework/ICommonHeadFramework.h"
+#include "ContactListViewModel/IContactListViewModel.h"
+
+
+
+class test :public IContactServiceCallback
+{
+    virtual void OnContactListAvailable() {
+        WIN_LOG_DEBUG("receive OnContactListAvailable");
+    }
+};
 int main(int argc, char *argv[])
 {
 	std::string dirPath = "./app_log";
@@ -16,14 +30,24 @@ int main(int argc, char *argv[])
 
     ThreadPoolUtil::initThreadPool(3);
     std::shared_ptr<ICoreFramework> a = std::make_shared<CoreFramework>();
+    std::shared_ptr<ICommonHeadFramework> commonHeadFramework = ICommonHeadFramework::CreateInstance();
+
     std::shared_ptr<IImageService> b = std::make_shared<ImageService>(std::weak_ptr(a));
+    auto contactService = IContactService::CreateInstance(std::weak_ptr(a));
 
-    WIN_LOG_DEBUG("start app succeed:" + a->getName() + std::to_string(a->getServices().size()) + b->getServiceName());
+    auto testListen = std::make_shared<test>();
+    contactService->registerCallback(testListen);
+    contactService->fetchContactList();
 
 
+
+
+    WIN_LOG_DEBUG("start app succeed:" + a->getName() + std::to_string(a->getServices().size()) + contactService->getServiceName());
+
+    auto contactListViewModel = CommonHead::ViewModels::IContactListViewModel::CreateInstance(std::weak_ptr(commonHeadFramework));
 
     //QtWebEngineQuick::initialize();
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
 

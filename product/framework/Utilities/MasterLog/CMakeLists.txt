@@ -27,5 +27,5 @@ BuildModule(
         include/MasterLog/LogDefine.h 
         include/MasterLog/LogExport.h
     IDE_FOLDER
-        Utilities
+        framework/Utilities
 )

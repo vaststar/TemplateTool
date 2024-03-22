@@ -32,4 +32,10 @@ qt_add_qml_module(${PROJECT_NAME}
 
 add_subdirectory(mylib)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Gui Qt6::Quick MyQMLplugin MasterLog CoreFramework ThreadPool ImageService)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Gui Qt6::Quick 
+MyQMLplugin
+ViewModels
+ImageService ContactService
+CoreFramework CommonHeadFramework
+MasterLog  ThreadPool  
+)

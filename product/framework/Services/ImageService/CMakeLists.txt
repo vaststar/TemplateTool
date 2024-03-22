@@ -22,5 +22,5 @@ BuildModule(
     INSTALL_PUBLIC_HEADER 
         include/ImageService/IImageService.h
     IDE_FOLDER
-        Services
+        framework/Services
 )

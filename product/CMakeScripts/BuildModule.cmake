@@ -28,6 +28,7 @@ function(BuildModule)
         ##build shared library
         add_library(${MODULE_MODULE_NAME} SHARED  ${MODULE_TARGET_SOURCE})   
         target_compile_features(${MODULE_MODULE_NAME} PRIVATE cxx_std_20)
+        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES CXX_EXTENSIONS OFF)
         if(DEFINED  MODULE_IDE_FOLDER)
             set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})

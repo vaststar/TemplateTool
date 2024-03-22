@@ -1,0 +1,20 @@
+#pragma once
+#include "CoreFramework/IService.h"
+#include "NotificationHelper/NotificationHelper.h"
+
+
+class ICoreFramework;
+using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+
+class IContactServiceCallback
+{
+public:
+virtual ~ IContactServiceCallback() = default;
+virtual void OnContactListAvailable() = 0;
+};
+class SERVICE_EXPORT IContactService: public IService, public NotificationHelper<IContactServiceCallback>
+{
+public:
+    virtual void fetchContactList() = 0;
+    static std::shared_ptr<IContactService> CreateInstance(ICoreFrameworkWPtr coreFramework);
+};

@@ -23,5 +23,5 @@ BuildModule(
         include/ThreadPool/ThreadPoolExport.h 
         include/ThreadPool/ThreadPoolUtil.h
     IDE_FOLDER
-        Utilities
+        framework/Utilities
 )
