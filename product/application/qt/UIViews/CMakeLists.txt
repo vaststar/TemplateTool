@@ -1,0 +1,23 @@
+include(BuildQtModule)
+BuildQtModule(
+MODULE_NAME 
+    UIViews
+PUBLIC_BUILD_INTERFACE_FOLDER
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/ContactList
+PUBLIC_INSTALL_INTERFACE_FOLDER
+    .
+PRIVATE_BUILD_FOLDER
+    .
+INSTALL_PUBLIC_HEADER 
+    ContactList/Datas.h
+IDE_FOLDER
+    UI
+QML_TARGET_URI
+    UIViews
+QML_TARGET_FILES
+    ContactList/ContactList.qml
+QML_TARGET_SOURCES
+    ContactList/Datas.h 
+    ContactList/Datas.cpp
+)

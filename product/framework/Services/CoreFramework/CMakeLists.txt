@@ -7,7 +7,7 @@ BuildModule(
         include/CoreFramework/IService.h
         include/CoreFramework/ICoreFramework.h
         include/CoreFramework/CoreFramework.h
-        # include/CoreFramework/NotificationHelper.h
+        include/CoreFramework/ServiceAccessor.h
         src/CoreFramework.cpp
     TARGET_PRIVATE_DEPENDENICES
         MasterLog
@@ -24,6 +24,7 @@ BuildModule(
     INSTALL_PUBLIC_HEADER 
         include/CoreFramework/ICoreFramework.h  
         include/CoreFramework/IService.h
+        include/CoreFramework/ServiceAccessor.h
     IDE_FOLDER
     framework/Services
 )

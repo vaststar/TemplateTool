@@ -1,0 +1,28 @@
+include(BuildQtModule)
+BuildQtModule(
+MODULE_NAME 
+    MainUIProject
+TARGET_SOURCE
+    MainWindow.h 
+    MainWindow.cpp
+TARGET_PRIVATE_DEPENDENICES
+    UIViews
+    Qt6::Gui Qt6::Quick 
+    ViewModels 
+    CoreFramework CommonHeadFramework
+    MasterLog ThreadPool
+TARGET_PUBLIC_DEPENDENICES
+    ServiceCommonFile
+PUBLIC_BUILD_INTERFACE_FOLDER
+    ${CMAKE_CURRENT_SOURCE_DIR}
+PUBLIC_INSTALL_INTERFACE_FOLDER
+    .
+INSTALL_PUBLIC_HEADER 
+    MainWindow.h
+IDE_FOLDER
+    UI
+QML_TARGET_URI
+    mainUI
+QML_TARGET_FILES
+    MainWindow.qml
+)

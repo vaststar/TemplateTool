@@ -1,16 +1,28 @@
 #pragma once
-#include "ServiceCommonFile/ServiceExport.h"
+
 #include <string>
 #include <memory>
 #include <vector>
 
+#include "ServiceCommonFile/ServiceExport.h"
+#include "CoreFramework/ServiceAccessor.h"
+
 class IService;
 
-class SERVICE_EXPORT ICoreFramework
+class SERVICE_EXPORT ICoreFrameworkCallback
 {
 public:
+    virtual ~ICoreFrameworkCallback() = default;
+    virtual void OnDataBaseInitialized() = 0;
+};
+
+class SERVICE_EXPORT ICoreFramework: public ServiceAccessor
+{
+public:
+    virtual ~ICoreFramework() = default;
+public:
     virtual std::string getName() const = 0;
-    virtual std::vector<std::weak_ptr<IService>> getServices() const = 0;
+    static std::shared_ptr<ICoreFramework> CreateInstance();
 };
 
 using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;

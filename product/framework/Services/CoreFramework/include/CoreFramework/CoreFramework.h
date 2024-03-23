@@ -1,10 +1,12 @@
 #include "ServiceCommonFile/ServiceExport.h"
 #include "CoreFramework/ICoreFramework.h"
-class SERVICE_EXPORT CoreFramework final: public ICoreFramework
+
+#include <memory>
+class SERVICE_EXPORT CoreFramework final: public ICoreFramework,
+                                          public std::enable_shared_from_this<CoreFramework>
 {
 public:
     CoreFramework();
 public:
     virtual std::string getName() const override;
-    virtual std::vector<std::weak_ptr<IService>> getServices() const override;
 };
