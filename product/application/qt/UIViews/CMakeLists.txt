@@ -11,6 +11,7 @@ PRIVATE_BUILD_FOLDER
     .
 INSTALL_PUBLIC_HEADER 
     ContactList/Datas.h
+    ContactList/ContactListViewController.h
 IDE_FOLDER
     UI
 QML_TARGET_URI
@@ -20,4 +21,6 @@ QML_TARGET_FILES
 QML_TARGET_SOURCES
     ContactList/Datas.h 
     ContactList/Datas.cpp
+    ContactList/ContactListViewController.h
+    ContactList/ContactListViewController.cpp
 )
