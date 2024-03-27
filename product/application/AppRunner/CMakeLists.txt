@@ -1,16 +1,20 @@
 include(BuildModule)
 
+if (WIN32)
+    set(ADD_APPRUNNER_DEFINITIONS APPRUNNER_DLL APPRUNNER_LIB)
+endif()
+
 BuildModule(
     MODULE_NAME 
-        CommonHeadFramework
+        AppRunner
     TARGET_SOURCE 
-        include/CommonHeadFramework/ICommonHeadFramework.h
-        include/CommonHeadFramework/CommonHeadFramework.h
-        src/CommonHeadFramework.cpp
+        include/AppRunner/AppRunner.h
+        include/AppRunner/AppRunnerExport.h
+        src/AppRunner.cpp
     TARGET_PRIVATE_DEPENDENICES
+        CommonHeadFramework
         CoreFramework
     TARGET_PUBLIC_DEPENDENICES
-        CommonHeadCommonFile
         MasterLog
     PUBLIC_BUILD_INTERFACE_FOLDER
         ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -19,9 +23,8 @@ BuildModule(
     PRIVATE_BUILD_FOLDER
         src
     TARGET_DEFINITIONS
-        ${ADD_COMMONHEAD_DEFINITIONS}
+        ${ADD_APPRUNNER_DEFINITIONS}
     INSTALL_PUBLIC_HEADER 
-        include/CommonHeadFramework/ICommonHeadFramework.h  
-    IDE_FOLDER
-        commonhead
+        include/AppRunner/AppRunner.h
+        include/AppRunner/AppRunnerExport.h
 )

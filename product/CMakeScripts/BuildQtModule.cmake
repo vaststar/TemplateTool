@@ -79,7 +79,7 @@ function(BuildQtModule)
         endif()
 
         #build install 
-        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES PUBLIC_HEADER ${MODULE_INSTALL_PUBLIC_HEADER})
+        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES PUBLIC_HEADER "${MODULE_INSTALL_PUBLIC_HEADER}")
 
 
         install(TARGETS ${MODULE_MODULE_NAME} 

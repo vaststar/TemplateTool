@@ -14,7 +14,5 @@ endif()
 target_link_libraries(${MAIN_ENTRY} PRIVATE
 MainUIProject
 ViewModels
-ImageService ContactService
-CoreFramework CommonHeadFramework
-MasterLog  ThreadPool 
+AppRunner
 )
