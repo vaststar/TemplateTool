@@ -10,7 +10,7 @@ std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ICore
 
 CommonHeadFramework::CommonHeadFramework(ICoreFrameworkWPtr coreframework)
 {
-    COMMONHEAD_LOG_DEBUG("create CommonHeadFramework")
+    COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
     mCoreframeworkWPtr = coreframework;
 }
 

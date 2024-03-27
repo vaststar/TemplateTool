@@ -1,5 +1,5 @@
 #include "AppRunner/AppRunner.h"
-#include "MainWindow.h"
+#include "MainWindow/MainWindow.h"
 #include "MasterLog/LogExport.h"
 
 //for coreframework
@@ -22,6 +22,6 @@ int main(int argc, char *argv[])
     AppRunner::ApplicationConfig appConfig{logConfig};
     auto dependencies = AppRunner::initAppDependencies(appConfig);
     MAIN_LOG_DEBUG("initAppDependencies done, start mainWindow");
-    MainWindow a;
+    MainWindow a(dependencies.commonHeadFramework);
     return a.runMainWindow(argc, argv);
 }

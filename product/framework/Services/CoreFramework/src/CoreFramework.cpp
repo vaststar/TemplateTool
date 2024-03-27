@@ -11,7 +11,7 @@ std::shared_ptr<ICoreFramework> ICoreFramework::CreateInstance()
 
 CoreFramework::CoreFramework()
 {
-    CORE_LOG_DEBUG("create CoreFramework")
+    CORE_LOG_DEBUG("create CoreFramework, address:" << this);
 }
 
 std::string CoreFramework::getName() const

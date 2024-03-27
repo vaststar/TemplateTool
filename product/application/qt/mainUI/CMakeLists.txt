@@ -3,9 +3,10 @@ BuildQtModule(
 MODULE_NAME 
     MainUIProject
 TARGET_SOURCE
-    MainWindow.h 
-    MainWindowExport.h
-    MainWindow.cpp
+    include/MainWindow/MainWindow.h 
+    include/MainWindow/MainWindowExport.h
+    include/MainWindow/LoggerDefine.h 
+    src/MainWindow.cpp
 TARGET_PRIVATE_DEPENDENICES
     UIViews
     Qt6::Gui Qt6::Quick 
@@ -17,16 +18,16 @@ TARGET_DEFINITIONS
     MainWindow_DLL
     MainWindow_LIB
 PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 PUBLIC_INSTALL_INTERFACE_FOLDER
-    .
+    include
 INSTALL_PUBLIC_HEADER 
-    MainWindow.h
-    MainWindowExport.h
+    include/MainWindow/MainWindow.h
+    include/MainWindow/MainWindowExport.h
 IDE_FOLDER
     UI
 QML_TARGET_URI
     mainUI
 QML_TARGET_FILES
-    MainWindow.qml
+    qml/MainWindow.qml
 )
