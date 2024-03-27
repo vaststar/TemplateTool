@@ -1,5 +1,6 @@
 project(application VERSION 1.0 LANGUAGES CXX)
 
+message(STATUS "start build mainEntry.exe")
 set(MAIN_ENTRY "mainEntry")
 add_executable(${MAIN_ENTRY} main.cpp)
 if(${CMAKE_CXX_COMPILER} MATCHES ".*/(g\\+\\+)(\\..*)")
@@ -16,3 +17,5 @@ MainUIProject
 ViewModels
 AppRunner
 )
+
+message(STATUS "finish build mainEntry.exe")

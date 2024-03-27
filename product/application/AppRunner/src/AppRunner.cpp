@@ -8,7 +8,7 @@ namespace AppRunner
 FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
 {
     //init logger
-	auto fileLogger = std::make_shared<LogLogSpace::LoggerFileConfigure>(appConfig.appLogConfig.logLevel, appConfig.appLogConfig.logDirPath, appConfig.appLogConfig.logBaseFileName, appConfig.appLogConfig.logMaxKeepDays, appConfig.appLogConfig.logMaxSingleFileSize, "APP");
+	auto fileLogger = std::make_shared<LogLogSpace::LoggerFileConfigure>(appConfig.appLogConfig.logLevel, appConfig.appLogConfig.logDirPath, appConfig.appLogConfig.logBaseFileName, appConfig.appLogConfig.logMaxKeepDays, appConfig.appLogConfig.logMaxSingleFileSize, appConfig.appLogConfig.loggerName);
 	MasterLogUtil::InitLogger({fileLogger});
 
     //create framework

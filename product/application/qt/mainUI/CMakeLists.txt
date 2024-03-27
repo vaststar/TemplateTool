@@ -4,15 +4,15 @@ MODULE_NAME
     MainUIProject
 TARGET_SOURCE
     MainWindow.h 
+    MainWindowExport.h
     MainWindow.cpp
 TARGET_PRIVATE_DEPENDENICES
     UIViews
     Qt6::Gui Qt6::Quick 
     ViewModels 
     CoreFramework CommonHeadFramework
-    MasterLog ThreadPool
 TARGET_PUBLIC_DEPENDENICES
-    ServiceCommonFile
+    MasterLog ThreadPool
 TARGET_DEFINITIONS
     MainWindow_DLL
     MainWindow_LIB
@@ -22,6 +22,7 @@ PUBLIC_INSTALL_INTERFACE_FOLDER
     .
 INSTALL_PUBLIC_HEADER 
     MainWindow.h
+    MainWindowExport.h
 IDE_FOLDER
     UI
 QML_TARGET_URI
