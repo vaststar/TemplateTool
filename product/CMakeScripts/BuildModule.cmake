@@ -41,11 +41,6 @@ function(BuildModule)
             PUBLIC_INSTALL_INTERFACE_FOLDER ${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}
             PRIVATE_BUILD_FOLDER ${MODULE_PRIVATE_BUILD_FOLDER}
         )
-        # target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
-        #                         $<BUILD_INTERFACE:${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}>
-        #                         $<INSTALL_INTERFACE:${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
-        #                         PRIVATE ${MODULE_PRIVATE_BUILD_FOLDER}
-        # )
         
         if(DEFINED MODULE_TARGET_PRIVATE_DEPENDENICES)
             message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_PRIVATE_DEPENDENICES}")
