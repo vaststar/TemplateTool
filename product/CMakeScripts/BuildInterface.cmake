@@ -1,3 +1,4 @@
+include (LinkTargetIncludeDirectories)
 include (BuildInstallModule)
 function(BuildInterface)
     message(STATUS "====Start Build Interface====")
@@ -19,10 +20,16 @@ function(BuildInterface)
         set_target_properties(${INTERFACE_MODULE_NAME} PROPERTIES FOLDER ${INTERFACE_IDE_FOLDER})
     endif()
 
-    target_include_directories(${INTERFACE_MODULE_NAME} INTERFACE 
-                               $<BUILD_INTERFACE:${INTERFACE_PUBLIC_BUILD_INTERFACE_FOLDER}>
-                               $<INSTALL_INTERFACE:${INTERFACE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
+    LinkTargetIncludeDirectories(
+        INTERFACE
+        MODULE_NAME ${INTERFACE_MODULE_NAME}
+        PUBLIC_BUILD_INTERFACE_FOLDER ${INTERFACE_PUBLIC_BUILD_INTERFACE_FOLDER}
+        PUBLIC_INSTALL_INTERFACE_FOLDER ${INTERFACE_PUBLIC_INSTALL_INTERFACE_FOLDER}
     )
+    # target_include_directories(${INTERFACE_MODULE_NAME} INTERFACE 
+    #                            $<BUILD_INTERFACE:${INTERFACE_PUBLIC_BUILD_INTERFACE_FOLDER}>
+    #                            $<INSTALL_INTERFACE:${INTERFACE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
+    # )
     BuildInstallModule(
             MODULE_NAME ${INTERFACE_MODULE_NAME}
             TARGET_PUBLIC_HEADER ${INTERFACE_INSTALL_PUBLIC_HEADER}

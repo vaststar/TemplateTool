@@ -1,7 +1,6 @@
 #pragma once
 #include "MainWindowExport.h"
 #include <memory>
-#include <QObject>
 
 class ICommonHeadFramework;
 using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;

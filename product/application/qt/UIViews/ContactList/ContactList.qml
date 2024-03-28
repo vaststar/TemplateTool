@@ -18,7 +18,7 @@ function getAge()
 
 Label {
     id:lab
-    text: "12"//dat.m_age
+    text: dat.m_age
     font.pixelSize: 22
     font.italic: true
     Component.onCompleted:{

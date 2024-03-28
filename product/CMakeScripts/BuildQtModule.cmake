@@ -1,3 +1,4 @@
+include (LinkTargetIncludeDirectories)
 function(BuildQtModule)
         message(STATUS "====Start Build Qt Module====")
         set(options)
@@ -7,7 +8,7 @@ function(BuildQtModule)
                            TARGET_DEFINITIONS
                            INSTALL_PUBLIC_HEADER 
                            IDE_FOLDER
-                           QML_TARGET_URI QML_TARGET_FILES QML_TARGET_SOURCES
+                           QML_TARGET_URI QML_TARGET_FILES QML_TARGET_SOURCES QML_PUBLIC_BUILD_INTERFACE_FOLDER
         )
         cmake_parse_arguments(MODULE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
 
@@ -37,11 +38,41 @@ function(BuildQtModule)
             set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
         endif()
         
+        LinkTargetIncludeDirectories(
+            MODULE_NAME ${MODULE_MODULE_NAME}
+            PUBLIC_BUILD_INTERFACE_FOLDER ${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}
+            PUBLIC_INSTALL_INTERFACE_FOLDER ${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}
+            PRIVATE_BUILD_FOLDER ${MODULE_PRIVATE_BUILD_FOLDER}
+        )
+        message(STATUS "start include directories for ${MODULE_MODULE_NAME}")
         target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
-                                $<BUILD_INTERFACE:${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}>
+                                # $<BUILD_INTERFACE:${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}>
                                 $<INSTALL_INTERFACE:${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
                                 PRIVATE ${MODULE_PRIVATE_BUILD_FOLDER}
         )
+
+        # if (DEFINED MODULE_PUBLIC_BUILD_INTERFACE_FOLDER)
+        #     foreach(build_interface_dir ${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER})
+        #         target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
+        #             $<BUILD_INTERFACE:${build_interface_dir}>
+        #         )
+        #     endforeach()
+        # endif()
+
+        # if (DEFINED MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER)
+        #     foreach(install_interface_dir ${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER})
+        #         target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
+        #             $<INSTALL_INTERFACE:${install_interface_dir}>
+        #         )
+        #     endforeach()
+        # endif()
+
+        # if (DEFINED MODULE_PRIVATE_BUILD_FOLDER)
+        #     target_include_directories(${MODULE_MODULE_NAME} PRIVATE 
+        #         ${MODULE_PRIVATE_BUILD_FOLDER}
+        #     )
+        # endif()
+        # message(STATUS "finish include directories for ${MODULE_MODULE_NAME}")
         
         if(DEFINED MODULE_TARGET_PRIVATE_DEPENDENICES)
             message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_PRIVATE_DEPENDENICES}")
@@ -69,6 +100,13 @@ function(BuildQtModule)
                     ${MODULE_QML_TARGET_SOURCES}
             )
             set_target_properties(${MODULE_MODULE_NAME}plugin PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+            if (DEFINED MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER)
+                foreach(interface_dir ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER})
+                    target_include_directories(${MODULE_MODULE_NAME}plugin PUBLIC 
+                        $<BUILD_INTERFACE:${interface_dir}>
+                    )
+                endforeach()
+            endif()
             set_target_properties(${MODULE_MODULE_NAME}plugin_init PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
             set_target_properties(${MODULE_MODULE_NAME}_other_files PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
             set_target_properties(${MODULE_MODULE_NAME}_qmlcache PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)

@@ -1,4 +1,5 @@
 include (BuildInstallModule)
+include (LinkTargetIncludeDirectories)
 
 function(BuildModule)
         message(STATUS "====Start Build Module====")
@@ -34,11 +35,17 @@ function(BuildModule)
             set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
         endif()
         
-        target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
-                                $<BUILD_INTERFACE:${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}>
-                                $<INSTALL_INTERFACE:${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
-                                PRIVATE ${MODULE_PRIVATE_BUILD_FOLDER}
+        LinkTargetIncludeDirectories(
+            MODULE_NAME ${MODULE_MODULE_NAME}
+            PUBLIC_BUILD_INTERFACE_FOLDER ${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}
+            PUBLIC_INSTALL_INTERFACE_FOLDER ${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}
+            PRIVATE_BUILD_FOLDER ${MODULE_PRIVATE_BUILD_FOLDER}
         )
+        # target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
+        #                         $<BUILD_INTERFACE:${MODULE_PUBLIC_BUILD_INTERFACE_FOLDER}>
+        #                         $<INSTALL_INTERFACE:${MODULE_PUBLIC_INSTALL_INTERFACE_FOLDER}>
+        #                         PRIVATE ${MODULE_PRIVATE_BUILD_FOLDER}
+        # )
         
         if(DEFINED MODULE_TARGET_PRIVATE_DEPENDENICES)
             message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_PRIVATE_DEPENDENICES}")
