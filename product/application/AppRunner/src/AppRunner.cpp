@@ -2,6 +2,7 @@
 #include "MasterLog/LogExport.h"
 #include "CoreFramework/ICoreFramework.h"
 #include "CommonHeadFramework/ICommonHeadFramework.h"
+#include "ContactService/IContactService.h"
 
 namespace AppRunner
 {
@@ -13,6 +14,10 @@ FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
 
     //create framework
     auto coreFramework = ICoreFramework::CreateInstance();
+    coreFramework->injectService<IContactService>(coreFramework);
+
+    coreFramework->initServices();
+    
     auto commonheadFramework = ICommonHeadFramework::CreateInstance(coreFramework);
     return FrameworkDependencies{coreFramework, commonheadFramework};
 }

@@ -24,8 +24,12 @@ int MainWindow::runMainWindow(int argc, char *argv[])
         {
             QCoreApplication::exit(-1);
         }
-        MainWindowController controller(mCommonHeadFrameworkWPtr);
-        obj->setProperty("controller", QVariant::fromValue(&controller));
+        if (obj && url == objUrl)
+        {
+            MainWindowController controller(mCommonHeadFrameworkWPtr);
+            obj->setProperty("controller", QVariant::fromValue(&controller));
+            MAINUI_LOG_DEBUG("set controller");
+        }
     }, Qt::QueuedConnection);
     engine.load(url);
     return app.exec();

@@ -18,3 +18,14 @@ std::string CoreFramework::getName() const
 {
     return "CoreFramework";
 }
+
+void CoreFramework::initServices()
+{
+    auto allServices = getAllServices();
+    std::for_each(allServices.begin(), allServices.end(), [](std::weak_ptr<IService> service){
+        if (auto servicePtr = service.lock())
+        {
+            servicePtr->initService();
+        }
+    }); 
+}

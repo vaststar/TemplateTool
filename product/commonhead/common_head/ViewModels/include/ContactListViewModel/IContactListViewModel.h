@@ -22,6 +22,7 @@ class COMMONHEAD_EXPORT IContactListViewModel: public NotificationHelper<IContac
 {
 public:
     virtual std::string getViewModelName() const = 0;
+    virtual std::vector<CommonHead::ViewModels::Contact> getContactList() const = 0;
 public:
     static std::shared_ptr<IContactListViewModel> CreateInstance(ICommonHeadFrameworkWptr commonHeadFramework);
 };

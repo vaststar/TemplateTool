@@ -6,7 +6,9 @@ BuildModule(
     TARGET_SOURCE 
         include/ContactService/IContactService.h
         include/ContactService/ContactService.h
+        include/ContactService/ContactModel.h
         src/ContactService.cpp
+        src/ContactModel.cpp
     TARGET_PRIVATE_DEPENDENICES
         CoreFramework
         MasterLog
@@ -23,6 +25,7 @@ BuildModule(
         ${ADD_SERVICE_DEFINITIONS}
     INSTALL_PUBLIC_HEADER 
         include/ContactService/IContactService.h
+        include/ContactService/ContactModel.h
     IDE_FOLDER
         framework/Services
 )

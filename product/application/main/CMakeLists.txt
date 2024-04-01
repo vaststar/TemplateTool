@@ -2,7 +2,7 @@ project(application VERSION 1.0 LANGUAGES CXX)
 
 message(STATUS "start build mainEntry.exe")
 set(MAIN_ENTRY "mainEntry")
-add_executable(${MAIN_ENTRY} main.cpp)
+add_executable(${MAIN_ENTRY} main.cpp logo.rc)
 if(${CMAKE_CXX_COMPILER} MATCHES ".*/(g\\+\\+)(\\..*)")
     set_target_properties(${MAIN_ENTRY} PROPERTIES LINK_FLAGS_DEBUG "-mwindows")
     set_target_properties(${MAIN_ENTRY} PROPERTIES LINK_FLAGS_RELEASE "-mwindows")

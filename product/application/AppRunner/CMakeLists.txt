@@ -13,6 +13,7 @@ BuildModule(
         src/AppRunner.cpp
     TARGET_PRIVATE_DEPENDENICES
         CommonHeadFramework
+        ContactService
         CoreFramework
     TARGET_PUBLIC_DEPENDENICES
         MasterLog

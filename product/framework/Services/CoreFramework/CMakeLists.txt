@@ -13,6 +13,7 @@ BuildModule(
         MasterLog
     TARGET_PUBLIC_DEPENDENICES
         ServiceCommonFile
+        NotificationHelper
     PUBLIC_BUILD_INTERFACE_FOLDER
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC_INSTALL_INTERFACE_FOLDER

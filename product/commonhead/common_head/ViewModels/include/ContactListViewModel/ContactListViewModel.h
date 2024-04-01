@@ -9,6 +9,8 @@ class ContactListViewModel: public IContactListViewModel,
 public:
     ContactListViewModel(ICommonHeadFrameworkWptr commonHeadFramework);
     virtual std::string getViewModelName() const override;
+    virtual std::vector<CommonHead::ViewModels::Contact> getContactList() const override;
+
 private:
     ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
 };

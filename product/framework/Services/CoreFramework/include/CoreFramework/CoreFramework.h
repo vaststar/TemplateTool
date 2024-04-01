@@ -9,4 +9,5 @@ public:
     CoreFramework();
 public:
     virtual std::string getName() const override;
+    virtual void initServices() override;
 };

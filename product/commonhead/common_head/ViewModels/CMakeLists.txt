@@ -10,8 +10,9 @@ BuildModule(
         src/ContactListViewModel/ContactListViewModel.cpp
         src/ContactListViewModel/ContactListModel.cpp
     TARGET_PRIVATE_DEPENDENICES
-        CoreFramework
         CommonHeadFramework
+        ContactService
+        CoreFramework
         MasterLog
     TARGET_PUBLIC_DEPENDENICES
         CommonHeadCommonFile

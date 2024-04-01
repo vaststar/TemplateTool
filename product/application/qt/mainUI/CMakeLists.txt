@@ -11,7 +11,7 @@ TARGET_PRIVATE_DEPENDENICES
     UIViews
     Qt6::Gui Qt6::Quick 
     ViewModels 
-    CoreFramework CommonHeadFramework
+    CommonHeadFramework
 TARGET_PUBLIC_DEPENDENICES
     MasterLog ThreadPool
 TARGET_DEFINITIONS
