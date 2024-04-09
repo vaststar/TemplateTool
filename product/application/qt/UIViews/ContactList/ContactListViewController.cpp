@@ -2,7 +2,7 @@
 
 
 ContactListViewController::ContactListViewController(QObject *parent)
-    : QObject(parent)
+    : BaseController(parent)
 {
 
 }
@@ -10,4 +10,9 @@ ContactListViewController::ContactListViewController(QObject *parent)
 QString ContactListViewController::getControllerName()
 {
     return "ContactListViewController";
+}
+
+void ContactListViewController::initController(ICommonHeadFrameworkWPtr commonheadFramework)
+{
+    setCommonHeadFramework(commonheadFramework);
 }

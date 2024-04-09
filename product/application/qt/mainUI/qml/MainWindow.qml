@@ -2,13 +2,17 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts
 import UIViews 1.0
+import mainUI 1.0
 // import qt.windowController 1.0
 
 // import QtWebEngine
 
 ApplicationWindow
 {
-    property var controller //: MainWindowController
+    MainWindowController{
+        id:controller
+    }
+    // property var controller //: MainWindowController
     visible: true
     width: 758 
     height: 576
@@ -77,7 +81,7 @@ ApplicationWindow
 StackView {
         anchors.fill: parent
         initialItem: Rectangle {
-            width: 200
+            width: 400
             height: 200
             color: "salmon"
         }
@@ -85,18 +89,23 @@ StackView {
 Datas{id:dd}
     ContactList{
         id: frame
-        width : 200
+        width : 400
         height: 200
     }
 
         Text {
     text: controller.mControllerName
     font.family: "Helvetica"
-    font.pointSize: 24
+    font.pointSize: 12
     color: "red"
     
 }
-
+ContactList{
+    id: contactList
+    Component.onCompleted:{
+        controller.registerController(contactList.controller)
+    }
+}
     // WebEngineView{
     //     anchors.fill:parent
     //     url:"https://www.baidu.com"

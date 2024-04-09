@@ -1,0 +1,37 @@
+include(BuildQtModule)
+BuildQtModule(
+MODULE_NAME 
+    UIComponent
+TARGET_SOURCE
+    include/UIComponentExport.h
+    include/LoggerDefine.h
+    include/BaseController/BaseController.h 
+    src/BaseController.cpp
+TARGET_PRIVATE_DEPENDENICES
+    Qt6::Gui Qt6::Quick 
+    ViewModels 
+    CommonHeadFramework
+TARGET_PUBLIC_DEPENDENICES
+    MasterLog ThreadPool
+TARGET_DEFINITIONS
+    UICOMPONENT_DLL
+    UICOMPONENT_LIB
+PUBLIC_BUILD_INTERFACE_FOLDER
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+PUBLIC_INSTALL_INTERFACE_FOLDER
+    include
+INSTALL_PUBLIC_HEADER 
+    include/UIComponentExport.h
+    include/BaseController/BaseController.h
+IDE_FOLDER
+    UI
+# QML_TARGET_URI
+#     UIComponent
+# QML_TARGET_FILES
+#     qml/MainWindow.qml
+# QML_TARGET_SOURCES
+#     include/MainWindow/MainWindowController.h 
+#     src/MainWindowController.cpp
+# QML_PUBLIC_BUILD_INTERFACE_FOLDER
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include/MainWindow
+)

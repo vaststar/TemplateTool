@@ -1,16 +1,22 @@
 #include "MainWindow/MainWindow.h"
-#include "MainWindow/LoggerDefine.h"
-#include "MainWindow/MainWindowController.h"
-#include "CommonHeadFramework/ICommonHeadFramework.h"
 
 #include <QGuiApplication>
 #include <QQuickView>
 #include <QQmlApplicationEngine>
 
+#include "CommonHeadFramework/ICommonHeadFramework.h"
+
+#include "ClientGlobal/ClientGlobal.h"
+#include "MainWindow/LoggerDefine.h"
+#include "MainWindow/MainWindowController.h"
+
+
+
 MainWindow::MainWindow(ICommonHeadFrameworkWPtr commonHeadFramework)
     : mCommonHeadFrameworkWPtr(commonHeadFramework)
 {
     MAINUI_LOG_DEBUG("create MainWindow with CommonHeadFramework, address: " << commonHeadFramework.lock());
+    ClientGlobal::getInstance()->setCommonHeadFramework(commonHeadFramework);
 }
 
 int MainWindow::runMainWindow(int argc, char *argv[])
@@ -24,12 +30,12 @@ int MainWindow::runMainWindow(int argc, char *argv[])
         {
             QCoreApplication::exit(-1);
         }
-        if (obj && url == objUrl)
-        {
-            MainWindowController controller(mCommonHeadFrameworkWPtr);
-            obj->setProperty("controller", QVariant::fromValue(&controller));
-            MAINUI_LOG_DEBUG("set controller");
-        }
+        // if (obj && url == objUrl)
+        // {
+        //     MainWindowController controller(mCommonHeadFrameworkWPtr);
+        //     obj->setProperty("controller", QVariant::fromValue(&controller));
+        //     MAINUI_LOG_DEBUG("set controller");
+        // }
     }, Qt::QueuedConnection);
     engine.load(url);
     return app.exec();

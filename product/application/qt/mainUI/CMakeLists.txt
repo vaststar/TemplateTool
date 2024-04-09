@@ -9,11 +9,14 @@ TARGET_SOURCE
     src/MainWindow.cpp
 TARGET_PRIVATE_DEPENDENICES
     UIViews
+    UIComponent
     Qt6::Gui Qt6::Quick 
     ViewModels 
     CommonHeadFramework
 TARGET_PUBLIC_DEPENDENICES
-    MasterLog ThreadPool
+    ClientGlobal
+    MasterLog 
+    ThreadPool
 TARGET_DEFINITIONS
     MainWindow_DLL
     MainWindow_LIB
@@ -31,7 +34,7 @@ QML_TARGET_URI
 QML_TARGET_FILES
     qml/MainWindow.qml
 QML_TARGET_SOURCES
-include/MainWindow/MainWindowController.h 
+    include/MainWindow/MainWindowController.h 
     src/MainWindowController.cpp
 QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/include/MainWindow

@@ -4,10 +4,15 @@ import UIViews 1.0
 
 Item{
     id: root
+    property alias controller: controller
 Datas{
     id: dat
 }
 property var ii:"555"
+
+ContactListViewController{
+    id:controller
+}
 
 function getAge()
 {
