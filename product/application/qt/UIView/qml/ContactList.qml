@@ -1,18 +1,20 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.15
-import UIViews 1.0
+import UIView 1.0
 
 Item{
     id: root
+    
     property alias controller: controller
+
+    ContactListViewController{
+        id:controller
+    }
 Datas{
     id: dat
 }
 property var ii:"555"
 
-ContactListViewController{
-    id:controller
-}
 
 function getAge()
 {

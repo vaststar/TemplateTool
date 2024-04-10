@@ -10,14 +10,16 @@ using ICommonHeadFrameworkPtr = std::shared_ptr<ICommonHeadFramework>;
 class UICOMPONENT_EXPORT BaseController: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString mControllerName READ getControllerName NOTIFY controllerNameChanged)
 public:
     BaseController(QObject *parent = nullptr);
+    virtual ~BaseController() = default;
+    virtual QString getControllerName() const = 0;
 
-    virtual void initController(ICommonHeadFrameworkWPtr commonheadFramework) = 0;
-
-    Q_INVOKABLE void registerController(BaseController* controller);
-    Q_INVOKABLE void setCommonHeadFramework(ICommonHeadFrameworkWPtr commonheadFramework);
+    void setCommonHeadFramework(ICommonHeadFrameworkWPtr commonheadFramework);
     ICommonHeadFrameworkWPtr getCommonHeadFramework() const;
+signals:
+    void controllerNameChanged();
 private:
     ICommonHeadFrameworkWPtr mCommonHeadFrameworkWPtr;
 };

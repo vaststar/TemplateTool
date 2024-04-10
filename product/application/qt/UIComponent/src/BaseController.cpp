@@ -1,10 +1,12 @@
 #include "BaseController/BaseController.h"
 #include "LoggerDefine.h"
+#include "ClientGlobal/ClientGlobal.h"
 
 BaseController::BaseController(QObject *parent)
     :QObject(parent)
 {
     UICOM_LOG_INFO("create BaseController, address:" << this);
+    setCommonHeadFramework(ClientGlobal::getInstance()->getCommonHeadFramework());
 }
 
 void BaseController::setCommonHeadFramework(ICommonHeadFrameworkWPtr commonheadFramework)
@@ -16,13 +18,4 @@ void BaseController::setCommonHeadFramework(ICommonHeadFrameworkWPtr commonheadF
 ICommonHeadFrameworkWPtr BaseController::getCommonHeadFramework() const
 {
     return mCommonHeadFrameworkWPtr;
-}
-
-void BaseController::registerController(BaseController* controller)
-{
-    if (controller)
-    {
-        UICOM_LOG_INFO("registerController, address:" << controller);
-        controller->initController(mCommonHeadFrameworkWPtr);
-    }
 }

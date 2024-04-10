@@ -14,12 +14,11 @@ using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 class ContactListViewController: public BaseController
 {
     Q_OBJECT
-    Q_PROPERTY(QString mControllerName READ getControllerName)
+    // Q_PROPERTY(QString mControllerName READ getControllerName)
     QML_ELEMENT
 public:
     explicit ContactListViewController(QObject *parent = nullptr);
-    QString getControllerName();
-    virtual void initController(ICommonHeadFrameworkWPtr commonheadFramework) override;
+    virtual QString getControllerName() const override;
 private:
-    QString mControllerName;
+    // QString mControllerName;
 };

@@ -15,7 +15,7 @@ std::string ImageService::getServiceName() const
     return "ImageService";
 }
 
-void ImageService::initService() const
+void ImageService::initService()
 {
 
 }

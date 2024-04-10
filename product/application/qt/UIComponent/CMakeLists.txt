@@ -12,7 +12,9 @@ TARGET_PRIVATE_DEPENDENICES
     ViewModels 
     CommonHeadFramework
 TARGET_PUBLIC_DEPENDENICES
-    MasterLog ThreadPool
+    ClientGlobal
+    MasterLog 
+    ThreadPool
 TARGET_DEFINITIONS
     UICOMPONENT_DLL
     UICOMPONENT_LIB

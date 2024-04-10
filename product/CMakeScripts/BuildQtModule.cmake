@@ -98,5 +98,8 @@ function(BuildQtModule)
             ARCHIVE DESTINATION ${MODULE_MODULE_NAME}/lib
             PUBLIC_HEADER DESTINATION ${MODULE_MODULE_NAME}/include
         )
+
+        #for project tree view
+        source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE} ${MODULE_QML_TARGET_SOURCES} ${MODULE_QML_TARGET_FILES})
     message(STATUS "====Finish Build Qt Module====")
 endfunction()
