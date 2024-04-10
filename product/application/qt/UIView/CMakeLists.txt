@@ -16,12 +16,13 @@ set(UIVIEW_INSTALL_PUBLIC_HEADER
 )
 
 set(UIVIEW_QML_TARGET_FILES
-    qml/ContactList.qml
-    qml/AppHeader.qml
-    qml/AppMenuBar.qml
-    qml/AppFooter.qml
-    qml/MainWindowContent.qml
-    qml/MainWindow.qml
+    qml/ContactList/ContactList.qml
+    qml/MainWindow/AppHeader.qml
+    qml/MainWindow/AppMenuBar.qml
+    qml/MainWindow/AppFooter.qml
+    qml/MainWindow/MainWindowContent.qml
+    qml/MainWindow/MainWindow.qml
+    qml/MainWindow/MainWindowTabBar.qml
 )
 
 set(UIVIEW_QML_TARGET_SOURCES

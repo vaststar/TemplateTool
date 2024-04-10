@@ -25,7 +25,7 @@ void Main::initMain(int argc, char *argv[])
     };
     AppRunner::ApplicationConfig appConfig{logConfig};
     mDependencies = AppRunner::initAppDependencies(appConfig);
-    
+
     MAINUI_LOG_DEBUG("initAppDependencies done");
     ClientGlobal::getInstance()->setCommonHeadFramework(std::weak_ptr(mDependencies.commonHeadFramework));
     MAINUI_LOG_DEBUG("init Main done");
@@ -33,11 +33,12 @@ void Main::initMain(int argc, char *argv[])
 
 int Main::runMain(int argc, char *argv[])
 {
+    initMain(argc, argv);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
     MAINUI_LOG_DEBUG("start load main qml");
-    const QUrl url(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow.qml"));
+    const QUrl url(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url, this](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
         {

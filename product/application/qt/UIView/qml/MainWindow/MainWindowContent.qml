@@ -5,19 +5,18 @@ import UIView 1.0
 
 Item{
     required property var controller
-    
-    StackView {
-        anchors.fill: parent
-        initialItem: Rectangle {
-            width: 400
-            height: 200
-            color: "salmon"
-        }
+    MainWindowTabBar{
+        id: navigationBar
     }
+    
     ContactList{
         id: frame
         width : 400
         height: 200
+        anchors{
+            top: parent.top
+            left: navigationBar.right
+        }
     }
 
     Text {
