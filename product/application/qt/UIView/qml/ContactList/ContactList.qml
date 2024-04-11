@@ -36,7 +36,7 @@ Label {
 
 Button{
     id:butt
-    text:"Button"
+    text:dat.getData()
     height: 200
     width: 200
     x: 200
@@ -44,6 +44,11 @@ Button{
         console.log("Button clicked")
         lab.text = dat.getData()
     }
+    // color: "steelblue"
+    // background: Rectangle {
+    //             color: parent.down ? "#bbbbbb" :
+    //                     (parent.hovered ? "#d6d6d6" : "#f6f6f6")
+    //     }
 }
 }
 
