@@ -8,7 +8,9 @@ function(BuildQtModule)
                            TARGET_DEFINITIONS
                            INSTALL_PUBLIC_HEADER 
                            IDE_FOLDER
-                           QML_TARGET_URI QML_TARGET_FILES QML_TARGET_SOURCES QML_PUBLIC_BUILD_INTERFACE_FOLDER
+                           QML_TARGET_URI QML_TARGET_FILES QML_TARGET_SOURCES 
+                           QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES 
+                           QML_PUBLIC_BUILD_INTERFACE_FOLDER
         )
         cmake_parse_arguments(MODULE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
 
@@ -26,6 +28,10 @@ function(BuildQtModule)
         message(STATUS "QML_TARGET_URI: ${MODULE_QML_TARGET_URI}")
         message(STATUS "QML_TARGET_FILES: ${MODULE_QML_TARGET_FILES}")
         message(STATUS "QML_TARGET_SOURCES: ${MODULE_QML_TARGET_SOURCES}")
+        message(STATUS "QML_TARGET_RESOURCES_DIR: ${MODULE_QML_TARGET_RESOURCES_DIR}")
+        message(STATUS "QML_TARGET_RESOURCES: ${MODULE_QML_TARGET_RESOURCES}")
+        message(STATUS "QML_PUBLIC_BUILD_INTERFACE_FOLDER: ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER}")
+        
         
         message(STATUS "create library: ${MODULE_MODULE_NAME}")
         ##build sattic library
@@ -62,11 +68,22 @@ function(BuildQtModule)
 
         if (DEFINED MODULE_QML_TARGET_URI)
             message(STATUS "====Start Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")
+            if (DEFINED MODULE_QML_TARGET_RESOURCES_DIR)
+                message(STATUS "set alias of resources")
+                set(ALL_MODULE_QML_TARGET_RESOURCES "")
+                foreach(resource ${MODULE_QML_TARGET_RESOURCES})
+                    set_source_files_properties(${MODULE_QML_TARGET_RESOURCES_DIR}/${resource} PROPERTIES QT_RESOURCE_ALIAS ${resource})
+                    list(APPEND ALL_MODULE_QML_TARGET_RESOURCES ${MODULE_QML_TARGET_RESOURCES_DIR}/${resource})
+                endforeach()
+                message(STATUS "qml_resources: ${ALL_MODULE_QML_TARGET_RESOURCES}")
+            endif()
             qt_add_qml_module(${MODULE_MODULE_NAME}
                 URI ${MODULE_QML_TARGET_URI}
                 VERSION 1.0
                 QML_FILES
                     ${MODULE_QML_TARGET_FILES}
+                RESOURCES
+                    ${ALL_MODULE_QML_TARGET_RESOURCES}
                 SOURCES
                     ${MODULE_QML_TARGET_SOURCES}
             )

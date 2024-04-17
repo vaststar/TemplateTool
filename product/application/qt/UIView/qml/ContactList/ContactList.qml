@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 import UIView 1.0
 
 Item{
@@ -22,7 +22,11 @@ function getAge()
     // console.log("aaa", root.dat.getAge())
     return "aaa"//data.getAge()
 }
-
+Image {
+    height:200
+    width:200
+    source: "qrc:/qt/qml/UIView/picture/112.png"
+}
 Label {
     id:lab
     text: dat.m_age
@@ -34,21 +38,40 @@ Label {
     }
 }
 
-Button{
-    id:butt
-    text:dat.getData()
-    height: 200
-    width: 200
-    x: 200
-    onClicked: {
-        console.log("Button clicked")
-        lab.text = dat.getData()
-    }
-    // color: "steelblue"
-    // background: Rectangle {
-    //             color: parent.down ? "#bbbbbb" :
-    //                     (parent.hovered ? "#d6d6d6" : "#f6f6f6")
-    //     }
-}
+// Button{
+//     id:butt
+//     text:"5555555555"
+//     height: 200
+//     width: 200
+//     x: 200
+//     onClicked: {
+//         console.log("Button clicked")
+//         lab.text = dat.getData()
+//     }
+
+// }
+
+ContactListItemModel{id:treeModel}
+ TreeView {
+        id: treeView
+        anchors{
+            left:parent.left
+            leftMargin: 200
+            top: parent.top
+            topMargin: 10
+        }
+        width:200
+        height:200
+        clip: true
+
+        // The model needs to be a QAbstractItemModel
+        model: treeModel
+
+        delegate: Item {
+            Text{
+                text:model.display
+            }
+        }
+ }
 }
 

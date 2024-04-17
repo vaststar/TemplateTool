@@ -21,4 +21,5 @@ public:
     virtual QString getControllerName() const override;
 private:
     // QString mControllerName;
+    // ContactListItemModel mContactListModel;
 };
