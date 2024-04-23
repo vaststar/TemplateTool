@@ -67,11 +67,7 @@ ContactListItemModel{id:treeModel}
         // The model needs to be a QAbstractItemModel
         model: treeModel
 
-        delegate: Item {
-            Text{
-                text:model.display
-            }
-        }
+        delegate: TreeViewDelegate { implicitWidth : parent.width}
  }
 }
 

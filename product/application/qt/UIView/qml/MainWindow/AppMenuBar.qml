@@ -1,24 +1,26 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.0
+import QtQuick
+import QtQuick.Controls 
 import QtQuick.Layouts
 
-ToolBar {
-        RowLayout {
-            anchors.fill: parent
-            ToolButton {
-                text: qsTr("‹")
-                onClicked: stack.pop()
-            }
-            Label {
-                text: "ManuBar"
-                elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-            }
-            ToolButton {
-                text: qsTr("⋮")
-                onClicked: menu.open()
-            }
-        }
+MenuBar {
+    focus:true
+     Menu {
+        title: qsTr("File")
+        Action { text: qsTr("New...") }
+        Action { text: qsTr("Open...") }
+        Action { text: qsTr("Save") }
+        Action { text: qsTr("Save As...") }
+        MenuSeparator { }
+        Action { text: qsTr("Quit") }
     }
+    Menu {
+        title: qsTr("Edit")
+        Action { text: qsTr("Cut") }
+        Action { text: qsTr("Copy") }
+        Action { text: qsTr("Paste") }
+    }
+    Menu {
+        title: qsTr("Help")
+        Action { text: qsTr("About") }
+    }
+}

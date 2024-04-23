@@ -25,5 +25,6 @@ ApplicationWindow
         id: mainWindowContent
         controller: mainController
         anchors.fill: parent
+        
     }
 }
