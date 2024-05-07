@@ -2,6 +2,8 @@
 #include "CoreFramework/ICoreFramework.h"
 #include "ServiceCommonFile/ServiceLogger.h"
 
+#include <sqlite3.h>
+
 
 std::shared_ptr<IContactService> IContactService::CreateInstance(ICoreFrameworkWPtr coreFramework)
 {
@@ -21,6 +23,12 @@ void ContactService::initService()
     {
         coreFramework->registerCallback(shared_from_this());
     }
+
+
+    //
+    sqlite3* pDb = NULL;
+    sqlite3_initialize();
+    sqlite3_open("test_tt.db", &pDb);
 }
 
 std::string ContactService::getServiceName() const

@@ -10,6 +10,7 @@ BuildModule(
         src/ContactService.cpp
         src/ContactModel.cpp
     TARGET_PRIVATE_DEPENDENICES
+        Sqlite3
         CoreFramework
         MasterLog
     TARGET_PUBLIC_DEPENDENICES
