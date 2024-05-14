@@ -14,11 +14,13 @@ function(BuildInterface)
     message(STATUS "INSTALL_PUBLIC_HEADER: ${INTERFACE_INSTALL_PUBLIC_HEADER}")
     message(STATUS "IDE_FOLDER: ${INTERFACE_IDE_FOLDER}")
 
-    add_library(${INTERFACE_MODULE_NAME} INTERFACE ${INTERFACE_TARGET_PUBLIC_HEADER})
+    add_library(${INTERFACE_MODULE_NAME} INTERFACE)
 
     if(DEFINED  INTERFACE_IDE_FOLDER)
         set_target_properties(${INTERFACE_MODULE_NAME} PROPERTIES FOLDER ${INTERFACE_IDE_FOLDER})
     endif()
+
+    # target_compile_definitions(${INTERFACE_MODULE_NAME} INTERFACE Utilities_DLL Utilities_LIB)
 
     LinkTargetIncludeDirectories(
         INTERFACE

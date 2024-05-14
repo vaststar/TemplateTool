@@ -41,6 +41,11 @@ void ContactService::OnDataBaseInitialized()
 
 }
 
+void ContactService::OnServiceInitialized()
+{
+    SERVICE_LOG_DEBUG("");
+}
+
 void ContactService::fetchContactList()
 {
     SERVICE_LOG_DEBUG("start fetchContactList");

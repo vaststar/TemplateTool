@@ -4,12 +4,51 @@
 #include "CoreFramework/IService.h"
 
 
+
+
+/**************************************************
+ * 
+ * 
+ * CoreFrameworkImpl
+ * 
+ * 
+ * ************************************/
+
+class CoreFramework::CoreFrameworkImpl// : public NotificationHelper<ICoreFrameworkCallback>
+{
+public:
+    CoreFramework::CoreFrameworkImpl()
+    {
+        CORE_LOG_DEBUG("create CoreFrameworkImpl, address:" << this);
+    }
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+/**************************************************
+ * 
+ * 
+ * CoreFramework
+ * 
+ * 
+ * ************************************/
 std::shared_ptr<ICoreFramework> ICoreFramework::CreateInstance()
 {
     return std::make_shared<CoreFramework>();
 }
 
 CoreFramework::CoreFramework()
+    : mImpl(std::make_shared<CoreFrameworkImpl>())
 {
     CORE_LOG_DEBUG("create CoreFramework, address:" << this);
 }
@@ -28,4 +67,11 @@ void CoreFramework::initServices()
             servicePtr->initService();
         }
     }); 
+    fireNotification(&ICoreFrameworkCallback::OnServiceInitialized);
 }
+
+
+// void CoreFramework::registerCallback(CallbackPtr callback)
+// {
+//     mImpl->registerCallback(callback);
+// }

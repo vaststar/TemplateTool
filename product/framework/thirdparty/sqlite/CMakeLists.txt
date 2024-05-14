@@ -7,8 +7,8 @@ endif()
 if (MSVC)
 add_compile_options(/FIsqlite_export.h)
 else()
-add_compile_options()
-endif(-include sqlite_export.h)
+add_compile_options(-include sqlite_export.h)
+endif()
 
 BuildModule(
     MODULE_NAME 

@@ -117,7 +117,7 @@ namespace LogLogSpace{
         {
             if (std::string filePath = getCurrentLoggerFilePath(); !filePath.empty() && std::filesystem::exists(filePath))
             {
-                m_currentSize = std::filesystem::file_size(filePath);
+                m_currentSize = static_cast<unsigned int>(std::filesystem::file_size(filePath));
             }
         }
         if(m_currentSize + addedSize > m_maxSingleSize)

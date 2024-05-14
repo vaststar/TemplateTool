@@ -6,14 +6,20 @@ BuildModule(
     TARGET_SOURCE 
         include/CoreFramework/IService.h
         include/CoreFramework/ICoreFramework.h
+        include/CoreFramework/ICoreFramework.h
         include/CoreFramework/CoreFramework.h
         include/CoreFramework/ServiceAccessor.h
+        include/CoreFramework/ICoreFrameworkCallback.h
         src/CoreFramework.cpp
     TARGET_PRIVATE_DEPENDENICES
-        MasterLog
+        ThreadPool
+        
+        
     TARGET_PUBLIC_DEPENDENICES
+        MasterLog
         ServiceCommonFile
         NotificationHelper
+        
     PUBLIC_BUILD_INTERFACE_FOLDER
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PUBLIC_INSTALL_INTERFACE_FOLDER

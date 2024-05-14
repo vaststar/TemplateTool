@@ -9,9 +9,10 @@
 
 class IService;
 using IServicePtr = std::shared_ptr<IService>;
-class SERVICE_EXPORT ServiceAccessor
+class SERVICE_EXPORT IServiceAccessor
 {
 public:
+    virtual ~ServiceAccessor() = default;
     template<typename T>
     std::weak_ptr<T> getService()
     {

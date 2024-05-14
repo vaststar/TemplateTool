@@ -22,6 +22,7 @@ public:
 
     //ICoreFrameworkCallback
     virtual void OnDataBaseInitialized() override;
+    virtual void OnServiceInitialized() override;
 private:
     std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
     std::unique_ptr<model::ContactModel>  mContactModelPtr;

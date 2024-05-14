@@ -5,7 +5,7 @@ function(BuildModule)
         message(STATUS "====Start Build Module====")
         set(options)
         set(oneValueArg MODULE_NAME)
-        set(multiValueArgs TARGET_SOURCE TARGET_PRIVATE_DEPENDENICES TARGET_PUBLIC_DEPENDENICES 
+        set(multiValueArgs TARGET_SOURCE TARGET_PRIVATE_DEPENDENICES TARGET_PUBLIC_DEPENDENICES
                            PUBLIC_BUILD_INTERFACE_FOLDER PUBLIC_INSTALL_INTERFACE_FOLDER PRIVATE_BUILD_FOLDER
                            TARGET_DEFINITIONS
                            INSTALL_PUBLIC_HEADER 

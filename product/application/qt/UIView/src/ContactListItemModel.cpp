@@ -147,6 +147,7 @@ int ContactListItemModel::rowCount(const QModelIndex &parent) const
     {
         return static_cast<int>(item->getLowerIds().size());
     }
+    return 0;
 }
 
 int ContactListItemModel::columnCount(const QModelIndex &parent) const

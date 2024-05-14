@@ -10,6 +10,8 @@ BuildInterface(
     INSTALL_PUBLIC_HEADER 
         include/NotificationHelper/NotificationHelperExport.h
         include/NotificationHelper/NotificationHelper.h
+        include/NotificationHelper/INotificationHelper.h
+        include/NotificationHelper/NotificationHelperImpl.h
     IDE_FOLDER
         framework/Utilities
 )

@@ -1,22 +1,23 @@
 #pragma once
 
+#pragma once
+
 #include <mutex>
 #include <memory>
 #include <algorithm>
 #include <functional>
 
+#include "NotificationHelper/INotificationHelper.h"
+
 template <typename CallbackObject>
-class  NotificationHelper
+class  NotificationHelperImpl: public INotificationHelper<CallbackObject>
 {
 public:
     using Callback = CallbackObject;
     using CallbackWeakPtr = std::weak_ptr<CallbackObject>;
     using CallbackPtr = std::shared_ptr<CallbackObject>;
     using CallbackList = std::vector<CallbackWeakPtr>;
-
-    virtual ~NotificationHelper() = default;
-
-    void registerCallback(CallbackPtr callback)
+    void registerCallback(CallbackPtr callback) override
     {
         if (!callback)
         {
