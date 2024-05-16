@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MasterLog/LogExport.h"
+#include "LogExport.h"
 
 static inline const char * UIViewLoggerName = "APP";
 #define UIVIEW_LOG_DEBUG(message)     LOG_DEBUG("UIView",message,UIViewLoggerName)

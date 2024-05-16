@@ -27,13 +27,4 @@ INSTALL_PUBLIC_HEADER
     include/BaseController/BaseController.h
 IDE_FOLDER
     UI
-# QML_TARGET_URI
-#     UIComponent
-# QML_TARGET_FILES
-#     qml/MainWindow.qml
-# QML_TARGET_SOURCES
-#     include/MainWindow/MainWindowController.h 
-#     src/MainWindowController.cpp
-# QML_PUBLIC_BUILD_INTERFACE_FOLDER
-#     ${CMAKE_CURRENT_SOURCE_DIR}/include/MainWindow
 )

@@ -3,13 +3,15 @@ include(BuildInterface)
 BuildInterface(
     MODULE_NAME 
         CommonHeadCommonFile
-    PUBLIC_BUILD_INTERFACE_FOLDER
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PUBLIC_INSTALL_INTERFACE_FOLDER
-        include
-    INSTALL_PUBLIC_HEADER 
+    TARGET_SOURCE_HEADER_BASE_DIR
+        ${CMAKE_CURRENT_LIST_DIR}/include
+    TARGET_SOURCE_PUBLIC_HEADER
         include/CommonHeadCommonFile/CommonHeadExport.h
         include/CommonHeadCommonFile/CommonHeadLogger.h
-    IDE_FOLDER
-        CommonHeads
+    TARGET_DEPENDENICES_PUBLIC
+        MasterLog
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        include
 )

@@ -1,4 +1,4 @@
-#include "CoreFramework/CoreFramework.h"
+#include "CoreFramework.h"
 
 #include "ServiceCommonFile/ServiceLogger.h"
 #include "CoreFramework/IService.h"
@@ -14,7 +14,7 @@
  * 
  * ************************************/
 
-class CoreFramework::CoreFrameworkImpl// : public NotificationHelper<ICoreFrameworkCallback>
+class CoreFramework::CoreFrameworkImpl
 {
 public:
     CoreFramework::CoreFrameworkImpl()

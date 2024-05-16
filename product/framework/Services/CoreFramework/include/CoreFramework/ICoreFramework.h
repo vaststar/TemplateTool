@@ -4,14 +4,14 @@
 #include <memory>
 #include <vector>
 
-#include "ServiceCommonFile/ServiceExport.h"
-#include "CoreFramework/ServiceAccessor.h"
-#include "NotificationHelper/NotificationHelper.h"
-#include "CoreFramework/ICoreFrameworkCallback.h"
+#include <ServiceCommonFile/ServiceExport.h>
+#include <CoreFramework/ServiceAccessor.h>
+#include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <CoreFramework/ICoreFrameworkCallback.h>
 
 class IService;
 
-class SERVICE_EXPORT ICoreFramework: public ServiceAccessor, public NotificationHelper<ICoreFrameworkCallback>
+class SERVICE_EXPORT ICoreFramework: public ServiceAccessor, public virtual INotificationHelper<ICoreFrameworkCallback>
 {
 public:
     virtual ~ICoreFramework() = default;

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.23)
 
 set(TARGETNAME "common_head_unit_test")
 set(PROJECTFOLDER "commonhead")
