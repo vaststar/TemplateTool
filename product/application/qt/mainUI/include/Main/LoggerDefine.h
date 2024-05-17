@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MasterLog/LogExport.h"
+#include <MasterLog/LogExport.h>
 
 static inline const char * MainUILoggerName = "APP";
 #define MAINUI_LOG_DEBUG(message)     LOG_DEBUG("CoreFramework",message,MainUILoggerName)

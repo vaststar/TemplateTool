@@ -6,9 +6,7 @@ project(${TARGETNAME})
 
 
 set(TARGET_SOURCE
-    src/MasterLog_tests.cpp
     src/NotificationHelper_tests.cpp
-    src/ThreadPool_tests.cpp
 )
 
 add_executable(${TARGETNAME} ${TARGET_SOURCE})

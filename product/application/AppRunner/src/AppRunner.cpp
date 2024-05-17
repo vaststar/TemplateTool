@@ -1,5 +1,5 @@
 #include "AppRunner/AppRunner.h"
-#include "MasterLog/LogExport.h"
+#include <MasterLog/LogExport.h>
 #include "CoreFramework/ICoreFramework.h"
 #include "CommonHeadFramework/ICommonHeadFramework.h"
 #include "ContactService/IContactService.h"

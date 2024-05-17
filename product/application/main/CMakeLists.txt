@@ -14,7 +14,7 @@ endif()
 
 
 target_link_libraries(${MAIN_ENTRY} PRIVATE
-MainUIProject
+    MainUI
 )
 install(TARGETS ${MAIN_ENTRY} 
             EXPORT ${MAIN_ENTRY}Config

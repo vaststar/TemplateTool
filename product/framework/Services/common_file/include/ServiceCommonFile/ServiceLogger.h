@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MasterLog/LogExport.h"
+#include <MasterLog/LogExport.h>
 
 //for coreframework
 static inline const char * FrameworkLoggerName = "APP";

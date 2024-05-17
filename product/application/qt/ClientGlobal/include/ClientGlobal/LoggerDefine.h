@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MasterLog/LogExport.h"
+#include <MasterLog/LogExport.h>
 
 static inline const char * ClientGlobalLoggerName = "APP";
 #define CLIENTGLOBAL_LOG_DEBUG(message)     LOG_DEBUG("ClientGlobal",message,ClientGlobalLoggerName)

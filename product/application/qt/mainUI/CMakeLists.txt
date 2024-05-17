@@ -1,32 +1,43 @@
-include(BuildQtModule)
-BuildQtModule(
-MODULE_NAME 
-    MainUIProject
-TARGET_SOURCE
-    include/Main/Main.h 
-    include/Main/MainExport.h
-    include/Main/LoggerDefine.h 
-    src/Main.cpp
-TARGET_PRIVATE_DEPENDENICES
-    UIView
-    Qt6::Gui Qt6::Quick 
-    ViewModels 
-    CommonHeadFramework
-TARGET_PUBLIC_DEPENDENICES
-    ClientGlobal
-    AppRunner
-    MasterLog 
-    ThreadPool
-TARGET_DEFINITIONS
-    Main_DLL
-    Main_LIB
-PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-PUBLIC_INSTALL_INTERFACE_FOLDER
-    include
-INSTALL_PUBLIC_HEADER 
+set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/Main/Main.h
     include/Main/MainExport.h
-IDE_FOLDER
-    UI
+)
+
+set(TARGET_SOURCE_FILES_PRIVATE
+    include/Main/LoggerDefine.h 
+    src/Main.cpp
+)
+
+
+include(BuildQtModule)
+BuildQtModule(
+    MODULE_NAME 
+        MainUI
+    TARGET_SOURCE_PRIVATE 
+        ${TARGET_SOURCE_FILES_PRIVATE}
+    TARGET_SOURCE_HEADER_BASE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    TARGET_SOURCE_PUBLIC_HEADER
+        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
+    TARGET_DEPENDENICES_PRIVATE
+        UIView
+        Qt6::Gui Qt6::Quick 
+        ViewModels 
+        CommonHeadFramework
+    TARGET_DEPENDENICES_PUBLIC
+        ClientGlobal
+        AppRunner
+        MasterLog 
+        ThreadPool
+    TARGET_DEFINITIONS
+        Main_DLL
+        Main_LIB
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        include
+    TARGET_INCLUDE_DIRECTORIES_PRIVATE
+        src
+    IDE_FOLDER
+        UI
 )

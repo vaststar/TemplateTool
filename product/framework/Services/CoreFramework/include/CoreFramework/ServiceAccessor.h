@@ -12,7 +12,6 @@ using IServicePtr = std::shared_ptr<IService>;
 class SERVICE_EXPORT ServiceAccessor
 {
 public:
-    virtual ~ServiceAccessor() = default;
     template<typename T>
     std::weak_ptr<T> getService()
     {

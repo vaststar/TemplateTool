@@ -1,26 +1,39 @@
 include(BuildModule)
 
+set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
+include/ImageService/IImageService.h
+)
+
+set(TARGET_SOURCE_FILES_PRIVATE
+include/ImageService/ImageService.h
+src/ImageService.cpp
+)
+
 BuildModule(
     MODULE_NAME 
         ImageService
-    TARGET_SOURCE 
-        include/ImageService/IImageService.h
-        include/ImageService/ImageService.h
-        src/ImageService.cpp
-    TARGET_PRIVATE_DEPENDENICES
-        CoreFramework
-    TARGET_PUBLIC_DEPENDENICES
-        ServiceCommonFile
-    PUBLIC_BUILD_INTERFACE_FOLDER
+    TARGET_SOURCE_PRIVATE 
+        ${TARGET_SOURCE_FILES_PRIVATE}
+    TARGET_SOURCE_HEADER_BASE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-    PUBLIC_INSTALL_INTERFACE_FOLDER
+    TARGET_SOURCE_PUBLIC_HEADER
+        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
+    TARGET_DEPENDENICES_PRIVATE
+        CoreFramework
+    TARGET_DEPENDENICES_PUBLIC
+        ServiceCommonFile
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
         include
-    PRIVATE_BUILD_FOLDER
+    TARGET_INCLUDE_DIRECTORIES_PRIVATE
         src
     TARGET_DEFINITIONS
         ${ADD_SERVICE_DEFINITIONS}
-    INSTALL_PUBLIC_HEADER 
-        include/ImageService/IImageService.h
+    # INSTALL_PUBLIC_HEADER 
+    #     include/ImageService/IImageService.h
+    # INSTALL_PUBLIC_HEADER_DIR
+    #     include/ImageService
     IDE_FOLDER
         framework/Services
 )

@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreFramework/IService.h"
-#include "NotificationHelper/NotificationHelper.h"
+#include <Utilities/NotificationHelper/NotificationHelper.h>
 
 
 class ICoreFramework;
