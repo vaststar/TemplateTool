@@ -11,7 +11,7 @@ if NOT exist %BUILD_DIR% (
     mkdir %BUILD_DIR%
 )
 
-set CMAKE=%ROOT_DIR%tools\platforms\windows\x64\CMake\bin\cmake.exe
+set CMAKE=%ROOT_DIR%tools\platforms\windows\x64\cmake\bin\cmake.exe
 set SOURCE_DIR=%ROOT_DIR%.
 
 echo CMAKE: %CMAKE%
