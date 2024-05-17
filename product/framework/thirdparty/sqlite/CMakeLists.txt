@@ -10,11 +10,11 @@ else()
 add_compile_options(-include sqlite_export.h)
 endif()
 
-set(target_public_include_headers  #for include and install header
+set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 src/sqlite3.h
 )
 
-set(target_build_source_files
+set(TARGET_SOURCE_FILES_PRIVATE
 src/sqlite3.c
 src/sqlite3ext.h
 src/sqlite_export.h
@@ -24,11 +24,11 @@ BuildModule(
     MODULE_NAME 
         Sqlite3
     TARGET_SOURCE_PRIVATE 
-        ${target_build_source_files}
+        ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
         ${CMAKE_CURRENT_LIST_DIR}/src
     TARGET_SOURCE_PUBLIC_HEADER
-        ${target_public_include_headers}
+        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

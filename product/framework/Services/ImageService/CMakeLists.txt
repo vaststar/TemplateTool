@@ -1,10 +1,10 @@
 include(BuildModule)
 
-set(target_public_include_headers  #for include and install header
+set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 include/ImageService/IImageService.h
 )
 
-set(target_build_source_files
+set(TARGET_SOURCE_FILES_PRIVATE
 include/ImageService/ImageService.h
 src/ImageService.cpp
 )
@@ -13,11 +13,11 @@ BuildModule(
     MODULE_NAME 
         ImageService
     TARGET_SOURCE_PRIVATE 
-        ${target_build_source_files}
+        ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
-        ${target_public_include_headers}
+        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         CoreFramework
     TARGET_DEPENDENICES_PUBLIC

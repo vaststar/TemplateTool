@@ -7,21 +7,23 @@ TARGET_SOURCE
     include/LoggerDefine.h
     include/BaseController/BaseController.h 
     src/BaseController.cpp
-TARGET_PRIVATE_DEPENDENICES
+TARGET_DEPENDENICES_PRIVATE
     Qt6::Gui Qt6::Quick 
     ViewModels 
     CommonHeadFramework
-TARGET_PUBLIC_DEPENDENICES
+TARGET_DEPENDENICES_PUBLIC
     ClientGlobal
     MasterLog 
     ThreadPool
 TARGET_DEFINITIONS
     UICOMPONENT_DLL
     UICOMPONENT_LIB
-PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-PUBLIC_INSTALL_INTERFACE_FOLDER
-    include
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        include
+    TARGET_INCLUDE_DIRECTORIES_PRIVATE
+        src
 INSTALL_PUBLIC_HEADER 
     include/UIComponentExport.h
     include/BaseController/BaseController.h

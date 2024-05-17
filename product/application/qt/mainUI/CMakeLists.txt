@@ -7,12 +7,12 @@ TARGET_SOURCE
     include/Main/MainExport.h
     include/Main/LoggerDefine.h 
     src/Main.cpp
-TARGET_PRIVATE_DEPENDENICES
+TARGET_DEPENDENICES_PRIVATE
     UIView
     Qt6::Gui Qt6::Quick 
     ViewModels 
     CommonHeadFramework
-TARGET_PUBLIC_DEPENDENICES
+TARGET_DEPENDENICES_PUBLIC
     ClientGlobal
     AppRunner
     MasterLog 
@@ -20,10 +20,12 @@ TARGET_PUBLIC_DEPENDENICES
 TARGET_DEFINITIONS
     Main_DLL
     Main_LIB
-PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-PUBLIC_INSTALL_INTERFACE_FOLDER
-    include
+TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        include
+    TARGET_INCLUDE_DIRECTORIES_PRIVATE
+        src
 INSTALL_PUBLIC_HEADER 
     include/Main/Main.h
     include/Main/MainExport.h

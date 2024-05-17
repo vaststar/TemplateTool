@@ -4,7 +4,7 @@ BuildInterface(
     MODULE_NAME 
         ServiceCommonFile
     TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         include/ServiceCommonFile/ServiceExport.h
         include/ServiceCommonFile/ServiceLogger.h
