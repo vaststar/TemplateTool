@@ -1,14 +1,14 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-include/ContactService/IContactService.h
-include/ContactService/ContactModel.h
+    include/ContactService/IContactService.h
+    include/ContactService/ContactModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-include/ContactService/ContactService.h
-src/ContactService.cpp
-src/ContactModel.cpp
+    include/ContactService/ContactService.h
+    src/ContactService.cpp
+    src/ContactModel.cpp
 )
 
 
@@ -35,11 +35,6 @@ BuildModule(
         src
     TARGET_DEFINITIONS
         ${ADD_SERVICE_DEFINITIONS}
-    # INSTALL_PUBLIC_HEADER 
-    #     include/ContactService/IContactService.h
-    #     include/ContactService/ContactModel.h
-    # INSTALL_PUBLIC_HEADER_DIR
-    #     include/ContactService
     IDE_FOLDER
         framework/Services
 )

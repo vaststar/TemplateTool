@@ -19,7 +19,9 @@ class ContactListViewController: public BaseController
 public:
     explicit ContactListViewController(QObject *parent = nullptr);
     virtual QString getControllerName() const override;
+public slots:
+    void buttonClicked();
 private:
     // QString mControllerName;
-    // ContactListItemModel mContactListModel;
+    std::shared_ptr<CommonHead::ViewModels::IContactListViewModel> mContactListViewModel;
 };

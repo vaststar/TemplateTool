@@ -5,7 +5,7 @@ project(TemplateTool)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-set(CMAKE_DEBUG_POSTFIX "_d")
+set(CMAKE_DEBUG_POSTFIX "")
 set(CMAKE_RELEASE_POSTFIX "_r")
 
 # set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)

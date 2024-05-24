@@ -27,6 +27,7 @@ BuildModule(
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
         NotificationHelper
+        libcurl
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
@@ -35,10 +36,6 @@ BuildModule(
         src
     TARGET_DEFINITIONS
         ${ADD_SERVICE_DEFINITIONS}
-    # INSTALL_PUBLIC_HEADER 
-    #     ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    # INSTALL_PUBLIC_HEADER_DIR
-    #     include/CoreFramework
     IDE_FOLDER
         framework/Services
 )

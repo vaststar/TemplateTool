@@ -27,6 +27,22 @@ Image {
     width:200
     source: "qrc:/qt/qml/UIView/picture/112.png"
 }
+
+
+    Button {
+        text: "wo de button"
+        anchors{
+            top: parent.top
+            topMargin: 100
+            left: parent.left
+            leftMargin: 100
+        }
+        onClicked:{
+            console.log("111111111111111")
+            controller.buttonClicked()
+        }
+    }
+
 Label {
     id:lab
     text: dat.m_age

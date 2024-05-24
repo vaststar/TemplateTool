@@ -1,0 +1,37 @@
+curl and libcurl 8.8.1
+
+ Public curl releases:         258
+ Command line options:         259
+ curl_easy_setopt() options:   305
+ Public functions in libcurl:  94
+ Contributors:                 3173
+
+This release includes the following changes:
+
+
+This release includes the following bugfixes:
+
+ o (lib)curl.rc: set debug flag also for `CURLDEBUG` and `UNITTESTS` [2]
+ o winbuild: fix PE version info debug flag [1]
+ --- new entries are listed above this ---
+
+This release includes the following known bugs:
+
+ o see docs/KNOWN_BUGS (https://curl.se/docs/knownbugs.html)
+
+Planned upcoming removals include:
+
+ o support for space-separated NOPROXY patterns
+
+ See https://curl.se/dev/deprecate.html for details
+
+This release would not have looked like this without help, code, reports and
+advice from friends like these:
+
+  Ray Satiro, Viktor Szakats
+  (2 contributors)
+
+References to bug reports and discussions on issues:
+
+ [1] = https://curl.se/bug/?i=13739
+ [2] = https://curl.se/bug/?i=13730
