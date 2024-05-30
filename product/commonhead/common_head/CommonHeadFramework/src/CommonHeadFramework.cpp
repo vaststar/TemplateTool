@@ -1,14 +1,16 @@
-#include "CommonHeadFramework/CommonHeadFramework.h"
-#include "CoreFramework/ICoreFramework.h"
+#include "CommonHeadFramework.h"
 
-#include "CommonHeadCommonFile/CommonHeadLogger.h"
+#include <ucf/CoreFramework/ICoreFramework.h>
 
-std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ICoreFrameworkWPtr coreframework)
+#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+
+namespace commonHead{
+std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ucf::ICoreFrameworkWPtr coreframework)
 {
     return std::make_shared<CommonHeadFramework>(coreframework);
 }
 
-CommonHeadFramework::CommonHeadFramework(ICoreFrameworkWPtr coreframework)
+CommonHeadFramework::CommonHeadFramework(ucf::ICoreFrameworkWPtr coreframework)
 {
     COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
     mCoreframeworkWPtr = coreframework;
@@ -19,7 +21,8 @@ std::string CommonHeadFramework::getName() const
     return "CommonHeadFramework";
 }
 
-ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
+ucf::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
 {
     return mCoreframeworkWPtr;
+}
 }

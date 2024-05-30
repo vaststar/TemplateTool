@@ -1,10 +1,10 @@
 #pragma once
-#include "CommonHeadCommonFile/CommonHeadExport.h"
+#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 
 #include <string>
 #include <vector>
 
-namespace CommonHead::ViewModels{
+namespace commonHead::viewModels::model{
 class COMMONHEAD_EXPORT Contact
 {
 public:

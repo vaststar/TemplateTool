@@ -3,8 +3,11 @@
 #include <string>
 #include <vector>
 #include <mutex>
-#include "ServiceCommonFile/ServiceExport.h"
 
+#include <ucf/ServiceCommonFile/ServiceExport.h>
+
+
+namespace ucf{
 class ICoreFramework;
 
 namespace model{
@@ -43,4 +46,5 @@ private:
     std::vector<Contact> mContacts;
     std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
 };
+}
 }

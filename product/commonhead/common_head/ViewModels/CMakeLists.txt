@@ -1,12 +1,12 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-include/ContactListViewModel/IContactListViewModel.h
-include/ContactListViewModel/ContactListModel.h
+include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
+include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-include/ContactListViewModel/ContactListViewModel.h
+src/ContactListViewModel/ContactListViewModel.h
 src/ContactListViewModel/ContactListViewModel.cpp
 src/ContactListViewModel/ContactListModel.cpp
 )

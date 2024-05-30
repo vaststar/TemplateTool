@@ -17,13 +17,13 @@ ClientGlobal::~ClientGlobal()
 {
 }
 
-void ClientGlobal::setCommonHeadFramework(ICommonHeadFrameworkWPtr commonheadFramework)
+void ClientGlobal::setCommonHeadFramework(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
     CLIENTGLOBAL_LOG_DEBUG("init CommonheadFramework, address: " << commonheadFramework.lock());
     mCommonHeadFramework = commonheadFramework;
 }
 
-ICommonHeadFrameworkWPtr ClientGlobal::getCommonHeadFramework() const
+commonHead::ICommonHeadFrameworkWPtr ClientGlobal::getCommonHeadFramework() const
 {
     return mCommonHeadFramework;
 }

@@ -1,19 +1,22 @@
-#include "ContactListViewModel/ContactListViewModel.h"
-#include "CoreFramework/ICoreFramework.h"
-#include "CommonHeadCommonFile/CommonHeadLogger.h"
-#include "CommonHeadFramework/ICommonHeadFramework.h"
-#include "ContactService/IContactService.h"
-#include "ContactService/ContactModel.h"
-#include "ContactListViewModel/ContactListModel.h"
+#include "ContactListViewModel.h"
+
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/ContactService/IContactService.h>
+#include <ucf/ContactService/ContactModel.h>
+
+#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+
+#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 
 
-namespace CommonHead::ViewModels{
-std::shared_ptr<IContactListViewModel> IContactListViewModel::CreateInstance(ICommonHeadFrameworkWptr commonHeadFramework)
+namespace commonHead::viewModels{
+std::shared_ptr<IContactListViewModel> IContactListViewModel::CreateInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
     return std::make_shared<ContactListViewModel>(commonHeadFramework);
 }
 
-ContactListViewModel::ContactListViewModel(ICommonHeadFrameworkWptr commonHeadFramework)
+ContactListViewModel::ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : mCommonHeadFrameworkWptr(commonHeadFramework)
 {
     COMMONHEAD_LOG_DEBUG("create ContactListViewModel");
@@ -24,19 +27,19 @@ std::string ContactListViewModel::getViewModelName() const
     return "ContactListViewModel";
 }
 
-std::vector<CommonHead::ViewModels::Contact> ContactListViewModel::getContactList() const
+std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getContactList() const
 {
     if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
     {
         if (auto coreFramework = commonHeadFramework->getCoreFramework().lock())
         {
-            if (auto contactService  = coreFramework->getService<IContactService>().lock())
+            if (auto contactService  = coreFramework->getService<ucf::IContactService>().lock())
             {
                 auto contactList = contactService->getContactList();
-                std::vector<CommonHead::ViewModels::Contact> contacts;
+                std::vector<commonHead::viewModels::model::Contact> contacts;
                 for(auto conact: contactList)
                 {
-                    contacts.emplace_back(CommonHead::ViewModels::Contact{conact.getContactId()});
+                    contacts.emplace_back(commonHead::viewModels::model::Contact{conact.getContactId()});
                 }
                 return contacts;
             }

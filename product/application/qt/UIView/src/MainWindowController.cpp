@@ -1,6 +1,6 @@
 #include "MainWindow/MainWindowController.h"
 
-#include "CommonHeadFramework/ICommonHeadFramework.h"
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include "LoggerDefine.h"
 
 MainWindowController::MainWindowController(QObject* parent)

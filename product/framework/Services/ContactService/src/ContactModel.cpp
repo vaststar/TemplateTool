@@ -1,13 +1,14 @@
-#include "ContactService/ContactModel.h"
-
-#include "CoreFramework/ICoreFramework.h"
-#include "ServiceCommonFile/ServiceLogger.h"
 
 #include <algorithm>
 #include <iterator>
 #include <map>
 #include <set>
-namespace model{
+
+#include <ucf/ContactService/ContactModel.h>
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/ServiceCommonFile/ServiceLogger.h>
+
+namespace ucf::model{
 Contact::Contact(const std::string& id, const std::string& name)
     : mContactId(id)
     , mContactName(name)

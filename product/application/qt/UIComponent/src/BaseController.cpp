@@ -8,12 +8,12 @@ BaseController::BaseController(QObject *parent)
     setCommonHeadFramework(ClientGlobal::getInstance()->getCommonHeadFramework());
 }
 
-void BaseController::setCommonHeadFramework(ICommonHeadFrameworkWPtr commonheadFramework)
+void BaseController::setCommonHeadFramework(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
     mCommonHeadFrameworkWPtr = commonheadFramework;
 }
 
-ICommonHeadFrameworkWPtr BaseController::getCommonHeadFramework() const
+commonHead::ICommonHeadFrameworkWPtr BaseController::getCommonHeadFramework() const
 {
     return mCommonHeadFrameworkWPtr;
 }

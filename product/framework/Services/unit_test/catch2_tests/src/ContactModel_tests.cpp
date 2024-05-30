@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "ContactService/ContactModel.h"
+#include <ucf/ContactService/ContactModel.h>
 #include "ServicesTests/FakeServiceTestsUtils.h"
 
 

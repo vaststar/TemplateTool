@@ -1,5 +1,6 @@
 #pragma once
 
+namespace Utilities{
 template <typename CallbackObject>
 class INotificationHelper
 {
@@ -12,3 +13,4 @@ public:
     virtual void registerCallback(CallbackPtr callback) = 0;
     virtual void unRegisterCallback(CallbackPtr callback) = 0;
 };
+}

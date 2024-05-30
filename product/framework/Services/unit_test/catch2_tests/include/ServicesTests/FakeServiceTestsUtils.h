@@ -1,5 +1,5 @@
 #pragma once
-#include "CoreFramework/ICoreFramework.h"
+#include <ucf/CoreFramework/ICoreFramework.h>
 #include <memory>
 namespace FakeServiceTestsUtils
 {

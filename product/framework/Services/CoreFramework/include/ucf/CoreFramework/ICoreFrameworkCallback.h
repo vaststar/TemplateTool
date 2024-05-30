@@ -1,6 +1,8 @@
 #pragma once
 
-#include "ServiceCommonFile/ServiceExport.h"
+#include <ucf/ServiceCommonFile/ServiceExport.h>
+
+namespace ucf{
 
 class SERVICE_EXPORT ICoreFrameworkCallback
 {
@@ -9,3 +11,4 @@ public:
     virtual void OnDataBaseInitialized() = 0;
     virtual void OnServiceInitialized() = 0;
 };
+}

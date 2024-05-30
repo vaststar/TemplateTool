@@ -1,8 +1,9 @@
 #include "CoreFramework.h"
 
-#include "ServiceCommonFile/ServiceLogger.h"
-#include "CoreFramework/IService.h"
+#include <ucf/ServiceCommonFile/ServiceLogger.h>
+#include <ucf/CoreFramework/IService.h>
 
+namespace ucf{
 
 
 
@@ -69,9 +70,4 @@ void CoreFramework::initServices()
     }); 
     fireNotification(&ICoreFrameworkCallback::OnServiceInitialized);
 }
-
-
-// void CoreFramework::registerCallback(CallbackPtr callback)
-// {
-//     mImpl->registerCallback(callback);
-// }
+}

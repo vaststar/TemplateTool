@@ -1,13 +1,13 @@
 #include "ContactList/ContactListViewController.h"
 #include "LoggerDefine.h"
-#include <ContactListViewModel/IContactListViewModel.h>
-#include <ContactListViewModel/ContactListModel.h>
+#include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
+#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 
 
 ContactListViewController::ContactListViewController(QObject *parent)
     : BaseController(parent)
 {
-    mContactListViewModel = CommonHead::ViewModels::IContactListViewModel::CreateInstance(getCommonHeadFramework());
+    mContactListViewModel = commonHead::viewModels::IContactListViewModel::CreateInstance(getCommonHeadFramework());
     assert(mContactListViewModel);
     UIVIEW_LOG_DEBUG("create ContactListViewController");
 }

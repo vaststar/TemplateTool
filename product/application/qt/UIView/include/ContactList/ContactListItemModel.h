@@ -3,7 +3,7 @@
 #include <QAbstractItemModel>
 #include <QtQml>
 
-#include "ContactListViewModel/ContactListModel.h"
+#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 
 class ContactListItemModel : public QAbstractItemModel
 {
@@ -22,7 +22,7 @@ public:
     int rowCount(const QModelIndex &parent = {}) const override;
     int columnCount(const QModelIndex &parent = {}) const override;
 
-    void setupModelData(const std::vector<CommonHead::ViewModels::Contact>& contacts);
+    void setupModelData(const std::vector<commonHead::viewModels::model::Contact>& contacts);
 private:
-    std::vector<CommonHead::ViewModels::Contact> mContacts;
+    std::vector<commonHead::viewModels::model::Contact> mContacts;
 };

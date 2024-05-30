@@ -1,12 +1,12 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-include/ImageService/IImageService.h
+    include/ucf/ImageService/IImageService.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-include/ImageService/ImageService.h
-src/ImageService.cpp
+    src/ImageService.h
+    src/ImageService.cpp
 )
 
 BuildModule(
@@ -30,10 +30,6 @@ BuildModule(
         src
     TARGET_DEFINITIONS
         ${ADD_SERVICE_DEFINITIONS}
-    # INSTALL_PUBLIC_HEADER 
-    #     include/ImageService/IImageService.h
-    # INSTALL_PUBLIC_HEADER_DIR
-    #     include/ImageService
     IDE_FOLDER
         framework/Services
 )

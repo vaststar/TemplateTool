@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <string>
-#include "IImageService.h"
+#include <ucf/ImageService/IImageService.h>
 
+
+namespace ucf{
 class ICoreFramework;
 class SERVICE_EXPORT ImageService:public IImageService
 {
@@ -16,4 +18,4 @@ public:
 private:
     std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
 };
-
+}

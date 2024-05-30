@@ -9,6 +9,7 @@
 
 #include <Utilities/NotificationHelper/INotificationHelper.h>
 
+namespace Utilities{
 template <typename CallbackObject>
 class  NotificationHelper: public virtual INotificationHelper<CallbackObject>
 {
@@ -94,3 +95,4 @@ private:
     std::mutex mDataMutex;
     CallbackList mCallbacks;
 };
+}

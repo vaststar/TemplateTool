@@ -1,12 +1,12 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-include/CommonHeadFramework/ICommonHeadFramework.h
+    include/commonHead/CommonHeadFramework/ICommonHeadFramework.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-include/CommonHeadFramework/CommonHeadFramework.h
-src/CommonHeadFramework.cpp
+    src/CommonHeadFramework.h
+    src/CommonHeadFramework.cpp
 )
 
 BuildModule(

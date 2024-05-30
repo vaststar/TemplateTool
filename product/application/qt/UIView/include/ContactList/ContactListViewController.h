@@ -4,12 +4,15 @@
 #include <QtQml>
 #include "BaseController/BaseController.h"
 
-namespace CommonHead::ViewModels
+namespace commonHead::viewModels
 {
     class IContactListViewModel;
 } // namespace name
-class ICommonHeadFramework;
-using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+
+namespace commonHead{
+    class ICommonHeadFramework;
+    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+}
 
 class ContactListViewController: public BaseController
 {
@@ -23,5 +26,5 @@ public slots:
     void buttonClicked();
 private:
     // QString mControllerName;
-    std::shared_ptr<CommonHead::ViewModels::IContactListViewModel> mContactListViewModel;
+    std::shared_ptr<commonHead::viewModels::IContactListViewModel> mContactListViewModel;
 };

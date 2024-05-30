@@ -1,5 +1,9 @@
 #pragma once
-#include "CoreFramework/IService.h"
+#include <ucf/CoreFramework/IService.h>
+
+
+namespace ucf{
 class SERVICE_EXPORT IImageService: public IService
 {
 };
+}

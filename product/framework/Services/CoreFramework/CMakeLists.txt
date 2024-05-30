@@ -1,14 +1,15 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/CoreFramework/IService.h
-    include/CoreFramework/ICoreFramework.h
-    include/CoreFramework/ICoreFramework.h
-    include/CoreFramework/ServiceAccessor.h
-    include/CoreFramework/ICoreFrameworkCallback.h
+    include/ucf/CoreFramework/IService.h
+    include/ucf/CoreFramework/ICoreFramework.h
+    include/ucf/CoreFramework/ICoreFramework.h
+    include/ucf/CoreFramework/IServiceAccessor.h
+    include/ucf/CoreFramework/ICoreFrameworkCallback.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/ServiceAccessor.h
     src/CoreFramework.h
     src/CoreFramework.cpp
 )

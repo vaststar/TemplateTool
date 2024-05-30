@@ -5,8 +5,10 @@
 #include <QtQml>
 #include "BaseController/BaseController.h"
 
-class ICommonHeadFramework;
-using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+namespace commonHead{
+    class ICommonHeadFramework;
+    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+}
 
 class MainWindowController : public BaseController
 {

@@ -1,10 +1,12 @@
-#include "ContactService/ContactService.h"
-#include "CoreFramework/ICoreFramework.h"
-#include "ServiceCommonFile/ServiceLogger.h"
+#include "ContactService.h"
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/ServiceCommonFile/ServiceLogger.h>
 
 #include <sqlite3.h>
 #include <curl/curl.h>
 
+
+namespace ucf{
 std::shared_ptr<IContactService> IContactService::CreateInstance(ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<ContactService>(coreFramework);
@@ -103,4 +105,5 @@ CURL *curl;
 
 
     return {};
+}
 }

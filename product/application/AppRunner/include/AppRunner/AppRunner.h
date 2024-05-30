@@ -3,14 +3,21 @@
 #include <memory>
 #include <string>
 
-class ICoreFramework;
-class ICommonHeadFramework;
+namespace ucf {
+    class ICoreFramework;
+    using ICoreFrameworkPtr = std::shared_ptr<ICoreFramework>;
+}
+
+namespace commonHead{
+    class ICommonHeadFramework;
+    using ICommonHeadFrameworkPtr = std::shared_ptr<ICommonHeadFramework>;
+}
 
 namespace AppRunner
 {
     struct FrameworkDependencies{
-        std::shared_ptr<ICoreFramework> coreFramework;
-        std::shared_ptr<ICommonHeadFramework> commonHeadFramework;
+        ucf::ICoreFrameworkPtr coreFramework;
+        commonHead::ICommonHeadFrameworkPtr commonHeadFramework;
     };
     struct AppLogConfig{
         std::string logDirPath;

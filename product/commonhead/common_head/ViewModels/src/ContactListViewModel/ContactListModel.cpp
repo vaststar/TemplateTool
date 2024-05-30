@@ -1,6 +1,6 @@
-#include "ContactListViewModel/ContactListModel.h"
+#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 
-namespace CommonHead::ViewModels{
+namespace commonHead::viewModels::model{
 
 Contact::Contact(const std::string& contactId)
     : mContactId(contactId)

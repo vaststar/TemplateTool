@@ -7,7 +7,7 @@ virtual void onReceiveData(int&& a) = 0;
 virtual ~IObaserverCallback() = default;
 };
 
-class Observer: public NotificationHelper<IObaserverCallback>
+class Observer: public Utilities::NotificationHelper<IObaserverCallback>
 {
 public:
 void fireMyData(int&& data){

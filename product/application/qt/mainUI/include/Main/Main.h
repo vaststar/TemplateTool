@@ -1,11 +1,8 @@
 #pragma once
+
+#include <memory>
 #include "MainExport.h"
 #include "AppRunner/AppRunner.h"
-#include <memory>
-
-class ICommonHeadFramework;
-using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
-
 class Main_EXPORT Main
 {
 public:

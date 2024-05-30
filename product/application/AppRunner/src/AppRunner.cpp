@@ -1,8 +1,8 @@
 #include "AppRunner/AppRunner.h"
 #include <MasterLog/LogExport.h>
-#include "CoreFramework/ICoreFramework.h"
-#include "CommonHeadFramework/ICommonHeadFramework.h"
-#include "ContactService/IContactService.h"
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <ucf/ContactService/IContactService.h>
 
 namespace AppRunner
 {
@@ -13,12 +13,12 @@ FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
 	MasterLogUtil::InitLogger({fileLogger});
 
     //create framework
-    auto coreFramework = ICoreFramework::CreateInstance();
-    coreFramework->injectService<IContactService>(coreFramework);
+    auto coreFramework = ucf::ICoreFramework::CreateInstance();
+    coreFramework->registerService<ucf::IContactService>(ucf::IContactService::CreateInstance(coreFramework));
 
     coreFramework->initServices();
     
-    auto commonheadFramework = ICommonHeadFramework::CreateInstance(coreFramework);
+    auto commonheadFramework = commonHead::ICommonHeadFramework::CreateInstance(coreFramework);
     return FrameworkDependencies{coreFramework, commonheadFramework};
 }
 }

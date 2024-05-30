@@ -1,12 +1,15 @@
 #pragma once
-#include "CoreFramework/ICoreFramework.h"
-#include "ContactService/IContactService.h"
-#include "ContactService/ContactModel.h"
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/ContactService/IContactService.h>
+#include <ucf/ContactService/ContactModel.h>
 
 #include <memory>
 
 
-class ContactService: public IContactService, 
+namespace ucf{
+class ContactService: public virtual IContactService, 
+                      public virtual Utilities::NotificationHelper<IContactServiceCallback>,
                       public ICoreFrameworkCallback,
                       public std::enable_shared_from_this<ContactService>
 {
@@ -27,3 +30,4 @@ private:
     std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
     std::unique_ptr<model::ContactModel>  mContactModelPtr;
 };
+}

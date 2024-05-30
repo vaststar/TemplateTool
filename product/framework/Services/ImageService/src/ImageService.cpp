@@ -1,6 +1,8 @@
-#include "ImageService/ImageService.h"
-#include "CoreFramework/ICoreFramework.h"
+#include "ImageService.h"
+#include <ucf/CoreFramework/ICoreFramework.h>
 
+
+namespace ucf{
 ImageService::ImageService(std::weak_ptr<ICoreFramework> coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
@@ -18,4 +20,5 @@ std::string ImageService::getServiceName() const
 void ImageService::initService()
 {
 
+}
 }

@@ -4,7 +4,7 @@
 #include <QQuickView>
 #include <QQmlApplicationEngine>
 
-#include "CommonHeadFramework/ICommonHeadFramework.h"
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include "ClientGlobal/ClientGlobal.h"
 #include "Main/LoggerDefine.h"
