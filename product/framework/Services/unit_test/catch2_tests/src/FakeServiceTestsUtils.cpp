@@ -4,8 +4,8 @@
 
 namespace FakeServiceTestsUtils
 {
-    std::shared_ptr<ICoreFramework> buildFakeCoreFramework()
+    std::shared_ptr<ucf::ICoreFramework> buildFakeCoreFramework()
     {
-        return ICoreFramework::CreateInstance();
+        return ucf::ICoreFramework::CreateInstance();
     }
 } // namespace FakeServiceTestsUtils

@@ -7,10 +7,10 @@ TEST_CASE( "test update contact", "[ContactModelTests]" )
 {
     auto frameowrk = FakeServiceTestsUtils::buildFakeCoreFramework();
 
-    model::ContactModel contactModel(frameowrk);
-    contactModel.setContacts({model::Contact{"1234","test name"}});
+    ucf::model::ContactModel contactModel(frameowrk);
+    contactModel.setContacts({ucf::model::Contact{"1234","test name"}});
 
-    contactModel.addOrUpdateContact(model::Contact{"1234","new test name"});
+    contactModel.addOrUpdateContact(ucf::model::Contact{"1234","new test name"});
 
     REQUIRE(contactModel.getContacts().front().getContactName() == "new test name");
 }
