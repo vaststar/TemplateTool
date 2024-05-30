@@ -1,14 +1,14 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
-include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
+    include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
+    include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-src/ContactListViewModel/ContactListViewModel.h
-src/ContactListViewModel/ContactListViewModel.cpp
-src/ContactListViewModel/ContactListModel.cpp
+    src/test/ContactListViewModel.h
+    src/ContactListViewModel/ContactListViewModel.cpp
+    src/ContactListViewModel/ContactListModel.cpp
 )
 
 BuildModule(
@@ -35,11 +35,6 @@ BuildModule(
         src
     TARGET_DEFINITIONS
         ${ADD_COMMONHEAD_DEFINITIONS}
-    # INSTALL_PUBLIC_HEADER 
-    #     include/ContactListViewModel/IContactListViewModel.h  
-    #     include/ContactListViewModel/ContactListModel.h 
-    # INSTALL_PUBLIC_HEADER_DIR
-    #     include/CommonHeadFramework 
     IDE_FOLDER
         commonhead
 )

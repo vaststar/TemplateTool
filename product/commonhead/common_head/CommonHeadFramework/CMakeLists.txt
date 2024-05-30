@@ -30,10 +30,6 @@ BuildModule(
         src
     TARGET_DEFINITIONS
         ${ADD_COMMONHEAD_DEFINITIONS}
-    # INSTALL_PUBLIC_HEADER 
-    #     include/CommonHeadFramework/ICommonHeadFramework.h  
-    # INSTALL_PUBLIC_HEADER_DIR
-    #     include/CommonHeadFramework
     IDE_FOLDER
         commonhead
 )
