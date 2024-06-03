@@ -6,7 +6,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    src/test/ContactListViewModel.h
+    src/ContactListViewModel/ContactListViewModel.h
     src/ContactListViewModel/ContactListViewModel.cpp
     src/ContactListViewModel/ContactListModel.cpp
 )

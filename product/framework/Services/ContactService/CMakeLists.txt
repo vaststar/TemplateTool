@@ -1,6 +1,7 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
+    include/ucf/ContactService/IContactServiceCallback.h
     include/ucf/ContactService/IContactService.h
     include/ucf/ContactService/ContactModel.h
 )

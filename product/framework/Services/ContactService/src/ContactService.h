@@ -1,10 +1,13 @@
 #pragma once
-#include <ucf/CoreFramework/ICoreFramework.h>
+
+#include <memory>
+
 #include <Utilities/NotificationHelper/NotificationHelper.h>
+
+#include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/ContactService/IContactService.h>
 #include <ucf/ContactService/ContactModel.h>
 
-#include <memory>
 
 
 namespace ucf{

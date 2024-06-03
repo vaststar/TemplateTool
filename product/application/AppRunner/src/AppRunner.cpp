@@ -1,8 +1,10 @@
 #include "AppRunner/AppRunner.h"
+
 #include <MasterLog/LogExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <ucf/ContactService/IContactService.h>
+#include <ucf/NetworkService/INetworkService.h>
 
 namespace AppRunner
 {
@@ -14,7 +16,9 @@ FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
 
     //create framework
     auto coreFramework = ucf::ICoreFramework::CreateInstance();
+
     coreFramework->registerService<ucf::IContactService>(ucf::IContactService::CreateInstance(coreFramework));
+    coreFramework->registerService<ucf::INetworkService>(ucf::INetworkService::CreateInstance(coreFramework));
 
     coreFramework->initServices();
     

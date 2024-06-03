@@ -1,7 +1,8 @@
 #pragma once
 
-#include <ucf/CoreFramework/IService.h>
 #include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/CoreFramework/IService.h>
+#include <ucf/ContactService/IContactServiceCallback.h>
 
 namespace ucf{
 
@@ -11,13 +12,6 @@ using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 namespace model{
     class Contact;
 }
-
-class SERVICE_EXPORT IContactServiceCallback
-{
-public:
-    virtual ~ IContactServiceCallback() = default;
-    virtual void OnContactListAvailable(const std::vector<model::Contact>& contactList) = 0;
-};
 
 class SERVICE_EXPORT IContactService: public IService, 
                                       public virtual Utilities::INotificationHelper<IContactServiceCallback>
