@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <ucf/ImageService/IImageService.h>
+#include <ucf/Services/ImageService/IImageService.h>
 
 
 namespace ucf{

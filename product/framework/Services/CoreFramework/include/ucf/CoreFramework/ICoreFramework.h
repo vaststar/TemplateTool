@@ -4,18 +4,18 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 #include <ucf/CoreFramework/IServiceAccessor.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
 
-#include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf{
 
 class IService;
 
 class SERVICE_EXPORT ICoreFramework: public virtual IServiceAccessor, 
-                                     public virtual Utilities::INotificationHelper<ICoreFrameworkCallback>
+                                     public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
 {
 public:
     virtual ~ICoreFramework() = default;

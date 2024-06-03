@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
-#include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -23,7 +23,7 @@ public:
     virtual void onContactListAvaliable(const std::vector<model::Contact>& contactList) = 0;
 };
 
-class COMMONHEAD_EXPORT IContactListViewModel: public virtual Utilities::INotificationHelper<IContactListViewModelCallback>
+class COMMONHEAD_EXPORT IContactListViewModel: public virtual ucf::utilities::INotificationHelper<IContactListViewModelCallback>
 {
 public:
     virtual std::string getViewModelName() const = 0;

@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <functional>
 
-#include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
-namespace Utilities{
+namespace ucf::utilities{
 template <typename CallbackObject>
 class  NotificationHelper: public virtual INotificationHelper<CallbackObject>
 {

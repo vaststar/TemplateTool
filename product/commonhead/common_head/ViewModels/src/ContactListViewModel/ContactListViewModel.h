@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include <Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 
 namespace commonHead::viewModels{
 class ContactListViewModel: public virtual IContactListViewModel, 
-                            public virtual Utilities::NotificationHelper<IContactListViewModelCallback>,
+                            public virtual ucf::utilities::NotificationHelper<IContactListViewModelCallback>,
                             public std::enable_shared_from_this<ContactListViewModel>
 {
 public:

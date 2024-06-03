@@ -1,7 +1,7 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/ImageService/IImageService.h
+    include/ucf/Services/ImageService/IImageService.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE

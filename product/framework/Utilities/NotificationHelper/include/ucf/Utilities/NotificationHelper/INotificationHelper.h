@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Utilities{
+namespace ucf::utilities{
 template <typename CallbackObject>
 class INotificationHelper
 {

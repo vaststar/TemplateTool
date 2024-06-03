@@ -2,19 +2,19 @@
 
 #include <memory>
 
-#include <ucf/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 #include <ucf/CoreFramework/IService.h>
-#include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
-#include <ucf/NetworkService/INetworkServiceCallback.h>
+#include <ucf/Services/NetworkService/INetworkServiceCallback.h>
 
 namespace ucf{
-    
+
 class ICoreFramework;
 using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 
 class SERVICE_EXPORT INetworkService: public IService, 
-                                      public virtual Utilities::INotificationHelper<INetworkServiceCallback>
+                                      public virtual ucf::utilities::INotificationHelper<INetworkServiceCallback>
 {
 public: 
     static std::shared_ptr<INetworkService> CreateInstance(ICoreFrameworkWPtr coreFramework);

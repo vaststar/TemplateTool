@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 #include <ucf/CoreFramework/IService.h>
-#include <ucf/ContactService/IContactServiceCallback.h>
+#include <ucf/Services/ContactService/IContactServiceCallback.h>
 
 namespace ucf{
 
@@ -14,7 +14,7 @@ namespace model{
 }
 
 class SERVICE_EXPORT IContactService: public IService, 
-                                      public virtual Utilities::INotificationHelper<IContactServiceCallback>
+                                      public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
 {
 public:
     virtual void fetchContactList() = 0;

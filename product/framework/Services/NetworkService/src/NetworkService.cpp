@@ -1,6 +1,6 @@
 #include "NetworkService.h"
 
-#include <ucf/ServiceCommonFile/ServiceLogger.h>
+#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 namespace ucf{
 std::shared_ptr<INetworkService> INetworkService::CreateInstance(ICoreFrameworkWPtr coreFramework)

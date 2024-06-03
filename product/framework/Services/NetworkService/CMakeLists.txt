@@ -1,8 +1,8 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/NetworkService/INetworkService.h
-    include/ucf/NetworkService/INetworkServiceCallback.h
+    include/ucf/Services/NetworkService/INetworkService.h
+    include/ucf/Services/NetworkService/INetworkServiceCallback.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE

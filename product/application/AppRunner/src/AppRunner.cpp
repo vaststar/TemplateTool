@@ -3,8 +3,8 @@
 #include <MasterLog/LogExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <ucf/ContactService/IContactService.h>
-#include <ucf/NetworkService/INetworkService.h>
+#include <ucf/Services/ContactService/IContactService.h>
+#include <ucf/Services/NetworkService/INetworkService.h>
 
 namespace AppRunner
 {

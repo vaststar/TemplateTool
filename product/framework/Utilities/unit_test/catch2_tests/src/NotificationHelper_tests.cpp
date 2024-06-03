@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "Utilities/NotificationHelper/NotificationHelper.h"
+#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 class IObaserverCallback{
 public: 
@@ -7,7 +7,7 @@ virtual void onReceiveData(int&& a) = 0;
 virtual ~IObaserverCallback() = default;
 };
 
-class Observer: public Utilities::NotificationHelper<IObaserverCallback>
+class Observer: public ucf::utilities::NotificationHelper<IObaserverCallback>
 {
 public:
 void fireMyData(int&& data){

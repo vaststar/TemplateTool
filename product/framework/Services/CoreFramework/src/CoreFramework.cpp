@@ -1,6 +1,6 @@
 #include "CoreFramework.h"
 
-#include <ucf/ServiceCommonFile/ServiceLogger.h>
+#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/CoreFramework/IService.h>
 
 namespace ucf{

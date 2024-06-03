@@ -6,8 +6,8 @@ BuildInterface(
     TARGET_SOURCE_HEADER_BASE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
-        include/Utilities/NotificationHelper/NotificationHelper.h
-        include/Utilities/NotificationHelper/INotificationHelper.h
+        include/ucf/Utilities/NotificationHelper/NotificationHelper.h
+        include/ucf/Utilities/NotificationHelper/INotificationHelper.h
     TARGET_DEPENDENICES_PUBLIC
         MasterLog
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

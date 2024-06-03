@@ -4,9 +4,9 @@
 #include <map>
 #include <set>
 
-#include <ucf/ContactService/ContactModel.h>
+#include <ucf/Services/ContactService/ContactModel.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/ServiceCommonFile/ServiceLogger.h>
+#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 namespace ucf::model{
 Contact::Contact(const std::string& id, const std::string& name)

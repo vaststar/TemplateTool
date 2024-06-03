@@ -1,8 +1,8 @@
 #include "ContactListViewModel.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/ContactService/IContactService.h>
-#include <ucf/ContactService/ContactModel.h>
+#include <ucf/Services/ContactService/IContactService.h>
+#include <ucf/Services/ContactService/ContactModel.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>

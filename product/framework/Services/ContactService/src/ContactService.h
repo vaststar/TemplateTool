@@ -2,17 +2,17 @@
 
 #include <memory>
 
-#include <Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/ContactService/IContactService.h>
-#include <ucf/ContactService/ContactModel.h>
+#include <ucf/Services/ContactService/IContactService.h>
+#include <ucf/Services/ContactService/ContactModel.h>
 
 
 
 namespace ucf{
 class ContactService: public virtual IContactService, 
-                      public virtual Utilities::NotificationHelper<IContactServiceCallback>,
+                      public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
                       public ICoreFrameworkCallback,
                       public std::enable_shared_from_this<ContactService>
 {

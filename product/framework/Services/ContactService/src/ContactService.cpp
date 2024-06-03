@@ -1,6 +1,6 @@
 #include "ContactService.h"
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/ServiceCommonFile/ServiceLogger.h>
+#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 #include <sqlite3.h>
 #include <curl/curl.h>

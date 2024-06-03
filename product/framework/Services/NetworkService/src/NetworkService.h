@@ -2,14 +2,14 @@
 
 #include <memory>
 
-#include <Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
-#include <ucf/NetworkService/INetworkService.h>
-#include <ucf/NetworkService/INetworkServiceCallback.h>
+#include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/NetworkService/INetworkServiceCallback.h>
 
 namespace ucf{
 class NetworkService: public virtual INetworkService,
-                      public virtual Utilities::NotificationHelper<INetworkServiceCallback>,
+                      public virtual ucf::utilities::NotificationHelper<INetworkServiceCallback>,
                       public std::enable_shared_from_this<NetworkService>
 {
 public:
