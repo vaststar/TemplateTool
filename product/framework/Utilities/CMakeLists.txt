@@ -1,7 +1,8 @@
 if (WIN32)
     set(ADD_UTILITIES_DEFINITIONS Utilities_DLL Utilities_LIB)
 endif()
-# add_subdirectory(ThreadPool)
-# add_subdirectory(MasterLog)
+
+add_subdirectory(common_file)
 add_subdirectory(NotificationHelper)
+add_subdirectory(TimeUtils)
 add_subdirectory(unit_test)
