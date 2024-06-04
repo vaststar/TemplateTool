@@ -4,6 +4,7 @@
 #include <QQuickView>
 #include <QQmlApplicationEngine>
 
+#include <ucf/CoreFramework/ICoreFramework.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include "ClientGlobal/ClientGlobal.h"
@@ -12,6 +13,11 @@
 
 Main::Main()
 {
+}
+
+Main::~Main()
+{
+    MAINUI_LOG_DEBUG("delete Main");
 }
 
 void Main::initMain(int argc, char *argv[])
@@ -47,5 +53,15 @@ int Main::runMain(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
     MAINUI_LOG_DEBUG("finish load main qml");
-    return app.exec();
+
+    int appResult = app.exec();
+    MAINUI_LOG_DEBUG("quit App");
+    onExitApp();
+    return appResult;
+}
+
+void Main::onExitApp()
+{
+    MAINUI_LOG_DEBUG("exit app");
+    mDependencies.coreFramework->exitCoreFramework();
 }

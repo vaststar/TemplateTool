@@ -16,9 +16,15 @@ class CoreFramework final:  public virtual ICoreFramework,
 {
 public:
     CoreFramework();
+    ~CoreFramework();
+    CoreFramework(const CoreFramework&) = delete;
+    CoreFramework(CoreFramework&&) = delete;
+    CoreFramework& operator=(const CoreFramework&) = delete;
+    CoreFramework& operator=(CoreFramework&&) = delete;
 public:
     virtual std::string getName() const override;
     virtual void initServices() override;
+    virtual void exitCoreFramework() override;
 
     
     // virtual void registerCallback(CallbackPtr callback) override;

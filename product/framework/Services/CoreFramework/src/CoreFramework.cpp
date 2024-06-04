@@ -54,6 +54,17 @@ CoreFramework::CoreFramework()
     CORE_LOG_DEBUG("create CoreFramework, address:" << this);
 }
 
+CoreFramework::~CoreFramework()
+{
+    CORE_LOG_DEBUG("delete CoreFramework, address:" << this);
+}
+
+void CoreFramework::exitCoreFramework()
+{
+    CORE_LOG_DEBUG("exit CoreFramework, address:" << this);
+    fireNotification(&ICoreFrameworkCallback::onCoreFrameworkExit);
+}
+
 std::string CoreFramework::getName() const
 {
     return "CoreFramework";

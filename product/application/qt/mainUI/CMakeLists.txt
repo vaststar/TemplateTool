@@ -23,6 +23,7 @@ BuildQtModule(
         UIView
         Qt6::Gui Qt6::Quick 
         ViewModels 
+        CoreFramework
         CommonHeadFramework
     TARGET_DEPENDENICES_PUBLIC
         ClientGlobal

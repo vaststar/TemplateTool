@@ -48,6 +48,11 @@ void ContactService::OnServiceInitialized()
     SERVICE_LOG_DEBUG("");
 }
 
+void ContactService::onCoreFrameworkExit()
+{
+    SERVICE_LOG_DEBUG("");
+}
+
 void ContactService::fetchContactList()
 {
     SERVICE_LOG_DEBUG("start fetchContactList");

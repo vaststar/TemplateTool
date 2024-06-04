@@ -22,7 +22,7 @@ public:
 public:
     virtual std::string getName() const = 0;
     virtual void initServices() = 0;
-    
+    virtual void exitCoreFramework() = 0;
     static std::shared_ptr<ICoreFramework> CreateInstance();
 };
 
