@@ -4,21 +4,26 @@
 
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
-#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ContactService/ContactModel.h>
-
 
 
 namespace ucf{
 class ContactService: public virtual IContactService, 
                       public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
-                      public ICoreFrameworkCallback,
+                      public CoreFrameworkCallbackDefault,
                       public std::enable_shared_from_this<ContactService>
 {
 public:
     explicit ContactService(ICoreFrameworkWPtr coreFramework);
+    virtual ~ContactService();
+    ContactService(const ContactService&) = delete;
+    ContactService(ContactService&&) = delete;
+    ContactService& operator=(const ContactService&) = delete;
+    ContactService& operator=(ContactService&&) = delete;
 
+    //IContactService
     virtual void fetchContactList() override;
     virtual std::vector<model::Contact> getContactList() const override;
 
@@ -31,7 +36,7 @@ public:
     virtual void OnServiceInitialized() override;
     virtual void onCoreFrameworkExit() override;
 private:
-    std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
-    std::unique_ptr<model::ContactModel>  mContactModelPtr;
+    class DataPrivate;
+    std::unique_ptr<DataPrivate> mDataPrivate;
 };
 }

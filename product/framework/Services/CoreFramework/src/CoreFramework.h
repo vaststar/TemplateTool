@@ -16,20 +16,18 @@ class CoreFramework final:  public virtual ICoreFramework,
 {
 public:
     CoreFramework();
-    ~CoreFramework();
+    virtual ~CoreFramework();
     CoreFramework(const CoreFramework&) = delete;
     CoreFramework(CoreFramework&&) = delete;
     CoreFramework& operator=(const CoreFramework&) = delete;
     CoreFramework& operator=(CoreFramework&&) = delete;
 public:
+    //ICoreFramework
     virtual std::string getName() const override;
     virtual void initServices() override;
     virtual void exitCoreFramework() override;
-
-    
-    // virtual void registerCallback(CallbackPtr callback) override;
 private:
-    class CoreFrameworkImpl;
-    std::shared_ptr<CoreFrameworkImpl> mImpl;
+    class DataPrivate;
+    std::unique_ptr<DataPrivate> mDataPrivate;
 };
 }

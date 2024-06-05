@@ -15,7 +15,6 @@ public:
     //IService
     virtual std::string getServiceName() const override;
     virtual void initService() override;
-    virtual void onCoreFrameworkExit() override;
 private:
     std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
 };

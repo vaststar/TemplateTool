@@ -6,6 +6,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/CoreFramework/ICoreFramework.h
     include/ucf/CoreFramework/IServiceAccessor.h
     include/ucf/CoreFramework/ICoreFrameworkCallback.h
+    include/ucf/CoreFramework/CoreFrameworkCallbackDefault.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
