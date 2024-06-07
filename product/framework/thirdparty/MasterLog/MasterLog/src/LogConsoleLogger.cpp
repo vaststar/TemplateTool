@@ -13,8 +13,13 @@ namespace LogLogSpace{
         
     }
 
-    void LogConsoleLogger::processMessage(const std::string& message) 
+    void LogConsoleLogger::processMessage(const std::queue<std::string>& messages) 
     {
-        std::cout<<message<<std::endl;
+        std::queue<std::string> logMessages = messages;
+        while(!logMessages.empty())
+        {
+            std::cout<<logMessages.front()<<std::endl;
+            logMessages.pop();
+        }
     }
 }

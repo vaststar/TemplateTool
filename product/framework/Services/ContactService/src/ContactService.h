@@ -32,7 +32,6 @@ public:
     virtual std::string getServiceName() const override;
 
     //ICoreFrameworkCallback
-    virtual void OnDataBaseInitialized() override;
     virtual void OnServiceInitialized() override;
     virtual void onCoreFrameworkExit() override;
 private:

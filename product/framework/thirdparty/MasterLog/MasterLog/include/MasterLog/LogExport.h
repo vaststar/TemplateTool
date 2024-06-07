@@ -27,6 +27,7 @@ inline constexpr auto Default_File_Logger_Name = "DefaultFileLogger";
 LOG_LIB_API void WriteLog(const std::string& logTag, LogLogSpace::LogLevel logLevel, const std::string& filePath, 
                           int lineNumber, const std::string& functionName, const std::string& logMessage, const std::string& loggerName);
 LOG_LIB_API void InitLogger(const std::vector<std::shared_ptr<LogLogSpace::LoggerBaseConfigure>>& configure);
+LOG_LIB_API void WaitForExit();
 }
 
 #define LOG_DEBUG(logTag,logMessage,loggerName) {std::ostringstream _oss; _oss << logMessage;MasterLogUtil::WriteLog(logTag,LogLogSpace::LogLevel::LOG_DEBUG,__FILE__,__LINE__,__FUNCTION__,_oss.str(),loggerName);}
@@ -34,4 +35,5 @@ LOG_LIB_API void InitLogger(const std::vector<std::shared_ptr<LogLogSpace::Logge
 #define LOG_WARN(logTag,logMessage,loggerName) {std::ostringstream _oss; _oss << logMessage;MasterLogUtil::WriteLog(logTag,LogLogSpace::LogLevel::LOG_WARN,__FILE__,__LINE__,__FUNCTION__,_oss.str(),loggerName);}
 #define LOG_ERROR(logTag,logMessage,loggerName) {std::ostringstream _oss; _oss << logMessage;MasterLogUtil::WriteLog(logTag,LogLogSpace::LogLevel::LOG_ERROR,__FILE__,__LINE__,__FUNCTION__,_oss.str(),loggerName);}
 #define LOG_FATAL(logTag,logMessage,loggerName) {std::ostringstream _oss; _oss << logMessage;MasterLogUtil::WriteLog(logTag,LogLogSpace::LogLevel::LOG_FATAL,__FILE__,__LINE__,__FUNCTION__,_oss.str(),loggerName);}
+#define LOG_WAIT_EXIT() {MasterLogUtil::WaitForExit();}
 #endif//__LogExport_h__

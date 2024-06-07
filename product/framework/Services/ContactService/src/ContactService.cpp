@@ -82,11 +82,6 @@ std::string ContactService::getServiceName() const
     return "ContactService";
 }
 
-void ContactService::OnDataBaseInitialized()
-{
-
-}
-
 void ContactService::OnServiceInitialized()
 {
     SERVICE_LOG_DEBUG("");

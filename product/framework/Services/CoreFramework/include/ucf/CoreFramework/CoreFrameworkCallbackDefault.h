@@ -9,7 +9,6 @@ class SERVICE_EXPORT CoreFrameworkCallbackDefault: public ICoreFrameworkCallback
 {
 public:
     virtual ~CoreFrameworkCallbackDefault() = default;
-    virtual void OnDataBaseInitialized() {};
     virtual void OnServiceInitialized() {};
     virtual void onCoreFrameworkExit() {};
 };

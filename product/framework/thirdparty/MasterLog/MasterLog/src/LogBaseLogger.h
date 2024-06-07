@@ -17,9 +17,10 @@ namespace LogLogSpace{
         void appendLog(int loggerLevel, const std::string& message);
         void startLog();
         std::string getLoggerName() const;
+        virtual void waitForExit();
     protected:
         virtual void initialize() = 0;
-        virtual void processMessage(const std::string& message) = 0;
+        virtual void processMessage(const std::queue<std::string>& message) = 0;
     private:
         void doWorkFunction();
     private:

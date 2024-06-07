@@ -18,9 +18,10 @@ Main::Main()
 Main::~Main()
 {
     MAINUI_LOG_DEBUG("delete Main");
+    LOG_WAIT_EXIT();
 }
 
-void Main::initMain(int argc, char *argv[])
+void Main::initApp(int argc, char *argv[])
 {
     AppRunner::AppLogConfig logConfig{
         "applogs",
@@ -37,9 +38,8 @@ void Main::initMain(int argc, char *argv[])
     MAINUI_LOG_DEBUG("init Main done");
 }
 
-int Main::runMain(int argc, char *argv[])
+int Main::runMainWindowExec(int argc, char *argv[])
 {
-    initMain(argc, argv);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
@@ -53,8 +53,14 @@ int Main::runMain(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
     MAINUI_LOG_DEBUG("finish load main qml");
+    return app.exec();
+}
 
-    int appResult = app.exec();
+int Main::runMain(int argc, char *argv[])
+{
+    initApp(argc, argv);
+    int appResult = runMainWindowExec(argc, argv);
+    
     MAINUI_LOG_DEBUG("quit App");
     onExitApp();
     return appResult;

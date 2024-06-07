@@ -16,16 +16,32 @@ namespace LogLogSpace{
 
     LogBaseLogger::~LogBaseLogger()
     {
+        waitForExit();
+    }
+
+    void LogBaseLogger::waitForExit()
+    {
+        //set exit flag
+        std::queue<std::string> lastMessages;
         {
             std::scoped_lock<std::mutex> loc(m_dataMutex);
             m_isInExit = true;
+            std::swap(lastMessages, m_logMessages);
             m_condition.notify_one();
         }
-        if(m_workThread)
+        //deal the last messages
+        if (!lastMessages.empty())
+        {
+            std::scoped_lock<std::mutex> loc(m_witeMutex);
+            processMessage(lastMessages);
+        }
+
+        //join the task
+        m_condition.notify_one();
+        if(m_workThread && m_workThread->joinable())
         {
             m_workThread->join();
         }
-        std::scoped_lock<std::mutex> loc(m_witeMutex);
     }
 
     std::string LogBaseLogger::getLoggerName() const
@@ -56,7 +72,7 @@ namespace LogLogSpace{
     {
         while (true)
         {
-            std::string currentLog = "";
+            std::queue<std::string> currentLogs;
             {
                 std::unique_lock<std::mutex> guard(m_dataMutex);
                 m_condition.wait(guard,[this](){return !m_logMessages.empty() || m_isInExit;});
@@ -64,11 +80,13 @@ namespace LogLogSpace{
                 {
                     return;
                 }
-                currentLog = m_logMessages.front();
-                m_logMessages.pop();
+                std::swap(currentLogs,m_logMessages);
             }
-            std::scoped_lock<std::mutex> loc(m_witeMutex);
-            processMessage(currentLog);
+            if (!currentLogs.empty())
+            {
+                std::scoped_lock<std::mutex> loc(m_witeMutex);
+                processMessage(currentLogs);
+            }
         }
     }
 }

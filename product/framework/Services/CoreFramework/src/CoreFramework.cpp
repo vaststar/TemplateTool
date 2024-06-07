@@ -1,5 +1,6 @@
 #include "CoreFramework.h"
 
+#include <atomic>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/CoreFramework/IService.h>
 
@@ -14,13 +15,27 @@ class CoreFramework::DataPrivate
 {
 public:
     DataPrivate();
+    bool isExiting();
+    void onExiting();
+private:
+    std::atomic<bool> mIsExiting;
 };
 
 CoreFramework::DataPrivate::DataPrivate()
+    : mIsExiting(false)
 {
     CORE_LOG_DEBUG("create CoreFramework::DataPrivate, address:" << this);
 }
 
+bool CoreFramework::DataPrivate::isExiting()
+{
+    return mIsExiting.load();
+}
+
+void CoreFramework::DataPrivate::onExiting()
+{
+    mIsExiting.store(true);
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -52,7 +67,9 @@ CoreFramework::~CoreFramework()
 void CoreFramework::exitCoreFramework()
 {
     CORE_LOG_DEBUG("exit CoreFramework, address:" << this);
+    mDataPrivate->onExiting();
     fireNotification(&ICoreFrameworkCallback::onCoreFrameworkExit);
+    unRegisterServices();
 }
 
 std::string CoreFramework::getName() const

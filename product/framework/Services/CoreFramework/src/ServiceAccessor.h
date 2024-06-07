@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <map>
+#include <utility>
 
 #include <ucf/CoreFramework/IServiceAccessor.h>
 
@@ -38,6 +39,7 @@ protected:
         }
         return {};
     }
+
     virtual void registerServiceInternal(std::type_index index, IServicePtr service, bool overrideExisting) override
     {
         std::scoped_lock loc(mDataMutex);
@@ -45,6 +47,13 @@ protected:
         {
             mServices[index] = service;
         }
+    }
+
+    virtual void unRegisterServices() override
+    {
+        std::map<std::type_index, IServicePtr> emptyServices;
+        std::mutex mDataMutex;
+        std::swap(mServices, emptyServices);
     }
 private:
     std::mutex mDataMutex;

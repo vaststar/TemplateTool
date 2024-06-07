@@ -32,5 +32,6 @@ public:
 protected:
     virtual IServicePtr getServiceInternal(std::type_index index) = 0;
     virtual void registerServiceInternal(std::type_index index, IServicePtr service, bool overrideExisting) = 0;
+    virtual void unRegisterServices() = 0;
 };
 }

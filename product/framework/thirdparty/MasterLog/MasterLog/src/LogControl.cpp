@@ -113,4 +113,12 @@ std::string LogControl::formatMessage(const std::string& logTag, int logLevel, c
     
     return std::format("{} {} [{}] [{}] [{}] [{}] {}\n", getCurrentFormatedTime(), getLogLevelString(logLevel), getCurrentThreadId(), fileString, logTag, functionName, logMessage);
 }
+
+void LogControl::waitForExit()
+{
+    std::scoped_lock<std::mutex> lo(m_loggerMutex);
+    std::for_each(m_currentLogger.begin(),m_currentLogger.end(),[](std::unique_ptr<LogBaseLogger>& logger){
+        logger->waitForExit();
+    });
+}
 }

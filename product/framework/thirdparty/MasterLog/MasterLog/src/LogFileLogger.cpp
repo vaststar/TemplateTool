@@ -32,12 +32,17 @@ namespace LogLogSpace{
         std::filesystem::create_directories(m_logDirPath);
     }
 
-    void LogFileLogger::processMessage(const std::string& message) 
+    void LogFileLogger::processMessage(const std::queue<std::string>& messages) 
     {
-        if(readyForLog(static_cast<unsigned int>(message.size())) && m_currentFile.is_open())
+        std::queue<std::string> logMessages = messages;
+        while(!logMessages.empty())
         {
-            m_currentFile<<message;
-            m_currentFile.flush();
+            if(readyForLog(static_cast<unsigned int>(logMessages.front().size())) && m_currentFile.is_open())
+            {
+                m_currentFile<<logMessages.front();
+                m_currentFile.flush();
+            }
+            logMessages.pop();
         }
     }
 
