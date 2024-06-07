@@ -65,6 +65,15 @@ void LogControl::writeLog(const std::string& logTag, int logLevel, const std::st
     });
 }
 
+void LogControl::stopLogger()
+{
+    std::scoped_lock<std::mutex> lo(m_loggerMutex);
+    std::for_each(m_currentLogger.begin(),m_currentLogger.end(),[](std::unique_ptr<LogBaseLogger>& logger){
+        logger->stopLog();
+    });
+    m_currentLogger.clear();
+}
+
 std::string LogControl::getCurrentFormatedTime() const
 {
     const auto start = std::chrono::utc_clock::now();
@@ -112,13 +121,5 @@ std::string LogControl::formatMessage(const std::string& logTag, int logLevel, c
     }
     
     return std::format("{} {} [{}] [{}] [{}] [{}] {}\n", getCurrentFormatedTime(), getLogLevelString(logLevel), getCurrentThreadId(), fileString, logTag, functionName, logMessage);
-}
-
-void LogControl::waitForExit()
-{
-    std::scoped_lock<std::mutex> lo(m_loggerMutex);
-    std::for_each(m_currentLogger.begin(),m_currentLogger.end(),[](std::unique_ptr<LogBaseLogger>& logger){
-        logger->waitForExit();
-    });
 }
 }

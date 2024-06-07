@@ -10,7 +10,7 @@ namespace LogLogSpace{
         ~LogConsoleLogger()=default;
     protected:
         void initialize() override;
-        void processMessage(const std::queue<std::string>& messages) override;
+        void processMessage(const std::string& message) override;
     };
 }
 #endif//__LogConsoleLogger_h__

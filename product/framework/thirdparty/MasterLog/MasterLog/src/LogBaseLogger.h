@@ -16,13 +16,14 @@ namespace LogLogSpace{
         virtual ~LogBaseLogger();
         void appendLog(int loggerLevel, const std::string& message);
         void startLog();
+        void stopLog();
         std::string getLoggerName() const;
-        virtual void waitForExit();
     protected:
         virtual void initialize() = 0;
-        virtual void processMessage(const std::queue<std::string>& message) = 0;
+        virtual void processMessage(const std::string& message) = 0;
     private:
         void doWorkFunction();
+        void dealMessages(const std::queue<std::string>& logMessages);
     private:
         int m_loggerLevels;
         std::string m_loggerName;
@@ -30,6 +31,7 @@ namespace LogLogSpace{
         std::mutex m_dataMutex;
         bool m_isInExit;
         std::once_flag start_flag;
+        std::once_flag stop_flag;
         std::queue<std::string> m_logMessages;
         std::unique_ptr<std::thread> m_workThread;
         std::mutex m_witeMutex;

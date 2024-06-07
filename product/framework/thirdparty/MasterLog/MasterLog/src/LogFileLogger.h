@@ -11,10 +11,9 @@ namespace LogLogSpace{
     public:
         LogFileLogger(int logLevels, const std::string& logDirPath, const std::string& logBaseName, unsigned int maxKeepDays, unsigned int maxSignleSize, const std::string& loggerName);
         ~LogFileLogger();
-        // virtual void waitForExit() override;
     protected:
         void initialize() override;
-        void processMessage(const std::queue<std::string>& message) override;
+        void processMessage(const std::string& message) override;
     private:
         std::vector<std::string> getCurrentFileList()const;
         bool readyForLog(unsigned int addedSize);

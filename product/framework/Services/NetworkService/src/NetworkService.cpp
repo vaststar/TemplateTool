@@ -18,14 +18,28 @@ NetworkService::NetworkService(ICoreFrameworkWPtr coreFramework)
     SERVICE_LOG_DEBUG("now:" << test << ", zone:" << ucf::utilities::TimeUtils::getLocalTimeZone());
 
 }
+ 
+ NetworkService::~NetworkService()
+ {
+    SERVICE_LOG_DEBUG("");
+ }
 
 void NetworkService::initService()
 {
     SERVICE_LOG_DEBUG("init NetworkService, address:" << this);
+    // if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    // {
+    //     coreFramework->registerCallback(shared_from_this());
+    // }
 }
 
 std::string NetworkService::getServiceName() const
 {
     return "NetworkService";
+}
+
+void NetworkService::onCoreFrameworkExit()
+{
+    SERVICE_LOG_DEBUG("about exit NetworkService, address:" << this);
 }
 }

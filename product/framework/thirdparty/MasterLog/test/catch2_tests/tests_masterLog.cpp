@@ -25,7 +25,7 @@ void testConsoleLog()
 	{
 		(*it).join();
 	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	// std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 void testFileLog()
@@ -51,16 +51,16 @@ void testFileLog()
 	{
 		(*it).join();
 	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
 }
 
 TEST_CASE( "testConsoleLog", "[MasterLogTests]" ) {
     testConsoleLog();
     REQUIRE( true );
+	MasterLogUtil::StopLogger();
 }
 
 TEST_CASE( "testFileLog", "[MasterLogTests]" ) {
 	testFileLog();
     REQUIRE( true );
+	MasterLogUtil::StopLogger();
 }

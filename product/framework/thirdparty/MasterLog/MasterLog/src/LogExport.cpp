@@ -23,8 +23,8 @@ void InitLogger(const std::vector<std::shared_ptr<LogLogSpace::LoggerBaseConfigu
     });
 }
 
-void WaitForExit()
+void StopLogger()
 {
-    LogLogSpace::LogControl::getInstance()->waitForExit();
+    LogLogSpace::LogControl::getInstance()->stopLogger();
 }
 }
