@@ -18,12 +18,17 @@ public:
     explicit NetworkService(ICoreFrameworkWPtr coreFramework);
     virtual ~NetworkService();
 public:
+    //INetworkService
+    virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() override;
+
     //IService
     virtual void initService() override;
     virtual std::string getServiceName() const override;
+
     //CoreFrameworkCallbackDefault
     virtual void onCoreFrameworkExit() override;
 private:
-    std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
+    class DataPrivate;
+    std::unique_ptr<DataPrivate> mDataPrivate;
 };
 }
