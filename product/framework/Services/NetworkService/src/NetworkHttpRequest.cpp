@@ -8,14 +8,46 @@ namespace ucf::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 class NetworkHttpRequest::DataPrivate{
 public:
-    DataPrivate();
+    DataPrivate(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload);
+    HTTPMethod getMethod() const;
+    std::string getUri() const;
+    std::string getPayload() const;
+    std::map<std::string, std::string> getHeaders() const;
+private:
+    HTTPMethod mMethod;
+    std::string mUri;
+    std::map<std::string, std::string> mHeaders;
+    std::string mPayload;
 };
 
-NetworkHttpRequest::DataPrivate::DataPrivate()
+NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload)
+    : mMethod(method)
+    , mUri(uri)
+    , mHeaders(headers)
+    , mPayload(payload)
 {
 
 }
 
+HTTPMethod NetworkHttpRequest::DataPrivate::getMethod() const
+{
+    return mMethod;
+}
+
+std::string NetworkHttpRequest::DataPrivate::getUri() const
+{
+    return mUri;
+}
+
+std::string NetworkHttpRequest::DataPrivate::getPayload() const
+{
+    return mPayload;
+}
+
+std::map<std::string, std::string> NetworkHttpRequest::DataPrivate::getHeaders() const
+{
+    return mHeaders;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -28,10 +60,32 @@ NetworkHttpRequest::DataPrivate::DataPrivate()
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-NetworkHttpRequest::NetworkHttpRequest()
+NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload)
+    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, payload))
 {
 
 }
+
+HTTPMethod NetworkHttpRequest::getRequestMethod() const
+{
+    return mDataPrivate->getMethod();
+}
+
+std::string NetworkHttpRequest::getRequestUri() const
+{
+    return mDataPrivate->getUri();
+}
+
+std::map<std::string, std::string> NetworkHttpRequest::getRequestHeaders() const
+{
+    return mDataPrivate->getHeaders();
+}
+
+std::string NetworkHttpRequest::getRequestPayload() const
+{
+    return mDataPrivate->getPayload();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish NetworkHttpRequest Logic///////////////////////////////////////
