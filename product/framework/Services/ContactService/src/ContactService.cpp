@@ -1,9 +1,11 @@
 #include "ContactService.h"
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
+#include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
+#include <ucf/Services/NetworkService/Http/NetworkHttpRequest.h>
 
 #include <sqlite3.h>
-#include <curl/curl.h>
 
 namespace ucf{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -106,28 +108,14 @@ void ContactService::fetchContactList()
 
 std::vector<model::Contact> ContactService::getContactList() const
 {
-
-    
-CURL *curl;
-    CURLcode res;
-    
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, "http://www.example.com");
-        /* example.com is redirected, so we tell libcurl to follow redirection */
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        
-        res = curl_easy_perform(curl);
-        
-        /* Check for errors */
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        if (auto network  = coreFramework->getService<ucf::INetworkService>().lock())
+        {
+            network->getNetworkHttpManager().lock()->sendHttpRequest(ucf::network::http::NetworkHttpRequest(ucf::network::http::HTTPMethod::GET, "", {},""), nullptr);
         }
-        
-        /* always cleanup */
-        curl_easy_cleanup(curl);
     }
-
+    
     if (auto contactModel = mDataPrivate->getContactModel())
     {
         return contactModel->getContacts();

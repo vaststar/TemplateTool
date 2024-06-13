@@ -1,3 +1,4 @@
+add_subdirectory(LibCurlClient)
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
@@ -30,6 +31,7 @@ BuildModule(
     TARGET_DEPENDENICES_PRIVATE
         TimeUtils
         CoreFramework
+        LibCurlClient
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

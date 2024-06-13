@@ -1,5 +1,6 @@
 #include "NetworkHttpManager.h"
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
+#include <LibCurlClient.h>
 
 namespace ucf::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -10,13 +11,21 @@ namespace ucf::network::http{
 class NetworkHttpManager::DataPrivate{
 public:
     DataPrivate();
+    std::shared_ptr<ucf::network::libcurl::LibCurlClient> getLibCurlClient() const;
+private:
+    std::shared_ptr<ucf::network::libcurl::LibCurlClient> mLibcurlClient;
 };
 
 NetworkHttpManager::DataPrivate::DataPrivate()
+    :mLibcurlClient(std::make_shared<ucf::network::libcurl::LibCurlClient>())
 {
 
 }
 
+std::shared_ptr<ucf::network::libcurl::LibCurlClient> NetworkHttpManager::DataPrivate::getLibCurlClient() const
+{
+    return mLibcurlClient;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////

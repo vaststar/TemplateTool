@@ -25,6 +25,7 @@ BuildModule(
     TARGET_DEPENDENICES_PRIVATE
         Sqlite3
         CoreFramework
+        NetworkService
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
         NotificationHelper

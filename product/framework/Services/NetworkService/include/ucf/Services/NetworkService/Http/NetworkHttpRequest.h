@@ -17,6 +17,6 @@ public:
     std::string getRequestPayload() const;
 private:
     class DataPrivate;
-    std::unique_ptr<DataPrivate> mDataPrivate;
+    std::shared_ptr<DataPrivate> mDataPrivate;
 };
 }

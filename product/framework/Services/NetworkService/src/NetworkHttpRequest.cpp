@@ -61,7 +61,7 @@ std::map<std::string, std::string> NetworkHttpRequest::DataPrivate::getHeaders()
 /////////////////////////////////////////////////////////////////////////////////////
 
 NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload)
-    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, payload))
+    :mDataPrivate(std::make_shared<DataPrivate>(method, uri, headers, payload))
 {
 
 }
