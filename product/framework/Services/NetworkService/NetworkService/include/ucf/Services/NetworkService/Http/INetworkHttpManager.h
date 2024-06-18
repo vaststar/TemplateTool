@@ -6,8 +6,8 @@
 namespace ucf::network::http{
 class NetworkHttpRequest;
 class NetworkHttpResponse;
-
 using NetworkHttpResponseCallbackFunc = std::function<void(const NetworkHttpResponse& httpResponse)>;
+
 class SERVICE_EXPORT INetworkHttpManager
 {
 public:

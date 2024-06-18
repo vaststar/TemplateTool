@@ -3,7 +3,7 @@
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
-#include <ucf/Services/NetworkService/Http/NetworkHttpRequest.h>
+#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 #include <sqlite3.h>
 

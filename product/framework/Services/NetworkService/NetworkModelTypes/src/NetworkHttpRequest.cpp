@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Http/NetworkHttpRequest.h>
+#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 namespace ucf::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +25,11 @@ NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std
     , mUri(uri)
     , mHeaders(headers)
     , mPayload(payload)
+{
+
+}
+
+NetworkHttpRequest::~NetworkHttpRequest()
 {
 
 }
@@ -61,7 +66,7 @@ std::map<std::string, std::string> NetworkHttpRequest::DataPrivate::getHeaders()
 /////////////////////////////////////////////////////////////////////////////////////
 
 NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload)
-    :mDataPrivate(std::make_shared<DataPrivate>(method, uri, headers, payload))
+    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, payload))
 {
 
 }
