@@ -4,6 +4,7 @@
 
 #include "LibCurlClientLogger.h"
 #include "LibCurlMultiHandleManager.h"
+#include "LibCurlEasyHandle.h"
 
 namespace ucf::network::libcurl{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +18,8 @@ public:
     DataPrivate();
     void start();
     void stop();
+
+    std::shared_ptr<LibCurlEasyHandle> buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::NetworkHttpResponseCallbackFunc& callBackFunc) const;
 private:
     std::unique_ptr<LibCurlMultiHandleManager> mMultiHandleManager;
 };
@@ -36,6 +39,11 @@ void LibCurlClient::DataPrivate::stop()
     mMultiHandleManager->stopLoop();
 }
 
+std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::NetworkHttpResponseCallbackFunc& callBackFunc) const
+{
+    auto easyHandle = std::make_shared<LibCurlEasyHandle>();
+    return easyHandle;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic/////////////////////////////////////////
