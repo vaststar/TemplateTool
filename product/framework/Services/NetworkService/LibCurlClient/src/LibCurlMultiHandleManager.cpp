@@ -20,6 +20,7 @@ LibCurlMultiHandleManager::~LibCurlMultiHandleManager()
         std::scoped_lock lo(mStopMutex);
         mStop = true;
     }
+    
     if (mLoopThread.joinable())
     {
         mLoopThread.join();
@@ -30,32 +31,15 @@ void LibCurlMultiHandleManager::runLoop()
 {
     LIBCURL_LOG_DEBUG("start looping, address:" << this);
     mLoopThread = std::thread([this](){
-        do
+        while(true)
         {
-            int runningHandles = 0;
-            do
-            {
-                if (CURLM_OK !=  mMultiHandle->perform(&runningHandles))
-                {
-                    break;
-                }
-
-                if (runningHandles > 0)
-                {
-                    if (CURLM_OK !=  mMultiHandle->poll(nullptr, 0, 100, nullptr))
-                    {
-                        break;
-                    }
-                }
-                //readAll();
-            }while(runningHandles > 0);
-
+            mMultiHandle->performRequests();
             std::unique_lock<std::mutex> lo(mStopMutex);
             if (mStop)
             {
                 break;
             }
-        }while(true);
+        }
         mCondition.notify_all();
     });
 }
@@ -69,4 +53,8 @@ void LibCurlMultiHandleManager::stopLoop()
     LIBCURL_LOG_DEBUG("finish stopping loop");
 }
 
+void LibCurlMultiHandleManager::insert(std::shared_ptr<LibCurlEasyHandle> request)
+{
+    mMultiHandle->addEasyHandle(request);
+}
 }

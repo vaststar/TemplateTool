@@ -51,7 +51,18 @@ NetworkHttpManager::~NetworkHttpManager()
 void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc)
 {
     SERVICE_LOG_DEBUG("");
-    mDataPrivate->getLibCurlClient()->makeHttpRequest(httpRequest, callBackFunc);
+
+    auto headerCallback = [this, weakThis = weak_from_this()](const NetworkHttpResponse& response) {
+    };
+
+    auto bodyCallback = [this, weakThis = weak_from_this()](const ByteBuffer& buffer, bool isFinished){
+
+    };
+
+    auto completionCallback = [this, weakThis = weak_from_this()](const HttpResponseMetrics& metrics){
+
+    };
+    mDataPrivate->getLibCurlClient()->makeGenericRequest(httpRequest, headerCallback, bodyCallback, completionCallback);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

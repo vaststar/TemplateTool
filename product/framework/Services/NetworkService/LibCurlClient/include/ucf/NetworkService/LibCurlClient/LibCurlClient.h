@@ -2,12 +2,8 @@
 #include <memory>
 #include <functional>
 #include <ucf/NetworkService/LibCurlClient/LibCurlClientExport.h>
+#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
-namespace ucf::network::http{
-class NetworkHttpRequest;
-class NetworkHttpResponse;
-using NetworkHttpResponseCallbackFunc = std::function<void(const NetworkHttpResponse& httpResponse)>;
-}
 namespace ucf::network::libcurl{
 class LIBCURLCLIENT_EXPORT LibCurlClient final
 {
@@ -19,7 +15,7 @@ public:
     LibCurlClient& operator=(const LibCurlClient&) = delete;
     LibCurlClient& operator=(LibCurlClient&&) = delete;
 
-    void makeHttpRequest(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::NetworkHttpResponseCallbackFunc& callBackFunc);
+    void makeGenericRequest(const ucf::network::http::NetworkHttpRequest& request, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback);
     void startService();
     void stopService();
 private:

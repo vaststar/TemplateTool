@@ -6,6 +6,7 @@
 #include <thread>
 #include <condition_variable>
 #include "LibCurlMultiHandle.h"
+#include "LibCurlEasyHandle.h"
 
 namespace ucf::network::libcurl{
 class LibCurlMultiHandleManager final
@@ -20,6 +21,7 @@ public:
 public:
     void runLoop();
     void stopLoop();
+    void insert(std::shared_ptr<LibCurlEasyHandle> request);
 private:
     std::unique_ptr<LibCurlMultiHandle> mMultiHandle;
     std::mutex mStopMutex;

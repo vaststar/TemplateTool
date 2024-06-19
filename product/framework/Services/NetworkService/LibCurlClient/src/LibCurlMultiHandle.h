@@ -1,9 +1,9 @@
 #pragma once
 
-#include <mutex>
-#include <curl/curl.h>
+#include <memory>
 
 namespace ucf::network::libcurl{
+class LibCurlEasyHandle;
 class LibCurlMultiHandle
 {
 public:
@@ -14,14 +14,13 @@ public:
     LibCurlMultiHandle& operator=(const LibCurlMultiHandle&) = delete;
     LibCurlMultiHandle& operator=(LibCurlMultiHandle&&) = delete;
 
-    int addEasyHandle(CURL* easyHandle);
-    int removeEasyHandle(CURL* easyHandle);
+public:
+    int addEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle);
+    int removeEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle);
 
-    int perform(int* count);
-    int poll(curl_waitfd extraFds[], unsigned int fdCount, int timeoutMS, int* numfds);
-    CURLMsg* read();
+    void performRequests();
 private:
-    std::mutex mDataAccess;
-    CURLM* mHandle;
+    class DataPrivate;
+    std::unique_ptr<DataPrivate> mDataPrivate;
 };
 }

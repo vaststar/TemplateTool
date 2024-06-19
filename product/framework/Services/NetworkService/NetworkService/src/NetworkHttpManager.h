@@ -3,7 +3,8 @@
 #include <memory>
 #include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
 namespace ucf::network::http{
-class NetworkHttpManager: public INetworkHttpManager
+class NetworkHttpManager final: public INetworkHttpManager,
+                                public std::enable_shared_from_this<NetworkHttpManager>
 {
 public:
     NetworkHttpManager();
