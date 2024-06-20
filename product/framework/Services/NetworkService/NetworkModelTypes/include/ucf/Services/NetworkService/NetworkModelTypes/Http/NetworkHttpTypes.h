@@ -4,7 +4,12 @@
 namespace ucf::network::http{
 enum class HTTPMethod{
     GET,
-    POST
+    POST,
+    HEAD,
+    PUT,
+    DEL,
+    PATCH,
+    OPTIONS
 };
 
 class NetworkHttpRequest;

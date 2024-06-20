@@ -1,5 +1,6 @@
 #include <memory>
 #include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 #include "LibCurlClientLogger.h"
@@ -46,7 +47,11 @@ void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHan
 
 std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback) const
 {
-    auto easyHandle = std::make_shared<LibCurlEasyHandle>();
+    auto easyHandle = std::make_shared<LibCurlEasyHandle>(headerCallback, bodyCallback, completionCallback);
+    easyHandle->setHttpMethod(httpRequest.getRequestMethod());
+    easyHandle->setURI(httpRequest.getRequestUri());
+    easyHandle->setHeaders(httpRequest.getRequestHeaders());
+    easyHandle->setTrackingId(httpRequest.getTrackingId());
     return easyHandle;
 }
 /////////////////////////////////////////////////////////////////////////////////////

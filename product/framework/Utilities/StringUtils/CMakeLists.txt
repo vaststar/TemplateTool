@@ -1,16 +1,16 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/Utilities/TimeUtils/TimeUtils.h
+    include/ucf/Utilities/StringUtils/StringUtils.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    src/TimeUtils.cpp
+    src/StringUtils.cpp
 )
 
 BuildModule(
     MODULE_NAME 
-        TimeUtils
+        StringUtils
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR

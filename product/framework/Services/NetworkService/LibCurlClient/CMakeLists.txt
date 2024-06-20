@@ -31,6 +31,7 @@ BuildModule(
     TARGET_DEPENDENICES_PUBLIC
         MasterLog
         NetworkModelTypes
+        StringUtils
     TARGET_DEPENDENICES_PRIVATE
         libcurl
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
