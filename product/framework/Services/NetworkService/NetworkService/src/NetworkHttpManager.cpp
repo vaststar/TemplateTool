@@ -1,6 +1,7 @@
 #include "NetworkHttpManager.h"
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
-#include <ucf/NetworkService/LibCurlClient/LibCurlClient.h>
+#include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 namespace ucf::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +51,7 @@ NetworkHttpManager::~NetworkHttpManager()
 
 void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc)
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString());
 
     auto headerCallback = [this, weakThis = weak_from_this()](const NetworkHttpResponse& response) {
     };

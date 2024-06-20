@@ -3,7 +3,7 @@
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
-#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 #include <sqlite3.h>
 
@@ -112,7 +112,8 @@ std::vector<model::Contact> ContactService::getContactList() const
     {
         if (auto network  = coreFramework->getService<ucf::INetworkService>().lock())
         {
-            network->getNetworkHttpManager().lock()->sendHttpRequest(ucf::network::http::NetworkHttpRequest(ucf::network::http::HTTPMethod::GET, "", {},""), nullptr);
+
+            network->getNetworkHttpManager().lock()->sendHttpRequest(ucf::network::http::NetworkHttpRequest(ucf::network::http::HTTPMethod::GET, "https://ds.ciscospark.com//v1/region", {},""), nullptr);
         }
     }
     

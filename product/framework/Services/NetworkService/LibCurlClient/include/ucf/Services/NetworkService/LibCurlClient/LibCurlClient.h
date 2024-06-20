@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include <functional>
-#include <ucf/NetworkService/LibCurlClient/LibCurlClientExport.h>
-#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Services/NetworkService/LibCurlClient/LibCurlClientExport.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::network::libcurl{
 class LIBCURLCLIENT_EXPORT LibCurlClient final

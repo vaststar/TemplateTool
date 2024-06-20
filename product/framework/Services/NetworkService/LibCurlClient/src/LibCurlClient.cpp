@@ -1,6 +1,6 @@
 #include <memory>
-#include <ucf/NetworkService/LibCurlClient/LibCurlClient.h>
-#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 #include "LibCurlClientLogger.h"
 #include "LibCurlMultiHandleManager.h"

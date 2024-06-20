@@ -1,7 +1,7 @@
 #include <string>
 #include <curl/curl.h>
-#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 
 #include "LibCurlEasyHandle.h"

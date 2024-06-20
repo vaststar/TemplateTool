@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <ucf/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h>
 
 namespace ucf::network::http{
 struct NETWORKTYPE_EXPORT HttpResponseMetrics{

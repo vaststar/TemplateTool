@@ -5,10 +5,10 @@ endif()
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h
-    include/ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h
-    include/ucf/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h
-    include/ucf/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h
+    include/ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h
+    include/ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h
+    include/ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h
+    include/ucf/Services/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -25,6 +25,8 @@ BuildModule(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
+    TARGET_DEPENDENICES_PRIVATE
+        UUIDUtils
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

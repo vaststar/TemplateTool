@@ -4,8 +4,8 @@ if (WIN32)
 endif()
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/NetworkService/LibCurlClient/LibCurlClient.h
-    include/ucf/NetworkService/LibCurlClient/LibCurlClientExport.h
+    include/ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h
+    include/ucf/Services/NetworkService/LibCurlClient/LibCurlClientExport.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE

@@ -59,6 +59,7 @@ int Main::runMainWindowExec(int argc, char *argv[])
 int Main::runMain(int argc, char *argv[])
 {
     initApp(argc, argv);
+    MAINUI_LOG_DEBUG(__cplusplus);
     int appResult = runMainWindowExec(argc, argv);
     
     MAINUI_LOG_DEBUG("quit App");
