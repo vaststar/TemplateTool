@@ -25,7 +25,7 @@ echo =========================================================
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
           -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
           -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
-          -DCMAKE_INSTALL_PREFIX="%ROOT_DIR%install"
+          -DCMAKE_INSTALL_PREFIX="%ROOT_DIR%install" 
 
 set EXIT_CODE=%errorlevel%
 

@@ -22,6 +22,8 @@ public:
     std::shared_ptr<LibCurlEasyHandle> buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback) const;
     void insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle);
 private:
+    ucf::network::http::NetworkHttpHeaders buildHeaders(const ucf::network::http::NetworkHttpRequest& httpRequest) const;
+private:
     std::unique_ptr<LibCurlMultiHandleManager> mMultiHandleManager;
 };
 
@@ -45,13 +47,22 @@ void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHan
     mMultiHandleManager->insert(handle);
 }
 
+ucf::network::http::NetworkHttpHeaders LibCurlClient::DataPrivate::buildHeaders(const ucf::network::http::NetworkHttpRequest& httpRequest) const
+{
+    auto requestHeaders = httpRequest.getRequestHeaders();
+    requestHeaders.emplace_back("TrackingID", httpRequest.getTrackingId());
+    return requestHeaders;
+}
+
 std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback) const
 {
     auto easyHandle = std::make_shared<LibCurlEasyHandle>(headerCallback, bodyCallback, completionCallback);
     easyHandle->setHttpMethod(httpRequest.getRequestMethod());
     easyHandle->setURI(httpRequest.getRequestUri());
-    easyHandle->setHeaders(httpRequest.getRequestHeaders());
+    easyHandle->setHeaders(buildHeaders(httpRequest));
     easyHandle->setTrackingId(httpRequest.getTrackingId());
+    easyHandle->setTimeout(httpRequest.getTimeout());
+    easyHandle->setCommonOptions();
     return easyHandle;
 }
 /////////////////////////////////////////////////////////////////////////////////////

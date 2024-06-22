@@ -19,16 +19,26 @@ static size_t header_callback(char *data, size_t size, size_t nmemb, void *userp
     }
     const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
     const std::string_view headerString(data, size * nmemb);
-    const auto seperator = headerString.find(": ");
-    if (seperator != std::string::npos)
+    if (const auto seperator = headerString.find(": "); seperator != std::string::npos)
     {
         const auto key = std::string(headerString.substr(0, seperator));
         const auto value = ucf::utilities::StringUtils::trim(std::string(headerString.substr(seperator + 2)));
-        // easyHandle->addResponseHeader(key, value);
+        easyHandle->addResponseHeader(key, value);
     }
     if (headerString == "\r\n") {
-        // easyHandle->headersCompleted();
+        easyHandle->headersCompleted();
     }
+    return size * nmemb;
+}
+
+static size_t response_body_callback(char *data, size_t size, size_t nmemb, void *userp)
+{
+    if(data == nullptr || userp == nullptr)
+    {
+        return size * nmemb;
+    }
+    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
+    easyHandle->appendResponseBody(data, size * nmemb);
     return size * nmemb;
 }
 /////////////////////////////////////////////////////////////////////////////////////
@@ -55,8 +65,7 @@ public:
 
     int setHttpMethod(ucf::network::http::HTTPMethod method);
     int setURI(const std::string& uri);
-    int setHeaders(const std::map<std::string, std::string>& headers);
-    void setCommonOptions();
+    int setHeaders(const ucf::network::http::NetworkHttpHeaders& headers);
 
     template<typename ...Args>
     int setOption(CURLoption option, const Args& ...args)
@@ -68,6 +77,12 @@ public:
         }
         return code;
     }
+
+    void addResponseHeader(const std::string& key, const std::string& val);
+    ucf::network::http::NetworkHttpHeaders getResponseHeader() const;
+
+    int getResponseCode();
+
 private:
     CURL* mHandle;
     CURLU* mUrl;
@@ -76,6 +91,8 @@ private:
     ucf::network::http::HttpBodyCallback mBodyCallback;
     ucf::network::http::HttpCompletionCallback mCompletionCallback;
     std::string mTrackingId;
+
+    ucf::network::http::NetworkHttpHeaders mResponseHeader;
 };
 
 LibCurlEasyHandle::DataPrivate::DataPrivate(const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback)
@@ -191,13 +208,15 @@ int LibCurlEasyHandle::DataPrivate::setURI(const std::string& uri)
 
     if (code != CURLUE_OK)
     {
-        LIBCURL_LOG_WARN("Error parsing url: " << static_cast<int>(code));
+        LIBCURL_LOG_WARN("Error parsing url: " << curl_url_strerror(code));
     }
+
+    setOption(CURLOPT_CURLU, mUrl);
 
     return code;
 }
 
-int LibCurlEasyHandle::DataPrivate::setHeaders(const std::map<std::string, std::string>& headers)
+int LibCurlEasyHandle::DataPrivate::setHeaders(const ucf::network::http::NetworkHttpHeaders& headers)
 {
     for (auto[key, val] : headers)
     {
@@ -211,14 +230,23 @@ int LibCurlEasyHandle::DataPrivate::setHeaders(const std::map<std::string, std::
     return setOption(CURLOPT_HTTPHEADER, mHeaders);
 }
 
-void LibCurlEasyHandle::DataPrivate::setCommonOptions()
+void LibCurlEasyHandle::DataPrivate::addResponseHeader(const std::string& key, const std::string& val)
 {
-    setOption(CURLOPT_HEADERFUNCTION, header_callback);
-    //setOption(CURLOPT_WRITEFUNCTION, response_body_callback);
-    setOption(CURLOPT_MAXREDIRS, MAX_REQUEST_REDIRECTS);
-    setOption(CURLOPT_TRANSFER_ENCODING, 1L);
-    setOption(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+    mResponseHeader.emplace_back(key, val);
 }
+
+ucf::network::http::NetworkHttpHeaders LibCurlEasyHandle::DataPrivate::getResponseHeader() const
+{
+    return mResponseHeader;
+}
+
+int LibCurlEasyHandle::DataPrivate::getResponseCode()
+{
+    long responseCode = 0;
+    curl_easy_getinfo(mHandle,CURLINFO_RESPONSE_CODE, &responseCode);
+    return responseCode;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic/////////////////////////////////////////
@@ -255,7 +283,7 @@ void LibCurlEasyHandle::setURI(const std::string& uri)
     mDataPrivate->setURI(uri);
 }
 
-void LibCurlEasyHandle::setHeaders(const std::map<std::string, std::string>& headers)
+void LibCurlEasyHandle::setHeaders(const ucf::network::http::NetworkHttpHeaders& headers)
 {
     mDataPrivate->setHeaders(headers);
 }
@@ -265,9 +293,51 @@ void LibCurlEasyHandle::setTrackingId(const std::string& trackingId)
     mDataPrivate->setTrackingId(trackingId);
 }
 
+void LibCurlEasyHandle::setTimeout(int timeoutSecs)
+{
+    mDataPrivate->setOption(CURLOPT_TIMEOUT, timeoutSecs);
+}
+
+void LibCurlEasyHandle::setCommonOptions()
+{
+    mDataPrivate->setOption(CURLOPT_HEADERFUNCTION, header_callback);
+    mDataPrivate->setOption(CURLOPT_WRITEFUNCTION, response_body_callback);
+    mDataPrivate->setOption(CURLOPT_MAXREDIRS, MAX_REQUEST_REDIRECTS);
+    mDataPrivate->setOption(CURLOPT_TRANSFER_ENCODING, 1L);
+    //mDataPrivate->setOption(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+    mDataPrivate->setOption(CURLOPT_HEADERDATA, this);
+    mDataPrivate->setOption(CURLOPT_WRITEDATA, this);
+
+    mDataPrivate->setOption(CURLOPT_SSL_VERIFYPEER, 0L);
+    mDataPrivate->setOption(CURLOPT_SSL_VERIFYHOST, 0L);
+}
+
+void LibCurlEasyHandle::addResponseHeader(const std::string& key, const std::string& val)
+{
+    mDataPrivate->addResponseHeader(key, val);
+}
+
+void LibCurlEasyHandle::appendResponseBody(char *data, size_t size)
+{
+    if (mDataPrivate->getBodyCallback() != nullptr)
+    {
+        mDataPrivate->getBodyCallback()(ucf::network::http::ByteBuffer(data, data + size), false);
+    }
+}
+
+void LibCurlEasyHandle::headersCompleted()
+{
+    if (mDataPrivate->getHeaderCallback() != nullptr)
+    {
+        mDataPrivate->getResponseCode();
+        ucf::network::http::NetworkHttpResponse response;
+        mDataPrivate->getHeaderCallback()(response);
+    }
+}
+
 void LibCurlEasyHandle::finishHandle(CURLcode code)
 {
-    LIBCURL_LOG_DEBUG("task started to finish trackingId=" << mDataPrivate->getTrackingId());
+    LIBCURL_LOG_DEBUG("finish rquest, trackingId=" << mDataPrivate->getTrackingId());
     if (code == CURLE_OK)
     {
         if (mDataPrivate->getBodyCallback() != nullptr)
@@ -284,6 +354,7 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
     else
     {
         LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code) << ", trackingId=" << mDataPrivate->getTrackingId());
+        //todo
         ucf::network::http::NetworkHttpResponse response;
 
         if (mDataPrivate->getHeaderCallback() != nullptr)

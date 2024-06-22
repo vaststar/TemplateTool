@@ -113,7 +113,7 @@ std::vector<model::Contact> ContactService::getContactList() const
         if (auto network  = coreFramework->getService<ucf::INetworkService>().lock())
         {
 
-            network->getNetworkHttpManager().lock()->sendHttpRequest(ucf::network::http::NetworkHttpRequest(ucf::network::http::HTTPMethod::GET, "https://ds.ciscospark.com//v1/region", {},""), nullptr);
+            network->getNetworkHttpManager().lock()->sendHttpRequest(ucf::network::http::NetworkHttpRequest(ucf::network::http::HTTPMethod::GET, "https://www.baidu.com", {},""), nullptr);
         }
     }
     

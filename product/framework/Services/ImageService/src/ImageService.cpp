@@ -21,9 +21,4 @@ void ImageService::initService()
 {
 
 }
-
-void ImageService::onCoreFrameworkExit()
-{
-    
-}
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <vector>
 #include <functional>
 namespace ucf::network::http{
@@ -12,6 +13,7 @@ enum class HTTPMethod{
     OPTIONS
 };
 
+using NetworkHttpHeaders = std::vector<std::pair<std::string, std::string>>;
 class NetworkHttpRequest;
 class NetworkHttpResponse;
 struct HttpResponseMetrics;

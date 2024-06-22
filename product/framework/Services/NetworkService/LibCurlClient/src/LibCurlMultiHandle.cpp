@@ -99,7 +99,6 @@ int LibCurlMultiHandle::DataPrivate::poll(int timeout_ms)
     {
         LIBCURL_LOG_INFO("multi handle perform error: " << curl_multi_strerror(code));
     }
-    LIBCURL_LOG_DEBUG("");
     return code;
 }
 
@@ -117,7 +116,7 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlMultiHandle::DataPrivate::getEasyHanle
         return request->getHandle() == handle;
     });
 
-    if (iter != mRequests.begin())
+    if (iter != mRequests.end())
     {
         return *iter;
     }
@@ -131,7 +130,6 @@ void LibCurlMultiHandle::DataPrivate::completeCurrentRequest()
     {
         if (CURLMSG_DONE == msg->msg)
         {
-            LIBCURL_LOG_DEBUG("read response");
             if (auto libCurlHandle = getEasyHanleFromCURL(msg->easy_handle))
             {
                 libCurlHandle->finishHandle(msg->data.result);
@@ -164,6 +162,7 @@ LibCurlMultiHandle::LibCurlMultiHandle()
 
 LibCurlMultiHandle::~LibCurlMultiHandle()
 {
+    LIBCURL_LOG_DEBUG("destory multi handle");
 }
 
 int LibCurlMultiHandle::addEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle)

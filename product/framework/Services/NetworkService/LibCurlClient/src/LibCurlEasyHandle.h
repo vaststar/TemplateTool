@@ -17,10 +17,17 @@ public:
 public:
     void setHttpMethod(ucf::network::http::HTTPMethod method);
     void setURI(const std::string& uri);
-    void setHeaders(const std::map<std::string, std::string>& headers);
+    void setHeaders(const ucf::network::http::NetworkHttpHeaders& headers);
     void setTrackingId(const std::string& trackingId);
+    void setTimeout(int timeoutSecs);
+    void setCommonOptions();
 
     void finishHandle(CURLcode code);
+
+    void addResponseHeader(const std::string& key, const std::string& val);
+    void headersCompleted();
+
+    void appendResponseBody(char *data, size_t size);
 public:
     CURL* getHandle() const;
 private:

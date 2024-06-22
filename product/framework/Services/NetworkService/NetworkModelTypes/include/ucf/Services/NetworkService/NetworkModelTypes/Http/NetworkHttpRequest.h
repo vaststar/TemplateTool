@@ -10,7 +10,7 @@ namespace ucf::network::http{
 class NETWORKTYPE_EXPORT NetworkHttpRequest final
 {
 public:
-    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload);
+    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs = 30);
     ~NetworkHttpRequest();
     NetworkHttpRequest(const NetworkHttpRequest&) = delete;
     NetworkHttpRequest(NetworkHttpRequest&&) = delete;
@@ -20,8 +20,9 @@ public:
     std::string getRequestId() const;
     HTTPMethod getRequestMethod() const;
     std::string getRequestUri() const;
-    std::map<std::string, std::string> getRequestHeaders() const;
+    NetworkHttpHeaders getRequestHeaders() const;
     std::string getRequestPayload() const;
+    int getTimeout() const;
 
     void setTrackingId(const std::string& trackingId);
     std::string getTrackingId() const;

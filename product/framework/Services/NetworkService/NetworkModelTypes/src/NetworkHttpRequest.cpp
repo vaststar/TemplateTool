@@ -10,12 +10,13 @@ namespace ucf::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 class NetworkHttpRequest::DataPrivate{
 public:
-    DataPrivate(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload);
+    DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs);
     std::string getRequestId() const;
     HTTPMethod getMethod() const;
     std::string getUri() const;
     std::string getPayload() const;
-    std::map<std::string, std::string> getHeaders() const;
+    NetworkHttpHeaders getHeaders() const;
+    int getTimeoutSecs() const;
     
     void setTrackingId(const std::string& trackingId);
     std::string getTrackingId() const;
@@ -23,18 +24,20 @@ private:
     const std::string mRequestId;
     HTTPMethod mMethod;
     std::string mUri;
-    std::map<std::string, std::string> mHeaders;
+    NetworkHttpHeaders mHeaders;
     std::string mPayload;
+    int mTimeoutSecs;
     std::string mTrackingId;
 };
 
-NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload)
+NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs)
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
     , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
     , mMethod(method)
     , mUri(uri)
     , mHeaders(headers)
     , mPayload(payload)
+    , mTimeoutSecs(timeoutSecs)
 {
 
 }
@@ -64,7 +67,7 @@ std::string NetworkHttpRequest::DataPrivate::getPayload() const
     return mPayload;
 }
 
-std::map<std::string, std::string> NetworkHttpRequest::DataPrivate::getHeaders() const
+NetworkHttpHeaders NetworkHttpRequest::DataPrivate::getHeaders() const
 {
     return mHeaders;
 }
@@ -79,6 +82,11 @@ std::string NetworkHttpRequest::DataPrivate::getTrackingId() const
     return mTrackingId;
 }
 
+int NetworkHttpRequest::DataPrivate::getTimeoutSecs() const
+{
+    return mTimeoutSecs;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -91,8 +99,8 @@ std::string NetworkHttpRequest::DataPrivate::getTrackingId() const
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const std::map<std::string, std::string>& headers, const std::string& payload)
-    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, payload))
+NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs)
+    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, payload, timeoutSecs))
 {
 
 }
@@ -107,7 +115,7 @@ std::string NetworkHttpRequest::getRequestUri() const
     return mDataPrivate->getUri();
 }
 
-std::map<std::string, std::string> NetworkHttpRequest::getRequestHeaders() const
+NetworkHttpHeaders NetworkHttpRequest::getRequestHeaders() const
 {
     return mDataPrivate->getHeaders();
 }
@@ -120,6 +128,11 @@ std::string NetworkHttpRequest::getRequestPayload() const
 std::string NetworkHttpRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
+}
+
+int NetworkHttpRequest::getTimeout() const
+{
+    return mDataPrivate->getTimeoutSecs();
 }
 
 void NetworkHttpRequest::setTrackingId(const std::string& trackingId)
@@ -141,10 +154,20 @@ std::string NetworkHttpRequest::toString() const
             return "GET";
         case HTTPMethod::POST:
             return "POST";
+        case HTTPMethod::HEAD:
+            return "HEAD";
+        case HTTPMethod::PUT:
+            return "PUT";
+        case HTTPMethod::DEL:
+            return "DEL";
+        case HTTPMethod::PATCH:
+            return "PATCH";
+        case HTTPMethod::OPTIONS:
+            return "OPTIONS";
         default:
             return "UNKNOWN";
         }};
-    return std::format("Http Request, Method:{}, URI:{}, RequestId:{}, TrackingId:{}", getMethodString(), getRequestUri(), getRequestId(), getTrackingId());
+    return "NetworkHttpRequest, {" + std::format("\"Method\": \"{}\", \"URI\": \"{}\", \"RequestId\": \"{}\", \"TrackingId\": \"{}\"", getMethodString(), getRequestUri(), getRequestId(), getTrackingId()) + "}";
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
