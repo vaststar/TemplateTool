@@ -4,7 +4,7 @@
 #include <memory>
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 
-namespace ucf {
+namespace ucf::framework{
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
@@ -14,8 +14,8 @@ class COMMONHEAD_EXPORT ICommonHeadFramework
 {
 public:
     virtual std::string getName() const = 0;
-    virtual ucf::ICoreFrameworkWPtr getCoreFramework() const = 0;
+    virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const = 0;
 public:
-    static std::shared_ptr<ICommonHeadFramework> CreateInstance(ucf::ICoreFrameworkWPtr coreframework);
+    static std::shared_ptr<ICommonHeadFramework> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };
 }

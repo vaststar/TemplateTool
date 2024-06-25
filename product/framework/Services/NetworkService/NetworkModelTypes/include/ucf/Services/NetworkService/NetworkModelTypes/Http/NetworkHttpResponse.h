@@ -4,7 +4,7 @@
 #include <string>
 #include <ucf/Services/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h>
 
-namespace ucf::network::http{
+namespace ucf::service::network::http{
 struct NETWORKTYPE_EXPORT HttpResponseMetrics{
     int requestStartTime{ 0 };
     int dnsLookupMs{ 0 };

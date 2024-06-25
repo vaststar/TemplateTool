@@ -8,14 +8,14 @@
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/NetworkService/INetworkServiceCallback.h>
 
-namespace ucf{
+namespace ucf::service{
 class NetworkService: public virtual INetworkService,
                       public virtual ucf::utilities::NotificationHelper<INetworkServiceCallback>,
-                      public CoreFrameworkCallbackDefault,
+                      public ucf::framework::CoreFrameworkCallbackDefault,
                       public std::enable_shared_from_this<NetworkService>
 {
 public:
-    explicit NetworkService(ICoreFrameworkWPtr coreFramework);
+    explicit NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework);
     virtual ~NetworkService();
 public:
     //INetworkService

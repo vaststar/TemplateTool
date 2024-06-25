@@ -3,7 +3,7 @@
 #include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
-namespace ucf::network::http{
+namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -12,18 +12,18 @@ namespace ucf::network::http{
 class NetworkHttpManager::DataPrivate{
 public:
     DataPrivate();
-    std::shared_ptr<ucf::network::libcurl::LibCurlClient> getLibCurlClient() const;
+    std::shared_ptr<ucf::service::network::libcurl::LibCurlClient> getLibCurlClient() const;
 private:
-    std::shared_ptr<ucf::network::libcurl::LibCurlClient> mLibcurlClient;
+    std::shared_ptr<ucf::service::network::libcurl::LibCurlClient> mLibcurlClient;
 };
 
 NetworkHttpManager::DataPrivate::DataPrivate()
-    :mLibcurlClient(std::make_shared<ucf::network::libcurl::LibCurlClient>())
+    :mLibcurlClient(std::make_shared<ucf::service::network::libcurl::LibCurlClient>())
 {
 
 }
 
-std::shared_ptr<ucf::network::libcurl::LibCurlClient> NetworkHttpManager::DataPrivate::getLibCurlClient() const
+std::shared_ptr<ucf::service::network::libcurl::LibCurlClient> NetworkHttpManager::DataPrivate::getLibCurlClient() const
 {
     return mLibcurlClient;
 }
@@ -52,6 +52,14 @@ NetworkHttpManager::~NetworkHttpManager()
 void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc)
 {
     SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString());
+
+//     using json = nlohmann::json;
+//     // parse explicitly
+//     auto j = json::parse(R"({"happy": true, "pi": 3.141})");
+//     // explicit conversion to string
+// std::string s = j.dump();    // {"happy":true,"pi":3.141}
+//     SERVICE_LOG_DEBUG("test:" << s);
+
 
     auto headerCallback = [this, weakThis = weak_from_this()](const NetworkHttpResponse& response) {
     };

@@ -7,7 +7,7 @@
 #include "LibCurlMultiHandleManager.h"
 #include "LibCurlEasyHandle.h"
 
-namespace ucf::network::libcurl{
+namespace ucf::service::network::libcurl{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -19,10 +19,10 @@ public:
     DataPrivate();
     void start();
     void stop();
-    std::shared_ptr<LibCurlEasyHandle> buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback) const;
+    std::shared_ptr<LibCurlEasyHandle> buildEasyHandle(const ucf::service::network::http::NetworkHttpRequest& httpRequest, const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback) const;
     void insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle);
 private:
-    ucf::network::http::NetworkHttpHeaders buildHeaders(const ucf::network::http::NetworkHttpRequest& httpRequest) const;
+    ucf::service::network::http::NetworkHttpHeaders buildHeaders(const ucf::service::network::http::NetworkHttpRequest& httpRequest) const;
 private:
     std::unique_ptr<LibCurlMultiHandleManager> mMultiHandleManager;
 };
@@ -47,14 +47,14 @@ void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHan
     mMultiHandleManager->insert(handle);
 }
 
-ucf::network::http::NetworkHttpHeaders LibCurlClient::DataPrivate::buildHeaders(const ucf::network::http::NetworkHttpRequest& httpRequest) const
+ucf::service::network::http::NetworkHttpHeaders LibCurlClient::DataPrivate::buildHeaders(const ucf::service::network::http::NetworkHttpRequest& httpRequest) const
 {
     auto requestHeaders = httpRequest.getRequestHeaders();
     requestHeaders.emplace_back("TrackingID", httpRequest.getTrackingId());
     return requestHeaders;
 }
 
-std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(const ucf::network::http::NetworkHttpRequest& httpRequest, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback) const
+std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(const ucf::service::network::http::NetworkHttpRequest& httpRequest, const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback) const
 {
     auto easyHandle = std::make_shared<LibCurlEasyHandle>(headerCallback, bodyCallback, completionCallback);
     easyHandle->setHttpMethod(httpRequest.getRequestMethod());
@@ -101,33 +101,11 @@ void LibCurlClient::stopService()
     mDataPrivate->stop();
 }
 
-void LibCurlClient::makeGenericRequest(const ucf::network::http::NetworkHttpRequest& request, const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback)
+void LibCurlClient::makeGenericRequest(const ucf::service::network::http::NetworkHttpRequest& request, const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback)
 {
     LIBCURL_LOG_DEBUG("");
     auto easyHandle = mDataPrivate->buildEasyHandle(request, headerCallback, bodyCallback, completionCallback);
     mDataPrivate->insertEasyHandle(easyHandle);
-
-    
-// CURL *curl;
-//     CURLcode res;
-    
-//     curl = curl_easy_init();
-//     if (curl) {
-//         curl_easy_setopt(curl, CURLOPT_URL, "http://www.example.com");
-//         /* example.com is redirected, so we tell libcurl to follow redirection */
-//         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        
-//         res = curl_easy_perform(curl);
-        
-//         /* Check for errors */
-//         if (res != CURLE_OK) {
-//             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-//         }
-        
-//         /* always cleanup */
-//         curl_easy_cleanup(curl);
-//     }
-
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

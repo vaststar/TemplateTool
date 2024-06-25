@@ -4,7 +4,7 @@
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/CoreFramework/IService.h>
 
-namespace ucf{
+namespace ucf::framework{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -80,7 +80,7 @@ std::string CoreFramework::getName() const
 void CoreFramework::initServices()
 {
     auto allServices = getAllServices();
-    std::for_each(allServices.begin(), allServices.end(), [](std::weak_ptr<IService> service){
+    std::for_each(allServices.begin(), allServices.end(), [](std::weak_ptr<ucf::service::IService> service){
         if (auto servicePtr = service.lock())
         {
             servicePtr->initService();

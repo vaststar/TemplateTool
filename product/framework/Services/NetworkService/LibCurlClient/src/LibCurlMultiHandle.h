@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace ucf::network::libcurl{
+namespace ucf::service::network::libcurl{
 class LibCurlEasyHandle;
 class LibCurlMultiHandle
 {

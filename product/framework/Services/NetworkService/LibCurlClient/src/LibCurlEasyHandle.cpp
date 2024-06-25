@@ -8,7 +8,7 @@
 #include "LibCurlEasyHandle.h"
 #include "LibCurlClientLogger.h"
 
-namespace ucf::network::libcurl{
+namespace ucf::service::network::libcurl{
 inline constexpr auto MAX_REQUEST_REDIRECTS{ 5 };
 
 static size_t header_callback(char *data, size_t size, size_t nmemb, void *userp)
@@ -49,23 +49,23 @@ static size_t response_body_callback(char *data, size_t size, size_t nmemb, void
 class LibCurlEasyHandle::DataPrivate
 {
 public:
-    DataPrivate(const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback);
+    DataPrivate(const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback);
     ~DataPrivate();
 
     CURL* getHandle();
 
-    ucf::network::http::HttpResponseMetrics getResponseMetrics() const;
+    ucf::service::network::http::HttpResponseMetrics getResponseMetrics() const;
 
-    ucf::network::http::HttpHeaderCallback getHeaderCallback() {return mHeaderCallback;}
-    ucf::network::http::HttpBodyCallback getBodyCallback() {return mBodyCallback;}
-    ucf::network::http::HttpCompletionCallback getCompletionCallback() {return mCompletionCallback;}
+    ucf::service::network::http::HttpHeaderCallback getHeaderCallback() {return mHeaderCallback;}
+    ucf::service::network::http::HttpBodyCallback getBodyCallback() {return mBodyCallback;}
+    ucf::service::network::http::HttpCompletionCallback getCompletionCallback() {return mCompletionCallback;}
 
     void setTrackingId(const std::string& trackingId){mTrackingId = trackingId;}
     std::string getTrackingId() const{return mTrackingId;}
 
-    int setHttpMethod(ucf::network::http::HTTPMethod method);
+    int setHttpMethod(ucf::service::network::http::HTTPMethod method);
     int setURI(const std::string& uri);
-    int setHeaders(const ucf::network::http::NetworkHttpHeaders& headers);
+    int setHeaders(const ucf::service::network::http::NetworkHttpHeaders& headers);
 
     template<typename ...Args>
     int setOption(CURLoption option, const Args& ...args)
@@ -79,7 +79,7 @@ public:
     }
 
     void addResponseHeader(const std::string& key, const std::string& val);
-    ucf::network::http::NetworkHttpHeaders getResponseHeader() const;
+    ucf::service::network::http::NetworkHttpHeaders getResponseHeader() const;
 
     int getResponseCode();
 
@@ -87,15 +87,15 @@ private:
     CURL* mHandle;
     CURLU* mUrl;
     curl_slist* mHeaders;
-    ucf::network::http::HttpHeaderCallback mHeaderCallback;
-    ucf::network::http::HttpBodyCallback mBodyCallback;
-    ucf::network::http::HttpCompletionCallback mCompletionCallback;
+    ucf::service::network::http::HttpHeaderCallback mHeaderCallback;
+    ucf::service::network::http::HttpBodyCallback mBodyCallback;
+    ucf::service::network::http::HttpCompletionCallback mCompletionCallback;
     std::string mTrackingId;
 
-    ucf::network::http::NetworkHttpHeaders mResponseHeader;
+    ucf::service::network::http::NetworkHttpHeaders mResponseHeader;
 };
 
-LibCurlEasyHandle::DataPrivate::DataPrivate(const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback)
+LibCurlEasyHandle::DataPrivate::DataPrivate(const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback)
     : mHandle(curl_easy_init())
     , mUrl(curl_url())
     , mHeaders(nullptr)
@@ -127,7 +127,7 @@ CURL* LibCurlEasyHandle::DataPrivate::getHandle()
     return mHandle;
 }
 
-ucf::network::http::HttpResponseMetrics LibCurlEasyHandle::DataPrivate::getResponseMetrics() const
+ucf::service::network::http::HttpResponseMetrics LibCurlEasyHandle::DataPrivate::getResponseMetrics() const
 {
     curl_off_t nameLookup{0};
     curl_easy_getinfo(mHandle,CURLINFO_NAMELOOKUP_TIME_T, &nameLookup);
@@ -166,34 +166,34 @@ ucf::network::http::HttpResponseMetrics LibCurlEasyHandle::DataPrivate::getRespo
     return { 0, static_cast<int>(nameLookup) / 1000, static_cast<int>(connectTime - nameLookup) / 1000, static_cast<int>(startTransferTime - preTransferTime) / 1000, static_cast<int>(transferTime - startTransferTime) / 1000,  static_cast<size_t>(responseLength), versionString };
 }
 
-int LibCurlEasyHandle::DataPrivate::setHttpMethod(ucf::network::http::HTTPMethod method)
+int LibCurlEasyHandle::DataPrivate::setHttpMethod(ucf::service::network::http::HTTPMethod method)
 {
     int result = { 0 };
     switch (method)
     {
-        case ucf::network::http::HTTPMethod::GET:
+        case ucf::service::network::http::HTTPMethod::GET:
             result = setOption(CURLOPT_HTTPGET, 1L);
             break;
             break;
-        case ucf::network::http::HTTPMethod::POST:
+        case ucf::service::network::http::HTTPMethod::POST:
             setOption(CURLOPT_POST, 1L);
             result = setOption(CURLOPT_POSTFIELDS, nullptr);
             break;
-        case ucf::network::http::HTTPMethod::HEAD:
+        case ucf::service::network::http::HTTPMethod::HEAD:
             setOption(CURLOPT_NOBODY, 1L);
             result = setOption(CURLOPT_CUSTOMREQUEST, "HEAD");
             break;
-        case ucf::network::http::HTTPMethod::PUT:
+        case ucf::service::network::http::HTTPMethod::PUT:
             setOption(CURLOPT_CUSTOMREQUEST, "PUT");
             result = setOption(CURLOPT_POSTFIELDS, nullptr);
             break;
-        case ucf::network::http::HTTPMethod::DEL:
+        case ucf::service::network::http::HTTPMethod::DEL:
             result = setOption(CURLOPT_CUSTOMREQUEST, "DELETE");
             break;
-        case ucf::network::http::HTTPMethod::PATCH:
+        case ucf::service::network::http::HTTPMethod::PATCH:
             result = setOption(CURLOPT_CUSTOMREQUEST, "PATCH");
             break;
-        case ucf::network::http::HTTPMethod::OPTIONS:
+        case ucf::service::network::http::HTTPMethod::OPTIONS:
             result = setOption(CURLOPT_CUSTOMREQUEST, "OPTIONS");
             break;
         default:
@@ -216,7 +216,7 @@ int LibCurlEasyHandle::DataPrivate::setURI(const std::string& uri)
     return code;
 }
 
-int LibCurlEasyHandle::DataPrivate::setHeaders(const ucf::network::http::NetworkHttpHeaders& headers)
+int LibCurlEasyHandle::DataPrivate::setHeaders(const ucf::service::network::http::NetworkHttpHeaders& headers)
 {
     for (auto[key, val] : headers)
     {
@@ -235,7 +235,7 @@ void LibCurlEasyHandle::DataPrivate::addResponseHeader(const std::string& key, c
     mResponseHeader.emplace_back(key, val);
 }
 
-ucf::network::http::NetworkHttpHeaders LibCurlEasyHandle::DataPrivate::getResponseHeader() const
+ucf::service::network::http::NetworkHttpHeaders LibCurlEasyHandle::DataPrivate::getResponseHeader() const
 {
     return mResponseHeader;
 }
@@ -258,7 +258,7 @@ int LibCurlEasyHandle::DataPrivate::getResponseCode()
 ////////////////////Start LibCurlEasyHandle Logic////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-LibCurlEasyHandle::LibCurlEasyHandle(const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback)
+LibCurlEasyHandle::LibCurlEasyHandle(const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback)
     : mDataPrivate(std::make_unique<DataPrivate>(headerCallback, bodyCallback, completionCallback))
 {
 
@@ -273,7 +273,7 @@ CURL* LibCurlEasyHandle::getHandle() const
     return mDataPrivate->getHandle();
 }
 
-void LibCurlEasyHandle::setHttpMethod(ucf::network::http::HTTPMethod method)
+void LibCurlEasyHandle::setHttpMethod(ucf::service::network::http::HTTPMethod method)
 {
     mDataPrivate->setHttpMethod(method);
 }
@@ -283,7 +283,7 @@ void LibCurlEasyHandle::setURI(const std::string& uri)
     mDataPrivate->setURI(uri);
 }
 
-void LibCurlEasyHandle::setHeaders(const ucf::network::http::NetworkHttpHeaders& headers)
+void LibCurlEasyHandle::setHeaders(const ucf::service::network::http::NetworkHttpHeaders& headers)
 {
     mDataPrivate->setHeaders(headers);
 }
@@ -321,7 +321,7 @@ void LibCurlEasyHandle::appendResponseBody(char *data, size_t size)
 {
     if (mDataPrivate->getBodyCallback() != nullptr)
     {
-        mDataPrivate->getBodyCallback()(ucf::network::http::ByteBuffer(data, data + size), false);
+        mDataPrivate->getBodyCallback()(ucf::service::network::http::ByteBuffer(data, data + size), false);
     }
 }
 
@@ -330,7 +330,7 @@ void LibCurlEasyHandle::headersCompleted()
     if (mDataPrivate->getHeaderCallback() != nullptr)
     {
         mDataPrivate->getResponseCode();
-        ucf::network::http::NetworkHttpResponse response;
+        ucf::service::network::http::NetworkHttpResponse response;
         mDataPrivate->getHeaderCallback()(response);
     }
 }
@@ -342,7 +342,7 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
     {
         if (mDataPrivate->getBodyCallback() != nullptr)
         {
-            ucf::network::http::ByteBuffer emptyBuf;
+            ucf::service::network::http::ByteBuffer emptyBuf;
             mDataPrivate->getBodyCallback()(emptyBuf, true);
         }
 
@@ -355,7 +355,7 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
     {
         LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code) << ", trackingId=" << mDataPrivate->getTrackingId());
         //todo
-        ucf::network::http::NetworkHttpResponse response;
+        ucf::service::network::http::NetworkHttpResponse response;
 
         if (mDataPrivate->getHeaderCallback() != nullptr)
         {

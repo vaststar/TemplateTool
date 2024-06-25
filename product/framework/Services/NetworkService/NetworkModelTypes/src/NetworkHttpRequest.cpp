@@ -1,8 +1,9 @@
 #include <format>
+
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
-namespace ucf::network::http{
+namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -10,11 +11,13 @@ namespace ucf::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 class NetworkHttpRequest::DataPrivate{
 public:
+    DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs);
     DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs);
     std::string getRequestId() const;
     HTTPMethod getMethod() const;
     std::string getUri() const;
-    std::string getPayload() const;
+    NetworkHttpPayloadType getPayloadType() const;
+    std::string getJsonPayload() const;
     NetworkHttpHeaders getHeaders() const;
     int getTimeoutSecs() const;
     
@@ -25,10 +28,23 @@ private:
     HTTPMethod mMethod;
     std::string mUri;
     NetworkHttpHeaders mHeaders;
+    NetworkHttpPayloadType mPayloadType;
     std::string mPayload;
     int mTimeoutSecs;
     std::string mTrackingId;
 };
+
+NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs)
+    : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
+    , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
+    , mMethod(method)
+    , mUri(uri)
+    , mHeaders(headers)
+    , mPayloadType(NetworkHttpPayloadType::None)
+    , mTimeoutSecs(timeoutSecs)
+{
+
+}
 
 NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs)
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
@@ -36,6 +52,7 @@ NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std
     , mMethod(method)
     , mUri(uri)
     , mHeaders(headers)
+    , mPayloadType(NetworkHttpPayloadType::Json)
     , mPayload(payload)
     , mTimeoutSecs(timeoutSecs)
 {
@@ -62,7 +79,12 @@ std::string NetworkHttpRequest::DataPrivate::getUri() const
     return mUri;
 }
 
-std::string NetworkHttpRequest::DataPrivate::getPayload() const
+NetworkHttpPayloadType NetworkHttpRequest::DataPrivate::getPayloadType() const
+{
+    return mPayloadType;
+}
+
+std::string NetworkHttpRequest::DataPrivate::getJsonPayload() const
 {
     return mPayload;
 }
@@ -105,6 +127,12 @@ NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::stri
 
 }
 
+NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs)
+    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, timeoutSecs))
+{
+
+}
+
 HTTPMethod NetworkHttpRequest::getRequestMethod() const
 {
     return mDataPrivate->getMethod();
@@ -120,9 +148,9 @@ NetworkHttpHeaders NetworkHttpRequest::getRequestHeaders() const
     return mDataPrivate->getHeaders();
 }
 
-std::string NetworkHttpRequest::getRequestPayload() const
+std::string NetworkHttpRequest::getJsonPayload() const
 {
-    return mDataPrivate->getPayload();
+    return mDataPrivate->getJsonPayload();
 }
 
 std::string NetworkHttpRequest::getRequestId() const
@@ -143,6 +171,11 @@ void NetworkHttpRequest::setTrackingId(const std::string& trackingId)
 std::string NetworkHttpRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
+}
+
+NetworkHttpPayloadType NetworkHttpRequest::getPayloadType() const
+{
+    return mDataPrivate->getPayloadType();
 }
 
 std::string NetworkHttpRequest::toString() const

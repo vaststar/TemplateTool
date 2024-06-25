@@ -6,11 +6,11 @@
 
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
-
-namespace ucf{
-class ICoreFramework;
-
-namespace model{
+namespace ucf::framework{
+    class ICoreFramework;
+    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+}
+namespace ucf::service::model{
 class SERVICE_EXPORT Contact
 {
 public:
@@ -35,7 +35,7 @@ private:
 class SERVICE_EXPORT ContactModel
 {
 public:
-    ContactModel(std::weak_ptr<ICoreFramework> coreFramework);
+    ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework);
     const std::vector<Contact>& getContacts() const;
     void setContacts(const std::vector<Contact>& contacts);
     void deleteContacts(const std::string& contactId);
@@ -44,7 +44,6 @@ public:
 private:
     mutable std::mutex mContactMutex;
     std::vector<Contact> mContacts;
-    std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
+    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };
-}
 }

@@ -10,6 +10,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/ContactService.h
     src/ContactService.cpp
     src/ContactModel.cpp
+    src/Adapters/ContactAdapter.h
+    src/Adapters/ContactAdapter.cpp
 )
 
 
@@ -24,6 +26,7 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         Sqlite3
+        nlohmann_json::nlohmann_json
         CoreFramework
         NetworkService
     TARGET_DEPENDENICES_PUBLIC

@@ -2,7 +2,7 @@
 
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
-namespace ucf{
+namespace ucf::framework{
 
 class SERVICE_EXPORT ICoreFrameworkCallback
 {

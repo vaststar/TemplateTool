@@ -4,18 +4,20 @@
 #include <string>
 #include <ucf/Services/ImageService/IImageService.h>
 
-
-namespace ucf{
-class ICoreFramework;
+namespace ucf::framework{
+    class ICoreFramework;
+    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+}
+namespace ucf::service{
 class SERVICE_EXPORT ImageService:public IImageService
 {
 public:
-    ImageService(std::weak_ptr<ICoreFramework> coreFramework);
+    ImageService(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ~ImageService();
     //IService
     virtual std::string getServiceName() const override;
     virtual void initService() override;
 private:
-    std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
+    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };
 }

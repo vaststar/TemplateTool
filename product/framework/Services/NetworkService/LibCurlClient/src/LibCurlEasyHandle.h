@@ -4,20 +4,20 @@
 #include <memory>
 #include <curl/curl.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
-namespace ucf::network::libcurl{
+namespace ucf::service::network::libcurl{
 class LibCurlEasyHandle
 {
 public:
-    LibCurlEasyHandle(const ucf::network::http::HttpHeaderCallback& headerCallback, const ucf::network::http::HttpBodyCallback& bodyCallback, const ucf::network::http::HttpCompletionCallback& completionCallback);
+    LibCurlEasyHandle(const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback);
     ~LibCurlEasyHandle();
     LibCurlEasyHandle(const LibCurlEasyHandle&) = delete;
     LibCurlEasyHandle(LibCurlEasyHandle&&) = delete;
     LibCurlEasyHandle& operator=(const LibCurlEasyHandle&) = delete;
     LibCurlEasyHandle& operator=(LibCurlEasyHandle&&) = delete;
 public:
-    void setHttpMethod(ucf::network::http::HTTPMethod method);
+    void setHttpMethod(ucf::service::network::http::HTTPMethod method);
     void setURI(const std::string& uri);
-    void setHeaders(const ucf::network::http::NetworkHttpHeaders& headers);
+    void setHeaders(const ucf::service::network::http::NetworkHttpHeaders& headers);
     void setTrackingId(const std::string& trackingId);
     void setTimeout(int timeoutSecs);
     void setCommonOptions();

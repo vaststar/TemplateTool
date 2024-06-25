@@ -8,7 +8,7 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
-namespace ucf::model{
+namespace ucf::service::model{
 Contact::Contact(const std::string& id, const std::string& name)
     : mContactId(id)
     , mContactName(name)
@@ -70,7 +70,7 @@ void Contact::removeTags(const std::vector<std::string>& tags)
     });
 }
 
-ContactModel::ContactModel(std::weak_ptr<ICoreFramework> coreFramework)
+ContactModel::ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
 :  mCoreFrameworkWPtr(coreFramework)
 {
     SERVICE_LOG_DEBUG("create ContactModel, address:"  << this);

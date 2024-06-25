@@ -1,13 +1,13 @@
 #include "ContactService.h"
-#include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 #include <sqlite3.h>
 
-namespace ucf{
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
+
+#include "Adapters/ContactAdapter.h"
+
+namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -15,22 +15,25 @@ namespace ucf{
 /////////////////////////////////////////////////////////////////////////////////////
 class ContactService::DataPrivate{
 public:
-    explicit DataPrivate(ICoreFrameworkWPtr coreFramework);
-    std::weak_ptr<ICoreFramework> getCoreFramework() const;
+    explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
     std::shared_ptr<model::ContactModel> getContactModel() const;
+    std::shared_ptr<ucf::adapter::ContactAdapter> getContactAdapter() const;
 private:
-    std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
+    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::shared_ptr<model::ContactModel>  mContactModelPtr;
+    std::shared_ptr<ucf::adapter::ContactAdapter> mContactAdapter;
 };
 
-ContactService::DataPrivate::DataPrivate(ICoreFrameworkWPtr coreFramework)
+ContactService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
     , mContactModelPtr(std::make_shared<model::ContactModel>(coreFramework))
+    , mContactAdapter(std::make_shared<ucf::adapter::ContactAdapter>(coreFramework))
 {
 
 }
 
-std::weak_ptr<ICoreFramework> ContactService::DataPrivate::getCoreFramework() const
+ucf::framework::ICoreFrameworkWPtr ContactService::DataPrivate::getCoreFramework() const
 {
     return mCoreFrameworkWPtr;
 }
@@ -38,6 +41,11 @@ std::weak_ptr<ICoreFramework> ContactService::DataPrivate::getCoreFramework() co
 std::shared_ptr<model::ContactModel> ContactService::DataPrivate::getContactModel() const
 {
     return mContactModelPtr;
+}
+
+std::shared_ptr<ucf::adapter::ContactAdapter> ContactService::DataPrivate::getContactAdapter() const
+{
+    return mContactAdapter;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -50,12 +58,12 @@ std::shared_ptr<model::ContactModel> ContactService::DataPrivate::getContactMode
 ////////////////////Start ContactService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<IContactService> IContactService::CreateInstance(ICoreFrameworkWPtr coreFramework)
+std::shared_ptr<IContactService> IContactService::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<ContactService>(coreFramework);
 }
 
-ContactService::ContactService(ICoreFrameworkWPtr coreFramework)
+ContactService::ContactService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
     SERVICE_LOG_DEBUG("Create ContactService, address:" << this);
@@ -108,13 +116,11 @@ void ContactService::fetchContactList()
 
 std::vector<model::Contact> ContactService::getContactList() const
 {
-    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    if (auto contactAdapter = mDataPrivate->getContactAdapter())
     {
-        if (auto network  = coreFramework->getService<ucf::INetworkService>().lock())
-        {
-
-            network->getNetworkHttpManager().lock()->sendHttpRequest(ucf::network::http::NetworkHttpRequest(ucf::network::http::HTTPMethod::GET, "https://www.baidu.com", {},""), nullptr);
-        }
+        contactAdapter->fetchContactInfo("", [](const ucf::service::model::Contact& contact){
+            SERVICE_LOG_DEBUG("test fetch contactInfo");
+        });
     }
     
     if (auto contactModel = mDataPrivate->getContactModel())

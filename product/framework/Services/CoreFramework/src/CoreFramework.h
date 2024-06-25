@@ -8,7 +8,7 @@
 #include "ServiceAccessor.h"
 
 
-namespace ucf{
+namespace ucf::framework{
 class CoreFramework final:  public virtual ICoreFramework,
                             public virtual ServiceAccessor,
                             public virtual ucf::utilities::NotificationHelper<ICoreFrameworkCallback>,

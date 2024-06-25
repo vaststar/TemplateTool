@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace ucf {
+namespace ucf::framework {
     class ICoreFramework;
     using ICoreFrameworkPtr = std::shared_ptr<ICoreFramework>;
 }
@@ -16,7 +16,7 @@ namespace commonHead{
 namespace AppRunner
 {
     struct FrameworkDependencies{
-        ucf::ICoreFrameworkPtr coreFramework;
+        ucf::framework::ICoreFrameworkPtr coreFramework;
         commonHead::ICommonHeadFrameworkPtr commonHeadFramework;
     };
     struct AppLogConfig{

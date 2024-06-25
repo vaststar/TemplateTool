@@ -2,7 +2,7 @@
 #include <ucf/CoreFramework/IService.h>
 
 
-namespace ucf{
+namespace ucf::service{
 class SERVICE_EXPORT IImageService: public IService
 {
 };

@@ -33,7 +33,7 @@ std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getCon
     {
         if (auto coreFramework = commonHeadFramework->getCoreFramework().lock())
         {
-            if (auto contactService  = coreFramework->getService<ucf::IContactService>().lock())
+            if (auto contactService  = coreFramework->getService<ucf::service::IContactService>().lock())
             {
                 auto contactList = contactService->getContactList();
                 std::vector<commonHead::viewModels::model::Contact> contacts;

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace ucf{
+namespace ucf::service{
     namespace model{
         class Contact;
     }

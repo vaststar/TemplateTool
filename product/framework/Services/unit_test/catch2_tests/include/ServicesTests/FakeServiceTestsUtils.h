@@ -3,5 +3,5 @@
 #include <memory>
 namespace FakeServiceTestsUtils
 {
-    std::shared_ptr<ucf::ICoreFramework> buildFakeCoreFramework();
+    std::shared_ptr<ucf::framework::ICoreFramework> buildFakeCoreFramework();
 } // namespace FakeServiceTestsUtils

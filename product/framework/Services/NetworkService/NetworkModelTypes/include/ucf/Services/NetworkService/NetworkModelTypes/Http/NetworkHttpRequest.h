@@ -3,13 +3,22 @@
 #include <memory>
 #include <map>
 #include <string>
+
 #include <ucf/Services/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
-namespace ucf::network::http{
+namespace ucf::service::network::http{
+    enum class NetworkHttpPayloadType{
+        None,
+        Json,
+        File,
+        Memory
+    };
+
 class NETWORKTYPE_EXPORT NetworkHttpRequest final
 {
 public:
+    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs = 30);
     NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs = 30);
     ~NetworkHttpRequest();
     NetworkHttpRequest(const NetworkHttpRequest&) = delete;
@@ -21,7 +30,9 @@ public:
     HTTPMethod getRequestMethod() const;
     std::string getRequestUri() const;
     NetworkHttpHeaders getRequestHeaders() const;
-    std::string getRequestPayload() const;
+
+    NetworkHttpPayloadType getPayloadType() const;
+    std::string getJsonPayload() const;
     int getTimeout() const;
 
     void setTrackingId(const std::string& trackingId);

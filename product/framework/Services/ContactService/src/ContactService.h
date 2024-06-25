@@ -9,14 +9,14 @@
 #include <ucf/Services/ContactService/ContactModel.h>
 
 
-namespace ucf{
+namespace ucf::service{
 class ContactService: public virtual IContactService, 
                       public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
-                      public CoreFrameworkCallbackDefault,
+                      public ucf::framework::CoreFrameworkCallbackDefault,
                       public std::enable_shared_from_this<ContactService>
 {
 public:
-    explicit ContactService(ICoreFrameworkWPtr coreFramework);
+    explicit ContactService(ucf::framework::ICoreFrameworkWPtr coreFramework);
     virtual ~ContactService();
     ContactService(const ContactService&) = delete;
     ContactService(ContactService&&) = delete;

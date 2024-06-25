@@ -10,7 +10,7 @@
 
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
-namespace ucf{
+namespace ucf::framework{
 
 class IService;
 

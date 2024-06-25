@@ -8,7 +8,7 @@
 #include "LibCurlMultiHandle.h"
 #include "LibCurlEasyHandle.h"
 
-namespace ucf::network::libcurl{
+namespace ucf::service::network::libcurl{
 class LibCurlMultiHandleManager final
 {
 public:

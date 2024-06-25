@@ -15,10 +15,10 @@ FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
 	MasterLogUtil::InitLogger({fileLogger});
 
     //create framework
-    auto coreFramework = ucf::ICoreFramework::CreateInstance();
+    auto coreFramework = ucf::framework::ICoreFramework::CreateInstance();
 
-    coreFramework->registerService<ucf::IContactService>(ucf::IContactService::CreateInstance(coreFramework));
-    coreFramework->registerService<ucf::INetworkService>(ucf::INetworkService::CreateInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::CreateInstance(coreFramework));
+    coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::CreateInstance(coreFramework));
 
     coreFramework->initServices();
     

@@ -5,12 +5,12 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 
 namespace commonHead{
-std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ucf::ICoreFrameworkWPtr coreframework)
+std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
 {
     return std::make_shared<CommonHeadFramework>(coreframework);
 }
 
-CommonHeadFramework::CommonHeadFramework(ucf::ICoreFrameworkWPtr coreframework)
+CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr coreframework)
 {
     COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
     mCoreframeworkWPtr = coreframework;
@@ -21,7 +21,7 @@ std::string CommonHeadFramework::getName() const
     return "CommonHeadFramework";
 }
 
-ucf::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
+ucf::framework::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
 {
     return mCoreframeworkWPtr;
 }

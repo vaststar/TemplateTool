@@ -8,17 +8,18 @@
 
 #include <ucf/CoreFramework/IServiceAccessor.h>
 
-namespace ucf{
+namespace ucf::service{
+    class IService;
+    using IServicePtr = std::shared_ptr<IService>;
+}
 
-class IService;
-using IServicePtr = std::shared_ptr<IService>;
-
+namespace ucf::framework{
 class ServiceAccessor: public virtual IServiceAccessor
 {
 public:
-    virtual std::vector<std::weak_ptr<IService>> getAllServices() override
+    virtual std::vector<std::weak_ptr<ucf::service::IService>> getAllServices() override
     {
-        std::vector<std::weak_ptr<IService>> services;
+        std::vector<std::weak_ptr<ucf::service::IService>> services;
         {
             std::scoped_lock loc(mDataMutex);
             for(auto [_, service] : mServices)
@@ -30,7 +31,7 @@ public:
     }
 
 protected:
-    virtual IServicePtr getServiceInternal(std::type_index index) override
+    virtual ucf::service::IServicePtr getServiceInternal(std::type_index index) override
     {
         std::scoped_lock loc(mDataMutex);
         if (auto iter = mServices.find(index); iter != mServices.end())
@@ -40,7 +41,7 @@ protected:
         return {};
     }
 
-    virtual void registerServiceInternal(std::type_index index, IServicePtr service, bool overrideExisting) override
+    virtual void registerServiceInternal(std::type_index index, ucf::service::IServicePtr service, bool overrideExisting) override
     {
         std::scoped_lock loc(mDataMutex);
         if (overrideExisting || !mServices.contains(index))
@@ -51,12 +52,12 @@ protected:
 
     virtual void unRegisterServices() override
     {
-        std::map<std::type_index, IServicePtr> emptyServices;
+        std::map<std::type_index, ucf::service::IServicePtr> emptyServices;
         std::mutex mDataMutex;
         std::swap(mServices, emptyServices);
     }
 private:
     std::mutex mDataMutex;
-    std::map<std::type_index, IServicePtr> mServices;
+    std::map<std::type_index, ucf::service::IServicePtr> mServices;
 };
 }

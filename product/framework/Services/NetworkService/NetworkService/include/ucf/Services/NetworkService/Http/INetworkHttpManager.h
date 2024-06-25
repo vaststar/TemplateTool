@@ -3,7 +3,7 @@
 #include <functional>
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
-namespace ucf::network::http{
+namespace ucf::service::network::http{
 class NetworkHttpRequest;
 class NetworkHttpResponse;
 using NetworkHttpResponseCallbackFunc = std::function<void(const NetworkHttpResponse& httpResponse)>;

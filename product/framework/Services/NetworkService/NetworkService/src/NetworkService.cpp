@@ -5,7 +5,7 @@
 
 #include "NetworkHttpManager.h"
 
-namespace ucf{
+namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -13,22 +13,22 @@ namespace ucf{
 /////////////////////////////////////////////////////////////////////////////////////
 class NetworkService::DataPrivate{
 public:
-    explicit DataPrivate(ICoreFrameworkWPtr coreFramework);
-    std::weak_ptr<ICoreFramework> getCoreFramework() const;
+    explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
     std::shared_ptr<network::http::INetworkHttpManager> getNetworkHttpManager() const;
 private:
-    std::weak_ptr<ICoreFramework> mCoreFrameworkWPtr;
+    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::shared_ptr<network::http::INetworkHttpManager> mNetworkHttpManagerPtr;
 };
 
-NetworkService::DataPrivate::DataPrivate(ICoreFrameworkWPtr coreFramework)
+NetworkService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
     , mNetworkHttpManagerPtr(std::make_shared<network::http::NetworkHttpManager>())
 {
 
 }
 
-std::weak_ptr<ICoreFramework> NetworkService::DataPrivate::getCoreFramework() const
+ucf::framework::ICoreFrameworkWPtr NetworkService::DataPrivate::getCoreFramework() const
 {
     return mCoreFrameworkWPtr;
 }
@@ -49,12 +49,12 @@ std::shared_ptr<network::http::INetworkHttpManager> NetworkService::DataPrivate:
 ////////////////////Start NetworkService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<INetworkService> INetworkService::CreateInstance(ICoreFrameworkWPtr coreFramework)
+std::shared_ptr<INetworkService> INetworkService::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<NetworkService>(coreFramework);
 }
 
-NetworkService::NetworkService(ICoreFrameworkWPtr coreFramework)
+NetworkService::NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
     SERVICE_LOG_DEBUG("Create NetworkService, address:" << this);

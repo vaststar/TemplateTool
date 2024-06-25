@@ -4,7 +4,7 @@
 
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
-namespace ucf{
+namespace ucf::service{
 class SERVICE_EXPORT IService
 {
 public:

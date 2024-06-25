@@ -4,7 +4,7 @@
 
 #include "LibCurlClientLogger.h"
 
-namespace ucf::network::libcurl{
+namespace ucf::service::network::libcurl{
 LibCurlMultiHandleManager::LibCurlMultiHandleManager()
     : mMultiHandle(std::make_unique<LibCurlMultiHandle>())
     , mStop(false)
