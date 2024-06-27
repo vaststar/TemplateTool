@@ -2,6 +2,7 @@
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +63,7 @@ void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, 
 
 
     auto headerCallback = [this, weakThis = weak_from_this()](const NetworkHttpResponse& response) {
+        SERVICE_LOG_DEBUG("receive header, status code:" << response.getHttpResponseCode());
     };
 
     auto bodyCallback = [this, weakThis = weak_from_this()](const ByteBuffer& buffer, bool isFinished){

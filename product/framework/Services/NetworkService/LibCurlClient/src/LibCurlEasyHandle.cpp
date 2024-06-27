@@ -314,7 +314,7 @@ void LibCurlEasyHandle::setCommonOptions()
     mDataPrivate->setOption(CURLOPT_WRITEFUNCTION, response_body_callback);
     mDataPrivate->setOption(CURLOPT_MAXREDIRS, MAX_REQUEST_REDIRECTS);
     mDataPrivate->setOption(CURLOPT_TRANSFER_ENCODING, 1L);
-    //mDataPrivate->setOption(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+    mDataPrivate->setOption(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
     mDataPrivate->setOption(CURLOPT_HEADERDATA, this);
     mDataPrivate->setOption(CURLOPT_WRITEDATA, this);
 

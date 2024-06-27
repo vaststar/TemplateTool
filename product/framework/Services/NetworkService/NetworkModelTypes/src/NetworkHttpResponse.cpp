@@ -10,11 +10,26 @@ class NetworkHttpResponse::DataPrivate
 {
 public:
     DataPrivate();
+    void setHttpResponseCode(int statusCode);
+    int getHttpResponseCode() const;
+private:
+    int mResponseCode;
 };
 
 NetworkHttpResponse::DataPrivate::DataPrivate()
+    : mResponseCode(0)
 {
 
+}
+
+void NetworkHttpResponse::DataPrivate::setHttpResponseCode(int statusCode)
+{
+    mResponseCode = statusCode;
+}
+
+int NetworkHttpResponse::DataPrivate::getHttpResponseCode() const
+{
+    return mResponseCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +53,17 @@ NetworkHttpResponse::~NetworkHttpResponse()
 {
 
 }
+
+void NetworkHttpResponse::setHttpResponseCode(int statusCode)
+{
+    mDataPrivate->setHttpResponseCode(statusCode);
+}
+
+int NetworkHttpResponse::getHttpResponseCode() const
+{
+    return mDataPrivate->getHttpResponseCode();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////

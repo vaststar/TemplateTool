@@ -23,6 +23,9 @@ public:
     NetworkHttpResponse(NetworkHttpResponse&&) = delete;
     NetworkHttpResponse& operator=(const NetworkHttpResponse&) = delete;
     NetworkHttpResponse& operator=(NetworkHttpResponse&&) = delete;
+
+    void setHttpResponseCode(int statusCode);
+    int getHttpResponseCode() const;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
