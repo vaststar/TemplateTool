@@ -78,6 +78,16 @@ public:
         return code;
     }
 
+    template<typename ...Args>
+    int getInfo(CURLINFO info, Args ...args) const
+    {
+        auto const code = curl_easy_getinfo(mHandle, info, args...);
+        if (code != CURLE_OK)
+        {
+            LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code));
+        }
+        return code;
+    }
     void addResponseHeader(const std::string& key, const std::string& val);
     ucf::service::network::http::NetworkHttpHeaders getResponseHeader() const;
 
@@ -130,19 +140,19 @@ CURL* LibCurlEasyHandle::DataPrivate::getHandle()
 ucf::service::network::http::HttpResponseMetrics LibCurlEasyHandle::DataPrivate::getResponseMetrics() const
 {
     curl_off_t nameLookup{0};
-    curl_easy_getinfo(mHandle,CURLINFO_NAMELOOKUP_TIME_T, &nameLookup);
+    getInfo(CURLINFO_NAMELOOKUP_TIME_T, &nameLookup);
     curl_off_t connectTime{0};
-    curl_easy_getinfo(mHandle,CURLINFO_CONNECT_TIME_T, &connectTime);
+    getInfo(CURLINFO_CONNECT_TIME_T, &connectTime);
     curl_off_t preTransferTime{0};
-    curl_easy_getinfo(mHandle,CURLINFO_PRETRANSFER_TIME_T, &preTransferTime);
+    getInfo(CURLINFO_PRETRANSFER_TIME_T, &preTransferTime);
     curl_off_t startTransferTime{0};
-    curl_easy_getinfo(mHandle,CURLINFO_STARTTRANSFER_TIME_T, &startTransferTime);
+    getInfo(CURLINFO_STARTTRANSFER_TIME_T, &startTransferTime);
     curl_off_t transferTime{0};
-    curl_easy_getinfo(mHandle,CURLINFO_TOTAL_TIME_T, &transferTime);
+    getInfo(CURLINFO_TOTAL_TIME_T, &transferTime);
     curl_off_t responseLength{0};
-    curl_easy_getinfo(mHandle,CURLINFO_SIZE_DOWNLOAD_T, &responseLength);
+    getInfo(CURLINFO_SIZE_DOWNLOAD_T, &responseLength);
     long httpVersion{0};
-    curl_easy_getinfo(mHandle,CURLINFO_HTTP_VERSION, &httpVersion);
+    getInfo(CURLINFO_HTTP_VERSION, &httpVersion);
     
     std::string versionString;
     switch(httpVersion)
@@ -243,7 +253,7 @@ ucf::service::network::http::NetworkHttpHeaders LibCurlEasyHandle::DataPrivate::
 int LibCurlEasyHandle::DataPrivate::getResponseCode()
 {
     long responseCode = 0;
-    curl_easy_getinfo(mHandle,CURLINFO_RESPONSE_CODE, &responseCode);
+    getInfo(CURLINFO_RESPONSE_CODE, &responseCode);
     return responseCode;
 }
 
@@ -327,10 +337,13 @@ void LibCurlEasyHandle::appendResponseBody(char *data, size_t size)
 
 void LibCurlEasyHandle::headersCompleted()
 {
+    long responseCode{0};
+    mDataPrivate->getInfo(CURLINFO_RESPONSE_CODE, &responseCode);
     if (mDataPrivate->getHeaderCallback() != nullptr)
     {
         mDataPrivate->getResponseCode();
         ucf::service::network::http::NetworkHttpResponse response;
+        response.setHttpResponseCode(static_cast<int>(responseCode));
         mDataPrivate->getHeaderCallback()(response);
     }
 }
