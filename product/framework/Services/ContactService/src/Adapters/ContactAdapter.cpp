@@ -72,7 +72,12 @@ void ContactAdapter::fetchContactInfo(const std::string& contactId, fetchContact
 {
     if (auto networkManager = mDataPrivate->getHttpManager().lock())
     {
-        networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://www.baidu.com", {},""), nullptr);
+        networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"sipUrl":"thzhu@cisco.webex.com"})"), nullptr);
+        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "https://reqres.in/api/users", {{"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"job":"leader","name":"morpheus"})"), nullptr);
+
+        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "http://localhost:8000/", {{"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"job":"leader","name":"morpheus"})"), nullptr);
+        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://reqres.in/api/users", { {"Content-Type","application/json"},{"Transfer-Encoding",""}}, 30), nullptr);
+        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://www.baidu.com", {}, 30), nullptr);
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////

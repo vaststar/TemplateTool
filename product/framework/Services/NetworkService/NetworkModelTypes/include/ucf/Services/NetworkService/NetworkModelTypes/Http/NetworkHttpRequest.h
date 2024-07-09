@@ -18,8 +18,10 @@ namespace ucf::service::network::http{
 class NETWORKTYPE_EXPORT NetworkHttpRequest final
 {
 public:
-    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs = 30);
-    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& payload, int timeoutSecs = 30);
+    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs);
+    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& payload);
+    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, ByteBufferPtr inMemoryBuffer, UploadProgressFunction progressFunc);
+    NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& filePath, UploadProgressFunction progressFunc);
     ~NetworkHttpRequest();
     NetworkHttpRequest(const NetworkHttpRequest&) = delete;
     NetworkHttpRequest(NetworkHttpRequest&&) = delete;
@@ -30,11 +32,16 @@ public:
     HTTPMethod getRequestMethod() const;
     std::string getRequestUri() const;
     NetworkHttpHeaders getRequestHeaders() const;
-
-    NetworkHttpPayloadType getPayloadType() const;
-    std::string getJsonPayload() const;
     int getTimeout() const;
 
+    NetworkHttpPayloadType getPayloadType() const;
+    size_t getPayloadSize() const;
+    std::string getPayloadJsonString() const;
+    std::string getPayloadFilePath() const;
+    ByteBufferPtr getPayloadMemoryBuffer() const;
+
+    UploadProgressFunction getProgressFunction() const;
+ 
     void setTrackingId(const std::string& trackingId);
     std::string getTrackingId() const;
 

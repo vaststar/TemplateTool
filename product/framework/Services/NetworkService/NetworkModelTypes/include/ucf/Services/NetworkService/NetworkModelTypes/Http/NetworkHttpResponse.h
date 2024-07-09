@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <ucf/Services/NetworkService/NetworkModelTypes/NetworkModelTypesExport.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::service::network::http{
 struct NETWORKTYPE_EXPORT HttpResponseMetrics{
@@ -26,6 +27,10 @@ public:
 
     void setHttpResponseCode(int statusCode);
     int getHttpResponseCode() const;
+
+    void setResponseHeaders(const NetworkHttpHeaders& headers);
+    NetworkHttpHeaders getResponseHeaders() const;
+
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

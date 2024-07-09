@@ -15,7 +15,7 @@ std::string StringUtils::trim(const std::string& str)
 std::string StringUtils::ltrim(const std::string& str)
 {
     auto res = str;
-    res.erase(std::find_if(res.begin(), res.end(), [](char ch) {return !std::isspace(ch);}), res.end());
+    res.erase(res.begin(), std::find_if(res.begin(), res.end(), [](char ch) {return !std::isspace(ch);}));
     return res;
 }
 

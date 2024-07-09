@@ -1,4 +1,7 @@
 #include <string>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <curl/curl.h>
 #include <ucf/Utilities/StringUtils/StringUtils.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
@@ -7,6 +10,7 @@
 
 #include "LibCurlEasyHandle.h"
 #include "LibCurlClientLogger.h"
+#include "LibCurlPayloadData.h"
 
 namespace ucf::service::network::libcurl{
 inline constexpr auto MAX_REQUEST_REDIRECTS{ 5 };
@@ -40,6 +44,88 @@ static size_t response_body_callback(char *data, size_t size, size_t nmemb, void
     const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
     easyHandle->appendResponseBody(data, size * nmemb);
     return size * nmemb;
+}
+
+static size_t request_body_callback(char *data, size_t size, size_t nmemb, void *userp)
+{
+    if (userp == nullptr)
+    {
+        LIBCURL_LOG_ERROR("user data is null");
+        return 0;
+    }
+    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
+    return easyHandle->readRequestBody(data, size * nmemb);
+}
+
+int seek_body_callback(void *userp, curl_off_t offset, int origin)
+{
+    if (userp == nullptr)
+    {
+        LIBCURL_LOG_ERROR("user data is null");
+        return CURL_SEEKFUNC_CANTSEEK;
+    }
+    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
+    return easyHandle->seekRequestBody(offset, origin);
+
+}
+
+static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t size, void *userp)
+{
+    if (type == CURLINFO_SSL_DATA_IN || type == CURLINFO_SSL_DATA_OUT)
+    {
+        return 0;
+    }
+
+    std::string typeStr;
+    switch (type)
+    {
+    case CURLINFO_TEXT:
+        typeStr = "TEXT";
+        break;
+    case CURLINFO_HEADER_IN:
+        typeStr = "HEADER_IN";
+        break;
+    case CURLINFO_HEADER_OUT:
+        typeStr = "HEADER_OUT";
+        break;
+    case CURLINFO_DATA_IN:
+        typeStr = "DATA_IN";
+        break;
+    case CURLINFO_DATA_OUT:
+        typeStr = "DATA_OUT";
+        break;
+    default:
+        typeStr = "UNHANDLE";
+        break;
+    }
+    std::string dataStr;
+    dataStr.append(data, size);
+    if (type == CURLINFO_HEADER_OUT)
+    {
+        std::istringstream f(dataStr);
+        std::string line;
+        while(std::getline(f, line, '\n'))
+        {
+            size_t last_pos = line.size()?line.size()-1:0;
+            if(line[last_pos] == '\r')
+            {
+                line[last_pos] = 0;
+                LIBCURL_LOG_DEBUG("info:["<<typeStr<<"]"<< line);
+            }
+
+        }
+    }
+    else
+    {
+        for(auto it = dataStr.rbegin(); it!=dataStr.rend();++it)
+        {
+            if (*it == '\r'||*it=='\n')
+            {
+                *it = 0;
+            }
+        }
+        LIBCURL_LOG_DEBUG("info:["<<typeStr<<"]"<<dataStr);
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -93,6 +179,8 @@ public:
 
     int getResponseCode();
 
+    void setPayloadData(std::shared_ptr<PayloadData> payload);
+    std::shared_ptr<PayloadData> getPayloadData() const;
 private:
     CURL* mHandle;
     CURLU* mUrl;
@@ -103,6 +191,7 @@ private:
     std::string mTrackingId;
 
     ucf::service::network::http::NetworkHttpHeaders mResponseHeader;
+    std::shared_ptr<PayloadData> mPayloadData;
 };
 
 LibCurlEasyHandle::DataPrivate::DataPrivate(const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback)
@@ -112,6 +201,7 @@ LibCurlEasyHandle::DataPrivate::DataPrivate(const ucf::service::network::http::H
     , mHeaderCallback(headerCallback)
     , mBodyCallback(bodyCallback)
     , mCompletionCallback(completionCallback)
+    , mPayloadData(nullptr)
 {
 
 }
@@ -183,7 +273,6 @@ int LibCurlEasyHandle::DataPrivate::setHttpMethod(ucf::service::network::http::H
     {
         case ucf::service::network::http::HTTPMethod::GET:
             result = setOption(CURLOPT_HTTPGET, 1L);
-            break;
             break;
         case ucf::service::network::http::HTTPMethod::POST:
             setOption(CURLOPT_POST, 1L);
@@ -257,6 +346,15 @@ int LibCurlEasyHandle::DataPrivate::getResponseCode()
     return responseCode;
 }
 
+void LibCurlEasyHandle::DataPrivate::setPayloadData(std::shared_ptr<PayloadData> payload)
+{
+    mPayloadData = payload;
+}
+
+std::shared_ptr<PayloadData> LibCurlEasyHandle::DataPrivate::getPayloadData() const
+{
+    return mPayloadData;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic/////////////////////////////////////////
@@ -301,6 +399,7 @@ void LibCurlEasyHandle::setHeaders(const ucf::service::network::http::NetworkHtt
 void LibCurlEasyHandle::setTrackingId(const std::string& trackingId)
 {
     mDataPrivate->setTrackingId(trackingId);
+    // mDataPrivate->setOption(CURLOPT_DEBUGDATA, timeoutSecs);
 }
 
 void LibCurlEasyHandle::setTimeout(int timeoutSecs)
@@ -308,18 +407,32 @@ void LibCurlEasyHandle::setTimeout(int timeoutSecs)
     mDataPrivate->setOption(CURLOPT_TIMEOUT, timeoutSecs);
 }
 
-void LibCurlEasyHandle::setCommonOptions()
+void LibCurlEasyHandle::setInFileSizeLarge(size_t file_size)
 {
+    mDataPrivate->setOption(CURLOPT_INFILESIZE_LARGE, file_size);
+}
+
+void LibCurlEasyHandle::setCommonOptions()
+{    
+    mDataPrivate->setOption(CURLOPT_READFUNCTION, request_body_callback);
+    mDataPrivate->setOption(CURLOPT_READDATA, this);
+    mDataPrivate->setOption(CURLOPT_SEEKFUNCTION, seek_body_callback);
+    mDataPrivate->setOption(CURLOPT_SEEKDATA, this);
+
     mDataPrivate->setOption(CURLOPT_HEADERFUNCTION, header_callback);
+    mDataPrivate->setOption(CURLOPT_HEADERDATA, this);
     mDataPrivate->setOption(CURLOPT_WRITEFUNCTION, response_body_callback);
+    mDataPrivate->setOption(CURLOPT_WRITEDATA, this);
+
     mDataPrivate->setOption(CURLOPT_MAXREDIRS, MAX_REQUEST_REDIRECTS);
     mDataPrivate->setOption(CURLOPT_TRANSFER_ENCODING, 1L);
     mDataPrivate->setOption(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-    mDataPrivate->setOption(CURLOPT_HEADERDATA, this);
-    mDataPrivate->setOption(CURLOPT_WRITEDATA, this);
-
     mDataPrivate->setOption(CURLOPT_SSL_VERIFYPEER, 0L);
     mDataPrivate->setOption(CURLOPT_SSL_VERIFYHOST, 0L);
+
+    mDataPrivate->setOption(CURLOPT_VERBOSE, 1L);
+    mDataPrivate->setOption(CURLOPT_DEBUGFUNCTION, debug_callback);
+    mDataPrivate->setOption(CURLOPT_NOSIGNAL, 1L);
 }
 
 void LibCurlEasyHandle::addResponseHeader(const std::string& key, const std::string& val)
@@ -335,6 +448,39 @@ void LibCurlEasyHandle::appendResponseBody(char *data, size_t size)
     }
 }
 
+void LibCurlEasyHandle::setRequestDataJsonString(const std::string& jsonString)
+{
+    mDataPrivate->setPayloadData(std::make_shared<StringPayloadData>(jsonString));
+}
+
+void LibCurlEasyHandle::setRequestDataBuffer(ucf::service::network::http::ByteBufferPtr buffer, ucf::service::network::http::UploadProgressFunction progressFunc)
+{
+    mDataPrivate->setPayloadData(std::make_shared<BufferPayloadData>(buffer, progressFunc));
+}
+
+void LibCurlEasyHandle::setRequestDataFile(const std::string& filePath, ucf::service::network::http::UploadProgressFunction progressFunc)
+{
+    mDataPrivate->setPayloadData(std::make_shared<FilePayloadData>(filePath, progressFunc));
+}
+
+size_t LibCurlEasyHandle::readRequestBody(char *data, size_t size)
+{
+    if (auto payloadData = mDataPrivate->getPayloadData())
+    {
+        return payloadData->readData(data, size);
+    }
+    return 0;
+}
+
+int LibCurlEasyHandle::seekRequestBody(curl_off_t offset, int origin)
+{
+    if (auto payloadData = mDataPrivate->getPayloadData())
+    {
+        return payloadData->seekData(offset, origin);
+    }
+    return 0;
+}
+
 void LibCurlEasyHandle::headersCompleted()
 {
     long responseCode{0};
@@ -344,6 +490,7 @@ void LibCurlEasyHandle::headersCompleted()
         mDataPrivate->getResponseCode();
         ucf::service::network::http::NetworkHttpResponse response;
         response.setHttpResponseCode(static_cast<int>(responseCode));
+        response.setResponseHeaders(mDataPrivate->getResponseHeader());
         mDataPrivate->getHeaderCallback()(response);
     }
 }
@@ -358,11 +505,6 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
             ucf::service::network::http::ByteBuffer emptyBuf;
             mDataPrivate->getBodyCallback()(emptyBuf, true);
         }
-
-        if (mDataPrivate->getCompletionCallback() != nullptr)
-        {
-            mDataPrivate->getCompletionCallback()(mDataPrivate->getResponseMetrics());
-        }
     }
     else
     {
@@ -375,10 +517,11 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
             mDataPrivate->getHeaderCallback()(response);
         }
 
-        if (mDataPrivate->getCompletionCallback() != nullptr)
-        {
-            mDataPrivate->getCompletionCallback()(mDataPrivate->getResponseMetrics());
-        }
+    }
+
+    if (mDataPrivate->getCompletionCallback() != nullptr)
+    {
+        mDataPrivate->getCompletionCallback()(mDataPrivate->getResponseMetrics());
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////

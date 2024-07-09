@@ -17,6 +17,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/LibCurlMultiHandle.cpp
     src/LibCurlEasyHandle.h
     src/LibCurlEasyHandle.cpp
+    src/LibCurlPayloadData.h
+    src/LibCurlPayloadData.cpp
 )
 
 BuildModule(

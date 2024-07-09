@@ -12,8 +12,12 @@ public:
     DataPrivate();
     void setHttpResponseCode(int statusCode);
     int getHttpResponseCode() const;
+
+    void setResponseHeaders(const NetworkHttpHeaders& headers);
+    NetworkHttpHeaders getResponseHeaders() const;
 private:
     int mResponseCode;
+    NetworkHttpHeaders mResponseHeaders;
 };
 
 NetworkHttpResponse::DataPrivate::DataPrivate()
@@ -32,6 +36,15 @@ int NetworkHttpResponse::DataPrivate::getHttpResponseCode() const
     return mResponseCode;
 }
 
+void NetworkHttpResponse::DataPrivate::setResponseHeaders(const NetworkHttpHeaders& headers)
+{
+    mResponseHeaders = headers;
+}
+
+NetworkHttpHeaders NetworkHttpResponse::DataPrivate::getResponseHeaders() const
+{
+    return mResponseHeaders;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic/////////////////////////////////////////
@@ -64,6 +77,15 @@ int NetworkHttpResponse::getHttpResponseCode() const
     return mDataPrivate->getHttpResponseCode();
 }
 
+void NetworkHttpResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
+{
+    mDataPrivate->setResponseHeaders(headers);
+}
+
+NetworkHttpHeaders NetworkHttpResponse::getResponseHeaders() const
+{
+    return mDataPrivate->getResponseHeaders();
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////

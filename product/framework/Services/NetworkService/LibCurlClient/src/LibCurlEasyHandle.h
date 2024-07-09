@@ -20,14 +20,21 @@ public:
     void setHeaders(const ucf::service::network::http::NetworkHttpHeaders& headers);
     void setTrackingId(const std::string& trackingId);
     void setTimeout(int timeoutSecs);
+    void setInFileSizeLarge(size_t file_size);
     void setCommonOptions();
 
     void finishHandle(CURLcode code);
 
     void addResponseHeader(const std::string& key, const std::string& val);
-    void headersCompleted();
 
+    void setRequestDataJsonString(const std::string& jsonString);
+    void setRequestDataBuffer(ucf::service::network::http::ByteBufferPtr buffer, ucf::service::network::http::UploadProgressFunction progressFunc);
+    void setRequestDataFile(const std::string& filePath, ucf::service::network::http::UploadProgressFunction progressFunc);
+
+    void headersCompleted();
     void appendResponseBody(char *data, size_t size);
+    size_t readRequestBody(char *data, size_t size);
+    int seekRequestBody(curl_off_t offset, int origin);
 public:
     CURL* getHandle() const;
 private:

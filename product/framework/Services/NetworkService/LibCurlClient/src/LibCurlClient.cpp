@@ -1,4 +1,5 @@
 #include <memory>
+#include <filesystem>
 #include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
@@ -50,7 +51,12 @@ void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHan
 ucf::service::network::http::NetworkHttpHeaders LibCurlClient::DataPrivate::buildHeaders(const ucf::service::network::http::NetworkHttpRequest& httpRequest) const
 {
     auto requestHeaders = httpRequest.getRequestHeaders();
+    requestHeaders.emplace_back("Expect", "");
     requestHeaders.emplace_back("TrackingID", httpRequest.getTrackingId());
+    if (auto contentLength = httpRequest.getPayloadSize(); contentLength > 0)
+    {
+        requestHeaders.emplace_back("Content-Length", std::to_string(contentLength));
+    }
     return requestHeaders;
 }
 
@@ -63,6 +69,23 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
     easyHandle->setTrackingId(httpRequest.getTrackingId());
     easyHandle->setTimeout(httpRequest.getTimeout());
     easyHandle->setCommonOptions();
+
+    switch (httpRequest.getPayloadType())
+    {
+    case ucf::service::network::http::NetworkHttpPayloadType::Json:
+        easyHandle->setRequestDataJsonString(httpRequest.getPayloadJsonString());
+        break;
+    case ucf::service::network::http::NetworkHttpPayloadType::Memory:
+        easyHandle->setRequestDataBuffer(httpRequest.getPayloadMemoryBuffer(), httpRequest.getProgressFunction());
+        easyHandle->setInFileSizeLarge(httpRequest.getPayloadSize());
+        break;
+    case ucf::service::network::http::NetworkHttpPayloadType::File:
+        easyHandle->setRequestDataFile(httpRequest.getPayloadFilePath(), httpRequest.getProgressFunction());
+        easyHandle->setInFileSizeLarge(httpRequest.getPayloadSize());
+        break;
+    default:
+        break;
+    }
     return easyHandle;
 }
 /////////////////////////////////////////////////////////////////////////////////////
