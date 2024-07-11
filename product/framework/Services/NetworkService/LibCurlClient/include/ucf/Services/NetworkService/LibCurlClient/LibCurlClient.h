@@ -1,9 +1,11 @@
 #pragma once
 #include <memory>
-#include <functional>
 #include <ucf/Services/NetworkService/LibCurlClient/LibCurlClientExport.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
+namespace ucf::service::network::http{
+    class NetworkHttpRequest;
+}
 namespace ucf::service::network::libcurl{
 class LIBCURLCLIENT_EXPORT LibCurlClient final
 {

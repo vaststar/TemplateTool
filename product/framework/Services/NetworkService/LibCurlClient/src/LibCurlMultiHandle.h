@@ -4,7 +4,7 @@
 
 namespace ucf::service::network::libcurl{
 class LibCurlEasyHandle;
-class LibCurlMultiHandle
+class LibCurlMultiHandle final
 {
 public:
     LibCurlMultiHandle();

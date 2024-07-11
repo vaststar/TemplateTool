@@ -11,6 +11,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/NetworkService.cpp
     src/NetworkHttpManager.h
     src/NetworkHttpManager.cpp
+    src/NetworkHttpCallbackHandler.h
+    src/NetworkHttpCallbackHandler.cpp
 )
 
 BuildModule(

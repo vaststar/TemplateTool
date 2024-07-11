@@ -4,9 +4,6 @@
 #include <sstream>
 #include <curl/curl.h>
 #include <ucf/Utilities/StringUtils/StringUtils.h>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
-
 
 #include "LibCurlEasyHandle.h"
 #include "LibCurlClientLogger.h"
@@ -126,6 +123,7 @@ static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t s
         }
         LIBCURL_LOG_DEBUG("info:["<<typeStr<<"]"<<dataStr);
     }
+    return 0;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +175,7 @@ public:
     void addResponseHeader(const std::string& key, const std::string& val);
     ucf::service::network::http::NetworkHttpHeaders getResponseHeader() const;
 
-    int getResponseCode();
+    long getResponseCode();
 
     void setPayloadData(std::shared_ptr<PayloadData> payload);
     std::shared_ptr<PayloadData> getPayloadData() const;
@@ -339,7 +337,7 @@ ucf::service::network::http::NetworkHttpHeaders LibCurlEasyHandle::DataPrivate::
     return mResponseHeader;
 }
 
-int LibCurlEasyHandle::DataPrivate::getResponseCode()
+long LibCurlEasyHandle::DataPrivate::getResponseCode()
 {
     long responseCode = 0;
     getInfo(CURLINFO_RESPONSE_CODE, &responseCode);
@@ -399,7 +397,6 @@ void LibCurlEasyHandle::setHeaders(const ucf::service::network::http::NetworkHtt
 void LibCurlEasyHandle::setTrackingId(const std::string& trackingId)
 {
     mDataPrivate->setTrackingId(trackingId);
-    // mDataPrivate->setOption(CURLOPT_DEBUGDATA, timeoutSecs);
 }
 
 void LibCurlEasyHandle::setTimeout(int timeoutSecs)
@@ -430,9 +427,13 @@ void LibCurlEasyHandle::setCommonOptions()
     mDataPrivate->setOption(CURLOPT_SSL_VERIFYPEER, 0L);
     mDataPrivate->setOption(CURLOPT_SSL_VERIFYHOST, 0L);
 
+    mDataPrivate->setOption(CURLOPT_NOSIGNAL, 1L);
+}
+
+void LibCurlEasyHandle::enableCURLDebugPrint()
+{
     mDataPrivate->setOption(CURLOPT_VERBOSE, 1L);
     mDataPrivate->setOption(CURLOPT_DEBUGFUNCTION, debug_callback);
-    mDataPrivate->setOption(CURLOPT_NOSIGNAL, 1L);
 }
 
 void LibCurlEasyHandle::addResponseHeader(const std::string& key, const std::string& val)
@@ -483,15 +484,9 @@ int LibCurlEasyHandle::seekRequestBody(curl_off_t offset, int origin)
 
 void LibCurlEasyHandle::headersCompleted()
 {
-    long responseCode{0};
-    mDataPrivate->getInfo(CURLINFO_RESPONSE_CODE, &responseCode);
     if (mDataPrivate->getHeaderCallback() != nullptr)
     {
-        mDataPrivate->getResponseCode();
-        ucf::service::network::http::NetworkHttpResponse response;
-        response.setHttpResponseCode(static_cast<int>(responseCode));
-        response.setResponseHeaders(mDataPrivate->getResponseHeader());
-        mDataPrivate->getHeaderCallback()(response);
+        mDataPrivate->getHeaderCallback()(static_cast<int>(mDataPrivate->getResponseCode()), mDataPrivate->getResponseHeader(), std::nullopt);
     }
 }
 
@@ -509,12 +504,9 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
     else
     {
         LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code) << ", trackingId=" << mDataPrivate->getTrackingId());
-        //todo
-        ucf::service::network::http::NetworkHttpResponse response;
-
         if (mDataPrivate->getHeaderCallback() != nullptr)
         {
-            mDataPrivate->getHeaderCallback()(response);
+            mDataPrivate->getHeaderCallback()(static_cast<int>(mDataPrivate->getResponseCode()), mDataPrivate->getResponseHeader(), makeErrorData(code));
         }
 
     }
@@ -523,6 +515,53 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
     {
         mDataPrivate->getCompletionCallback()(mDataPrivate->getResponseMetrics());
     }
+}
+
+ucf::service::network::http::ResponseErrorStruct LibCurlEasyHandle::makeErrorData(CURLcode code)
+{
+    ucf::service::network::http::ResponseErrorStruct errorStruct;
+    errorStruct.errorDescription = curl_easy_strerror(code);
+    errorStruct.errorCode = static_cast<int>(code);
+    switch (code)
+    {
+    case CURLE_COULDNT_RESOLVE_HOST:
+    case CURLE_COULDNT_RESOLVE_PROXY:
+        errorStruct.errorType = ucf::service::network::http::ResponseErrorType::DNSError;
+        break;
+    
+    case CURLE_COULDNT_CONNECT:
+    case CURLE_SEND_ERROR:
+    case CURLE_RECV_ERROR:
+        errorStruct.errorType = ucf::service::network::http::ResponseErrorType::SocketError;
+        break;
+    case CURLE_SSL_ENGINE_NOTFOUND:
+    case CURLE_SSL_ENGINE_SETFAILED:
+    case CURLE_SSL_CERTPROBLEM:
+    case CURLE_SSL_CIPHER:
+    case CURLE_SSL_ENGINE_INITFAILED:
+    case CURLE_SSL_CACERT_BADFILE:
+    case CURLE_SSL_SHUTDOWN_FAILED:
+    case CURLE_SSL_CRL_BADFILE:
+    case CURLE_SSL_ISSUER_ERROR:
+    case CURLE_SSL_PINNEDPUBKEYNOTMATCH:
+    case CURLE_SSL_INVALIDCERTSTATUS:
+    case CURLE_SSL_CLIENTCERT:
+    case CURLE_SSL_CONNECT_ERROR:
+    case CURLE_PEER_FAILED_VERIFICATION:
+        errorStruct.errorType = ucf::service::network::http::ResponseErrorType::TLSError;
+        break;
+    case CURLE_OPERATION_TIMEDOUT:
+        errorStruct.errorType = ucf::service::network::http::ResponseErrorType::TimeoutError;
+        break;
+    case CURLE_REMOTE_ACCESS_DENIED:
+    case CURLE_ABORTED_BY_CALLBACK:
+        errorStruct.errorType = ucf::service::network::http::ResponseErrorType::OtherError;
+        break;
+    default:
+        errorStruct.errorType = ucf::service::network::http::ResponseErrorType::UnHandledError;
+        break;
+    }
+    return errorStruct;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

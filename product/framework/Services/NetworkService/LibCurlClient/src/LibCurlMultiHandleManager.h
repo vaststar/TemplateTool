@@ -1,14 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <atomic>
-#include <mutex>
-#include <thread>
-#include <condition_variable>
-#include "LibCurlMultiHandle.h"
-#include "LibCurlEasyHandle.h"
 
 namespace ucf::service::network::libcurl{
+class LibCurlEasyHandle;
 class LibCurlMultiHandleManager final
 {
 public:
@@ -23,10 +18,7 @@ public:
     void stopLoop();
     void insert(std::shared_ptr<LibCurlEasyHandle> request);
 private:
-    std::unique_ptr<LibCurlMultiHandle> mMultiHandle;
-    std::mutex mStopMutex;
-    std::condition_variable mCondition;
-    std::atomic_bool mStop;
-    std::thread mLoopThread;
+    class DataPrivate;
+    std::unique_ptr<DataPrivate> mDataPrivate;
 };
 }

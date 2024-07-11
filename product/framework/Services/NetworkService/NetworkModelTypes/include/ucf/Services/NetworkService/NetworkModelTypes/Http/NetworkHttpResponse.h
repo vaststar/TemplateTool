@@ -6,15 +6,6 @@
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::service::network::http{
-struct NETWORKTYPE_EXPORT HttpResponseMetrics{
-    int requestStartTime{ 0 };
-    int dnsLookupMs{ 0 };
-    int connectMs{ 0 };
-    int sendRequestMs{ 0 };
-    int receiveResponseMs{ 0 };
-    size_t responseLength{ 0 };
-    std::string httpVersion;
-};
 class NETWORKTYPE_EXPORT NetworkHttpResponse final
 {
 public:

@@ -8,13 +8,6 @@
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::service::network::http{
-    enum class NetworkHttpPayloadType{
-        None,
-        Json,
-        File,
-        Memory
-    };
-
 class NETWORKTYPE_EXPORT NetworkHttpRequest final
 {
 public:

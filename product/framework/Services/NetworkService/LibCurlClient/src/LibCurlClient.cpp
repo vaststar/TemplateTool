@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 #include "LibCurlClientLogger.h"
 #include "LibCurlMultiHandleManager.h"
@@ -69,6 +68,7 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
     easyHandle->setTrackingId(httpRequest.getTrackingId());
     easyHandle->setTimeout(httpRequest.getTimeout());
     easyHandle->setCommonOptions();
+    easyHandle->enableCURLDebugPrint();
 
     switch (httpRequest.getPayloadType())
     {
@@ -102,31 +102,35 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
 LibCurlClient::LibCurlClient()
     : mDataPrivate(std::make_unique<DataPrivate>())
 {
-    LIBCURL_LOG_DEBUG(""<<this);
+    LIBCURL_LOG_DEBUG("create LibCurlClient, "<<this);
     startService();
+    LIBCURL_LOG_DEBUG("create LibCurlClient done, "<<this);
 }
 
 LibCurlClient::~LibCurlClient()
 {
-    LIBCURL_LOG_DEBUG("" << this);
+    LIBCURL_LOG_DEBUG("delete LibCurlClient, " << this);
     stopService();
+    LIBCURL_LOG_DEBUG("delete LibCurlClient done, " << this);
 }
 
 void LibCurlClient::startService()
 {
-    LIBCURL_LOG_DEBUG("");
+    LIBCURL_LOG_DEBUG("start service, " << this);
     mDataPrivate->start();
+    LIBCURL_LOG_DEBUG("start service done, " << this);
 }
 
 void LibCurlClient::stopService()
 {
-    LIBCURL_LOG_DEBUG("");
+    LIBCURL_LOG_DEBUG("stop service, " << this);
     mDataPrivate->stop();
+    LIBCURL_LOG_DEBUG("stop service done, " << this);
 }
 
 void LibCurlClient::makeGenericRequest(const ucf::service::network::http::NetworkHttpRequest& request, const ucf::service::network::http::HttpHeaderCallback& headerCallback, const ucf::service::network::http::HttpBodyCallback& bodyCallback, const ucf::service::network::http::HttpCompletionCallback& completionCallback)
 {
-    LIBCURL_LOG_DEBUG("");
+    LIBCURL_LOG_DEBUG("make request, requestId: " << request.getRequestId() << ", trackingId: " << request.getTrackingId());
     auto easyHandle = mDataPrivate->buildEasyHandle(request, headerCallback, bodyCallback, completionCallback);
     mDataPrivate->insertEasyHandle(easyHandle);
 }
