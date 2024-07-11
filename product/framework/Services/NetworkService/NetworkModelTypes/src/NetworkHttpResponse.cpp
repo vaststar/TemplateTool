@@ -15,13 +15,22 @@ public:
 
     void setResponseHeaders(const NetworkHttpHeaders& headers);
     NetworkHttpHeaders getResponseHeaders() const;
+
+    void setErrorData(const ResponseErrorStruct& errorData);
+    std::optional<ResponseErrorStruct> getErrorData() const;
+
+    void setResponseBody(const std::string& buffer);
+    std::string getResponseBody() const;
 private:
     int mResponseCode;
     NetworkHttpHeaders mResponseHeaders;
+    std::optional<ResponseErrorStruct> mErrorData;
+    std::string mResponseBody;
 };
 
 NetworkHttpResponse::DataPrivate::DataPrivate()
     : mResponseCode(0)
+    , mErrorData(std::nullopt)
 {
 
 }
@@ -44,6 +53,27 @@ void NetworkHttpResponse::DataPrivate::setResponseHeaders(const NetworkHttpHeade
 NetworkHttpHeaders NetworkHttpResponse::DataPrivate::getResponseHeaders() const
 {
     return mResponseHeaders;
+}
+
+void NetworkHttpResponse::DataPrivate::setErrorData(const ResponseErrorStruct& errorData)
+{
+    mErrorData = errorData;
+}
+
+std::optional<ResponseErrorStruct> NetworkHttpResponse::DataPrivate::getErrorData() const
+{
+    return mErrorData;
+}
+
+
+void NetworkHttpResponse::DataPrivate::setResponseBody(const std::string& buffer)
+{
+    mResponseBody = buffer;
+}
+
+std::string NetworkHttpResponse::DataPrivate::getResponseBody() const
+{
+    return mResponseBody;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -86,6 +116,27 @@ NetworkHttpHeaders NetworkHttpResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
+
+void NetworkHttpResponse::setErrorData(const ResponseErrorStruct& errorData)
+{
+    mDataPrivate->setErrorData(errorData);
+}
+
+std::optional<ResponseErrorStruct> NetworkHttpResponse::getErrorData() const
+{
+    return mDataPrivate->getErrorData();
+}
+
+void NetworkHttpResponse::setResponseBody(const std::string& buffer)
+{
+    mDataPrivate->setResponseBody(buffer);
+}
+
+std::string NetworkHttpResponse::getResponseBody() const
+{
+    return mDataPrivate->getResponseBody();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////

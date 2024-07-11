@@ -6,6 +6,7 @@
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
 #include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 namespace ucf::adapter{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -72,12 +73,16 @@ void ContactAdapter::fetchContactInfo(const std::string& contactId, fetchContact
 {
     if (auto networkManager = mDataPrivate->getHttpManager().lock())
     {
-        networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"sipUrl":"thzhu@cisco.webex.com"})"), nullptr);
-        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "https://reqres.in/api/users", {{"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"job":"leader","name":"morpheus"})"), nullptr);
-
-        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "http://localhost:8000/", {{"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"job":"leader","name":"morpheus"})"), nullptr);
-        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://reqres.in/api/users", { {"Content-Type","application/json"},{"Transfer-Encoding",""}}, 30), nullptr);
-        // networkManager->sendHttpRequest(ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://www.baidu.com", {}, 30), nullptr);
+        // auto httpRequest = ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"sipUrl":"thzhu@cisco.webex.com"})");
+        auto httpRequest = ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}}, 30);
+    
+        // auto httpRequest = ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://www.dundeecity.gov.uk/sites/default/files/publications/civic_renewal_forms.zip", {{"Transfer-Encoding",""}}, 30);
+        
+        auto httpResponseCallback = [](const ucf::service::network::http::NetworkHttpResponse& response){
+            
+            SERVICE_LOG_DEBUG("got response, body:" << response.getResponseBody());
+        };
+        networkManager->sendHttpRequest(httpRequest, httpResponseCallback);
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////

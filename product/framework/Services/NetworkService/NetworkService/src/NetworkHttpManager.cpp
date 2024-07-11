@@ -58,9 +58,13 @@ NetworkHttpManager::~NetworkHttpManager()
    SERVICE_LOG_DEBUG("");
 }
 
-void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc)
+void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString());
+    SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString() <<", from: " 
+              << location.file_name() << '('
+              << location.line() << ':'
+              << location.column() << ") `"
+              << location.function_name());
 
 //     using json = nlohmann::json;
 //     // parse explicitly

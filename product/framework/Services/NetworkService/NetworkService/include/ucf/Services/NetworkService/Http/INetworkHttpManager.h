@@ -1,5 +1,6 @@
 #pragma once
 
+#include <source_location>
 #include <functional>
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
@@ -12,6 +13,10 @@ class SERVICE_EXPORT INetworkHttpManager
 {
 public:
     virtual ~INetworkHttpManager() = default;
-    virtual void sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc) = 0;
+
+    virtual void sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc, const std::source_location location = std::source_location::current()) = 0;
+    
+    // virtual void HttpRequest
+    // virtual void downloadContentToMemory();
 };
 }

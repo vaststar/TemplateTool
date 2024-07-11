@@ -14,7 +14,7 @@ public:
     NetworkHttpManager& operator=(const NetworkHttpManager&) = delete;
     NetworkHttpManager& operator=(NetworkHttpManager&&) = delete;
 public:
-    virtual void sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc) override;
+    virtual void sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc, const std::source_location location = std::source_location::current()) override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

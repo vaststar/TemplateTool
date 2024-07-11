@@ -22,6 +22,11 @@ public:
     void setResponseHeaders(const NetworkHttpHeaders& headers);
     NetworkHttpHeaders getResponseHeaders() const;
 
+    void setErrorData(const ResponseErrorStruct& errorData);
+    std::optional<ResponseErrorStruct> getErrorData() const;
+
+    void setResponseBody(const std::string& body);
+    std::string getResponseBody() const;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
