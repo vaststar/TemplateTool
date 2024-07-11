@@ -1,8 +1,8 @@
 #include "NetworkHttpManager.h"
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
-#include <ucf/Services/NetworkService/LibCurlClient/LibCurlClient.h>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClient.h>
+#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 #include "NetworkHttpCallbackHandler.h"
 
@@ -21,18 +21,18 @@ namespace ucf::service::network::http{
 class NetworkHttpManager::DataPrivate{
 public:
     DataPrivate();
-    std::shared_ptr<ucf::service::network::libcurl::LibCurlClient> getLibCurlClient() const;
+    std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> getLibCurlClient() const;
 private:
-    std::shared_ptr<ucf::service::network::libcurl::LibCurlClient> mLibcurlClient;
+    std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> mLibcurlClient;
 };
 
 NetworkHttpManager::DataPrivate::DataPrivate()
-    :mLibcurlClient(std::make_shared<ucf::service::network::libcurl::LibCurlClient>())
+    :mLibcurlClient(std::make_shared<ucf::utilities::network::libcurl::LibCurlClient>())
 {
 
 }
 
-std::shared_ptr<ucf::service::network::libcurl::LibCurlClient> NetworkHttpManager::DataPrivate::getLibCurlClient() const
+std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> NetworkHttpManager::DataPrivate::getLibCurlClient() const
 {
     return mLibcurlClient;
 }
@@ -58,7 +58,7 @@ NetworkHttpManager::~NetworkHttpManager()
    SERVICE_LOG_DEBUG("");
 }
 
-void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, const NetworkHttpResponseCallbackFunc& callBackFunc, const std::source_location location)
+void NetworkHttpManager::sendHttpRequest(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest, const ucf::utilities::network::http::NetworkHttpResponseCallbackFunc& callBackFunc, const std::source_location location)
 {
     SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString() <<", from: " 
               << location.file_name() << '('
@@ -77,19 +77,19 @@ void NetworkHttpManager::sendHttpRequest(const NetworkHttpRequest& httpRequest, 
     callbackHandler->setResponseCallback(callBackFunc);
     std::string trackingId = httpRequest.getTrackingId();
     std::string requestId = httpRequest.getRequestId();
-    auto headerCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](int statusCode, const NetworkHttpHeaders& headers, std::optional<ResponseErrorStruct> errorData) {
+    auto headerCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) {
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive header, status code: " << statusCode << ", trackingId: " << trackingId);
         callbackHandler->setResponseHeader(statusCode, headers, errorData);
     };
 
-    auto bodyCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ByteBuffer& buffer, bool isFinished){
+    auto bodyCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive body data, size: " << buffer.size() << ", isFinished: "<< isFinished << ", trackingId: " << trackingId);
         callbackHandler->appendResponseBody(buffer, isFinished);
     };
 
-    auto completionCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const HttpResponseMetrics& metrics){
+    auto completionCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::HttpResponseMetrics& metrics){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive completion callback" << ", trackingId: " << trackingId);
         callbackHandler->completeResponse(metrics);

@@ -2,11 +2,15 @@
 
 #include <memory>
 #include <functional>
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpTypes.h>
-namespace ucf::service::network::http{
+#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
+namespace ucf::utilities::network::http{
 class NetworkHttpResponse;
 using NetworkHttpResponseCallbackFunc = std::function<void(const NetworkHttpResponse& httpResponse)>;
+
+}
+namespace ucf::service::network::http{
+
 
 class NetworkHttpCallbackHandler final
 {
@@ -18,10 +22,10 @@ public:
     NetworkHttpCallbackHandler& operator=(const NetworkHttpCallbackHandler&) = delete;
     NetworkHttpCallbackHandler& operator=(NetworkHttpCallbackHandler&&) = delete;
 public:
-    void setResponseCallback(const NetworkHttpResponseCallbackFunc& callbackFunc);
-    void setResponseHeader(int statusCode, const NetworkHttpHeaders& headers, std::optional<ResponseErrorStruct> errorData);
-    void appendResponseBody(const ByteBuffer& buffer, bool isFinished);
-    void completeResponse(const HttpResponseMetrics& metrics);
+    void setResponseCallback(const ucf::utilities::network::http::NetworkHttpResponseCallbackFunc& callbackFunc);
+    void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData);
+    void appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished);
+    void completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

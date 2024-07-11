@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 
 #include "NetworkHttpCallbackHandler.h"
@@ -12,17 +12,17 @@ namespace ucf::service::network::http{
 class NetworkHttpCallbackHandler::DataPrivate{
 public:
     DataPrivate();
-    void setResponseCallback(const NetworkHttpResponseCallbackFunc& callbackFunc){mResponseCallBack = callbackFunc;}
-    NetworkHttpResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
+    void setResponseCallback(const ucf::utilities::network::http::NetworkHttpResponseCallbackFunc& callbackFunc){mResponseCallBack = callbackFunc;}
+    ucf::utilities::network::http::NetworkHttpResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
 
-    NetworkHttpResponse& getResponse(){return mResponse;}
+    ucf::utilities::network::http::NetworkHttpResponse& getResponse(){return mResponse;}
 
-    void appendBuffer(const ByteBuffer& buffer){mCachedBuffer.insert(mCachedBuffer.end(), buffer.begin(), buffer.end());}
-    const ByteBuffer& getCachedBuffer() const{return mCachedBuffer;}
+    void appendBuffer(const ucf::utilities::network::http::ByteBuffer& buffer){mCachedBuffer.insert(mCachedBuffer.end(), buffer.begin(), buffer.end());}
+    const ucf::utilities::network::http::ByteBuffer& getCachedBuffer() const{return mCachedBuffer;}
 private:
-    NetworkHttpResponseCallbackFunc mResponseCallBack;
-    NetworkHttpResponse mResponse;
-    ByteBuffer mCachedBuffer;
+    ucf::utilities::network::http::NetworkHttpResponseCallbackFunc mResponseCallBack;
+    ucf::utilities::network::http::NetworkHttpResponse mResponse;
+    ucf::utilities::network::http::ByteBuffer mCachedBuffer;
 };
 
 NetworkHttpCallbackHandler::DataPrivate::DataPrivate()
@@ -51,12 +51,12 @@ NetworkHttpCallbackHandler::~NetworkHttpCallbackHandler()
 
 }
 
-void NetworkHttpCallbackHandler::setResponseCallback(const NetworkHttpResponseCallbackFunc& callbackFunc)
+void NetworkHttpCallbackHandler::setResponseCallback(const ucf::utilities::network::http::NetworkHttpResponseCallbackFunc& callbackFunc)
 {
     mDataPrivate->setResponseCallback(callbackFunc);
 }
 
-void NetworkHttpCallbackHandler::setResponseHeader(int statusCode, const NetworkHttpHeaders& headers, std::optional<ResponseErrorStruct> errorData)
+void NetworkHttpCallbackHandler::setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData)
 {
     mDataPrivate->getResponse().setHttpResponseCode(statusCode);
     mDataPrivate->getResponse().setResponseHeaders(headers);
@@ -66,7 +66,7 @@ void NetworkHttpCallbackHandler::setResponseHeader(int statusCode, const Network
     }
 }
 
-void NetworkHttpCallbackHandler::appendResponseBody(const ByteBuffer& buffer, bool isFinished)
+void NetworkHttpCallbackHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
 {
     mDataPrivate->appendBuffer(buffer);
     if (isFinished)
@@ -76,7 +76,7 @@ void NetworkHttpCallbackHandler::appendResponseBody(const ByteBuffer& buffer, bo
     }
 }
 
-void NetworkHttpCallbackHandler::completeResponse(const HttpResponseMetrics& metrics)
+void NetworkHttpCallbackHandler::completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics)
 {
     if (mDataPrivate->getResponseCallback())
     {
