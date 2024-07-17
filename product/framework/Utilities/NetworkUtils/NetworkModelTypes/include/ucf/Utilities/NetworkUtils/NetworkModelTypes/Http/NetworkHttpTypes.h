@@ -8,7 +8,7 @@
 
 namespace ucf::utilities::network::http{
 
-enum class HTTPMethod{
+enum class NETWORKTYPE_EXPORT HTTPMethod{
     GET,
     POST,
     HEAD,

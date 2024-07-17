@@ -13,26 +13,42 @@ namespace ucf::utilities::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 class NetworkHttpRequest::DataPrivate{
 public:
-    DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs);
-    DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& payload);
-    DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, ByteBufferPtr inMemoryBuffer, UploadProgressFunction progressFunc);
-    DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& filePath, UploadProgressFunction progressFunc);
-    std::string getRequestId() const;
-    HTTPMethod getMethod() const;
-    std::string getUri() const;
-    NetworkHttpHeaders getHeaders() const;
-    int getTimeoutSecs() const;
-    
-    void setTrackingId(const std::string& trackingId);
-    std::string getTrackingId() const;
+    DataPrivate();
 
-    NetworkHttpPayloadType getPayloadType() const;
-    std::string getPayloadJsonString() const;
-    std::string getPayloadFilePath() const;
-    ByteBufferPtr getPayloadMemoryBuffer() const;
-    UploadProgressFunction getProgressFunction() const;
+    void setRequestId(const std::string& requestId){ mRequestId = requestId;}
+    std::string getRequestId() const{ return mRequestId;}
+
+    void setMethod(const HTTPMethod& method){ mMethod = method;}
+    HTTPMethod getMethod() const{ return mMethod;}
+
+    void setUri(const std::string& uri){ mUri = uri;}
+    std::string getUri() const{ return mUri;}
+
+    void setHeaders(const NetworkHttpHeaders& headers){ mHeaders = headers;}
+    NetworkHttpHeaders getHeaders() const{ return mHeaders;}
+
+    void setTimeoutSecs(int timeout){ mTimeoutSecs = timeout;}
+    int getTimeoutSecs() const{ return mTimeoutSecs;}
+    
+    void setTrackingId(const std::string& trackingId){ mTrackingId = trackingId;}
+    std::string getTrackingId() const{ return mTrackingId;}
+
+    void setPayloadType(const NetworkHttpPayloadType& payloadType){ mPayloadType = payloadType;}
+    NetworkHttpPayloadType getPayloadType() const{ return mPayloadType;}
+
+    void setPayloadJsonString(const std::string& str){ mPayloadJson = str;}
+    std::string getPayloadJsonString() const{ return mPayloadJson;}
+
+    void setPayloadFilePath(const std::string& filePath){ mPayloadFilePath = filePath;}
+    std::string getPayloadFilePath() const{ return mPayloadFilePath;}
+
+    void setPayloadMemoryBuffer(ByteBufferPtr buffer){ mPayloadBuffer = buffer;}
+    ByteBufferPtr getPayloadMemoryBuffer() const{ return mPayloadBuffer;}
+
+    void setProgressFunction(UploadProgressFunction progressFunc){ mUploadProgressFunction = progressFunc;}
+    UploadProgressFunction getProgressFunction() const{ return mUploadProgressFunction;}
 private:
-    const std::string mRequestId;
+    std::string mRequestId;
     HTTPMethod mMethod;
     std::string mUri;
     NetworkHttpHeaders mHeaders;
@@ -46,119 +62,12 @@ private:
     UploadProgressFunction mUploadProgressFunction;
 };
 
-NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs)
+NetworkHttpRequest::DataPrivate::DataPrivate()
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
     , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
-    , mMethod(method)
-    , mUri(uri)
-    , mHeaders(headers)
-    , mPayloadType(NetworkHttpPayloadType::None)
-    , mTimeoutSecs(timeoutSecs)
 {
 
 }
-
-NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& payload)
-    : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
-    , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
-    , mMethod(method)
-    , mUri(uri)
-    , mHeaders(headers)
-    , mPayloadType(NetworkHttpPayloadType::Json)
-    , mPayloadJson(payload)
-    , mTimeoutSecs(timeoutSecs)
-{
-
-}
-
-NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, ByteBufferPtr inMemoryBuffer, UploadProgressFunction progressFunc)
-    : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
-    , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
-    , mMethod(method)
-    , mUri(uri)
-    , mHeaders(headers)
-    , mPayloadType(NetworkHttpPayloadType::Memory)
-    , mPayloadBuffer(inMemoryBuffer)
-    , mUploadProgressFunction(progressFunc)
-    , mTimeoutSecs(timeoutSecs)
-{
-
-}
-
-NetworkHttpRequest::DataPrivate::DataPrivate(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& filePath, UploadProgressFunction progressFunc)
-    : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
-    , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
-    , mMethod(method)
-    , mUri(uri)
-    , mHeaders(headers)
-    , mPayloadType(NetworkHttpPayloadType::File)
-    , mPayloadFilePath(filePath)
-    , mUploadProgressFunction(progressFunc)
-    , mTimeoutSecs(timeoutSecs)
-{
-
-}
-
-std::string NetworkHttpRequest::DataPrivate::getRequestId() const
-{
-    return mRequestId;
-}
-
-HTTPMethod NetworkHttpRequest::DataPrivate::getMethod() const
-{
-    return mMethod;
-}
-
-std::string NetworkHttpRequest::DataPrivate::getUri() const
-{
-    return mUri;
-}
-
-NetworkHttpPayloadType NetworkHttpRequest::DataPrivate::getPayloadType() const
-{
-    return mPayloadType;
-}
-
-std::string NetworkHttpRequest::DataPrivate::getPayloadJsonString() const
-{
-    return mPayloadJson;
-}
-
-std::string NetworkHttpRequest::DataPrivate::getPayloadFilePath() const
-{
-    return mPayloadFilePath;
-}
-
-ByteBufferPtr NetworkHttpRequest::DataPrivate::getPayloadMemoryBuffer() const
-{
-    return mPayloadBuffer;
-}
-
-UploadProgressFunction NetworkHttpRequest::DataPrivate::getProgressFunction() const
-{
-    return mUploadProgressFunction;
-}
-
-NetworkHttpHeaders NetworkHttpRequest::DataPrivate::getHeaders() const
-{
-    return mHeaders;
-}
-
-void NetworkHttpRequest::DataPrivate::setTrackingId(const std::string& trackingId)
-{
-    mTrackingId = trackingId;
-}
-
-std::string NetworkHttpRequest::DataPrivate::getTrackingId() const
-{
-    return mTrackingId;
-}
-
-int NetworkHttpRequest::DataPrivate::getTimeoutSecs() const
-{
-    return mTimeoutSecs;
-}
-
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -170,28 +79,8 @@ int NetworkHttpRequest::DataPrivate::getTimeoutSecs() const
 ////////////////////Start NetworkHttpRequest Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-
-NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& payload)
-    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, timeoutSecs, payload))
-{
-
-}
-
-NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs)
-    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, timeoutSecs))
-{
-
-}
-
-
-NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, ByteBufferPtr inMemoryBuffer, UploadProgressFunction progressFunc)
-    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, timeoutSecs, inMemoryBuffer, progressFunc))
-{
-
-}
-
-NetworkHttpRequest::NetworkHttpRequest(const HTTPMethod& method, const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs, const std::string& filePath, UploadProgressFunction progressFunc)
-    :mDataPrivate(std::make_unique<DataPrivate>(method, uri, headers, timeoutSecs, filePath, progressFunc))
+NetworkHttpRequest::NetworkHttpRequest()
+    :mDataPrivate(std::make_unique<DataPrivate>())
 {
 
 }
@@ -201,29 +90,14 @@ NetworkHttpRequest::~NetworkHttpRequest()
 
 }
 
-HTTPMethod NetworkHttpRequest::getRequestMethod() const
+void NetworkHttpRequest::setRequestId(const std::string& requestId)
 {
-    return mDataPrivate->getMethod();
-}
-
-std::string NetworkHttpRequest::getRequestUri() const
-{
-    return mDataPrivate->getUri();
-}
-
-NetworkHttpHeaders NetworkHttpRequest::getRequestHeaders() const
-{
-    return mDataPrivate->getHeaders();
+    mDataPrivate->setRequestId(requestId);
 }
 
 std::string NetworkHttpRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
-}
-
-int NetworkHttpRequest::getTimeout() const
-{
-    return mDataPrivate->getTimeoutSecs();
 }
 
 void NetworkHttpRequest::setTrackingId(const std::string& trackingId)
@@ -235,6 +109,48 @@ std::string NetworkHttpRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
 }
+
+void NetworkHttpRequest::setRequestMethod(const HTTPMethod& httpMethod)
+{
+    mDataPrivate->setMethod(httpMethod);
+}
+
+HTTPMethod NetworkHttpRequest::getRequestMethod() const
+{
+    return mDataPrivate->getMethod();
+}
+
+void NetworkHttpRequest::setRequestUri(const std::string& uri)
+{
+    mDataPrivate->setUri(uri);
+}
+
+std::string NetworkHttpRequest::getRequestUri() const
+{
+    return mDataPrivate->getUri();
+}
+
+void NetworkHttpRequest::setRequestHeaders(const NetworkHttpHeaders& headers)
+{
+    mDataPrivate->setHeaders(headers);
+}
+
+NetworkHttpHeaders NetworkHttpRequest::getRequestHeaders() const
+{
+    return mDataPrivate->getHeaders();
+}
+
+
+void NetworkHttpRequest::setTimeout(int timeoutSecs)
+{
+    mDataPrivate->setTimeoutSecs(timeoutSecs);
+}
+
+int NetworkHttpRequest::getTimeout() const
+{
+    return mDataPrivate->getTimeoutSecs();
+}
+
 
 NetworkHttpPayloadType NetworkHttpRequest::getPayloadType() const
 {
@@ -256,9 +172,21 @@ size_t NetworkHttpRequest::getPayloadSize() const
     }
 }
 
+void NetworkHttpRequest::setPayloadJsonString(const std::string& jsonStr)
+{
+    mDataPrivate->setPayloadType(NetworkHttpPayloadType::Json);
+    mDataPrivate->setPayloadJsonString(jsonStr);
+}
+
 std::string NetworkHttpRequest::getPayloadJsonString() const
 {
     return mDataPrivate->getPayloadJsonString();
+}
+
+void NetworkHttpRequest::setPayloadFilePath(const std::string& filePath)
+{
+    mDataPrivate->setPayloadType(NetworkHttpPayloadType::File);
+    mDataPrivate->setPayloadFilePath(filePath);
 }
 
 std::string NetworkHttpRequest::getPayloadFilePath() const
@@ -266,9 +194,20 @@ std::string NetworkHttpRequest::getPayloadFilePath() const
     return mDataPrivate->getPayloadFilePath();
 }
 
+void NetworkHttpRequest::setPayloadMemoryBuffer(ByteBufferPtr buffer)
+{
+    mDataPrivate->setPayloadType(NetworkHttpPayloadType::Memory);
+    mDataPrivate->setPayloadMemoryBuffer(buffer);
+}
+
 ByteBufferPtr NetworkHttpRequest::getPayloadMemoryBuffer() const
 {
     return mDataPrivate->getPayloadMemoryBuffer();
+}
+
+void NetworkHttpRequest::setProgressFunction(UploadProgressFunction progressFunc)
+{
+    mDataPrivate->setProgressFunction(progressFunc);
 }
 
 UploadProgressFunction NetworkHttpRequest::getProgressFunction() const

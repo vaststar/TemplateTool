@@ -1,10 +1,11 @@
 #include "NetworkHttpManager.h"
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClient.h>
+#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
-#include "NetworkHttpCallbackHandler.h"
+#include "NetworkCallbackHandler/NetworkHttpRestCallbackHandler.h"
 
 #ifndef RETURN_FROM_LAMBDA_IF_DEAD
 #define RETURN_FROM_LAMBDA_IF_DEAD(x) \
@@ -18,7 +19,8 @@ namespace ucf::service::network::http{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class NetworkHttpManager::DataPrivate{
+class NetworkHttpManager::DataPrivate
+{
 public:
     DataPrivate();
     std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> getLibCurlClient() const;
@@ -58,9 +60,17 @@ NetworkHttpManager::~NetworkHttpManager()
    SERVICE_LOG_DEBUG("");
 }
 
-void NetworkHttpManager::sendHttpRequest(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest, const ucf::utilities::network::http::NetworkHttpResponseCallbackFunc& callBackFunc, const std::source_location location)
+void NetworkHttpManager::sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString() <<", from: " 
+    auto callbackHandler = std::make_shared<NetworkHttpRestCallbackHandler>(restRequest, restResponseCallback);
+    sendHttpRequest(callbackHandler->getHttpRequest(), callbackHandler, location);
+}
+
+void NetworkHttpManager::sendHttpRequest(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest, 
+                         std::shared_ptr<INetworkHttpCallbackHandler> callbackHandler,
+                         const std::source_location location)
+{
+   SERVICE_LOG_DEBUG("about making http request:" << httpRequest.toString() <<", from: " 
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"
@@ -73,28 +83,33 @@ void NetworkHttpManager::sendHttpRequest(const ucf::utilities::network::http::Ne
 // std::string s = j.dump();    // {"happy":true,"pi":3.141}
 //     SERVICE_LOG_DEBUG("test:" << s);
 
-    auto callbackHandler = std::make_shared<NetworkHttpCallbackHandler>();
-    callbackHandler->setResponseCallback(callBackFunc);
     std::string trackingId = httpRequest.getTrackingId();
     std::string requestId = httpRequest.getRequestId();
-    auto headerCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) {
+    auto curlHeaderCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) {
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive header, status code: " << statusCode << ", trackingId: " << trackingId);
         callbackHandler->setResponseHeader(statusCode, headers, errorData);
     };
 
-    auto bodyCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished){
+    auto curlBodyCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive body data, size: " << buffer.size() << ", isFinished: "<< isFinished << ", trackingId: " << trackingId);
         callbackHandler->appendResponseBody(buffer, isFinished);
     };
 
-    auto completionCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::HttpResponseMetrics& metrics){
+    auto curlCompletionCallback = [callbackHandler, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::HttpResponseMetrics& metrics){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive completion callback" << ", trackingId: " << trackingId);
-        callbackHandler->completeResponse(metrics);
+        if (callbackHandler->shouldRetryRequest())
+        {
+            sendHttpRequest(callbackHandler->prepareRetryRequest(), callbackHandler);
+        }
+        else
+        {
+            callbackHandler->completeResponse(metrics);
+        }
     };
-    mDataPrivate->getLibCurlClient()->makeGenericRequest(httpRequest, headerCallback, bodyCallback, completionCallback);
+    mDataPrivate->getLibCurlClient()->makeGenericRequest(httpRequest, curlHeaderCallback, curlBodyCallback, curlCompletionCallback);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
