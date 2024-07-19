@@ -19,6 +19,6 @@ public:
     virtual void appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished) = 0;
     virtual void completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics) = 0;
     virtual bool shouldRetryRequest() const = 0;
-    virtual const ucf::utilities::network::http::NetworkHttpRequest& prepareRetryRequest() = 0;
+    virtual void prepareRetryRequest() = 0;
 };
 }

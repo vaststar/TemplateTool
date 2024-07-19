@@ -10,17 +10,19 @@ class NetworkHttpResponse::DataPrivate
 {
 public:
     DataPrivate();
-    void setHttpResponseCode(int statusCode);
-    int getHttpResponseCode() const;
+    void setHttpResponseCode(int statusCode){ mResponseCode = statusCode;}
+    int getHttpResponseCode() const{ return mResponseCode;}
 
-    void setResponseHeaders(const NetworkHttpHeaders& headers);
-    NetworkHttpHeaders getResponseHeaders() const;
+    void setResponseHeaders(const NetworkHttpHeaders& headers){ mResponseHeaders = headers;}
+    NetworkHttpHeaders getResponseHeaders() const{ return mResponseHeaders;}
 
-    void setErrorData(const ResponseErrorStruct& errorData);
-    std::optional<ResponseErrorStruct> getErrorData() const;
+    void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
+    std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
 
-    void setResponseBody(const std::string& buffer);
-    std::string getResponseBody() const;
+    void setResponseBody(const std::string& buffer){ mResponseBody = buffer;}
+    std::string getResponseBody() const{ return mResponseBody;}
+
+    void clear();
 private:
     int mResponseCode;
     NetworkHttpHeaders mResponseHeaders;
@@ -32,48 +34,14 @@ NetworkHttpResponse::DataPrivate::DataPrivate()
     : mResponseCode(0)
     , mErrorData(std::nullopt)
 {
-
 }
 
-void NetworkHttpResponse::DataPrivate::setHttpResponseCode(int statusCode)
+void NetworkHttpResponse::DataPrivate::clear()
 {
-    mResponseCode = statusCode;
-}
-
-int NetworkHttpResponse::DataPrivate::getHttpResponseCode() const
-{
-    return mResponseCode;
-}
-
-void NetworkHttpResponse::DataPrivate::setResponseHeaders(const NetworkHttpHeaders& headers)
-{
-    mResponseHeaders = headers;
-}
-
-NetworkHttpHeaders NetworkHttpResponse::DataPrivate::getResponseHeaders() const
-{
-    return mResponseHeaders;
-}
-
-void NetworkHttpResponse::DataPrivate::setErrorData(const ResponseErrorStruct& errorData)
-{
-    mErrorData = errorData;
-}
-
-std::optional<ResponseErrorStruct> NetworkHttpResponse::DataPrivate::getErrorData() const
-{
-    return mErrorData;
-}
-
-
-void NetworkHttpResponse::DataPrivate::setResponseBody(const std::string& buffer)
-{
-    mResponseBody = buffer;
-}
-
-std::string NetworkHttpResponse::DataPrivate::getResponseBody() const
-{
-    return mResponseBody;
+    mResponseCode = 0;
+    mResponseHeaders.clear();
+    mErrorData = std::nullopt;
+    mResponseBody.clear();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +105,10 @@ std::string NetworkHttpResponse::getResponseBody() const
     return mDataPrivate->getResponseBody();
 }
 
+void NetworkHttpResponse::clear()
+{
+    mDataPrivate->clear();
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////

@@ -54,6 +54,7 @@ public:
     UploadProgressFunction getProgressFunction() const;
 
     std::string toString() const;
+    void clear();
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

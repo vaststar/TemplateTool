@@ -27,6 +27,8 @@ public:
 
     void setResponseBody(const std::string& body);
     std::string getResponseBody() const;
+
+    void clear();
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

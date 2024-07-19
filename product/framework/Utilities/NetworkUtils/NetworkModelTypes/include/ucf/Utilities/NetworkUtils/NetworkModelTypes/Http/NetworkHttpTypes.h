@@ -15,7 +15,8 @@ enum class NETWORKTYPE_EXPORT HTTPMethod{
     PUT,
     DEL,
     PATCH,
-    OPTIONS
+    OPTIONS,
+    Unknwon
 };
 
 enum class NetworkHttpPayloadType{

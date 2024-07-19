@@ -47,6 +47,8 @@ NetworkHttpRestCallbackHandler::DataPrivate::DataPrivate(const ucf::service::net
 void NetworkHttpRestCallbackHandler::DataPrivate::parepareRetry()
 {
     ++mRetryCount;
+    mHttpResponse.clear();
+    mCachedBuffer.clear();
 }
 
 void NetworkHttpRestCallbackHandler::DataPrivate::convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
@@ -151,17 +153,23 @@ void NetworkHttpRestCallbackHandler::completeResponse(const ucf::utilities::netw
 
 bool NetworkHttpRestCallbackHandler::shouldRetryRequest() const
 {
-    if (mDataPrivate->getHttpResponse().getHttpResponseCode() == 302)
+    if (301 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
+        302 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
+        303 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
+        307 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
+        308 == mDataPrivate->getHttpResponse().getHttpResponseCode())
     {
         return mDataPrivate->getRetryCount() <= 2;
     }
     return false;
 }
 
-const ucf::utilities::network::http::NetworkHttpRequest& NetworkHttpRestCallbackHandler::prepareRetryRequest()
+void NetworkHttpRestCallbackHandler::prepareRetryRequest()
 {
-    mDataPrivate->parepareRetry();
-    return getHttpRequest();
+    if (shouldRetryRequest())
+    {
+        mDataPrivate->parepareRetry();
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

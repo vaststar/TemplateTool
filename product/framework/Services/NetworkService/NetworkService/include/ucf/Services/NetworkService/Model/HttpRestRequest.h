@@ -4,10 +4,21 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/Services/NetworkService/Model/HttpTypes.h>
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
 namespace ucf::service::network::http{
+using HttpRequestHeaders = std::vector<std::pair<std::string, std::string>>;
+
+enum class HTTPMethod{
+    GET,
+    POST,
+    HEAD,
+    PUT,
+    DEL,
+    PATCH,
+    OPTIONS
+};
+
 class SERVICE_EXPORT HttpRestRequest final
 {
 public:

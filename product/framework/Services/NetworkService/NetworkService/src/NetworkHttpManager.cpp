@@ -102,7 +102,8 @@ void NetworkHttpManager::sendHttpRequest(const ucf::utilities::network::http::Ne
         SERVICE_LOG_DEBUG("receive completion callback" << ", trackingId: " << trackingId);
         if (callbackHandler->shouldRetryRequest())
         {
-            sendHttpRequest(callbackHandler->prepareRetryRequest(), callbackHandler);
+            callbackHandler->prepareRetryRequest();
+            sendHttpRequest(callbackHandler->getHttpRequest(), callbackHandler);
         }
         else
         {

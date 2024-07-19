@@ -47,6 +47,8 @@ public:
 
     void setProgressFunction(UploadProgressFunction progressFunc){ mUploadProgressFunction = progressFunc;}
     UploadProgressFunction getProgressFunction() const{ return mUploadProgressFunction;}
+
+    void clear();
 private:
     std::string mRequestId;
     HTTPMethod mMethod;
@@ -65,8 +67,26 @@ private:
 NetworkHttpRequest::DataPrivate::DataPrivate()
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
     , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
+    , mMethod(HTTPMethod::Unknwon)
+    , mPayloadType(NetworkHttpPayloadType::None)
+    , mTimeoutSecs(0)
 {
 
+}
+
+void NetworkHttpRequest::DataPrivate::clear()
+{
+    mRequestId.clear();
+    mTrackingId.clear();
+    mMethod = HTTPMethod::Unknwon;
+    mUri.clear();
+    mHeaders.clear();
+    mTimeoutSecs = 0;
+    mTrackingId.clear();
+    mPayloadJson.clear();
+    mPayloadFilePath.clear();
+    mPayloadBuffer.reset();
+    mUploadProgressFunction = nullptr;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -213,6 +233,11 @@ void NetworkHttpRequest::setProgressFunction(UploadProgressFunction progressFunc
 UploadProgressFunction NetworkHttpRequest::getProgressFunction() const
 {
     return mDataPrivate->getProgressFunction();
+}
+
+void NetworkHttpRequest::clear()
+{
+    mDataPrivate->clear();
 }
 
 std::string NetworkHttpRequest::toString() const

@@ -6,7 +6,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/NetworkService/Http/INetworkHttpManager.h
     include/ucf/Services/NetworkService/Model/HttpRestRequest.h
     include/ucf/Services/NetworkService/Model/HttpRestResponse.h
-    include/ucf/Services/NetworkService/Model/HttpTypes.h
+    # include/ucf/Services/NetworkService/Model/HttpTypes.h
     
 )
 

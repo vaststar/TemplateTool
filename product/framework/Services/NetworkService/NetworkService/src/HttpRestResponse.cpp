@@ -10,9 +10,26 @@ class HttpRestResponse::DataPrivate
 {
 public:
     DataPrivate();
+    void setHttpResponseCode(int statusCode){ mResponseCode = statusCode;}
+    int getHttpResponseCode() const{ return mResponseCode;}
+
+    void setResponseHeaders(const HttpResponseHeaders& headers){ mResponseHeaders = headers;}
+    HttpResponseHeaders getResponseHeaders() const{ return mResponseHeaders;}
+
+    void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
+    std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
+
+    void setResponseBody(const std::string& buffer){ mResponseBody = buffer;}
+    std::string getResponseBody() const{ return mResponseBody;}
+private:
+    int mResponseCode;
+    HttpResponseHeaders mResponseHeaders;
+    std::optional<ResponseErrorStruct> mErrorData;
+    std::string mResponseBody;
 };
 
 HttpRestResponse::DataPrivate::DataPrivate()
+    : mResponseCode(0)
 {
 
 }
@@ -37,6 +54,47 @@ HttpRestResponse::HttpRestResponse()
 HttpRestResponse::~HttpRestResponse()
 {
 
+}
+
+
+void HttpRestResponse::setHttpResponseCode(int statusCode)
+{
+    mDataPrivate->setHttpResponseCode(statusCode);
+}
+
+int HttpRestResponse::getHttpResponseCode() const
+{
+    return mDataPrivate->getHttpResponseCode();
+}
+
+void HttpRestResponse::setResponseHeaders(const HttpResponseHeaders& headers)
+{
+    mDataPrivate->setResponseHeaders(headers);
+}
+
+HttpResponseHeaders HttpRestResponse::getResponseHeaders() const
+{
+    return mDataPrivate->getResponseHeaders();
+}
+
+void HttpRestResponse::setErrorData(const ResponseErrorStruct& errorData)
+{
+    mDataPrivate->setErrorData(errorData);
+}
+
+std::optional<ResponseErrorStruct> HttpRestResponse::getErrorData() const
+{
+    return mDataPrivate->getErrorData();
+}
+
+void HttpRestResponse::setResponseBody(const std::string& buffer)
+{
+    mDataPrivate->setResponseBody(buffer);
+}
+
+std::string HttpRestResponse::getResponseBody() const
+{
+    return mDataPrivate->getResponseBody();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

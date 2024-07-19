@@ -31,7 +31,7 @@ public:
     virtual void appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished) override;
     virtual void completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics) override;
     virtual bool shouldRetryRequest() const override;
-    virtual const ucf::utilities::network::http::NetworkHttpRequest& prepareRetryRequest() override;
+    virtual void prepareRetryRequest() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
