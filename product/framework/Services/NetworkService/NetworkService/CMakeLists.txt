@@ -6,7 +6,8 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/NetworkService/Http/INetworkHttpManager.h
     include/ucf/Services/NetworkService/Model/HttpRestRequest.h
     include/ucf/Services/NetworkService/Model/HttpRestResponse.h
-    # include/ucf/Services/NetworkService/Model/HttpTypes.h
+    include/ucf/Services/NetworkService/Model/HttpDeclareTypes.h
+    include/ucf/Services/NetworkService/Model/HttpRawRequest.h
     
 )
 
@@ -15,11 +16,14 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/NetworkService.cpp
     src/NetworkHttpManager.h
     src/NetworkHttpManager.cpp
-    src/NetworkCallbackHandler/INetworkHttpCallbackHandler.h
-    src/NetworkCallbackHandler/NetworkHttpRestCallbackHandler.h
-    src/NetworkCallbackHandler/NetworkHttpRestCallbackHandler.cpp
+    src/NetworkHttpHandler/INetworkHttpHandler.h
+    src/NetworkHttpHandler/NetworkHttpRestHandler.h
+    src/NetworkHttpHandler/NetworkHttpRestHandler.cpp
+    src/NetworkHttpHandler/NetworkHttpRawHandler.h
+    src/NetworkHttpHandler/NetworkHttpRawHandler.cpp
     src/HttpRestRequest.cpp
     src/HttpRestResponse.cpp
+    src/HttpRawRequest.cpp
 )
 
 BuildModule(

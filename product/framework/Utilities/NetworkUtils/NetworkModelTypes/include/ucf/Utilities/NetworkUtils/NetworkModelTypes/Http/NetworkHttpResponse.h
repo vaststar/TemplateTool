@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/NetworkModelTypesExport.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
@@ -27,6 +28,8 @@ public:
 
     void setResponseBody(const std::string& body);
     std::string getResponseBody() const;
+
+    std::optional<std::string> getHeaderValue(const std::string& key) const;
 
     void clear();
 private:

@@ -4,8 +4,7 @@
 #include <functional>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
-#include <ucf/Services/NetworkService/Model/HttpTypes.h>
-#include "NetworkCallbackHandler/INetworkHttpCallbackHandler.h"
+#include "NetworkHttpHandler/INetworkHttpHandler.h"
 
 namespace ucf::utilities::network::http{
 class NetworkHttpResponse;
@@ -14,24 +13,24 @@ class NetworkHttpRequest;
 
 }
 namespace ucf::service::network::http{
+    class HttpRawRequest;
+    using HttpRawResponseCallbackFunc = std::function<void()>;
 
 
-class NetworkHttpRestCallbackHandler final: public INetworkHttpCallbackHandler
+class NetworkHttpRawHandler final: public INetworkHttpHandler
 {
 public:
-    NetworkHttpRestCallbackHandler(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback);
-    virtual ~NetworkHttpRestCallbackHandler();
-    NetworkHttpRestCallbackHandler(const NetworkHttpRestCallbackHandler&) = delete;
-    NetworkHttpRestCallbackHandler(NetworkHttpRestCallbackHandler&&) = delete;
-    NetworkHttpRestCallbackHandler& operator=(const NetworkHttpRestCallbackHandler&) = delete;
-    NetworkHttpRestCallbackHandler& operator=(NetworkHttpRestCallbackHandler&&) = delete;
+    NetworkHttpRawHandler(const ucf::service::network::http::HttpRawRequest& restRequest, const HttpRawResponseCallbackFunc& restResponseCallback);
+    virtual ~NetworkHttpRawHandler();
+    NetworkHttpRawHandler(const NetworkHttpRawHandler&) = delete;
+    NetworkHttpRawHandler(NetworkHttpRawHandler&&) = delete;
+    NetworkHttpRawHandler& operator=(const NetworkHttpRawHandler&) = delete;
+    NetworkHttpRawHandler& operator=(NetworkHttpRawHandler&&) = delete;
 public:
     virtual const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const override;
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) override;
     virtual void appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished) override;
     virtual void completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics) override;
-    virtual bool shouldRetryRequest() const override;
-    virtual void prepareRetryRequest() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

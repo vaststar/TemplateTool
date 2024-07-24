@@ -109,6 +109,19 @@ void NetworkHttpResponse::clear()
 {
     mDataPrivate->clear();
 }
+
+std::optional<std::string> NetworkHttpResponse::getHeaderValue(const std::string& key) const
+{
+    const auto& headers = getResponseHeaders();
+    auto locationItem = std::find_if(headers.cbegin(), headers.cend(), [key](const auto& headerKeyVal){
+        return headerKeyVal.first == key;
+    });
+    if (locationItem != headers.cend())
+    {
+        return locationItem->second;
+    }
+    return {};
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////

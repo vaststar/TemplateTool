@@ -9,7 +9,7 @@ class NetworkHttpRequest;
 } // namespace ucf::utilities::network::http
 
 namespace ucf::service::network::http{
-class INetworkHttpCallbackHandler;
+class INetworkHttpHandler;
 
 class NetworkHttpManager final: public INetworkHttpManager,
                                 public std::enable_shared_from_this<NetworkHttpManager>
@@ -23,10 +23,9 @@ public:
     NetworkHttpManager& operator=(NetworkHttpManager&&) = delete;
 public:
     virtual void sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location = std::source_location::current()) override;
+    virtual void sendHttpRawRequest(const ucf::service::network::http::HttpRawRequest& rawRequest, const ucf::service::network::http::HttpRawResponseCallbackFunc& rawResponseCallback, const std::source_location location = std::source_location::current()) override;
 private:
-    void sendHttpRequest(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest, 
-                         std::shared_ptr<INetworkHttpCallbackHandler> callbackHandler,
-                         const std::source_location location = std::source_location::current());
+    void sendHttpRequest(std::shared_ptr<INetworkHttpHandler> callbackHandler, const std::source_location location = std::source_location::current());
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

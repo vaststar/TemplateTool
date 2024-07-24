@@ -8,16 +8,17 @@
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
-class SERVICE_EXPORT HttpRestRequest final
+
+class SERVICE_EXPORT HttpRawRequest final
 {
 public:
-    HttpRestRequest();
-    HttpRestRequest(const HTTPMethod& requestMethod, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& body, int timeoutSecs);
-    HttpRestRequest(const HttpRestRequest&) = delete;
-    HttpRestRequest(HttpRestRequest&&) = delete;
-    HttpRestRequest& operator=(const HttpRestRequest&) = delete;
-    HttpRestRequest& operator=(HttpRestRequest&&) = delete;
-    ~HttpRestRequest();
+    HttpRawRequest();
+    HttpRawRequest(const HTTPMethod& requestMethod, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& body, int timeoutSecs);
+    HttpRawRequest(const HttpRawRequest&) = delete;
+    HttpRawRequest(HttpRawRequest&&) = delete;
+    HttpRawRequest& operator=(const HttpRawRequest&) = delete;
+    HttpRawRequest& operator=(HttpRawRequest&&) = delete;
+    ~HttpRawRequest();
 
     std::string getRequestId() const;
     std::string getTrackingId() const;
@@ -27,7 +28,7 @@ public:
     int getTimeout() const;
 
     size_t getPayloadSize() const;
-    std::string getPayloadJsonString() const;
+    std::string getPayloadString() const;
 private:private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpRestRequest.h>
+#include <ucf/Services/NetworkService/Model/HttpRawRequest.h>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
 namespace ucf::service::network::http{
@@ -7,7 +7,7 @@ namespace ucf::service::network::http{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class HttpRestRequest::DataPrivate
+class HttpRawRequest::DataPrivate
 {
 public:
     DataPrivate();
@@ -29,8 +29,8 @@ public:
     void setTrackingId(const std::string& trackingId){ mTrackingId = trackingId;}
     std::string getTrackingId() const{ return mTrackingId;}
 
-    void setPayloadJsonString(const std::string& str){ mPayloadJson = str;}
-    std::string getPayloadJsonString() const{ return mPayloadJson;}
+    void setPayloadString(const std::string& str){ mPayload = str;}
+    std::string getPayloadString() const{ return mPayload;}
 private:
     std::string mRequestId;
     HTTPMethod mMethod;
@@ -39,10 +39,10 @@ private:
     int mTimeoutSecs;
     std::string mTrackingId;
 
-    std::string mPayloadJson;
+    std::string mPayload;
 };
 
-HttpRestRequest::DataPrivate::DataPrivate()
+HttpRawRequest::DataPrivate::DataPrivate()
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
     , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
 {
@@ -57,70 +57,70 @@ HttpRestRequest::DataPrivate::DataPrivate()
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpRestRequest Logic//////////////////////////////////////////
+////////////////////Start HttpRawRequest Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-HttpRestRequest::HttpRestRequest()
+HttpRawRequest::HttpRawRequest()
 {
 
 }
-HttpRestRequest::HttpRestRequest(const HTTPMethod& requestMethod, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& body, int timeoutSecs)
-    : mDataPrivate(std::make_unique<HttpRestRequest::DataPrivate>())
+HttpRawRequest::HttpRawRequest(const HTTPMethod& requestMethod, const std::string& uri, const NetworkHttpHeaders& headers, const std::string& body, int timeoutSecs)
+    : mDataPrivate(std::make_unique<HttpRawRequest::DataPrivate>())
 {
     mDataPrivate->setMethod(requestMethod);
     mDataPrivate->setUri(uri);
     mDataPrivate->setHeaders(headers);
     mDataPrivate->setTimeoutSecs(timeoutSecs);
-    mDataPrivate->setPayloadJsonString(body);
+    mDataPrivate->setPayloadString(body);
 }
 
-HttpRestRequest::~HttpRestRequest()
+HttpRawRequest::~HttpRawRequest()
 {
 
 }
 
 
-std::string HttpRestRequest::getRequestId() const
+std::string HttpRawRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
 }
-std::string HttpRestRequest::getTrackingId() const
+std::string HttpRawRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
 }
 
-HTTPMethod HttpRestRequest::getRequestMethod() const
+HTTPMethod HttpRawRequest::getRequestMethod() const
 {
     return mDataPrivate->getMethod();
 }
 
-std::string HttpRestRequest::getRequestUri() const
+std::string HttpRawRequest::getRequestUri() const
 {
     return mDataPrivate->getUri();
 }
 
-NetworkHttpHeaders HttpRestRequest::getRequestHeaders() const
+NetworkHttpHeaders HttpRawRequest::getRequestHeaders() const
 {
     return mDataPrivate->getHeaders();
 }
 
-int HttpRestRequest::getTimeout() const
+int HttpRawRequest::getTimeout() const
 {
     return mDataPrivate->getTimeoutSecs();
 }
 
-size_t HttpRestRequest::getPayloadSize() const
+size_t HttpRawRequest::getPayloadSize() const
 {
-    return getPayloadJsonString().size();
+    return getPayloadString().size();
 }
 
-std::string HttpRestRequest::getPayloadJsonString() const
+std::string HttpRawRequest::getPayloadString() const
 {
-    return mDataPrivate->getPayloadJsonString();
+    return mDataPrivate->getPayloadString();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpRestRequest Logic//////////////////////////////////////////
+////////////////////Start HttpRawRequest Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

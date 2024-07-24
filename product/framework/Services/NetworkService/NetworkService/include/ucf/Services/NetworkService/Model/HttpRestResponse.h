@@ -6,26 +6,9 @@
 #include <optional>
 
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
-using HttpResponseHeaders = std::vector<std::pair<std::string, std::string>>;
-enum class ResponseErrorType
-{
-    NoError,
-    DNSError,
-    SocketError,
-    TLSError,
-    TimeoutError,
-    CancelledError,
-    OtherError,
-    UnHandledError
-};
-
-struct ResponseErrorStruct{
-    int errorCode{ 0 };
-    ResponseErrorType errorType{ResponseErrorType::NoError};
-    std::string errorDescription;
-};
 class SERVICE_EXPORT HttpRestResponse final
 {
 public:
@@ -39,8 +22,8 @@ public:
     void setHttpResponseCode(int statusCode);
     int getHttpResponseCode() const;
 
-    void setResponseHeaders(const HttpResponseHeaders& headers);
-    HttpResponseHeaders getResponseHeaders() const;
+    void setResponseHeaders(const NetworkHttpHeaders& headers);
+    NetworkHttpHeaders getResponseHeaders() const;
 
     void setErrorData(const ResponseErrorStruct& errorData);
     std::optional<ResponseErrorStruct> getErrorData() const;

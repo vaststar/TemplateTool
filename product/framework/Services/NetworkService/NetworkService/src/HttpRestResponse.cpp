@@ -13,8 +13,8 @@ public:
     void setHttpResponseCode(int statusCode){ mResponseCode = statusCode;}
     int getHttpResponseCode() const{ return mResponseCode;}
 
-    void setResponseHeaders(const HttpResponseHeaders& headers){ mResponseHeaders = headers;}
-    HttpResponseHeaders getResponseHeaders() const{ return mResponseHeaders;}
+    void setResponseHeaders(const NetworkHttpHeaders& headers){ mResponseHeaders = headers;}
+    NetworkHttpHeaders getResponseHeaders() const{ return mResponseHeaders;}
 
     void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
     std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
@@ -23,7 +23,7 @@ public:
     std::string getResponseBody() const{ return mResponseBody;}
 private:
     int mResponseCode;
-    HttpResponseHeaders mResponseHeaders;
+    NetworkHttpHeaders mResponseHeaders;
     std::optional<ResponseErrorStruct> mErrorData;
     std::string mResponseBody;
 };
@@ -67,12 +67,12 @@ int HttpRestResponse::getHttpResponseCode() const
     return mDataPrivate->getHttpResponseCode();
 }
 
-void HttpRestResponse::setResponseHeaders(const HttpResponseHeaders& headers)
+void HttpRestResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
 {
     mDataPrivate->setResponseHeaders(headers);
 }
 
-HttpResponseHeaders HttpRestResponse::getResponseHeaders() const
+NetworkHttpHeaders HttpRestResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }

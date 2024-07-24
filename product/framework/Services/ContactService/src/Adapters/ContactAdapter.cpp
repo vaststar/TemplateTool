@@ -85,7 +85,8 @@ void ContactAdapter::fetchContactInfo(const std::string& contactId, fetchContact
         // };
 
         auto callback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){};
-        ucf::service::network::http::HttpRestRequest httpRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
+        // ucf::service::network::http::HttpRestRequest httpRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
+        ucf::service::network::http::HttpRestRequest httpRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);
         networkManager->sendHttpRestRequest(httpRequest, callback);
     }
 }
