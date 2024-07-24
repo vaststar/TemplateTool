@@ -72,8 +72,8 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
 
     switch (httpRequest.getPayloadType())
     {
-    case ucf::utilities::network::http::NetworkHttpPayloadType::Json:
-        easyHandle->setRequestDataJsonString(httpRequest.getPayloadJsonString());
+    case ucf::utilities::network::http::NetworkHttpPayloadType::String:
+        easyHandle->setRequestDataString(httpRequest.getPayloadString());
         break;
     case ucf::utilities::network::http::NetworkHttpPayloadType::Memory:
         easyHandle->setRequestDataBuffer(httpRequest.getPayloadMemoryBuffer(), httpRequest.getProgressFunction());

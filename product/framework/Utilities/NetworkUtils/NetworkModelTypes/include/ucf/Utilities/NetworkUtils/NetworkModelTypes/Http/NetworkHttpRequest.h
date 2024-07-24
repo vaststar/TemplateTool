@@ -41,8 +41,8 @@ public:
     NetworkHttpPayloadType getPayloadType() const;
     size_t getPayloadSize() const;
 
-    void setPayloadJsonString(const std::string& stringPayload);
-    std::string getPayloadJsonString() const;
+    void setPayloadString(const std::string& stringPayload);
+    std::string getPayloadString() const;
 
     void setPayloadFilePath(const std::string& filePath);
     std::string getPayloadFilePath() const;

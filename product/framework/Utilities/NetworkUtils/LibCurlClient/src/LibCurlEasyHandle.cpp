@@ -449,7 +449,7 @@ void LibCurlEasyHandle::appendResponseBody(char *data, size_t size)
     }
 }
 
-void LibCurlEasyHandle::setRequestDataJsonString(const std::string& jsonString)
+void LibCurlEasyHandle::setRequestDataString(const std::string& jsonString)
 {
     mDataPrivate->setPayloadData(std::make_shared<StringPayloadData>(jsonString));
 }

@@ -99,7 +99,7 @@ void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const 
     httpRequest.setTrackingId(restRequest.getTrackingId());
     httpRequest.setRequestUri(restRequest.getRequestUri());
     httpRequest.setTimeout(restRequest.getTimeout());
-    httpRequest.setPayloadJsonString(restRequest.getPayloadJsonString());
+    httpRequest.setPayloadString(restRequest.getPayloadJsonString());
 }
 
 void NetworkHttpRestHandler::DataPrivate::convertHttpResponseToRestResponse(const ucf::utilities::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRestResponse& restResponse) const

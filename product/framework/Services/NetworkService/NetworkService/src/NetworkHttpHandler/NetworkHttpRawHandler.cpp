@@ -74,7 +74,7 @@ void NetworkHttpRawHandler::DataPrivate::convertRawRequestToHttpRequest(const uc
     httpRequest.setTrackingId(restRequest.getTrackingId());
     httpRequest.setRequestUri(restRequest.getRequestUri());
     httpRequest.setTimeout(restRequest.getTimeout());
-    httpRequest.setPayloadJsonString(restRequest.getPayloadString());
+    httpRequest.setPayloadString(restRequest.getPayloadString());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

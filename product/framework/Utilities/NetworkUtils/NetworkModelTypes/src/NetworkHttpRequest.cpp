@@ -36,8 +36,8 @@ public:
     void setPayloadType(const NetworkHttpPayloadType& payloadType){ mPayloadType = payloadType;}
     NetworkHttpPayloadType getPayloadType() const{ return mPayloadType;}
 
-    void setPayloadJsonString(const std::string& str){ mPayloadJson = str;}
-    std::string getPayloadJsonString() const{ return mPayloadJson;}
+    void setPayloadString(const std::string& str){ mPayloadString = str;}
+    std::string getPayloadString() const{ return mPayloadString;}
 
     void setPayloadFilePath(const std::string& filePath){ mPayloadFilePath = filePath;}
     std::string getPayloadFilePath() const{ return mPayloadFilePath;}
@@ -58,7 +58,7 @@ private:
     std::string mTrackingId;
 
     NetworkHttpPayloadType mPayloadType;
-    std::string mPayloadJson;
+    std::string mPayloadString;
     std::string mPayloadFilePath;
     ByteBufferPtr mPayloadBuffer;
     UploadProgressFunction mUploadProgressFunction;
@@ -83,7 +83,7 @@ void NetworkHttpRequest::DataPrivate::clear()
     mHeaders.clear();
     mTimeoutSecs = 0;
     mTrackingId.clear();
-    mPayloadJson.clear();
+    mPayloadString.clear();
     mPayloadFilePath.clear();
     mPayloadBuffer.reset();
     mUploadProgressFunction = nullptr;
@@ -181,8 +181,8 @@ size_t NetworkHttpRequest::getPayloadSize() const
 {
     switch (getPayloadType())
     {
-    case NetworkHttpPayloadType::Json:
-        return getPayloadJsonString().size();
+    case NetworkHttpPayloadType::String:
+        return getPayloadString().size();
     case NetworkHttpPayloadType::Memory:
         return getPayloadMemoryBuffer()->size();
     case NetworkHttpPayloadType::File:
@@ -192,15 +192,15 @@ size_t NetworkHttpRequest::getPayloadSize() const
     }
 }
 
-void NetworkHttpRequest::setPayloadJsonString(const std::string& jsonStr)
+void NetworkHttpRequest::setPayloadString(const std::string& str)
 {
-    mDataPrivate->setPayloadType(NetworkHttpPayloadType::Json);
-    mDataPrivate->setPayloadJsonString(jsonStr);
+    mDataPrivate->setPayloadType(NetworkHttpPayloadType::String);
+    mDataPrivate->setPayloadString(str);
 }
 
-std::string NetworkHttpRequest::getPayloadJsonString() const
+std::string NetworkHttpRequest::getPayloadString() const
 {
-    return mDataPrivate->getPayloadJsonString();
+    return mDataPrivate->getPayloadString();
 }
 
 void NetworkHttpRequest::setPayloadFilePath(const std::string& filePath)

@@ -21,7 +21,7 @@ enum class NETWORKTYPE_EXPORT HTTPMethod{
 
 enum class NetworkHttpPayloadType{
     None,
-    Json,
+    String,
     File,
     Memory
 };

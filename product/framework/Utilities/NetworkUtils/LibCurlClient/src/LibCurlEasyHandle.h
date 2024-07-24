@@ -23,7 +23,7 @@ public:
     void setInFileSizeLarge(size_t file_size);
     void setCommonOptions();
     void enableCURLDebugPrint();
-    void setRequestDataJsonString(const std::string& jsonString);
+    void setRequestDataString(const std::string& jsonString);
     void setRequestDataBuffer(ucf::utilities::network::http::ByteBufferPtr buffer, ucf::utilities::network::http::UploadProgressFunction progressFunc);
     void setRequestDataFile(const std::string& filePath, ucf::utilities::network::http::UploadProgressFunction progressFunc);
 
