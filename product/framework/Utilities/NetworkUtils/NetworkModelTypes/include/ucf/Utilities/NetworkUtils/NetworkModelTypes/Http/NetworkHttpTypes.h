@@ -33,7 +33,7 @@ enum class ResponseErrorType
     SocketError,
     TLSError,
     TimeoutError,
-    CancelledError,
+    CanceledError,
     OtherError,
     UnHandledError
 };

@@ -26,8 +26,9 @@ public:
     void setErrorData(const ResponseErrorStruct& errorData);
     std::optional<ResponseErrorStruct> getErrorData() const;
 
-    void setResponseBody(const std::string& body);
-    std::string getResponseBody() const;
+    void appendResponseBody(const ByteBuffer& buffer);
+    void setResponseBody(const ByteBuffer& buffer);
+    ByteBuffer getResponseBody() const;
 
     std::optional<std::string> getHeaderValue(const std::string& key) const;
 

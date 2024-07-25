@@ -2,6 +2,7 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpRawRequest.h>
+#include <ucf/Services/NetworkService/Model/HttpRawResponse.h>
 
 
 #include "NetworkHttpRawHandler.h"
@@ -24,6 +25,7 @@ public:
     const ucf::utilities::network::http::ByteBuffer& getCachedBuffer() const{return mCachedBuffer;}
 
     void convertRawRequestToHttpRequest(const ucf::service::network::http::HttpRawRequest& rawRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
+    void convertHttpResponseToRestResponse(const ucf::utilities::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRawResponse& rawResponse) const;
 private:
     ucf::service::network::http::HttpRawResponseCallbackFunc mResponseCallBack;
     ucf::utilities::network::http::NetworkHttpResponse mHttpResponse;
@@ -77,6 +79,52 @@ void NetworkHttpRawHandler::DataPrivate::convertRawRequestToHttpRequest(const uc
     httpRequest.setPayloadString(restRequest.getPayloadString());
 }
 
+void NetworkHttpRawHandler::DataPrivate::convertHttpResponseToRestResponse(const ucf::utilities::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRawResponse& rawResponse) const
+{
+    rawResponse.setHttpResponseCode(httpResponse.getHttpResponseCode());
+    rawResponse.setResponseHeaders(httpResponse.getResponseHeaders());
+    if (const auto& responseBody = httpResponse.getResponseBody(); !responseBody.empty())
+    {
+        rawResponse.setResponseBody(responseBody);
+    }
+    
+    if (auto errorData = httpResponse.getErrorData())
+    {
+        ResponseErrorStruct restErrorData;
+        restErrorData.errorCode = errorData->errorCode;
+        restErrorData.errorDescription = errorData->errorDescription;
+        switch (errorData->errorType)
+        {
+        case ucf::utilities::network::http::ResponseErrorType::NoError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::NoError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::DNSError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::DNSError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::SocketError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::SocketError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::TLSError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TLSError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::TimeoutError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TimeoutError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::CanceledError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::CanceledError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::OtherError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::OtherError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::UnHandledError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::UnHandledError;
+            break;
+        default:
+            break;
+        }
+        rawResponse.setErrorData(restErrorData);
+    }
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -116,11 +164,9 @@ void NetworkHttpRawHandler::setResponseHeader(int statusCode, const ucf::utiliti
 
 void NetworkHttpRawHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
 {
-    mDataPrivate->appendBuffer(buffer);
-    if (isFinished)
+    if (!buffer.empty())
     {
-        std::string bodyString = std::string(mDataPrivate->getCachedBuffer().begin(), mDataPrivate->getCachedBuffer().end());
-        mDataPrivate->getHttpResponse().setResponseBody(std::move(bodyString));
+        mDataPrivate->getHttpResponse().appendResponseBody(buffer);
     }
 }
 
@@ -128,7 +174,9 @@ void NetworkHttpRawHandler::completeResponse(const ucf::utilities::network::http
 {
     if (mDataPrivate->getResponseCallback())
     {
-        mDataPrivate->getResponseCallback()();
+        ucf::service::network::http::HttpRawResponse rawResponse;
+        mDataPrivate->convertHttpResponseToRestResponse(mDataPrivate->getHttpResponse(), rawResponse);
+        mDataPrivate->getResponseCallback()(rawResponse);
     }
 }
 

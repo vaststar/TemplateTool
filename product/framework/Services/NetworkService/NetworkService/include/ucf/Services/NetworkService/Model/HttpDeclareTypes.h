@@ -26,7 +26,7 @@ enum class SERVICE_EXPORT ResponseErrorType
     SocketError,
     TLSError,
     TimeoutError,
-    CancelledError,
+    CanceledError,
     OtherError,
     UnHandledError
 };
@@ -43,4 +43,12 @@ using NetworkHttpHeaders = std::vector<std::pair<std::string, std::string>>;
 using HttpHeaderCallback = std::function<void(int statusCode, const NetworkHttpHeaders& headers, std::optional<ResponseErrorStruct> errorData)>;
 using HttpBodyCallback =  std::function<void(const ByteBuffer& buffer, bool isFinished)>;
 using UploadProgressFunction = std::function<void(size_t, uint64_t)>;
+
+
+class HttpRestResponse;
+using HttpRestResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRestResponse& restResponse)>;
+
+class HttpRawResponse;
+using HttpRawResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRawResponse& rawResponse)>;
+
 }

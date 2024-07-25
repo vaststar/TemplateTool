@@ -13,8 +13,7 @@ class NetworkHttpRequest;
 
 }
 namespace ucf::service::network::http{
-    class HttpRawRequest;
-    using HttpRawResponseCallbackFunc = std::function<void()>;
+class HttpRawRequest;
 
 
 class NetworkHttpRawHandler final: public INetworkHttpHandler

@@ -1,12 +1,12 @@
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Services/NetworkService/Model/HttpRawResponse.h>
 
-namespace ucf::utilities::network::http{
+namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class NetworkHttpResponse::DataPrivate
+class HttpRawResponse::DataPrivate
 {
 public:
     DataPrivate();
@@ -19,11 +19,8 @@ public:
     void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
     std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
 
-    void appendResponseBody(const ByteBuffer& buffer){ mResponseBody.insert(mResponseBody.end(), buffer.begin(), buffer.end());}
     void setResponseBody(const ByteBuffer& buffer){ mResponseBody = buffer;}
     ByteBuffer getResponseBody() const{ return mResponseBody;}
-
-    void clear();
 private:
     int mResponseCode;
     NetworkHttpHeaders mResponseHeaders;
@@ -31,109 +28,77 @@ private:
     ByteBuffer mResponseBody;
 };
 
-NetworkHttpResponse::DataPrivate::DataPrivate()
+HttpRawResponse::DataPrivate::DataPrivate()
     : mResponseCode(0)
-    , mErrorData(std::nullopt)
 {
-}
 
-void NetworkHttpResponse::DataPrivate::clear()
-{
-    mResponseCode = 0;
-    mResponseHeaders.clear();
-    mErrorData = std::nullopt;
-    mResponseBody.clear();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish DataPrivate Logic/////////////////////////////////////////
+////////////////////Finish DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start NetworkHttpResponse Logic//////////////////////////////////
+////////////////////Start HttpRawResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-NetworkHttpResponse::NetworkHttpResponse()
-    : mDataPrivate(std::make_unique<DataPrivate>())
+HttpRawResponse::HttpRawResponse()
+    : mDataPrivate(std::make_unique<HttpRawResponse::DataPrivate>())
 {
 
 }
 
-NetworkHttpResponse::~NetworkHttpResponse()
+HttpRawResponse::~HttpRawResponse()
 {
 
 }
 
-void NetworkHttpResponse::setHttpResponseCode(int statusCode)
+
+void HttpRawResponse::setHttpResponseCode(int statusCode)
 {
     mDataPrivate->setHttpResponseCode(statusCode);
 }
 
-int NetworkHttpResponse::getHttpResponseCode() const
+int HttpRawResponse::getHttpResponseCode() const
 {
     return mDataPrivate->getHttpResponseCode();
 }
 
-void NetworkHttpResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
+void HttpRawResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
 {
     mDataPrivate->setResponseHeaders(headers);
 }
 
-NetworkHttpHeaders NetworkHttpResponse::getResponseHeaders() const
+NetworkHttpHeaders HttpRawResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
 
-void NetworkHttpResponse::setErrorData(const ResponseErrorStruct& errorData)
+void HttpRawResponse::setErrorData(const ResponseErrorStruct& errorData)
 {
     mDataPrivate->setErrorData(errorData);
 }
 
-std::optional<ResponseErrorStruct> NetworkHttpResponse::getErrorData() const
+std::optional<ResponseErrorStruct> HttpRawResponse::getErrorData() const
 {
     return mDataPrivate->getErrorData();
 }
 
-void NetworkHttpResponse::appendResponseBody(const ByteBuffer& buffer)
-{
-    if (!buffer.empty())
-    {
-        mDataPrivate->appendResponseBody(buffer);
-    }
-}
-
-void NetworkHttpResponse::setResponseBody(const ByteBuffer& buffer)
+void HttpRawResponse::setResponseBody(const ByteBuffer& buffer)
 {
     mDataPrivate->setResponseBody(buffer);
 }
 
-ByteBuffer NetworkHttpResponse::getResponseBody() const
+ByteBuffer HttpRawResponse::getResponseBody() const
 {
     return mDataPrivate->getResponseBody();
 }
-
-void NetworkHttpResponse::clear()
-{
-    mDataPrivate->clear();
-}
-
-std::optional<std::string> NetworkHttpResponse::getHeaderValue(const std::string& key) const
-{
-    const auto& headers = getResponseHeaders();
-    auto locationItem = std::find_if(headers.cbegin(), headers.cend(), [key](const auto& headerKeyVal){
-        return headerKeyVal.first == key;
-    });
-    if (locationItem != headers.cend())
-    {
-        return locationItem->second;
-    }
-    return {};
-}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////
+////////////////////Start HttpRawResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

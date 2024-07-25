@@ -13,10 +13,6 @@ class NetworkHttpRequest;
 
 }
 namespace ucf::service::network::http{
-    class HttpRestRequest;
-    class HttpRestResponse;
-    using HttpRestResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRestResponse& restResponse)>;
-
 
 class NetworkHttpRestHandler final: public INetworkHttpHandler
 {

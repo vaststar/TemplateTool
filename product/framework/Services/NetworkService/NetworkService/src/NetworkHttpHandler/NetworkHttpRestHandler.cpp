@@ -21,9 +21,6 @@ public:
     ucf::utilities::network::http::NetworkHttpResponse& getHttpResponse(){return mHttpResponse;}
     ucf::service::network::http::HttpRestResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
 
-    void appendBuffer(const ucf::utilities::network::http::ByteBuffer& buffer){mCachedBuffer.insert(mCachedBuffer.end(), buffer.begin(), buffer.end());}
-    const ucf::utilities::network::http::ByteBuffer& getCachedBuffer() const{return mCachedBuffer;}
-
     int getRedirectCount() const{ return mRedirectCount;}
     void prepareRedirect();
 
@@ -35,7 +32,6 @@ private:
     ucf::service::network::http::HttpRestResponseCallbackFunc mResponseCallBack;
     ucf::utilities::network::http::NetworkHttpResponse mHttpResponse;
     ucf::utilities::network::http::NetworkHttpRequest mHttpRequest;
-    ucf::utilities::network::http::ByteBuffer mCachedBuffer;
     int mRedirectCount;
 };
 
@@ -55,13 +51,11 @@ void NetworkHttpRestHandler::DataPrivate::prepareRedirect()
     }
     
     mHttpResponse.clear();
-    mCachedBuffer.clear();
 }
 
 void NetworkHttpRestHandler::DataPrivate::prepareRetry()
 {
     mHttpResponse.clear();
-    mCachedBuffer.clear();
 }
 
 void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
@@ -104,7 +98,49 @@ void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const 
 
 void NetworkHttpRestHandler::DataPrivate::convertHttpResponseToRestResponse(const ucf::utilities::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRestResponse& restResponse) const
 {
-
+    restResponse.setHttpResponseCode(httpResponse.getHttpResponseCode());
+    restResponse.setResponseHeaders(httpResponse.getResponseHeaders());
+    if (const auto& responseBody = httpResponse.getResponseBody(); !responseBody.empty())
+    {
+        restResponse.setResponseBody(std::string{responseBody.begin(), responseBody.end()});
+    }
+    
+    if (auto errorData = httpResponse.getErrorData())
+    {
+        ResponseErrorStruct restErrorData;
+        restErrorData.errorCode = errorData->errorCode;
+        restErrorData.errorDescription = errorData->errorDescription;
+        switch (errorData->errorType)
+        {
+        case ucf::utilities::network::http::ResponseErrorType::NoError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::NoError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::DNSError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::DNSError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::SocketError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::SocketError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::TLSError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TLSError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::TimeoutError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TimeoutError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::CanceledError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::CanceledError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::OtherError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::OtherError;
+            break;
+        case ucf::utilities::network::http::ResponseErrorType::UnHandledError:
+            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::UnHandledError;
+            break;
+        default:
+            break;
+        }
+        restResponse.setErrorData(restErrorData);
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -146,11 +182,9 @@ void NetworkHttpRestHandler::setResponseHeader(int statusCode, const ucf::utilit
 
 void NetworkHttpRestHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
 {
-    mDataPrivate->appendBuffer(buffer);
-    if (isFinished)
+    if (!buffer.empty())
     {
-        std::string bodyString = std::string(mDataPrivate->getCachedBuffer().begin(), mDataPrivate->getCachedBuffer().end());
-        mDataPrivate->getHttpResponse().setResponseBody(std::move(bodyString));
+        mDataPrivate->getHttpResponse().appendResponseBody(buffer);
     }
 }
 
