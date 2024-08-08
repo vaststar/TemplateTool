@@ -1,12 +1,12 @@
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToContentResponse.h>
 
-namespace ucf::utilities::network::http{
+namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class NetworkHttpResponse::DataPrivate
+class HttpDownloadToContentResponse::DataPrivate
 {
 public:
     DataPrivate();
@@ -21,119 +21,107 @@ public:
 
     void appendResponseBody(const ByteBuffer& buffer){ mResponseBody.insert(mResponseBody.end(), buffer.begin(), buffer.end());}
     void setResponseBody(const ByteBuffer& buffer){ mResponseBody = buffer;}
-    ByteBuffer getResponseBody() const{ return mResponseBody;}
+    const ByteBuffer& getResponseBody() const{ return mResponseBody;}
 
-    void clear();
+    size_t getTotalSize(){ return mTotalSize;}
+    void setTotalSize(size_t size){ mTotalSize = size;}
 private:
     int mResponseCode;
     NetworkHttpHeaders mResponseHeaders;
     std::optional<ResponseErrorStruct> mErrorData;
     ByteBuffer mResponseBody;
+    size_t mTotalSize;
 };
 
-NetworkHttpResponse::DataPrivate::DataPrivate()
+HttpDownloadToContentResponse::DataPrivate::DataPrivate()
     : mResponseCode(0)
-    , mErrorData(std::nullopt)
+    , mTotalSize(0)
 {
-}
 
-void NetworkHttpResponse::DataPrivate::clear()
-{
-    mResponseCode = 0;
-    mResponseHeaders.clear();
-    mErrorData = std::nullopt;
-    mResponseBody.clear();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish DataPrivate Logic/////////////////////////////////////////
+////////////////////Finish DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start NetworkHttpResponse Logic//////////////////////////////////
+////////////////////Start HttpDownloadToContentResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-NetworkHttpResponse::NetworkHttpResponse()
-    : mDataPrivate(std::make_unique<DataPrivate>())
+HttpDownloadToContentResponse::HttpDownloadToContentResponse()
+    : mDataPrivate(std::make_unique<HttpDownloadToContentResponse::DataPrivate>())
 {
 
 }
 
-NetworkHttpResponse::~NetworkHttpResponse()
+HttpDownloadToContentResponse::~HttpDownloadToContentResponse()
 {
 
 }
 
-void NetworkHttpResponse::setHttpResponseCode(int statusCode)
+
+void HttpDownloadToContentResponse::setHttpResponseCode(int statusCode)
 {
     mDataPrivate->setHttpResponseCode(statusCode);
 }
 
-int NetworkHttpResponse::getHttpResponseCode() const
+int HttpDownloadToContentResponse::getHttpResponseCode() const
 {
     return mDataPrivate->getHttpResponseCode();
 }
 
-void NetworkHttpResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
+void HttpDownloadToContentResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
 {
     mDataPrivate->setResponseHeaders(headers);
+    auto item = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
+        return headerKeyVal.first == "Content-Length";
+    });
+    if (item != headers.cend())
+    {
+        mDataPrivate->setTotalSize(static_cast<size_t>(std::stoull(item->second)));
+    }
 }
 
-NetworkHttpHeaders NetworkHttpResponse::getResponseHeaders() const
+NetworkHttpHeaders HttpDownloadToContentResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
 
-void NetworkHttpResponse::setErrorData(const ResponseErrorStruct& errorData)
+void HttpDownloadToContentResponse::setErrorData(const ResponseErrorStruct& errorData)
 {
     mDataPrivate->setErrorData(errorData);
 }
 
-std::optional<ResponseErrorStruct> NetworkHttpResponse::getErrorData() const
+std::optional<ResponseErrorStruct> HttpDownloadToContentResponse::getErrorData() const
 {
     return mDataPrivate->getErrorData();
 }
 
-void NetworkHttpResponse::appendResponseBody(const ByteBuffer& buffer)
+void HttpDownloadToContentResponse::appendResponseBody(const ByteBuffer& buffer)
 {
-    if (!buffer.empty())
-    {
-        mDataPrivate->appendResponseBody(buffer);
-    }
+    mDataPrivate->appendResponseBody(buffer);
 }
 
-void NetworkHttpResponse::setResponseBody(const ByteBuffer& buffer)
+void HttpDownloadToContentResponse::setResponseBody(const ByteBuffer& buffer)
 {
     mDataPrivate->setResponseBody(buffer);
 }
 
-ByteBuffer NetworkHttpResponse::getResponseBody() const
+const ByteBuffer& HttpDownloadToContentResponse::getResponseBody() const
 {
     return mDataPrivate->getResponseBody();
 }
 
-void NetworkHttpResponse::clear()
+size_t HttpDownloadToContentResponse::getTotalSize() const
 {
-    mDataPrivate->clear();
-}
-
-std::optional<std::string> NetworkHttpResponse::getHeaderValue(const std::string& key) const
-{
-    const auto& headers = getResponseHeaders();
-    auto item = std::find_if(headers.cbegin(), headers.cend(), [key](const auto& headerKeyVal){
-        return headerKeyVal.first == key;
-    });
-    if (item != headers.cend())
-    {
-        return item->second;
-    }
-    return {};
+    return mDataPrivate->getTotalSize();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish NetworkHttpResponse Logic/////////////////////////////////
+////////////////////Start HttpDownloadToContentResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

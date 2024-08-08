@@ -46,9 +46,12 @@ using UploadProgressFunction = std::function<void(size_t, uint64_t)>;
 
 
 class HttpRestResponse;
-using HttpRestResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRestResponse& restResponse)>;
+using HttpRestResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRestResponse&)>;
 
 class HttpRawResponse;
-using HttpRawResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRawResponse& rawResponse)>;
+using HttpRawResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpRawResponse&)>;
+
+class HttpDownloadToContentResponse;
+using HttpDownloadToContentResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpDownloadToContentResponse&)>;
 
 }

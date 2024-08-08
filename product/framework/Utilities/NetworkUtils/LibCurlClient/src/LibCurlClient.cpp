@@ -68,7 +68,7 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
     easyHandle->setTrackingId(httpRequest.getTrackingId());
     easyHandle->setTimeout(httpRequest.getTimeout());
     easyHandle->setCommonOptions();
-    easyHandle->enableCURLDebugPrint();
+    // easyHandle->enableCURLDebugPrint();
 
     switch (httpRequest.getPayloadType())
     {

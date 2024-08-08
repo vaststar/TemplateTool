@@ -11,6 +11,11 @@
 
 #include <ucf/Services/NetworkService/Model/HttpRawRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpRawResponse.h>
+
+
+#include <ucf/Services/NetworkService/Model/HttpDownloadToContentRequest.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToContentResponse.h>
+
 namespace ucf::adapter{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -74,29 +79,46 @@ ContactAdapter::~ContactAdapter()
 
 void ContactAdapter::fetchContactInfo(const std::string& contactId, fetchContactInfoCallBack)
 {
+    testFunc();
+}
+
+void ContactAdapter::testFunc()
+{
     if (auto networkManager = mDataPrivate->getHttpManager().lock())
     {
-        // auto httpRequest = ucf::utilities::network::http::NetworkHttpRequest(ucf::utilities::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, 30, R"({"sipUrl":"thzhu@cisco.webex.com"})");
-        // auto httpRequest = ucf::utilities::network::http::NetworkHttpRequest(ucf::utilities::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}}, 30);
-    
-        // auto httpRequest = ucf::service::network::http::NetworkHttpRequest(ucf::service::network::http::HTTPMethod::GET, "https://www.dundeecity.gov.uk/sites/default/files/publications/civic_renewal_forms.zip", {{"Transfer-Encoding",""}}, 30);
-        
-        // auto httpResponseCallback = [](const ucf::utilities::network::http::NetworkHttpResponse& response){
-            
-        //     SERVICE_LOG_DEBUG("got response, body:" << response.getResponseBody());
+        using namespace ucf::service::network::http; 
+        // //test post rest api
+        //     ucf::service::network::http::HttpRestRequest postRestRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
+        //     auto postRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
+        //             SERVICE_LOG_DEBUG("postRestCallback body," << httpResponse.getResponseBody());
+        //     };
+        //     SERVICE_LOG_DEBUG("start post Rest");
+        //     networkManager->sendHttpRestRequest(postRestRequest, postRestCallback);
+        // //test get rest api(auto redirect)
+        //     ucf::service::network::http::HttpRestRequest getRestRequest{ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30};
+        //     auto getRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
+        //             SERVICE_LOG_DEBUG("getRestCallback body," << httpResponse.getResponseBody());
+        //     };
+        //     SERVICE_LOG_DEBUG("start get Rest");
+        //     networkManager->sendHttpRestRequest(getRestRequest, getRestCallback);
+
+        // //test raw get request
+        // ucf::service::network::http::HttpRawRequest rawGetRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);
+        // auto rawGetCallback = [](const ucf::service::network::http::HttpRawResponse& httpResponse) {
+        //     auto body = httpResponse.getResponseBody();
+        //     std::string pri = std::string{ body.begin(), body.end() };
+        //     SERVICE_LOG_DEBUG("rawGetCallback body," << pri);
         // };
+        //     SERVICE_LOG_DEBUG("start get Raw");
+        // networkManager->sendHttpRawRequest(rawGetRequest, rawGetCallback);
 
-        // auto callback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){};
-        // ucf::service::network::http::HttpRestRequest httpRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
-        // ucf::service::network::http::HttpRestRequest httpRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);
-        ucf::service::network::http::HttpRawRequest httpRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);
-
-        auto callback = [](const ucf::service::network::http::HttpRawResponse& httpResponse) {
-            auto body = httpResponse.getResponseBody();
-            std::string pri = std::string{ body.begin(), body.end() };
-            SERVICE_LOG_DEBUG("body," << pri);
+        //test download content
+        HttpDownloadToContentRequest downloadToContentRequest("https://ash-speed.hetzner.com/100MB.bin",{},30);
+        auto downloadMemoryCallBack = [](const HttpDownloadToContentResponse& downloadContent){
+            SERVICE_LOG_DEBUG("download body, current:" << downloadContent.getResponseBody().size() << ", total:" << downloadContent.getTotalSize());
         };
-        networkManager->sendHttpRawRequest(httpRequest, callback);
+            SERVICE_LOG_DEBUG("start download to content Raw");
+        networkManager->downloadContentToMemory(downloadToContentRequest, downloadMemoryCallBack);
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////

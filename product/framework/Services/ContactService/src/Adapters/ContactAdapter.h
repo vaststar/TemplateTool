@@ -23,6 +23,8 @@ public:
     ~ContactAdapter();
     void fetchContactInfo(const std::string& contactId, fetchContactInfoCallBack);
 private:
+    void testFunc();
+private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
 };
