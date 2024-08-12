@@ -3,12 +3,11 @@
 #include <memory>
 #include <functional>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 #include "NetworkHttpHandler/INetworkHttpHandler.h"
 
 namespace ucf::utilities::network::http{
-class NetworkHttpResponse;
-using NetworkHttpResponseCallbackFunc = std::function<void(const NetworkHttpResponse& httpResponse)>;
 class NetworkHttpRequest;
 
 }

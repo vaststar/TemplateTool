@@ -9,15 +9,15 @@
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
-class SERVICE_EXPORT HttpDownloadToContentResponse final
+class SERVICE_EXPORT HttpDownloadToMemoryResponse final
 {
 public:
-    HttpDownloadToContentResponse();
-    ~HttpDownloadToContentResponse();
-    HttpDownloadToContentResponse(const HttpDownloadToContentResponse&) = delete;
-    HttpDownloadToContentResponse(HttpDownloadToContentResponse&&) = delete;
-    HttpDownloadToContentResponse& operator=(const HttpDownloadToContentResponse&) = delete;
-    HttpDownloadToContentResponse& operator=(HttpDownloadToContentResponse&&) = delete;
+    HttpDownloadToMemoryResponse();
+    ~HttpDownloadToMemoryResponse();
+    HttpDownloadToMemoryResponse(const HttpDownloadToMemoryResponse&) = delete;
+    HttpDownloadToMemoryResponse(HttpDownloadToMemoryResponse&&) = delete;
+    HttpDownloadToMemoryResponse& operator=(const HttpDownloadToMemoryResponse&) = delete;
+    HttpDownloadToMemoryResponse& operator=(HttpDownloadToMemoryResponse&&) = delete;
 
     void setHttpResponseCode(int statusCode);
     int getHttpResponseCode() const;

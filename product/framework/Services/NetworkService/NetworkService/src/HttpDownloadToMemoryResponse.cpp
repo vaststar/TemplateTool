@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpDownloadToContentResponse.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -6,7 +6,7 @@ namespace ucf::service::network::http{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class HttpDownloadToContentResponse::DataPrivate
+class HttpDownloadToMemoryResponse::DataPrivate
 {
 public:
     DataPrivate();
@@ -33,7 +33,7 @@ private:
     size_t mTotalSize;
 };
 
-HttpDownloadToContentResponse::DataPrivate::DataPrivate()
+HttpDownloadToMemoryResponse::DataPrivate::DataPrivate()
     : mResponseCode(0)
     , mTotalSize(0)
 {
@@ -48,32 +48,32 @@ HttpDownloadToContentResponse::DataPrivate::DataPrivate()
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpDownloadToContentResponse Logic//////////////////////////////////////////
+////////////////////Start HttpDownloadToMemoryResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-HttpDownloadToContentResponse::HttpDownloadToContentResponse()
-    : mDataPrivate(std::make_unique<HttpDownloadToContentResponse::DataPrivate>())
+HttpDownloadToMemoryResponse::HttpDownloadToMemoryResponse()
+    : mDataPrivate(std::make_unique<HttpDownloadToMemoryResponse::DataPrivate>())
 {
 
 }
 
-HttpDownloadToContentResponse::~HttpDownloadToContentResponse()
+HttpDownloadToMemoryResponse::~HttpDownloadToMemoryResponse()
 {
 
 }
 
 
-void HttpDownloadToContentResponse::setHttpResponseCode(int statusCode)
+void HttpDownloadToMemoryResponse::setHttpResponseCode(int statusCode)
 {
     mDataPrivate->setHttpResponseCode(statusCode);
 }
 
-int HttpDownloadToContentResponse::getHttpResponseCode() const
+int HttpDownloadToMemoryResponse::getHttpResponseCode() const
 {
     return mDataPrivate->getHttpResponseCode();
 }
 
-void HttpDownloadToContentResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
+void HttpDownloadToMemoryResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
 {
     mDataPrivate->setResponseHeaders(headers);
     auto item = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
@@ -85,43 +85,43 @@ void HttpDownloadToContentResponse::setResponseHeaders(const NetworkHttpHeaders&
     }
 }
 
-NetworkHttpHeaders HttpDownloadToContentResponse::getResponseHeaders() const
+NetworkHttpHeaders HttpDownloadToMemoryResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
 
-void HttpDownloadToContentResponse::setErrorData(const ResponseErrorStruct& errorData)
+void HttpDownloadToMemoryResponse::setErrorData(const ResponseErrorStruct& errorData)
 {
     mDataPrivate->setErrorData(errorData);
 }
 
-std::optional<ResponseErrorStruct> HttpDownloadToContentResponse::getErrorData() const
+std::optional<ResponseErrorStruct> HttpDownloadToMemoryResponse::getErrorData() const
 {
     return mDataPrivate->getErrorData();
 }
 
-void HttpDownloadToContentResponse::appendResponseBody(const ByteBuffer& buffer)
+void HttpDownloadToMemoryResponse::appendResponseBody(const ByteBuffer& buffer)
 {
     mDataPrivate->appendResponseBody(buffer);
 }
 
-void HttpDownloadToContentResponse::setResponseBody(const ByteBuffer& buffer)
+void HttpDownloadToMemoryResponse::setResponseBody(const ByteBuffer& buffer)
 {
     mDataPrivate->setResponseBody(buffer);
 }
 
-const ByteBuffer& HttpDownloadToContentResponse::getResponseBody() const
+const ByteBuffer& HttpDownloadToMemoryResponse::getResponseBody() const
 {
     return mDataPrivate->getResponseBody();
 }
 
-size_t HttpDownloadToContentResponse::getTotalSize() const
+size_t HttpDownloadToMemoryResponse::getTotalSize() const
 {
     return mDataPrivate->getTotalSize();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpDownloadToContentResponse Logic//////////////////////////////////////////
+////////////////////Start HttpDownloadToMemoryResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

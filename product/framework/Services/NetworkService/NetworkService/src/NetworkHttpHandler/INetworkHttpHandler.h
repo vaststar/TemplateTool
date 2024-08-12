@@ -4,8 +4,6 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::utilities::network::http{
-class NetworkHttpResponse;
-using NetworkHttpResponseCallbackFunc = std::function<void(const NetworkHttpResponse& httpResponse)>;
 class NetworkHttpRequest;
 }
 

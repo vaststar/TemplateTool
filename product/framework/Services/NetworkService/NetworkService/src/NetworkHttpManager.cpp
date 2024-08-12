@@ -7,7 +7,7 @@
 
 #include "NetworkHttpHandler/NetworkHttpRestHandler.h"
 #include "NetworkHttpHandler/NetworkHttpRawHandler.h"
-#include "NetworkHttpHandler/NetworkHttpDownloadToContentHandler.h"
+#include "NetworkHttpHandler/NetworkHttpDownloadToMemoryHandler.h"
 
 #ifndef RETURN_FROM_LAMBDA_IF_DEAD
 #define RETURN_FROM_LAMBDA_IF_DEAD(x) \
@@ -74,9 +74,9 @@ void NetworkHttpManager::sendHttpRawRequest(const ucf::service::network::http::H
     sendHttpRequest(httpHandler, location);
 }
 
-void NetworkHttpManager::downloadContentToMemory(const ucf::service::network::http::HttpDownloadToContentRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToContentResponseCallbackFunc& downloadResponseCallback, const std::source_location location)
+void NetworkHttpManager::downloadContentToMemory(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& downloadResponseCallback, const std::source_location location)
 {
-    auto httpHandler = std::make_shared<NetworkHttpDownloadToContentHandler>(downloadRequest, downloadResponseCallback);
+    auto httpHandler = std::make_shared<NetworkHttpDownloadToMemoryHandler>(downloadRequest, downloadResponseCallback);
     sendHttpRequest(httpHandler, location);
 }
 

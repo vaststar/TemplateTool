@@ -1,11 +1,11 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToContentRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToContentResponse.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
 
 
-#include "NetworkHttpDownloadToContentHandler.h"
+#include "NetworkHttpDownloadToMemoryHandler.h"
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -13,28 +13,28 @@ namespace ucf::service::network::http{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class NetworkHttpDownloadToContentHandler::DataPrivate{
+class NetworkHttpDownloadToMemoryHandler::DataPrivate{
 public:
-    DataPrivate(const ucf::service::network::http::HttpDownloadToContentRequest& downloadRequest, const HttpDownloadToContentResponseCallbackFunc& restResponseCallback);
+    DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const HttpDownloadToMemoryResponseCallbackFunc& restResponseCallback);
     
     const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
-    ucf::service::network::http::HttpDownloadToContentResponse& getDownloadResponse(){return mDownloadResponse;}
-    ucf::service::network::http::HttpDownloadToContentResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
+    ucf::service::network::http::HttpDownloadToMemoryResponse& getDownloadResponse(){return mDownloadResponse;}
+    ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
 
-    void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToContentRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
+    void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
 private:
-    ucf::service::network::http::HttpDownloadToContentResponseCallbackFunc mResponseCallBack;
-    ucf::service::network::http::HttpDownloadToContentResponse mDownloadResponse;
+    ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc mResponseCallBack;
+    ucf::service::network::http::HttpDownloadToMemoryResponse mDownloadResponse;
     ucf::utilities::network::http::NetworkHttpRequest mHttpRequest;
 };
 
-NetworkHttpDownloadToContentHandler::DataPrivate::DataPrivate(const ucf::service::network::http::HttpDownloadToContentRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToContentResponseCallbackFunc& restResponseCallback)
+NetworkHttpDownloadToMemoryHandler::DataPrivate::DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& restResponseCallback)
     : mResponseCallBack(restResponseCallback)
 {
     convertDownloadRequestToHttpRequest(downloadRequest, mHttpRequest);
 }
 
-void NetworkHttpDownloadToContentHandler::DataPrivate::convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToContentRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
+void NetworkHttpDownloadToMemoryHandler::DataPrivate::convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
 {
     httpRequest.setRequestMethod(ucf::utilities::network::http::HTTPMethod::GET);
     httpRequest.setRequestHeaders(downloadRequest.getRequestHeaders());
@@ -52,26 +52,26 @@ void NetworkHttpDownloadToContentHandler::DataPrivate::convertDownloadRequestToH
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start NetworkHttpDownloadToContentHandler Logic///////////////////////////////////////
+////////////////////Start NetworkHttpDownloadToMemoryHandler Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-NetworkHttpDownloadToContentHandler::NetworkHttpDownloadToContentHandler(const ucf::service::network::http::HttpDownloadToContentRequest& downloadRequest, const HttpDownloadToContentResponseCallbackFunc& restResponseCallback)
-    : mDataPrivate(std::make_unique<NetworkHttpDownloadToContentHandler::DataPrivate>(downloadRequest, restResponseCallback))
+NetworkHttpDownloadToMemoryHandler::NetworkHttpDownloadToMemoryHandler(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const HttpDownloadToMemoryResponseCallbackFunc& restResponseCallback)
+    : mDataPrivate(std::make_unique<NetworkHttpDownloadToMemoryHandler::DataPrivate>(downloadRequest, restResponseCallback))
 {
 
 }
 
-NetworkHttpDownloadToContentHandler::~NetworkHttpDownloadToContentHandler()
+NetworkHttpDownloadToMemoryHandler::~NetworkHttpDownloadToMemoryHandler()
 {
 
 }
 
-const ucf::utilities::network::http::NetworkHttpRequest& NetworkHttpDownloadToContentHandler::getHttpRequest() const
+const ucf::utilities::network::http::NetworkHttpRequest& NetworkHttpDownloadToMemoryHandler::getHttpRequest() const
 {
     return mDataPrivate->getHttpRequest();
 }
 
-void NetworkHttpDownloadToContentHandler::setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData)
+void NetworkHttpDownloadToMemoryHandler::setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData)
 {
 
     mDataPrivate->getDownloadResponse().setHttpResponseCode(statusCode);
@@ -115,7 +115,7 @@ void NetworkHttpDownloadToContentHandler::setResponseHeader(int statusCode, cons
     }
 }
 
-void NetworkHttpDownloadToContentHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
+void NetworkHttpDownloadToMemoryHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
 {
     if (!buffer.empty())
     {
@@ -128,7 +128,7 @@ void NetworkHttpDownloadToContentHandler::appendResponseBody(const ucf::utilitie
     }
 }
 
-void NetworkHttpDownloadToContentHandler::completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics)
+void NetworkHttpDownloadToMemoryHandler::completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics)
 {
     if (auto callback = mDataPrivate->getResponseCallback())
     {
@@ -137,7 +137,7 @@ void NetworkHttpDownloadToContentHandler::completeResponse(const ucf::utilities:
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish NetworkHttpDownloadToContentHandler Logic///////////////////////////////////////
+////////////////////Finish NetworkHttpDownloadToMemoryHandler Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

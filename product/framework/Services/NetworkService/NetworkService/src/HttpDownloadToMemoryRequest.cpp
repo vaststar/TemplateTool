@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpDownloadToContentRequest.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
 namespace ucf::service::network::http{
@@ -7,7 +7,7 @@ namespace ucf::service::network::http{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class HttpDownloadToContentRequest::DataPrivate
+class HttpDownloadToMemoryRequest::DataPrivate
 {
 public:
     DataPrivate();
@@ -34,7 +34,7 @@ private:
     std::string mTrackingId;
 };
 
-HttpDownloadToContentRequest::DataPrivate::DataPrivate()
+HttpDownloadToMemoryRequest::DataPrivate::DataPrivate()
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
     , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
 {
@@ -49,53 +49,53 @@ HttpDownloadToContentRequest::DataPrivate::DataPrivate()
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpDownloadToContentRequest Logic//////////////////////////////////////////
+////////////////////Start HttpDownloadToMemoryRequest Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-HttpDownloadToContentRequest::HttpDownloadToContentRequest()
+HttpDownloadToMemoryRequest::HttpDownloadToMemoryRequest()
 {
 
 }
-HttpDownloadToContentRequest::HttpDownloadToContentRequest( const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs)
-    : mDataPrivate(std::make_unique<HttpDownloadToContentRequest::DataPrivate>())
+HttpDownloadToMemoryRequest::HttpDownloadToMemoryRequest( const std::string& uri, const NetworkHttpHeaders& headers, int timeoutSecs)
+    : mDataPrivate(std::make_unique<HttpDownloadToMemoryRequest::DataPrivate>())
 {
     mDataPrivate->setUri(uri);
     mDataPrivate->setHeaders(headers);
     mDataPrivate->setTimeoutSecs(timeoutSecs);
 }
 
-HttpDownloadToContentRequest::~HttpDownloadToContentRequest()
+HttpDownloadToMemoryRequest::~HttpDownloadToMemoryRequest()
 {
 
 }
 
 
-std::string HttpDownloadToContentRequest::getRequestId() const
+std::string HttpDownloadToMemoryRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
 }
-std::string HttpDownloadToContentRequest::getTrackingId() const
+std::string HttpDownloadToMemoryRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
 }
 
-std::string HttpDownloadToContentRequest::getRequestUri() const
+std::string HttpDownloadToMemoryRequest::getRequestUri() const
 {
     return mDataPrivate->getUri();
 }
 
-NetworkHttpHeaders HttpDownloadToContentRequest::getRequestHeaders() const
+NetworkHttpHeaders HttpDownloadToMemoryRequest::getRequestHeaders() const
 {
     return mDataPrivate->getHeaders();
 }
 
-int HttpDownloadToContentRequest::getTimeout() const
+int HttpDownloadToMemoryRequest::getTimeout() const
 {
     return mDataPrivate->getTimeoutSecs();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpDownloadToContentRequest Logic//////////////////////////////////////////
+////////////////////Start HttpDownloadToMemoryRequest Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }
