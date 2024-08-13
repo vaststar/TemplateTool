@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -6,7 +6,7 @@ namespace ucf::service::network::http{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class HttpDownloadToMemoryResponse::DataPrivate
+class HttpDownloadToFileResponse::DataPrivate
 {
 public:
     DataPrivate();
@@ -19,28 +19,28 @@ public:
     void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
     std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
 
-    void appendResponseBody(const ByteBuffer& buffer){ mResponseBody.insert(mResponseBody.end(), buffer.begin(), buffer.end());}
-    void setResponseBody(const ByteBuffer& buffer){ mResponseBody = buffer;}
-    const ByteBuffer& getResponseBody() const{ return mResponseBody;}
-
     size_t getTotalSize(){ return mTotalSize;}
     void setTotalSize(size_t size){ mTotalSize = size;}
     
     bool isFinished() const{ return mIsFinished;}
     void setFinished(){ mIsFinished = true;}
+
+    size_t getCurrentSize() const{ return mCurrentSize;}
+    void addCurrentSize( size_t _size) { mCurrentSize += _size;}
 private:
     int mResponseCode;
     NetworkHttpHeaders mResponseHeaders;
     std::optional<ResponseErrorStruct> mErrorData;
-    ByteBuffer mResponseBody;
     size_t mTotalSize;
+    size_t mCurrentSize;
     bool mIsFinished;
 };
 
-HttpDownloadToMemoryResponse::DataPrivate::DataPrivate()
+HttpDownloadToFileResponse::DataPrivate::DataPrivate()
     : mResponseCode(0)
     , mTotalSize(0)
     , mIsFinished(false)
+    , mCurrentSize(0)
 {
 
 }
@@ -53,32 +53,32 @@ HttpDownloadToMemoryResponse::DataPrivate::DataPrivate()
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpDownloadToMemoryResponse Logic//////////////////////////////////////////
+////////////////////Start HttpDownloadToFileResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-HttpDownloadToMemoryResponse::HttpDownloadToMemoryResponse()
-    : mDataPrivate(std::make_unique<HttpDownloadToMemoryResponse::DataPrivate>())
+HttpDownloadToFileResponse::HttpDownloadToFileResponse()
+    : mDataPrivate(std::make_unique<HttpDownloadToFileResponse::DataPrivate>())
 {
 
 }
 
-HttpDownloadToMemoryResponse::~HttpDownloadToMemoryResponse()
+HttpDownloadToFileResponse::~HttpDownloadToFileResponse()
 {
 
 }
 
 
-void HttpDownloadToMemoryResponse::setHttpResponseCode(int statusCode)
+void HttpDownloadToFileResponse::setHttpResponseCode(int statusCode)
 {
     mDataPrivate->setHttpResponseCode(statusCode);
 }
 
-int HttpDownloadToMemoryResponse::getHttpResponseCode() const
+int HttpDownloadToFileResponse::getHttpResponseCode() const
 {
     return mDataPrivate->getHttpResponseCode();
 }
 
-void HttpDownloadToMemoryResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
+void HttpDownloadToFileResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
 {
     mDataPrivate->setResponseHeaders(headers);
     auto item = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
@@ -90,53 +90,48 @@ void HttpDownloadToMemoryResponse::setResponseHeaders(const NetworkHttpHeaders& 
     }
 }
 
-NetworkHttpHeaders HttpDownloadToMemoryResponse::getResponseHeaders() const
+NetworkHttpHeaders HttpDownloadToFileResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
 
-void HttpDownloadToMemoryResponse::setErrorData(const ResponseErrorStruct& errorData)
+void HttpDownloadToFileResponse::setErrorData(const ResponseErrorStruct& errorData)
 {
     mDataPrivate->setErrorData(errorData);
 }
 
-std::optional<ResponseErrorStruct> HttpDownloadToMemoryResponse::getErrorData() const
+std::optional<ResponseErrorStruct> HttpDownloadToFileResponse::getErrorData() const
 {
     return mDataPrivate->getErrorData();
 }
 
-void HttpDownloadToMemoryResponse::appendResponseBody(const ByteBuffer& buffer)
+void HttpDownloadToFileResponse::appendResponseBody(const ByteBuffer& body)
 {
-    mDataPrivate->appendResponseBody(buffer);
+    mDataPrivate->addCurrentSize(body.size());
 }
 
-void HttpDownloadToMemoryResponse::setResponseBody(const ByteBuffer& buffer)
+size_t HttpDownloadToFileResponse::getCurrentSize() const
 {
-    mDataPrivate->setResponseBody(buffer);
+    return mDataPrivate->getCurrentSize();
 }
 
-const ByteBuffer& HttpDownloadToMemoryResponse::getResponseBody() const
-{
-    return mDataPrivate->getResponseBody();
-}
-
-size_t HttpDownloadToMemoryResponse::getTotalSize() const
+size_t HttpDownloadToFileResponse::getTotalSize() const
 {
     return mDataPrivate->getTotalSize();
 }
 
-bool HttpDownloadToMemoryResponse::isFinished() const
+bool HttpDownloadToFileResponse::isFinished() const
 {
     return mDataPrivate->isFinished();
 }
 
-void HttpDownloadToMemoryResponse::setFinished()
+void HttpDownloadToFileResponse::setFinished()
 {
     mDataPrivate->setFinished();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start HttpDownloadToMemoryResponse Logic//////////////////////////////////////////
+////////////////////Start HttpDownloadToFileResponse Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

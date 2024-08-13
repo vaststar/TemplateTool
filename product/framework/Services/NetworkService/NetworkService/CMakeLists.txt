@@ -11,6 +11,8 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/NetworkService/Model/HttpRawResponse.h
     include/ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h
     include/ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h
+    include/ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h
+    include/ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -25,12 +27,16 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/NetworkHttpHandler/NetworkHttpRawHandler.cpp
     src/NetworkHttpHandler/NetworkHttpDownloadToMemoryHandler.h
     src/NetworkHttpHandler/NetworkHttpDownloadToMemoryHandler.cpp
+    src/NetworkHttpHandler/NetworkHttpDownloadToFileHandler.h
+    src/NetworkHttpHandler/NetworkHttpDownloadToFileHandler.cpp
     src/HttpRestRequest.cpp
     src/HttpRestResponse.cpp
     src/HttpRawRequest.cpp
     src/HttpRawResponse.cpp
     src/HttpDownloadToMemoryRequest.cpp
     src/HttpDownloadToMemoryResponse.cpp
+    src/HttpDownloadToFileRequest.cpp
+    src/HttpDownloadToFileResponse.cpp
 )
 
 BuildModule(

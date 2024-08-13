@@ -5,9 +5,12 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
+#include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 #include "NetworkHttpHandler/NetworkHttpRestHandler.h"
 #include "NetworkHttpHandler/NetworkHttpRawHandler.h"
 #include "NetworkHttpHandler/NetworkHttpDownloadToMemoryHandler.h"
+#include "NetworkHttpHandler/NetworkHttpDownloadToFileHandler.h"
+
 
 #ifndef RETURN_FROM_LAMBDA_IF_DEAD
 #define RETURN_FROM_LAMBDA_IF_DEAD(x) \
@@ -77,6 +80,12 @@ void NetworkHttpManager::sendHttpRawRequest(const ucf::service::network::http::H
 void NetworkHttpManager::downloadContentToMemory(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& downloadResponseCallback, const std::source_location location)
 {
     auto httpHandler = std::make_shared<NetworkHttpDownloadToMemoryHandler>(downloadRequest, downloadResponseCallback);
+    sendHttpRequest(httpHandler, location);
+}
+
+void NetworkHttpManager::downloadContentToFile(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToFileResponseCallbackFunc& downloadResponseCallback, const std::source_location location)
+{
+    auto httpHandler = std::make_shared<NetworkHttpDownloadToFileHandler>(downloadRequest, downloadResponseCallback);
     sendHttpRequest(httpHandler, location);
 }
 

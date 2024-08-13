@@ -16,6 +16,9 @@
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
 
+#include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
+#include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
+
 namespace ucf::adapter{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -113,12 +116,20 @@ void ContactAdapter::testFunc()
         // networkManager->sendHttpRawRequest(rawGetRequest, rawGetCallback);
 
         //test download content
-        HttpDownloadToMemoryRequest DownloadToMemoryRequest("https://ash-speed.hetzner.com/100MB.bin",{},30);
-        auto downloadMemoryCallBack = [](const HttpDownloadToMemoryResponse& downloadContent){
-            SERVICE_LOG_DEBUG("download body, current:" << downloadContent.getResponseBody().size() << ", total:" << downloadContent.getTotalSize());
+        // HttpDownloadToMemoryRequest DownloadToMemoryRequest("https://ash-speed.hetzner.com/100MB.bin",{},30);
+        // auto downloadMemoryCallBack = [](const HttpDownloadToMemoryResponse& downloadContent){
+        //     SERVICE_LOG_DEBUG("download body, current:" << downloadContent.getResponseBody().size() << ", total:" << downloadContent.getTotalSize());
+        // };
+        //     SERVICE_LOG_DEBUG("start download to content Raw");
+        // networkManager->downloadContentToMemory(DownloadToMemoryRequest, downloadMemoryCallBack);
+
+        HttpDownloadToFileRequest downloadToFileRequest("https://ash-speed.hetzner.com/100MB.bin",{},3000,"scf_test_file");
+        auto downloadFileCallBack = [](const HttpDownloadToFileResponse& downloadContent){
+            SERVICE_LOG_DEBUG("download body, current:" << downloadContent.getCurrentSize() << ", total:" << downloadContent.getTotalSize());
         };
-            SERVICE_LOG_DEBUG("start download to content Raw");
-        networkManager->downloadContentToMemory(DownloadToMemoryRequest, downloadMemoryCallBack);
+            SERVICE_LOG_DEBUG("start download to file");
+        networkManager->downloadContentToFile(downloadToFileRequest, downloadFileCallBack);
+
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////

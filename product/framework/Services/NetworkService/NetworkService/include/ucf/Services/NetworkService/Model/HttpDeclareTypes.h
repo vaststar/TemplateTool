@@ -54,4 +54,7 @@ using HttpRawResponseCallbackFunc = std::function<void(const ucf::service::netwo
 class HttpDownloadToMemoryResponse;
 using HttpDownloadToMemoryResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpDownloadToMemoryResponse&)>;
 
+class HttpDownloadToFileResponse;
+using HttpDownloadToFileResponseCallbackFunc = std::function<void(const ucf::service::network::http::HttpDownloadToFileResponse&)>;
+
 }
