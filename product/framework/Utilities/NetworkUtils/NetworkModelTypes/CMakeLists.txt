@@ -36,5 +36,5 @@ BuildModule(
     TARGET_DEFINITIONS
         ${ADD_NETWORKTYPE_DEFINITIONS}
     IDE_FOLDER
-        framework/Services/Network
+        framework/Utilities/NetworkUtils
 )

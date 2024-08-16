@@ -46,5 +46,5 @@ BuildModule(
     TARGET_DEFINITIONS
         ${ADD_LIBCURL_DEFINITIONS}
     IDE_FOLDER
-        framework/Services/Network
+        framework/Utilities/NetworkUtils
 )

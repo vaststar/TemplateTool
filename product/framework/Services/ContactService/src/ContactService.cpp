@@ -1,7 +1,5 @@
 #include "ContactService.h"
 
-#include <sqlite3.h>
-
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
@@ -80,11 +78,6 @@ void ContactService::initService()
     {
         coreFramework->registerCallback(shared_from_this());
     }
-
-    //
-    sqlite3* pDb = NULL;
-    sqlite3_initialize();
-    sqlite3_open("test_tt.db", &pDb);
 }
 
 std::string ContactService::getServiceName() const
