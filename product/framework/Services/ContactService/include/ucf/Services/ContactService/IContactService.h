@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+#include <vector>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 #include <ucf/CoreFramework/IService.h>
 #include <ucf/Services/ContactService/IContactServiceCallback.h>
@@ -18,7 +20,7 @@ class SERVICE_EXPORT IContactService: public IService,
                                       public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
 {
 public:
-    virtual void fetchContactList() = 0;
+    virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) = 0;
     virtual std::vector<model::Contact> getContactList() const = 0;
     static std::shared_ptr<IContactService> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

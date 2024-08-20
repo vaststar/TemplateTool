@@ -2,14 +2,9 @@
 
 #include <string>
 #include <vector>
-#include <mutex>
 
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 
-namespace ucf::framework{
-    class ICoreFramework;
-    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
-}
 namespace ucf::service::model{
 class SERVICE_EXPORT Contact
 {
@@ -30,20 +25,5 @@ private:
     std::string mContactId;
     std::string mContactName;
     std::vector<std::string> mContactTags;
-};
-
-class SERVICE_EXPORT ContactModel
-{
-public:
-    ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework);
-    const std::vector<Contact>& getContacts() const;
-    void setContacts(const std::vector<Contact>& contacts);
-    void deleteContacts(const std::string& contactId);
-    void addOrUpdateContact(const Contact& contact);
-
-private:
-    mutable std::mutex mContactMutex;
-    std::vector<Contact> mContacts;
-    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };
 }

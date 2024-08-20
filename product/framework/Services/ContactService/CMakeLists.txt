@@ -3,13 +3,17 @@ include(BuildModule)
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/ContactService/IContactServiceCallback.h
     include/ucf/Services/ContactService/IContactService.h
-    include/ucf/Services/ContactService/ContactModel.h
+    include/ucf/Services/ContactService/Contact.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/ContactService.h
     src/ContactService.cpp
+    src/ContactModel.h
     src/ContactModel.cpp
+    src/Contact.cpp
+    src/ContactManager.h
+    src/ContactManager.cpp
     src/Adapters/ContactAdapter.h
     src/Adapters/ContactAdapter.cpp
 )

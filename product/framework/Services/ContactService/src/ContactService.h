@@ -6,11 +6,11 @@
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ContactService/ContactModel.h>
+#include <ucf/Services/ContactService/Contact.h>
 
 
 namespace ucf::service{
-class ContactService: public virtual IContactService, 
+class ContactService final: public virtual IContactService, 
                       public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
                       public ucf::framework::CoreFrameworkCallbackDefault,
                       public std::enable_shared_from_this<ContactService>
@@ -24,7 +24,7 @@ public:
     ContactService& operator=(ContactService&&) = delete;
 
     //IContactService
-    virtual void fetchContactList() override;
+    virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) override;
     virtual std::vector<model::Contact> getContactList() const override;
 
     //IService

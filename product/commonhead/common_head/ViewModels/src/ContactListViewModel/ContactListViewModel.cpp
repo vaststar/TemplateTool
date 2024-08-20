@@ -2,7 +2,7 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ContactService/ContactModel.h>
+#include <ucf/Services/ContactService/Contact.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
