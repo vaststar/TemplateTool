@@ -8,6 +8,7 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
+#include <ucf/Services/ContactService/Contact.h>
 #include "ContactModel.h"
 
 namespace ucf::service{
@@ -18,8 +19,8 @@ ContactModel::ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     SERVICE_LOG_DEBUG("create ContactModel, address:"  << this);
 
-    mContacts.push_back(model::Contact("1234", "test name1"));
-    mContacts.push_back(model::Contact("5678", "test name2"));
+    mContacts.push_back(model::PersonContact("1234"));
+    mContacts.push_back(model::PersonContact("5678"));
 }
 
 void ContactModel::initDataBase()
@@ -27,36 +28,36 @@ void ContactModel::initDataBase()
 
 }
 
-const std::vector<model::Contact>& ContactModel::getContacts() const
+const std::vector<model::PersonContact>& ContactModel::getContacts() const
 {
     std::scoped_lock loc(mContactMutex);
     return mContacts;
 }
 
-void ContactModel::setContacts(const std::vector<model::Contact>& contacts)
+void ContactModel::setContacts(const std::vector<model::PersonContact>& contacts)
 {
-    std::scoped_lock loc(mContactMutex);
-    mContacts = contacts;
+    // std::scoped_lock loc(mContactMutex);
+    // mContacts = contacts;
 }
 
 void ContactModel::deleteContacts(const std::string& contactId)
 {
-    std::scoped_lock loc(mContactMutex);
-    mContacts.erase(std::remove_if(mContacts.begin(), mContacts.end(),[contactId](const model::Contact& contact){
-        return contactId == contact.getContactId();
-    }),mContacts.end());
+    // std::scoped_lock loc(mContactMutex);
+    // mContacts.erase(std::remove_if(mContacts.cbegin(), mContacts.cend(),[contactId](const model::PersonContact& contact){
+    //     return contactId == contact.getContactId();
+    // }),mContacts.cend());
 }
 
-void ContactModel::addOrUpdateContact(const model::Contact& contact)
+void ContactModel::addOrUpdateContact(const model::PersonContact& contact)
 {
-    std::scoped_lock loc(mContactMutex);
-    if (auto iter = std::find(mContacts.begin(), mContacts.end(), contact); iter != mContacts.end())
-    {
-        *iter = contact;
-    }
-    else
-    {
-        mContacts.push_back(contact);
-    }
+    // std::scoped_lock loc(mContactMutex);
+    // if (auto iter = std::find(mContacts.begin(), mContacts.end(), contact); iter != mContacts.end())
+    // {
+    //     //*iter.getContactId() = contact;
+    // }
+    // else
+    // {
+    //     mContacts.push_back(contact);
+    // }
 }
 }

@@ -61,7 +61,7 @@ ContactManager::~ContactManager()
 }
 
 
-std::vector<model::Contact> ContactManager::getContactList() const
+std::vector<model::PersonContact> ContactManager::getPersonContactList() const
 {
     if (auto contactAdapter = mDataPrivate->getContactAdapter())
     {

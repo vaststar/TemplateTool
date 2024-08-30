@@ -25,13 +25,13 @@ public:
 
 public:
     void initDataBase();
-    const std::vector<model::Contact>& getContacts() const;
-    void setContacts(const std::vector<model::Contact>& contacts);
+    const std::vector<model::PersonContact>& getContacts() const;
+    void setContacts(const std::vector<model::PersonContact>& contacts);
     void deleteContacts(const std::string& contactId);
-    void addOrUpdateContact(const model::Contact& contact);
+    void addOrUpdateContact(const model::PersonContact& contact);
 private:
     mutable std::mutex mContactMutex;
-    std::vector<model::Contact> mContacts;
+    std::vector<model::PersonContact> mContacts;
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };
 }
