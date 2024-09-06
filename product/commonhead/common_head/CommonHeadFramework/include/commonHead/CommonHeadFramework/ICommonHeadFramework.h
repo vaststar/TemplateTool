@@ -15,6 +15,7 @@ class COMMONHEAD_EXPORT ICommonHeadFramework
 public:
     virtual std::string getName() const = 0;
     virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const = 0;
+    virtual void exitCommonheadFramework() = 0;
 public:
     static std::shared_ptr<ICommonHeadFramework> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

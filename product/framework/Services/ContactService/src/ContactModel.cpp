@@ -36,28 +36,29 @@ const std::vector<model::PersonContact>& ContactModel::getContacts() const
 
 void ContactModel::setContacts(const std::vector<model::PersonContact>& contacts)
 {
-    // std::scoped_lock loc(mContactMutex);
-    // mContacts = contacts;
+    std::scoped_lock loc(mContactMutex);
+    mContacts = contacts;
 }
 
 void ContactModel::deleteContacts(const std::string& contactId)
 {
-    // std::scoped_lock loc(mContactMutex);
-    // mContacts.erase(std::remove_if(mContacts.cbegin(), mContacts.cend(),[contactId](const model::PersonContact& contact){
-    //     return contactId == contact.getContactId();
-    // }),mContacts.cend());
+    std::scoped_lock loc(mContactMutex);
+    mContacts.erase(std::remove_if(mContacts.begin(), mContacts.end(),[contactId](const model::PersonContact& contact){
+        return contactId == contact.getContactId();
+    }),mContacts.end());
 }
 
 void ContactModel::addOrUpdateContact(const model::PersonContact& contact)
 {
-    // std::scoped_lock loc(mContactMutex);
-    // if (auto iter = std::find(mContacts.begin(), mContacts.end(), contact); iter != mContacts.end())
-    // {
-    //     //*iter.getContactId() = contact;
-    // }
-    // else
-    // {
-    //     mContacts.push_back(contact);
-    // }
+    std::scoped_lock loc(mContactMutex);
+    if (auto iter = std::find_if(mContacts.begin(), mContacts.end(), [contact](const model::PersonContact& contactItem) {return contact.getContactId() == contactItem.getContactId();});
+        iter != mContacts.end())
+    {
+        //*iter.getContactId() = contact;
+    }
+    else
+    {
+        mContacts.push_back(contact);
+    }
 }
 }

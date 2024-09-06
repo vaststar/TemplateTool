@@ -10,6 +10,7 @@ class CommonHeadFramework: public ICommonHeadFramework, std::enable_shared_from_
 {
 public:
     CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr coreframework);
+    virtual void exitCommonheadFramework() override;
     virtual std::string getName() const override;
     virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const override;
 private:

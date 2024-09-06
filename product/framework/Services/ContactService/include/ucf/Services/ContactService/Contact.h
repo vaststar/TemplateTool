@@ -15,7 +15,7 @@ public:
     virtual ~IContact() = default;
     std::string getContactId() const{ return mContactId;}
 private:
-    const std::string mContactId;
+    std::string mContactId;
 };
 
 class SERVICE_EXPORT PersonContact: public IContact

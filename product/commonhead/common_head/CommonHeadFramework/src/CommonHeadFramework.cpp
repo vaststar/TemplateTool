@@ -16,6 +16,11 @@ CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr core
     mCoreframeworkWPtr = coreframework;
 }
 
+void CommonHeadFramework::exitCommonheadFramework()
+{
+    COMMONHEAD_LOG_DEBUG("exit CommonHeadFramework, address:"<<this);
+}
+
 std::string CommonHeadFramework::getName() const
 {
     return "CommonHeadFramework";

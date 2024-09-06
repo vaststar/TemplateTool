@@ -1,27 +1,33 @@
 #include "Main/Main.h"
 
-#include <QGuiApplication>
-#include <QQuickView>
-#include <QQmlApplicationEngine>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
+#include "AppRunner/AppRunner.h"
 #include "ClientGlobal/ClientGlobal.h"
 #include "Main/LoggerDefine.h"
 
+#include "MainWindow/MainWindowManager.h"
 
-Main::Main()
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+class Main::DataPrivate
 {
-}
+public:
+    void initDataPrivate();
+    void exitApp();
+    const AppRunner::FrameworkDependencies& getDependencies() const{ return mDependencies;}
+private:
+    AppRunner::FrameworkDependencies mDependencies;
+};
 
-Main::~Main()
-{
-    MAINUI_LOG_DEBUG("delete Main");
-    LOG_WAIT_EXIT();
-}
-
-void Main::initApp(int argc, char *argv[])
+void Main::DataPrivate::initDataPrivate()
 {
     AppRunner::AppLogConfig logConfig{
         "applogs",
@@ -33,42 +39,51 @@ void Main::initApp(int argc, char *argv[])
     AppRunner::ApplicationConfig appConfig{logConfig};
     mDependencies = AppRunner::initAppDependencies(appConfig);
 
-    MAINUI_LOG_DEBUG("initAppDependencies done");
     ClientGlobal::getInstance()->setCommonHeadFramework(std::weak_ptr(mDependencies.commonHeadFramework));
-    MAINUI_LOG_DEBUG("init Main done");
 }
 
-int Main::runMainWindowExec(int argc, char *argv[])
+void Main::DataPrivate::exitApp()
 {
-    QGuiApplication app(argc, argv);
-    QQmlApplicationEngine engine;
+    if (mDependencies.coreFramework)
+    {
+        mDependencies.coreFramework->exitCoreFramework();
+    }
 
-    MAINUI_LOG_DEBUG("start load main qml");
-    const QUrl url(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app, [url, this](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-        {
-            QCoreApplication::exit(-1);
-        }
-    }, Qt::QueuedConnection);
-    engine.load(url);
-    MAINUI_LOG_DEBUG("finish load main qml");
-    return app.exec();
+    if (mDependencies.commonHeadFramework)
+    {
+        mDependencies.commonHeadFramework->exitCommonheadFramework();
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Finish DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+Main::Main()
+    : mDataPrivate(std::make_unique<Main::DataPrivate>())
+{
+}
+
+Main::~Main()
+{
+    MAINUI_LOG_DEBUG("delete Main");
+    LOG_WAIT_EXIT();
 }
 
 int Main::runMain(int argc, char *argv[])
 {
-    initApp(argc, argv);
-    MAINUI_LOG_DEBUG(__cplusplus);
-    int appResult = runMainWindowExec(argc, argv);
-    
-    MAINUI_LOG_DEBUG("quit App");
-    onExitApp();
-    return appResult;
-}
+    mDataPrivate->initDataPrivate();
+    MAINUI_LOG_DEBUG("init dependencies done");
 
-void Main::onExitApp()
-{
-    MAINUI_LOG_DEBUG("exit app");
-    mDependencies.coreFramework->exitCoreFramework();
+    MAINUI_LOG_DEBUG(__cplusplus);
+    int runResult = 0;
+    {
+        MainWindowManager mainWindowManager(MainWindowManager::ApplicationConfig{argc, argv, std::weak_ptr(mDataPrivate->getDependencies().commonHeadFramework)});
+        runResult = mainWindowManager.runApp();
+    }
+    
+    MAINUI_LOG_DEBUG("start quit App");
+    mDataPrivate->exitApp();
+    MAINUI_LOG_DEBUG("finish quit App");
+    return runResult;
 }

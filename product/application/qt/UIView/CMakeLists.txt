@@ -1,4 +1,5 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
+    include/MainWindow/MainWindowController.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -6,11 +7,13 @@ set(TARGET_SOURCE_FILES_PRIVATE
     include/ContactList/Datas.h
     include/ContactList/ContactListItemModel.h
     include/ContactList/ContactListViewController.h
-    include/MainWindow/MainWindowController.h
+    include/MainWindow/MainWindowManager.h
+
     src/Datas.cpp
     src/ContactListViewController.cpp
     src/MainWindowController.cpp
     src/ContactListItemModel.cpp
+    src/MainWindowManager.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
@@ -44,6 +47,8 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        UICore
+        Qt6::Gui Qt6::Quick Qt6::Widgets
         UIComponent
         ViewModels
         CommonHeadFramework
