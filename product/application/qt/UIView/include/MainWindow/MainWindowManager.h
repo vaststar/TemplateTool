@@ -25,6 +25,6 @@ public:
 private:
     void createAndShowMainWindow();
 private:
-    class DataPrivate;
-    std::unique_ptr<DataPrivate> mDataPrivate;
+    class Impl;
+    std::unique_ptr<Impl> mImpl;
 };

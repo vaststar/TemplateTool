@@ -1,42 +1,58 @@
 #include "MainWindowManager.h"
 
+#include <memory>
 #include <QObject>
 #include <QGuiApplication>
 #include <QQuickView>
 #include <QQmlApplicationEngine>
 
 
-#include <UICore/MainApplication.h>
+#include <UICore/CoreApplication.h>
+#include <UICore/CoreQmlApplicationEngine.h>
+#include <UICore/CoreContext.h>
+#include <UICore/CoreViewFactory.h>
 
 #include "LoggerDefine.h"
 
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start DataPrivate Logic//////////////////////////////////////////
+////////////////////Start Impl Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class MainWindowManager::DataPrivate
+class MainWindowManager::Impl
 {
 public:
-    DataPrivate(const MainWindowManager::ApplicationConfig& config);
-    int runApp(){ return mainApp.exec();}
+    Impl(const MainWindowManager::ApplicationConfig& config);
+    int runApp(){ return mainApp->exec();}
+
+    void initAppContext(const MainWindowManager::ApplicationConfig& config);
+
+    const std::unique_ptr<CoreContext>& getAppContext() const{ return mAppContext;}
 public:
-    MainApplication mainApp;
+    std::unique_ptr<CoreApplication> mainApp;
+    std::unique_ptr<CoreContext> mAppContext;
 };
 
-MainWindowManager::DataPrivate::DataPrivate(const MainWindowManager::ApplicationConfig& config)
-    : mainApp{ config.argc, config.argv }
+MainWindowManager::Impl::Impl(const MainWindowManager::ApplicationConfig& config)
+    : mainApp(std::make_unique<CoreApplication>( config.argc, config.argv ))
 {
+    initAppContext(config);
+}
 
+void MainWindowManager::Impl::initAppContext(const MainWindowManager::ApplicationConfig& config)
+{
+    auto qmlEngine = std::make_unique<CoreQmlApplicationEngine>();
+    auto viewFactory = std::make_unique<CoreViewFactory>(std::move(qmlEngine));
+    mAppContext = std::make_unique<CoreContext>(std::move(viewFactory));
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish DataPrivate Logic//////////////////////////////////////////
+////////////////////Finish Impl Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 MainWindowManager::MainWindowManager(const MainWindowManager::ApplicationConfig& config)
-    : mDataPrivate(std::make_unique<MainWindowManager::DataPrivate>(config))
+    : mImpl(std::make_unique<MainWindowManager::Impl>(config))
 {
     
 }
@@ -52,23 +68,23 @@ int MainWindowManager::runApp()
     // QQuickView view;
     // view.setSource(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
     // view.show();
-    return mDataPrivate->runApp();
+    // QQuickView view;
+    // view.setSource(QStringLiteral("qrc:/qt/qml/UIView/qml/testUI/testUI.qml"));
+    // view.show();
+
+    return mImpl->runApp();
 }
 
 void MainWindowManager::createAndShowMainWindow()
 {
-    // QQmlApplicationEngine engine;
 
     UIVIEW_LOG_DEBUG("start load main qml");
     const QUrl url(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
-    QObject::connect(mDataPrivate->mainApp.mApplicationEngine, &QQmlApplicationEngine::objectCreated, &mDataPrivate->mainApp,[url, this](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-        {
-            QCoreApplication::exit(-1);
-        }
-    }, Qt::QueuedConnection);
-    mDataPrivate->mainApp.mApplicationEngine->load(url);
 
+    mImpl->getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
+    mImpl->getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("qrc:/qt/qml/UIView/qml/testUI/testWindow.qml"));
+    // mDataPrivate->mainApp.mApplicationEngine->load(url);
+    // mDataPrivate->mainApp.mApplicationEngine->load(url);
     UIVIEW_LOG_DEBUG("finish load main qml");
 
 }

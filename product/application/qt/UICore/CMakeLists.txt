@@ -1,11 +1,17 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/UICore/MainApplication.h
+    include/UICore/CoreApplication.h
     include/UICore/UICoreExport.h
+    include/UICore/CoreQmlApplicationEngine.h
+    include/UICore/CoreContext.h
+    include/UICore/CoreViewFactory.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     # include/UICore/LoggerDefine.h 
-    src/MainApplication.cpp
+    src/CoreApplication.cpp
+    src/CoreQmlApplicationEngine.cpp
+    src/CoreContext.cpp
+    src/CoreViewFactory.cpp
 )
 
 
