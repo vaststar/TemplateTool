@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts
 import UIView 1.0
-
+import UIComponent 1.0
 Item{
     required property var controller
     MainWindowTabBar{
@@ -18,6 +18,10 @@ Item{
             left: navigationBar.right
         }
     }
+    
+    Component.onCompleted:{
+        controller.controllerInitialized.connect(frame.controller.initializeController)
+    }
 
     Text {
         text: controller.mControllerName + "test"
@@ -30,5 +34,23 @@ Item{
             left: parent.left
             leftMargin: 200
         }
+    }
+
+    
+    Button {
+        text: "testDialogShowButton"
+        anchors{
+            top: parent.top
+            topMargin: 300
+            left: parent.left
+            leftMargin: 100
+        }
+        onClicked:{
+            dialog.open()
+        }
+    }
+
+    UTDialog{
+        id: dialog
     }
 }

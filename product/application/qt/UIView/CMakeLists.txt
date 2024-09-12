@@ -8,12 +8,14 @@ set(TARGET_SOURCE_FILES_PRIVATE
     include/ContactList/ContactListItemModel.h
     include/ContactList/ContactListViewController.h
     include/MainWindow/MainWindowManager.h
+    include/MainWindow/TestController.h
 
     src/Datas.cpp
     src/ContactListViewController.cpp
     src/MainWindowController.cpp
     src/ContactListItemModel.cpp
     src/MainWindowManager.cpp
+    src/TestController.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES

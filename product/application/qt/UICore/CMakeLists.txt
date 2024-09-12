@@ -4,14 +4,18 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UICore/CoreQmlApplicationEngine.h
     include/UICore/CoreContext.h
     include/UICore/CoreViewFactory.h
+    include/UICore/CoreController.h
+    include/UICore/CoreViewModelFactory.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    # include/UICore/LoggerDefine.h 
+    src/LoggerDefine.h 
     src/CoreApplication.cpp
     src/CoreQmlApplicationEngine.cpp
     src/CoreContext.cpp
     src/CoreViewFactory.cpp
+    src/CoreController.cpp
+    src/CoreViewModelFactory.cpp
 )
 
 

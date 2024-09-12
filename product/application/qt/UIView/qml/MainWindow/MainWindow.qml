@@ -13,7 +13,7 @@ ApplicationWindow
     visible: true
     width: 758 
     height: 576
-    title: qsTr("TIAN TOOL")
+    title: qsTr(mainController.mTitle)
     color: "steelblue"
     menuBar: AppMenuBar {}
     header: AppHeader {

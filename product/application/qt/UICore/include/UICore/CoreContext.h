@@ -1,13 +1,20 @@
 #pragma once
 
 #include <memory>
+#include <QObject>
+#include <QtQml>
+
+#include <UICore/UICoreExport.h>
 
 class  CoreViewFactory;
-#include <UICore/UICoreExport.h>
-class UICore_EXPORT CoreContext final
+class CoreViewModelFactory;
+
+class UICore_EXPORT CoreContext final: public QObject
 {
+Q_OBJECT
+QML_ELEMENT
 public:
-    CoreContext(std::unique_ptr<CoreViewFactory>&& viewFactory);
+    CoreContext(std::unique_ptr<CoreViewModelFactory>&& viewModelFactory, std::unique_ptr<CoreViewFactory>&& viewFactory);
     ~CoreContext();
     
     CoreContext(const CoreContext&) = delete;
@@ -16,7 +23,8 @@ public:
     CoreContext& operator=(CoreContext&&) = delete;
 
     const std::unique_ptr<CoreViewFactory>& getViewFactory() const;
+    const std::unique_ptr<CoreViewModelFactory>& getViewModelFactory() const;
 private:
     const std::unique_ptr<CoreViewFactory> mViewFactory;
-    
+    const std::unique_ptr<CoreViewModelFactory> mViewModelFactory;
 };

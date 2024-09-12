@@ -8,10 +8,17 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/BaseController.cpp
 )
 
+set(UIVIEW_QML_TARGET_FILES
+    qml/UTDialog.qml
+)
+
+set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
+)
+
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
-    UIComponent
+        UIComponent
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
@@ -37,4 +44,9 @@ BuildQtModule(
         src
     IDE_FOLDER
         UI
+    
+    QML_TARGET_URI
+        UIComponent
+    QML_TARGET_FILES
+        ${UIVIEW_QML_TARGET_FILES}
 )
