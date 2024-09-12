@@ -10,6 +10,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 
 set(UIVIEW_QML_TARGET_FILES
     qml/UTDialog.qml
+    qml/UTWindow.qml
 )
 
 set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
@@ -26,7 +27,7 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
-        Qt6::Gui Qt6::Quick 
+        Qt6::Gui Qt6::Quick
         ViewModels 
         CommonHeadFramework
     TARGET_DEPENDENICES_PUBLIC

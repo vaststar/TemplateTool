@@ -66,8 +66,22 @@ MainWindowManager::~MainWindowManager()
 
 }
 
+#include<QLabel>
 int MainWindowManager::runApp()
 {
+    QLabel* a=new QLabel;
+    QPointer<QLabel> b(a);
+    delete a;
+    a=nullptr;
+    if (b)
+    {
+        UIVIEW_LOG_DEBUG("start load main qml" << b->text().toStdString());
+    }
+    else
+    {
+        UIVIEW_LOG_DEBUG("no b");
+    }
+
     createAndShowMainWindow();
     // QQuickView view;
     // view.setSource(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));

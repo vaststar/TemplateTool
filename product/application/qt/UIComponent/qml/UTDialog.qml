@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls
 import QtQuick.Layouts
 
+Item{
 Dialog {
     id: dialog
     title: "myTitle"
@@ -12,4 +13,6 @@ Dialog {
 
     onAccepted: console.log("Ok clicked")
     onRejected: console.log("Cancel clicked")
+}
+
 }
