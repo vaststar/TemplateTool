@@ -1,4 +1,4 @@
-#include "ContactList/ContactListItemModel.h"
+#include "ContactList/include/ContactListItemModel.h"
 
 ContactListItemModel::ContactListItemModel(QObject *parent)
 {

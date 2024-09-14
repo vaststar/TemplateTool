@@ -1,5 +1,5 @@
-#include "ContactList/ContactListViewController.h"
-#include "LoggerDefine.h"
+#include "ContactList/include/ContactListViewController.h"
+#include "LoggerDefine/LoggerDefine.h"
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 

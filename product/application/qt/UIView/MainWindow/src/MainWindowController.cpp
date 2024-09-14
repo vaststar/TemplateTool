@@ -1,9 +1,9 @@
-#include "MainWindow/MainWindowController.h"
+#include "MainWindow/include/MainWindowController.h"
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include "LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
-#include "ContactListViewController.h"
+#include "ContactList/include/ContactListViewController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)

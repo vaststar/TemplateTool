@@ -8,7 +8,7 @@
 #include "ClientGlobal/ClientGlobal.h"
 #include "Main/LoggerDefine.h"
 
-#include "MainWindow/MainWindowManager.h"
+#include "AppUIManager/include/AppUIManager.h"
 
 
 
@@ -78,8 +78,8 @@ int Main::runMain(int argc, char *argv[])
     MAINUI_LOG_DEBUG(__cplusplus);
     int runResult = 0;
     {
-        MainWindowManager mainWindowManager(MainWindowManager::ApplicationConfig{argc, argv, std::weak_ptr(mDataPrivate->getDependencies().commonHeadFramework)});
-        runResult = mainWindowManager.runApp();
+        AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, std::weak_ptr(mDataPrivate->getDependencies().commonHeadFramework)});
+        runResult = AppUIManager.runApp();
     }
     
     MAINUI_LOG_DEBUG("start quit App");

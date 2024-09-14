@@ -7,7 +7,7 @@ namespace commonHead{
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
-class MainWindowManager final
+class AppUIManager final
 {
 public:
     struct ApplicationConfig
@@ -18,8 +18,8 @@ public:
     };
     
 public:
-    MainWindowManager(const ApplicationConfig& config);
-    ~MainWindowManager();
+    AppUIManager(const ApplicationConfig& config);
+    ~AppUIManager();
 public:
     int runApp();
 private:
