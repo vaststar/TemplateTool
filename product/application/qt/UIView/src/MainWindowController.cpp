@@ -3,6 +3,8 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include "LoggerDefine.h"
 
+#include "ContactListViewController.h"
+
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)
     , mAppContext(nullptr)
@@ -40,4 +42,9 @@ void MainWindowController::showMainWindow()
     // // mDataPrivate->mainApp.mApplicationEngine->load(url);
     // UIVIEW_LOG_DEBUG("finish load main qml");
 
+}
+
+void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
+{
+    contactListController->initializeController(mAppContext);
 }

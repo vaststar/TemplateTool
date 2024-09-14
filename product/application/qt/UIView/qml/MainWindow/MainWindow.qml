@@ -21,10 +21,23 @@ ApplicationWindow
     }
     footer: AppFooter {}
 
-    MainWindowContent{
-        id: mainWindowContent
-        controller: mainController
+    Loader{
+        id: mainWindowContentLoader
         anchors.fill: parent
-        
     }
+
+    Component.onCompleted:{
+        mainController.controllerInitialized.connect(onMainControllerInitialized)
+    }
+
+
+    function onMainControllerInitialized( appContext ){
+        mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
+    }
+    // MainWindowContent{
+    //     id: mainWindowContent
+    //     controller: mainController
+    //     anchors.fill: parent
+        
+    // }
 }

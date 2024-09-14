@@ -12,6 +12,7 @@ namespace commonHead{
 }
 
 class CoreContext;
+class ContactListViewController;
 class MainWindowController : public CoreController
 {
     Q_OBJECT
@@ -25,9 +26,12 @@ public:
 
     void showMainWindow();
     void initializeController(CoreContext* appContext);
+
 signals:
     void titleChanged();
     void controllerInitialized(CoreContext*);
+public slots:
+    void onContactListLoaded(ContactListViewController* contactListController);
 private:
     CoreContext* mAppContext;
     QString mTitle;

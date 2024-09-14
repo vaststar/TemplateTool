@@ -20,7 +20,9 @@ Item{
     }
     
     Component.onCompleted:{
-        controller.controllerInitialized.connect(frame.controller.initializeController)
+        // controller.controllerInitialized.connect(frame.controller.initializeController)
+        // frame.controller.initializeController(controller.getAppContext())
+        controller.onContactListLoaded(frame.controller)
     }
 
     Text {
