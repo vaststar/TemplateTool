@@ -14,10 +14,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
 
     MainWindow/include/MainWindowController.h
     MainWindow/src/MainWindowController.cpp
-    # include/MainWindow/TestController.h
 
     AppUIManager/src/AppUIManager.cpp
-    # src/TestController.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
@@ -28,8 +26,6 @@ set(UIVIEW_QML_TARGET_FILES
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
     MainWindow/qml/MainWindowTabBar.qml
-    # qml/testUI/testUI.qml
-    # qml/testUI/testWindow.qml
 )
 
 set(UIVIEW_QML_TARGET_RESOURCES
@@ -40,7 +36,6 @@ set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
 )
-
 
 include(BuildQtModule)
 BuildQtModule(
