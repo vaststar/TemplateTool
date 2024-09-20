@@ -30,19 +30,6 @@ QString MainWindowController::getTitle() const
 {
     return mTitle;
 }
-void MainWindowController::showMainWindow()
-{
-    // UIVIEW_LOG_DEBUG("start load main qml");
-    // const QUrl url(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
-
-    // mAppContext.getViewFactory()->loadQmlWindow(QStringLiteral("qrc:/qt/qml/UIView/qml/MainWindow/MainWindow.qml"));
-    // setProperty(const char *name, const QVariant &value)
-    // // mImpl->getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("qrc:/qt/qml/UIView/qml/testUI/testWindow.qml"));
-    // // mDataPrivate->mainApp.mApplicationEngine->load(url);
-    // // mDataPrivate->mainApp.mApplicationEngine->load(url);
-    // UIVIEW_LOG_DEBUG("finish load main qml");
-
-}
 
 void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
 {

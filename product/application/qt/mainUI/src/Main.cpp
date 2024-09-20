@@ -5,7 +5,6 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include "AppRunner/AppRunner.h"
-#include "ClientGlobal/ClientGlobal.h"
 #include "Main/LoggerDefine.h"
 
 #include "AppUIManager/include/AppUIManager.h"
@@ -38,8 +37,6 @@ void Main::DataPrivate::initDataPrivate()
     };
     AppRunner::ApplicationConfig appConfig{logConfig};
     mDependencies = AppRunner::initAppDependencies(appConfig);
-
-    ClientGlobal::getInstance()->setCommonHeadFramework(std::weak_ptr(mDependencies.commonHeadFramework));
 }
 
 void Main::DataPrivate::exitApp()

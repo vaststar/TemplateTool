@@ -24,7 +24,6 @@ public:
 
     QString getTitle() const;
 
-    void showMainWindow();
     void initializeController(CoreContext* appContext);
 
 signals:

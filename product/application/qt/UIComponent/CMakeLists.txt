@@ -1,11 +1,9 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIComponentExport.h
-    include/BaseController/BaseController.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     include/LoggerDefine.h
-    src/BaseController.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
@@ -31,7 +29,6 @@ BuildQtModule(
         ViewModels 
         CommonHeadFramework
     TARGET_DEPENDENICES_PUBLIC
-        ClientGlobal
         MasterLog 
         ThreadPool
     TARGET_DEFINITIONS

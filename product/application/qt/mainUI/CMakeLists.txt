@@ -24,7 +24,6 @@ BuildQtModule(
         CoreFramework
         CommonHeadFramework
     TARGET_DEPENDENICES_PUBLIC
-        ClientGlobal
         AppRunner
         MasterLog 
     TARGET_DEFINITIONS
