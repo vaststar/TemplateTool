@@ -30,15 +30,15 @@ QPointer<QQuickView> CoreViewFactory::createQmlWindow(const QString& qmlResource
 }
 
 
-void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const ControllerCallback& controllerCallback)
+void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const ControllerCallback& controllerCallback)
 {
-    QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [this,qmlResource, controllerCallback](QObject* object, const QUrl& url) {
+    QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [qmlResource, controllerObjectName, controllerCallback](QObject* object, const QUrl& url) {
         if (object && url.toString() == qmlResource)
         {
             UICore_LOG_DEBUG("object created: " << url.toString().toStdString());
-            if (auto controller = object->findChild<CoreController*>())
+            if (auto controller = object->findChild<CoreController*>(controllerObjectName))
             {
-                UICore_LOG_DEBUG("controller found, name: " << controller->getControllerName().toStdString());
+                UICore_LOG_DEBUG("controller found, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<<controller->objectName().toStdString());
                 controllerCallback(controller);
             }
         }

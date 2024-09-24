@@ -26,6 +26,7 @@ set(UIVIEW_QML_TARGET_FILES
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
     MainWindow/qml/MainWindowTabBar.qml
+    SystemTray/qml/SystemTray.qml
 )
 
 set(UIVIEW_QML_TARGET_RESOURCES

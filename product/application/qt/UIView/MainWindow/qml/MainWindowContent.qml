@@ -8,7 +8,6 @@ Item{
     MainWindowTabBar{
         id: navigationBar
     }
-    
     ContactList{
         id: frame
         width : 400

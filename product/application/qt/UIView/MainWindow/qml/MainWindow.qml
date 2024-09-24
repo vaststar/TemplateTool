@@ -6,8 +6,10 @@ import UIView 1.0
 ApplicationWindow
 {
     id: root
+
     MainWindowController{
         id:mainController
+        objectName: "MainWindowController"
     }
 
     visible: true
@@ -34,10 +36,8 @@ ApplicationWindow
     function onMainControllerInitialized( appContext ){
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
     }
-    // MainWindowContent{
-    //     id: mainWindowContent
-    //     controller: mainController
-    //     anchors.fill: parent
-        
-    // }
+
+    SystemTray{
+        id: systemTray
+    }
 }

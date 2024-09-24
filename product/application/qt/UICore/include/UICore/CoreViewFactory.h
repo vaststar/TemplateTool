@@ -20,7 +20,7 @@ public:
 
     QPointer<QQuickView> createQmlWindow(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr);
 
-    void loadQmlWindow(const QString& qmlResource, const ControllerCallback& controllerCallback = nullptr);
+    void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const ControllerCallback& controllerCallback = nullptr);
 private:
     const std::unique_ptr<CoreQmlApplicationEngine> mQmlEngine;
 };

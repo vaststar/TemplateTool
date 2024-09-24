@@ -26,6 +26,9 @@ public:
 
     void initializeController(CoreContext* appContext);
 
+// private:
+//     void showContactWindow()
+
 signals:
     void titleChanged();
     void controllerInitialized(CoreContext*);
