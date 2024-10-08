@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <QObject>
-#include <QtQml>
 
 #include <UICore/UICoreExport.h>
 
@@ -12,7 +11,6 @@ class CoreViewModelFactory;
 class UICore_EXPORT CoreContext final: public QObject
 {
 Q_OBJECT
-QML_ELEMENT
 public:
     CoreContext(std::unique_ptr<CoreViewModelFactory>&& viewModelFactory, std::unique_ptr<CoreViewFactory>&& viewFactory);
     ~CoreContext();

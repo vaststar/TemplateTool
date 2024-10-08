@@ -10,6 +10,7 @@
 
 #include <ucf/Services/ContactService/Contact.h>
 #include "ContactModel.h"
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 
 namespace ucf::service{
 
@@ -25,7 +26,9 @@ ContactModel::ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
 
 void ContactModel::initDataBase()
 {
-
+    ucf::utilities::database::SqliteDatabaseConfig config{"test_database.db"};
+    mContactDatabase = ucf::utilities::database::IDatabaseWrapper::createSqliteDatabase(config);
+    mContactDatabase->open();
 }
 
 const std::vector<model::PersonContact>& ContactModel::getContacts() const

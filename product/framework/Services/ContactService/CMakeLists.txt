@@ -32,6 +32,7 @@ BuildModule(
         nlohmann_json::nlohmann_json
         CoreFramework
         NetworkService
+        DatabaseWrapper
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
         NotificationHelper

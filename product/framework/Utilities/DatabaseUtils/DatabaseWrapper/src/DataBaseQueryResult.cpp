@@ -1,0 +1,117 @@
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseQueryResult.h>
+
+#include <map>
+#include <mutex>
+#include <algorithm>
+
+#include "DatabaseWrapperLogger.h"
+namespace ucf::utilities::database{
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+class DataBaseQueryResult::DataPrivate
+{
+public:
+    explicit DataPrivate();
+    void addColumnData(const std::string& key, const DatabaseValue& value);
+    DatabaseValue value(const std::string& key) const;
+    std::vector<std::string> keys() const;
+private:
+    std::map<std::string, DatabaseValue> mValues;
+    mutable std::mutex mMutex;
+};
+
+DataBaseQueryResult::DataPrivate::DataPrivate()
+{
+
+}
+
+void DataBaseQueryResult::DataPrivate::addColumnData(const std::string& key, const DatabaseValue& value)
+{
+    if (key.empty())
+    {
+        return;
+    }
+
+    {
+        std::scoped_lock<std::mutex> loc(mMutex);
+        if (mValues.find(key) != mValues.end())
+        {
+            DBWRAPPER_LOG_INFO("key already exists, key: " << key << ", will replace it with new value.");
+        }
+        mValues[key] = value;
+    }
+}
+
+std::vector<std::string> DataBaseQueryResult::DataPrivate::keys() const
+{
+    std::vector<std::string> keys;
+    {
+        std::scoped_lock<std::mutex> loc(mMutex);
+        std::transform(mValues.cbegin(), mValues.cend(), std::back_inserter(keys), [](const auto& keyValPair){ return keyValPair.first;});
+    }
+    return keys;
+}
+
+DatabaseValue DataBaseQueryResult::DataPrivate::value(const std::string& key) const
+{
+    if (key.empty())
+    {
+        return {};
+    }
+    {
+        std::scoped_lock<std::mutex> loc(mMutex);
+        if (auto it = mValues.find(key); it != mValues.end())
+        {
+            return it->second;
+        }
+    }
+    return {};
+}
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+DataBaseQueryResult::DataBaseQueryResult()
+    : mDataPrivate(std::make_unique<DataBaseQueryResult::DataPrivate>())
+{
+
+}
+
+DataBaseQueryResult::~DataBaseQueryResult()
+{
+
+}
+
+void DataBaseQueryResult::addColumnData(const std::string& key, const DatabaseValue& value)
+{
+    mDataPrivate->addColumnData(key, value);
+}
+
+DatabaseValue DataBaseQueryResult::value(const std::string& key) const
+{
+    return mDataPrivate->value(key);
+}
+
+std::vector<std::string> DataBaseQueryResult::keys() const
+{
+    return mDataPrivate->keys();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+}

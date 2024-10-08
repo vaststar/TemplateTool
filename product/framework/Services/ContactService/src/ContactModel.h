@@ -7,6 +7,13 @@
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 #include <ucf/Services/ContactService/Contact.h>
 
+
+namespace ucf::utilities::database
+{
+    class IDatabaseWrapper;
+}
+
+
 namespace ucf::framework{
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
@@ -33,5 +40,6 @@ private:
     mutable std::mutex mContactMutex;
     std::vector<model::PersonContact> mContacts;
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> mContactDatabase;
 };
 }

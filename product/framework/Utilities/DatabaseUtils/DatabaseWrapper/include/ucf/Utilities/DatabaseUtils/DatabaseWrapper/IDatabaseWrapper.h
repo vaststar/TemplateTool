@@ -1,8 +1,21 @@
 #pragma once
+
+#include <memory>
+#include <string>
+#include <functional>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h>
 
 namespace ucf::utilities::database{
-class IDatabaseWrapper
+
+class DataBaseQueryResult;
+using DataBaseQueryResults = std::vector<DataBaseQueryResult>;
+
+struct SqliteDatabaseConfig{
+    std::string fileName;
+    std::string password;
+};
+
+class DATABASEWRAPPER_EXPORT IDatabaseWrapper
 {
 public:
     virtual ~IDatabaseWrapper() = default;
@@ -10,5 +23,9 @@ public:
     virtual void open() = 0;
     virtual void close() = 0;
     virtual bool isOpen() = 0;
+    virtual void execute(const std::string& commandStr) = 0;
+    virtual void queryData(const std::string& queryStr, std::function<void(const DataBaseQueryResults&)>) = 0;
+
+    static std::shared_ptr<IDatabaseWrapper> createSqliteDatabase(const SqliteDatabaseConfig& config);
 };
 }
