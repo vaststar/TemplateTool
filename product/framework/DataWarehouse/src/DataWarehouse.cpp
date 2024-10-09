@@ -1,4 +1,12 @@
+#include <map>
+#include <mutex>
+
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
+
 #include "DataWarehouse.h"
+#include "DataWarehouseLogger.h"
+#include "DataWarehouseSchemas.h"
+
 
 namespace db{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -10,11 +18,41 @@ class DataWarehouse::DataPrivate
 {
 public:
     DataPrivate();
+    ~DataPrivate();
+    void initializeDB(const DBConfig& dbConfig);
+private:
+    ucf::utilities::database::DataBaseSchemas createUserTables();
+private:
+    std::map<db::DBEnum, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDataBaseWrapper;
 };
 
 DataWarehouse::DataPrivate::DataPrivate()
 {
 
+}
+
+DataWarehouse::DataPrivate::~DataPrivate()
+{
+    mDataBaseWrapper.clear();
+}
+
+void DataWarehouse::DataPrivate::initializeDB(const DBConfig& dbConfig)
+{
+    if (mDataBaseWrapper.find(dbConfig.dbType) == mDataBaseWrapper.end())
+    {
+        mDataBaseWrapper[dbConfig.dbType] = ucf::utilities::database::IDatabaseWrapper::createSqliteDatabase(ucf::utilities::database::SqliteDatabaseConfig{dbConfig.dbFilePath, dbConfig.password});
+        mDataBaseWrapper[dbConfig.dbType]->open();
+        mDataBaseWrapper[dbConfig.dbType]->createTables(createUserTables());
+    }
+    else
+    {
+        DATAWAREHOUSE_LOG_WARN("already have dbType:" << static_cast<int>(dbConfig.dbType));
+    }
+}
+
+ucf::utilities::database::DataBaseSchemas DataWarehouse::DataPrivate::createUserTables()
+{
+    return {db::UserContactTable{}, db::GroupContactTable{}};
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +78,15 @@ DataWarehouse::DataWarehouse()
 
 }
 
+DataWarehouse::~DataWarehouse()
+{
+
+}
+
+void DataWarehouse::initializeDB(const DBConfig& dbConfig)
+{
+    mDataPrivate->initializeDB(dbConfig);
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataWarehouse Logic//////////////////////////////////////////

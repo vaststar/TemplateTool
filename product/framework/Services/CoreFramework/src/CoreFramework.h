@@ -24,8 +24,10 @@ public:
 public:
     //ICoreFramework
     virtual std::string getName() const override;
+    virtual void initCoreFramework() override;
     virtual void initServices() override;
     virtual void exitCoreFramework() override;
+    virtual std::shared_ptr<db::IDataWarehouse> getDataWarehouse() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

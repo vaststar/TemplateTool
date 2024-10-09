@@ -35,6 +35,7 @@ void Main::DataPrivate::initDataPrivate()
         180,
         50 * 1024 * 1024
     };
+    
     AppRunner::ApplicationConfig appConfig{logConfig};
     mDependencies = AppRunner::initAppDependencies(appConfig);
 }

@@ -13,6 +13,8 @@ public:
     DataWarehouse(DataWarehouse&&) = delete;
     DataWarehouse& operator=(const DataWarehouse&) = delete;
     DataWarehouse& operator=(DataWarehouse&&) = delete;
+
+    virtual void initializeDB(const DBConfig& dbConfig) override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

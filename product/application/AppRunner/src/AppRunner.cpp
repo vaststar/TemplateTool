@@ -16,6 +16,7 @@ FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
 
     //create framework
     auto coreFramework = ucf::framework::ICoreFramework::CreateInstance();
+    coreFramework->initCoreFramework();
 
     coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::CreateInstance(coreFramework));
     coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::CreateInstance(coreFramework));

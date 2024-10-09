@@ -4,6 +4,7 @@
 #include "DatabaseWrapperLogger.h"
 
 namespace ucf::utilities::database{
+static constexpr auto CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ";
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -18,7 +19,7 @@ public:
     bool isOpen();
     void execute(const std::string& commandStr);
 private:
-    const SqliteDatabaseConfig& mDataBaseConfig;
+    SqliteDatabaseConfig mDataBaseConfig;
     sqlite3* mDatabase;
 };
 
@@ -48,16 +49,6 @@ void SqliteDatabaseWrapper::DataPrivate::openDatabase()
    {
         DBWRAPPER_LOG_WARN("open db failed, dbname: " << mDataBaseConfig.fileName);
    }
-
-   //for test
-
-   sqlite3_exec(mDatabase, R"SQL(
-        CREATE TABLE IF NOT EXISTS user(
-            id INTEGER PRIMARY KEY,
-            create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    )SQL", 0, 0, NULL);
 }
 
 void SqliteDatabaseWrapper::DataPrivate::closeDatabase()
@@ -115,6 +106,7 @@ SqliteDatabaseWrapper::~SqliteDatabaseWrapper()
     }
     catch(...)
     {
+        DBWRAPPER_LOG_WARN("close db exception"); 
     }
 }
 
@@ -133,10 +125,15 @@ bool SqliteDatabaseWrapper::isOpen()
     return mDataPrivate->isOpen();
 }
 
-void SqliteDatabaseWrapper::execute(const std::string& commandStr)
+void SqliteDatabaseWrapper::createTables(const DataBaseSchemas& tableSchemas)
 {
-    mDataPrivate->execute(commandStr);
+    for (const auto& tableInfo : tableSchemas)
+    {
+        std::string createStatement = CREATE_TABLE + tableInfo.tableName() + tableInfo.schema();
+        mDataPrivate->execute(createStatement);
+    }
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish SqliteDatabaseWrapper Logic//////////////////////////////////////////

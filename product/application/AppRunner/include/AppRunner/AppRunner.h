@@ -27,6 +27,7 @@ namespace AppRunner
         unsigned int logMaxSingleFileSize{ 50 * 1024 * 1024};
         std::string loggerName{"APP"};//don't change it, we all use APP as loggerName
     };
+    
     struct ApplicationConfig{
         AppLogConfig appLogConfig;
     };
