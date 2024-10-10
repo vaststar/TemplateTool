@@ -1,6 +1,6 @@
 #include "DataWarehouseSchemas.h"
 
-namespace db{
+namespace db::schema{
 UserContactTable::UserContactTable()
     : ucf::utilities::database::DataBaseSchema(TableName,{
         {ContactIdField, "TEXT UNIQUE NOT NULL"},

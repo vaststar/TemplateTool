@@ -9,5 +9,4 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
 
 add_subdirectory(thirdparty)
 add_subdirectory(Utilities)
-add_subdirectory(DataWarehouse)
 add_subdirectory(Services)

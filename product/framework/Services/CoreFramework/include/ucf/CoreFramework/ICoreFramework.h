@@ -10,11 +10,6 @@
 
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
-
-namespace db{
-    class IDataWarehouse;
-}
-
 namespace ucf::framework{
 
 class IService;
@@ -29,7 +24,6 @@ public:
     virtual void initCoreFramework() = 0;
     virtual void initServices() = 0;
     virtual void exitCoreFramework() = 0;
-    virtual std::shared_ptr<db::IDataWarehouse> getDataWarehouse() = 0;
     static std::shared_ptr<ICoreFramework> CreateInstance();
 };
 

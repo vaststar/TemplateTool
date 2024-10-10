@@ -3,7 +3,6 @@
 #include <mutex>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/CoreFramework/IService.h>
-#include <ucf/DataWarehouse/IDataWarehouse.h>
 
 namespace ucf::framework{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -28,16 +27,13 @@ public:
     void initialize();
     void onExiting();
     void exitFinished();
-    std::shared_ptr<db::IDataWarehouse> getDataWarehouse();
 private:
     mutable std::mutex mStateMutex;
     CoreFrameworkState mState;
-    std::shared_ptr<db::IDataWarehouse> mDataWarehouse;
 };
 
 CoreFramework::DataPrivate::DataPrivate()
     : mState(CoreFrameworkState::InitialState)
-    , mDataWarehouse(db::IDataWarehouse::createDataWarehouse())
 {
     CORE_LOG_DEBUG("create CoreFramework::DataPrivate, address:" << this);
 }
@@ -82,10 +78,6 @@ void CoreFramework::DataPrivate::initialize()
     }
 }
 
-std::shared_ptr<db::IDataWarehouse> CoreFramework::DataPrivate::getDataWarehouse()
-{
-    return mDataWarehouse;
-}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -120,7 +112,6 @@ void CoreFramework::initCoreFramework()
     {
         CORE_LOG_DEBUG("about initialize CoreFramework, address:" << this);
         mDataPrivate->initialize();
-        mDataPrivate->getDataWarehouse()->initializeDB({db::DBEnum::SHARED_DB, "shared_db.db"});
         CORE_LOG_DEBUG("finish initialize CoreFramework, address:" << this);
     }
     else
@@ -170,18 +161,6 @@ void CoreFramework::initServices()
     }
 }
 
-std::shared_ptr<db::IDataWarehouse> CoreFramework::getDataWarehouse()
-{
-    if (mDataPrivate->isRunnable())
-    {
-        mDataPrivate->getDataWarehouse();
-    }
-    else
-    {
-        CORE_LOG_INFO("CoreFramework is not runnable, address:" << this);
-    }
-    return nullptr;
-}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish CoreFramework Logic////////////////////////////////////////

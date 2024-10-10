@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseSchema.h>
-namespace db{
+namespace db::schema{
 struct UserContactTable: public ucf::utilities::database::DataBaseSchema
 {
     UserContactTable();

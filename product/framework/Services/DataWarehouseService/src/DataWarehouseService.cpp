@@ -2,41 +2,41 @@
 #include <mutex>
 
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
+#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
-#include "DataWarehouse.h"
-#include "DataWarehouseLogger.h"
+#include "DataWarehouseService.h"
 #include "DataWarehouseSchemas.h"
 
 
-namespace db{
+namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class DataWarehouse::DataPrivate
+class DataWarehouseService::DataPrivate
 {
 public:
-    DataPrivate();
+    explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ~DataPrivate();
-    void initializeDB(const DBConfig& dbConfig);
+    void initializeDB(const model::DBConfig& dbConfig);
 private:
     ucf::utilities::database::DataBaseSchemas createUserTables();
 private:
-    std::map<db::DBEnum, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDataBaseWrapper;
+    std::map<model::DBEnum, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDataBaseWrapper;
 };
 
-DataWarehouse::DataPrivate::DataPrivate()
+DataWarehouseService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
 
 }
 
-DataWarehouse::DataPrivate::~DataPrivate()
+DataWarehouseService::DataPrivate::~DataPrivate()
 {
     mDataBaseWrapper.clear();
 }
 
-void DataWarehouse::DataPrivate::initializeDB(const DBConfig& dbConfig)
+void DataWarehouseService::DataPrivate::initializeDB(const model::DBConfig& dbConfig)
 {
     if (mDataBaseWrapper.find(dbConfig.dbType) == mDataBaseWrapper.end())
     {
@@ -46,13 +46,13 @@ void DataWarehouse::DataPrivate::initializeDB(const DBConfig& dbConfig)
     }
     else
     {
-        DATAWAREHOUSE_LOG_WARN("already have dbType:" << static_cast<int>(dbConfig.dbType));
+        SERVICE_LOG_WARN("already have dbType:" << static_cast<int>(dbConfig.dbType));
     }
 }
 
-ucf::utilities::database::DataBaseSchemas DataWarehouse::DataPrivate::createUserTables()
+ucf::utilities::database::DataBaseSchemas DataWarehouseService::DataPrivate::createUserTables()
 {
-    return {db::UserContactTable{}, db::GroupContactTable{}};
+    return {db::schema::UserContactTable{}, db::schema::GroupContactTable{}};
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -64,32 +64,42 @@ ucf::utilities::database::DataBaseSchemas DataWarehouse::DataPrivate::createUser
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start DataWarehouse Logic//////////////////////////////////////////
+////////////////////Start DataWarehouseService Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<IDataWarehouse> IDataWarehouse::createDataWarehouse()
+std::shared_ptr<IDataWarehouseService> IDataWarehouseService::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
-    return std::make_shared<DataWarehouse>();
+    return std::make_shared<DataWarehouseService>(coreFramework);
 }
 
-DataWarehouse::DataWarehouse()
-    : mDataPrivate(std::make_unique<DataWarehouse::DataPrivate>())
-{
-
-}
-
-DataWarehouse::~DataWarehouse()
+DataWarehouseService::DataWarehouseService(ucf::framework::ICoreFrameworkWPtr coreFramework)
+    : mDataPrivate(std::make_unique<DataWarehouseService::DataPrivate>(coreFramework))
 {
 
 }
 
-void DataWarehouse::initializeDB(const DBConfig& dbConfig)
+DataWarehouseService::~DataWarehouseService()
+{
+
+}
+
+std::string DataWarehouseService::getServiceName() const
+{
+    return "DataWarehouseService";
+}
+
+void DataWarehouseService::initService()
+{
+    initializeDB({model::DBEnum::SHARED_DB, "shared_db.db"});
+}
+
+void DataWarehouseService::initializeDB(const model::DBConfig& dbConfig)
 {
     mDataPrivate->initializeDB(dbConfig);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish DataWarehouse Logic//////////////////////////////////////////
+////////////////////Finish DataWarehouseService Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

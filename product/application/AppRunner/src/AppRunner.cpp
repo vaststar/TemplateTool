@@ -5,6 +5,7 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 
 namespace AppRunner
 {
@@ -18,8 +19,9 @@ FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig)
     auto coreFramework = ucf::framework::ICoreFramework::CreateInstance();
     coreFramework->initCoreFramework();
 
-    coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::CreateInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::CreateInstance(coreFramework));
     coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::CreateInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::CreateInstance(coreFramework));
 
     coreFramework->initServices();
     

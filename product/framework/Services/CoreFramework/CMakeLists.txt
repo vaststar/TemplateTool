@@ -26,7 +26,6 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         ThreadPool
-        DataWarehouse
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
         NotificationHelper
