@@ -31,7 +31,7 @@ public:
     ContactModel& operator=(ContactModel&&) = delete;
 
 public:
-    void initDataBase();
+    void initDatabase();
     const std::vector<model::PersonContact>& getContacts() const;
     void setContacts(const std::vector<model::PersonContact>& contacts);
     void deleteContacts(const std::string& contactId);

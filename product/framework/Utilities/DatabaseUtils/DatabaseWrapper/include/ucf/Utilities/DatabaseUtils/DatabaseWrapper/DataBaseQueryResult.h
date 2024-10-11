@@ -4,20 +4,22 @@
 #include <variant>
 #include <memory>
 #include <vector>
+#include <map>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFormatStruct.h>
 
 namespace ucf::utilities::database{
 
-using DatabaseBuffer = std::vector<uint8_t>;
-using DatabaseValue = std::variant<bool, int, double, std::string, DatabaseBuffer>;
+class DBFormatStruct;
 
-class DATABASEWRAPPER_EXPORT DataBaseQueryResult final
+class DATABASEWRAPPER_EXPORT DatabaseQueryResult final
 {
 public:
-    DataBaseQueryResult();
-    ~DataBaseQueryResult();
-    void addColumnData(const std::string& key, const DatabaseValue& value);
-    DatabaseValue value(const std::string& key) const;
+    DatabaseQueryResult();
+    ~DatabaseQueryResult();
+    void addColumnData(const std::string& key, const DBFormatStruct& value);
+    std::map<std::string, DBFormatStruct> values() const;
+    // DBFormatStruct value(const std::string& key) const;
     std::vector<std::string> keys() const;
 private:
     class DataPrivate;

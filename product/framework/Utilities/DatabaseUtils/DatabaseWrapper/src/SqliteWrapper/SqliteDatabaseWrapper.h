@@ -18,7 +18,7 @@ public:
     virtual void open() override;
     virtual void close() override;
     virtual bool isOpen() override;
-    virtual void createTables(const DataBaseSchemas& tableSchemas) override;
+    virtual void createTables(const DatabaseSchemas& tableSchemas) override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

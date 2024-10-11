@@ -5,7 +5,7 @@
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h>
 namespace ucf::utilities::database{
 
-class DATABASEWRAPPER_EXPORT DataBaseSchema
+class DATABASEWRAPPER_EXPORT DatabaseSchema
 {
 public:
     struct Column
@@ -14,8 +14,8 @@ public:
         std::string mAttributes;
     };
 
-    DataBaseSchema(const std::string& tableName, const std::vector<Column>& columns);
-    DataBaseSchema(const std::string& tableName, std::vector<Column>&& columns);
+    DatabaseSchema(const std::string& tableName, const std::vector<Column>& columns);
+    DatabaseSchema(const std::string& tableName, std::vector<Column>&& columns);
 
     std::string schema() const;
     std::string tableName() const;

@@ -5,7 +5,8 @@ namespace ucf::service::model{
     
 enum class DBEnum{
     SHARED_DB,
-    USER_DB
+    USER_DB,
+    TEMP_DB
 };
 struct DBConfig{
     DBEnum dbType{DBEnum::SHARED_DB};

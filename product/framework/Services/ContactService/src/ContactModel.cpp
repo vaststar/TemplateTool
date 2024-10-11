@@ -24,7 +24,7 @@ ContactModel::ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
     mContacts.push_back(model::PersonContact("5678"));
 }
 
-void ContactModel::initDataBase()
+void ContactModel::initDatabase()
 {
     // ucf::utilities::database::SqliteDatabaseConfig config{"test_database.db"};
     // mContactDatabase = ucf::utilities::database::IDatabaseWrapper::createSqliteDatabase(config);

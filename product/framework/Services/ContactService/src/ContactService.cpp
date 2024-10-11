@@ -80,7 +80,7 @@ void ContactService::initService()
         coreFramework->registerCallback(shared_from_this());
     }
 
-    mDataPrivate->getContactModel()->initDataBase();
+    mDataPrivate->getContactModel()->initDatabase();
 }
 
 std::string ContactService::getServiceName() const

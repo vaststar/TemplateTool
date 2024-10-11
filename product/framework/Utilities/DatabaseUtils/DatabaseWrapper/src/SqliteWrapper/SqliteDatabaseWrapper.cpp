@@ -19,35 +19,35 @@ public:
     bool isOpen();
     void execute(const std::string& commandStr);
 private:
-    SqliteDatabaseConfig mDataBaseConfig;
+    SqliteDatabaseConfig mDatabaseConfig;
     sqlite3* mDatabase;
 };
 
 SqliteDatabaseWrapper::DataPrivate::DataPrivate(const SqliteDatabaseConfig& config)
-    : mDataBaseConfig(config)
+    : mDatabaseConfig(config)
     , mDatabase(nullptr)
 {
 }
 
 void SqliteDatabaseWrapper::DataPrivate::openDatabase()
 {
-   if (SQLITE_OK == sqlite3_open(mDataBaseConfig.fileName.c_str(), &mDatabase))
+   if (SQLITE_OK == sqlite3_open(mDatabaseConfig.fileName.c_str(), &mDatabase))
    {
-        DBWRAPPER_LOG_INFO("open db successfully, dbname: " << mDataBaseConfig.fileName);
-        // if (!mDataBaseConfig.password.empty() && 
-        //     SQLITE_OK == sqlite3_key(mDatabase, mDataBaseConfig.password.c_str(), mDataBaseConfig.password.length()))
+        DBWRAPPER_LOG_INFO("open db successfully, dbname: " << mDatabaseConfig.fileName);
+        // if (!mDatabaseConfig.password.empty() && 
+        //     SQLITE_OK == sqlite3_key(mDatabase, mDatabaseConfig.password.c_str(), mDatabaseConfig.password.length()))
         // {
-        //     DBWRAPPER_LOG_INFO("open db successfully, dbname: " << mDataBaseConfig.fileName);
+        //     DBWRAPPER_LOG_INFO("open db successfully, dbname: " << mDatabaseConfig.fileName);
         //     closeDatabase();
         // }
         // else
         // {
-        //     DBWRAPPER_LOG_WARN("db password wrong, dbname: " << mDataBaseConfig.fileName);
+        //     DBWRAPPER_LOG_WARN("db password wrong, dbname: " << mDatabaseConfig.fileName);
         // }
    }
    else
    {
-        DBWRAPPER_LOG_WARN("open db failed, dbname: " << mDataBaseConfig.fileName);
+        DBWRAPPER_LOG_WARN("open db failed, dbname: " << mDatabaseConfig.fileName);
    }
 }
 
@@ -72,7 +72,7 @@ void SqliteDatabaseWrapper::DataPrivate::execute(const std::string& commandStr)
     {
         std::string errorMessage = sqlError;
         sqlite3_free(sqlError);
-        DBWRAPPER_LOG_WARN("execute db command failed, dbname: " << mDataBaseConfig.fileName << ", error: " << errorMessage);
+        DBWRAPPER_LOG_WARN("execute db command failed, dbname: " << mDatabaseConfig.fileName << ", error: " << errorMessage);
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ bool SqliteDatabaseWrapper::isOpen()
     return mDataPrivate->isOpen();
 }
 
-void SqliteDatabaseWrapper::createTables(const DataBaseSchemas& tableSchemas)
+void SqliteDatabaseWrapper::createTables(const DatabaseSchemas& tableSchemas)
 {
     for (const auto& tableInfo : tableSchemas)
     {

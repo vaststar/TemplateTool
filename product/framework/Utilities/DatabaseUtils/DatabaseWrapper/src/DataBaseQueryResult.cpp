@@ -1,4 +1,4 @@
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseQueryResult.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseQueryResult.h>
 
 #include <map>
 #include <mutex>
@@ -11,24 +11,25 @@ namespace ucf::utilities::database{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class DataBaseQueryResult::DataPrivate
+class DatabaseQueryResult::DataPrivate
 {
 public:
     explicit DataPrivate();
-    void addColumnData(const std::string& key, const DatabaseValue& value);
-    DatabaseValue value(const std::string& key) const;
+    void addColumnData(const std::string& key, const DBFormatStruct& value);
+    // DBFormatStruct value(const std::string& key) const;
     std::vector<std::string> keys() const;
+    std::map<std::string, DBFormatStruct> values() const;
 private:
-    std::map<std::string, DatabaseValue> mValues;
+    std::map<std::string, DBFormatStruct> mValues;
     mutable std::mutex mMutex;
 };
 
-DataBaseQueryResult::DataPrivate::DataPrivate()
+DatabaseQueryResult::DataPrivate::DataPrivate()
 {
 
 }
 
-void DataBaseQueryResult::DataPrivate::addColumnData(const std::string& key, const DatabaseValue& value)
+void DatabaseQueryResult::DataPrivate::addColumnData(const std::string& key, const DBFormatStruct& value)
 {
     if (key.empty())
     {
@@ -41,11 +42,11 @@ void DataBaseQueryResult::DataPrivate::addColumnData(const std::string& key, con
         {
             DBWRAPPER_LOG_INFO("key already exists, key: " << key << ", will replace it with new value.");
         }
-        mValues[key] = value;
+        mValues.emplace(key, value);
     }
 }
 
-std::vector<std::string> DataBaseQueryResult::DataPrivate::keys() const
+std::vector<std::string> DatabaseQueryResult::DataPrivate::keys() const
 {
     std::vector<std::string> keys;
     {
@@ -55,21 +56,26 @@ std::vector<std::string> DataBaseQueryResult::DataPrivate::keys() const
     return keys;
 }
 
-DatabaseValue DataBaseQueryResult::DataPrivate::value(const std::string& key) const
+std::map<std::string, DBFormatStruct> DatabaseQueryResult::DataPrivate::values() const
 {
-    if (key.empty())
-    {
-        return {};
-    }
-    {
-        std::scoped_lock<std::mutex> loc(mMutex);
-        if (auto it = mValues.find(key); it != mValues.end())
-        {
-            return it->second;
-        }
-    }
-    return {};
+    return mValues;
 }
+
+// DBFormatStruct DatabaseQueryResult::DataPrivate::value(const std::string& key) const
+// {
+//     if (key.empty())
+//     {
+//         return {};
+//     }
+//     {
+//         std::scoped_lock<std::mutex> loc(mMutex);
+//         if (auto it = mValues.find(key); it != mValues.end())
+//         {
+//             return it->second;
+//         }
+//     }
+//     return {};
+// }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -82,28 +88,33 @@ DatabaseValue DataBaseQueryResult::DataPrivate::value(const std::string& key) co
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-DataBaseQueryResult::DataBaseQueryResult()
-    : mDataPrivate(std::make_unique<DataBaseQueryResult::DataPrivate>())
+DatabaseQueryResult::DatabaseQueryResult()
+    : mDataPrivate(std::make_unique<DatabaseQueryResult::DataPrivate>())
 {
 
 }
 
-DataBaseQueryResult::~DataBaseQueryResult()
+DatabaseQueryResult::~DatabaseQueryResult()
 {
 
 }
 
-void DataBaseQueryResult::addColumnData(const std::string& key, const DatabaseValue& value)
+void DatabaseQueryResult::addColumnData(const std::string& key, const DBFormatStruct& value)
 {
     mDataPrivate->addColumnData(key, value);
 }
 
-DatabaseValue DataBaseQueryResult::value(const std::string& key) const
+std::map<std::string, DBFormatStruct> DatabaseQueryResult::values() const
 {
-    return mDataPrivate->value(key);
+    return mDataPrivate->values();
 }
 
-std::vector<std::string> DataBaseQueryResult::keys() const
+// DatabaseValue DatabaseQueryResult::value(const std::string& key) const
+// {
+//     return mDataPrivate->value(key);
+// }
+
+std::vector<std::string> DatabaseQueryResult::keys() const
 {
     return mDataPrivate->keys();
 }

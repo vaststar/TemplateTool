@@ -7,7 +7,7 @@ endif()
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/DataWarehouseService/IDataWarehouseService.h
-    include/ucf/Services/DataWarehouseService/DataBaseModel.h
+    include/ucf/Services/DataWarehouseService/DatabaseModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -15,6 +15,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/DataWarehouseService.cpp
     src/DataWarehouseSchemas.h
     src/DataWarehouseSchemas.cpp
+    src/DataWarehouseManager.h
+    src/DataWarehouseManager.cpp
 )
 
 BuildModule(

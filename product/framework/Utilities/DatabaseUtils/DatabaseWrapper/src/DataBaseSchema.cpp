@@ -1,21 +1,21 @@
 #include <algorithm>
 #include <numeric>
 #include <iterator>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseSchema.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
 
 namespace ucf::utilities::database{
-DataBaseSchema::DataBaseSchema(const std::string& tableName, const std::vector<Column>& columns)
+DatabaseSchema::DatabaseSchema(const std::string& tableName, const std::vector<Column>& columns)
     : mTableName(tableName)
     , mColumns(columns)
 {
 }
-DataBaseSchema::DataBaseSchema(const std::string& tableName, std::vector<Column>&& columns)
+DatabaseSchema::DatabaseSchema(const std::string& tableName, std::vector<Column>&& columns)
     : mTableName(tableName)
 {
     mColumns.swap(columns);
 }
 
-std::string DataBaseSchema::schema() const
+std::string DatabaseSchema::schema() const
 {
     if (mColumns.empty())
     {
@@ -29,7 +29,7 @@ std::string DataBaseSchema::schema() const
     return std::string("(") + std::accumulate(std::next(fields.begin()), fields.end(), fields.front(), [](std::string a, std::string b){return a+","+b;}) + ")";
 }
 
-std::string DataBaseSchema::tableName() const
+std::string DatabaseSchema::tableName() const
 {
     return mTableName;
 }
