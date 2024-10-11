@@ -14,10 +14,10 @@ namespace DBSupportedTypes
     using INT = int;
     using BLOB = std::vector<uint8_t>;
     using FLOAT = float;
-    using STRING_VECTOR = std::vector<std::string>;
-    using INT_VECTOR = std::vector<INT>;
+    // using STRING_VECTOR = std::vector<std::string>;
+    // using INT_VECTOR = std::vector<INT>;
 } // namespace DBSupportedTypes
-using DBType = std::variant<DBSupportedTypes::STRING, DBSupportedTypes::INT, DBSupportedTypes::FLOAT, DBSupportedTypes::BLOB, DBSupportedTypes::STRING_VECTOR, DBSupportedTypes::INT_VECTOR>;
+using DBType = std::variant<DBSupportedTypes::STRING, DBSupportedTypes::INT, DBSupportedTypes::FLOAT, DBSupportedTypes::BLOB/*, DBSupportedTypes::STRING_VECTOR, DBSupportedTypes::INT_VECTOR*/>;
 
 
 class DATABASEWRAPPER_EXPORT DBFormatStruct final
@@ -31,8 +31,8 @@ public:
     DBFormatStruct(float value);
     DBFormatStruct(bool value);
     DBFormatStruct(DBSupportedTypes::BLOB buffer);
-    DBFormatStruct(DBSupportedTypes::STRING_VECTOR value);
-    DBFormatStruct(DBSupportedTypes::INT_VECTOR values);
+    // DBFormatStruct(DBSupportedTypes::STRING_VECTOR value);
+    // DBFormatStruct(DBSupportedTypes::INT_VECTOR values);
 private:
     // this is the main thing: we store the internal data as a variant over several types
     // the total memory consumption is the biggest of these types which is StringVector (24 bytes) + the std::variant core size (8 bytes or so)
@@ -46,7 +46,7 @@ public:
     }
     // these accessors are for type safety and for to provide utility values to consumers
     template <typename T>
-    const T& getVariantValue(const T& staticDefault) const
+    T getVariantValue(const T& staticDefault) const
     {
         if (const auto p = std::get_if<T>(&mVariantValue))
         {
@@ -54,25 +54,15 @@ public:
         }
         return staticDefault;
     }
-    template <typename T>
-    T& getVariantReference(T& staticDefault) const
-    {
-        if (auto p = std::get_if<T>(&mVariantValue))
-        {
-            return const_cast<T&>(*p);
-        }
-        return staticDefault;
-    }
-    const DBSupportedTypes::STRING& getStringValue() const;
-    DBSupportedTypes::STRING& getStringReference();
+    DBSupportedTypes::STRING getStringValue() const;
     DBSupportedTypes::INT getIntValue() const;
     DBSupportedTypes::FLOAT getFloatValue() const;
-    const DBSupportedTypes::BLOB& getBufferValue() const;
-    const DBSupportedTypes::STRING_VECTOR& getStringVectorValue() const;
-    const DBSupportedTypes::INT_VECTOR& getIntVectorValues() const;
-    const DBSupportedTypes::INT getIntVectorValue(size_t index) const;
-    std::tuple<std::string,int> getCommaSeparatedValues(int currentIndex) const;
-    size_t count_params() const;
+    DBSupportedTypes::BLOB getBufferValue() const;
+    // const DBSupportedTypes::STRING_VECTOR& getStringVectorValue() const;
+    // const DBSupportedTypes::INT_VECTOR& getIntVectorValues() const;
+    // const DBSupportedTypes::INT getIntVectorValue(size_t index) const;
+    // std::tuple<std::string,int> getCommaSeparatedValues(int currentIndex) const;
+    // size_t count_params() const;
     bool operator>(const DBFormatStruct& rhs) const;
     bool operator>=(const DBFormatStruct& rhs) const;
     bool operator<(const DBFormatStruct& rhs) const;

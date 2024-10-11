@@ -1,7 +1,7 @@
 #include <map>
 #include <mutex>
 
-
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFormatStruct.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 
 #include <ucf/Services/DataWarehouseService/DatabaseModel.h>
@@ -46,6 +46,13 @@ void DataWarehouseManager::DataPrivate::initializeDB(const model::DBConfig& dbCo
         mDatabaseWrapper[dbConfig.dbType] = ucf::utilities::database::IDatabaseWrapper::createSqliteDatabase(ucf::utilities::database::SqliteDatabaseConfig{dbConfig.dbFilePath, dbConfig.password});
         mDatabaseWrapper[dbConfig.dbType]->open();
         mDatabaseWrapper[dbConfig.dbType]->createTables(createUserTables());
+
+
+        ucf::utilities::database::ListOfArguments arguments;
+        arguments.emplace_back(ucf::utilities::database::Arguments{ std::string("test_id"), std::string("test_name"), std::string("243@qq.com") });
+        mDatabaseWrapper[dbConfig.dbType]->insertIntoDatabase(db::schema::UserContactTable::TableName, 
+            {db::schema::UserContactTable::ContactIdField, db::schema::UserContactTable::ContactFullNameField, db::schema::UserContactTable::ContactEmailField},
+            arguments);
     }
     else
     {

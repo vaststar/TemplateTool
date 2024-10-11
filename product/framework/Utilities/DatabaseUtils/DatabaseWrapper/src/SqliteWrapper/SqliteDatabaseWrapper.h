@@ -19,6 +19,9 @@ public:
     virtual void close() override;
     virtual bool isOpen() override;
     virtual void createTables(const DatabaseSchemas& tableSchemas) override;
+    virtual void insertIntoDatabase(const std::string& tableName, const Columns& columns, const ListOfArguments& arguments, const std::source_location location = std::source_location::current()) override;
+private:
+    std::string generateInsertStatement(const std::string& tableName, const Columns& columns);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
