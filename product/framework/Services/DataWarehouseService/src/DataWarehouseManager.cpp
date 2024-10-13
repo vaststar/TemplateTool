@@ -8,7 +8,6 @@
 #include <ucf/Services/DataWarehouseService/DatabaseModel.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
-//#include "DataWarehouseSchemas.h"
 #include "DataWarehouseManager.h"
 
 namespace ucf::service{
@@ -20,20 +19,20 @@ namespace ucf::service{
 class DataWarehouseManager::DataPrivate
 {
 public:
-    explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    DataPrivate();
     ~DataPrivate();
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values);
 private:
     ucf::utilities::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels);
-
+    ucf::utilities::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values);
 private:
     mutable std::mutex mDatabaseMutex;
     std::map<std::string, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDatabaseWrapper;
 };
 
-DataWarehouseManager::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
+DataWarehouseManager::DataPrivate::DataPrivate()
 {
-
 }
 
 DataWarehouseManager::DataPrivate::~DataPrivate()
@@ -43,6 +42,7 @@ DataWarehouseManager::DataPrivate::~DataPrivate()
 
 void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
+    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
     if (mDatabaseWrapper.find(dbConfig->getDBId()) == mDatabaseWrapper.end())
     {
         if (auto sqliteConfig = std::dynamic_pointer_cast<model::SqliteDBConfig>(dbConfig))
@@ -55,14 +55,6 @@ void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
                 dataBaseWrapper->createTables(convertToDatabaseSchemas(tables));
             }
         }
-
-        ucf::utilities::database::ListOfArguments arguments;
-        arguments.emplace_back(ucf::utilities::database::Arguments{ std::string("test_id"), std::string("test_nameee"), std::string("243@qq.com") });
-        arguments.emplace_back(ucf::utilities::database::Arguments{ std::string("test_id2"), std::string("test_name2"), std::string("111@qq.com") });
-        arguments.emplace_back(ucf::utilities::database::Arguments{ std::string("test_id5"), std::string("test5_name4"), std::string("qqq@qq.com") });
-        mDatabaseWrapper[dbConfig->getDBId()]->insertIntoDatabase("UserContact",
-            {"CONTACT_ID", "CONTACT_FULL_NAME", "CONTACT_EMAIL"},
-            arguments);
     }
     else
     {
@@ -83,6 +75,62 @@ ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::con
     });
     return databaseSchemas;
 }
+
+
+ucf::utilities::database::ListOfArguments DataWarehouseManager::DataPrivate::convertToDatabaseArguments(const model::ListOfDBValues& values)
+{
+    ucf::utilities::database::ListOfArguments listOfArguments;
+    std::transform(values.cbegin(), values.cend(), std::back_inserter(listOfArguments), [](const auto& value) {
+        ucf::utilities::database::Arguments arguments; 
+        std::transform(value.begin(), value.end(), std::back_inserter(arguments), [](const model::DBDataValue& data) {
+            if (const auto val = std::get_if<model::DBDataValueType::BOOL>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            else if (const auto val = std::get_if<model::DBDataValueType::LONG>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            else if (const auto val = std::get_if<model::DBDataValueType::LONGLONG>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            else if (const auto val = std::get_if<model::DBDataValueType::STRING>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            else if (const auto val = std::get_if<model::DBDataValueType::INT>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            else if (const auto val = std::get_if<model::DBDataValueType::FLOAT>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            else if (const auto val = std::get_if<model::DBDataValueType::BUFFER>(&data))
+            {
+                return ucf::utilities::database::DBFormatStruct(*val);
+            }
+            SERVICE_LOG_WARN("unrecognized db value type, will just use empty string");
+            return ucf::utilities::database::DBFormatStruct("");
+        });
+        return arguments;
+    });
+    return listOfArguments;
+}
+
+void DataWarehouseManager::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values)
+{
+    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
+    if (auto it = mDatabaseWrapper.find(dbId); it != mDatabaseWrapper.end())
+    {
+        it->second->insertIntoDatabase(tableName, columnFields, convertToDatabaseArguments(values));
+    }
+    else
+    {
+        SERVICE_LOG_WARN("no db:" << dbId);
+    }
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -90,14 +138,13 @@ ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::con
 /////////////////////////////////////////////////////////////////////////////////////
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataWarehouseManager Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-DataWarehouseManager::DataWarehouseManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
-    : mDataPrivate(std::make_unique<DataWarehouseManager::DataPrivate>(coreFramework))
+DataWarehouseManager::DataWarehouseManager()
+    : mDataPrivate(std::make_unique<DataWarehouseManager::DataPrivate>())
 {
 
 }
@@ -106,9 +153,24 @@ DataWarehouseManager::~DataWarehouseManager()
 {
 
 }
+
 void DataWarehouseManager::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     mDataPrivate->initializeDB(dbConfig, tables);
+}
+
+void DataWarehouseManager::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values)
+{
+    for (const auto& value: values)
+    {
+        if (columnFields.size() != value.size())
+        {
+            SERVICE_LOG_WARN("insert data but column fields size not matched, dbId" << dbId);
+            return;
+        }
+    }
+
+    mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

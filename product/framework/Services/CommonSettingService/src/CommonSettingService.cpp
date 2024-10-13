@@ -8,7 +8,6 @@
 #include <ucf/Services/DataWarehouseService/DataBaseModel.h>
 
 #include "DataWarehouseSchemas.h"
-
 #include "CommonSettingService.h"
 
 namespace ucf::service{
@@ -46,6 +45,13 @@ void CommonSettingService::DataPrivate::initDatabase()
         {
             std::vector<model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{} };
             dataWarehouse->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>("test", "shared_db.db"), tables);
+            
+
+            model::ListOfDBValues values;
+            values.emplace_back(model::DBDataValues{ std::string("test_id"), std::string("test_name"), std::string("243@qq.com") });
+            values.emplace_back(model::DBDataValues{ std::string("test_id111"), std::string("test_name11"), std::string("11243@qq.com") });
+
+            dataWarehouse->insertIntoDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME", "CONTACT_EMAIL"}, values);
         }
     }
 }

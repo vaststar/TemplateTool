@@ -17,7 +17,7 @@ namespace model{
 class DataWarehouseManager final
 {
 public:
-    explicit DataWarehouseManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    DataWarehouseManager();
     ~DataWarehouseManager();
     DataWarehouseManager(const DataWarehouseManager&) = delete;
     DataWarehouseManager(DataWarehouseManager&&) = delete;
@@ -25,6 +25,7 @@ public:
     DataWarehouseManager& operator=(DataWarehouseManager&&) = delete;
 public:
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

@@ -43,6 +43,8 @@ namespace DBDataValueType
 
 using DBDataValue = std::variant<DBDataValueType::BOOL, DBDataValueType::LONG, DBDataValueType::LONGLONG, DBDataValueType::STRING, DBDataValueType::INT, DBDataValueType::FLOAT, DBDataValueType::BUFFER>;
 using DBDataValues = std::vector<DBDataValue>;
+using ListOfDBValues = std::vector<DBDataValues>;
+
 using DBColumnFields = std::vector<std::string>;
 
 class SERVICE_EXPORT DBTableModel
