@@ -10,7 +10,8 @@ namespace ucf::framework{
 namespace ucf::service{
     
 namespace model{
-    struct DBConfig;
+    class DBConfig;
+    class DBTableModel;
 }
 
 class DataWarehouseManager final
@@ -23,7 +24,7 @@ public:
     DataWarehouseManager& operator=(const DataWarehouseManager&) = delete;
     DataWarehouseManager& operator=(DataWarehouseManager&&) = delete;
 public:
-    void initializeDB(const model::DBConfig& dbConfig);
+    void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

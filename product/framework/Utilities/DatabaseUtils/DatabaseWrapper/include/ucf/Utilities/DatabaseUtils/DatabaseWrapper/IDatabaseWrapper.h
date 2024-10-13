@@ -20,7 +20,6 @@ using DatabaseSchemas = std::vector<DatabaseSchema>;
 using Columns = std::vector<std::string>; 
 class DBFormatStruct;
 using Arguments = std::vector<DBFormatStruct>;
-using DatabaseRecord = std::initializer_list<DBFormatStruct>;
 using ListOfArguments = std::vector<Arguments>;
 
 struct SqliteDatabaseConfig{

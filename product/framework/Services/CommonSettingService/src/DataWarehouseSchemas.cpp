@@ -2,7 +2,7 @@
 
 namespace db::schema{
 UserContactTable::UserContactTable()
-    : ucf::utilities::database::DatabaseSchema(TableName,{
+    : ucf::service::model::DBTableModel(TableName,{
         {ContactIdField, "TEXT UNIQUE NOT NULL"},
         {ContactFullNameField, "TEXT NOT NULL"},
         {ContactEmailField, "TEXT"}
@@ -11,7 +11,7 @@ UserContactTable::UserContactTable()
 }
 
 GroupContactTable::GroupContactTable()
-    : ucf::utilities::database::DatabaseSchema(TableName,{
+    : ucf::service::model::DBTableModel(TableName,{
         {GroupIdField, "TEXT UNIQUE NOT NULL"},
         {GroupNameField, "TEXT NOT NULL"}
     })

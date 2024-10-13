@@ -1,9 +1,4 @@
 include(BuildModule)
-if (WIN32)
-    set(ADD_DATAWAREHOUSE_DEFINITIONS DATAWAREHOUSE_DLL DATAWAREHOUSE_LIB)
-else()
-    set(ADD_DATAWAREHOUSE_DEFINITIONS )
-endif()
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/DataWarehouseService/IDataWarehouseService.h
@@ -11,10 +6,9 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/DatabaseModel.cpp
     src/DataWarehouseService.h
     src/DataWarehouseService.cpp
-    src/DataWarehouseSchemas.h
-    src/DataWarehouseSchemas.cpp
     src/DataWarehouseManager.h
     src/DataWarehouseManager.cpp
 )

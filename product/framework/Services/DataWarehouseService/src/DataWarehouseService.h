@@ -18,7 +18,7 @@ public:
     virtual std::string getServiceName() const override;
     virtual void initService() override;
     //IDataWarehouseService
-    virtual void initializeDB(const model::DBConfig& dbConfig) override;
+    virtual void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables = {}) override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

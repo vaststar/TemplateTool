@@ -19,7 +19,7 @@ class DataWarehouseService::DataPrivate
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ~DataPrivate();
-    void initializeDB(const model::DBConfig& dbConfig);
+    void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
 private:
     std::unique_ptr<DataWarehouseManager> mDataWarehouseManager;
 };
@@ -34,9 +34,9 @@ DataWarehouseService::DataPrivate::~DataPrivate()
 {
 }
 
-void DataWarehouseService::DataPrivate::initializeDB(const model::DBConfig& dbConfig)
+void DataWarehouseService::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
-    mDataWarehouseManager->initializeDB(dbConfig);
+    mDataWarehouseManager->initializeDB(dbConfig, tables);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -73,12 +73,11 @@ std::string DataWarehouseService::getServiceName() const
 
 void DataWarehouseService::initService()
 {
-    initializeDB({model::DBEnum::SHARED_DB, "shared_db.db"});
 }
 
-void DataWarehouseService::initializeDB(const model::DBConfig& dbConfig)
+void DataWarehouseService::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
-    mDataPrivate->initializeDB(dbConfig);
+    mDataPrivate->initializeDB(dbConfig, tables);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

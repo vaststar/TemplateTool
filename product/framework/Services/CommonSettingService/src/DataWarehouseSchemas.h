@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
+#include <ucf/Services/DataWarehouseService/DataBaseModel.h>
 namespace db::schema{
-struct UserContactTable: public ucf::utilities::database::DatabaseSchema
+struct UserContactTable: public ucf::service::model::DBTableModel
 {
     UserContactTable();
     static constexpr auto TableName = "UserContact";
@@ -11,7 +11,7 @@ struct UserContactTable: public ucf::utilities::database::DatabaseSchema
     static constexpr auto ContactEmailField = "CONTACT_EMAIL";
 };
 
-struct GroupContactTable: public ucf::utilities::database::DatabaseSchema
+struct GroupContactTable: public ucf::service::model::DBTableModel
 {
     GroupContactTable();
     static constexpr auto TableName = "GroupContact";
