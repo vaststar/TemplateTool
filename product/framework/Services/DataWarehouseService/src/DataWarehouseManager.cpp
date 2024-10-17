@@ -1,11 +1,15 @@
 #include <map>
 #include <mutex>
 #include <algorithm>
+#include <functional>
 
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFormatStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 
 #include <ucf/Services/DataWarehouseService/DatabaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
+#include <ucf/Services/DataWarehouseService/DataBaseTableModel.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 #include "DataWarehouseManager.h"
@@ -22,10 +26,11 @@ public:
     DataPrivate();
     ~DataPrivate();
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
-    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values);
+    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
 private:
     ucf::utilities::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels);
     ucf::utilities::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values);
+    ucf::utilities::database::DatabaseValueStruct convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const;
 private:
     mutable std::mutex mDatabaseMutex;
     std::map<std::string, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDatabaseWrapper;
@@ -76,55 +81,56 @@ ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::con
     return databaseSchemas;
 }
 
+ucf::utilities::database::DatabaseValueStruct DataWarehouseManager::DataPrivate::convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const
+{
+    if (value.holdsType<std::string>())
+    {
+        return ucf::utilities::database::DatabaseValueStruct(value.getStringValue());
+    }
+    else if (value.holdsType<int>())
+    {
+        return ucf::utilities::database::DatabaseValueStruct(value.getIntValue());
+    }
+    else if (value.holdsType<float>())
+    {
+        return ucf::utilities::database::DatabaseValueStruct(value.getFloatValue());
+    }
+    else if (value.holdsType<std::vector<uint8_t>>())
+    {
+        return ucf::utilities::database::DatabaseValueStruct(value.getBufferValue());
+    }
+    else
+    {
+        SERVICE_LOG_WARN("convert data failed");
+        return ucf::utilities::database::DatabaseValueStruct("");
+    }
+}
 
 ucf::utilities::database::ListOfArguments DataWarehouseManager::DataPrivate::convertToDatabaseArguments(const model::ListOfDBValues& values)
 {
     ucf::utilities::database::ListOfArguments listOfArguments;
-    std::transform(values.cbegin(), values.cend(), std::back_inserter(listOfArguments), [](const auto& value) {
+    std::transform(values.cbegin(), values.cend(), std::back_inserter(listOfArguments), [this](const auto& value) {
         ucf::utilities::database::Arguments arguments; 
-        std::transform(value.begin(), value.end(), std::back_inserter(arguments), [](const model::DBDataValue& data) {
-            if (const auto val = std::get_if<model::DBDataValueType::BOOL>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            else if (const auto val = std::get_if<model::DBDataValueType::LONG>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            else if (const auto val = std::get_if<model::DBDataValueType::LONGLONG>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            else if (const auto val = std::get_if<model::DBDataValueType::STRING>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            else if (const auto val = std::get_if<model::DBDataValueType::INT>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            else if (const auto val = std::get_if<model::DBDataValueType::FLOAT>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            else if (const auto val = std::get_if<model::DBDataValueType::BUFFER>(&data))
-            {
-                return ucf::utilities::database::DBFormatStruct(*val);
-            }
-            SERVICE_LOG_WARN("unrecognized db value type, will just use empty string");
-            return ucf::utilities::database::DBFormatStruct("");
-        });
+        std::transform(value.begin(), value.end(), std::back_inserter(arguments), std::bind_front(&DataWarehouseManager::DataPrivate::convertToDatabaseDataStruct, this));
         return arguments;
     });
     return listOfArguments;
 }
 
-void DataWarehouseManager::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values)
+void DataWarehouseManager::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
     std::scoped_lock<std::mutex> loc(mDatabaseMutex);
     if (auto it = mDatabaseWrapper.find(dbId); it != mDatabaseWrapper.end())
     {
-        it->second->insertIntoDatabase(tableName, columnFields, convertToDatabaseArguments(values));
+        it->second->insertIntoDatabase(tableName, columnFields, convertToDatabaseArguments(values), location);
+
+        it->second->fetchFromDatabase(tableName,{},[](const std::vector<ucf::utilities::database::DatabaseDataRecord>& results){
+            //for (const auto& res: results)
+            //{
+            //    auto val = res.values();
+            //}
+            SERVICE_LOG_WARN("unrecognized db value type, will just use empty string");
+        });
     }
     else
     {
@@ -159,7 +165,7 @@ void DataWarehouseManager::initializeDB(std::shared_ptr<model::DBConfig> dbConfi
     mDataPrivate->initializeDB(dbConfig, tables);
 }
 
-void DataWarehouseManager::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values)
+void DataWarehouseManager::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
     for (const auto& value: values)
     {
@@ -170,7 +176,7 @@ void DataWarehouseManager::insertIntoDatabase(const std::string& dbId, const std
         }
     }
 
-    mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values);
+    mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values, location);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

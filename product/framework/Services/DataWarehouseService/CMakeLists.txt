@@ -3,9 +3,13 @@ include(BuildModule)
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/DataWarehouseService/IDataWarehouseService.h
     include/ucf/Services/DataWarehouseService/DatabaseModel.h
+    include/ucf/Services/DataWarehouseService/DataBaseTableModel.h
+    include/ucf/Services/DataWarehouseService/DataBaseDataValue.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/DataBaseTableModel.cpp
+    src/DataBaseDataValue.cpp
     src/DatabaseModel.cpp
     src/DataWarehouseService.h
     src/DataWarehouseService.cpp

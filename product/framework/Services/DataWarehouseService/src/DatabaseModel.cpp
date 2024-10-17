@@ -32,25 +32,4 @@ std::string SqliteDBConfig::getDBPassword() const
     return mDBPassword;
 }
 
-DBTableModel::DBTableModel(const std::string& tableName, const std::vector<Column>& columns)
-    : mTableName(tableName)
-    , mColumns(columns)
-{
-}
-
-DBTableModel::DBTableModel(const std::string& tableName, std::vector<Column>&& columns)
-    : mTableName(tableName)
-{
-    mColumns.swap(columns);
-}
-
-std::string DBTableModel::tableName() const
-{
-    return mTableName;
-}
-
-const std::vector<DBTableModel::Column>& DBTableModel::columns() const
-{
-    return mColumns;
-}
 }

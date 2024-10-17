@@ -22,7 +22,7 @@ public:
     ~DataPrivate();
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
-    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values);
+    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
 private:
     std::unique_ptr<DataWarehouseManager> mDataWarehouseManager;
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
@@ -49,9 +49,9 @@ void DataWarehouseService::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
     mDataWarehouseManager->initializeDB(dbConfig, tables);
 }
 
-void DataWarehouseService::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values)
+void DataWarehouseService::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
-    mDataWarehouseManager->insertIntoDatabase(dbId, tableName, columnFields, values);
+    mDataWarehouseManager->insertIntoDatabase(dbId, tableName, columnFields, values, location);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -108,9 +108,14 @@ void DataWarehouseService::initializeDB(std::shared_ptr<model::DBConfig> dbConfi
     mDataPrivate->initializeDB(dbConfig, tables);
 }
 
-void DataWarehouseService::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values)
+void DataWarehouseService::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
-    mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values);
+    SERVICE_LOG_DEBUG("about to insert data into table: " << tableName << ", from: " 
+              << location.file_name() << '('
+              << location.line() << ':'
+              << location.column() << ") `"
+              << location.function_name());
+    mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values, location);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

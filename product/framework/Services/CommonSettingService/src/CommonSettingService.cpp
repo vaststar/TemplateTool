@@ -6,6 +6,7 @@
 
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/DataWarehouseService/DataBaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
 
 #include "DataWarehouseSchemas.h"
 #include "CommonSettingService.h"

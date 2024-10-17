@@ -6,16 +6,16 @@ include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h
-    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseQueryResult.h
     include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h
-    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFormatStruct.h
+    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h
+    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/DatabaseWrapperLogger.h
-    src/DatabaseQueryResult.cpp
+    src/DatabaseDataRecord.cpp
     src/DatabaseSchema.cpp
-    src/DatabaseFormatStruct.cpp
+    src/DatabaseValueStruct.cpp
     src/SqliteWrapper/SqliteDatabaseWrapper.h
     src/SqliteWrapper/SqliteDatabaseWrapper.cpp
 )

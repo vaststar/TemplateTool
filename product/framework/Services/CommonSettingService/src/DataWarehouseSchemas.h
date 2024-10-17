@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/DataWarehouseService/DataBaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseTableModel.h>
 namespace db::schema{
 struct UserContactTable: public ucf::service::model::DBTableModel
 {

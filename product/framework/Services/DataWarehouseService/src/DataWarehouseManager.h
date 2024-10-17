@@ -25,7 +25,7 @@ public:
     DataWarehouseManager& operator=(DataWarehouseManager&&) = delete;
 public:
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
-    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values);
+    void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

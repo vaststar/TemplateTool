@@ -30,40 +30,23 @@ private:
 
 };
 
-namespace DBDataValueType
-{
-    using BOOL = bool;
-    using STRING = std::string;
-    using INT = int;
-    using LONG = long;
-    using LONGLONG = long long;
-    using FLOAT = float;
-    using BUFFER = std::vector<uint8_t>;
-} // namespace DBDataValueType
-
-using DBDataValue = std::variant<DBDataValueType::BOOL, DBDataValueType::LONG, DBDataValueType::LONGLONG, DBDataValueType::STRING, DBDataValueType::INT, DBDataValueType::FLOAT, DBDataValueType::BUFFER>;
-using DBDataValues = std::vector<DBDataValue>;
-using ListOfDBValues = std::vector<DBDataValues>;
-
 using DBColumnFields = std::vector<std::string>;
 
-class SERVICE_EXPORT DBTableModel
+enum class DBOperatorType
 {
-public:
-    struct Column
-    {
-        std::string mName;
-        std::string mAttributes;
-    };
-
-    DBTableModel(const std::string& tableName, const std::vector<Column>& columns);
-    DBTableModel(const std::string& tableName, std::vector<Column>&& columns);
-
-    std::string tableName() const;
-    const std::vector<Column>& columns() const;
-private:
-    std::string mTableName;
-    std::vector<Column> mColumns;
+    Equal,
+    Less,
+    Greater,
+    Match,
+    In,
+    NotIn,
+    And,
+    Like,
+    Not,
+    IsNull
 };
 
+class DataBaseDataValue;
+using WhereCondition = std::tuple<std::string, DataBaseDataValue, DBOperatorType>;
+using ListsOfWhereCondition = std::vector<WhereCondition>;
 }

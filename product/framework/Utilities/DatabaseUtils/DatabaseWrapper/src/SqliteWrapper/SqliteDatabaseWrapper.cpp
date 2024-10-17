@@ -4,19 +4,19 @@
 
 #include <sqlite3.h>
 
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFormatStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 
 #include "SqliteWrapper/SqliteDatabaseWrapper.h"
 #include "DatabaseWrapperLogger.h"
 
 namespace ucf::utilities::database{
-static constexpr auto CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ";
-static constexpr auto INSERT_DATA = "INSERT OR REPLACE INTO ";
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+
 class SqliteDatabaseWrapper::DataPrivate
 {
 public:
@@ -26,7 +26,8 @@ public:
     bool isOpen();
     void execute(const std::string& commandStr);
     bool prepareStatement(const std::string& statement, sqlite3_stmt** ppStmt);
-    bool bindDBType(sqlite3_stmt* statement, const DBFormatStruct& value, int index);
+    bool bindDBType(sqlite3_stmt* statement, const DatabaseValueStruct& value, int index);
+    void extractResultsFromStatement(sqlite3_stmt* statement, DatabaseDataRecords& result);
 private:
     SqliteDatabaseConfig mDatabaseConfig;
     sqlite3* mDatabase;
@@ -95,7 +96,7 @@ bool SqliteDatabaseWrapper::DataPrivate::prepareStatement(const std::string& sta
     return true;
 }
 
-bool SqliteDatabaseWrapper::DataPrivate::bindDBType(sqlite3_stmt* statement, const DBFormatStruct& value, int index)
+bool SqliteDatabaseWrapper::DataPrivate::bindDBType(sqlite3_stmt* statement, const DatabaseValueStruct& value, int index)
 {
     if (value.holdsType<DBSupportedTypes::STRING>())
     {
@@ -165,6 +166,67 @@ bool SqliteDatabaseWrapper::DataPrivate::bindDBType(sqlite3_stmt* statement, con
     DBWRAPPER_LOG_WARN("db bind text failed");
     return false;
 }
+
+void SqliteDatabaseWrapper::DataPrivate::extractResultsFromStatement(sqlite3_stmt* statement, DatabaseDataRecords& result)
+{
+    while (SQLITE_ROW == sqlite3_step(statement))
+    {
+        int numberOfColumns = sqlite3_data_count(statement);
+        DatabaseDataRecord oneRowResult;
+        for (int i = 0; i < numberOfColumns; ++i)
+        {
+            std::string columnName = sqlite3_column_name(statement, i);
+            int columnType = sqlite3_column_type(statement, i);
+            switch (columnType)
+            {
+            case SQLITE_TEXT:
+            {
+                const unsigned char* columnText = sqlite3_column_text(statement, i);
+                const char* columnTextChar = (columnText == nullptr) ? "NULL" : reinterpret_cast<const char*>(columnText);
+                oneRowResult.addColumnData(columnName, columnTextChar);
+            }
+                break;
+            case SQLITE_INTEGER:
+            {
+                oneRowResult.addColumnData(columnName, sqlite3_column_int64(statement, i));
+            }
+                break;
+            case SQLITE_BLOB:
+            {
+                unsigned char* blob = (unsigned char*)sqlite3_column_blob(statement, i);
+                int size = sqlite3_column_bytes(statement, i);
+                if (blob != nullptr && size > 0)
+                {
+                    oneRowResult.addColumnData(columnName, DBSupportedTypes::BLOB(blob, blob + size));
+                }
+                else
+                {
+                    DBWRAPPER_LOG_WARN("Blob seems to be invalid when reading back from the DB.");
+                    oneRowResult.addColumnData(columnName, DBSupportedTypes::BLOB());
+                }
+            }
+                break;
+            case SQLITE_FLOAT:
+            {
+                oneRowResult.addColumnData(columnName, static_cast<float>(sqlite3_column_double(statement, i)));
+            }
+                break;
+            case SQLITE_NULL:
+            {
+                oneRowResult.addColumnData(columnName, "");
+            }
+                break;
+            default:
+            {
+                DBWRAPPER_LOG_WARN("Invalid column type found: " << columnType);
+                oneRowResult.addColumnData(columnName, ""); // fall back to empty string
+            }
+                break;
+            }
+        }
+        result.emplace_back(std::move(oneRowResult));
+    }
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -219,7 +281,7 @@ void SqliteDatabaseWrapper::createTables(const DatabaseSchemas& tableSchemas)
 {
     for (const auto& tableInfo : tableSchemas)
     {
-        std::string createStatement = CREATE_TABLE + tableInfo.tableName() + tableInfo.schema();
+        std::string createStatement = "CREATE TABLE IF NOT EXISTS " + tableInfo.tableName() + tableInfo.schema();
         mDataPrivate->execute(createStatement);
     }
 }
@@ -256,21 +318,33 @@ void SqliteDatabaseWrapper::insertIntoDatabase(const std::string& tableName, con
         return;
     }
 
+    bool errorHappened = false;
     for(const auto& argument: arguments)
     {
         for(size_t i = 0; i < argument.size(); ++i)
         {
-            mDataPrivate->bindDBType(statement, argument[i], i+1);
+            if (!mDataPrivate->bindDBType(statement, argument[i], i+1))
+            {
+                DBWRAPPER_LOG_WARN("bind statment failed, table: " << tableName);
+                errorHappened = true;
+                break;
+            }
         }
+        if (errorHappened)
+        {
+            break;
+        }
+
         if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
         {
             DBWRAPPER_LOG_WARN("step statment failed, table: " << tableName << ", error code: " << result);
-            return;
+            break;
         }
+
         if (auto result = sqlite3_reset(statement); SQLITE_OK != result && SQLITE_DONE != result)
         {
             DBWRAPPER_LOG_WARN("reset statment failed, table: " << tableName << ", error code: " << result);
-            return;
+            break;
         }
     }
     if (auto result = sqlite3_finalize(statement); SQLITE_OK != result && SQLITE_DONE != result)
@@ -280,7 +354,7 @@ void SqliteDatabaseWrapper::insertIntoDatabase(const std::string& tableName, con
     }
 }
 
-std::string SqliteDatabaseWrapper::generateInsertStatement(const std::string& tableName, const Columns& columns)
+std::string SqliteDatabaseWrapper::generateInsertStatement(const std::string& tableName, const Columns& columns) const
 {
     std::stringstream insertStatement;
 
@@ -295,8 +369,174 @@ std::string SqliteDatabaseWrapper::generateInsertStatement(const std::string& ta
 
     std::string columnPlaceholderStatement= std::string("(") + std::accumulate(std::next(columnFileds.begin()), columnFileds.end(), columnFileds.front(), [](std::string a, std::string b){return a+","+b;}) + ")";
 
-    insertStatement << INSERT_DATA << tableName << fieldsStatement << "VALUES" << columnPlaceholderStatement;
+    insertStatement << "INSERT OR REPLACE INTO " << tableName << fieldsStatement << "VALUES" << columnPlaceholderStatement;
     return insertStatement.str();
+}
+
+std::string SqliteDatabaseWrapper::generateSelectStatement(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& arguments, size_t limit) const
+{
+    std::stringstream selectStatement;
+    //select string
+    if (columns.empty())
+    {
+        selectStatement << "SELECT * FROM " << tableName; 
+    }
+    else
+    {
+        std::string columnsString = std::accumulate(std::next(columns.begin()), columns.end(), columns.front(),[](std::string a, std::string b){ return a + "," + b;});
+        selectStatement << "SELECT " << columnsString << " FROM " << tableName;
+    }
+    //whre condition
+    selectStatement << " " << createWhereCondition(arguments);
+    if (limit > 0)
+    {
+        selectStatement << " LIMIT " << limit;
+    }
+    return selectStatement.str();
+}
+
+std::string SqliteDatabaseWrapper::createWhereCondition(const ListsOfWhereCondition& arguments) const
+{
+    if (arguments.empty())
+    {
+        return {};
+    }
+
+    std::stringstream whereStatement;
+    unsigned int index = 1;
+
+    std::map<std::string, std::vector<std::pair<WhereCondition, int>>> groupedWhereConditions;
+    for (size_t i = 0; i < arguments.size(); ++i)
+    {
+        std::string name = std::get<0>(arguments[i]);
+        if (auto it = groupedWhereConditions.find(name); it != groupedWhereConditions.end())
+        {
+            it->second.push_back({ arguments[i], i + 1 });
+        }
+        else
+        {
+            groupedWhereConditions[name] = { { arguments[i], i + 1 } };
+        }
+
+    }
+    
+    whereStatement << " WHERE ";
+    // for (size_t groupIndex = 0; groupIndex < groupedWhereConditions.size(); ++groupIndex)
+    size_t indexInGroup = 1;
+    for (const auto& [name, group] : groupedWhereConditions)
+    {
+        whereStatement << " ( ";
+
+        size_t currentIndex = 1;
+        for (const auto& [condition, conditionIndex] : group)
+        {
+            const auto& tuple = condition;
+
+            whereStatement << std::get<0>(tuple);
+
+            if (std::get<2>(tuple) == DBOperatorType::Equal)
+            {
+                whereStatement << " = ?" << conditionIndex;
+            }
+            else if (std::get<2>(tuple) == DBOperatorType::Less)
+            {
+                whereStatement << " < ?" << conditionIndex;
+            }
+            else if (std::get<2>(tuple) == DBOperatorType::Greater)
+            {
+                whereStatement << " > ?" << conditionIndex;
+            }
+            else if (std::get<2>(tuple) == DBOperatorType::Match)
+            {
+                whereStatement << " MATCH ?" << conditionIndex;
+            }
+            else if (std::get<2>(tuple) == DBOperatorType::And)
+            {
+                whereStatement << " & ?" << conditionIndex;
+            }
+            else if (std::get<2>(tuple) == DBOperatorType::Like)
+            {
+                whereStatement << " LIKE ?" << conditionIndex;
+            }
+            else if (std::get<2>(tuple) == DBOperatorType::Not)
+            {
+                whereStatement << " <> ?" << conditionIndex;
+            }
+            else if ((std::get<2>(tuple) == DBOperatorType::In) || (std::get<2>(tuple) == DBOperatorType::NotIn))
+            {
+                if (std::get<2>(tuple) == DBOperatorType::NotIn)
+                {
+                    whereStatement << " NOT ";
+                }
+                whereStatement << " IN(" << conditionIndex << ")";
+            }
+            else
+            {
+                DBWRAPPER_LOG_WARN("Invalid operator in fetchFromDatabase");
+                return "";
+            }
+
+            if (currentIndex < group.size())
+            {
+                whereStatement << " OR ";
+            }
+
+            ++currentIndex;
+        }
+
+        whereStatement << " ) ";
+
+        if (indexInGroup < groupedWhereConditions.size())
+        {
+            whereStatement << " AND ";
+        }
+
+        ++indexInGroup;
+    }
+    
+    return whereStatement.str();
+}
+
+void SqliteDatabaseWrapper::fetchFromDatabase(const std::string& tableName, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit, const std::source_location location)
+{
+    DBWRAPPER_LOG_DEBUG("fetch data from table: " << tableName << ", from: " 
+              << location.file_name() << '('
+              << location.line() << ':'
+              << location.column() << ") `"
+              << location.function_name());
+    
+    std::string selectStatement = generateSelectStatement(tableName, Columns{{"*"}}, arguments, limit);
+    sqlite3_stmt* statement = nullptr;
+    if (!mDataPrivate->prepareStatement(selectStatement, &statement))
+    {
+        DBWRAPPER_LOG_WARN("prepare statment failed, table: " << tableName);
+        func({});
+        return;
+    }
+
+
+    for(size_t i = 0; i < arguments.size(); ++i)
+    {
+        if (!mDataPrivate->bindDBType(statement, std::get<1>(arguments[i]), i+1))
+        {
+            DBWRAPPER_LOG_WARN("bind statment failed, table: " << tableName << ", index: " << i);
+            func({});
+            return;
+        }
+    }
+
+    DatabaseDataRecords result;
+    mDataPrivate->extractResultsFromStatement(statement, result);
+
+    if (auto result = sqlite3_finalize(statement); SQLITE_OK != result && SQLITE_DONE != result)
+    {
+        DBWRAPPER_LOG_WARN("finalize statment failed, table: " << tableName << ", error code: " << result);
+        func({});
+        return;
+    }
+
+    DBWRAPPER_LOG_WARN("fetch data succeed, table: " << tableName);
+    func(result);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

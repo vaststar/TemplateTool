@@ -11,16 +11,33 @@
 
 namespace ucf::utilities::database{
 
-class DatabaseQueryResult;
-using DatabaseQueryResults = std::vector<DatabaseQueryResult>;
+class DatabaseDataRecord;
+using DatabaseDataRecords = std::vector<DatabaseDataRecord>;
+using DatabaseDataRecordsCallback = std::function<void(const DatabaseDataRecords&)>;
 
 class DatabaseSchema;
 using DatabaseSchemas = std::vector<DatabaseSchema>;
 
 using Columns = std::vector<std::string>; 
-class DBFormatStruct;
-using Arguments = std::vector<DBFormatStruct>;
+class DatabaseValueStruct;
+using Arguments = std::vector<DatabaseValueStruct>;
 using ListOfArguments = std::vector<Arguments>;
+
+enum class DBOperatorType
+{
+    Equal,
+    Less,
+    Greater,
+    Match,
+    In,
+    NotIn,
+    And,
+    Like,
+    Not,
+    IsNull
+};
+using WhereCondition = std::tuple<std::string, DatabaseValueStruct, DBOperatorType>;
+using ListsOfWhereCondition = std::vector<WhereCondition>;
 
 struct SqliteDatabaseConfig{
     std::string fileName;
@@ -38,7 +55,9 @@ public:
 
     virtual void createTables(const DatabaseSchemas& tableSchemas) = 0;
     virtual void insertIntoDatabase(const std::string& tableName, const Columns& columns, const ListOfArguments& arguments, const std::source_location location = std::source_location::current()) = 0;
-    // virtual void queryData(const std::string& queryStr, std::function<void(const DatabaseQueryResults&)>) = 0;
+    virtual void fetchFromDatabase(const std::string& tableName, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit = 0, const std::source_location location = std::source_location::current()) = 0;
+       
+    // virtual void queryData(const std::string& queryStr, std::function<void(const DatabaseDataRecords&)>) = 0;
 
     static std::shared_ptr<IDatabaseWrapper> createSqliteDatabase(const SqliteDatabaseConfig& config);
 };
