@@ -2,8 +2,10 @@
 #include <mutex>
 #include <algorithm>
 #include <functional>
+#include <filesystem>
 
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 
@@ -28,9 +30,10 @@ public:
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
     void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
 private:
-    ucf::utilities::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels);
-    ucf::utilities::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values);
+    ucf::utilities::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const;
+    ucf::utilities::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values) const;
     ucf::utilities::database::DatabaseValueStruct convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const;
+    void createFolder(const std::string& dbFilePath) const;
 private:
     mutable std::mutex mDatabaseMutex;
     std::map<std::string, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDatabaseWrapper;
@@ -45,6 +48,23 @@ DataWarehouseManager::DataPrivate::~DataPrivate()
     mDatabaseWrapper.clear();
 }
 
+void DataWarehouseManager::DataPrivate::createFolder(const std::string& dbFilePath) const
+{
+    std::string dbFolder;
+    if (size_t split_pos = dbFilePath.find_last_of("/"); split_pos != std::string::npos)
+    {
+        dbFolder = dbFilePath.substr(0, split_pos);
+    }
+    else if (size_t split_pos = dbFilePath.find_last_of("\\"); split_pos != std::string::npos)
+    {
+        dbFolder = dbFilePath.substr(0, split_pos);
+    }
+    if (!dbFolder.empty())
+    {
+        std::filesystem::create_directories(dbFolder);
+    }
+}
+
 void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     std::scoped_lock<std::mutex> loc(mDatabaseMutex);
@@ -52,6 +72,7 @@ void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
     {
         if (auto sqliteConfig = std::dynamic_pointer_cast<model::SqliteDBConfig>(dbConfig))
         {
+            createFolder(sqliteConfig->getDBFilePath());
             auto dataBaseWrapper = ucf::utilities::database::IDatabaseWrapper::createSqliteDatabase(ucf::utilities::database::SqliteDatabaseConfig{sqliteConfig->getDBFilePath(), sqliteConfig->getDBPassword()});
             mDatabaseWrapper[dbConfig->getDBId()] = dataBaseWrapper;
             dataBaseWrapper->open();
@@ -67,7 +88,7 @@ void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
     }
 }
 
-ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels)
+ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const
 {
     ucf::utilities::database::DatabaseSchemas databaseSchemas;
     std::transform(tableModels.cbegin(), tableModels.cend(), std::back_inserter(databaseSchemas), [](const auto& table) {
@@ -106,7 +127,7 @@ ucf::utilities::database::DatabaseValueStruct DataWarehouseManager::DataPrivate:
     }
 }
 
-ucf::utilities::database::ListOfArguments DataWarehouseManager::DataPrivate::convertToDatabaseArguments(const model::ListOfDBValues& values)
+ucf::utilities::database::ListOfArguments DataWarehouseManager::DataPrivate::convertToDatabaseArguments(const model::ListOfDBValues& values) const
 {
     ucf::utilities::database::ListOfArguments listOfArguments;
     std::transform(values.cbegin(), values.cend(), std::back_inserter(listOfArguments), [this](const auto& value) {

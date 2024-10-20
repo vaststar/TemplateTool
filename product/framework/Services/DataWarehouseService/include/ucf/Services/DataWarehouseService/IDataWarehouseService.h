@@ -6,7 +6,6 @@
 #include <source_location>
 
 #include <ucf/CoreFramework/IService.h>
-#include <ucf/Services/DataWarehouseService/DataBaseModel.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -19,6 +18,9 @@ namespace ucf::service{
         class DataBaseDataValue;
         using DBDataValues = std::vector<DataBaseDataValue>;
         using ListOfDBValues = std::vector<DBDataValues>;    
+
+        using DBColumnFields = std::vector<std::string>;
+        class DBConfig;
     }
     
 

@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <tuple>
 #include <variant>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h>
 
@@ -27,9 +26,7 @@ public:
     DatabaseValueStruct(float value);
     DatabaseValueStruct(bool value);
     DatabaseValueStruct(std::vector<uint8_t> buffer);
-private:
-    DBDataValue mVariantValue;
-public:
+public:                 
     template <typename T>
     bool holdsType() const
     {
@@ -47,7 +44,7 @@ public:
     bool operator<=(const DatabaseValueStruct& rhs) const;
     bool operator==(const DatabaseValueStruct& rhs) const;
     bool operator!=(const DatabaseValueStruct& rhs) const;
-
+private:
     template <typename T>
     T getVariantValue(const T& staticDefault) const
     {
@@ -57,5 +54,7 @@ public:
         }
         return staticDefault;
     }
+private:
+    DBDataValue mVariantValue;
 };
 }

@@ -5,6 +5,7 @@
 #include <sqlite3.h>
 
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 
 #include "SqliteWrapper/SqliteDatabaseWrapper.h"
@@ -80,9 +81,13 @@ void SqliteDatabaseWrapper::DataPrivate::execute(const std::string& commandStr)
     char* sqlError = nullptr;
     if (auto result = sqlite3_exec(mDatabase, commandStr.c_str(), nullptr, nullptr, &sqlError); SQLITE_OK != result)
     {
-        std::string errorMessage = sqlError;
-        sqlite3_free(sqlError);
-        DBWRAPPER_LOG_WARN("execute db command failed, dbname: " << mDatabaseConfig.fileName << ", error: " << errorMessage);
+        std::string errorMessage;
+        if (sqlError)
+        {
+            errorMessage = sqlError;
+            sqlite3_free(sqlError);
+        }
+        DBWRAPPER_LOG_WARN("execute db command failed, dbname: " << mDatabaseConfig.fileName << ", result code: " << result << ", error: " << errorMessage);
     }
 }
 

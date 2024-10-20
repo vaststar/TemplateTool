@@ -8,22 +8,22 @@ DataBaseDataValue::DataBaseDataValue(const std::string& value)
 }
 
 DataBaseDataValue::DataBaseDataValue(const char* value)
-    : mVariantValue(STRING(value))
+    : mVariantValue(DBSupportedTypes::STRING(value))
 {
 }
 
 DataBaseDataValue::DataBaseDataValue(long value)
-    : mVariantValue(static_cast<INT>(value))
+    : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
 DataBaseDataValue::DataBaseDataValue(long long value)
-    : mVariantValue(static_cast<INT>(value))
+    : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
 DataBaseDataValue::DataBaseDataValue(int value)
-    : mVariantValue(static_cast<INT>(value))
+    : mVariantValue(value)
 {
 }
 
@@ -33,7 +33,7 @@ DataBaseDataValue::DataBaseDataValue(float value)
 }
 
 DataBaseDataValue::DataBaseDataValue(bool value)
-    : mVariantValue(static_cast<INT>(value))
+    : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
@@ -42,99 +42,99 @@ DataBaseDataValue::DataBaseDataValue(std::vector<uint8_t> buffer)
 {
 }
 
-std::string DataBaseDataValue::getStringValue() const
+DBSupportedTypes::STRING DataBaseDataValue::getStringValue() const
 {
-    static const STRING defaultString = {};
-    return getVariantValue<STRING>(defaultString);
+    static const DBSupportedTypes::STRING defaultString = {};
+    return getVariantValue<DBSupportedTypes::STRING>(defaultString);
 }
 
-int DataBaseDataValue::getIntValue() const
+DBSupportedTypes::INT DataBaseDataValue::getIntValue() const
 {
-    static INT defaultInt{ 0 };
-    return getVariantValue<INT>(defaultInt);
+    static DBSupportedTypes::INT defaultInt{ 0 };
+    return getVariantValue<DBSupportedTypes::INT>(defaultInt);
 }
 
-float DataBaseDataValue::getFloatValue() const
+DBSupportedTypes::FLOAT DataBaseDataValue::getFloatValue() const
 {
-    static FLOAT defaultFloat{ 0.0 };
-    return getVariantValue<FLOAT>(defaultFloat);
+    static DBSupportedTypes::FLOAT defaultFloat{ 0.0 };
+    return getVariantValue<DBSupportedTypes::FLOAT>(defaultFloat);
 }
 
-std::vector<uint8_t> DataBaseDataValue::getBufferValue() const
+DBSupportedTypes::BUFFER DataBaseDataValue::getBufferValue() const
 {
-    static const BUFFER defaultBlob{};
-    return getVariantValue<BUFFER>(defaultBlob);
+    static const DBSupportedTypes::BUFFER defaultBlob{};
+    return getVariantValue<DBSupportedTypes::BUFFER>(defaultBlob);
 }
 
 bool DataBaseDataValue::operator>(const DataBaseDataValue& rhs) const
 {
-    if (holdsType<INT>())
+    if (holdsType<DBSupportedTypes::INT>())
     {
-        return *std::get_if<INT>(&mVariantValue) > *std::get_if<INT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) > *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
     }
-    else if (holdsType<FLOAT>())
+    else if (holdsType<DBSupportedTypes::FLOAT>())
     {
-        return *std::get_if<FLOAT>(&mVariantValue) > *std::get_if<FLOAT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) > *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
     }
     return false;
 }
 
 bool DataBaseDataValue::operator>=(const DataBaseDataValue& rhs) const
 {
-    if (holdsType<INT>())
+    if (holdsType<DBSupportedTypes::INT>())
     {
-        return *std::get_if<INT>(&mVariantValue) >= *std::get_if<INT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) >= *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
     }
-    else if (holdsType<FLOAT>())
+    else if (holdsType<DBSupportedTypes::FLOAT>())
     {
-        return *std::get_if<FLOAT>(&mVariantValue) >= *std::get_if<FLOAT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) >= *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
     }
     return false;
 }
 
 bool DataBaseDataValue::operator<(const DataBaseDataValue& rhs) const
 {
-    if (holdsType<STRING>())
+    if (holdsType<DBSupportedTypes::STRING>())
     {
-        return *std::get_if<STRING>(&mVariantValue) < *std::get_if<STRING>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::STRING>(&mVariantValue) < *std::get_if<DBSupportedTypes::STRING>(&rhs.mVariantValue);
     }
-    else  if (holdsType<INT>())
+    else  if (holdsType<DBSupportedTypes::INT>())
     {
-        return *std::get_if<INT>(&mVariantValue) < *std::get_if<INT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) < *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
     }
-    else if (holdsType<FLOAT>())
+    else if (holdsType<DBSupportedTypes::FLOAT>())
     {
-        return *std::get_if<FLOAT>(&mVariantValue) < *std::get_if<FLOAT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) < *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
     }
     return false;
 }
 
 bool DataBaseDataValue::operator<=(const DataBaseDataValue& rhs) const
 {
-    if (holdsType<INT>())
+    if (holdsType<DBSupportedTypes::INT>())
     {
-        return *std::get_if<INT>(&mVariantValue) <= *std::get_if<INT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) <= *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
     }
-    else if (holdsType<FLOAT>())
+    else if (holdsType<DBSupportedTypes::FLOAT>())
     {
-        return *std::get_if<FLOAT>(&mVariantValue) <= *std::get_if<FLOAT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) <= *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
     }
     return false;
 }
 
 bool DataBaseDataValue::operator==(const DataBaseDataValue& rhs) const
 {
-    if (holdsType<STRING>())
+    if (holdsType<DBSupportedTypes::STRING>())
     {
-        return *std::get_if<STRING>(&mVariantValue) == *std::get_if<STRING>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::STRING>(&mVariantValue) == *std::get_if<DBSupportedTypes::STRING>(&rhs.mVariantValue);
     }
-    else if (holdsType<INT>())
+    else if (holdsType<DBSupportedTypes::INT>())
     {
-        return *std::get_if<INT>(&mVariantValue) == *std::get_if<INT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) == *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
     }
-    else if (holdsType<FLOAT>())
+    else if (holdsType<DBSupportedTypes::FLOAT>())
     {
-        return *std::get_if<FLOAT>(&mVariantValue) == *std::get_if<FLOAT>(&rhs.mVariantValue);
+        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) == *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
     }
     return false;
 }

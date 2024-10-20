@@ -7,7 +7,6 @@
 #include <source_location>
 
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
 
 namespace ucf::utilities::database{
 

@@ -45,7 +45,7 @@ void CommonSettingService::DataPrivate::initDatabase()
         if (auto dataWarehouse = coreFramework->getService<IDataWarehouseService>().lock())
         {
             std::vector<model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{} };
-            dataWarehouse->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>("test", "shared_db.db"), tables);
+            dataWarehouse->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>("test", "app_data/shared_db.db"), tables);
             
 
             model::ListOfDBValues values;
