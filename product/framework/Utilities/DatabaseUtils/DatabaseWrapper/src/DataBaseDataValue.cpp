@@ -1,72 +1,72 @@
 #include <tuple>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseDataValue.h>
 
 namespace ucf::utilities::database{
-DatabaseValueStruct::DatabaseValueStruct(const std::string& value)
+DataBaseDataValue::DataBaseDataValue(const std::string& value)
     : mVariantValue(std::move(value))
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(const char* value)
+DataBaseDataValue::DataBaseDataValue(const char* value)
     : mVariantValue(DBSupportedTypes::STRING(value))
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(long value)
+DataBaseDataValue::DataBaseDataValue(long value)
     : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(long long value)
+DataBaseDataValue::DataBaseDataValue(long long value)
     : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(int value)
+DataBaseDataValue::DataBaseDataValue(int value)
     : mVariantValue(value)
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(float value)
+DataBaseDataValue::DataBaseDataValue(float value)
     : mVariantValue(value)
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(bool value)
+DataBaseDataValue::DataBaseDataValue(bool value)
     : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
-DatabaseValueStruct::DatabaseValueStruct(std::vector<uint8_t> buffer)
+DataBaseDataValue::DataBaseDataValue(std::vector<uint8_t> buffer)
     : mVariantValue(std::move(buffer))
 {
 }
 
-DBSupportedTypes::STRING DatabaseValueStruct::getStringValue() const
+DBSupportedTypes::STRING DataBaseDataValue::getStringValue() const
 {
     static const DBSupportedTypes::STRING defaultString = {};
     return getVariantValue<DBSupportedTypes::STRING>(defaultString);
 }
 
-DBSupportedTypes::INT DatabaseValueStruct::getIntValue() const
+DBSupportedTypes::INT DataBaseDataValue::getIntValue() const
 {
     static DBSupportedTypes::INT defaultInt{ 0 };
     return getVariantValue<DBSupportedTypes::INT>(defaultInt);
 }
 
-DBSupportedTypes::FLOAT DatabaseValueStruct::getFloatValue() const
+DBSupportedTypes::FLOAT DataBaseDataValue::getFloatValue() const
 {
     static DBSupportedTypes::FLOAT defaultFloat{ 0.0 };
     return getVariantValue<DBSupportedTypes::FLOAT>(defaultFloat);
 }
 
-std::vector<uint8_t> DatabaseValueStruct::getBufferValue() const
+std::vector<uint8_t> DataBaseDataValue::getBufferValue() const
 {
     static const DBSupportedTypes::BLOB defaultBlob{};
     return getVariantValue<DBSupportedTypes::BLOB>(defaultBlob);
 }
 
-bool DatabaseValueStruct::operator>(const DatabaseValueStruct& rhs) const
+bool DataBaseDataValue::operator>(const DataBaseDataValue& rhs) const
 {
     if (holdsType<DBSupportedTypes::INT>())
     {
@@ -79,7 +79,7 @@ bool DatabaseValueStruct::operator>(const DatabaseValueStruct& rhs) const
     return false;
 }
 
-bool DatabaseValueStruct::operator>=(const DatabaseValueStruct& rhs) const
+bool DataBaseDataValue::operator>=(const DataBaseDataValue& rhs) const
 {
     if (holdsType<DBSupportedTypes::INT>())
     {
@@ -92,7 +92,7 @@ bool DatabaseValueStruct::operator>=(const DatabaseValueStruct& rhs) const
     return false;
 }
 
-bool DatabaseValueStruct::operator<(const DatabaseValueStruct& rhs) const
+bool DataBaseDataValue::operator<(const DataBaseDataValue& rhs) const
 {
     if (holdsType<DBSupportedTypes::STRING>())
     {
@@ -109,7 +109,7 @@ bool DatabaseValueStruct::operator<(const DatabaseValueStruct& rhs) const
     return false;
 }
 
-bool DatabaseValueStruct::operator<=(const DatabaseValueStruct& rhs) const
+bool DataBaseDataValue::operator<=(const DataBaseDataValue& rhs) const
 {
     if (holdsType<DBSupportedTypes::INT>())
     {
@@ -122,7 +122,7 @@ bool DatabaseValueStruct::operator<=(const DatabaseValueStruct& rhs) const
     return false;
 }
 
-bool DatabaseValueStruct::operator==(const DatabaseValueStruct& rhs) const
+bool DataBaseDataValue::operator==(const DataBaseDataValue& rhs) const
 {
     if (holdsType<DBSupportedTypes::STRING>())
     {
@@ -139,7 +139,7 @@ bool DatabaseValueStruct::operator==(const DatabaseValueStruct& rhs) const
     return false;
 }
 
-bool DatabaseValueStruct::operator!=(const DatabaseValueStruct& rhs) const
+bool DataBaseDataValue::operator!=(const DataBaseDataValue& rhs) const
 {
     return !operator==(rhs);
 }

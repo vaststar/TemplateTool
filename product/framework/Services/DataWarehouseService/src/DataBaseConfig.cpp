@@ -1,4 +1,4 @@
-#include <ucf/Services/DataWarehouseService/DataBaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 
 
 namespace ucf::service::model{

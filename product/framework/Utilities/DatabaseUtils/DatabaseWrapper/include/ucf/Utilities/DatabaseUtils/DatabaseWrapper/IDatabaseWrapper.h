@@ -17,9 +17,10 @@ using DatabaseDataRecordsCallback = std::function<void(const DatabaseDataRecords
 class DatabaseSchema;
 using DatabaseSchemas = std::vector<DatabaseSchema>;
 
-using Columns = std::vector<std::string>; 
-class DatabaseValueStruct;
-using Arguments = std::vector<DatabaseValueStruct>;
+using Columns = std::vector<std::string>;
+ 
+class DataBaseDataValue;
+using Arguments = std::vector<DataBaseDataValue>;
 using ListOfArguments = std::vector<Arguments>;
 
 enum class DBOperatorType
@@ -35,7 +36,7 @@ enum class DBOperatorType
     Not,
     IsNull
 };
-using WhereCondition = std::tuple<std::string, DatabaseValueStruct, DBOperatorType>;
+using WhereCondition = std::tuple<std::string, DataBaseDataValue, DBOperatorType>;
 using ListsOfWhereCondition = std::vector<WhereCondition>;
 
 struct SqliteDatabaseConfig{
@@ -56,8 +57,6 @@ public:
     virtual void insertIntoDatabase(const std::string& tableName, const Columns& columns, const ListOfArguments& arguments, const std::source_location location = std::source_location::current()) = 0;
     virtual void fetchFromDatabase(const std::string& tableName, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit = 0, const std::source_location location = std::source_location::current()) = 0;
        
-    // virtual void queryData(const std::string& queryStr, std::function<void(const DatabaseDataRecords&)>) = 0;
-
     static std::shared_ptr<IDatabaseWrapper> createSqliteDatabase(const SqliteDatabaseConfig& config);
 };
 }

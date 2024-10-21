@@ -1,7 +1,7 @@
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 
-#include "DatabaseWrapperLogger.h"
-namespace ucf::utilities::database{
+#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
+
+namespace ucf::service::model{
 
 void DatabaseDataRecord::addColumnData(const std::string& key, const DataBaseDataValue& value)
 {

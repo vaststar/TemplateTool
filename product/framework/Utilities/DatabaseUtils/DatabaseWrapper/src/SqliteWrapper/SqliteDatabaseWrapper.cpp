@@ -4,7 +4,7 @@
 
 #include <sqlite3.h>
 
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseDataValue.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 
@@ -27,7 +27,7 @@ public:
     bool isOpen();
     void execute(const std::string& commandStr);
     bool prepareStatement(const std::string& statement, sqlite3_stmt** ppStmt);
-    bool bindDBType(sqlite3_stmt* statement, const DatabaseValueStruct& value, int index);
+    bool bindDBType(sqlite3_stmt* statement, const DataBaseDataValue& value, int index);
     void extractResultsFromStatement(sqlite3_stmt* statement, DatabaseDataRecords& result);
 private:
     SqliteDatabaseConfig mDatabaseConfig;
@@ -101,7 +101,7 @@ bool SqliteDatabaseWrapper::DataPrivate::prepareStatement(const std::string& sta
     return true;
 }
 
-bool SqliteDatabaseWrapper::DataPrivate::bindDBType(sqlite3_stmt* statement, const DatabaseValueStruct& value, int index)
+bool SqliteDatabaseWrapper::DataPrivate::bindDBType(sqlite3_stmt* statement, const DataBaseDataValue& value, int index)
 {
     if (value.holdsType<DBSupportedTypes::STRING>())
     {

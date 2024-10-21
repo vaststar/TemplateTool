@@ -5,7 +5,7 @@
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/DataWarehouseService/DataBaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 #include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
 
 #include "DataWarehouseSchemas.h"

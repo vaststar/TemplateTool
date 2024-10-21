@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -8,12 +9,6 @@ namespace ucf::framework{
 }
 
 namespace ucf::service{
-    
-namespace model{
-    class DBConfig;
-    class DBTableModel;
-}
-
 class DataWarehouseManager final
 {
 public:
@@ -26,6 +21,7 @@ public:
 public:
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
     void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
+    void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
-#include <variant>
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
 namespace ucf::service::model{
 
@@ -29,24 +27,4 @@ private:
     std::string mDBPassword;
 
 };
-
-using DBColumnFields = std::vector<std::string>;
-
-enum class DBOperatorType
-{
-    Equal,
-    Less,
-    Greater,
-    Match,
-    In,
-    NotIn,
-    And,
-    Like,
-    Not,
-    IsNull
-};
-
-class DataBaseDataValue;
-using WhereCondition = std::tuple<std::string, DataBaseDataValue, DBOperatorType>;
-using ListsOfWhereCondition = std::vector<WhereCondition>;
 }

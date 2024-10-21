@@ -1,16 +1,19 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
+    include/ucf/Services/DataWarehouseService/DatabaseModelDeclare.h
     include/ucf/Services/DataWarehouseService/IDataWarehouseService.h
-    include/ucf/Services/DataWarehouseService/DatabaseModel.h
+    include/ucf/Services/DataWarehouseService/DataBaseConfig.h
     include/ucf/Services/DataWarehouseService/DataBaseTableModel.h
     include/ucf/Services/DataWarehouseService/DataBaseDataValue.h
+    include/ucf/Services/DataWarehouseService/DatabaseDataRecord.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/DataBaseTableModel.cpp
     src/DataBaseDataValue.cpp
-    src/DatabaseModel.cpp
+    src/DatabaseDataRecord.cpp
+    src/DataBaseConfig.cpp
     src/DataWarehouseService.h
     src/DataWarehouseService.cpp
     src/DataWarehouseManager.h

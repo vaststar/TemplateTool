@@ -2,14 +2,14 @@
 
 #include <string>
 #include <map>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseDataValue.h>
+#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
 
-namespace ucf::utilities::database{
+namespace ucf::service::model{
 
 class DataBaseDataValue;
 
-class DATABASEWRAPPER_EXPORT DatabaseDataRecord final
+class SERVICE_EXPORT DatabaseDataRecord final
 {
 public:
     void addColumnData(const std::string& key, const DataBaseDataValue& value);

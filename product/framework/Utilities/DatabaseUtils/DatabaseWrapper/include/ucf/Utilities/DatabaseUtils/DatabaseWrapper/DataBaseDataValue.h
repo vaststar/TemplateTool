@@ -15,17 +15,17 @@ namespace DBSupportedTypes{
 }
 using DBDataValue = std::variant<DBSupportedTypes::STRING, DBSupportedTypes::INT, DBSupportedTypes::FLOAT, DBSupportedTypes::BLOB>;
 
-class DATABASEWRAPPER_EXPORT DatabaseValueStruct final
+class DATABASEWRAPPER_EXPORT DataBaseDataValue final
 {
 public:
-    DatabaseValueStruct(const std::string& value);
-    DatabaseValueStruct(const char* value);
-    DatabaseValueStruct(long value);
-    DatabaseValueStruct(long long value);
-    DatabaseValueStruct(int value);
-    DatabaseValueStruct(float value);
-    DatabaseValueStruct(bool value);
-    DatabaseValueStruct(std::vector<uint8_t> buffer);
+    DataBaseDataValue(const std::string& value);
+    DataBaseDataValue(const char* value);
+    DataBaseDataValue(long value);
+    DataBaseDataValue(long long value);
+    DataBaseDataValue(int value);
+    DataBaseDataValue(float value);
+    DataBaseDataValue(bool value);
+    DataBaseDataValue(std::vector<uint8_t> buffer);
 public:                 
     template <typename T>
     bool holdsType() const
@@ -38,12 +38,12 @@ public:
     DBSupportedTypes::FLOAT getFloatValue() const;
     DBSupportedTypes::BLOB getBufferValue() const;
 
-    bool operator>(const DatabaseValueStruct& rhs) const;
-    bool operator>=(const DatabaseValueStruct& rhs) const;
-    bool operator<(const DatabaseValueStruct& rhs) const;
-    bool operator<=(const DatabaseValueStruct& rhs) const;
-    bool operator==(const DatabaseValueStruct& rhs) const;
-    bool operator!=(const DatabaseValueStruct& rhs) const;
+    bool operator>(const DataBaseDataValue& rhs) const;
+    bool operator>=(const DataBaseDataValue& rhs) const;
+    bool operator<(const DataBaseDataValue& rhs) const;
+    bool operator<=(const DataBaseDataValue& rhs) const;
+    bool operator==(const DataBaseDataValue& rhs) const;
+    bool operator!=(const DataBaseDataValue& rhs) const;
 private:
     template <typename T>
     T getVariantValue(const T& staticDefault) const

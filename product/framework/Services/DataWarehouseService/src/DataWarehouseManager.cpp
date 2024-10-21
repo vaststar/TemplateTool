@@ -4,13 +4,14 @@
 #include <functional>
 #include <filesystem>
 
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseValueStruct.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseDataValue.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 
-#include <ucf/Services/DataWarehouseService/DatabaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 #include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
+#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
 #include <ucf/Services/DataWarehouseService/DataBaseTableModel.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
@@ -29,11 +30,13 @@ public:
     ~DataPrivate();
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
     void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
+    void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
 private:
     ucf::utilities::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const;
     ucf::utilities::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values) const;
-    ucf::utilities::database::DatabaseValueStruct convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const;
+    ucf::utilities::database::DataBaseDataValue convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const;
     void createFolder(const std::string& dbFilePath) const;
+    std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> getDBWrapper(const std::string& dbId);
 private:
     mutable std::mutex mDatabaseMutex;
     std::map<std::string, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDatabaseWrapper;
@@ -46,6 +49,16 @@ DataWarehouseManager::DataPrivate::DataPrivate()
 DataWarehouseManager::DataPrivate::~DataPrivate()
 {
     mDatabaseWrapper.clear();
+}
+
+std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> DataWarehouseManager::DataPrivate::getDBWrapper(const std::string& dbId)
+{
+    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
+    if (auto it = mDatabaseWrapper.find(dbId); it != mDatabaseWrapper.end())
+    {
+        return it->second;
+    }
+    return nullptr;
 }
 
 void DataWarehouseManager::DataPrivate::createFolder(const std::string& dbFilePath) const
@@ -102,28 +115,28 @@ ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::con
     return databaseSchemas;
 }
 
-ucf::utilities::database::DatabaseValueStruct DataWarehouseManager::DataPrivate::convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const
+ucf::utilities::database::DataBaseDataValue DataWarehouseManager::DataPrivate::convertToDatabaseDataStruct(const model::DataBaseDataValue& value) const
 {
     if (value.holdsType<std::string>())
     {
-        return ucf::utilities::database::DatabaseValueStruct(value.getStringValue());
+        return ucf::utilities::database::DataBaseDataValue(value.getStringValue());
     }
     else if (value.holdsType<int>())
     {
-        return ucf::utilities::database::DatabaseValueStruct(value.getIntValue());
+        return ucf::utilities::database::DataBaseDataValue(value.getIntValue());
     }
     else if (value.holdsType<float>())
     {
-        return ucf::utilities::database::DatabaseValueStruct(value.getFloatValue());
+        return ucf::utilities::database::DataBaseDataValue(value.getFloatValue());
     }
     else if (value.holdsType<std::vector<uint8_t>>())
     {
-        return ucf::utilities::database::DatabaseValueStruct(value.getBufferValue());
+        return ucf::utilities::database::DataBaseDataValue(value.getBufferValue());
     }
     else
     {
         SERVICE_LOG_WARN("convert data failed");
-        return ucf::utilities::database::DatabaseValueStruct("");
+        return ucf::utilities::database::DataBaseDataValue("");
     }
 }
 
@@ -140,12 +153,11 @@ ucf::utilities::database::ListOfArguments DataWarehouseManager::DataPrivate::con
 
 void DataWarehouseManager::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
-    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
-    if (auto it = mDatabaseWrapper.find(dbId); it != mDatabaseWrapper.end())
+    if (auto dbWrapper = getDBWrapper(dbId))
     {
-        it->second->insertIntoDatabase(tableName, columnFields, convertToDatabaseArguments(values), location);
+        dbWrapper->insertIntoDatabase(tableName, columnFields, convertToDatabaseArguments(values), location);
 
-        it->second->fetchFromDatabase(tableName,{},[](const std::vector<ucf::utilities::database::DatabaseDataRecord>& results){
+        dbWrapper->fetchFromDatabase(tableName,{},[](const std::vector<ucf::utilities::database::DatabaseDataRecord>& results){
             //for (const auto& res: results)
             //{
             //    auto val = res.values();
@@ -157,6 +169,20 @@ void DataWarehouseManager::DataPrivate::insertIntoDatabase(const std::string& db
     {
         SERVICE_LOG_WARN("no db:" << dbId);
     }
+}
+
+void DataWarehouseManager::DataPrivate::fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location)
+{
+    if (auto dbWrapper = getDBWrapper(dbId))
+    {
+        
+    }
+    else
+    {
+        SERVICE_LOG_WARN("no db:" << dbId);
+        func({});
+    }
+
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -198,6 +224,16 @@ void DataWarehouseManager::insertIntoDatabase(const std::string& dbId, const std
     }
 
     mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values, location);
+}
+
+void DataWarehouseManager::fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location)
+{
+    if (dbId.empty() || tableName.empty())
+    {
+        SERVICE_LOG_WARN("wrong fetch param, dbId" << dbId << ", tableName: " << tableName);
+        func({});
+    }
+    mDataPrivate->fetchFromDatabase(dbId, tableName, columnFields, whereConditions, func, limit, location);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

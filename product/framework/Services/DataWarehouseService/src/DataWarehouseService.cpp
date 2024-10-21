@@ -4,7 +4,7 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 #include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
-#include <ucf/Services/DataWarehouseService/DatabaseModel.h>
+#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 
 #include "DataWarehouseService.h"
 #include "DataWarehouseManager.h"
@@ -23,6 +23,7 @@ public:
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
     void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
     void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
+    void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
 private:
     std::unique_ptr<DataWarehouseManager> mDataWarehouseManager;
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
@@ -52,6 +53,11 @@ void DataWarehouseService::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
 void DataWarehouseService::DataPrivate::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
     mDataWarehouseManager->insertIntoDatabase(dbId, tableName, columnFields, values, location);
+}
+
+void DataWarehouseService::DataPrivate::fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location)
+{
+    mDataWarehouseManager->fetchFromDatabase(dbId, tableName, columnFields, whereConditions, func, limit, location);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +123,17 @@ void DataWarehouseService::insertIntoDatabase(const std::string& dbId, const std
               << location.function_name());
     mDataPrivate->insertIntoDatabase(dbId, tableName, columnFields, values, location);
 }
+
+void DataWarehouseService::fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location)
+{
+    SERVICE_LOG_DEBUG("about to fetch data from table: " << tableName << ", from: " 
+              << location.file_name() << '('
+              << location.line() << ':'
+              << location.column() << ") `"
+              << location.function_name());
+    mDataPrivate->fetchFromDatabase(dbId, tableName, columnFields, whereConditions, func, limit, location);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataWarehouseService Logic//////////////////////////////////////////
