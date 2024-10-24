@@ -43,9 +43,14 @@ namespace AppRunner
         void createApp(int argc, char* argv[]);
         void initApp();
         void exitApp();
-        commonHead::ICommonHeadFrameworkWPtr getCommonheadFramework() const;
-        ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
 
+        [[nodiscard]] commonHead::ICommonHeadFrameworkWPtr getCommonheadFramework() const;
+        [[nodiscard]] ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
+    public:
+        ApplicationRunner(const ApplicationRunner&) = delete;
+        ApplicationRunner(ApplicationRunner&&) = delete;
+        ApplicationRunner& operator=(const ApplicationRunner&) = delete;
+        ApplicationRunner& operator=(ApplicationRunner&&) = delete;
     private:
         class DataPrivate;
         std::unique_ptr<DataPrivate> mDataPrivate;
