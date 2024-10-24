@@ -14,6 +14,7 @@ class DATABASEWRAPPER_EXPORT DatabaseDataRecord final
 public:
     void addColumnData(const std::string& key, const DataBaseDataValue& value);
     void addColumnData(const std::string& key, DataBaseDataValue&& value);
+    const std::map<std::string, DataBaseDataValue>& getData() const;
 private:
     std::map<std::string, DataBaseDataValue> mValueMaps;
 };

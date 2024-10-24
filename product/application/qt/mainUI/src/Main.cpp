@@ -1,3 +1,6 @@
+#include <vector>
+#include <string>
+
 #include "Main/Main.h"
 
 
@@ -19,39 +22,26 @@
 class Main::DataPrivate
 {
 public:
-    void initDataPrivate();
+    void initApp(int argc, char *argv[]);
     void exitApp();
-    const AppRunner::FrameworkDependencies& getDependencies() const{ return mDependencies;}
+    commonHead::ICommonHeadFrameworkWPtr getCommonHeadFramework(){ return mApplicationRunner.getCommonheadFramework();}
 private:
-    AppRunner::FrameworkDependencies mDependencies;
+    AppRunner::ApplicationConfig parseApplicationConfig(int argc, char *argv[]) const;
+private:
+    AppRunner::ApplicationRunner mApplicationRunner;
 };
 
-void Main::DataPrivate::initDataPrivate()
+void Main::DataPrivate::initApp(int argc, char *argv[])
 {
-    AppRunner::AppLogConfig logConfig{
-        "applogs",
-        "temeplateTool",
-        MasterLogUtil::ALL_LOG_LEVEL,
-        180,
-        50 * 1024 * 1024
-    };
-    
-    AppRunner::ApplicationConfig appConfig{logConfig};
-    mDependencies = AppRunner::initAppDependencies(appConfig);
+    mApplicationRunner.createApp(argc, argv);
+    mApplicationRunner.initApp();
 }
 
 void Main::DataPrivate::exitApp()
 {
-    if (mDependencies.coreFramework)
-    {
-        mDependencies.coreFramework->exitCoreFramework();
-    }
-
-    if (mDependencies.commonHeadFramework)
-    {
-        mDependencies.commonHeadFramework->exitCommonheadFramework();
-    }
+    mApplicationRunner.exitApp();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -70,13 +60,12 @@ Main::~Main()
 
 int Main::runMain(int argc, char *argv[])
 {
-    mDataPrivate->initDataPrivate();
+    mDataPrivate->initApp(argc, argv);
     MAINUI_LOG_DEBUG("init dependencies done");
 
-    MAINUI_LOG_DEBUG(__cplusplus);
     int runResult = 0;
     {
-        AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, std::weak_ptr(mDataPrivate->getDependencies().commonHeadFramework)});
+        AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, mDataPrivate->getCommonHeadFramework()});
         runResult = AppUIManager.runApp();
     }
     

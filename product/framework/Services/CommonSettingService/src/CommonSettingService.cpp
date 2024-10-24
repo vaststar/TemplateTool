@@ -7,6 +7,7 @@
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 #include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
+#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
 
 #include "DataWarehouseSchemas.h"
 #include "CommonSettingService.h"
@@ -53,6 +54,11 @@ void CommonSettingService::DataPrivate::initDatabase()
             values.emplace_back(model::DBDataValues{ std::string("test_id111"), std::string("test_name11"), std::string("11243@qq.com") });
 
             dataWarehouse->insertIntoDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME", "CONTACT_EMAIL"}, values);
+
+            dataWarehouse->fetchFromDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME"}, {{"CONTACT_ID", "test_id", model::DBOperatorType::Not}},[](const model::DatabaseDataRecords& results){
+                auto res = results;
+                SERVICE_LOG_INFO("got data");
+            });
         }
     }
 }

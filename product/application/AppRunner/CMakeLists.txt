@@ -12,6 +12,7 @@ include/AppRunner/AppRunnerExport.h
 
 set(TARGET_SOURCE_FILES_PRIVATE
 src/AppRunner.cpp
+src/LoggerDefine.h
 )
 
 BuildModule(

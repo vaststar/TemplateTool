@@ -6,11 +6,13 @@
 namespace ucf::framework {
     class ICoreFramework;
     using ICoreFrameworkPtr = std::shared_ptr<ICoreFramework>;
+    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
 namespace commonHead{
     class ICommonHeadFramework;
     using ICommonHeadFrameworkPtr = std::shared_ptr<ICommonHeadFramework>;
+    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
 namespace AppRunner
@@ -31,5 +33,22 @@ namespace AppRunner
     struct ApplicationConfig{
         AppLogConfig appLogConfig;
     };
-    APPRUNNER_EXPORT [[nodiscard]] FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig);
+
+    class APPRUNNER_EXPORT ApplicationRunner final
+    {
+    public:
+        ApplicationRunner();
+        ~ApplicationRunner();
+    public:
+        void createApp(int argc, char* argv[]);
+        void initApp();
+        void exitApp();
+        commonHead::ICommonHeadFrameworkWPtr getCommonheadFramework() const;
+        ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
+
+    private:
+        class DataPrivate;
+        std::unique_ptr<DataPrivate> mDataPrivate;
+    };
+    // APPRUNNER_EXPORT [[nodiscard]] FrameworkDependencies initAppDependencies(const ApplicationConfig& appConfig);
 }

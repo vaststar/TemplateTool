@@ -13,4 +13,8 @@ void DatabaseDataRecord::addColumnData(const std::string& key, DataBaseDataValue
     mValueMaps.emplace(key, std::move(value));
 }
 
+const std::map<std::string, DataBaseDataValue>& DatabaseDataRecord::getData() const
+{
+    return mValueMaps;
+}
 }

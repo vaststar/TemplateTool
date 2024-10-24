@@ -57,12 +57,12 @@ void AppUIManager::Impl::initAppContext(const AppUIManager::ApplicationConfig& c
 AppUIManager::AppUIManager(const AppUIManager::ApplicationConfig& config)
     : mImpl(std::make_unique<AppUIManager::Impl>(config))
 {
-    
+    UIVIEW_LOG_INFO("create AppUIManager, address:" << this);
 }
 
 AppUIManager::~AppUIManager()
 {
-
+    UIVIEW_LOG_INFO("exit AppUIManager, address:" << this);
 }
 
 int AppUIManager::runApp()

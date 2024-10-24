@@ -60,7 +60,7 @@ DBSupportedTypes::FLOAT DataBaseDataValue::getFloatValue() const
     return getVariantValue<DBSupportedTypes::FLOAT>(defaultFloat);
 }
 
-std::vector<uint8_t> DataBaseDataValue::getBufferValue() const
+DBSupportedTypes::BLOB DataBaseDataValue::getBufferValue() const
 {
     static const DBSupportedTypes::BLOB defaultBlob{};
     return getVariantValue<DBSupportedTypes::BLOB>(defaultBlob);

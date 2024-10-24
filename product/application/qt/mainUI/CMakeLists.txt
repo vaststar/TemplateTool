@@ -23,8 +23,8 @@ BuildQtModule(
         UIView
         CoreFramework
         CommonHeadFramework
-    TARGET_DEPENDENICES_PUBLIC
         AppRunner
+    TARGET_DEPENDENICES_PUBLIC
         MasterLog 
     TARGET_DEFINITIONS
         Main_DLL

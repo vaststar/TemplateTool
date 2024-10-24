@@ -55,7 +55,7 @@ public:
 
     virtual void createTables(const DatabaseSchemas& tableSchemas) = 0;
     virtual void insertIntoDatabase(const std::string& tableName, const Columns& columns, const ListOfArguments& arguments, const std::source_location location = std::source_location::current()) = 0;
-    virtual void fetchFromDatabase(const std::string& tableName, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit = 0, const std::source_location location = std::source_location::current()) = 0;
+    virtual void fetchFromDatabase(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit = 0, const std::source_location location = std::source_location::current()) = 0;
        
     static std::shared_ptr<IDatabaseWrapper> createSqliteDatabase(const SqliteDatabaseConfig& config);
 };

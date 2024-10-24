@@ -416,7 +416,7 @@ std::string SqliteDatabaseWrapper::createWhereCondition(const ListsOfWhereCondit
         std::string name = std::get<0>(arguments[i]);
         if (auto it = groupedWhereConditions.find(name); it != groupedWhereConditions.end())
         {
-            it->second.push_back({ arguments[i], i + 1 });
+            it->second.emplace_back( arguments[i], i + 1);
         }
         else
         {
@@ -502,15 +502,14 @@ std::string SqliteDatabaseWrapper::createWhereCondition(const ListsOfWhereCondit
     return whereStatement.str();
 }
 
-void SqliteDatabaseWrapper::fetchFromDatabase(const std::string& tableName, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit, const std::source_location location)
+void SqliteDatabaseWrapper::fetchFromDatabase(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit, const std::source_location location)
 {
     DBWRAPPER_LOG_DEBUG("fetch data from table: " << tableName << ", from: " 
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"
               << location.function_name());
-    
-    std::string selectStatement = generateSelectStatement(tableName, Columns{{"*"}}, arguments, limit);
+    std::string selectStatement = generateSelectStatement(tableName, columns, arguments, limit);
     sqlite3_stmt* statement = nullptr;
     if (!mDataPrivate->prepareStatement(selectStatement, &statement))
     {
