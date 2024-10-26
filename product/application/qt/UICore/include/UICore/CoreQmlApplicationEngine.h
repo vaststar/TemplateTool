@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <QQmlApplicationEngine>
 #include <UICore/UICoreExport.h>
 
@@ -9,4 +10,5 @@ Q_OBJECT
 public:
     CoreQmlApplicationEngine(QObject* parent = nullptr);
     CoreQmlApplicationEngine(const QUrl& url, QObject* parent = nullptr);
+    // QString getDefaultQRCPrefix() const;
 };

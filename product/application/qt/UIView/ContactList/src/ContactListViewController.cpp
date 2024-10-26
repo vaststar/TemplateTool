@@ -27,6 +27,6 @@ void ContactListViewController::initializeController(CoreContext* appContext)
 void ContactListViewController::buttonClicked()
 {
     // mContactListViewModel->getContactList();
-    auto window = mAppContext->getViewFactory()->createQmlWindow(QStringLiteral("qrc:/qt/qml/UIComponent/qml/UTDialog.qml"));
+    auto window = mAppContext->getViewFactory()->createQmlWindow(QStringLiteral("UIComponent/qml/UTDialog.qml"));
     window->show();
 }

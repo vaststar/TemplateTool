@@ -77,7 +77,7 @@ void AppUIManager::createAndShowMainWindow()
 
     UIVIEW_LOG_DEBUG("start load main qml");
 
-    mImpl->getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("qrc:/qt/qml/UIView/MainWindow/qml/MainWindow.qml"), "MainWindowController", [this](auto controller){
+    mImpl->getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), "MainWindowController", [this](auto controller){
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
             mainController->initializeController(mImpl->getAppContext().get());

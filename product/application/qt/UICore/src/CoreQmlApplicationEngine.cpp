@@ -9,5 +9,4 @@ CoreQmlApplicationEngine::CoreQmlApplicationEngine(QObject* parent)
 CoreQmlApplicationEngine::CoreQmlApplicationEngine(const QUrl& url, QObject* parent)
     : QQmlApplicationEngine(url, parent)
 {
-
 }

@@ -11,6 +11,12 @@ CoreViewFactory::CoreViewFactory(std::unique_ptr<CoreQmlApplicationEngine>&& qml
 }
 
 CoreViewFactory::~CoreViewFactory() = default;
+
+QString CoreViewFactory::getQRCPrefixPath() const
+{
+    return QStringLiteral("qrc:/qt/qml/");
+}
+
 QPointer<QQuickView> CoreViewFactory::createQmlWindow(const QString& qmlResource, QWindow* parent, QObject* controller)
 {
     if (qmlResource.isEmpty())
@@ -32,8 +38,18 @@ QPointer<QQuickView> CoreViewFactory::createQmlWindow(const QString& qmlResource
 
 void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const ControllerCallback& controllerCallback)
 {
-    QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [qmlResource, controllerObjectName, controllerCallback](QObject* object, const QUrl& url) {
-        if (object && url.toString() == qmlResource)
+    QString actualQmlResource;
+    if (qmlResource.startsWith("qrc:/"))
+    {
+        actualQmlResource = qmlResource;
+    }
+    else
+    {
+        actualQmlResource = getQRCPrefixPath() + qmlResource;
+    }
+    
+    QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [actualQmlResource, controllerObjectName, controllerCallback](QObject* object, const QUrl& url) {
+        if (object && url.toString() == actualQmlResource)
         {
             UICore_LOG_DEBUG("object created: " << url.toString().toStdString());
             if (auto controller = object->findChild<CoreController*>(controllerObjectName))
@@ -44,8 +60,8 @@ void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& c
         }
         else
         {
-            UICore_LOG_WARN("object created failed: " << qmlResource.toStdString());
+            UICore_LOG_WARN("object created failed: " << actualQmlResource.toStdString());
         }
     });
-    mQmlEngine->load(qmlResource);
+    mQmlEngine->load(actualQmlResource);
 }   
