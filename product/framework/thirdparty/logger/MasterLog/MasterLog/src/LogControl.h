@@ -23,7 +23,6 @@ namespace LogLogSpace{
         std::mutex m_loggerMutex;
         std::list<std::unique_ptr<LogBaseLogger>> m_currentLogger;
     private:
-        void createLoggers();
         std::string formatMessage(const std::string& logTag, int logLevel, const std::string& filePath, 
                                   int lineNumber,const std::string& functionName, const std::string& logMessage)const;
         std::string getCurrentFormatedTime() const;
