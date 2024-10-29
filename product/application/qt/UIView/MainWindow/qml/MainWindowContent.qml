@@ -5,6 +5,7 @@ import UIView 1.0
 import UIComponent 1.0
 Item{
     required property var controller
+
     MainWindowTabBar{
         id: navigationBar
     }
@@ -19,12 +20,11 @@ Item{
     }
     
     Component.onCompleted:{
-        // controller.controllerInitialized.connect(frame.controller.initializeController)
-        // frame.controller.initializeController(controller.getAppContext())
         controller.onContactListLoaded(frame.controller)
     }
 
     Text {
+        focus: false
         text: controller.mControllerName + "test"
         font.family: "Helvetica"
         font.pointSize: 12
@@ -39,18 +39,55 @@ Item{
 
     
     Button {
+        id: bbb
         text: "testDialogShowButton"
         anchors{
             top: parent.top
             topMargin: 300
             left: parent.left
-            leftMargin: 100
+            leftMargin: 50
         }
         onClicked:{
             dialog.open()
         }
+        background: Rectangle{
+            anchors.fill: parent
+            border.color: "red"
+            border.width: bbb.activeFocus?3:0
+        }
     }
 
+    Button {
+        id: butn1
+        text: "1234"
+        anchors{
+            top: parent.top
+            topMargin: 300
+            left: parent.left
+            leftMargin: 200
+        }
+        background: Rectangle{
+            anchors.fill: parent
+            border.color: "red"
+            border.width: butn1.activeFocus?3:0
+        }
+    }
+    Button {
+        id: butn2
+        text: "5678"
+        anchors{
+            top: parent.top
+            topMargin: 300
+            left: parent.left
+            leftMargin: 400
+        }
+        background: Rectangle{
+            anchors.fill: parent
+            border.color: "red"
+            border.width: butn2.activeFocus?3:0
+        }
+    }
+    
     UTDialog{
         id: dialog
     }

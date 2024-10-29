@@ -26,6 +26,7 @@ public:
     void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const ControllerCallback& controllerCallback = nullptr);
 private:
     QString getQRCPrefixPath() const;
+    QString generateQmlResourcePath(const QString& qmlResource) const;
 private:
     const std::unique_ptr<CoreQmlApplicationEngine> mQmlEngine;
 };

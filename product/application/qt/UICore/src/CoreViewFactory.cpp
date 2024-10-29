@@ -17,6 +17,24 @@ QString CoreViewFactory::getQRCPrefixPath() const
     return QStringLiteral("qrc:/qt/qml/");
 }
 
+QString CoreViewFactory::generateQmlResourcePath(const QString& qmlResource) const
+{
+    if (qmlResource.isEmpty())
+    {
+        return {};
+    }
+
+    if (qmlResource.startsWith("qrc:/"))
+    {
+        return qmlResource;
+    }
+    else
+    {
+        return getQRCPrefixPath() + qmlResource;
+    }
+
+}
+
 QPointer<QQuickView> CoreViewFactory::createQmlWindow(const QString& qmlResource, QWindow* parent, QObject* controller)
 {
     if (qmlResource.isEmpty())
@@ -31,22 +49,19 @@ QPointer<QQuickView> CoreViewFactory::createQmlWindow(const QString& qmlResource
         view->setInitialProperties({ {QStringLiteral("controller"), QVariant::fromValue(controller)} });
     }
 
-    view->setSource(qmlResource);
+    view->setSource(generateQmlResourcePath(qmlResource));
     return view;
 }
 
 
 void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const ControllerCallback& controllerCallback)
 {
-    QString actualQmlResource;
-    if (qmlResource.startsWith("qrc:/"))
+    if (qmlResource.isEmpty())
     {
-        actualQmlResource = qmlResource;
+        return;
     }
-    else
-    {
-        actualQmlResource = getQRCPrefixPath() + qmlResource;
-    }
+
+    QString actualQmlResource = generateQmlResourcePath(qmlResource);
     
     QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [actualQmlResource, controllerObjectName, controllerCallback](QObject* object, const QUrl& url) {
         if (object && url.toString() == actualQmlResource)

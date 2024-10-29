@@ -10,27 +10,17 @@ Item{
     ContactListViewController{
         id:controller
     }
-Datas{
-    id: dat
-}
-property var ii:"555"
 
-
-function getAge()
-{
-    console.log("bbbbbbbbbbbbbbbbbbb")
-    // console.log("aaa", root.dat.getAge())
-    return "aaa"//data.getAge()
-}
-Image {
-    height:200
-    width:200
-    source: "qrc:/qt/qml/UIView/picture/112.png"
-}
-
+    Image {
+        focus: false
+        height:200
+        width:200
+        source: "qrc:/qt/qml/UIView/picture/112.png"
+    }
 
     Button {
-        text: "wo de button"
+        id: bbb
+        text: "contactListButton"
         anchors{
             top: parent.top
             topMargin: 100
@@ -41,35 +31,21 @@ Image {
             console.log("111111111111111")
             controller.buttonClicked()
         }
+        background: Rectangle{
+            anchors.fill: parent
+            border.color: "red"
+            border.width: bbb.activeFocus?3:0
+        }
     }
 
-Label {
-    id:lab
-    text: dat.m_age
-    font.pixelSize: 22
-    font.italic: true
-    Component.onCompleted:{
-        console.log("done")
-        // text = root.dat.getData()
+
+    ContactListItemModel{
+        id:treeModel
     }
-}
 
-// Button{
-//     id:butt
-//     text:"5555555555"
-//     height: 200
-//     width: 200
-//     x: 200
-//     onClicked: {
-//         console.log("Button clicked")
-//         lab.text = dat.getData()
-//     }
-
-// }
-
-ContactListItemModel{id:treeModel}
- TreeView {
+    TreeView {
         id: treeView
+        focus: false
         anchors{
             left:parent.left
             leftMargin: 200
@@ -84,6 +60,6 @@ ContactListItemModel{id:treeModel}
         model: treeModel
 
         delegate: TreeViewDelegate { implicitWidth : parent.width}
- }
+    }
 }
 

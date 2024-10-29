@@ -5,10 +5,8 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
 set(TARGET_SOURCE_FILES_PRIVATE
     LoggerDefine/LoggerDefine.h
 
-    ContactList/include/Datas.h
     ContactList/include/ContactListItemModel.h
     ContactList/include/ContactListViewController.h
-    ContactList/src/Datas.cpp
     ContactList/src/ContactListViewController.cpp
     ContactList/src/ContactListItemModel.cpp
 
