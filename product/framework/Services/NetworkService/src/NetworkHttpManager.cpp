@@ -1,16 +1,18 @@
 #include "NetworkHttpManager.h"
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
+
 #include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClient.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
+
 #include "NetworkHttpHandler/NetworkHttpRestHandler.h"
 #include "NetworkHttpHandler/NetworkHttpRawHandler.h"
 #include "NetworkHttpHandler/NetworkHttpDownloadToMemoryHandler.h"
 #include "NetworkHttpHandler/NetworkHttpDownloadToFileHandler.h"
 
+#include "NetworkServiceLogger.h"
 
 #ifndef RETURN_FROM_LAMBDA_IF_DEAD
 #define RETURN_FROM_LAMBDA_IF_DEAD(x) \
@@ -63,6 +65,11 @@ NetworkHttpManager::NetworkHttpManager()
 NetworkHttpManager::~NetworkHttpManager()
 {
    SERVICE_LOG_DEBUG("");
+}
+
+void NetworkHttpManager::startHttpNetwork()
+{
+    mDataPrivate->getLibCurlClient()->startService();
 }
 
 void NetworkHttpManager::sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location)

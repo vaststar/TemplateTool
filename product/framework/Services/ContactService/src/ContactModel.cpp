@@ -1,3 +1,4 @@
+#include "ContactModel.h"
 
 #include <algorithm>
 #include <iterator>
@@ -6,10 +7,9 @@
 
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 #include <ucf/Services/ContactService/Contact.h>
-#include "ContactModel.h"
+#include "ContactServiceLogger.h"
 // #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
 
 namespace ucf::service{

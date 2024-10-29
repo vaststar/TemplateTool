@@ -1,12 +1,13 @@
+#include "DataWarehouseService.h"
+
 #include <map>
 #include <mutex>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 
-#include "DataWarehouseService.h"
+#include "DataWarehouseServiceLogger.h"
 #include "DataWarehouseManager.h"
 
 namespace ucf::service{

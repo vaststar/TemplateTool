@@ -1,6 +1,6 @@
 #include "ContactManager.h"
 
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
+#include "ContactServiceLogger.h"
 #include "ContactModel.h"
 #include "Adapters/ContactAdapter.h"
 namespace ucf::service{

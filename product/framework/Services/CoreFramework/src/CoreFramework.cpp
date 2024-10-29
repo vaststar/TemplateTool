@@ -1,8 +1,9 @@
-#include "CoreFramework.h"
-
 #include <mutex>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
+
 #include <ucf/CoreFramework/IService.h>
+
+#include "CoreFramework.h"
+#include "CoreframeworkLogger.h"
 
 namespace ucf::framework{
 /////////////////////////////////////////////////////////////////////////////////////

@@ -1,11 +1,12 @@
+
+#include "NetworkHttpDownloadToMemoryHandler.h"
+
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
 
-
-#include "NetworkHttpDownloadToMemoryHandler.h"
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

@@ -1,8 +1,8 @@
 #include "NetworkService.h"
 
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 #include <ucf/Utilities/TimeUtils/TimeUtils.h>
 
+#include "NetworkServiceLogger.h"
 #include "NetworkHttpManager.h"
 
 namespace ucf::service{
@@ -76,11 +76,13 @@ network::http::INetworkHttpManagerWPtr NetworkService::getNetworkHttpManager()
 
 void NetworkService::initService()
 {
-    SERVICE_LOG_DEBUG("init NetworkService, address:" << this);
+    SERVICE_LOG_DEBUG("init NetworkService start, address:" << this);
     // if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     // {
     //     coreFramework->registerCallback(shared_from_this());
     // }
+    mDataPrivate->getNetworkHttpManager()->startHttpNetwork();
+    SERVICE_LOG_DEBUG("init NetworkService done, address:" << this);
 }
 
 std::string NetworkService::getServiceName() const

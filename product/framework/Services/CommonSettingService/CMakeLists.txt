@@ -5,6 +5,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/CommonSettingServiceLogger.h
     src/CommonSettingService.h
     src/CommonSettingService.cpp
     src/DataWarehouseSchemas.h
@@ -21,10 +22,10 @@ BuildModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        MasterLog
         CoreFramework
         DataWarehouseService
     TARGET_DEPENDENICES_PUBLIC
-        MasterLog
         ServiceCommonFile
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

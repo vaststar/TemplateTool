@@ -1,6 +1,8 @@
+#include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClient.h>
+
+#include <mutex>
 #include <memory>
 #include <filesystem>
-#include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClient.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 #include "LibCurlClientLogger.h"
@@ -25,21 +27,28 @@ private:
     ucf::utilities::network::http::NetworkHttpHeaders buildHeaders(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
 private:
     std::unique_ptr<LibCurlMultiHandleManager> mMultiHandleManager;
+    std::once_flag start_flag;
+    std::once_flag stop_flag;
+
 };
 
-LibCurlClient::DataPrivate::DataPrivate()
+LibCurlClient::DataPrivate::DataPrivate() 
     : mMultiHandleManager(std::make_unique<LibCurlMultiHandleManager>())
 {
 }
 
 void LibCurlClient::DataPrivate::start()
 {
-    mMultiHandleManager->runLoop();
+    std::call_once(start_flag, [this]() {
+        mMultiHandleManager->runLoop();
+    });
 }
 
 void LibCurlClient::DataPrivate::stop()
 {
-    mMultiHandleManager->stopLoop();
+    std::call_once(stop_flag, [this]() {
+        mMultiHandleManager->stopLoop();
+    });
 }
 
 void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle)
@@ -103,8 +112,6 @@ LibCurlClient::LibCurlClient()
     : mDataPrivate(std::make_unique<DataPrivate>())
 {
     LIBCURL_LOG_DEBUG("create LibCurlClient, "<<this);
-    startService();
-    LIBCURL_LOG_DEBUG("create LibCurlClient done, "<<this);
 }
 
 LibCurlClient::~LibCurlClient()

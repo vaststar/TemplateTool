@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <source_location>
 #include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
 
 namespace ucf::framework{

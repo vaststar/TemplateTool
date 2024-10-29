@@ -2,13 +2,13 @@
 #include <mutex>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 #include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
 #include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
 
+#include "CommonSettingServiceLogger.h"
 #include "DataWarehouseSchemas.h"
 #include "CommonSettingService.h"
 

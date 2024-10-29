@@ -1,11 +1,11 @@
+
+#include "NetworkHttpRestHandler.h"
+
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpRestRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
-
-
-#include "NetworkHttpRestHandler.h"
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

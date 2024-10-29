@@ -10,6 +10,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/CoreframeworkLogger.h
     src/ServiceAccessor.h
     src/CoreFramework.h
     src/CoreFramework.cpp
@@ -25,6 +26,7 @@ BuildModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        MasterLog
         ThreadPool
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile

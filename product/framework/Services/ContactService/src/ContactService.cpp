@@ -1,8 +1,8 @@
 #include "ContactService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
+#include "ContactServiceLogger.h"
 #include "ContactModel.h"
 #include "ContactManager.h"
 

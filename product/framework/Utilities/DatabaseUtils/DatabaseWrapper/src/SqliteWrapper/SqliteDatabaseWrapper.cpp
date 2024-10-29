@@ -539,7 +539,7 @@ void SqliteDatabaseWrapper::fetchFromDatabase(const std::string& tableName, cons
         return;
     }
 
-    DBWRAPPER_LOG_WARN("fetch data succeed, table: " << tableName);
+    DBWRAPPER_LOG_DEBUG("fetch data succeed, table: " << tableName);
     func(result);
 }
 /////////////////////////////////////////////////////////////////////////////////////

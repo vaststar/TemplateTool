@@ -7,6 +7,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/ContactServiceLogger.h
     src/ContactService.h
     src/ContactService.cpp
     src/ContactModel.h
@@ -30,10 +31,12 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         nlohmann_json::nlohmann_json
+        MasterLog
         CoreFramework
         NetworkService
         DatabaseWrapper
     TARGET_DEPENDENICES_PUBLIC
+        
         ServiceCommonFile
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

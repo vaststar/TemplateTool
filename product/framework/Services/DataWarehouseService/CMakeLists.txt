@@ -10,6 +10,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/DataWarehouseServiceLogger.h
     src/DataBaseTableModel.cpp
     src/DataBaseDataValue.cpp
     src/DatabaseDataRecord.cpp
@@ -30,11 +31,11 @@ BuildModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        MasterLog
         CoreFramework
         DatabaseWrapper
         ThreadPool
     TARGET_DEPENDENICES_PUBLIC
-        MasterLog
         ServiceCommonFile
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

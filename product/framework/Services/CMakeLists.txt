@@ -1,7 +1,7 @@
 if (WIN32)
     set(ADD_SERVICE_DEFINITIONS SERVICE_DLL SERVICE_LIB)
 endif()
-add_subdirectory(common_file)
+add_subdirectory(ServiceCommonFile)
 add_subdirectory(CoreFramework)
 add_subdirectory(DataWarehouseService)
 add_subdirectory(NetworkService)

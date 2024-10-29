@@ -1,7 +1,6 @@
 #include "Adapters/ContactAdapter.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
@@ -18,6 +17,8 @@
 
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
+
+#include "ContactServiceLogger.h"
 
 namespace ucf::adapter{
 /////////////////////////////////////////////////////////////////////////////////////

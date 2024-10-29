@@ -5,6 +5,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
+    src/ImageServiceLogger.h
     src/ImageService.h
     src/ImageService.cpp
 )
@@ -19,6 +20,7 @@ BuildModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        MasterLog
         CoreFramework
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile

@@ -1,3 +1,6 @@
+
+#include "DataWarehouseManager.h"
+
 #include <map>
 #include <mutex>
 #include <algorithm>
@@ -13,9 +16,8 @@
 #include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
 #include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
 #include <ucf/Services/DataWarehouseService/DataBaseTableModel.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
-#include "DataWarehouseManager.h"
+#include "DataWarehouseServiceLogger.h"
 
 namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////

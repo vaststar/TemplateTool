@@ -1,13 +1,15 @@
+
+#include "NetworkHttpDownloadToFileHandler.h"
+
 #include <fstream>
+
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
-#include <ucf/Services/ServiceCommonFile/ServiceLogger.h>
 
-
-#include "NetworkHttpDownloadToFileHandler.h"
+#include "NetworkServiceLogger.h"
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
