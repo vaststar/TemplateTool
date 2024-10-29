@@ -27,6 +27,7 @@ BuildModule(
         DataWarehouseService
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
+        ServiceDeclaration
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include

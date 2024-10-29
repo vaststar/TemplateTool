@@ -3,7 +3,9 @@
 #include <memory>
 #include <source_location>
 
-#include <ucf/CoreFramework/IService.h>
+
+// #include <ucf/CoreFramework/IService.h>
+#include <ucf/Services/ServiceDeclaration/IService.h>
 #include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
 
 namespace ucf::framework{

@@ -1,6 +1,8 @@
 #include <mutex>
 
-#include <ucf/CoreFramework/IService.h>
+// #include <ucf/CoreFramework/IService.h>
+
+#include <ucf/Services/ServiceDeclaration/IService.h>
 
 #include "CoreFramework.h"
 #include "CoreframeworkLogger.h"
@@ -151,7 +153,7 @@ void CoreFramework::initServices()
         std::for_each(allServices.begin(), allServices.end(), [](std::weak_ptr<ucf::service::IService> service){
             if (auto servicePtr = service.lock())
             {
-                servicePtr->initService();
+                servicePtr->initComponent();
             }
         }); 
         fireNotification(&ICoreFrameworkCallback::OnServiceInitialized);

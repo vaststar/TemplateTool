@@ -4,7 +4,10 @@
 #include <vector>
 #include <memory>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
-#include <ucf/CoreFramework/IService.h>
+
+// #include <ucf/CoreFramework/IService.h>
+#include <ucf/Services/ServiceDeclaration/IService.h>
+
 #include <ucf/Services/ContactService/IContactServiceCallback.h>
 
 namespace ucf::framework{

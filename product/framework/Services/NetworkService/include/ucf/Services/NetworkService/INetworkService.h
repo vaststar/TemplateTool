@@ -3,7 +3,9 @@
 #include <memory>
 
 #include <ucf/Services/ServiceCommonFile/ServiceExport.h>
-#include <ucf/CoreFramework/IService.h>
+
+// #include <ucf/CoreFramework/IService.h>
+#include <ucf/Services/ServiceDeclaration/IService.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 #include <ucf/Services/NetworkService/INetworkServiceCallback.h>

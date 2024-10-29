@@ -57,6 +57,7 @@ BuildModule(
         UUIDUtils
     TARGET_DEPENDENICES_PUBLIC
         ServiceCommonFile
+        ServiceDeclaration
         NetworkModelTypes
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
