@@ -78,7 +78,7 @@ void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& c
                 }
                 else
                 {
-                    UICore_LOG_WARN("controller not found, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                    UICore_LOG_WARN("controller not found, controllerObjectName: " << controllerObjectName.toStdString());
                 }
             }
         }
