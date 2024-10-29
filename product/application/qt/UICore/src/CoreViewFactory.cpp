@@ -3,8 +3,9 @@
 #include <UICore/CoreController.h>
 
 #include <QFileInfo>
-#include <iostream>
+
 #include "LoggerDefine.h"
+
 CoreViewFactory::CoreViewFactory(std::unique_ptr<CoreQmlApplicationEngine>&& qmlEngine)
     : mQmlEngine(std::move(qmlEngine))
 {
@@ -58,6 +59,7 @@ void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& c
 {
     if (qmlResource.isEmpty())
     {
+        UICore_LOG_WARN("empty qmlResource url");
         return;
     }
 
@@ -67,10 +69,17 @@ void CoreViewFactory::loadQmlWindow(const QString& qmlResource, const QString& c
         if (object && url.toString() == actualQmlResource)
         {
             UICore_LOG_DEBUG("object created: " << url.toString().toStdString());
-            if (auto controller = object->findChild<CoreController*>(controllerObjectName))
+            if (!controllerObjectName.isEmpty() && controllerCallback)
             {
-                UICore_LOG_DEBUG("controller found, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<<controller->objectName().toStdString());
-                controllerCallback(controller);
+                if (auto controller = object->findChild<CoreController*>(controllerObjectName))
+                {
+                    UICore_LOG_DEBUG("controller found, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                    controllerCallback(controller);
+                }
+                else
+                {
+                    UICore_LOG_WARN("controller not found, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                }
             }
         }
         else
