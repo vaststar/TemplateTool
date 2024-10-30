@@ -40,6 +40,7 @@ Item{
     
     Button {
         id: bbb
+        focus: true
         text: "testDialogShowButton"
         anchors{
             top: parent.top

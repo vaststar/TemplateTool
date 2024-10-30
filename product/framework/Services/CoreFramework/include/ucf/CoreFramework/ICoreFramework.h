@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/CoreFramework/IServiceAccessor.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
 

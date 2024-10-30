@@ -16,6 +16,8 @@ public:
     ~ImageService();
     //IService
     virtual std::string getServiceName() const override;
+protected:
+    //IService
     virtual void initService() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;

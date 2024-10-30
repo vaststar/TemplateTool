@@ -14,6 +14,8 @@ public:
     virtual void exitCommonheadFramework() override;
     virtual std::string getName() const override;
     virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const override;
+public:
+    IResourceLoaderPtr getResourceLoader() const override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
 };

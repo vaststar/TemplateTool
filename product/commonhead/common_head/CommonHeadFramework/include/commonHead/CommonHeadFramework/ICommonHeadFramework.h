@@ -10,6 +10,9 @@ namespace ucf::framework{
 }
 
 namespace commonHead{
+class IResourceLoader;
+using IResourceLoaderPtr = std::shared_ptr<IResourceLoader>;
+
 class COMMONHEAD_EXPORT ICommonHeadFramework
 {
 public:
@@ -17,6 +20,8 @@ public:
     virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const = 0;
     virtual void initCommonheadFramework() = 0;
     virtual void exitCommonheadFramework() = 0;
+public:
+    virtual IResourceLoaderPtr getResourceLoader() const = 0;
 public:
     static std::shared_ptr<ICommonHeadFramework> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

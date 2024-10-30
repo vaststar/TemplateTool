@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 namespace ucf::service::model{
 class SERVICE_EXPORT IContact

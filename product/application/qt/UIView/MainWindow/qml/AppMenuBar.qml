@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 MenuBar {
-    focus:true
      Menu {
         title: qsTr("File")
         Action { text: qsTr("New...") }

@@ -4,10 +4,10 @@
 #include <MasterLog/LogExport.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/CommonSettingService/ICommonSettingService.h>
+#include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/ContactService/IContactService.h>
+#include <ucf/Services/ImageService/IImageService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -63,6 +63,11 @@ void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& a
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
     
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========start create Frameworks=========");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
     createFrameworks();
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
@@ -73,15 +78,33 @@ void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& a
 
 void ApplicationRunner::DataPrivate::initApp()
 {
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========start init App==================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
     //1. init frameworks
     initFrameworks();
-    RUNNER_LOG_INFO("===========App Initialzied==============");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========App initialized=================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
 }
 
 void ApplicationRunner::DataPrivate::exitApp()
 {
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========start exit App==================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
     exitFrameworks();
-    RUNNER_LOG_INFO("===========App exited==============");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========App exited======================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
 }
 
 void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::string>& args)
@@ -128,7 +151,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::CreateInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::CreateInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::CreateInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::ICommonSettingService>(ucf::service::ICommonSettingService::CreateInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::CreateInstance(mFrameworkDependencies.coreFramework));
 
         mFrameworkDependencies.coreFramework->initServices();
     }

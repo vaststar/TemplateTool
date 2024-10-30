@@ -26,6 +26,7 @@ ApplicationWindow
     Loader{
         id: mainWindowContentLoader
         anchors.fill: parent
+        focus: true
     }
 
     Component.onCompleted:{

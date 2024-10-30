@@ -27,11 +27,11 @@ BuildModule(
     TARGET_DEPENDENICES_PRIVATE
         MasterLog
         CommonHeadFramework
+        ImageService
         DataWarehouseService
         ContactService
         NetworkService
         CoreFramework
-        CommonSettingService
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

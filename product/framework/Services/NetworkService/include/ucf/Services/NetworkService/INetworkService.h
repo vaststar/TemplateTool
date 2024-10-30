@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 // #include <ucf/CoreFramework/IService.h>
 #include <ucf/Services/ServiceDeclaration/IService.h>

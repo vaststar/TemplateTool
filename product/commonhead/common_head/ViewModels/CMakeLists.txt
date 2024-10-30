@@ -3,12 +3,15 @@ include(BuildModule)
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
     include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
+    include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/ContactListViewModel/ContactListViewModel.h
     src/ContactListViewModel/ContactListViewModel.cpp
     src/ContactListViewModel/ContactListModel.cpp
+    src/MainWindowViewModel/MainWindowViewModel.h
+    src/MainWindowViewModel/MainWindowViewModel.cpp
 )
 
 BuildModule(
@@ -23,6 +26,8 @@ BuildModule(
     TARGET_DEPENDENICES_PRIVATE
         CommonHeadFramework
         ContactService
+        DataWarehouseService
+        DataWarehouseSchema
         CoreFramework
     TARGET_DEPENDENICES_PUBLIC
         CommonHeadCommonFile

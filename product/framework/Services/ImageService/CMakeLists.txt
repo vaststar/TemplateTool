@@ -23,7 +23,7 @@ BuildModule(
         MasterLog
         CoreFramework
     TARGET_DEPENDENICES_PUBLIC
-        ServiceCommonFile
+        ServiceExportMacro
         ServiceDeclaration
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include

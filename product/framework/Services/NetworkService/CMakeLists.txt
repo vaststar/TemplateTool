@@ -56,7 +56,7 @@ BuildModule(
         LibCurlClient
         UUIDUtils
     TARGET_DEPENDENICES_PUBLIC
-        ServiceCommonFile
+        ServiceExportMacro
         ServiceDeclaration
         NetworkModelTypes
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

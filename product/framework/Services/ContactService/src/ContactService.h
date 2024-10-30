@@ -28,12 +28,14 @@ public:
     virtual std::vector<model::PersonContact> getPersonContactList() const override;
 
     //IService
-    virtual void initService() override;
     virtual std::string getServiceName() const override;
 
     //ICoreFrameworkCallback
     virtual void OnServiceInitialized() override;
     virtual void onCoreFrameworkExit() override;
+protected:
+    //IService
+    virtual void initService() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

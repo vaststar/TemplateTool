@@ -9,6 +9,10 @@
 namespace commonHead{
     class ICommonHeadFramework;
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+
+    namespace viewModels{
+        class IMainWindowViewModel;
+    }
 }
 
 class CoreContext;
@@ -37,4 +41,5 @@ public slots:
 private:
     CoreContext* mAppContext;
     QString mTitle;
+    std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
 };

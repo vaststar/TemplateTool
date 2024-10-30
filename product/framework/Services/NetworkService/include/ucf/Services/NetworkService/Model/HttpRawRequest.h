@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{

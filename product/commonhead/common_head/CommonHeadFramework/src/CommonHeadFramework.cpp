@@ -3,6 +3,7 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+#include <commonHead/ResourceLoader/IResourceLoader.h>
 
 namespace commonHead{
 std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
@@ -34,5 +35,10 @@ std::string CommonHeadFramework::getName() const
 ucf::framework::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
 {
     return mCoreframeworkWPtr;
+}
+
+IResourceLoaderPtr CommonHeadFramework::getResourceLoader() const
+{
+    return IResourceLoader::CreateInstance();
 }
 }

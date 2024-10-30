@@ -22,11 +22,13 @@ public:
     virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() override;
 
     //IService
-    virtual void initService() override;
     virtual std::string getServiceName() const override;
 
     //CoreFrameworkCallbackDefault
     virtual void onCoreFrameworkExit() override;
+protected:
+    //IService
+    virtual void initService() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

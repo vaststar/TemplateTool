@@ -4,7 +4,7 @@
 #include <vector>
 #include <mutex>
 
-#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/Services/ContactService/Contact.h>
 
 

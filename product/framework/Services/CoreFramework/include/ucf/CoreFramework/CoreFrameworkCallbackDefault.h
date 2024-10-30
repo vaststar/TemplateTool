@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/ServiceCommonFile/ServiceExport.h>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
 
 namespace ucf::framework{

@@ -1,6 +1,9 @@
 #include "MainWindow/include/MainWindowController.h"
 
+#include <UICore/CoreContext.h>
+#include <UICore/CoreViewModelFactory.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include "LoggerDefine/LoggerDefine.h"
 
 #include "ContactList/include/ContactListViewController.h"
@@ -21,6 +24,8 @@ QString MainWindowController::getControllerName() const
 void MainWindowController::initializeController(CoreContext* appContext)
 {
     mAppContext = appContext;
+    mMainViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
+    mMainViewModel->initDatabase();
     mTitle = "intialized window";
     emit titleChanged();
     emit controllerInitialized(appContext);

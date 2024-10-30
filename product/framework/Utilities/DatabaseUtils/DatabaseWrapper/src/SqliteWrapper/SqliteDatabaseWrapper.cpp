@@ -416,13 +416,12 @@ std::string SqliteDatabaseWrapper::createWhereCondition(const ListsOfWhereCondit
         std::string name = std::get<0>(arguments[i]);
         if (auto it = groupedWhereConditions.find(name); it != groupedWhereConditions.end())
         {
-            it->second.emplace_back( arguments[i], i + 1);
+            it->second.emplace_back( arguments[i], static_cast<int>(i + 1));
         }
         else
         {
-            groupedWhereConditions[name] = { { arguments[i], i + 1 } };
+            groupedWhereConditions[name] = { { arguments[i], static_cast<int>(i + 1) } };
         }
-
     }
     
     whereStatement << " WHERE ";

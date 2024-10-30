@@ -36,7 +36,7 @@ BuildModule(
         NetworkService
         DatabaseWrapper
     TARGET_DEPENDENICES_PUBLIC
-        ServiceCommonFile
+        ServiceExportMacro
         ServiceDeclaration
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

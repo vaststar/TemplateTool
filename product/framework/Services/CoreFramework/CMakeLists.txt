@@ -1,7 +1,6 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    # include/ucf/CoreFramework/IService.h
     include/ucf/CoreFramework/ICoreFramework.h
     include/ucf/CoreFramework/ICoreFramework.h
     include/ucf/CoreFramework/IServiceAccessor.h
@@ -30,7 +29,7 @@ BuildModule(
         ThreadPool
         ServiceDeclaration
     TARGET_DEPENDENICES_PUBLIC
-        ServiceCommonFile
+        ServiceExportMacro
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
