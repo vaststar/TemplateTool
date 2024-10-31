@@ -12,6 +12,6 @@ class SERVICE_EXPORT IImageService: public IService
 {
 public:
     virtual ~IImageService() = default;
-    static std::shared_ptr<IImageService> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    static std::shared_ptr<IImageService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

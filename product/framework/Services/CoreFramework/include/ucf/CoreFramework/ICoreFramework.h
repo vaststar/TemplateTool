@@ -24,7 +24,7 @@ public:
     virtual void initCoreFramework() = 0;
     virtual void initServices() = 0;
     virtual void exitCoreFramework() = 0;
-    static std::shared_ptr<ICoreFramework> CreateInstance();
+    static std::shared_ptr<ICoreFramework> createInstance();
 };
 
 using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;

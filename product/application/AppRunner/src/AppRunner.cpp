@@ -154,8 +154,8 @@ void ApplicationRunner::DataPrivate::createFrameworks()
     RUNNER_LOG_INFO("===========start create Frameworks=========");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
-    mFrameworkDependencies.coreFramework = ucf::framework::ICoreFramework::CreateInstance();
-    mFrameworkDependencies.commonHeadFramework = commonHead::ICommonHeadFramework::CreateInstance(mFrameworkDependencies.coreFramework);
+    mFrameworkDependencies.coreFramework = ucf::framework::ICoreFramework::createInstance();
+    mFrameworkDependencies.commonHeadFramework = commonHead::ICommonHeadFramework::createInstance(mFrameworkDependencies.coreFramework);
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========Frameworks Created==============");
@@ -168,10 +168,10 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::CreateInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::CreateInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::CreateInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::CreateInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::createInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::createInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::createInstance(mFrameworkDependencies.coreFramework));
 
         mFrameworkDependencies.coreFramework->initServices();
     }
@@ -223,7 +223,7 @@ ApplicationRunner::~ApplicationRunner()
 
 }
 
-void ApplicationRunner::createApp(int argc, char *argv[])
+void ApplicationRunner::initApp(int argc, char *argv[])
 {
     if (argc < 1)
     {
@@ -231,10 +231,6 @@ void ApplicationRunner::createApp(int argc, char *argv[])
     }
 
     mDataPrivate->createApp(std::vector<std::string>(argv+1, argv + argc));
-}
-
-void ApplicationRunner::initApp()
-{
     mDataPrivate->initApp();
 }
 

@@ -24,6 +24,6 @@ public:
     virtual std::string getViewModelName() const = 0;
     virtual void initDatabase() const = 0;
 public:
-    static std::shared_ptr<IMainWindowViewModel> CreateInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    static std::shared_ptr<IMainWindowViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };
 }

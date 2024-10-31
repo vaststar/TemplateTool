@@ -26,7 +26,7 @@ public:
     virtual void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit = 0, const std::source_location location = std::source_location::current()) override;
     
     //ICoreFrameworkCallback
-    virtual void OnServiceInitialized() override;
+    virtual void onServiceInitialized() override;
     virtual void onCoreFrameworkExit() override;
 protected:
     virtual void initService() override;

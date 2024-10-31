@@ -26,6 +26,6 @@ class SERVICE_EXPORT IContactService: public IService,
 public:
     // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) = 0;
     virtual std::vector<model::PersonContact> getPersonContactList() const = 0;
-    static std::shared_ptr<IContactService> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    static std::shared_ptr<IContactService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

@@ -57,7 +57,7 @@ std::shared_ptr<ContactManager> ContactService::DataPrivate::getContactManager()
 ////////////////////Start ContactService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<IContactService> IContactService::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+std::shared_ptr<IContactService> IContactService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<ContactService>(coreFramework);
 }
@@ -88,7 +88,7 @@ std::string ContactService::getServiceName() const
     return "ContactService";
 }
 
-void ContactService::OnServiceInitialized()
+void ContactService::onServiceInitialized()
 {
     SERVICE_LOG_DEBUG("");
 }

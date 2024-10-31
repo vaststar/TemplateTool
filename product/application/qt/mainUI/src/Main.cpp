@@ -33,8 +33,7 @@ private:
 
 void Main::DataPrivate::initApp(int argc, char *argv[])
 {
-    mApplicationRunner.createApp(argc, argv);
-    mApplicationRunner.initApp();
+    mApplicationRunner.initApp(argc, argv);
 }
 
 void Main::DataPrivate::exitApp()

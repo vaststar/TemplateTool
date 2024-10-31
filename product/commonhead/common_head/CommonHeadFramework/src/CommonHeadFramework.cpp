@@ -6,7 +6,7 @@
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 
 namespace commonHead{
-std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
+std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::createInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
 {
     return std::make_shared<CommonHeadFramework>(coreframework);
 }
@@ -39,6 +39,6 @@ ucf::framework::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
 
 IResourceLoaderPtr CommonHeadFramework::getResourceLoader() const
 {
-    return IResourceLoader::CreateInstance();
+    return IResourceLoader::createInstance();
 }
 }

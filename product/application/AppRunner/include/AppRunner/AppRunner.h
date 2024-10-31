@@ -40,8 +40,7 @@ namespace AppRunner
         ApplicationRunner();
         ~ApplicationRunner();
     public:
-        void createApp(int argc, char* argv[]);
-        void initApp();
+        void initApp(int argc, char* argv[]);
         void exitApp();
 
         [[nodiscard]] commonHead::ICommonHeadFrameworkWPtr getCommonheadFramework() const;

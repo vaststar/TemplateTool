@@ -11,7 +11,7 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 namespace commonHead::viewModels{
-std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::CreateInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
     return std::make_shared<MainWindowViewModel>(commonHeadFramework);
 }

@@ -8,7 +8,7 @@ class SERVICE_EXPORT ICoreFrameworkCallback
 {
 public:
     virtual ~ICoreFrameworkCallback() = default;
-    virtual void OnServiceInitialized() = 0;
+    virtual void onServiceInitialized() = 0;
     virtual void onCoreFrameworkExit() = 0;
 };
 }

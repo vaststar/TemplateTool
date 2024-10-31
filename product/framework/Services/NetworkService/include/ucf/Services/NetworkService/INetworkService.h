@@ -27,6 +27,6 @@ class SERVICE_EXPORT INetworkService: public IService,
 public:
     virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() = 0;
 public: 
-    static std::shared_ptr<INetworkService> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    static std::shared_ptr<INetworkService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

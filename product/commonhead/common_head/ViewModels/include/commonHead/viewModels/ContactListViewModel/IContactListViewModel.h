@@ -29,6 +29,6 @@ public:
     virtual std::string getViewModelName() const = 0;
     virtual std::vector<commonHead::viewModels::model::Contact> getContactList() const = 0;
 public:
-    static std::shared_ptr<IContactListViewModel> CreateInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    static std::shared_ptr<IContactListViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };
 }

@@ -93,7 +93,7 @@ void CoreFramework::DataPrivate::initialize()
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-std::shared_ptr<ICoreFramework> ICoreFramework::CreateInstance()
+std::shared_ptr<ICoreFramework> ICoreFramework::createInstance()
 {
     return std::make_shared<CoreFramework>();
 }
@@ -156,7 +156,7 @@ void CoreFramework::initServices()
                 servicePtr->initComponent();
             }
         }); 
-        fireNotification(&ICoreFrameworkCallback::OnServiceInitialized);
+        fireNotification(&ICoreFrameworkCallback::onServiceInitialized);
     }
     else
     {

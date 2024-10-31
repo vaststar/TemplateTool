@@ -17,7 +17,7 @@ public:
     template <typename T, typename... Args>
     std::shared_ptr<T> createViewModelInstance(const Args&... args) const
     {
-        return T::CreateInstance(args..., mCommonHeadFramework);
+        return T::createInstance(args..., mCommonHeadFramework);
     }
 private:
     commonHead::ICommonHeadFrameworkWPtr mCommonHeadFramework;

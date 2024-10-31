@@ -23,6 +23,6 @@ public:
 public:
     virtual IResourceLoaderPtr getResourceLoader() const = 0;
 public:
-    static std::shared_ptr<ICommonHeadFramework> CreateInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
+    static std::shared_ptr<ICommonHeadFramework> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };
 }

@@ -11,7 +11,7 @@
 
 
 namespace commonHead::viewModels{
-std::shared_ptr<IContactListViewModel> IContactListViewModel::CreateInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+std::shared_ptr<IContactListViewModel> IContactListViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
     return std::make_shared<ContactListViewModel>(commonHeadFramework);
 }

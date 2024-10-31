@@ -71,7 +71,7 @@ void DataWarehouseService::DataPrivate::fetchFromDatabase(const std::string& dbI
 ////////////////////Start DataWarehouseService Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<IDataWarehouseService> IDataWarehouseService::CreateInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+std::shared_ptr<IDataWarehouseService> IDataWarehouseService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<DataWarehouseService>(coreFramework);
 }
@@ -100,7 +100,7 @@ void DataWarehouseService::initService()
     }
 }
 
-void DataWarehouseService::OnServiceInitialized()
+void DataWarehouseService::onServiceInitialized()
 {
     SERVICE_LOG_DEBUG("");
 }
