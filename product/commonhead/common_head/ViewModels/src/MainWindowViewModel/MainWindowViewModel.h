@@ -7,8 +7,8 @@
 
 namespace commonHead::viewModels{
 class MainWindowViewModel: public virtual IMainWindowViewModel, 
-                            public virtual ucf::utilities::NotificationHelper<IMainWindowViewModelCallback>,
-                            public std::enable_shared_from_this<MainWindowViewModel>
+                           public virtual ucf::utilities::NotificationHelper<IMainWindowViewModelCallback>,
+                           public std::enable_shared_from_this<MainWindowViewModel>
 {
 public:
     MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);

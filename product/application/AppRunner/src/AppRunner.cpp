@@ -1,5 +1,6 @@
 #include <optional>
 #include <map>
+#include <mutex>
 
 #include <MasterLog/LogExport.h>
 
@@ -34,20 +35,32 @@ public:
     void createFrameworks();
     void initFrameworks();
     void exitFrameworks();
+    void initLogger();
 private:
     ApplicationConfig mApplicationConfig;
     std::map<std::string, std::string> mCommandLineValues;
     FrameworkDependencies mFrameworkDependencies;
+    std::once_flag mCreate_flag;
+    std::once_flag mInit_flag;
+    std::once_flag mExit_flag;
 };
 
 void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& args)
 {
-    //1. parse args and create application config
-    //2. create frameworks
-    parseCommandLines(args);
-    createApplicationConfig();
+    std::call_once(mCreate_flag, [args, this](){
+        //1. parse args and create application config
+        //2. create frameworks
+        parseCommandLines(args);
+        createApplicationConfig();
 
-    //init logger
+        //init logger
+        initLogger();
+
+        createFrameworks();
+    });
+}
+void ApplicationRunner::DataPrivate::initLogger()
+{
 	auto fileLogger = std::make_shared<LogLogSpace::LoggerFileConfigure>(
                         mApplicationConfig.appLogConfig.logLevel, 
                         mApplicationConfig.appLogConfig.logDirPath, 
@@ -56,55 +69,52 @@ void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& a
                         mApplicationConfig.appLogConfig.logMaxSingleFileSize, 
                         mApplicationConfig.appLogConfig.loggerName
                     );
+#if defined(_DEBUG)
+    auto consoleLogger = std::make_shared<LogLogSpace::LoggerConsoleConfigure>(mApplicationConfig.appLogConfig.logLevel, mApplicationConfig.appLogConfig.loggerName);
+	MasterLogUtil::InitLogger({fileLogger, consoleLogger});
+#else
 	MasterLogUtil::InitLogger({fileLogger});
+#endif
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========Logger Initialzied==============");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========start create Frameworks=========");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    createFrameworks();
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========Frameworks Created==============");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
 }
 
 void ApplicationRunner::DataPrivate::initApp()
 {
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========start init App==================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    //1. init frameworks
-    initFrameworks();
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========App initialized=================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
+    std::call_once(mInit_flag, [this](){
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========start init App==================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+        //1. init frameworks
+        initFrameworks();
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========App initialized=================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+    });
 }
 
 void ApplicationRunner::DataPrivate::exitApp()
 {
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========start exit App==================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    exitFrameworks();
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========App exited======================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
+    std::call_once(mExit_flag, [this](){
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========start exit App==================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+        exitFrameworks();
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========App exited======================");
+        RUNNER_LOG_INFO("===========================================");
+        RUNNER_LOG_INFO("===========================================");
+    });
 }
 
 void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::string>& args)
@@ -139,8 +149,18 @@ void ApplicationRunner::DataPrivate::createApplicationConfig()
 
 void ApplicationRunner::DataPrivate::createFrameworks()
 {
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========start create Frameworks=========");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
     mFrameworkDependencies.coreFramework = ucf::framework::ICoreFramework::CreateInstance();
     mFrameworkDependencies.commonHeadFramework = commonHead::ICommonHeadFramework::CreateInstance(mFrameworkDependencies.coreFramework);
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========Frameworks Created==============");
+    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("===========================================");
 }
 
 void ApplicationRunner::DataPrivate::initFrameworks()
