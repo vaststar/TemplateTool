@@ -9,6 +9,7 @@
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ImageService/IImageService.h>
+#include <ucf/Services/MediaService/IMediaService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -172,7 +173,8 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::createInstance(mFrameworkDependencies.coreFramework));
-
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(ucf::service::IMediaService::createInstance(mFrameworkDependencies.coreFramework));
+        
         mFrameworkDependencies.coreFramework->initServices();
     }
 

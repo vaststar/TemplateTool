@@ -1,7 +1,9 @@
 #include "MainWindowViewModel.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/Services/MediaService/IMediaService.h>
 #include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 #include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
 #include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
@@ -49,6 +51,17 @@ void MainWindowViewModel::initDatabase() const
                 auto res = results;
                 COMMONHEAD_LOG_DEBUG("got data");
             });
+        }
+    }
+}
+
+void MainWindowViewModel::openCamera()
+{
+    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    {
+        if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
+        {
+            media->openCamera();
         }
     }
 }

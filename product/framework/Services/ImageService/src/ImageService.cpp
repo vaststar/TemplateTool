@@ -1,7 +1,6 @@
 #include "ImageService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <opencv2/core.hpp>
 #include "ImageServiceLogger.h"
 
 

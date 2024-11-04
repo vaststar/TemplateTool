@@ -15,6 +15,7 @@ public:
     virtual std::string getViewModelName() const override;
 
     virtual void initDatabase() const override;
+    virtual void openCamera() override;
 private:
     commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
 };

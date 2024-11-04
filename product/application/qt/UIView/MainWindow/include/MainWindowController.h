@@ -38,6 +38,7 @@ signals:
     void controllerInitialized(CoreContext*);
 public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
+    void openCamera();
 private:
     CoreContext* mAppContext;
     QString mTitle;

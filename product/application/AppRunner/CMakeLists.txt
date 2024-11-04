@@ -30,6 +30,7 @@ BuildModule(
         ImageService
         DataWarehouseService
         ContactService
+        MediaService
         NetworkService
         CoreFramework
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

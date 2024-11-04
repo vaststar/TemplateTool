@@ -22,7 +22,6 @@ BuildModule(
     TARGET_DEPENDENICES_PRIVATE
         MasterLog
         CoreFramework
-        opencv
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro
         ServiceDeclaration

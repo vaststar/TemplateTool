@@ -26,6 +26,7 @@ BuildModule(
     TARGET_DEPENDENICES_PRIVATE
         CommonHeadFramework
         ContactService
+        MediaService
         DataWarehouseService
         DataWarehouseSchema
         CoreFramework

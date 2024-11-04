@@ -40,3 +40,8 @@ void MainWindowController::onContactListLoaded(ContactListViewController* contac
 {
     contactListController->initializeController(mAppContext);
 }
+
+void MainWindowController::openCamera()
+{
+    mMainViewModel->openCamera();
+}

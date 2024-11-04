@@ -72,6 +72,9 @@ Item{
             border.color: "red"
             border.width: butn1.activeFocus?3:0
         }
+        onClicked:{
+            controller.openCamera();
+        }
     }
     Button {
         id: butn2
