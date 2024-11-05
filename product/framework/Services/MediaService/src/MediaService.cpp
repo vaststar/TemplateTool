@@ -1,5 +1,7 @@
 #include "MediaService.h"
 
+#include <thread>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include <opencv2/core.hpp>
@@ -35,18 +37,40 @@ void MediaService::initService()
 
 }
 
+void openImage()
+{
+    auto frame = cv::imread("C:\\Users\\tianzheng\\Desktop\\test.jpg", 0);
+    cv::imshow("my image", frame);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}
 void MediaService::openCamera()
 {
-    cv::VideoCapture cap;
-    cap.open(0);
-    cv::namedWindow("Video",1);
+    //openImage();
+    //return;
+    cv::Mat frame;
+    cv::VideoCapture cap(0, cv::VideoCaptureAPIs::CAP_DSHOW);
+    if (!cap.isOpened())
+    {
+        SERVICE_LOG_DEBUG("camera not opened");
+        return;
+    }
+    cv::namedWindow("Video");
     for(;;)
     {
-        cv::Mat frame;
-        cap>> frame;
+        //std::this_thread::sleep_for(std::chrono::duration(std::chrono::seconds(2)));
+        cap.read(frame);
+        if (frame.empty())
+        {
+            SERVICE_LOG_DEBUG("camera not opened");
+            if (cv::waitKey(30) >= 0) break;
+            continue;
+        }
         imshow("Video", frame);
         if (cv::waitKey(30)>=0) break;
     }
     cap.release();
+    cv::destroyAllWindows();
 }
+
 }
