@@ -91,20 +91,20 @@ void ContactAdapter::testFunc()
     if (auto networkManager = mDataPrivate->getHttpManager().lock())
     {
         using namespace ucf::service::network::http; 
-        // //test post rest api
-        //     ucf::service::network::http::HttpRestRequest postRestRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
-        //     auto postRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
-        //             SERVICE_LOG_DEBUG("postRestCallback body," << httpResponse.getResponseBody());
-        //     };
-        //     SERVICE_LOG_DEBUG("start post Rest");
-        //     networkManager->sendHttpRestRequest(postRestRequest, postRestCallback);
-        // //test get rest api(auto redirect)
-        //     ucf::service::network::http::HttpRestRequest getRestRequest{ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30};
-        //     auto getRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
-        //             SERVICE_LOG_DEBUG("getRestCallback body," << httpResponse.getResponseBody());
-        //     };
-        //     SERVICE_LOG_DEBUG("start get Rest");
-        //     networkManager->sendHttpRestRequest(getRestRequest, getRestCallback);
+        //test post rest api
+            ucf::service::network::http::HttpRestRequest postRestRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
+            auto postRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
+                    SERVICE_LOG_DEBUG("postRestCallback body," << httpResponse.getResponseBody());
+            };
+            SERVICE_LOG_DEBUG("start post Rest");
+            networkManager->sendHttpRestRequest(postRestRequest, postRestCallback);
+        //test get rest api(auto redirect)
+            ucf::service::network::http::HttpRestRequest getRestRequest{ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30};
+            auto getRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
+                    SERVICE_LOG_DEBUG("getRestCallback body," << httpResponse.getResponseBody());
+            };
+            SERVICE_LOG_DEBUG("start get Rest");
+            networkManager->sendHttpRestRequest(getRestRequest, getRestCallback);
 
         // //test raw get request
         // ucf::service::network::http::HttpRawRequest rawGetRequest(ucf::service::network::http::HTTPMethod::GET, "http://www.microsoft.com/", {{"Transfer-Encoding",""}},{}, 30);

@@ -1,0 +1,13 @@
+prefix=J:/JenkinsWorkspace/workspace/native/Custom_Builds/Build_cURL_Windows/output_x86_release/out/release_x86_static
+exec_prefix=J:/JenkinsWorkspace/workspace/native/Custom_Builds/Build_cURL_Windows/output_x86_release/out/release_x86_static
+libdir=J:/JenkinsWorkspace/workspace/native/Custom_Builds/Build_cURL_Windows/output_x86_release/out/release_x86_static/lib
+sharedlibdir=J:/JenkinsWorkspace/workspace/native/Custom_Builds/Build_cURL_Windows/output_x86_release/out/release_x86_static/lib
+includedir=J:/JenkinsWorkspace/workspace/native/Custom_Builds/Build_cURL_Windows/output_x86_release/out/release_x86_static/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.11
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

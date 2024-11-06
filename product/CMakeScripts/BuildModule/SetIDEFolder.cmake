@@ -1,0 +1,12 @@
+function(SetIDEFolder)
+    set(options)
+    set(oneValueArg FOLDER_NAME)
+    set(multiValueArgs TARGET_NAMES)
+    cmake_parse_arguments(FOLDER "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
+
+    foreach(target_name ${FOLDER_TARGET_NAMES})
+        if (TARGET ${target_name})
+            set_target_properties(${target_name} PROPERTIES FOLDER ${FOLDER_FOLDER_NAME})
+        endif()
+    endforeach()
+endfunction()

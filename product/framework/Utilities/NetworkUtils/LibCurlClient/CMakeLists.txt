@@ -36,7 +36,8 @@ BuildModule(
         StringUtils
     TARGET_DEPENDENICES_PRIVATE
         openssl
-        CURL::libcurl
+        curl
+        #CURL::libcurl
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
