@@ -1,4 +1,5 @@
 include (LinkTargetIncludeDirectories)
+include (SetIDEFolder)
 function(BuildQtModule)
         message(STATUS "====Start Build Qt Module====")
         set(options)
@@ -105,11 +106,22 @@ function(BuildQtModule)
                     )
                 endforeach()
             endif()
-            set_target_properties(${MODULE_MODULE_NAME}plugin_init PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            set_target_properties(${MODULE_MODULE_NAME}_other_files PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            set_target_properties(${MODULE_MODULE_NAME}_qmlcache PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            set_target_properties(${MODULE_MODULE_NAME}_resources_1 PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            set_target_properties(${MODULE_MODULE_NAME}_resources_2 PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+            
+            SetIDEFolder(
+            TARGET_NAMES
+                ${MODULE_MODULE_NAME}plugin_init
+                ${MODULE_MODULE_NAME}_other_files
+                ${MODULE_MODULE_NAME}_qmlcache
+                ${MODULE_MODULE_NAME}_resources_1
+                ${MODULE_MODULE_NAME}_resources_2
+            FOLDER_NAME
+                ${MODULE_IDE_FOLDER}/internalTargets
+            )
+            #set_target_properties(${MODULE_MODULE_NAME}plugin_init PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+            #set_target_properties(${MODULE_MODULE_NAME}_other_files PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+            #set_target_properties(${MODULE_MODULE_NAME}_qmlcache PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+            #set_target_properties(${MODULE_MODULE_NAME}_resources_1 PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+            #set_target_properties(${MODULE_MODULE_NAME}_resources_2 PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
             target_link_libraries(${MODULE_MODULE_NAME} PRIVATE ${MODULE_MODULE_NAME}plugin)
             message(STATUS "====Finish Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")
         endif()

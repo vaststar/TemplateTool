@@ -44,19 +44,20 @@ void openImage()
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
-void MediaService::openCamera()
+
+void openCameraFunc()
 {
-    //openImage();
-    //return;
     cv::Mat frame;
-    cv::VideoCapture cap(0, cv::VideoCaptureAPIs::CAP_DSHOW);
+    cv::VideoCapture cap(0);
     if (!cap.isOpened())
     {
         SERVICE_LOG_DEBUG("camera not opened");
         return;
     }
-    cv::namedWindow("Video");
-    for(;;)
+    static int i = 1;
+    i++;
+    cv::namedWindow("Video" + std::to_string(i));
+    for (;;)
     {
         //std::this_thread::sleep_for(std::chrono::duration(std::chrono::seconds(2)));
         cap.read(frame);
@@ -66,11 +67,25 @@ void MediaService::openCamera()
             if (cv::waitKey(30) >= 0) break;
             continue;
         }
-        imshow("Video", frame);
-        if (cv::waitKey(30)>=0) break;
+        imshow("Video" + std::to_string(i), frame);
+        if (cv::waitKey(30) >= 0) break;
     }
     cap.release();
     cv::destroyAllWindows();
+}
+
+void MediaService::openCamera()
+{
+    //openImage();
+    //return;
+    auto thread1 = new std::thread([]() {
+        openCameraFunc();
+        });
+    thread1->detach();
+    auto thread2 = new std::thread([]() {
+        openCameraFunc();
+        });
+    thread2->detach();
 }
 
 }
