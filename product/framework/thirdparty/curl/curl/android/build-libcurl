@@ -1,0 +1,193 @@
+#!/bin/bash
+
+CURRENT_DIR=`pwd`
+
+# Check for required command line arguments
+if [ $# -lt 2 ]; then
+    echo "Syntax error: Missing required arguments"
+    echo "Usage: build-libcurl <abs path to SCF repo> <abs path to NDK>"
+    exit 1
+else
+    export SCFDIR=$1
+    export NDK=$2
+    echo "Running build-libcurl with:"
+    echo "    SCF path: $SCFDIR"
+    echo "    NDK path: $NDK"
+fi
+
+bail_if_nzero() {
+    RESULT=$?
+    MSG=$1
+
+    if test $RESULT -ne 0
+    then
+        echo $MSG
+        exit 1
+    fi
+}
+
+write_libssl_pc() {
+    file=$1
+    scfdir=$2
+    arch=$3
+    echo "prefix=$scfdir" > $file
+    echo "exec_prefix=\${prefix}" >> $file
+    echo "libdir=\${exec_prefix}/lib/$arch" >> $file
+    echo "includedir=\${prefix}/include" >> $file
+    echo "Name: OpenSSL-libssl" >> $file
+    echo "Description: Secure Sockets Layer and cryptography libraries" >> $file
+    echo "Version: 1.1.1k" >> $file
+    echo "Requires.private: libcrypto" >> $file
+    echo "Libs: -L\${libdir} -lssl" >> $file
+    echo "Cflags: -I\${includedir}" >> $file
+}
+
+write_libcrypto_pc() {
+    file=$1
+    scfdir=$2
+    arch=$3
+    echo "prefix=$scfdir" > $file
+    echo "exec_prefix=\${prefix}" >> $file
+    echo "libdir=\${exec_prefix}/lib/$arch" >> $file
+    echo "includedir=\${prefix}/include" >> $file
+    echo "enginesdir=\${libdir}/engines-1.1" >> $file
+    echo "Name: OpenSSL-libcrypto" >> $file
+    echo "Description: OpenSSL cryptography library" >> $file
+    echo "Version: 1.1.1k" >> $file
+    echo "Libs: -L\${libdir} -lcrypto" >> $file
+    echo "Libs.private:" >> $file
+    echo "Cflags: -I\${includedir}" >> $file
+}
+
+write_openssl_pc() {
+    file=$1
+    scfdir=$2
+    arch=$3
+    echo "prefix=$scfdir" > $file
+    echo "exec_prefix=\${prefix}" >> $file
+    echo "libdir=\${exec_prefix}/lib/$arch" >> $file
+    echo "includedir=\${prefix}/include" >> $file
+    echo "Name: OpenSSL" >> $file
+    echo "Description: Secure Sockets Layer and cryptography libraries and tools" >> $file
+    echo "Version: 1.1.1k" >> $file
+    echo "Requires: libssl libcrypto" >> $file
+}
+
+# Determine machine variables
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac machine
+    export CORES=$((`sysctl -n hw.logicalcpu`+1))
+    export HOST_TAG=darwin-x86_64
+else
+    # Linux machine
+    export CORES=$((`nproc`+1))
+    export HOST_TAG=linux-x86_64
+fi
+
+# Specify machine variables
+CISCO_SSL_DIR=$SCFDIR/spark-client-framework/thirdparty/ciscossl/android
+ZLIB_PATH=$SCFDIR/spark-client-framework/thirdparty/zlib
+MIN_SDK_VERSION=28
+TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$HOST_TAG
+PKG_CONFIG_PATH=$CISCOSSLDIR/lib/$ANDROID_ARCH/pkgconfig
+
+# Configure for build tool arguments.
+#   Annoyingly, 'armeabi-v7a' names clang tools differently from others (thus the
+ARCHS=( \
+    #Linker tools           Compiler tools             Architecture
+    "aarch64-linux-android" "aarch64-linux-android"    "arm64-v8a"   \
+    "arm-linux-androideabi" "armv7a-linux-androideabi" "armeabi-v7a" \
+    "i686-linux-android"    "i686-linux-android"       "x86"         \
+    "x86_64-linux-android"  "x86_64-linux-android"     "x86_64"      \
+    )
+ARCHS_SIZE=${#ARCHS[@]}
+ARCHS_NUM=$((ARCHS_SIZE / 2))
+echo "    Building $ARCHS_NUM architecture(s)"
+
+# Begin for loop ..............................................................
+for ((i = 0; i < ARCHS_SIZE; i+=3)); do
+    TARGET_HOST=${ARCHS[i+0]}
+    TARGET_HOST2=${ARCHS[i+1]}
+    ANDROID_ARCH=${ARCHS[i+2]}
+    echo "    Performing build of ANDROID_ARCH: $ANDROID_ARCH (TARGET_HOST: $TARGET_HOST, TARGET_HOST2: $TARGET_HOST2)"
+    echo ""
+
+    export AR="${TOOLCHAIN}/bin/${TARGET_HOST}-ar"
+    export RANLIB="${TOOLCHAIN}/bin/${TARGET_HOST}-ranlib"
+    export STRIP="${TOOLCHAIN}/bin/${TARGET_HOST}-strip"
+    export LD="${TOOLCHAIN}/bin/${TARGET_HOST}-ld.gold"
+    export CC="${TOOLCHAIN}/bin/${TARGET_HOST2}${MIN_SDK_VERSION}-clang"
+    export CXX="${TOOLCHAIN}/bin/${TARGET_HOST2}${MIN_SDK_VERSION}-clang++"
+    export AS=$CC
+
+    # Define and create working directory for pkg-config
+    export PKG_CONFIG_PATH="${CURRENT_DIR}/pkgconfig/$ANDROID_ARCH"
+
+    # (copy) Rename Cisco SSL files in work location (HACK: COULDN'T GET ./configure TO WORK WITH .pc AND Cisco NAME!)
+    LOCAL_CISCO_SSL_DIR=${CURRENT_DIR}/openssl
+    LOCAL_CISCO_SSL_LIB_DIR=$LOCAL_CISCO_SSL_DIR/lib/$ANDROID_ARCH
+
+    if [[ ! -d "${LOCAL_CISCO_SSL_DIR}/include" ]]; then
+        mkdir -p "${LOCAL_CISCO_SSL_DIR}"
+        cp -R "${CISCO_SSL_DIR}/include" "${LOCAL_CISCO_SSL_DIR}"
+    fi
+
+    if [[ ! -d "${LOCAL_CISCO_SSL_LIB_DIR}" ]]; then
+        mkdir -p "${LOCAL_CISCO_SSL_LIB_DIR}"
+        cp "${CISCO_SSL_DIR}/lib/${ANDROID_ARCH}/libsslcisco.so" "${LOCAL_CISCO_SSL_LIB_DIR}/libssl.so"
+        cp "${CISCO_SSL_DIR}/lib/${ANDROID_ARCH}/libcryptocisco.so" "${LOCAL_CISCO_SSL_LIB_DIR}/libcrypto.so"
+    fi
+
+    # Auto-generate .pc files (with user's SCF directory and ABI being built)
+    if [[ ! -d "${PKG_CONFIG_PATH}" ]]; then
+        mkdir -p "${PKG_CONFIG_PATH}"
+        write_openssl_pc $PKG_CONFIG_PATH/openssl.pc $LOCAL_CISCO_SSL_DIR $ANDROID_ARCH
+        write_libssl_pc $PKG_CONFIG_PATH/libssl.pc $LOCAL_CISCO_SSL_DIR $ANDROID_ARCH
+        write_libcrypto_pc $PKG_CONFIG_PATH/libcrypto.pc $LOCAL_CISCO_SSL_DIR $ANDROID_ARCH
+    fi
+
+    # Define output directory for make resulting files
+    ARTIFACT_PATH=$CURRENT_DIR/artifacts/android/$ANDROID_ARCH
+
+    # For debugging, set true
+    if false; then
+        echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+        echo "OUTPUTPATH=$ARTIFACT_PATH"
+        echo "Cisco SSL openssl"
+        pkg-config openssl --exists
+        echo "Cisco SSL cryptocisco"
+        pkg-config libcrypto --cflags
+        pkg-config libcrypto --libs
+        echo "Cisco SSL sslcisco"
+        pkg-config libssl --cflags
+        pkg-config libssl --libs
+    fi
+
+    # Configure
+    ./configure --host=$TARGET_HOST --target=$TARGET_HOST --prefix=$ARTIFACT_PATH \
+        --enable-static --with-zlib=${ZLIB_PATH} --with-openssl --with-pic \
+        --enable-ipv6 --enable-http --enable-file --enable-optimize \
+        --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp \
+        --enable-proxy --disable-dict --disable-telnet --disable-tftp \
+        --disable-pop3 --disable-imap --disable-smb --disable-smtp \
+        --disable-gopher --disable-mqtt --without-ca-bundle --without-ca-path
+
+    bail_if_nzero "Configure FAILED!"
+
+    # Compile
+    make --directory lib -j$CORES
+    bail_if_nzero "Failed to compile libcurl"
+
+    # Install
+    mkdir -p $ARTIFACT_PATH
+    cp lib/.libs/libcurl.a $ARTIFACT_PATH
+    bail_if_nzero "Failed to copy libcurl"
+
+    # Clean
+    make --directory lib clean
+    bail_if_nzero "Failed to clean libcurl"
+done
+# End for loop ................................................................
+
+echo "Finished"
+exit 0
