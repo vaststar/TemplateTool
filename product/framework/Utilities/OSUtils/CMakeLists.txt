@@ -1,36 +1,38 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/Services/ClientInfoService/IClientInfoServiceCallback.h
-    include/ucf/Services/ClientInfoService/IClientInfoService.h
-    include/ucf/Services/ClientInfoService/ClientInfoModel.h
+    include/ucf/Utilities/OSUtils/OSUtils.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    src/ClientInfoServiceLogger.h
-    src/ClientInfoService.h
-    src/ClientInfoService.cpp
+    src/OSUtils.cpp
 )
 
+if (WIN32)
+    list(APPEND TARGET_SOURCE_FILES_PRIVATE 
+    src/OSUtils_Win.h
+    src/OSUtils_Win.cpp)
+elseif (APPLE)
+    list(APPEND TARGET_SOURCE_FILES_PRIVATE 
+    src/OSUtils_Mac.h
+    src/OSUtils_Mac.cpp)
+elseif (UNIX)
+    list(APPEND TARGET_SOURCE_FILES_PRIVATE 
+    src/OSUtils_Mac.h
+    src/OSUtils_Mac.cpp)
+endif()
 
 BuildModule(
     MODULE_NAME 
-        ClientInfoService
+        OSUtils
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PRIVATE
-        MasterLog
-        CoreFramework
-        TimeUtils
-        OSUtils
     TARGET_DEPENDENICES_PUBLIC
-        ServiceExportMacro
-        ServiceDeclaration
-        NotificationHelper
+        UtilitiesCommonFile
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
@@ -38,7 +40,7 @@ BuildModule(
     TARGET_INCLUDE_DIRECTORIES_PRIVATE
         src
     TARGET_DEFINITIONS
-        ${ADD_SERVICE_DEFINITIONS}
+        ${ADD_UTILITIES_DEFINITIONS}
     IDE_FOLDER
-        framework/Services
+        framework/Utilities
 )

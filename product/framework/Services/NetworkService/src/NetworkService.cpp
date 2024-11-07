@@ -1,7 +1,5 @@
 #include "NetworkService.h"
 
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
-
 #include "NetworkServiceLogger.h"
 #include "NetworkHttpManager.h"
 
@@ -58,10 +56,6 @@ NetworkService::NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
     SERVICE_LOG_DEBUG("Create NetworkService, address:" << this);
-    ucf::utilities::TimeUtils::getUTCCurrentTime();
-    auto test = ucf::utilities::TimeUtils::getUTCNowInMilliseconds();
-    SERVICE_LOG_DEBUG("now:" << test << ", zone:" << ucf::utilities::TimeUtils::getLocalTimeZone());
-
 }
  
 NetworkService::~NetworkService()

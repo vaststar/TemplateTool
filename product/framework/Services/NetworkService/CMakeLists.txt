@@ -51,7 +51,6 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         MasterLog
-        TimeUtils
         CoreFramework
         LibCurlClient
         UUIDUtils

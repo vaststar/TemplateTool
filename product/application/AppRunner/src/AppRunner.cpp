@@ -5,6 +5,7 @@
 #include <MasterLog/LogExport.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/ContactService/IContactService.h>
@@ -169,6 +170,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::IClientInfoService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::createInstance(mFrameworkDependencies.coreFramework));

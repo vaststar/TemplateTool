@@ -1,6 +1,9 @@
 #include "ClientInfoService.h"
 
+#include <locale>
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Utilities/TimeUtils/TimeUtils.h>
+#include <ucf/Utilities/OSUtils/OSUtils.h>
 
 #include "ClientInfoServiceLogger.h"
 
@@ -62,6 +65,7 @@ void ClientInfoService::initService()
     {
         coreFramework->registerCallback(shared_from_this());
     }
+    printClientInfo();
 }
 
 std::string ClientInfoService::getServiceName() const
@@ -83,9 +87,22 @@ model::Version ClientInfoService::getApplicationVersion() const
 {
     return model::Version{"1", "0", "1"};
 }
+
+void ClientInfoService::printClientInfo() const
+{
+    SERVICE_LOG_DEBUG("==================================");
+    SERVICE_LOG_DEBUG("===========ClientInfo=============");
+    SERVICE_LOG_DEBUG("clientVersion: " << getApplicationVersion().toString());
+    SERVICE_LOG_DEBUG("os platform: " << ucf::utilities::OSUtils::getOSTypeName());
+    SERVICE_LOG_DEBUG("os version: " << ucf::utilities::OSUtils::getOSVersion());
+    SERVICE_LOG_DEBUG("os local: " << std::locale::classic().name());
+    SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZone());
+    SERVICE_LOG_DEBUG("===========ClientInfo=============");
+    SERVICE_LOG_DEBUG("==================================");
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish ClientInfoService Logic///////////////////////////////////////
+////////////////////Finish ClientInfoService Logic///////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 }

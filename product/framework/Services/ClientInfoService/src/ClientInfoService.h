@@ -35,6 +35,8 @@ protected:
     //IService
     virtual void initService() override;
 private:
+    void printClientInfo() const;
+private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
 };

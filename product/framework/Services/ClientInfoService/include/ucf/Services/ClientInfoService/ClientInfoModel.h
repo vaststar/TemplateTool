@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <format>
 
 namespace ucf::service::model{
 
@@ -9,6 +10,9 @@ struct Version
     std::string majorVersion;
     std::string minorVersion;
     std::string patchVersion;
+    std::string toString() const{
+        return std::format("{}.{}.{}", majorVersion, minorVersion, patchVersion);
+    }
 };
 
 enum class OSType
