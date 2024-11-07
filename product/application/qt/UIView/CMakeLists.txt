@@ -71,3 +71,9 @@ BuildQtModule(
     QML_PUBLIC_BUILD_INTERFACE_FOLDER
         ${UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )
+
+
+#qt_add_translations(UIView  TS_FILES test.ts
+#SOURCES ${UIVIEW_QML_TARGET_FILES}
+#)
+#add_dependencies(UIView update_translations)

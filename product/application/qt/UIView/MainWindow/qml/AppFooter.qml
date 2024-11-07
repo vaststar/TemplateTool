@@ -9,7 +9,7 @@ ToolBar {
             onClicked: stack.pop()
         }
         Label {
-            text: "Footer"
+            text: qsTr("Footer")
             elide: Label.ElideRight
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
