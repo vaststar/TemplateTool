@@ -1,5 +1,8 @@
 #pragma once
+
 #include <memory>
+#include <QObject>
+
 #include <UIFabrication/UIFabricationExport.h>
 
 namespace commonHead{
@@ -9,8 +12,9 @@ namespace commonHead{
 
 
 namespace UIFabrication{
-class UIFabrication_EXPORT ViewModelFactory final
+class UIFabrication_EXPORT ViewModelFactory final: public QObject
 {
+Q_OBJECT
 public:
     explicit ViewModelFactory(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);
     ViewModelFactory(const ViewModelFactory&) = delete;

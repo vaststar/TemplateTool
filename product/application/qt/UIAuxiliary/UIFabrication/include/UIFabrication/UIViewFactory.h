@@ -5,7 +5,7 @@
 #include <QPointer>
 #include <QObject>
 #include <QQuickView>
-#include <QVariant>
+
 #include <UIFabrication/UIFabricationExport.h>
 
 namespace UICore{

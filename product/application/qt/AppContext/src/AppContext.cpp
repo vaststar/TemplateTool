@@ -50,15 +50,14 @@ AppContext::~AppContext()
 
 }
 
-const std::unique_ptr<UIFabrication::UIViewFactory>& AppContext::getViewFactory() const
+QPointer<UIFabrication::UIViewFactory> AppContext::getViewFactory() const
 {
-    return mImpl->mViewFactory;
+    return mImpl->mViewFactory.get();
 }
 
-
-const std::unique_ptr<UIFabrication::ViewModelFactory>& AppContext::getViewModelFactory() const
+QPointer<UIFabrication::ViewModelFactory> AppContext::getViewModelFactory() const
 {
-    return mImpl->mViewModelFactory;
+    return mImpl->mViewModelFactory.get();
 }
 
 QPointer<UICore::CoreApplication> AppContext::getApplication() const
@@ -71,8 +70,7 @@ QPointer<UICore::CoreQmlEngine> AppContext::getQmlEngine() const
     return mImpl->mQmlEngine;
 }
 
-
-const std::unique_ptr<UIManager::UIManagerProvider>& AppContext::getManagerProvider() const
+QPointer<UIManager::UIManagerProvider> AppContext::getManagerProvider() const
 {
-    return mImpl->mManagerProvider;
+    return mImpl->mManagerProvider.get();
 }

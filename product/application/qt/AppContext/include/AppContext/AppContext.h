@@ -36,9 +36,9 @@ public:
     AppContext& operator=(const AppContext&) = delete;
     AppContext& operator=(AppContext&&) = delete;
 
-    const std::unique_ptr<UIFabrication::UIViewFactory>& getViewFactory() const;
-    const std::unique_ptr<UIFabrication::ViewModelFactory>& getViewModelFactory() const;
-    const std::unique_ptr<UIManager::UIManagerProvider>& getManagerProvider() const;
+    QPointer<UIFabrication::UIViewFactory> getViewFactory() const;
+    QPointer<UIFabrication::ViewModelFactory> getViewModelFactory() const;
+    QPointer<UIManager::UIManagerProvider> getManagerProvider() const;
     QPointer<UICore::CoreApplication> getApplication() const;
     QPointer<UICore::CoreQmlEngine> getQmlEngine() const;
 private:
