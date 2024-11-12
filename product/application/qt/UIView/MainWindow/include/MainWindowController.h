@@ -16,33 +16,28 @@ namespace commonHead{
 
 class AppContext;
 class ContactListViewController;
+class AppMenuBarController;
 class MainWindowController : public UICore::CoreController
 {
     Q_OBJECT
-    Q_PROPERTY(QString mTitle READ getTitle NOTIFY titleChanged)
-    Q_PROPERTY(QString mButtonText MEMBER mButtonText NOTIFY titleChanged)
+    Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
     QML_ELEMENT
 public:
-    MainWindowController(QObject* parent =nullptr);
+    MainWindowController(QObject* parent = nullptr);
     virtual QString getControllerName() const override;
 
     QString getTitle() const;
-    QString getButton() const;
 
     void initializeController(AppContext* appContext);
-
-// private:
-//     void showContactWindow()
 
 signals:
     void titleChanged();
     void controllerInitialized();
 public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
+    void onInitMenuBarController(AppMenuBarController* menuBarController);
     void openCamera();
 private:
     QPointer<AppContext> mAppContext;
-    QString mTitle;
-    QString mButtonText;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
 };

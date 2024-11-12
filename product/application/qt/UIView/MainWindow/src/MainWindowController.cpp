@@ -10,6 +10,7 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 #include "ContactList/include/ContactListViewController.h"
+#include "MainWindow/include/AppMenuBarController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)
@@ -27,33 +28,33 @@ QString MainWindowController::getControllerName() const
 void MainWindowController::initializeController(AppContext* appContext)
 {
     mAppContext = appContext;
+    assert(mAppContext);
+
     mMainViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
     mMainViewModel->initDatabase();
-    mTitle = QObject::tr("mywindow");
-    mButtonText = QObject::tr("mybutton");
-            //  mAppContext->getViewFactory()->installTranslation({});
-             emit titleChanged();
     emit controllerInitialized();
 }
 
 QString MainWindowController::getTitle() const
 {
-    return mTitle;
+    return QObject::tr("my test window");
 }
 
-QString MainWindowController::getButton() const
-{
-    return mButtonText;
-}
+
 void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
 {
     contactListController->initializeController(mAppContext);
 }
 
+void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBarController)
+{
+    menuBarController->initializeController(mAppContext);
+}
+
 void MainWindowController::openCamera()
 {
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation("en");
-    mButtonText = QObject::tr("newmybutton");
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIManager::TranslatorManager::LanguageType::CHINESE_SIMPLIFIED);
+    // mButtonText = QObject::tr("mybutton");
             emit titleChanged();
     //mMainViewModel->openCamera();
 }

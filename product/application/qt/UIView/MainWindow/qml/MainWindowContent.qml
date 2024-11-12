@@ -78,7 +78,7 @@ Item{
     }
     Button {
         id: butn2
-        text: mainController.mButtonText
+        text: qsTr("button2")
         anchors{
             top: parent.top
             topMargin: 300

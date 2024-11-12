@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>AppFooter</name>
     <message>
@@ -62,7 +62,7 @@
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="20"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">退出</translation>
     </message>
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="23"/>
@@ -115,12 +115,24 @@
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="63"/>
         <source>openCamera</source>
-        <translation type="unfinished"></translation>
+        <translation>摄像头</translation>
     </message>
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="81"/>
         <source>button2</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowController</name>
+    <message>
+        <source>mywindow</source>
+        <translation type="vanished">翻译</translation>
+    </message>
+    <message>
+        <source>mybutton</source>
+        <comment>fanfan</comment>
+        <translation type="vanished">按钮</translation>
     </message>
 </context>
 <context>
@@ -149,6 +161,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>MainWindowController</source>
+        <translation type="vanished">主窗口控制器</translation>
+    </message>
+    <message>
+        <source>mywindow</source>
+        <translation type="vanished">翻译</translation>
+    </message>
+    <message>
+        <source>mybutton</source>
+        <translation type="vanished">按钮</translation>
+    </message>
+    <message>
+        <source>newmybutton</source>
+        <translation type="vanished">aaaaaaaa</translation>
+    </message>
+    <message>
         <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="40"/>
         <source>my test window</source>
         <translation type="unfinished"></translation>
@@ -159,7 +187,14 @@
     <message>
         <location filename="../../qt/UIView/SystemTray/qml/SystemTray.qml" line="9"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>退出</translation>
+    </message>
+</context>
+<context>
+    <name>mybutton</name>
+    <message>
+        <source>fanfan</source>
+        <translation type="vanished">rteee</translation>
     </message>
 </context>
 </TS>

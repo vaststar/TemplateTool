@@ -17,7 +17,9 @@ ApplicationWindow
     height: 576
     title: mainController.mTitle
     color: "steelblue"
-    menuBar: AppMenuBar {}
+    menuBar: AppMenuBar {
+        id: menuBarId
+    }
     header: AppHeader {
         visible: false
     }
@@ -35,6 +37,7 @@ ApplicationWindow
 
 
     function onMainControllerInitialized(){
+        mainController.onInitMenuBarController(menuBarId.controller)
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
     }
 

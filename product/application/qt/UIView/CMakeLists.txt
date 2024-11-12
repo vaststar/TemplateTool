@@ -11,7 +11,9 @@ set(TARGET_SOURCE_FILES_PRIVATE
     ContactList/src/ContactListItemModel.cpp
 
     MainWindow/include/MainWindowController.h
+    MainWindow/include/AppMenuBarController.h
     MainWindow/src/MainWindowController.cpp
+    MainWindow/src/AppMenuBarController.cpp
 
     AppUIManager/src/AppUIManager.cpp
 )
@@ -27,6 +29,9 @@ set(UIVIEW_QML_TARGET_FILES
     SystemTray/qml/SystemTray.qml
 )
 
+set (UIVIEW_QML_TARGET_RESOURCES_DIR
+    ../../rescources
+)
 set(UIVIEW_QML_TARGET_RESOURCES
     picture/112.png
 )
@@ -48,6 +53,7 @@ BuildQtModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         AppContext
+        UIManager
         Qt6::Gui Qt6::Quick Qt6::Widgets
         UIComponent
         ViewModels
@@ -65,7 +71,7 @@ BuildQtModule(
     QML_TARGET_FILES
         ${UIVIEW_QML_TARGET_FILES}
     QML_TARGET_RESOURCES_DIR
-        ../../rescources
+        ${UIVIEW_QML_TARGET_RESOURCES_DIR}
     QML_TARGET_RESOURCES
         ${UIVIEW_QML_TARGET_RESOURCES}
     QML_PUBLIC_BUILD_INTERFACE_FOLDER
@@ -76,7 +82,8 @@ BuildQtModule(
 qt_add_translations(UIView  
     #TS_FILE_BASE UIVIEW_translations_en
     #TS_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../rescources/translations
-TS_FILES ../../rescources/translations/UIVIEW_translations_en.ts
+TS_FILES ${UIVIEW_QML_TARGET_RESOURCES_DIR}/translations/UIVIEW_translations_en.ts
+         ${UIVIEW_QML_TARGET_RESOURCES_DIR}/translations/UIVIEW_translations_zh-CN.ts
     SOURCES ${UIVIEW_QML_TARGET_FILES} ${TARGET_SOURCE_FILES_PRIVATE}
 )
 add_dependencies(UIView update_translations)
