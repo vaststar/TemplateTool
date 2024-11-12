@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls 
 import QtQuick.Layouts
 import UIView 1.0
-import UIManager 1.0
 
 MenuBar {
     id: root
