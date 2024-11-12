@@ -47,7 +47,6 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
-        UICore
         AppContext
         Qt6::Gui Qt6::Quick Qt6::Widgets
         UIComponent

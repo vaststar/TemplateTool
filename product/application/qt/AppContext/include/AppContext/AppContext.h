@@ -37,8 +37,6 @@ public:
     QPointer<UICore::CoreApplication> getApplication() const;
     QPointer<UICore::CoreQmlEngine> getQmlEngine() const;
 private:
-    const std::unique_ptr<UIFabrication::UIViewFactory> mViewFactory;
-    const std::unique_ptr<UIFabrication::ViewModelFactory> mViewModelFactory;
-    const QPointer<UICore::CoreApplication> mApplication;
-    const QPointer<UICore::CoreQmlEngine> mQmlEngine;
+    class Impl;
+    std::unique_ptr<Impl> mImpl;
 };

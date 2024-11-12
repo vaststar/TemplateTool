@@ -28,8 +28,6 @@ public:
     Impl(const AppUIManager::ApplicationConfig& config);
     int runApp(){ return mainApp->exec();}
 
-    void initAppContext(const AppUIManager::ApplicationConfig& config);
-
     const std::unique_ptr<AppContext>& getAppContext() const{ return mAppContext;}
 public:
     std::unique_ptr<UICore::CoreApplication> mainApp;
@@ -40,16 +38,10 @@ public:
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
     , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
+    , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
-    initAppContext(config);
 }
 
-void AppUIManager::Impl::initAppContext(const AppUIManager::ApplicationConfig& config)
-{
-    // auto viewModelFactory = std::make_unique<UIFabrication::ViewModelFactory>(config.commonHeadFramework);
-    // auto viewFactory = std::make_unique<UIFabrication::UIViewFactory>(mQmlEngine.get());
-    mAppContext = std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework);
-}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish Impl Logic//////////////////////////////////////////

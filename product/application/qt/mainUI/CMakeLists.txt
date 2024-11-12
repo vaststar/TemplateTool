@@ -24,8 +24,7 @@ BuildQtModule(
         CoreFramework
         CommonHeadFramework
         AppRunner
-    TARGET_DEPENDENICES_PUBLIC
-        MasterLog 
+        MasterLog
     TARGET_DEFINITIONS
         Main_DLL
         Main_LIB

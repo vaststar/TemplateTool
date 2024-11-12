@@ -22,11 +22,11 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
-        Qt6::Gui Qt6::Quick Qt6::Widgets
         UICore
         CommonHeadFramework
+        MasterLog
     TARGET_DEPENDENICES_PUBLIC
-        MasterLog 
+        Qt6::Gui Qt6::Quick Qt6::Widgets
     TARGET_DEFINITIONS
         UIFabrication_DLL
         UIFabrication_LIB
