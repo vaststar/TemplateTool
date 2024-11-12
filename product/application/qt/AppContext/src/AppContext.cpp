@@ -4,6 +4,7 @@
 #include <UICore/CoreQmlEngine.h>
 #include <UIFabrication/UIViewFactory.h>
 #include <UIFabrication/ViewModelFactory.h>
+#include <UIManager/UIManagerProvider.h>
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -18,6 +19,7 @@ public:
 
     const std::unique_ptr<UIFabrication::UIViewFactory> mViewFactory;
     const std::unique_ptr<UIFabrication::ViewModelFactory> mViewModelFactory;
+    const std::unique_ptr<UIManager::UIManagerProvider> mManagerProvider;
     const QPointer<UICore::CoreApplication> mApplication;
     const QPointer<UICore::CoreQmlEngine> mQmlEngine;
 };
@@ -27,6 +29,7 @@ AppContext::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngi
     , mQmlEngine(qmlEngine)
     , mViewModelFactory(std::make_unique<UIFabrication::ViewModelFactory>(commonheadFramework))
     , mViewFactory(std::make_unique<UIFabrication::UIViewFactory>(qmlEngine))
+    , mManagerProvider(std::make_unique<UIManager::UIManagerProvider>(application, qmlEngine))
 {
 }
 
@@ -66,4 +69,10 @@ QPointer<UICore::CoreApplication> AppContext::getApplication() const
 QPointer<UICore::CoreQmlEngine> AppContext::getQmlEngine() const
 {
     return mImpl->mQmlEngine;
+}
+
+
+const std::unique_ptr<UIManager::UIManagerProvider>& AppContext::getManagerProvider() const
+{
+    return mImpl->mManagerProvider;
 }

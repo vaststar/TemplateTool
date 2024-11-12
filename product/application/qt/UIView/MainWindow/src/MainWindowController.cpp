@@ -2,6 +2,8 @@
 
 #include <UIFabrication/ViewModelFactory.h>
 #include <UIFabrication/UIViewFactory.h>
+#include <UIManager/UIManagerProvider.h>
+#include <UIManager/TranslatorManager.h>
 #include <AppContext/AppContext.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
@@ -50,7 +52,7 @@ void MainWindowController::onContactListLoaded(ContactListViewController* contac
 
 void MainWindowController::openCamera()
 {
-            mAppContext->getViewFactory()->installTranslation({});
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation("en");
     mButtonText = QObject::tr("newmybutton");
             emit titleChanged();
     //mMainViewModel->openCamera();

@@ -141,17 +141,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="30"/>
+        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="32"/>
         <source>mywindow</source>
         <translation>翻译</translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="31"/>
+        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="33"/>
         <source>mybutton</source>
         <translation>按钮</translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="54"/>
+        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="56"/>
         <source>newmybutton</source>
         <translation>aaaaaaaa</translation>
     </message>

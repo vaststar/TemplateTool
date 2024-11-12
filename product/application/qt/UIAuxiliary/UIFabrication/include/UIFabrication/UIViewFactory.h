@@ -29,8 +29,6 @@ public:
     QPointer<QQuickView> createQmlWindow(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr);
 
     void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const UICore::ControllerCallback& controllerCallback = nullptr);
-
-    void installTranslation(const QString& translationFile);
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;

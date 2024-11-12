@@ -3,7 +3,6 @@
 #include <UICore/CoreController.h>
 
 #include <QFileInfo>
-#include <QTranslator>
 #include <QApplication>
 
 #include "LoggerDefine.h"
@@ -105,15 +104,4 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& con
     });
     mQmlEngine->load(actualQmlResource);
 }   
-
-void UIViewFactory::installTranslation(const QString& translationFile)
-{
-
-    QTranslator *translator = new QTranslator();
-    if (translator->load(":/i18n/UIVIEW_translations_en.qm"))
-    {
-        qApp->installTranslator(translator);
-        mQmlEngine->retranslate();
-    }
-}
 }

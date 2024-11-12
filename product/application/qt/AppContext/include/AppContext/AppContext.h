@@ -11,9 +11,13 @@ namespace UICore{
     class CoreQmlEngine;
 }
 
-namespace UIFabrication {
+namespace UIFabrication{
     class  UIViewFactory;
     class ViewModelFactory;
+}
+
+namespace UIManager{
+    class UIManagerProvider;
 }
 namespace commonHead{
     class ICommonHeadFramework;
@@ -34,6 +38,7 @@ public:
 
     const std::unique_ptr<UIFabrication::UIViewFactory>& getViewFactory() const;
     const std::unique_ptr<UIFabrication::ViewModelFactory>& getViewModelFactory() const;
+    const std::unique_ptr<UIManager::UIManagerProvider>& getManagerProvider() const;
     QPointer<UICore::CoreApplication> getApplication() const;
     QPointer<UICore::CoreQmlEngine> getQmlEngine() const;
 private:

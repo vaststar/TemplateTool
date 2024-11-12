@@ -1,17 +1,20 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/AppContext/AppContextExport.h
-    include/AppContext/AppContext.h
+    include/UIManager/UIManagerExport.h
+    include/UIManager/TranslatorManager.h
+    include/UIManager/UIManagerProvider.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h 
-    src/AppContext.cpp
+    src/TranslatorManager.cpp
+    src/UIManagerProvider.cpp
 )
+
 
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
-        AppContext
+        UIManager
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
@@ -19,15 +22,14 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
-        Qt6::Quick
         MasterLog
-    TARGET_DEPENDENICES_PUBLIC
         UICore
-        UIFabrication
-        UIManager
+    TARGET_DEPENDENICES_PUBLIC
+        Qt6::Widgets
+        Qt6::Qml
     TARGET_DEFINITIONS
-        AppContext_DLL
-        AppContext_LIB
+        UIManager_DLL
+        UIManager_LIB
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

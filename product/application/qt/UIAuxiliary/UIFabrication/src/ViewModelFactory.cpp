@@ -1,4 +1,5 @@
 #include <UIFabrication/ViewModelFactory.h>
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 
 namespace UIFabrication{
