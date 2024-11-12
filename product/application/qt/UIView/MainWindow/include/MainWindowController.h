@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QtQml>
 #include <UICore/CoreController.h>
-#include <UICore/CoreContext.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -15,32 +14,35 @@ namespace commonHead{
     }
 }
 
-class CoreContext;
+class AppContext;
 class ContactListViewController;
-class MainWindowController : public CoreController
+class MainWindowController : public UICore::CoreController
 {
     Q_OBJECT
     Q_PROPERTY(QString mTitle READ getTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString mButtonText MEMBER mButtonText NOTIFY titleChanged)
     QML_ELEMENT
 public:
     MainWindowController(QObject* parent =nullptr);
     virtual QString getControllerName() const override;
 
     QString getTitle() const;
+    QString getButton() const;
 
-    void initializeController(CoreContext* appContext);
+    void initializeController(AppContext* appContext);
 
 // private:
 //     void showContactWindow()
 
 signals:
     void titleChanged();
-    void controllerInitialized(CoreContext*);
+    void controllerInitialized();
 public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
     void openCamera();
 private:
-    CoreContext* mAppContext;
+    QPointer<AppContext> mAppContext;
     QString mTitle;
+    QString mButtonText;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
 };

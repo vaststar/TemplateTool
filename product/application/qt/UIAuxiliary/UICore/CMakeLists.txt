@@ -1,21 +1,15 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UICore/CoreApplication.h
     include/UICore/UICoreExport.h
-    include/UICore/CoreQmlApplicationEngine.h
-    include/UICore/CoreContext.h
-    include/UICore/CoreViewFactory.h
+    include/UICore/CoreQmlEngine.h
     include/UICore/CoreController.h
-    include/UICore/CoreViewModelFactory.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h 
     src/CoreApplication.cpp
-    src/CoreQmlApplicationEngine.cpp
-    src/CoreContext.cpp
-    src/CoreViewFactory.cpp
+    src/CoreQmlEngine.cpp
     src/CoreController.cpp
-    src/CoreViewModelFactory.cpp
 )
 
 
@@ -30,9 +24,10 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
-        Qt6::Gui Qt6::Quick Qt6::Widgets
+        MasterLog
     TARGET_DEPENDENICES_PUBLIC
-        MasterLog 
+        Qt6::Widgets
+        Qt6::Qml
     TARGET_DEFINITIONS
         UICore_DLL
         UICore_LIB

@@ -1,5 +1,6 @@
+add_subdirectory(UIAuxiliary)
+add_subdirectory(AppContext)
 add_subdirectory(UIComponent)
-add_subdirectory(UICore)
 add_subdirectory(UIView)
 add_subdirectory(mainUI)
 

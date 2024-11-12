@@ -1,9 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 #include <QtQml>
 #include <UICore/CoreController.h>
-#include <UICore/CoreContext.h>
 
 namespace commonHead::viewModels
 {
@@ -15,18 +15,18 @@ namespace commonHead{
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
-class CoreContext;
-class ContactListViewController: public CoreController
+class AppContext;
+class ContactListViewController: public UICore::CoreController
 {
     Q_OBJECT
     QML_ELEMENT
 public:
     explicit ContactListViewController(QObject *parent = nullptr);
     virtual QString getControllerName() const override;
-    void initializeController(CoreContext* appContext);
+    void initializeController(AppContext* appContext);
 public slots:
     void buttonClicked();
 private:
-    CoreContext* mAppContext;
+    QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IContactListViewModel> mContactListViewModel;
 };

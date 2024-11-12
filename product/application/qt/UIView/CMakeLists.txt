@@ -48,6 +48,7 @@ BuildQtModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         UICore
+        AppContext
         Qt6::Gui Qt6::Quick Qt6::Widgets
         UIComponent
         ViewModels
@@ -73,7 +74,10 @@ BuildQtModule(
 )
 
 
-#qt_add_translations(UIView  TS_FILES test.ts
-#SOURCES ${UIVIEW_QML_TARGET_FILES}
-#)
-#add_dependencies(UIView update_translations)
+qt_add_translations(UIView  
+    #TS_FILE_BASE UIVIEW_translations_en
+    #TS_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../rescources/translations
+TS_FILES ../../rescources/translations/UIVIEW_translations_en.ts
+    SOURCES ${UIVIEW_QML_TARGET_FILES} ${TARGET_SOURCE_FILES_PRIVATE}
+)
+add_dependencies(UIView update_translations)

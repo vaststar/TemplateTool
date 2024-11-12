@@ -31,10 +31,10 @@ BuildModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PUBLIC
-        MasterLog
         NetworkModelTypes
         StringUtils
     TARGET_DEPENDENICES_PRIVATE
+        MasterLog
         openssl
         curl
         #CURL::libcurl

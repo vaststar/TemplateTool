@@ -60,7 +60,7 @@ Item{
 
     Button {
         id: butn1
-        text: "1234"
+        text: qsTr("openCamera")
         anchors{
             top: parent.top
             topMargin: 300
@@ -78,7 +78,7 @@ Item{
     }
     Button {
         id: butn2
-        text: "5678"
+        text: mainController.mButtonText
         anchors{
             top: parent.top
             topMargin: 300

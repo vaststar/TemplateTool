@@ -1,7 +1,8 @@
 #include "MainWindow/include/MainWindowController.h"
 
-#include <UICore/CoreContext.h>
-#include <UICore/CoreViewModelFactory.h>
+#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/UIViewFactory.h>
+#include <AppContext/AppContext.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include "LoggerDefine/LoggerDefine.h"
@@ -21,14 +22,16 @@ QString MainWindowController::getControllerName() const
 }
 
 
-void MainWindowController::initializeController(CoreContext* appContext)
+void MainWindowController::initializeController(AppContext* appContext)
 {
     mAppContext = appContext;
     mMainViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
     mMainViewModel->initDatabase();
-    mTitle = "intialized window";
-    emit titleChanged();
-    emit controllerInitialized(appContext);
+    mTitle = QObject::tr("mywindow");
+    mButtonText = QObject::tr("mybutton");
+            //  mAppContext->getViewFactory()->installTranslation({});
+             emit titleChanged();
+    emit controllerInitialized();
 }
 
 QString MainWindowController::getTitle() const
@@ -36,6 +39,10 @@ QString MainWindowController::getTitle() const
     return mTitle;
 }
 
+QString MainWindowController::getButton() const
+{
+    return mButtonText;
+}
 void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
 {
     contactListController->initializeController(mAppContext);
@@ -43,5 +50,8 @@ void MainWindowController::onContactListLoaded(ContactListViewController* contac
 
 void MainWindowController::openCamera()
 {
-    mMainViewModel->openCamera();
+            mAppContext->getViewFactory()->installTranslation({});
+    mButtonText = QObject::tr("newmybutton");
+            emit titleChanged();
+    //mMainViewModel->openCamera();
 }

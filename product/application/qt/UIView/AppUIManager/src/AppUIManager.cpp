@@ -8,10 +8,10 @@
 
 
 #include <UICore/CoreApplication.h>
-#include <UICore/CoreQmlApplicationEngine.h>
-#include <UICore/CoreContext.h>
-#include <UICore/CoreViewFactory.h>
-#include <UICore/CoreViewModelFactory.h>
+#include <UICore/CoreQmlEngine.h>
+#include <AppContext/AppContext.h>
+#include <UIFabrication/UIViewFactory.h>
+#include <UIFabrication/ViewModelFactory.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -30,24 +30,25 @@ public:
 
     void initAppContext(const AppUIManager::ApplicationConfig& config);
 
-    const std::unique_ptr<CoreContext>& getAppContext() const{ return mAppContext;}
+    const std::unique_ptr<AppContext>& getAppContext() const{ return mAppContext;}
 public:
-    std::unique_ptr<CoreApplication> mainApp;
-    std::unique_ptr<CoreContext> mAppContext;
+    std::unique_ptr<UICore::CoreApplication> mainApp;
+    std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
+    std::unique_ptr<AppContext> mAppContext;
 };
 
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
-    : mainApp(std::make_unique<CoreApplication>( config.argc, config.argv ))
+    : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
+    , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
 {
     initAppContext(config);
 }
 
 void AppUIManager::Impl::initAppContext(const AppUIManager::ApplicationConfig& config)
 {
-    auto viewModelFactory = std::make_unique<CoreViewModelFactory>(config.commonHeadFramework);
-    auto qmlEngine = std::make_unique<CoreQmlApplicationEngine>();
-    auto viewFactory = std::make_unique<CoreViewFactory>(std::move(qmlEngine));
-    mAppContext = std::make_unique<CoreContext>(std::move(viewModelFactory),std::move(viewFactory));
+    // auto viewModelFactory = std::make_unique<UIFabrication::ViewModelFactory>(config.commonHeadFramework);
+    // auto viewFactory = std::make_unique<UIFabrication::UIViewFactory>(mQmlEngine.get());
+    mAppContext = std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -80,6 +81,7 @@ void AppUIManager::createAndShowMainWindow()
     mImpl->getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), "MainWindowController", [this](auto controller){
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
+            // mImpl->getAppContext()->getViewFactory()->installTranslation({});
             mainController->initializeController(mImpl->getAppContext().get());
         }
     });

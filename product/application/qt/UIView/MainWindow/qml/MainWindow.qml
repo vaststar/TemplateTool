@@ -15,7 +15,7 @@ ApplicationWindow
     visible: true
     width: 758 
     height: 576
-    title: qsTr(mainController.mTitle)
+    title: mainController.mTitle
     color: "steelblue"
     menuBar: AppMenuBar {}
     header: AppHeader {
@@ -34,7 +34,7 @@ ApplicationWindow
     }
 
 
-    function onMainControllerInitialized( appContext ){
+    function onMainControllerInitialized(){
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
     }
 
