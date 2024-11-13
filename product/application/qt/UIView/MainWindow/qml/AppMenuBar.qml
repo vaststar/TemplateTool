@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls 
 import QtQuick.Layouts
 import UIView 1.0
+import UIManager 1.0
 
 MenuBar {
     id: root
@@ -31,7 +32,7 @@ MenuBar {
             Action { 
                 text: qsTr("Switch to Chinese")
                 onTriggered: {
-                    controller.switchLanguage(UIManager.TranslatorManager.LanguageType.CHINESE_SIMPLIFIED)
+                    controller.switchLanguage(UIManager.LanguageType.CHINESE_SIMPLIFIED)
                 }
             }
         }

@@ -37,7 +37,7 @@ void AppMenuBarController::onContactListLoaded(ContactListViewController* contac
     contactListController->initializeController(mAppContext);
 }
 
-void AppMenuBarController::switchLanguage(UIManager::TranslatorManager::LanguageType languageType)
+void AppMenuBarController::switchLanguage(UIManager::LanguageType languageType)
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
 }

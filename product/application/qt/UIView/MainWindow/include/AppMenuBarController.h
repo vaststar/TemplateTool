@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QtQml>
 #include <UICore/CoreController.h>
-#include <UIManager/TranslatorManager.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -14,10 +13,9 @@ namespace commonHead{
         class IMainWindowViewModel;
     }
 }
-// namespace UIManager{
-//     class TranslatorManager;
-//     enum class TranslatorManager::LanguageType;
-// }
+namespace UIManager{
+    enum class LanguageType;
+}
 
 class AppContext;
 class ContactListViewController;
@@ -36,7 +34,7 @@ signals:
     void controllerInitialized();
 public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
-    void switchLanguage(UIManager::TranslatorManager::LanguageType languageType);
+    void switchLanguage(UIManager::LanguageType languageType);
 private:
     QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;

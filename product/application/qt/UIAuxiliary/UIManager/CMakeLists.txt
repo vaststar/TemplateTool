@@ -10,7 +10,6 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/UIManagerProvider.cpp
 )
 
-
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 

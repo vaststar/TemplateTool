@@ -26,8 +26,8 @@ public:
 
     QString mCurrentLanguage;
 
-    std::string getLanguageString(TranslatorManager::LanguageType languageType) const;
-    std::map<TranslatorManager::LanguageType, std::string> getLanguageMap() const;
+    std::string getLanguageString(LanguageType languageType) const;
+    std::map<LanguageType, std::string> getLanguageMap() const;
 };
 
 TranslatorManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
@@ -37,7 +37,7 @@ TranslatorManager::Impl::Impl(UICore::CoreApplication* application, UICore::Core
 {
 }
 
-std::map<TranslatorManager::LanguageType, std::string> TranslatorManager::Impl::getLanguageMap() const
+std::map<LanguageType, std::string> TranslatorManager::Impl::getLanguageMap() const
 {
     const std::map<LanguageType, std::string> languageMap = {
         {LanguageType::ENGLISH, "en"},
@@ -55,7 +55,7 @@ std::map<TranslatorManager::LanguageType, std::string> TranslatorManager::Impl::
     return languageMap;
 }
 
-std::string TranslatorManager::Impl::getLanguageString(TranslatorManager::LanguageType languageType) const
+std::string TranslatorManager::Impl::getLanguageString(LanguageType languageType) const
 {
     const auto& languageMap = getLanguageMap();
     if (auto iter = languageMap.find(languageType); iter != languageMap.end())

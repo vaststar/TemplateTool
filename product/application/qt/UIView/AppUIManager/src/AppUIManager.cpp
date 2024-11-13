@@ -5,13 +5,14 @@
 #include <QGuiApplication>
 #include <QQuickView>
 #include <QQmlApplicationEngine>
+#include <QtQml>
 
 
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <AppContext/AppContext.h>
 #include <UIFabrication/UIViewFactory.h>
-#include <UIFabrication/ViewModelFactory.h>
+#include <UIManager/TranslatorManager.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -29,7 +30,9 @@ public:
     int runApp(){ return mainApp->exec();}
 
     const std::unique_ptr<AppContext>& getAppContext() const{ return mAppContext;}
-public:
+
+    void registerQmlTypes();
+private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
     std::unique_ptr<AppContext> mAppContext;
@@ -40,8 +43,19 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
+    registerQmlTypes();
 }
 
+void AppUIManager::Impl::registerQmlTypes()
+{
+    qmlRegisterUncreatableMetaObject(
+		        UIManager::staticMetaObject, // The meta-object of the namespace
+		        "UIManager",                 // The URI or module name
+		        1, 0,                          // Version
+		        "UIManager",                 // The name used in QML
+		        "Access to enums only"         // Error message for attempting to create an instance
+		    );
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish Impl Logic//////////////////////////////////////////

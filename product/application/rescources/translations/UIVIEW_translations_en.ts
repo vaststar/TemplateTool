@@ -35,77 +35,77 @@
 <context>
     <name>AppMenuBar</name>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="13"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="14"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="14"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="15"/>
         <source>New...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="15"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="16"/>
         <source>Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="16"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="17"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="17"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="18"/>
         <source>Save As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="19"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="20"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="22"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="23"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="23"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="24"/>
         <source>Cut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="24"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="25"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="25"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="26"/>
         <source>Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="28"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="29"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="30"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="31"/>
         <source>Switch Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="32"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="33"/>
         <source>Switch to Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="40"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="41"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="41"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="42"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>

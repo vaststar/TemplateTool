@@ -12,25 +12,26 @@ namespace UICore{
 }
 
 namespace UIManager{
+Q_NAMESPACE
+enum class LanguageType {
+    ENGLISH,
+    CHINESE_SIMPLIFIED,
+    CHINESE_TRADITIONAL,
+    FRENCH,
+    GERMAN,
+    ITALIAN,
+    SPANISH,
+    PORTUGUESE,
+    JAPANESE,
+    KOREAN,
+    RUSSIAN
+};
+Q_ENUM_NS(LanguageType)
 
 class UIManager_EXPORT TranslatorManager final: public QObject
 {
 Q_OBJECT
 public:
-    enum class LanguageType {
-        ENGLISH,
-        CHINESE_SIMPLIFIED,
-        CHINESE_TRADITIONAL,
-        FRENCH,
-        GERMAN,
-        ITALIAN,
-        SPANISH,
-        PORTUGUESE,
-        JAPANESE,
-        KOREAN,
-        RUSSIAN
-    };
-    Q_ENUM(LanguageType)
     explicit TranslatorManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
     ~TranslatorManager();
 
