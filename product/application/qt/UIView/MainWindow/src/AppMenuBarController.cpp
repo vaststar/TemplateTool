@@ -16,6 +16,7 @@ AppMenuBarController::AppMenuBarController(QObject* parent)
     , mAppContext(nullptr)
 {
     UIVIEW_LOG_DEBUG("create AppMenuBarController");
+    createMenu();
 }
 
 QString AppMenuBarController::getControllerName() const
@@ -40,4 +41,24 @@ void AppMenuBarController::onContactListLoaded(ContactListViewController* contac
 void AppMenuBarController::switchLanguage(UIManager::LanguageType languageType)
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
+}
+
+void AppMenuBarController::createMenu()
+{
+    // 创建顶级菜单
+    mRootMenu = new MenuItemModel("Main Menu", "Root action");
+
+    // 创建子菜单项
+    auto fileMenu = new MenuItemModel("File", "File operations");
+    fileMenu->addSubItem(new MenuItemModel("Open", "Open a file"));
+    fileMenu->addSubItem(new MenuItemModel("Save", "Save the file"));
+
+    auto editMenu = new MenuItemModel("Edit", "Edit operations");
+    editMenu->addSubItem(new MenuItemModel("Cut", "Cut the selection"));
+    editMenu->addSubItem(new MenuItemModel("Copy", "Copy the selection"));
+    editMenu->addSubItem(new MenuItemModel("Paste", "Paste from clipboard"));
+
+    // 添加子菜单到顶级菜单
+    mRootMenu->addSubItem(fileMenu);
+    mRootMenu->addSubItem(editMenu);
 }

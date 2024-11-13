@@ -1,17 +1,23 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIComponentExport.h
+    include/UIComponent/MenuItemModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    include/LoggerDefine.h
+    src/LoggerDefine.h
+    src/MenuItemModel.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
     qml/UTDialog.qml
     qml/UTWindow.qml
+    qml/UTMenu.qml
+    jsutils/CreateMenus.js
+    
 )
 
-set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
+set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIComponent
 )
 
 include(BuildQtModule)
@@ -26,11 +32,7 @@ BuildQtModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         Qt6::Gui Qt6::Quick
-        ViewModels 
-        CommonHeadFramework
-    TARGET_DEPENDENICES_PUBLIC
         MasterLog 
-        ThreadPool
     TARGET_DEFINITIONS
         UICOMPONENT_DLL
         UICOMPONENT_LIB
@@ -42,9 +44,10 @@ BuildQtModule(
         src
     IDE_FOLDER
         UI
-    
     QML_TARGET_URI
         UIComponent
     QML_TARGET_FILES
         ${UIVIEW_QML_TARGET_FILES}
+    QML_PUBLIC_BUILD_INTERFACE_FOLDER
+        ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )

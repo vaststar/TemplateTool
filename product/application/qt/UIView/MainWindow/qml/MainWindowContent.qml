@@ -91,7 +91,6 @@ Item{
             border.width: butn2.activeFocus?3:0
         }
     }
-    
     UTDialog{
         id: dialog
     }

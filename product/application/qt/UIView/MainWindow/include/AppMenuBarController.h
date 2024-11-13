@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtQml>
 #include <UICore/CoreController.h>
+#include <UIComponent/MenuItemModel.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -22,6 +23,8 @@ class ContactListViewController;
 class AppMenuBarController : public UICore::CoreController
 {
     Q_OBJECT
+    Q_PROPERTY(MenuItemModel* rootMenu READ rootMenu CONSTANT)
+    Q_PROPERTY(QList<MenuItemModel*> listMenu READ listMenu CONSTANT)
     QML_ELEMENT
 public:
     AppMenuBarController(QObject* parent = nullptr);
@@ -29,6 +32,9 @@ public:
 
     void initializeController(AppContext* appContext);
 
+    void createMenu();
+    MenuItemModel* rootMenu() const{return mRootMenu;}
+    QList<MenuItemModel*> listMenu() const {return mRootMenu->subItems();}
 signals:
     void titleChanged();
     void controllerInitialized();
@@ -38,4 +44,5 @@ public slots:
 private:
     QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
+    MenuItemModel* mRootMenu{nullptr};
 };

@@ -61,5 +61,18 @@ Item{
 
         delegate: TreeViewDelegate { implicitWidth : parent.width}
     }
+
+    
+    Instantiator{
+        model: 3
+        delegate: Rectangle {
+            width: 100
+            height: 100
+            color: "lightblue"
+            border.color: "black"
+            x: index * (width + 10)
+        }
+
+    }
 }
 

@@ -15,7 +15,7 @@ ApplicationWindow
     visible: true
     width: 758 
     height: 576
-    title: mainController.mTitle
+    title: qsTr(mainController.mTitle)
     color: "steelblue"
     menuBar: AppMenuBar {
         id: menuBarId

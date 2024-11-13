@@ -21,7 +21,7 @@ MainWindowController::MainWindowController(QObject* parent)
 
 QString MainWindowController::getControllerName() const
 {
-    return "MainWindowController";
+    return QStringLiteral("MainWindowController");
 }
 
 
