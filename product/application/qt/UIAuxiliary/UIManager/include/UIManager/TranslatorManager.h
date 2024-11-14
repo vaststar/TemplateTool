@@ -12,7 +12,7 @@ namespace UICore{
 }
 
 namespace UIManager{
-Q_NAMESPACE
+Q_NAMESPACE_EXPORT(UIManager_EXPORT)
 enum class LanguageType {
     ENGLISH,
     CHINESE_SIMPLIFIED,

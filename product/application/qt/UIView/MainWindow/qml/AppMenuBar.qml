@@ -15,7 +15,8 @@ MenuBar {
 
     Component.onCompleted:{
         console.log("listlength:" + controller.listMenu.length)
-        CreateMenus.createMenus(root, controller.listMenu)
+        // CreateMenus.createMenus(root, controller.listMenu)
+        CreateMenus.createMenu(root, controller.rootMenu)
         }
 
 

@@ -4,18 +4,18 @@ include (LinkTargetIncludeDirectories)
 function(BuildModule)
         message(STATUS "====Start Build Module====")
         set(options)
-        set(oneValueArg MODULE_NAME)
+        set(oneValueArg MODULE_NAME IDE_FOLDER BUILD_LIBRARY_TYPE)
         set(multiValueArgs
             TARGET_SOURCE_PRIVATE TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
             TARGET_DEPENDENICES_PRIVATE TARGET_DEPENDENICES_PUBLIC
             TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
             TARGET_DEFINITIONS
-            IDE_FOLDER
         )
         cmake_parse_arguments(MODULE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
 
         message(STATUS "Parse Args Results:")
         message(STATUS "MODULE_NAME: ${MODULE_MODULE_NAME}")
+        message(STATUS "BUILD_LIBRARY_TYPE: ${MODULE_BUILD_LIBRARY_TYPE}")
         message(STATUS "TARGET_SOURCE_PRIVATE: ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS "TARGET_SOURCE_HEADER_BASE_DIR: ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}")
         message(STATUS "TARGET_SOURCE_PUBLIC_HEADER: ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
@@ -30,8 +30,12 @@ function(BuildModule)
         
         message(STATUS "***create library: ${MODULE_MODULE_NAME}***")
 
-        ##build shared library
-        add_library(${MODULE_MODULE_NAME} SHARED "")   
+        ##build shared library - default
+        if (DEFINED MODULE_BUILD_LIBRARY_TYPE)
+            add_library(${MODULE_MODULE_NAME} ${MODULE_BUILD_LIBRARY_TYPE} "")
+        else()
+            add_library(${MODULE_MODULE_NAME} SHARED "")
+        endif()
         target_sources(${MODULE_MODULE_NAME}
             PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
             PUBLIC FILE_SET HEADERS 

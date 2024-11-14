@@ -1,11 +1,7 @@
 #pragma once
 
 #ifdef UIFabrication_DLL
-#ifdef UIFabrication_LIB
-#define UIFabrication_EXPORT _declspec(dllexport)
+#define UIFabrication_EXPORT Q_DECL_EXPORT
 #else
-#define UIFabrication_EXPORT _declspec(dllimport)
-#endif
-#else
-#define UIFabrication_EXPORT 
+#define UIFabrication_EXPORT Q_DECL_IMPORT
 #endif

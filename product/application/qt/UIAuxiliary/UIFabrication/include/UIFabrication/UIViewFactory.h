@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QObject>
 #include <QQuickView>
+#include <UICore/CoreController.h>
 
 #include <UIFabrication/UIFabricationExport.h>
 

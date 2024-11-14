@@ -1,11 +1,7 @@
 #pragma once
 
 #ifdef UIManager_DLL
-#ifdef UIManager_LIB
-#define UIManager_EXPORT _declspec(dllexport)
+#define UIManager_EXPORT Q_DECL_EXPORT
 #else
-#define UIManager_EXPORT _declspec(dllimport)
-#endif
-#else
-#define UIManager_EXPORT 
+#define UIManager_EXPORT Q_DECL_IMPORT
 #endif

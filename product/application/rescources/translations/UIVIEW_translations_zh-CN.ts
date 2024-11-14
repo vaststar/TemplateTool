@@ -35,32 +35,32 @@
 <context>
     <name>AppMenuBar</name>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="70"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="63"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="71"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="64"/>
         <source>New...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="72"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="65"/>
         <source>Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="73"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="66"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="74"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="67"/>
         <source>Save As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="76"/>
+        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="69"/>
         <source>Quit</source>
         <translation type="unfinished">退出</translation>
     </message>

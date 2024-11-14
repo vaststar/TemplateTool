@@ -3,12 +3,11 @@ include (SetIDEFolder)
 function(BuildQtModule)
         message(STATUS "====Start Build Qt Module====")
         set(options)
-        set(oneValueArg MODULE_NAME)
+        set(oneValueArg MODULE_NAME IDE_FOLDER BUILD_LIBRARY_TYPE)
         set(multiValueArgs TARGET_SOURCE_PRIVATE TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
                            TARGET_DEPENDENICES_PRIVATE TARGET_DEPENDENICES_PUBLIC 
                            TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
                            TARGET_DEFINITIONS
-                           IDE_FOLDER
                            QML_TARGET_URI QML_TARGET_FILES QML_TARGET_SOURCES 
                            QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES 
                            QML_PUBLIC_BUILD_INTERFACE_FOLDER
@@ -19,6 +18,7 @@ function(BuildQtModule)
 
         message(STATUS "Parse Args Results:")
         message(STATUS "MODULE_NAME: ${MODULE_MODULE_NAME}")
+        message(STATUS "BUILD_LIBRARY_TYPE: ${MODULE_BUILD_LIBRARY_TYPE}")
         message(STATUS "TARGET_SOURCE_PRIVATE: ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS "TARGET_SOURCE_HEADER_BASE_DIR: ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}")
         message(STATUS "TARGET_SOURCE_PUBLIC_HEADER: ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
@@ -38,8 +38,12 @@ function(BuildQtModule)
         
         
         message(STATUS "create library: ${MODULE_MODULE_NAME}")
-        ##build sattic library
-        add_library(${MODULE_MODULE_NAME} STATIC "")
+        ##build static library
+        if (DEFINED MODULE_BUILD_LIBRARY_TYPE)
+            add_library(${MODULE_MODULE_NAME} ${MODULE_BUILD_LIBRARY_TYPE} "")
+        else()
+            add_library(${MODULE_MODULE_NAME} STATIC "")
+        endif()
         target_sources(${MODULE_MODULE_NAME}
             PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
             PUBLIC FILE_SET HEADERS 

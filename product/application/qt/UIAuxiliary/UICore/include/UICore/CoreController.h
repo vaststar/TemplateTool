@@ -5,6 +5,7 @@
 #include <UICore/UICoreExport.h>
 
 namespace UICore{
+    //Q_NAMESPACE
 class UICore_EXPORT CoreController: public QObject
 {
 Q_OBJECT

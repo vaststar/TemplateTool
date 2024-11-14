@@ -1,4 +1,4 @@
-#include <UIComponent/MenuItemModel.h>
+#include <UTMenu/MenuItemModel.h>
 
 MenuItemModel::MenuItemModel(const QString& name, const QString& action, QObject* parent)
     : QObject(parent)
