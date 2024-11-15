@@ -1,11 +1,7 @@
 #pragma once
 
 #ifdef UICOMPONENT_DLL
-#ifdef UICOMPONENT_LIB
-#define UICOMPONENT_EXPORT _declspec(dllexport)
+#define UICOMPONENT_EXPORT Q_DECL_EXPORT
 #else
-#define UICOMPONENT_EXPORT _declspec(dllimport)
-#endif
-#else
-#define UICOMPONENT_EXPORT 
+#define UICOMPONENT_EXPORT Q_DECL_IMPORT
 #endif

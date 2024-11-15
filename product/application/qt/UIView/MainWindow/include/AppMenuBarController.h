@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QtQml>
 #include <UICore/CoreController.h>
-#include <UTMenu/MenuItemModel.h>
+#include <MenuItemModel.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
