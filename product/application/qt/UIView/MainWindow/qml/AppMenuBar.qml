@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import QtQml.Models
 import UIView 1.0
 import UIManager 1.0
-import UIComponent 1.0
+import UTComponent 1.0
 
 MenuBar {
     id: root

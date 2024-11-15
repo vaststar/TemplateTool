@@ -1,18 +1,12 @@
-#ifndef ServiceExportExport_h__
-#define ServiceExportExport_h__
+#pragma once
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(_WIN64)
 #pragma warning(disable:4251)//for template class member with dll-export, it will report warning, so, just disable it
-#endif
-
-#ifdef SERVICE_DLL
-#ifdef SERVICE_LIB
-#define SERVICE_EXPORT _declspec(dllexport)
+    #if defined(SERVICE_DLL)
+        #define SERVICE_EXPORT __declspec(dllexport)
+    #else
+        #define SERVICE_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define SERVICE_EXPORT _declspec(dllimport)
+    #define SERVICE_EXPORT 
 #endif
-#else
-#define SERVICE_EXPORT 
-#endif
-
-#endif //ServiceExportExport_h__

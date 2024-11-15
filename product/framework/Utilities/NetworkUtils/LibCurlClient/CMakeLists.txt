@@ -1,6 +1,8 @@
 include(BuildModule)
 if (WIN32)
-    set(ADD_LIBCURL_DEFINITIONS LIBCURLCLIENT_DLL LIBCURLCLIENT_LIB)
+    set(ADD_LIBCURL_DEFINITIONS LIBCURLCLIENT_DLL)
+else()
+    set(ADD_LIBCURL_DEFINITIONS)
 endif()
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
@@ -37,7 +39,6 @@ BuildModule(
         MasterLog
         openssl
         curl
-        #CURL::libcurl
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

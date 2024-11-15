@@ -1,5 +1,6 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     AppUIManager/include/AppUIManager.h
+    AppUIManager/include/AppUIExport.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -41,6 +42,12 @@ set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
 )
 
+if (WIN32)
+    set(ADD_DEFINITIONS AppUI_DLL)
+else()
+    set(ADD_DEFINITIONS)
+endif()
+
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
@@ -55,9 +62,11 @@ BuildQtModule(
         AppContext
         UIManager
         Qt6::Gui Qt6::Quick Qt6::Widgets
-        UIComponent
+        UTComponent
         ViewModels
         CommonHeadFramework
+    TARGET_DEFINITIONS
+        ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
@@ -85,5 +94,14 @@ qt_add_translations(UIView
 TS_FILES ${UIVIEW_QML_TARGET_RESOURCES_DIR}/translations/UIVIEW_translations_en.ts
          ${UIVIEW_QML_TARGET_RESOURCES_DIR}/translations/UIVIEW_translations_zh-CN.ts
     SOURCES ${UIVIEW_QML_TARGET_FILES} ${TARGET_SOURCE_FILES_PRIVATE}
+)
+SetIDEFolder(
+    TARGET_NAMES
+        UIView_lupdate
+        UIView_lrelease
+        update_translations
+        release_translations
+    FOLDER_NAME
+        UI/translations
 )
 add_dependencies(UIView update_translations)

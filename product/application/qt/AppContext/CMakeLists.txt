@@ -8,6 +8,12 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/AppContext.cpp
 )
 
+if (WIN32)
+    set(ADD_DEFINITIONS AppContext_DLL)
+else()
+    set(ADD_DEFINITIONS)
+endif()
+
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
@@ -26,8 +32,7 @@ BuildQtModule(
         UIFabrication
         UIManager
     TARGET_DEFINITIONS
-        AppContext_DLL
-        AppContext_LIB
+        ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

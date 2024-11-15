@@ -1,13 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <AppUIManager/include/AppUIExport.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
-class AppUIManager final
+class AppUI_EXPORT AppUIManager final
 {
 public:
     struct ApplicationConfig

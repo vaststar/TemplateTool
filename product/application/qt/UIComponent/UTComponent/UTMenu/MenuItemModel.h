@@ -4,9 +4,9 @@
 #include <QtQml>
 #include <QString>
 #include <QList>
-#include <UIComponentExport.h>
+#include <include/UTComponentExport.h>
 
-class UICOMPONENT_EXPORT MenuItemModel : public QObject {
+class UTCOMPONENT_EXPORT MenuItemModel : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString action READ action CONSTANT)

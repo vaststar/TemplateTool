@@ -1,5 +1,7 @@
 if (WIN32)
-    set(ADD_SERVICE_DEFINITIONS SERVICE_DLL SERVICE_LIB)
+    set(ADD_SERVICE_DEFINITIONS SERVICE_DLL)
+else()
+    set(ADD_SERVICE_DEFINITIONS)
 endif()
 add_subdirectory(ServiceExportMacro)
 add_subdirectory(ServiceDeclaration)

@@ -1,14 +1,11 @@
-#ifndef UtilitiesExportExport_h__
-#define UtilitiesExportExport_h__
+#pragma once
 
-#ifdef Utilities_DLL
-#ifdef Utilities_LIB
-#define Utilities_EXPORT _declspec(dllexport)
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(Utilities_DLL)
+        #define Utilities_EXPORT __declspec(dllexport)
+    #else
+        #define Utilities_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define Utilities_EXPORT _declspec(dllimport)
+    #define Utilities_EXPORT 
 #endif
-#else
-#define Utilities_EXPORT 
-#endif
-
-#endif //UtilitiesExportExport_h__

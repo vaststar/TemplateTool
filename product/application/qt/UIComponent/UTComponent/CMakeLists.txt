@@ -1,5 +1,5 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/UIComponentExport.h
+    include/UTComponentExport.h
     UTMenu/MenuItemModel.h
 )
 
@@ -8,7 +8,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
     UTMenu/MenuItemModel.cpp
 )
 
-set(UIVIEW_QML_TARGET_FILES
+set(MODULE_QML_TARGET_FILES
     UTWindow/UTDialog.qml
     UTWindow/UTWindow.qml
     UTMenu/UTMenu.qml
@@ -17,20 +17,23 @@ set(UIVIEW_QML_TARGET_FILES
 )
 
 set(MODULE_TARGET_SOURCE_HEADER_BASE_DIR
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/UTMenu
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/UTMenu
 )
 
+if (WIN32)
+    set(ADD_DEFINITIONS UTCOMPONENT_DLL)
+else()
+    set(ADD_DEFINITIONS)
+endif()
+
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
-        UIComponent
-    BUILD_LIBRARY_TYPE
-        SHARED
+        UTComponent
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
@@ -41,7 +44,7 @@ BuildQtModule(
         Qt6::Gui Qt6::Quick
         MasterLog 
     TARGET_DEFINITIONS
-        UICOMPONENT_DLL
+        ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
@@ -51,9 +54,9 @@ BuildQtModule(
     IDE_FOLDER
         UI
     QML_TARGET_URI
-        UIComponent
+        UTComponent
     QML_TARGET_FILES
-        ${UIVIEW_QML_TARGET_FILES}
+        ${MODULE_QML_TARGET_FILES}
     QML_PUBLIC_BUILD_INTERFACE_FOLDER
         ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )

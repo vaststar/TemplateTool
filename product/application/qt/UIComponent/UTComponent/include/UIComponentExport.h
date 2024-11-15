@@ -1,7 +1,0 @@
-#pragma once
-
-#ifdef UICOMPONENT_DLL
-#define UICOMPONENT_EXPORT Q_DECL_EXPORT
-#else
-#define UICOMPONENT_EXPORT Q_DECL_IMPORT
-#endif

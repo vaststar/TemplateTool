@@ -1,7 +1,11 @@
 #pragma once
 
-#ifdef UIFabrication_DLL
-#define UIFabrication_EXPORT Q_DECL_EXPORT
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(UIFabrication_DLL)
+        #define UIFabrication_EXPORT __declspec(dllexport)
+    #else
+        #define UIFabrication_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define UIFabrication_EXPORT Q_DECL_IMPORT
+    #define UIFabrication_EXPORT 
 #endif

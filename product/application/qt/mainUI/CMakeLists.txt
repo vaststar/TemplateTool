@@ -7,7 +7,11 @@ set(TARGET_SOURCE_FILES_PRIVATE
     include/Main/LoggerDefine.h 
     src/Main.cpp
 )
-
+if (WIN32)
+    set(ADD_DEFINITIONS Main_DLL)
+else()
+    set(ADD_DEFINITIONS)
+endif()
 
 include(BuildQtModule)
 BuildQtModule(
@@ -26,8 +30,7 @@ BuildQtModule(
         AppRunner
         MasterLog
     TARGET_DEFINITIONS
-        Main_DLL
-        Main_LIB
+        ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

@@ -1,5 +1,7 @@
 if (WIN32)
-    set(ADD_UTILITIES_DEFINITIONS Utilities_DLL Utilities_LIB)
+    set(ADD_UTILITIES_DEFINITIONS Utilities_DLL)
+else()
+    set(ADD_UTILITIES_DEFINITIONS)
 endif()
 
 add_subdirectory(common_file)

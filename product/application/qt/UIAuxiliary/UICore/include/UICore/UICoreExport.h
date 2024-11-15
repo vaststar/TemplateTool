@@ -1,13 +1,11 @@
 #pragma once
 
-#ifdef UICore_DLL
-#define UICore_EXPORT Q_DECL_EXPORT
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(UICore_DLL)
+        #define UICore_EXPORT __declspec(dllexport)
+    #else
+        #define UICore_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define UICore_EXPORT Q_DECL_IMPORT
+    #define UICore_EXPORT 
 #endif
-
-// #if defined(MYSHAREDLIB_LIBRARY)
-// #  define MYSHAREDLIB_EXPORT Q_DECL_EXPORT
-// #else
-// #  define MYSHAREDLIB_EXPORT Q_DECL_IMPORT
-// #endif

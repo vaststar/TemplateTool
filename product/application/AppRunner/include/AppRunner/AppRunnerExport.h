@@ -1,11 +1,11 @@
 #pragma once
 
-#ifdef APPRUNNER_DLL
-#ifdef APPRUNNER_LIB
-#define APPRUNNER_EXPORT _declspec(dllexport)
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(APPRUNNER_DLL)
+        #define APPRUNNER_EXPORT __declspec(dllexport)
+    #else
+        #define APPRUNNER_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define APPRUNNER_EXPORT _declspec(dllimport)
-#endif
-#else
-#define APPRUNNER_EXPORT 
+    #define APPRUNNER_EXPORT 
 #endif

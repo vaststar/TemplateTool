@@ -1,14 +1,11 @@
-#ifndef DatabaseWrapperExport_h__
-#define DatabaseWrapperExport_h__
+#pragma once
 
-#ifdef DATABASEWRAPPER_DLL
-#ifdef DATABASEWRAPPER_LIB
-#define DATABASEWRAPPER_EXPORT _declspec(dllexport)
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(DATABASEWRAPPER_DLL)
+        #define DATABASEWRAPPER_EXPORT __declspec(dllexport)
+    #else
+        #define DATABASEWRAPPER_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define DATABASEWRAPPER_EXPORT _declspec(dllimport)
+    #define DATABASEWRAPPER_EXPORT 
 #endif
-#else
-#define DATABASEWRAPPER_EXPORT 
-#endif
-
-#endif //DatabaseWrapperExport_h__

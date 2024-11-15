@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
-import UIComponent 1.0
+import UTComponent 1.0
 Item{
     required property var controller
 

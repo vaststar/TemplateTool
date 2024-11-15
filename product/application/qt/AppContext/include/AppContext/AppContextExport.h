@@ -1,11 +1,11 @@
 #pragma once
 
-#ifdef AppContext_DLL
-#ifdef AppContext_LIB
-#define AppContext_EXPORT _declspec(dllexport)
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(AppContext_DLL)
+        #define AppContext_EXPORT __declspec(dllexport)
+    #else
+        #define AppContext_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define AppContext_EXPORT _declspec(dllimport)
-#endif
-#else
-#define AppContext_EXPORT 
+    #define AppContext_EXPORT 
 #endif

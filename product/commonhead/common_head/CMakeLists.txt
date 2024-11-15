@@ -1,6 +1,9 @@
 if (WIN32)
-    set(ADD_COMMONHEAD_DEFINITIONS COMMONHEAD_DLL COMMONHEAD_LIB)
+    set(ADD_COMMONHEAD_DEFINITIONS COMMONHEAD_DLL)
+else()
+    set(ADD_COMMONHEAD_DEFINITIONS)
 endif()
+
 add_subdirectory(common_file)
 add_subdirectory(CommonHeadManager)
 add_subdirectory(CommonHeadFramework)

@@ -38,11 +38,11 @@ function(BuildQtModule)
         
         
         message(STATUS "create library: ${MODULE_MODULE_NAME}")
-        ##build static library
+        ##build shared library - default
         if (DEFINED MODULE_BUILD_LIBRARY_TYPE)
             add_library(${MODULE_MODULE_NAME} ${MODULE_BUILD_LIBRARY_TYPE} "")
         else()
-            add_library(${MODULE_MODULE_NAME} STATIC "")
+            add_library(${MODULE_MODULE_NAME} SHARED "")
         endif()
         target_sources(${MODULE_MODULE_NAME}
             PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
@@ -76,7 +76,6 @@ function(BuildQtModule)
             target_link_libraries(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEPENDENICES_PUBLIC})
         endif()
         
-        ##define macro for windows
         if (DEFINED MODULE_TARGET_DEFINITIONS)
             target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
         endif()
@@ -102,32 +101,32 @@ function(BuildQtModule)
                 SOURCES
                     ${MODULE_QML_TARGET_SOURCES}
             )
-            set_target_properties(${MODULE_MODULE_NAME}plugin PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
+
             if (DEFINED MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER)
                 foreach(interface_dir ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER})
                     target_include_directories(${MODULE_MODULE_NAME}plugin PUBLIC 
+                        $<BUILD_INTERFACE:${interface_dir}>
+                    )
+                    target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
                         $<BUILD_INTERFACE:${interface_dir}>
                     )
                 endforeach()
             endif()
             
             SetIDEFolder(
-            TARGET_NAMES
-                ${MODULE_MODULE_NAME}plugin_init
-                ${MODULE_MODULE_NAME}_other_files
-                ${MODULE_MODULE_NAME}_qmlcache
-                ${MODULE_MODULE_NAME}_resources_1
-                ${MODULE_MODULE_NAME}_resources_2
-            FOLDER_NAME
-                ${MODULE_IDE_FOLDER}/internalTargets
+                TARGET_NAMES
+                    ${MODULE_MODULE_NAME}plugin
+                    ${MODULE_MODULE_NAME}plugin_init
+                    ${MODULE_MODULE_NAME}_other_files
+                    ${MODULE_MODULE_NAME}_qmlcache
+                    ${MODULE_MODULE_NAME}_resources_1
+                    ${MODULE_MODULE_NAME}_resources_2
+                    ${MODULE_MODULE_NAME}_resources_3
+                FOLDER_NAME
+                    ${MODULE_IDE_FOLDER}/internalTargets
             )
-            #set_target_properties(${MODULE_MODULE_NAME}plugin_init PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            #set_target_properties(${MODULE_MODULE_NAME}_other_files PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            #set_target_properties(${MODULE_MODULE_NAME}_qmlcache PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            #set_target_properties(${MODULE_MODULE_NAME}_resources_1 PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            #set_target_properties(${MODULE_MODULE_NAME}_resources_2 PROPERTIES FOLDER ${MODULE_IDE_FOLDER}/internalTargets)
-            if (NOT DEFINED MODULE_BUILD_LIBRARY_TYPE)
-            target_link_libraries(${MODULE_MODULE_NAME} PRIVATE ${MODULE_MODULE_NAME}plugin)
+            if (DEFINED MODULE_BUILD_LIBRARY_TYPE AND MODULE_BUILD_LIBRARY_TYPE STREQUAL "STATIC")
+                target_link_libraries(${MODULE_MODULE_NAME} PRIVATE ${MODULE_MODULE_NAME}plugin)
             endif()
             message(STATUS "====Finish Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")
         endif()

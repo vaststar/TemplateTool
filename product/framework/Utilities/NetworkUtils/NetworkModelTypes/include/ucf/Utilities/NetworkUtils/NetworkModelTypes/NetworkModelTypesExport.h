@@ -1,14 +1,11 @@
-#ifndef NetworkModelTypesExport_h__
-#define NetworkModelTypesExport_h__
+#pragma once
 
-#ifdef NETWORKTYPE_DLL
-#ifdef NETWORKTYPE_LIB
-#define NETWORKTYPE_EXPORT _declspec(dllexport)
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(NETWORKTYPE_DLL)
+        #define NETWORKTYPE_EXPORT __declspec(dllexport)
+    #else
+        #define NETWORKTYPE_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define NETWORKTYPE_EXPORT _declspec(dllimport)
+    #define NETWORKTYPE_EXPORT 
 #endif
-#else
-#define NETWORKTYPE_EXPORT 
-#endif
-
-#endif //NetworkModelTypesExport_h__

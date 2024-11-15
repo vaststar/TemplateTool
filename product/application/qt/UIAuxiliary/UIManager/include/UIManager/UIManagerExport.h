@@ -1,7 +1,11 @@
 #pragma once
 
-#ifdef UIManager_DLL
-#define UIManager_EXPORT Q_DECL_EXPORT
+#if defined(_WIN32) || defined(_WIN64)
+    #if defined(UIManager_DLL)
+        #define UIManager_EXPORT __declspec(dllexport)
+    #else
+        #define UIManager_EXPORT __declspec(dllimport)
+    #endif
 #else
-#define UIManager_EXPORT Q_DECL_IMPORT
+    #define UIManager_EXPORT 
 #endif
