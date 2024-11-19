@@ -98,7 +98,7 @@ void TranslatorManager::loadTranslation(const QString& language)
         return;
     }
 
-    QString translationFileName = QString("UIVIEW_translations_%1").arg(language);
+    QString translationFileName = QString("app_translations_%1").arg(language);
     if (mImpl->mTranslator->load(translationFileName, ":/i18n"))
     {
         UIManager_LOG_INFO("load translation file succeed, language:" << language.toStdString());

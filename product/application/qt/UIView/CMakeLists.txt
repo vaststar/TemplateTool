@@ -86,28 +86,3 @@ BuildQtModule(
     QML_PUBLIC_BUILD_INTERFACE_FOLDER
         ${UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )
-
-##for translation
-set(ALL_TRANSLATION_SOURCE_FILES ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC} ${TARGET_SOURCE_FILES_PRIVATE} ${UIVIEW_QML_TARGET_FILES})
-
-qt_add_translations(UIView  
-    #TS_FILE_BASE UIVIEW_translations_en
-    #TS_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../rescources/translations
-    TS_FILES 
-        ${UIVIEW_QML_TARGET_RESOURCES_DIR}/translations/UIVIEW_translations_en.ts
-        ${UIVIEW_QML_TARGET_RESOURCES_DIR}/translations/UIVIEW_translations_zh-CN.ts
-    SOURCES 
-        ${ALL_TRANSLATION_SOURCE_FILES}
-)
-
-SetIDEFolder(
-    TARGET_NAMES
-        UIView_lupdate
-        UIView_lrelease
-        update_translations
-        release_translations
-    FOLDER_NAME
-        UI/translations
-)
-
-add_dependencies(UIView update_translations)
