@@ -46,19 +46,39 @@ void AppMenuBarController::switchLanguage(UIManager::LanguageType languageType)
 void AppMenuBarController::createMenu()
 {
     // 创建顶级菜单
-    mRootMenu = new MenuItemModel("Main Menu", "Root action");
+    mRootMenu = new MenuItemModel("Main Menu", "Root action", this);
 
     // 创建子菜单项
-    auto fileMenu = new MenuItemModel("File", "File operations");
-    fileMenu->addSubItem(new MenuItemModel("Open", "Open a file"));
-    fileMenu->addSubItem(new MenuItemModel("Save", "Save the file"));
+    auto fileMenu = new MenuItemModel("File", "File operations", mRootMenu);
+    auto fileMenu_openFileItem = new MenuItemModel("Open", "Open a file", fileMenu);
+    auto fileMenu_saveItem = new MenuItemModel("Save", "Save the file", fileMenu);
+    fileMenu->addSubItem(fileMenu_openFileItem);
+    fileMenu->addSubItem(fileMenu_saveItem);
 
+    
     auto editMenu = new MenuItemModel("Edit", "Edit operations");
-    editMenu->addSubItem(new MenuItemModel("Cut", "Cut the selection"));
-    editMenu->addSubItem(new MenuItemModel("Copy", "Copy the selection"));
-    editMenu->addSubItem(new MenuItemModel("Paste", "Paste from clipboard"));
+    auto editMenu_cutItem = new MenuItemModel("Cut", "Cut the selection", editMenu);
+    auto editMenu_copyItem = new MenuItemModel("Copy", "Copy the selection", editMenu);
+    auto editMenu_pasteItem = new MenuItemModel("Paste", "Paste from clipboard", editMenu);
+
+    editMenu->addSubItem(editMenu_cutItem);
+    editMenu->addSubItem(editMenu_copyItem);
+    editMenu->addSubItem(editMenu_pasteItem);
 
     // 添加子菜单到顶级菜单
     mRootMenu->addSubItem(fileMenu);
     mRootMenu->addSubItem(editMenu);
+
+    QObject::connect(fileMenu_openFileItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 0));
+    QObject::connect(fileMenu_saveItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 1));
+    QObject::connect(editMenu_cutItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 2));
+    QObject::connect(editMenu_copyItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 3));
+    QObject::connect(editMenu_pasteItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 4));
+
+}
+
+void AppMenuBarController::onMenuItemTriggered(int itemIndex)
+{
+    UIVIEW_LOG_DEBUG("item clicked:" << itemIndex);
+
 }

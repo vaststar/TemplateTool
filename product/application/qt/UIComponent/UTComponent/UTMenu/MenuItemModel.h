@@ -6,7 +6,8 @@
 #include <QList>
 #include <include/UTComponentExport.h>
 
-class UTCOMPONENT_EXPORT MenuItemModel : public QObject {
+class UTCOMPONENT_EXPORT MenuItemModel : public QObject
+{
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString action READ action CONSTANT)
@@ -19,6 +20,8 @@ public:
     QString action() const;
     QList<MenuItemModel*> subItems() const;
     void addSubItem(MenuItemModel* item);
+signals:
+    void triggered();
 private:
     QString m_name;
     QString m_action;

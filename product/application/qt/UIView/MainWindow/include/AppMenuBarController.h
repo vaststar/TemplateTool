@@ -41,6 +41,8 @@ signals:
 public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
     void switchLanguage(UIManager::LanguageType languageType);
+private slots:
+    void onMenuItemTriggered(int itemIndex);
 private:
     QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
