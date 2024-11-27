@@ -54,7 +54,6 @@ void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBar
 void MainWindowController::openCamera()
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIManager::LanguageType::CHINESE_SIMPLIFIED);
-    // mButtonText = QObject::tr("mybutton");
-            emit titleChanged();
+    emit titleChanged();
     //mMainViewModel->openCamera();
 }

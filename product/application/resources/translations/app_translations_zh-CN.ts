@@ -106,7 +106,7 @@
     <message>
         <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="40"/>
         <source>my test window</source>
-        <translation type="unfinished"></translation>
+        <translation>测试标题</translation>
     </message>
 </context>
 <context>

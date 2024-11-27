@@ -16,7 +16,6 @@ AppMenuBarController::AppMenuBarController(QObject* parent)
     , mAppContext(nullptr)
 {
     UIVIEW_LOG_DEBUG("create AppMenuBarController");
-    createMenu();
 }
 
 QString AppMenuBarController::getControllerName() const
@@ -30,6 +29,7 @@ void AppMenuBarController::initializeController(AppContext* appContext)
     mAppContext = appContext;
     assert(mAppContext);
 
+    createMenu();
     emit controllerInitialized();
 }
 
