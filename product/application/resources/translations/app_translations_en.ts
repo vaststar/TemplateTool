@@ -33,39 +33,6 @@
     </message>
 </context>
 <context>
-    <name>AppMenuBar</name>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="66"/>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="67"/>
-        <source>New...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="68"/>
-        <source>Open...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="69"/>
-        <source>Save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="70"/>
-        <source>Save As...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="72"/>
-        <source>Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MainWindowContent</name>
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="63"/>
