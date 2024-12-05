@@ -24,8 +24,6 @@ public:
 public:
     int runApp();
 private:
-    void createAndShowMainWindow();
-private:
     class Impl;
     std::unique_ptr<Impl> mImpl;
 };

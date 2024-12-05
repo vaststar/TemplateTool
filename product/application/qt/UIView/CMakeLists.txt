@@ -17,6 +17,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     MainWindow/src/AppMenuBarController.cpp
 
     AppUIManager/src/AppUIManager.cpp
+    AppUIManager/src/AppUIController.h
+    AppUIManager/src/AppUIController.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
@@ -40,6 +42,7 @@ set(UIVIEW_QML_TARGET_RESOURCES
 set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
+    
 )
 
 if (WIN32)

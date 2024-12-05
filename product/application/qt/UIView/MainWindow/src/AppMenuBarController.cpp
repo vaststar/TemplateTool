@@ -83,5 +83,6 @@ void AppMenuBarController::createMenu()
 void AppMenuBarController::onMenuItemTriggered(int itemIndex)
 {
     UIVIEW_LOG_DEBUG("item clicked:" << itemIndex);
+    switchLanguage(UIManager::LanguageType::CHINESE_SIMPLIFIED);
 
 }
