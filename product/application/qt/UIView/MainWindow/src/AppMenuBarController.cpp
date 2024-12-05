@@ -7,6 +7,7 @@
 #include <AppContext/AppContext.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include "LoggerDefine/LoggerDefine.h"
 
 #include "ContactList/include/ContactListViewController.h"
@@ -29,6 +30,8 @@ void AppMenuBarController::initializeController(AppContext* appContext)
     mAppContext = appContext;
     assert(mAppContext);
 
+    auto clientInfoVM = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
+    auto res = clientInfoVM->getSupportedLanguages();
     createMenu();
     emit controllerInitialized();
 }

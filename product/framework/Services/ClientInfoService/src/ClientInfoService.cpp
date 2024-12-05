@@ -4,7 +4,10 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Utilities/TimeUtils/TimeUtils.h>
 #include <ucf/Utilities/OSUtils/OSUtils.h>
+#include <ucf/Utilities/StringUtils/StringUtils.h>
+#include <magic_enum/magic_enum.hpp>
 
+#include "ClientInfoManager.h"
 #include "ClientInfoServiceLogger.h"
 
 namespace ucf::service{
@@ -17,12 +20,15 @@ class ClientInfoService::DataPrivate{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
+    ClientInfoManager* getClientInfoManager() const;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    std::unique_ptr<ClientInfoManager> mClientInfoManager;
 };
 
 ClientInfoService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
+    , mClientInfoManager(std::make_unique<ClientInfoManager>(coreFramework))
 {
 
 }
@@ -32,6 +38,10 @@ ucf::framework::ICoreFrameworkWPtr ClientInfoService::DataPrivate::getCoreFramew
     return mCoreFrameworkWPtr;
 }
 
+ClientInfoManager* ClientInfoService::DataPrivate::getClientInfoManager() const
+{
+    return mClientInfoManager.get();
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -85,7 +95,7 @@ void ClientInfoService::onCoreFrameworkExit()
 
 model::Version ClientInfoService::getApplicationVersion() const
 {
-    return model::Version{"1", "0", "1"};
+    return mDataPrivate->getClientInfoManager()->getApplicationVersion();
 }
 
 void ClientInfoService::printClientInfo() const
@@ -97,8 +107,26 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os version: " << ucf::utilities::OSUtils::getOSVersion());
     SERVICE_LOG_DEBUG("os local: " << std::locale::classic().name());
     SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZone());
+    // SERVICE_LOG_DEBUG("client language: " << std::to_string(static_cast<std::underlying_type<decltype(getApplicationLanguage())>::type>(getApplicationLanguage())));
+    SERVICE_LOG_DEBUG("client language: " << magic_enum::enum_name(getApplicationLanguage()));
+    //SERVICE_LOG_DEBUG("client language: " << ucf::utilities::StringUtils::enumToString(getApplicationLanguage()));
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
     SERVICE_LOG_DEBUG("==================================");
+}
+
+model::LanguageType ClientInfoService::getApplicationLanguage() const
+{
+    return mDataPrivate->getClientInfoManager()->getApplicationLanguage();
+}
+
+void ClientInfoService::setApplicationLanguage(model::LanguageType languageType)
+{
+    mDataPrivate->getClientInfoManager()->setApplicationLanguage(languageType);
+}
+
+std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() const
+{
+    return mDataPrivate->getClientInfoManager()->getSupportedLanguages();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

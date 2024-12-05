@@ -26,8 +26,6 @@ public:
     void exitApp();
     commonHead::ICommonHeadFrameworkWPtr getCommonHeadFramework(){ return mApplicationRunner.getCommonheadFramework();}
 private:
-    AppRunner::ApplicationConfig parseApplicationConfig(int argc, char *argv[]) const;
-private:
     AppRunner::ApplicationRunner mApplicationRunner;
 };
 

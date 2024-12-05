@@ -10,6 +10,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/ClientInfoServiceLogger.h
     src/ClientInfoService.h
     src/ClientInfoService.cpp
+    src/ClientInfoManager.h
+    src/ClientInfoManager.cpp
 )
 
 
@@ -27,6 +29,8 @@ BuildModule(
         CoreFramework
         TimeUtils
         OSUtils
+        StringUtils
+        magic_enum
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro
         ServiceDeclaration

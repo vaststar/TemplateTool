@@ -4,6 +4,8 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
     include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
     include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
+    include/commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h
+    include/commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -12,6 +14,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/ContactListViewModel/ContactListModel.cpp
     src/MainWindowViewModel/MainWindowViewModel.h
     src/MainWindowViewModel/MainWindowViewModel.cpp
+    src/ClientInfoViewModel/ClientInfoViewModel.h
+    src/ClientInfoViewModel/ClientInfoViewModel.cpp
 )
 
 BuildModule(
@@ -27,6 +31,7 @@ BuildModule(
         CommonHeadFramework
         ContactService
         MediaService
+        ClientInfoService
         DataWarehouseService
         DataWarehouseSchema
         CoreFramework

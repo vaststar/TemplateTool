@@ -22,4 +22,19 @@ enum class OSType
     OSX,
     Linux
 };
+
+enum class LanguageType {
+    ENGLISH,
+    CHINESE_SIMPLIFIED,
+    CHINESE_TRADITIONAL,
+    FRENCH,
+    GERMAN,
+    ITALIAN,
+    SPANISH,
+    PORTUGUESE,
+    JAPANESE,
+    KOREAN,
+    RUSSIAN
+};
+
 }

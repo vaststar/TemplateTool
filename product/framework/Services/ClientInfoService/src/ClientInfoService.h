@@ -31,6 +31,10 @@ public:
 
     //IClientInfoService
     virtual model::Version getApplicationVersion() const override;
+
+    virtual model::LanguageType getApplicationLanguage() const override;
+    virtual void setApplicationLanguage(model::LanguageType languageType) override;
+    virtual std::vector<model::LanguageType> getSupportedLanguages() const override;
 protected:
     //IService
     virtual void initService() override;

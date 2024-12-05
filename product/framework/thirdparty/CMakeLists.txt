@@ -5,6 +5,7 @@ add_subdirectory(Catch2)
 add_subdirectory(sqlite)
 add_subdirectory(curl)
 add_subdirectory(opencv)
+add_subdirectory(magic_enum)
 
 #my lib
 add_subdirectory(threadpool)

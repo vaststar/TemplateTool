@@ -21,6 +21,9 @@ class SERVICE_EXPORT IClientInfoService: public IService,
 {
 public:
     virtual model::Version getApplicationVersion() const = 0;
+    virtual model::LanguageType getApplicationLanguage() const = 0;
+    virtual void setApplicationLanguage(model::LanguageType languageType) = 0;
+    virtual std::vector<model::LanguageType> getSupportedLanguages() const = 0;
     static std::shared_ptr<IClientInfoService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }
