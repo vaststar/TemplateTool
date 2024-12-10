@@ -2,9 +2,13 @@
 
 #include <UIFabrication/ViewModelFactory.h>
 #include <UIFabrication/UIViewFactory.h>
+#include <UIManager/UIManagerProvider.h>
 #include <AppContext/AppContext.h>
+#include <UIManager/TranslatorManager.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
+#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -27,6 +31,11 @@ void AppUIController::initializeController(AppContext* appContext)
 {
     mAppContext = appContext;
     assert(mAppContext);
+    mViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IAppUIViewModel>();
+    mViewModel->initDatabase();
+
+    auto clientInfoVM = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
+    clientInfoVM->getApplicationLanguage();
 
     emit controllerInitialized();
 }
@@ -34,7 +43,7 @@ void AppUIController::initializeController(AppContext* appContext)
 void AppUIController::startApp()
 {
     //load db to see if we need show sign in/up or main window
-    
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIManager::LanguageType::CHINESE_SIMPLIFIED);
     UIVIEW_LOG_DEBUG("start load main qml");
 
     mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), "MainWindowController", [this](auto controller){

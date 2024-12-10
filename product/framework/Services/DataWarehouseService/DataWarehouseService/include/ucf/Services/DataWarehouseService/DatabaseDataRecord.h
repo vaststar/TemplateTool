@@ -14,6 +14,7 @@ class SERVICE_EXPORT DatabaseDataRecord final
 public:
     void addColumnData(const std::string& key, const DataBaseDataValue& value);
     void addColumnData(const std::string& key, DataBaseDataValue&& value);
+    DataBaseDataValue getColumnData(const std::string& key) const;
 private:
     std::map<std::string, DataBaseDataValue> mValueMaps;
 };

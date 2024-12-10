@@ -13,4 +13,12 @@ void DatabaseDataRecord::addColumnData(const std::string& key, DataBaseDataValue
     mValueMaps.emplace(key, std::move(value));
 }
 
+DataBaseDataValue DatabaseDataRecord::getColumnData(const std::string& key) const
+{
+    if (auto iter = mValueMaps.find(key); iter != mValueMaps.end())
+    {
+        return iter->second;
+    }
+    return DataBaseDataValue("");
+}
 }

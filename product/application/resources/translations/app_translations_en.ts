@@ -71,7 +71,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="40"/>
+        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="39"/>
         <source>my test window</source>
         <translation type="unfinished"></translation>
     </message>

@@ -7,6 +7,7 @@ namespace ucf::service::model{
 class SERVICE_EXPORT DBConfig
 {
 public:
+    DBConfig();
     explicit DBConfig(const std::string& dbId);
     virtual ~DBConfig() = default;
 
@@ -18,6 +19,7 @@ private:
 class SERVICE_EXPORT SqliteDBConfig: public DBConfig
 {
 public:
+    SqliteDBConfig();
     SqliteDBConfig(const std::string& dbId, const std::string& filePath, const std::string& password = std::string{});
 
     std::string getDBFilePath() const;

@@ -16,6 +16,9 @@ namespace ucf::framework{
 
 namespace ucf::service{
 
+namespace model{
+    class SqliteDBConfig;
+}
 class SERVICE_EXPORT IClientInfoService: public IService, 
                                       public virtual ucf::utilities::INotificationHelper<IClientInfoServiceCallback>
 {
@@ -24,6 +27,8 @@ public:
     virtual model::LanguageType getApplicationLanguage() const = 0;
     virtual void setApplicationLanguage(model::LanguageType languageType) = 0;
     virtual std::vector<model::LanguageType> getSupportedLanguages() const = 0;
+
+    virtual model::SqliteDBConfig getSharedDBConfig() const = 0;
     static std::shared_ptr<IClientInfoService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

@@ -3,6 +3,11 @@
 
 namespace ucf::service::model{
 
+DBConfig::DBConfig()
+{
+
+}
+
 DBConfig::DBConfig(const std::string& dbId)
     : mDbId(dbId)
 {
@@ -12,6 +17,12 @@ DBConfig::DBConfig(const std::string& dbId)
 std::string DBConfig::getDBId() const
 {
     return mDbId;
+}
+
+SqliteDBConfig::SqliteDBConfig()
+    : DBConfig()
+{
+
 }
 
 SqliteDBConfig::SqliteDBConfig(const std::string& dbId, const std::string& filePath, const std::string& password)

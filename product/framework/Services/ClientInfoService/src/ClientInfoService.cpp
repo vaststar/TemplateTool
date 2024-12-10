@@ -5,6 +5,8 @@
 #include <ucf/Utilities/TimeUtils/TimeUtils.h>
 #include <ucf/Utilities/OSUtils/OSUtils.h>
 #include <ucf/Utilities/StringUtils/StringUtils.h>
+
+#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
 #include <magic_enum/magic_enum.hpp>
 
 #include "ClientInfoManager.h"
@@ -108,7 +110,7 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os local: " << std::locale::classic().name());
     SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZone());
     // SERVICE_LOG_DEBUG("client language: " << std::to_string(static_cast<std::underlying_type<decltype(getApplicationLanguage())>::type>(getApplicationLanguage())));
-    SERVICE_LOG_DEBUG("client language: " << magic_enum::enum_name(getApplicationLanguage()));
+    // SERVICE_LOG_DEBUG("client language: " << magic_enum::enum_name(getApplicationLanguage()));
     //SERVICE_LOG_DEBUG("client language: " << ucf::utilities::StringUtils::enumToString(getApplicationLanguage()));
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
     SERVICE_LOG_DEBUG("==================================");
@@ -127,6 +129,11 @@ void ClientInfoService::setApplicationLanguage(model::LanguageType languageType)
 std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() const
 {
     return mDataPrivate->getClientInfoManager()->getSupportedLanguages();
+}
+
+model::SqliteDBConfig ClientInfoService::getSharedDBConfig() const
+{
+    return mDataPrivate->getClientInfoManager()->getSharedDBConfig();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

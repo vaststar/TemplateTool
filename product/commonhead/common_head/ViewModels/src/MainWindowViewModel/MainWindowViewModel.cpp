@@ -37,7 +37,7 @@ void MainWindowViewModel::initDatabase() const
     {
         if (auto dataWarehouse = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
         {
-            std::vector<ucf::service::model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{} };
+            std::vector<ucf::service::model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{}, db::schema::SettingsTable{} };
             dataWarehouse->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>("test", "app_data/shared_db.db"), tables);
             
 

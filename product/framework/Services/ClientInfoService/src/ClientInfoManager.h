@@ -13,6 +13,10 @@ namespace ucf::framework{
 
 namespace ucf::service{
 
+namespace model {
+    class SqliteDBConfig;
+}
+
 class ClientInfoManager final
 {
 public:
@@ -27,7 +31,10 @@ public:
     model::LanguageType getApplicationLanguage() const;
     void setApplicationLanguage(model::LanguageType languageType);
     std::vector<model::LanguageType> getSupportedLanguages() const;
+    model::SqliteDBConfig getSharedDBConfig() const;
 private:
+    const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::atomic<model::LanguageType> mLanguageType;
+    std::atomic_bool mIsLanguageReadFromDB;
 };
 }

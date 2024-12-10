@@ -31,7 +31,6 @@ void MainWindowController::initializeController(AppContext* appContext)
     assert(mAppContext);
 
     mMainViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
-    mMainViewModel->initDatabase();
     emit controllerInitialized();
 }
 

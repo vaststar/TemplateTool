@@ -8,6 +8,10 @@
 namespace commonHead{
     class ICommonHeadFramework;
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+
+    namespace viewModels{
+            class IAppUIViewModel;
+    }
 }
 
 class AppContext;
@@ -27,4 +31,5 @@ signals:
     void controllerInitialized();
 private:
     QPointer<AppContext> mAppContext;
+    std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mViewModel;
 };
