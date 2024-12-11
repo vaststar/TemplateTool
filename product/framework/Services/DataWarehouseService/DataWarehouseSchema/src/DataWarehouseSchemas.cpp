@@ -20,8 +20,7 @@ GroupContactTable::GroupContactTable()
 
 SettingsTable::SettingsTable()
     : ucf::service::model::DBTableModel(TableName,{
-        {IdField, "TEXT UNIQUE NOT NULL"},
-        {KeyField, "TEXT NOT NULL"},
+        {KeyField, "TEXT UNIQUE NOT NULL"},
         {ValField, "INTEGER"}
     })
 {

@@ -7,6 +7,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/DataWarehouseService/DataBaseTableModel.h
     include/ucf/Services/DataWarehouseService/DataBaseDataValue.h
     include/ucf/Services/DataWarehouseService/DatabaseDataRecord.h
+    include/ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE

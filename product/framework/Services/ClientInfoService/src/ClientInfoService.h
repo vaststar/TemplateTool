@@ -6,12 +6,14 @@
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 
 namespace ucf::service{
 class ClientInfoService final: public virtual IClientInfoService, 
                       public virtual ucf::utilities::NotificationHelper<IClientInfoServiceCallback>,
                       public ucf::framework::CoreFrameworkCallbackDefault,
+                      public ucf::service::IDataWarehouseServiceCallback,
                       public std::enable_shared_from_this<ClientInfoService>
 {
 public:
@@ -28,6 +30,9 @@ public:
     //ICoreFrameworkCallback
     virtual void onServiceInitialized() override;
     virtual void onCoreFrameworkExit() override;
+
+    //IDataWarehouseServiceCallback
+    virtual void OnDatabaseInitialized(const std::string& dbId) override;
 
     //IClientInfoService
     virtual model::Version getApplicationVersion() const override;

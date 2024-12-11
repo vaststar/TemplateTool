@@ -29,32 +29,6 @@ std::string MainWindowViewModel::getViewModelName() const
     return "MainWindowViewModel";
 }
 
-void MainWindowViewModel::initDatabase() const
-{
-    COMMONHEAD_LOG_DEBUG("initDatabase");
-    
-    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
-    {
-        if (auto dataWarehouse = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
-        {
-            std::vector<ucf::service::model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{}, db::schema::SettingsTable{} };
-            dataWarehouse->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>("test", "app_data/shared_db.db"), tables);
-            
-
-            ucf::service::model::ListOfDBValues values;
-            values.emplace_back(ucf::service::model::DBDataValues{ std::string("test_id"), std::string("test_name"), std::string("243@qq.com") });
-            values.emplace_back(ucf::service::model::DBDataValues{ std::string("test_id111"), std::string("test_name11"), std::string("11243@qq.com") });
-
-            dataWarehouse->insertIntoDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME", "CONTACT_EMAIL"}, values);
-
-            dataWarehouse->fetchFromDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME"}, {{"CONTACT_ID", "test_id", ucf::service::model::DBOperatorType::Not}},[](const ucf::service::model::DatabaseDataRecords& results){
-                auto res = results;
-                COMMONHEAD_LOG_DEBUG("got data");
-            });
-        }
-    }
-}
-
 void MainWindowViewModel::openCamera()
 {
     if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())

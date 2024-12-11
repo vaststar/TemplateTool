@@ -113,6 +113,7 @@ void DataWarehouseService::onCoreFrameworkExit()
 void DataWarehouseService::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     mDataPrivate->initializeDB(dbConfig, tables);
+    fireNotification(&IDataWarehouseServiceCallback::OnDatabaseInitialized, dbConfig->getDBId());
 }
 
 void DataWarehouseService::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)

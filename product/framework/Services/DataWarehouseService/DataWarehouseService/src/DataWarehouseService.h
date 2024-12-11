@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 namespace ucf::service{
 class DataWarehouseService final: public IDataWarehouseService,
                                   public ucf::framework::CoreFrameworkCallbackDefault,
+                                  public virtual ucf::utilities::NotificationHelper<IDataWarehouseServiceCallback>,
                                   public std::enable_shared_from_this<DataWarehouseService>
 {
 public:

@@ -9,6 +9,7 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
+#include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -29,14 +30,18 @@ QString AppUIController::getControllerName() const
 
 void AppUIController::initializeController(AppContext* appContext)
 {
+    UIVIEW_LOG_DEBUG("init app ui controller");
     mAppContext = appContext;
     assert(mAppContext);
-    mViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IAppUIViewModel>();
-    mViewModel->initDatabase();
+    // mViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IAppUIViewModel>();
+    // mViewModel->initDatabase();
 
     auto clientInfoVM = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
-    clientInfoVM->getApplicationLanguage();
+    UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
 
+    // clientInfoVM->setApplicationLanguage(commonHead::viewModels::model::LanguageType::RUSSIAN);
+
+    UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
     emit controllerInitialized();
 }
 

@@ -1,12 +1,14 @@
 #pragma once
 
+#include <string>
 #include <memory>
 #include <source_location>
 
-
+#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 #include <ucf/Services/ServiceDeclaration/IService.h>
 #include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -14,7 +16,8 @@ namespace ucf::framework{
 }
 
 namespace ucf::service{
-class SERVICE_EXPORT IDataWarehouseService: public IService
+class SERVICE_EXPORT IDataWarehouseService: public IService, 
+                                            public virtual ucf::utilities::INotificationHelper<IDataWarehouseServiceCallback>
 {
 public:
     virtual void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables) = 0;

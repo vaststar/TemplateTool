@@ -7,6 +7,8 @@
 #include <ucf/Utilities/StringUtils/StringUtils.h>
 
 #include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+
 #include <magic_enum/magic_enum.hpp>
 
 #include "ClientInfoManager.h"
@@ -76,6 +78,10 @@ void ClientInfoService::initService()
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
+        if (auto dataWarehouse = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
+        {
+            dataWarehouse->registerCallback(shared_from_this());
+        }
     }
     printClientInfo();
 }
@@ -134,6 +140,11 @@ std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() cons
 model::SqliteDBConfig ClientInfoService::getSharedDBConfig() const
 {
     return mDataPrivate->getClientInfoManager()->getSharedDBConfig();
+}
+
+void ClientInfoService::OnDatabaseInitialized(const std::string& dbId)
+{
+    mDataPrivate->getClientInfoManager()->databaseInitialized(dbId);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,6 @@ struct SERVICE_EXPORT SettingsTable: public ucf::service::model::DBTableModel
 {
     SettingsTable();
     static constexpr auto TableName = "Settings";
-    static constexpr auto IdField = "SETTINGS_ID";
     static constexpr auto KeyField = "Key";
     static constexpr auto ValField = "Value";
 };

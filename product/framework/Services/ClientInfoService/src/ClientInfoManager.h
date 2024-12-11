@@ -32,6 +32,7 @@ public:
     void setApplicationLanguage(model::LanguageType languageType);
     std::vector<model::LanguageType> getSupportedLanguages() const;
     model::SqliteDBConfig getSharedDBConfig() const;
+    void databaseInitialized(const std::string& dbId);
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::atomic<model::LanguageType> mLanguageType;

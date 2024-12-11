@@ -27,7 +27,6 @@ class COMMONHEAD_EXPORT IAppUIViewModel: public virtual ucf::utilities::INotific
 {
 public:
     virtual std::string getViewModelName() const = 0;
-    virtual void initDatabase() = 0;;
 public:
     static std::shared_ptr<IAppUIViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };

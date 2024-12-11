@@ -22,7 +22,6 @@ class COMMONHEAD_EXPORT IMainWindowViewModel: public virtual ucf::utilities::INo
 {
 public:
     virtual std::string getViewModelName() const = 0;
-    virtual void initDatabase() const = 0;
     virtual void openCamera() = 0;
 public:
     static std::shared_ptr<IMainWindowViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);

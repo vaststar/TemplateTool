@@ -32,6 +32,7 @@ BuildModule(
         TimeUtils
         OSUtils
         StringUtils
+        UUIDUtils
         magic_enum
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro

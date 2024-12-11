@@ -8,6 +8,7 @@
 #include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
 
 
+#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 #include "ClientInfoServiceLogger.h"
 
 namespace ucf::service{
@@ -36,29 +37,19 @@ model::Version ClientInfoManager::getApplicationVersion() const
 
 model::LanguageType ClientInfoManager::getApplicationLanguage() const
 {
-    if (!mIsLanguageReadFromDB)
-    {
-        if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
-        {
-            dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
-                {{db::schema::SettingsTable::KeyField, "Language", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
-                    SERVICE_LOG_DEBUG("got language:" << this);
-                    for (const auto& res: results)
-                    {
-                        auto  val = res.getColumnData(db::schema::SettingsTable::ValField);
-                        SERVICE_LOG_DEBUG("got language:" <<val.getIntValue());
-                    }
-                    
-            });
-        }
-    }
-    
     return mLanguageType.load();
 }
 
 void ClientInfoManager::setApplicationLanguage(model::LanguageType languageType)
 {
     mLanguageType.store(languageType);
+    if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
+    {
+        ucf::service::model::ListOfDBValues dbVals;
+        dbVals.emplace_back(ucf::service::model::DBDataValues{std::string("Language"), static_cast<int>(languageType)});
+        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, 
+            {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField}, dbVals);
+    }
 }
 
 std::vector<model::LanguageType> ClientInfoManager::getSupportedLanguages() const
@@ -70,6 +61,23 @@ std::vector<model::LanguageType> ClientInfoManager::getSupportedLanguages() cons
 model::SqliteDBConfig ClientInfoManager::getSharedDBConfig() const
 {
     return model::SqliteDBConfig("test", "app_data/shared_db.db");
+}
+
+void ClientInfoManager::databaseInitialized(const std::string& dbId)
+{
+    if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
+    {
+        dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
+            {{db::schema::SettingsTable::KeyField, "Language", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
+                for (const auto& res: results)
+                {
+                    auto  val = res.getColumnData(db::schema::SettingsTable::ValField);
+                    mLanguageType.store(static_cast<model::LanguageType>(val.getIntValue()));
+                    SERVICE_LOG_DEBUG("got language from database:" << val.getIntValue());
+                }
+                
+        });
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
