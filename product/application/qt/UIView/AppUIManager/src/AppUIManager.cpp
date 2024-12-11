@@ -67,8 +67,7 @@ AppUIManager::~AppUIManager()
 int AppUIManager::runApp()
 {
     auto controller = std::make_unique<AppUIController>();
-    controller->initializeController(mImpl->getAppContext());
-    controller->startApp();
+    controller->runApp(mImpl->getAppContext());
 
     return mImpl->runApp();
 }

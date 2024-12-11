@@ -30,7 +30,6 @@ BuildModule(
         MasterLog
         CommonHeadFramework
         ImageService
-        DataWarehouseSchema
         DataWarehouseService
         ContactService
         MediaService

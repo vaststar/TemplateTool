@@ -7,10 +7,6 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
-#include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
-#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ImageService/IImageService.h>
@@ -41,7 +37,6 @@ private:
     void initFrameworks();
     void exitFrameworks();
     void initLogger();
-    void initDefaultDatabase();
 private:
     ApplicationConfig mApplicationConfig;
     std::map<std::string, std::string> mCommandLineValues;
@@ -98,8 +93,6 @@ void ApplicationRunner::DataPrivate::initApp()
         RUNNER_LOG_INFO("===========================================");
         //1. init frameworks
         initFrameworks();
-        //2. init default database
-        initDefaultDatabase();
         RUNNER_LOG_INFO("===========================================");
         RUNNER_LOG_INFO("===========================================");
         RUNNER_LOG_INFO("===========App initialized=================");
@@ -176,8 +169,8 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::IClientInfoService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::createInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::IClientInfoService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::createInstance(mFrameworkDependencies.coreFramework));
@@ -202,34 +195,6 @@ void ApplicationRunner::DataPrivate::exitFrameworks()
     if (mFrameworkDependencies.commonHeadFramework)
     {
         mFrameworkDependencies.commonHeadFramework->exitCommonheadFramework();
-    }
-}
-
-void ApplicationRunner::DataPrivate::initDefaultDatabase()
-{//this function need call after the framework inits
-    
-    ucf::service::model::SqliteDBConfig dbConfig;
-    if (auto coreFramework = mFrameworkDependencies.coreFramework)
-    {
-        if (auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock())
-        {//for database
-            if (auto dataWarehouse = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
-            {
-                std::vector<ucf::service::model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{}, db::schema::SettingsTable{} };
-                dataWarehouse->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>(clientInfoService->getSharedDBConfig().getDBId(), clientInfoService->getSharedDBConfig().getDBFilePath()), tables);
-
-                //for test
-                // ucf::service::model::ListOfDBValues values;
-                // values.emplace_back(ucf::service::model::DBDataValues{ std::string("test_id"), std::string("test_name"), std::string("243@qq.com") });
-                // values.emplace_back(ucf::service::model::DBDataValues{ std::string("test_id111"), std::string("test_name11"), std::string("11243@qq.com") });
-
-                // dataWarehouse->insertIntoDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME", "CONTACT_EMAIL"}, values);
-
-                // ucf::service::model::ListOfDBValues values_test;
-                // values_test.emplace_back(ucf::service::model::DBDataValues{ std::string("test__settings_id"), std::string("Language"), 5});
-                // dataWarehouse->insertIntoDatabase("test", "Settings", {"SETTINGS_ID", "Key", "Value"}, values_test);
-            }
-        }
     }
 }
 

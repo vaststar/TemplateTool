@@ -24,11 +24,13 @@ public:
     AppUIController(QObject* parent = nullptr);
     virtual QString getControllerName() const override;
 
-    void initializeController(AppContext* appContext);
+    void runApp(AppContext* appContext);
 
-    void startApp();
 signals:
     void controllerInitialized();
+private:
+    void initializeController(AppContext* appContext);
+    void startApp();
 private:
     QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mViewModel;
