@@ -18,7 +18,7 @@ set(Translation_LIB UIView)
 
 qt_add_translations(${Translation_LIB}  
     #TS_FILE_BASE UIVIEW_translations_en
-    #TS_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../rescources/translations
+    #TS_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../resources/translations
     TS_FILES 
         ${Translation_DIR}/app_translations_en.ts
         ${Translation_DIR}/app_translations_zh-CN.ts
