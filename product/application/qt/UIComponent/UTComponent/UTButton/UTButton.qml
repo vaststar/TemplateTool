@@ -1,7 +1,10 @@
 import QtQuick
 import QtQuick.Controls
+import UIComponentBase 1.0
 
-Button {
-    id: buttonRoot
-    
+BaseButton {
+    FontConstants{
+        id: fontConstant
+    }
+    font: fontConstant.bodySecondary
 }

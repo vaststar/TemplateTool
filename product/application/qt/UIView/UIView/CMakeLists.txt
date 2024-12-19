@@ -63,12 +63,12 @@ BuildQtModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         UIUtilities
+        UTComponent
         AppContext
         UIManager
-        Qt6::Gui Qt6::Quick Qt6::Widgets
-        UTComponent
         ViewModels
         CommonHeadFramework
+        Qt6::Gui Qt6::Quick Qt6::Widgets
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

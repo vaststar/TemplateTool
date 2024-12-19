@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
 import UTComponent 1.0
+
 Item{
     required property var controller
 
@@ -76,7 +77,7 @@ Item{
             controller.openCamera();
         }
     }
-    Button {
+    UTButton {
         id: butn2
         text: qsTr("button2")
         anchors{

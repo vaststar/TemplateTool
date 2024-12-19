@@ -1,20 +1,15 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/UTComponentExport.h
-    UTMenu/MenuItemModel.h
+    include/UIComponentBaseExport.h
+    Constants/FontConstants.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     include/LoggerDefine.h
-    UTMenu/MenuItemModel.cpp
+    Constants/FontConstants.cpp
 )
 
 set(MODULE_QML_TARGET_FILES
-    UTWindow/UTDialog.qml
-    UTWindow/UTWindow.qml
-    UTMenu/UTMenu.qml
-    UTMenu/UTMenuItem.qml
-    UTMenu/CreateMenus.js
-    UTButton/UTButton.qml
+    BaseButton/BaseButton.qml
 )
 
 set(MODULE_TARGET_SOURCE_HEADER_BASE_DIR
@@ -22,11 +17,11 @@ set(MODULE_TARGET_SOURCE_HEADER_BASE_DIR
 )
 
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}/UTMenu
+    ${CMAKE_CURRENT_SOURCE_DIR}/Constants
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS UTCOMPONENT_DLL)
+    set(ADD_DEFINITIONS UIComponentBase_DLL)
 else()
     set(ADD_DEFINITIONS)
 endif()
@@ -34,15 +29,15 @@ endif()
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
-        UTComponent
+        UIComponentBase
+    BUILD_LIBRARY_TYPE
+        STATIC
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
         ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PUBLIC
-        UIComponentBase
     TARGET_DEPENDENICES_PRIVATE
         Qt6::Gui Qt6::Quick
         MasterLog 
@@ -52,12 +47,12 @@ BuildQtModule(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
         include
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        src
+    # TARGET_INCLUDE_DIRECTORIES_PRIVATE
+    #     src
     IDE_FOLDER
         UI
     QML_TARGET_URI
-        UTComponent
+        UIComponentBase
     QML_TARGET_FILES
         ${MODULE_QML_TARGET_FILES}
     QML_PUBLIC_BUILD_INTERFACE_FOLDER
