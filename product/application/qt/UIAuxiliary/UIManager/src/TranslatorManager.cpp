@@ -76,7 +76,7 @@ std::string TranslatorManager::Impl::getLanguageString(LanguageType languageType
 TranslatorManager::TranslatorManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
     : mImpl(std::make_unique<TranslatorManager::Impl>(application, qmlEngine))
 {
-
+    UIManager_LOG_DEBUG("");
 }
 
 TranslatorManager::~TranslatorManager()

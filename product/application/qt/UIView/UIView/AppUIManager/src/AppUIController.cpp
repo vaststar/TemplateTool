@@ -5,6 +5,7 @@
 #include <UIManager/UIManagerProvider.h>
 #include <AppContext/AppContext.h>
 #include <UIManager/TranslatorManager.h>
+// #include <UIManager/ThemeManager.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
@@ -47,6 +48,7 @@ void AppUIController::initializeController(AppContext* appContext)
     // clientInfoVM->setApplicationLanguage(commonHead::viewModels::model::LanguageType::RUSSIAN);
 
     //UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
+    // mAppContext->getManagerProvider()->getThemeManager();
     emit controllerInitialized();
 }
 

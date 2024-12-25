@@ -22,6 +22,7 @@ Item{
     
     Component.onCompleted:{
         controller.onContactListLoaded(frame.controller)
+        ThemeManager.test()
     }
 
     Text {
@@ -86,11 +87,11 @@ Item{
             left: parent.left
             leftMargin: 400
         }
-        background: Rectangle{
-            anchors.fill: parent
-            border.color: "red"
-            border.width: butn2.activeFocus?3:0
-        }
+        // background: Rectangle{
+        //     anchors.fill: parent
+        //     border.color: "red"
+        //     border.width: butn2.activeFocus?3:0
+        // }
     }
     UTDialog{
         id: dialog

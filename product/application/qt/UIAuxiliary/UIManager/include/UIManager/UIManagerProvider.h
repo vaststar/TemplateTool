@@ -10,6 +10,7 @@ namespace UICore{
 
 namespace UIManager{
 class TranslatorManager;
+class ThemeManager;
 class UIManager_EXPORT UIManagerProvider final: public QObject
 {
 Q_OBJECT
@@ -17,6 +18,7 @@ public:
     explicit UIManagerProvider(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
     ~UIManagerProvider();
     QPointer<TranslatorManager> getTranslatorManager() const;
+    QPointer<ThemeManager> getThemeManager() const;
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;
