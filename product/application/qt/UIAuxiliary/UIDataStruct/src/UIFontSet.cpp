@@ -1,4 +1,4 @@
-#include <UIDataStruct/UIFont.h>
+#include <UIDataStruct/UIFontSet.h>
 
 #include <string>
 #include <map>
@@ -97,7 +97,7 @@ QFont UIFont::getFont(UIFontSize size, UIFontWeight weight, bool isItalic)
     return QFont(QString::fromStdString(mFontFamilyName), fontSize, fontWeight, isItalic);
 }
 
-UIFontFamily UIFont::getFontFamily()
+UIFont::UIFontFamily UIFont::getFontFamily()
 {
     return mFontFamly;
 }
@@ -108,19 +108,19 @@ UIFontSet::UIFontSet(QObject *parent)
 
 }
 
-void UIFontSet::initFonts(const std::vector<UIFont*>& fonts)
+void UIFontSet::initFonts(const std::vector<std::shared_ptr<UIFont>>& fonts)
 {
     mFonts = fonts;
 }
 
 QFont UIFontSet::getFont(UIFont::UIFontFamily family, UIFont::UIFontSize size, UIFont::UIFontWeight weight, bool isItalic)
 {
-    auto iter = std::find_if(mFonts.cbegin(), mFonts.cend(), [family](const UIFont* uFont){
+    auto iter = std::find_if(mFonts.cbegin(), mFonts.cend(), [family](const auto uFont){
         return family == uFont->getFontFamily();
     });
     if (iter != mFonts.cend())
     {
-        return (*iter)->getFont(size, weight);
+        return (*iter)->getFont(size, weight, isItalic);
     }
     UIData_LOG_WARN("can't find this ui family");
     return QFont("Segoe UI", 14, QFont::Normal, false);

@@ -12,5 +12,6 @@ BaseButton {
     // FontConstants{
     //     id: fontConstant
     // }
-    font: ThemeManager.getFont(UIFontSet.Large);
+    font: ThemeManager.getFont(UIFont.Large);
+    
 }

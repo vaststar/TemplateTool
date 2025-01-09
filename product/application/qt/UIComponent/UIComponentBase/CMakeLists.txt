@@ -1,11 +1,9 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIComponentBaseExport.h
-    Constants/FontConstants.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    include/LoggerDefine.h
-    Constants/FontConstants.cpp
+    src/LoggerDefine.h
 )
 
 set(MODULE_QML_TARGET_FILES
@@ -17,7 +15,7 @@ set(MODULE_TARGET_SOURCE_HEADER_BASE_DIR
 )
 
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}/Constants
+    ""
 )
 
 if (WIN32)

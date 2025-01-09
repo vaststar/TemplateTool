@@ -24,20 +24,47 @@ public:
     const QPointer<UICore::CoreQmlEngine> mQmlEngine;
 
     QPointer<UIData::UIFontSet> getFontSet() const;
+    QPointer<UIData::UIColorSet> getColorSet() const;
+private:
+    void initFontSet();
+    void initColorSet();
 private:
     std::unique_ptr<UIData::UIFontSet> mFontSet;
+    std::unique_ptr<UIData::UIColorSet> mColorSet;
 };
 
 ThemeManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
+    , mFontSet(std::make_unique<UIData::UIFontSet>())
+    , mColorSet(std::make_unique<UIData::UIColorSet>())
 {
-    mFontSet = std::make_unique<UIData::UIFontSet>();
+    initFontSet();
+    initColorSet();
 }
 
 QPointer<UIData::UIFontSet> ThemeManager::Impl::getFontSet() const
 {
     return mFontSet.get();
+}
+
+QPointer<UIData::UIColorSet> ThemeManager::Impl::getColorSet() const
+{
+    return mColorSet.get();
+}
+
+void ThemeManager::Impl::initFontSet()
+{
+    std::vector<std::shared_ptr<UIData::UIFont>> uiFonts;
+    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::SegoeUI));
+    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::Consolas));
+    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::SegoeUIEmoji));
+    mFontSet->initFonts(uiFonts);
+}
+
+void ThemeManager::Impl::initColorSet()
+{
+
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +73,8 @@ QPointer<UIData::UIFontSet> ThemeManager::Impl::getFontSet() const
 /////////////////////////////////////////////////////////////////////////////////////
 
 ThemeManager::ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
-    : mImpl(std::make_unique<ThemeManager::Impl>(application, qmlEngine))
+    : QObject(nullptr)
+    , mImpl(std::make_unique<ThemeManager::Impl>(application, qmlEngine))
 {
     UIManager_LOG_DEBUG("");
 }
@@ -70,8 +98,8 @@ UIData::UIColorSet* ThemeManager::getColorSet()
 // {
 //     return mImpl->getFontSet();
 // }
-QFont ThemeManager::getFont(UIData::UIFontSet::UIFontSize size, UIData::UIFontSet::UIFontWeight weight, bool isItalic)
+QFont ThemeManager::getFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight, bool isItalic, UIData::UIFont::UIFontFamily family)
 {
-    return mImpl->getFontSet()->getFont(size, weight, isItalic);
+    return mImpl->getFontSet()->getFont(family, size, weight, isItalic);
 }
 }

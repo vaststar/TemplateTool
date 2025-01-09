@@ -3,7 +3,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-""
+    src/LoggerDefine.h
 )
 
 if (WIN32)
@@ -19,11 +19,10 @@ set(UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER
 )
 
 set(UIDataStruct_QML_TARGET_SOURCES
-include/UIDataStruct/UIColorSet.h
-include/UIDataStruct/UIFontSet.h
-src/UIColorSet.cpp
-src/UIFontSet.cpp
-
+    include/UIDataStruct/UIColorSet.h
+    include/UIDataStruct/UIFontSet.h
+    src/UIColorSet.cpp
+    src/UIFontSet.cpp
 )
 
 include(BuildQtModule)
