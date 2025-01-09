@@ -18,4 +18,11 @@ enum class LanguageType {
     KOREAN,
     RUSSIAN
 };
+
+enum class ThemeType {
+    SystemDefault,
+    Dark,
+    Light
+};
+
 }

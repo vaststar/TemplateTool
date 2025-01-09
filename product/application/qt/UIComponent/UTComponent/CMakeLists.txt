@@ -46,6 +46,7 @@ BuildQtModule(
     TARGET_DEPENDENICES_PRIVATE
         Qt6::Gui Qt6::Quick
         MasterLog 
+        UIDataStruct
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

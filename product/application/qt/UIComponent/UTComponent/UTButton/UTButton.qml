@@ -1,10 +1,16 @@
 import QtQuick
 import QtQuick.Controls
 import UIComponentBase 1.0
+import UIDataStruct 1.0
+
 
 BaseButton {
-    FontConstants{
-        id: fontConstant
-    }
-    font: fontConstant.bodySecondary
+    property var colorEnum: ThemeManager.getColorSet();
+    property var fontSet: UIColorSet.AAA
+    property var fontEnum: ThemeManager.getColorSet().font
+    // property var fon : UIColorSet.TTT
+    // FontConstants{
+    //     id: fontConstant
+    // }
+    font: ThemeManager.getFont(UIFontSet.Large);
 }

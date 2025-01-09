@@ -5,6 +5,8 @@
 #include <QString>
 #include <QtQml>
 
+#include <UIDataStruct/UIFontSet.h>
+#include <UIDataStruct/UIColorSet.h>
 #include <UIManager/UIManagerExport.h>
 
 namespace UICore{
@@ -23,6 +25,8 @@ public:
 
 public slots:
     void test();
+    UIData::UIColorSet* getColorSet();
+    QFont getFont(UIData::UIFontSet::UIFontSize size, UIData::UIFontSet::UIFontWeight weight = UIData::UIFontSet::UIFontWeight::Normal, bool isItalic = false);
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;

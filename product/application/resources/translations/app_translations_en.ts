@@ -35,12 +35,12 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="65"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="67"/>
         <source>openCamera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="83"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="85"/>
         <source>button2</source>
         <translation type="unfinished"></translation>
     </message>

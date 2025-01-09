@@ -1,27 +1,35 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/UIManager/UIManagerExport.h
-    include/UIManager/TranslatorManager.h
-    include/UIManager/UIManagerProvider.h
-    include/UIManager/ThemeManager.h
+    include/UIDataStruct/UIDataStructExport.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    src/LoggerDefine.h 
-    src/TranslatorManager.cpp
-    src/UIManagerProvider.cpp
-    src/ThemeManager.cpp
+""
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIManager_DLL)
+    set(ADD_DEFINITIONS UIDataStruct_DLL)
 else()
     set(ADD_DEFINITIONS)
 endif()
 
+
+set(UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIDataStruct
+    
+)
+
+set(UIDataStruct_QML_TARGET_SOURCES
+include/UIDataStruct/UIColorSet.h
+include/UIDataStruct/UIFontSet.h
+src/UIColorSet.cpp
+src/UIFontSet.cpp
+
+)
+
 include(BuildQtModule)
 BuildQtModule(
     MODULE_NAME 
-        UIManager
+        UIDataStruct
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
@@ -35,7 +43,6 @@ BuildQtModule(
     TARGET_DEPENDENICES_PUBLIC
         Qt6::Widgets
         Qt6::Qml
-        UIDataStruct
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
@@ -46,4 +53,10 @@ BuildQtModule(
         src
     IDE_FOLDER
         UI
+    QML_TARGET_URI
+        UIDataStruct
+    QML_TARGET_SOURCES
+        ${UIDataStruct_QML_TARGET_SOURCES}
+    QML_PUBLIC_BUILD_INTERFACE_FOLDER
+        ${UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )
