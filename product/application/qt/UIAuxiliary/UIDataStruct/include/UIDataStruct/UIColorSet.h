@@ -9,30 +9,44 @@
 namespace UIData{
 
 
-struct UIDataStruct_EXPORT UIColorSet: public QObject
+struct UIDataStruct_EXPORT UIColors: public QObject
 {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("only created in c++ code")
-    Q_PROPERTY(QString name MEMBER name)
-    Q_PROPERTY(QColor normal MEMBER normal)
-    Q_PROPERTY(QColor hovered MEMBER hovered)
-    Q_PROPERTY(TESTFont font MEMBER font)
-
 public:
-
-    enum class TESTFont{
-        AAA
+    enum class UIColorsEnum{
+        Button_Primary_Text,
+        Button_Primary_Background,
+        Button_Primary_Border
     };
-    Q_ENUM(TESTFont)
+    Q_ENUM(UIColorsEnum)
 public:
-    UIColorSet(QObject *parent = nullptr);
-    UIColorSet(const QString& name, const QColor& normal);
-    UIColorSet(const QString& name, const QColor& normal, const QString& hovered);
+    UIColors(UIColorsEnum colorEnum, const QColor& normal);
+    UIColors(UIColorsEnum colorEnum, const QColor& normal, const QColor& hovered, const QColor& pressed, const QColor& disabled, const QColor& focused, const QColor& checked);
+
+    UIColorsEnum getColorEnum();
 private:
-    QString name;
-    QColor normal;
-    QColor hovered;
-    TESTFont font{TESTFont::AAA};
+    UIColorsEnum mColorEnum;
+    QColor mNormal;
+    QColor mHovered;
+    QColor mPressed;
+    QColor mDisabled;
+    QColor mFocused;
+    QColor mChecked;
+};
+
+
+struct UIDataStruct_EXPORT UIColorSet : public QObject
+{
+    Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("only created in c++ code")
+public:
+    UIColorSet(QObject* parent = nullptr);
+    void initColors(const std::vector<std::shared_ptr<UIColors>>& colors);
+    UIColors getColors(UIColors::UIColorsEnum);
+private:
+    std::vector<std::shared_ptr<UIColors>> mColors;
 };
 }

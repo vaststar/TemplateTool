@@ -58,12 +58,12 @@ private:
 struct UIDataStruct_EXPORT UIFontSet : public QObject
 {
     Q_OBJECT
-        QML_ELEMENT
-        QML_UNCREATABLE("only created in c++ code")
+    QML_ELEMENT
+    QML_UNCREATABLE("only created in c++ code")
 public:
     UIFontSet(QObject* parent = nullptr);
     void initFonts(const std::vector<std::shared_ptr<UIFont>>& fonts);
-    Q_INVOKABLE QFont getFont(UIFont::UIFontFamily family, UIFont::UIFontSize size, UIFont::UIFontWeight weight, bool isItalic = false);
+    std::shared_ptr<UIFont> getUIFont(UIFont::UIFontFamily family);
 private:
     std::vector<std::shared_ptr<UIFont>> mFonts;
 };
