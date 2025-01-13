@@ -101,5 +101,6 @@ UIData::UIColorSet* ThemeManager::getColorSet()
 QFont ThemeManager::getFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight, bool isItalic, UIData::UIFont::UIFontFamily family)
 {
     return mImpl->getFontSet()->getFont(family, size, weight, isItalic);
+    QFont("Segoe UI", 14, QFont::Normal, false)
 }
 }
