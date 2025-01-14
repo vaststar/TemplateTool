@@ -8,13 +8,13 @@
 namespace UIData{
 
     static const std::map<UIFont::UIFontFamily, std::string> UIFontFamilyMap = {
-        {UIFont::UIFontFamily::SegoeUI, "Segoe UI"},
-        {UIFont::UIFontFamily::Consolas, "Consolas"},
-        {UIFont::UIFontFamily::SegoeUIEmoji, "Segoe UI Emoji"}
+        {UIFont::UIFontFamily::UIFontFamily_SegoeUI, "Segoe UI"},
+        {UIFont::UIFontFamily::UIFontFamily_Consolas, "Consolas"},
+        {UIFont::UIFontFamily::UIFontFamily_SegoeUIEmoji, "Segoe UI Emoji"}
     };
 UIFont::UIFont(QObject *parent)
     : QObject(parent)
-    , mFontFamly(UIFontFamily::SegoeUI)
+    , mFontFamly(UIFontFamily::UIFontFamily_SegoeUI)
     , mFontFamilyName("Segoe UI")
 {
 
@@ -39,22 +39,22 @@ QFont UIFont::getFont(UIFontSize size, UIFontWeight weight, bool isItalic)
     int fontSize = 12;
     switch (size)
     {
-    case UIFontSize::ExtraSmall:
+    case UIFontSize::UIFontSize_ExtraSmall:
         fontSize = 12;
         break;
-    case UIFontSize::Small:
+    case UIFontSize::UIFontSize_Small:
         fontSize = 14;
         break;
-    case UIFontSize::MediumSmall:
+    case UIFontSize::UIFontSize_MediumSmall:
         fontSize = 16;
         break;
-    case UIFontSize::Medium:
+    case UIFontSize::UIFontSize_Medium:
         fontSize = 20;
         break;
-    case UIFontSize::Large:
+    case UIFontSize::UIFontSize_Large:
         fontSize = 26;
         break;
-    case UIFontSize::ExtraLarge:
+    case UIFontSize::UIFontSize_ExtraLarge:
         fontSize = 40;
         break;
     default:
@@ -64,31 +64,31 @@ QFont UIFont::getFont(UIFontSize size, UIFontWeight weight, bool isItalic)
     QFont::Weight fontWeight = QFont::Normal;
     switch (weight)
     {
-    case UIFontWeight::Thin:
+    case UIFontWeight::UIFontWeight_Thin:
         fontWeight = QFont::Thin;
         break;
-    case UIFontWeight::ExtraLight:
+    case UIFontWeight::UIFontWeight_ExtraLight:
         fontWeight = QFont::ExtraLight;
         break;
-    case UIFontWeight::Light:
+    case UIFontWeight::UIFontWeight_Light:
         fontWeight = QFont::Light;
         break;
-    case UIFontWeight::Normal:
+    case UIFontWeight::UIFontWeight_Normal:
         fontWeight = QFont::Normal;
         break;
-    case UIFontWeight::Medium:
+    case UIFontWeight::UIFontWeight_Medium:
         fontWeight = QFont::Medium;
         break;
-    case UIFontWeight::DemiBold:
+    case UIFontWeight::UIFontWeight_DemiBold:
         fontWeight = QFont::DemiBold;
         break;
-    case UIFontWeight::Bold:
+    case UIFontWeight::UIFontWeight_Bold:
         fontWeight = QFont::Bold;
         break;
-    case UIFontWeight::ExtraBold:
+    case UIFontWeight::UIFontWeight_ExtraBold:
         fontWeight = QFont::ExtraBold;
         break;
-    case UIFontWeight::Black:
+    case UIFontWeight::UIFontWeight_Black:
         fontWeight = QFont::Black;
         break;
     default:
@@ -122,7 +122,7 @@ std::shared_ptr<UIFont> UIFontSet::getUIFont(UIFont::UIFontFamily family)
     {
         return *iter;
     }
-    UIData_LOG_WARN("can't find this ui family");
-    return std::nullptr;
+    UIData_LOG_WARN("can't find this ui family: " << static_cast<int>(family));
+    return nullptr;
 }
 }

@@ -23,8 +23,6 @@ Item{
     
     Component.onCompleted:{
         controller.onContactListLoaded(frame.controller)
-        ThemeManager.test()
-        console.log("tttttttttttt", ThemeManager.getColorSet().normal);
     }
 
     Text {
@@ -83,6 +81,7 @@ Item{
     UTButton {
         id: butn2
         text: qsTr("button2")
+        width: 300
         anchors{
             top: parent.top
             topMargin: 300

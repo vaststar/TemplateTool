@@ -8,6 +8,7 @@
 #include <UICore/CoreQmlEngine.h>
 
 #include "LoggerDefine.h"
+#include "ColorConstant.h"
 
 namespace UIManager{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -56,15 +57,19 @@ QPointer<UIData::UIColorSet> ThemeManager::Impl::getColorSet() const
 void ThemeManager::Impl::initFontSet()
 {
     std::vector<std::shared_ptr<UIData::UIFont>> uiFonts;
-    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::SegoeUI));
-    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::Consolas));
-    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::SegoeUIEmoji));
+    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::UIFontFamily_SegoeUI));
+    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::UIFontFamily_Consolas));
+    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::UIFontFamily_SegoeUIEmoji));
     mFontSet->initFonts(uiFonts);
 }
 
 void ThemeManager::Impl::initColorSet()
 {
-
+    std::vector<std::shared_ptr<UIData::UIColors>> uiColors;
+    uiColors.emplace_back(std::make_shared<UIData::UIColors>(UIData::UIColors::UIColorsEnum::UIColorsEnum_Button_Primary_Text, QColor(0,0,0)));
+    uiColors.emplace_back(std::make_shared<UIData::UIColors>(UIData::UIColors::UIColorsEnum::UIColorsEnum_Button_Primary_Background, ColorConstant::Blue60, ColorConstant::Blue50, ColorConstant::Blue30, ColorConstant::Gray90, ColorConstant::Blue60, ColorConstant::Blue60));
+    uiColors.emplace_back(std::make_shared<UIData::UIColors>(UIData::UIColors::UIColorsEnum::UIColorsEnum_Button_Primary_Border, QColor(0,0,255)));
+    mColorSet->initColors(uiColors);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -89,18 +94,21 @@ void ThemeManager::test()
     UIManager_LOG_DEBUG("");
 }
 
-UIData::UIColorSet* ThemeManager::getColorSet()
+QColor ThemeManager::getUIColor(UIData::UIColors::UIColorsEnum colorEnum, UIData::UIColors::UIColorState state)
 {
-    return new UIData::UIColorSet("test", QColor(158,254,125));
+    if (auto uiColors = mImpl->getColorSet()->getUIColors(colorEnum))
+    {
+        return uiColors->getColor(state);
+    }
+    return QColor(0,0,0);
 }
 
-// QPointer<UIData::UIFontSet> ThemeManager::getFontSet()
-// {
-//     return mImpl->getFontSet();
-// }
-QFont ThemeManager::getFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight, bool isItalic, UIData::UIFont::UIFontFamily family)
+QFont ThemeManager::getUIFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight, bool isItalic, UIData::UIFont::UIFontFamily family)
 {
-    return mImpl->getFontSet()->getFont(family, size, weight, isItalic);
-    QFont("Segoe UI", 14, QFont::Normal, false)
+    if (auto uiFonts = mImpl->getFontSet()->getUIFont(family))
+    {
+        return uiFonts->getFont(size, weight, isItalic);
+    }
+    return QFont("Segoe UI", 14, QFont::Normal, false);
 }
 }

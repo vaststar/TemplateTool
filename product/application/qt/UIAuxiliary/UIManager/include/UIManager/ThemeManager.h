@@ -25,8 +25,8 @@ public:
 
 public slots:
     void test();
-    UIData::UIColorSet* getColorSet();
-    QFont getFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight = UIData::UIFont::UIFontWeight::Normal, bool isItalic = false, UIData::UIFont::UIFontFamily family = UIData::UIFont::UIFontFamily::SegoeUI);
+    QColor getUIColor(UIData::UIColors::UIColorsEnum colorEnum, UIData::UIColors::UIColorState state);
+    QFont getUIFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight = UIData::UIFont::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIData::UIFont::UIFontFamily family = UIData::UIFont::UIFontFamily::UIFontFamily_SegoeUI);
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;

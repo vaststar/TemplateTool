@@ -16,30 +16,30 @@ struct UIDataStruct_EXPORT UIFont: public QObject
     QML_UNCREATABLE("only created in c++ code")
 public:
     enum class UIFontFamily{
-        SegoeUI,
-        Consolas,
-        SegoeUIEmoji
+        UIFontFamily_SegoeUI,
+        UIFontFamily_Consolas,
+        UIFontFamily_SegoeUIEmoji
     };
 
     enum class UIFontSize{
-        ExtraSmall,     //12
-        Small,          //14
-        MediumSmall,    //16
-        Medium,         //20
-        Large,          //26
-        ExtraLarge      //40
+        UIFontSize_ExtraSmall,     //12
+        UIFontSize_Small,          //14
+        UIFontSize_MediumSmall,    //16
+        UIFontSize_Medium,         //20
+        UIFontSize_Large,          //26
+        UIFontSize_ExtraLarge      //40
     };
 
     enum class UIFontWeight{
-        Thin,
-        ExtraLight,
-        Light,
-        Normal,
-        Medium,
-        DemiBold,
-        Bold,
-        ExtraBold,
-        Black
+        UIFontWeight_Thin,
+        UIFontWeight_ExtraLight,
+        UIFontWeight_Light,
+        UIFontWeight_Normal,
+        UIFontWeight_Medium,
+        UIFontWeight_DemiBold,
+        UIFontWeight_Bold,
+        UIFontWeight_ExtraBold,
+        UIFontWeight_Black
     };
     Q_ENUM(UIFontFamily)
     Q_ENUM(UIFontSize)
@@ -47,7 +47,7 @@ public:
 public:
     UIFont(QObject *parent = nullptr);
     UIFont(UIFontFamily family, QObject *parent = nullptr);
-    Q_INVOKABLE QFont getFont(UIFontSize size, UIFontWeight weight, bool isItalic);
+    QFont getFont(UIFontSize size, UIFontWeight weight, bool isItalic);
     UIFontFamily getFontFamily();
 private:
     UIFontFamily mFontFamly;
