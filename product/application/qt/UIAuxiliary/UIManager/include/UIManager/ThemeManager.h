@@ -22,7 +22,6 @@ QML_ELEMENT
 public:
     explicit ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
     ~ThemeManager();
-
 public slots:
     void test();
     QColor getUIColor(UIData::UIColors::UIColorsEnum colorEnum, UIData::UIColors::UIColorState state);

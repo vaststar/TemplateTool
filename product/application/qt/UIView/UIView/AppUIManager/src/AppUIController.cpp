@@ -44,6 +44,7 @@ void AppUIController::initializeController(AppContext* appContext)
     mViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IAppUIViewModel>();
     mViewModel->initDatabase();
 
+    initializeUIClient();
 
     // clientInfoVM->setApplicationLanguage(commonHead::viewModels::model::LanguageType::RUSSIAN);
 
@@ -52,15 +53,21 @@ void AppUIController::initializeController(AppContext* appContext)
     emit controllerInitialized();
 }
 
-void AppUIController::startApp()
+void AppUIController::initializeUIClient()
 {
+    //prepare fontSet、colorSet、language
     //1, install language
     auto clientInfoVM = mAppContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
     UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(LanguageUtils::convertViewModelLanguageToUILanguage(clientInfoVM->getApplicationLanguage()));
 
-    //2, show start up page
-    //load db to see if we need show sign in/up or main window
+    //2, initialize themeManager
+
+
+}
+
+void AppUIController::startApp()
+{
     
     UIVIEW_LOG_DEBUG("start load main qml");
 

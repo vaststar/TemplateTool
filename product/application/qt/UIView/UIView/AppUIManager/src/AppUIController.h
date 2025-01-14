@@ -30,6 +30,7 @@ signals:
     void controllerInitialized();
 private:
     void initializeController(AppContext* appContext);
+    void initializeUIClient();
     void startApp();
 private:
     QPointer<AppContext> mAppContext;
