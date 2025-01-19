@@ -37,4 +37,9 @@ enum class LanguageType {
     RUSSIAN
 };
 
+enum class ThemeType {
+    SystemDefault,
+    Dark,
+    Light
+};
 }

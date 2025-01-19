@@ -62,7 +62,7 @@ void AppUIController::initializeUIClient()
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(LanguageUtils::convertViewModelLanguageToUILanguage(clientInfoVM->getApplicationLanguage()));
 
     //2, initialize themeManager
-
+    UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
 
 }
 

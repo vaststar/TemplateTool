@@ -20,6 +20,7 @@ namespace ucf::service{
 ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
     , mLanguageType(model::LanguageType::CHINESE_SIMPLIFIED)
+    , mThemeType(model::ThemeType::SystemDefault)
     , mIsLanguageReadFromDB (false)
 {
 
@@ -58,6 +59,28 @@ std::vector<model::LanguageType> ClientInfoManager::getSupportedLanguages() cons
             model::LanguageType::ITALIAN, model::LanguageType::SPANISH, model::LanguageType::PORTUGUESE, model::LanguageType::JAPANESE, model::LanguageType::KOREAN, model::LanguageType::RUSSIAN};
 }
 
+void ClientInfoManager::setCurrentThemeType(model::ThemeType themeType)
+{
+    mThemeType.store(themeType);
+    if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
+    {
+        ucf::service::model::ListOfDBValues dbVals;
+        dbVals.emplace_back(ucf::service::model::DBDataValues{std::string("Theme"), static_cast<int>(themeType)});
+        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, 
+            {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField}, dbVals);
+    }
+}
+
+model::ThemeType ClientInfoManager::getCurrentThemeType() const
+{
+    return mThemeType.load();
+}
+
+std::vector<model::ThemeType> ClientInfoManager::getSupportedThemeTypes() const
+{
+    return {model::ThemeType::SystemDefault, model::ThemeType::Dark, model::ThemeType::Light};
+}
+
 model::SqliteDBConfig ClientInfoManager::getSharedDBConfig() const
 {
     return model::SqliteDBConfig("test", "app_data/shared_db.db");
@@ -87,7 +110,16 @@ void ClientInfoManager::databaseInitialized(const std::string& dbId)
                     mLanguageType.store(static_cast<model::LanguageType>(val.getIntValue()));
                     SERVICE_LOG_DEBUG("got language from database:" << val.getIntValue());
                 }
-                
+        });
+        
+        dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
+            {{db::schema::SettingsTable::KeyField, "Theme", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
+                for (const auto& res: results)
+                {
+                    auto  val = res.getColumnData(db::schema::SettingsTable::ValField);
+                    mThemeType.store(static_cast<model::ThemeType>(val.getIntValue()));
+                    SERVICE_LOG_DEBUG("got theme from database:" << val.getIntValue());
+                }
         });
     }
 }

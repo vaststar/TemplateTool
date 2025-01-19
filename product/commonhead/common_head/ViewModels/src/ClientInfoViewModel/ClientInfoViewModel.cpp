@@ -124,6 +124,36 @@ ucf::service::model::LanguageType ClientInfoViewModel::convertModelLanguageToSer
     }
 }
 
+commonHead::viewModels::model::ThemeType ClientInfoViewModel::convertServiceThemeTypeToModelThemeType(ucf::service::model::ThemeType theme) const
+{
+    switch (theme)
+    {
+    case ucf::service::model::ThemeType::SystemDefault:
+        return commonHead::viewModels::model::ThemeType::SystemDefault;
+    case ucf::service::model::ThemeType::Dark:
+        return commonHead::viewModels::model::ThemeType::Dark;
+    case ucf::service::model::ThemeType::Light:
+        return commonHead::viewModels::model::ThemeType::Light;
+    default:
+        return commonHead::viewModels::model::ThemeType::SystemDefault;
+    }
+}
+
+ucf::service::model::ThemeType ClientInfoViewModel::convertModelThemeTypeToServiceThemeType(commonHead::viewModels::model::ThemeType theme) const
+{
+    switch (theme)
+    {
+    case commonHead::viewModels::model::ThemeType::SystemDefault:
+        return ucf::service::model::ThemeType::SystemDefault;
+    case commonHead::viewModels::model::ThemeType::Dark:
+        return ucf::service::model::ThemeType::Dark;
+    case commonHead::viewModels::model::ThemeType::Light:
+        return ucf::service::model::ThemeType::Light;
+    default:
+        return ucf::service::model::ThemeType::SystemDefault;
+    }
+}
+
 std::vector<commonHead::viewModels::model::LanguageType> ClientInfoViewModel::getSupportedLanguages() const
 {
     if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
@@ -134,6 +164,46 @@ std::vector<commonHead::viewModels::model::LanguageType> ClientInfoViewModel::ge
             std::vector<commonHead::viewModels::model::LanguageType> results;
             std::transform(supportedLanguages.begin(), supportedLanguages.end(), std::back_inserter(results), [this](ucf::service::model::LanguageType la){
                 return convertServiceLanguageToModelLanguage(la);
+            });
+            return results;
+        }
+    }
+    return {};
+}
+
+void ClientInfoViewModel::setCurrentThemeType(commonHead::viewModels::model::ThemeType themeType)
+{
+    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    {
+        if (auto service = coreFramework->getService<ucf::service::IClientInfoService>().lock())
+        {
+            return service->setCurrentThemeType(convertModelThemeTypeToServiceThemeType(themeType));
+        }
+    }
+}
+
+commonHead::viewModels::model::ThemeType ClientInfoViewModel::getCurrentThemeType() const
+{
+    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    {
+        if (auto service = coreFramework->getService<ucf::service::IClientInfoService>().lock())
+        {
+            return convertServiceThemeTypeToModelThemeType(service->getCurrentThemeType());
+        }
+    }
+    return commonHead::viewModels::model::ThemeType::SystemDefault;
+}
+
+std::vector<commonHead::viewModels::model::ThemeType> ClientInfoViewModel::getSupportedThemeTypes() const
+{
+    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    {
+        if (auto service = coreFramework->getService<ucf::service::IClientInfoService>().lock())
+        {
+            auto supportedThemeTypes = service->getSupportedThemeTypes();
+            std::vector<commonHead::viewModels::model::ThemeType> results;
+            std::transform(supportedThemeTypes.begin(), supportedThemeTypes.end(), std::back_inserter(results), [this](ucf::service::model::ThemeType theme){
+                return convertServiceThemeTypeToModelThemeType(theme);
             });
             return results;
         }

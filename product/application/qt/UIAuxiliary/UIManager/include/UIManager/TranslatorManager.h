@@ -11,6 +11,7 @@ namespace UICore{
     class CoreQmlEngine;
 }
 
+
 namespace UIManager{
 Q_NAMESPACE_EXPORT(UIManager_EXPORT)
 enum class LanguageType {
@@ -27,6 +28,13 @@ enum class LanguageType {
     RUSSIAN
 };
 Q_ENUM_NS(LanguageType)
+enum class TestClass {
+ AAA,
+ BBB,
+ CCC,
+ DDD
+};
+Q_ENUM_NS(TestClass)
 
 class UIManager_EXPORT TranslatorManager final: public QObject
 {

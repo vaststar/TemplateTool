@@ -40,6 +40,11 @@ public:
     virtual model::LanguageType getApplicationLanguage() const override;
     virtual void setApplicationLanguage(model::LanguageType languageType) override;
     virtual std::vector<model::LanguageType> getSupportedLanguages() const override;
+
+    virtual void setCurrentThemeType(model::ThemeType themeType) override;
+    virtual model::ThemeType getCurrentThemeType() const override;
+    virtual std::vector<model::ThemeType> getSupportedThemeTypes() const override;
+
     virtual model::SqliteDBConfig getSharedDBConfig() const override;
 protected:
     //IService

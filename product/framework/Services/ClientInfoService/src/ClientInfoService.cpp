@@ -137,6 +137,21 @@ std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() cons
     return mDataPrivate->getClientInfoManager()->getSupportedLanguages();
 }
 
+void ClientInfoService::setCurrentThemeType(model::ThemeType themeType)
+{
+    mDataPrivate->getClientInfoManager()->setCurrentThemeType(themeType);
+}
+
+model::ThemeType ClientInfoService::getCurrentThemeType() const
+{
+    return mDataPrivate->getClientInfoManager()->getCurrentThemeType();
+}
+
+std::vector<model::ThemeType> ClientInfoService::getSupportedThemeTypes() const
+{
+    return mDataPrivate->getClientInfoManager()->getSupportedThemeTypes();
+}
+
 model::SqliteDBConfig ClientInfoService::getSharedDBConfig() const
 {
     return mDataPrivate->getClientInfoManager()->getSharedDBConfig();

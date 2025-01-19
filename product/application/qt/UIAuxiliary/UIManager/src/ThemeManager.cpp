@@ -89,6 +89,7 @@ ThemeManager::~ThemeManager()
 
 }
 
+// void initialize();
 void ThemeManager::test()
 {
     UIManager_LOG_DEBUG("");

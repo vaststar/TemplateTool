@@ -28,14 +28,21 @@ public:
     ClientInfoManager& operator=(ClientInfoManager&&) = delete;
 public:
     model::Version getApplicationVersion() const;
+
     model::LanguageType getApplicationLanguage() const;
     void setApplicationLanguage(model::LanguageType languageType);
     std::vector<model::LanguageType> getSupportedLanguages() const;
+
+    void setCurrentThemeType(model::ThemeType themeType);
+    model::ThemeType getCurrentThemeType() const;
+    std::vector<model::ThemeType> getSupportedThemeTypes() const;
+
     model::SqliteDBConfig getSharedDBConfig() const;
     void databaseInitialized(const std::string& dbId);
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::atomic<model::LanguageType> mLanguageType;
+    std::atomic<model::ThemeType> mThemeType;
     std::atomic_bool mIsLanguageReadFromDB;
 };
 }
