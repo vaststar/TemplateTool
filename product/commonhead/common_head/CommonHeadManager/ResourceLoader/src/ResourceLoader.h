@@ -1,10 +1,29 @@
 #pragma once
 
+#include <mutex>
+#include <vector>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
+#include "Theme.h"
+
+namespace ucf::framework {
+    class ICoreFramework;
+    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+}
+
 namespace commonHead{
 class ResourceLoader: public IResourceLoader
 {
 public:
-    ResourceLoader();
+    explicit ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework);
+    virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const override;
+    virtual model::Color getColor(model::ColorItem colorItem, model::ColorItemState state) const override;
+private:
+    ucf::service::model::ThemeType getCurrentThemeType() const;
+    std::shared_ptr<Theme> getOrCreateTheme(ucf::service::model::ThemeType themeType) const;
+    std::shared_ptr<Theme> buildTheme(ucf::service::model::ThemeType themeType) const;
+private:
+    ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
+    mutable std::mutex mThemeMutex;
+    mutable std::vector<std::shared_ptr<Theme>> mThemes;
 };
 }

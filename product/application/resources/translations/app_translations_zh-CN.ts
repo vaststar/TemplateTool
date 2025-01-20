@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>AppFooter</name>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppFooter.qml" line="8"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppFooter.qml" line="8"/>
         <source>‹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppFooter.qml" line="12"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppFooter.qml" line="12"/>
         <source>Footer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppFooter.qml" line="19"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppFooter.qml" line="19"/>
         <source>⋮</source>
         <translation type="unfinished"></translation>
     </message>
@@ -22,58 +22,25 @@
 <context>
     <name>AppHeader</name>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppHeader.qml" line="9"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppHeader.qml" line="9"/>
         <source>‹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppHeader.qml" line="20"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppHeader.qml" line="20"/>
         <source>⋮</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AppMenuBar</name>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="63"/>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="64"/>
-        <source>New...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="65"/>
-        <source>Open...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="66"/>
-        <source>Save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="67"/>
-        <source>Save As...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/qml/AppMenuBar.qml" line="69"/>
-        <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="63"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="66"/>
         <source>openCamera</source>
-        <translation >翻译打开摄像头</translation>
+        <translation>翻译打开摄像头</translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="81"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="84"/>
         <source>button2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -81,17 +48,17 @@
 <context>
     <name>MainWindowTabBar</name>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/MainWindowTabBar.qml" line="9"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="9"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/MainWindowTabBar.qml" line="21"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="21"/>
         <source>Discover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/qml/MainWindowTabBar.qml" line="29"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="29"/>
         <source>Activity</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,12 +66,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../qt/UIView/ContactList/src/ContactListViewController.cpp" line="19"/>
+        <location filename="../../qt/UIView/UIView/ContactList/src/ContactListViewController.cpp" line="19"/>
         <source>ContactListViewController</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="40"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="39"/>
         <source>my test window</source>
         <translation>测试标题</translation>
     </message>
@@ -112,7 +79,7 @@
 <context>
     <name>SystemTray</name>
     <message>
-        <location filename="../../qt/UIView/SystemTray/qml/SystemTray.qml" line="9"/>
+        <location filename="../../qt/UIView/UIView/SystemTray/qml/SystemTray.qml" line="9"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>

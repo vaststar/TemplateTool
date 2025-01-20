@@ -2,11 +2,19 @@ include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/ResourceLoader/IResourceLoader.h
+    include/commonHead/ResourceLoader/ResourceLoaderModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/ResourceLoader.h
     src/ResourceLoader.cpp
+    src/FontSet.h
+    src/FontSet.cpp
+    src/ColorSet.h
+    src/ColorSet.cpp
+    src/Theme.h
+    src/Theme.cpp
+    src/ColorConstant.h
 )
 
 BuildModule(
@@ -20,6 +28,9 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PUBLIC
         CommonHeadCommonFile
+    TARGET_DEPENDENICES_PRIVATE
+        ClientInfoService
+        CoreFramework
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

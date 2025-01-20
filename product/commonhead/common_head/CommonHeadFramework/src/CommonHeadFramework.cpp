@@ -12,9 +12,10 @@ std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::createInstance(ucf::
 }
 
 CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr coreframework)
+    : mCoreframeworkWPtr(coreframework)
 {
     COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
-    mCoreframeworkWPtr = coreframework;
+    mResourceLoader = IResourceLoader::createInstance(coreframework);
 }
 
 void CommonHeadFramework::initCommonheadFramework()
@@ -39,6 +40,6 @@ ucf::framework::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
 
 IResourceLoaderPtr CommonHeadFramework::getResourceLoader() const
 {
-    return IResourceLoader::createInstance();
+    return mResourceLoader;
 }
 }

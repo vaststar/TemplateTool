@@ -18,5 +18,6 @@ public:
     IResourceLoaderPtr getResourceLoader() const override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
+    IResourceLoaderPtr mResourceLoader;
 };
 }
