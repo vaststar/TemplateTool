@@ -4,6 +4,9 @@
 #include <QLocale>
 #include <QTranslator>
 
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ResourceLoader/IResourceLoader.h>
+
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 
@@ -19,10 +22,11 @@ namespace UIManager{
 class ThemeManager::Impl
 {
 public:
-    Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
+    Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 
     const QPointer<UICore::CoreApplication> mApplication;
     const QPointer<UICore::CoreQmlEngine> mQmlEngine;
+    const commonHead::ICommonHeadFrameworkWPtr mCommonheadFramework;
 
     QPointer<UIData::UIFontSet> getFontSet() const;
     QPointer<UIData::UIColorSet> getColorSet() const;
@@ -34,9 +38,10 @@ private:
     std::unique_ptr<UIData::UIColorSet> mColorSet;
 };
 
-ThemeManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
+ThemeManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
+    , mCommonheadFramework(commonheadFramework)
     , mFontSet(std::make_unique<UIData::UIFontSet>())
     , mColorSet(std::make_unique<UIData::UIColorSet>())
 {
@@ -77,9 +82,9 @@ void ThemeManager::Impl::initColorSet()
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-ThemeManager::ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
+ThemeManager::ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : QObject(nullptr)
-    , mImpl(std::make_unique<ThemeManager::Impl>(application, qmlEngine))
+    , mImpl(std::make_unique<ThemeManager::Impl>(application, qmlEngine, commonheadFramework))
 {
     UIManager_LOG_DEBUG("");
 }
@@ -97,11 +102,33 @@ void ThemeManager::test()
 
 QColor ThemeManager::getUIColor(UIData::UIColors::UIColorsEnum colorEnum, UIData::UIColors::UIColorState state)
 {
-    if (auto uiColors = mImpl->getColorSet()->getUIColors(colorEnum))
+    switch (colorEnum)
     {
-        return uiColors->getColor(state);
+    case /* constant-expression */:
+        /* code */
+        break;
+    
+    default:
+        break;
     }
-    return QColor(0,0,0);
+
+    
+    switch (state)
+    {
+    case UIData::UIColors::UIColorState::UIColorState_Normal:
+        /* code */
+        break;
+    
+    default:
+        break;
+    }
+    mImpl->mCommonheadFramework->getResourceLoader()->getColor();
+
+    // if (auto uiColors = mImpl->getColorSet()->getUIColors(colorEnum))
+    // {
+    //     return uiColors->getColor(state);
+    // }
+    // return QColor(0,0,0);
 }
 
 QFont ThemeManager::getUIFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight, bool isItalic, UIData::UIFont::UIFontFamily family)

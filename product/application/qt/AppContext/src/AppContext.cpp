@@ -29,7 +29,7 @@ AppContext::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngi
     , mQmlEngine(qmlEngine)
     , mViewModelFactory(std::make_unique<UIFabrication::ViewModelFactory>(commonheadFramework))
     , mViewFactory(std::make_unique<UIFabrication::UIViewFactory>(qmlEngine))
-    , mManagerProvider(std::make_unique<UIManager::UIManagerProvider>(application, qmlEngine))
+    , mManagerProvider(std::make_unique<UIManager::UIManagerProvider>(application, qmlEngine, commonheadFramework))
 {
 }
 

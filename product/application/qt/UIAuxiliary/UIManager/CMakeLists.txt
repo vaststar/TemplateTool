@@ -30,6 +30,8 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        ResourceLoader
+        CommonHeadFramework
         ViewModels
         MasterLog
         UICore

@@ -9,6 +9,11 @@
 #include <UIDataStruct/UIColorSet.h>
 #include <UIManager/UIManagerExport.h>
 
+namespace commonHead{
+    class ICommonHeadFramework;
+    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+}
+
 namespace UICore{
     class CoreApplication;
     class CoreQmlEngine;
@@ -20,7 +25,7 @@ class UIManager_EXPORT ThemeManager final: public QObject
 Q_OBJECT
 QML_ELEMENT
 public:
-    explicit ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
+    explicit ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~ThemeManager();
 public slots:
     void test();

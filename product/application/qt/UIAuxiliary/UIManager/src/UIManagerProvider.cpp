@@ -1,5 +1,7 @@
 #include <UIManager/UIManagerProvider.h>
 
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <UIManager/TranslatorManager.h>
@@ -14,15 +16,15 @@ namespace UIManager{
 class UIManagerProvider::Impl
 {
 public:
-    explicit Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
+    explicit Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 
     std::unique_ptr<TranslatorManager> mTranslatorManager;
     std::unique_ptr<ThemeManager> mThemeManager;
 };
 
-UIManagerProvider::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
+UIManagerProvider::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mTranslatorManager(std::make_unique<TranslatorManager>(application, qmlEngine))
-    , mThemeManager(std::make_unique<ThemeManager>(application, qmlEngine))
+    , mThemeManager(std::make_unique<ThemeManager>(application, qmlEngine, commonheadFramework))
 {
     qmlEngine->rootContext()->setContextProperty("ThemeManager",mThemeManager.get());
 }
@@ -33,8 +35,8 @@ UIManagerProvider::Impl::Impl(UICore::CoreApplication* application, UICore::Core
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-UIManagerProvider::UIManagerProvider(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
-    : mImpl(std::make_unique<UIManagerProvider::Impl>(application, qmlEngine))
+UIManagerProvider::UIManagerProvider(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
+    : mImpl(std::make_unique<UIManagerProvider::Impl>(application, qmlEngine, commonheadFramework))
 {
 }
 
