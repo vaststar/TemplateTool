@@ -9,9 +9,9 @@
 
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
+#include <UIDataStruct/UIDataUtils.h>
 
 #include "LoggerDefine.h"
-#include "ColorConstant.h"
 
 namespace UIManager{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -28,53 +28,24 @@ public:
     const QPointer<UICore::CoreQmlEngine> mQmlEngine;
     const commonHead::ICommonHeadFrameworkWPtr mCommonheadFramework;
 
-    QPointer<UIData::UIFontSet> getFontSet() const;
-    QPointer<UIData::UIColorSet> getColorSet() const;
-private:
-    void initFontSet();
-    void initColorSet();
-private:
-    std::unique_ptr<UIData::UIFontSet> mFontSet;
-    std::unique_ptr<UIData::UIColorSet> mColorSet;
+    std::shared_ptr<commonHead::IResourceLoader> getResourceLoader() const;
+
 };
 
 ThemeManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
     , mCommonheadFramework(commonheadFramework)
-    , mFontSet(std::make_unique<UIData::UIFontSet>())
-    , mColorSet(std::make_unique<UIData::UIColorSet>())
 {
-    initFontSet();
-    initColorSet();
 }
 
-QPointer<UIData::UIFontSet> ThemeManager::Impl::getFontSet() const
+std::shared_ptr<commonHead::IResourceLoader> ThemeManager::Impl::getResourceLoader() const
 {
-    return mFontSet.get();
-}
-
-QPointer<UIData::UIColorSet> ThemeManager::Impl::getColorSet() const
-{
-    return mColorSet.get();
-}
-
-void ThemeManager::Impl::initFontSet()
-{
-    std::vector<std::shared_ptr<UIData::UIFont>> uiFonts;
-    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::UIFontFamily_SegoeUI));
-    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::UIFontFamily_Consolas));
-    uiFonts.emplace_back(std::make_shared<UIData::UIFont>(UIData::UIFont::UIFontFamily::UIFontFamily_SegoeUIEmoji));
-    mFontSet->initFonts(uiFonts);
-}
-
-void ThemeManager::Impl::initColorSet()
-{
-    std::vector<std::shared_ptr<UIData::UIColors>> uiColors;
-    uiColors.emplace_back(std::make_shared<UIData::UIColors>(UIData::UIColors::UIColorsEnum::UIColorsEnum_Button_Primary_Text, QColor(0,0,0)));
-    uiColors.emplace_back(std::make_shared<UIData::UIColors>(UIData::UIColors::UIColorsEnum::UIColorsEnum_Button_Primary_Background, ColorConstant::Blue60, ColorConstant::Blue50, ColorConstant::Blue30, ColorConstant::Gray90, ColorConstant::Blue60, ColorConstant::Blue60));
-    uiColors.emplace_back(std::make_shared<UIData::UIColors>(UIData::UIColors::UIColorsEnum::UIColorsEnum_Button_Primary_Border, QColor(0,0,255)));
-    mColorSet->initColors(uiColors);
+    if (auto commonHeadFramework = mCommonheadFramework.lock())
+    {
+        return commonHeadFramework->getResourceLoader();
+    }
+    return nullptr;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -94,49 +65,30 @@ ThemeManager::~ThemeManager()
 
 }
 
-// void initialize();
-void ThemeManager::test()
+QColor ThemeManager::getUIColor(UIElementData::UIColorEnum colorEnum, UIElementData::UIColorState state)
 {
-    UIManager_LOG_DEBUG("");
+    if (auto resourceLoader = mImpl->getResourceLoader())
+    {
+        commonHead::model::ColorItem vmColorItem = UIDataUtils::convertUIColorEnumToVMColorItem(colorEnum);
+        commonHead::model::ColorItemState vmColorItemState = UIDataUtils::convertUIColorStateToVMColorItemState(state);
+        auto vmColor = resourceLoader->getColor(vmColorItem, vmColorItemState);
+        return QColor(vmColor.r, vmColor.g, vmColor.b, vmColor.a) ;
+    }
+    UIManager_LOG_WARN("no resourceLoader");
+    return QColor();
 }
 
-QColor ThemeManager::getUIColor(UIData::UIColors::UIColorsEnum colorEnum, UIData::UIColors::UIColorState state)
+QFont ThemeManager::getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight, bool isItalic, UIElementData::UIFontFamily family)
 {
-    switch (colorEnum)
+    if (auto resourceLoader = mImpl->getResourceLoader())
     {
-    case /* constant-expression */:
-        /* code */
-        break;
-    
-    default:
-        break;
+        commonHead::model::FontFamily vmFontFamily = UIDataUtils::convertUIFontFamilyToVMFontFamily(family);
+        commonHead::model::FontSize vmFontSize = UIDataUtils::convertUIFontSizeToVMFontSize(size);
+        commonHead::model::FontWeight vmFontWeight = UIDataUtils::convertUIFontWeightToVMFontWeight(weight);
+        auto vmFont = resourceLoader->getFont(vmFontFamily, vmFontSize, vmFontWeight, isItalic);
+        return QFont(QString::fromStdString(vmFont.fontFamily), vmFont.fontSize, vmFont.fontWeight, isItalic);
     }
-
-    
-    switch (state)
-    {
-    case UIData::UIColors::UIColorState::UIColorState_Normal:
-        /* code */
-        break;
-    
-    default:
-        break;
-    }
-    mImpl->mCommonheadFramework->getResourceLoader()->getColor();
-
-    // if (auto uiColors = mImpl->getColorSet()->getUIColors(colorEnum))
-    // {
-    //     return uiColors->getColor(state);
-    // }
-    // return QColor(0,0,0);
-}
-
-QFont ThemeManager::getUIFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight, bool isItalic, UIData::UIFont::UIFontFamily family)
-{
-    if (auto uiFonts = mImpl->getFontSet()->getUIFont(family))
-    {
-        return uiFonts->getFont(size, weight, isItalic);
-    }
-    return QFont("Segoe UI", 14, QFont::Normal, false);
+    UIManager_LOG_WARN("no resourceLoader");
+    return QFont();
 }
 }

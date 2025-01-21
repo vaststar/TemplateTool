@@ -4,9 +4,10 @@
 #include <QObject>
 #include <QString>
 #include <QtQml>
+#include <QFont>
+#include <QColor>
 
-#include <UIDataStruct/UIFontSet.h>
-#include <UIDataStruct/UIColorSet.h>
+#include <UIDataStruct/UIElementData.h>
 #include <UIManager/UIManagerExport.h>
 
 namespace commonHead{
@@ -27,10 +28,9 @@ QML_ELEMENT
 public:
     explicit ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~ThemeManager();
-public slots:
-    void test();
-    QColor getUIColor(UIData::UIColors::UIColorsEnum colorEnum, UIData::UIColors::UIColorState state);
-    QFont getUIFont(UIData::UIFont::UIFontSize size, UIData::UIFont::UIFontWeight weight = UIData::UIFont::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIData::UIFont::UIFontFamily family = UIData::UIFont::UIFontFamily::UIFontFamily_SegoeUI);
+public:
+    Q_INVOKABLE QColor getUIColor(UIElementData::UIColorEnum colorEnum, UIElementData::UIColorState state);
+    Q_INVOKABLE QFont getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight = UIElementData::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIElementData::UIFontFamily family = UIElementData::UIFontFamily::UIFontFamily_SegoeUI);
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;

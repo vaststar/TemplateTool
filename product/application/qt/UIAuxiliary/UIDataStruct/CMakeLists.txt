@@ -1,9 +1,14 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIDataStruct/UIDataStructExport.h
+    # include/UIDataStruct/UIColors.h
+    include/UIDataStruct/UIElementData.h
+    include/UIDataStruct/UIDataUtils.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h
+    src/UIElementData.cpp
+    src/UIDataUtils.cpp
 )
 
 if (WIN32)
@@ -13,17 +18,17 @@ else()
 endif()
 
 
-set(UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIDataStruct
+# set(UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include/UIDataStruct
     
-)
+# )
 
-set(UIDataStruct_QML_TARGET_SOURCES
-    include/UIDataStruct/UIColorSet.h
-    include/UIDataStruct/UIFontSet.h
-    src/UIColorSet.cpp
-    src/UIFontSet.cpp
-)
+# set(UIDataStruct_QML_TARGET_SOURCES
+#     include/UIDataStruct/UIColorSet.h
+#     include/UIDataStruct/UIFontSet.h
+#     src/UIColorSet.cpp
+#     src/UIFontSet.cpp
+# )
 
 include(BuildQtModule)
 BuildQtModule(
@@ -36,7 +41,7 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
-        ViewModels
+        ResourceLoader
         MasterLog
         UICore
     TARGET_DEPENDENICES_PUBLIC
@@ -52,10 +57,10 @@ BuildQtModule(
         src
     IDE_FOLDER
         UI
-    QML_TARGET_URI
-        UIDataStruct
-    QML_TARGET_SOURCES
-        ${UIDataStruct_QML_TARGET_SOURCES}
-    QML_PUBLIC_BUILD_INTERFACE_FOLDER
-        ${UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
+    # QML_TARGET_URI
+    #     UIDataStruct
+    # QML_TARGET_SOURCES
+    #     ${UIDataStruct_QML_TARGET_SOURCES}
+    # QML_PUBLIC_BUILD_INTERFACE_FOLDER
+    #     ${UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )

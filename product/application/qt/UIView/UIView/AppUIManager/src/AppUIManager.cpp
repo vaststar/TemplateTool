@@ -10,7 +10,8 @@
 #include "LoggerDefine/LoggerDefine.h"
 #include "AppUIController.h"
 
-
+// #include <UIDataStruct/UIColors.h>
+#include <UIDataStruct/UIElementData.h>
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start Impl Logic//////////////////////////////////////////
@@ -47,6 +48,14 @@ void AppUIManager::Impl::registerQmlTypes()
 		        "UIManager",                 // The name used in QML
 		        "Access to enums only"         // Error message for attempting to create an instance
 		    );
+    UIElementData::registerMetaObject();        
+    // qmlRegisterUncreatableMetaObject(
+	// 	        UIData::staticMetaObject, // The meta-object of the namespace
+	// 	        "UIData",                 // The URI or module name
+	// 	        1, 0,                          // Version
+	// 	        "UIData",                 // The name used in QML
+	// 	        "Access to enums only"         // Error message for attempting to create an instance
+	// 	    );
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
