@@ -19,6 +19,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     AppUIManager/src/AppUIManager.cpp
     AppUIManager/src/AppUIController.h
     AppUIManager/src/AppUIController.cpp
+    AppUIManager/src/AppUIStringLoader.h
+    AppUIManager/src/AppUIStringLoader.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
@@ -66,6 +68,7 @@ BuildQtModule(
         UTComponent
         AppContext
         UIManager
+        ResourceLoader
         ViewModels
         CommonHeadFramework
         Qt6::Gui Qt6::Quick Qt6::Widgets

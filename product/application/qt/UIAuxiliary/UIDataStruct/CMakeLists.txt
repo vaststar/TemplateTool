@@ -1,14 +1,15 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIDataStruct/UIDataStructExport.h
-    # include/UIDataStruct/UIColors.h
     include/UIDataStruct/UIElementData.h
     include/UIDataStruct/UIDataUtils.h
+    include/UIDataStruct/UIStrings.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h
     src/UIElementData.cpp
     src/UIDataUtils.cpp
+    src/UIStrings.cpp
 )
 
 if (WIN32)

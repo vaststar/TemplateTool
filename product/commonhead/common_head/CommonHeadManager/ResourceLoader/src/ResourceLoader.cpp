@@ -1,11 +1,14 @@
 #include "ResourceLoader.h"
 
 #include <thread>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/ClientInfoModel.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+#include <commonHead/ResourceLoader/IResourceStringLoader.h>
+
 
 namespace commonHead{
 std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
@@ -70,6 +73,31 @@ std::shared_ptr<Theme> ResourceLoader::getOrCreateTheme(ucf::service::model::The
 std::shared_ptr<Theme> ResourceLoader::buildTheme(ucf::service::model::ThemeType themeType) const
 {
     return std::make_shared<Theme>(themeType);
+}
+
+void ResourceLoader::setResourceLocalizedString(std::shared_ptr<IResourceStringLoader> resourceStringLoader)
+{
+    std::call_once(mResourceStringInitFlag, [resourceStringLoader, this](){
+        mResourceStringLoader = resourceStringLoader;
+    });
+}
+
+std::string ResourceLoader::getLocalizedString(model::LocalizedString stringId) const
+{
+    if (mResourceStringLoader)
+    {
+        return mResourceStringLoader->getLocalizedString(stringId);
+    }
+    return {};
+}
+
+std::string ResourceLoader::getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const
+{
+    if (mResourceStringLoader)
+    {
+        return mResourceStringLoader->getLocalizedStringWithParams(stringId, params);
+    }
+    return {};
 }
 
 }

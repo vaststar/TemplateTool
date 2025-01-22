@@ -10,7 +10,6 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/TranslatorManager.cpp
     src/UIManagerProvider.cpp
     src/ThemeManager.cpp
-    src/ColorConstant.h
 )
 
 if (WIN32)

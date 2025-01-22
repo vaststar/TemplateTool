@@ -52,7 +52,7 @@ void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBar
 
 void MainWindowController::openCamera()
 {
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIManager::LanguageType::CHINESE_SIMPLIFIED);
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIManager::LanguageType::ENGLISH);
     emit titleChanged();
     //mMainViewModel->openCamera();
 }

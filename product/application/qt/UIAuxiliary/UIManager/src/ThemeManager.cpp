@@ -91,4 +91,26 @@ QFont ThemeManager::getUIFont(UIElementData::UIFontSize size, UIElementData::UIF
     UIManager_LOG_WARN("no resourceLoader");
     return QFont();
 }
+
+QString ThemeManager::getLocalizedString(UIStrings::LocalizedString stringId)
+{
+    if (auto resourceLoader = mImpl->getResourceLoader())
+    {
+
+        return resourceLoader->getLocalizedStringWithParams(commonHead::model::LocalizedStringWithParam::TestParm,{"ceshi"}).c_str();
+        return resourceLoader->getLocalizedString(UIDataUtils::convertUILocalizedStringToVMLocalizedString(stringId)).c_str();
+    }
+    UIManager_LOG_WARN("no resourceLoader");
+    return {};
+}
+
+QString ThemeManager::getLocalizedStringWithParams(UIStrings::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params)
+{
+    if (auto resourceLoader = mImpl->getResourceLoader())
+    {
+        return resourceLoader->getLocalizedStringWithParams(UIDataUtils::convertUILocalizedStringParamToVMLocalizedStringParam(stringId), params).c_str();
+    }
+    UIManager_LOG_WARN("no resourceLoader");
+    return {};
+}
 }

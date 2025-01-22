@@ -33,16 +33,29 @@
     </message>
 </context>
 <context>
+    <name>AppUIStringLoader</name>
+    <message>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="10"/>
+        <source>Ok</source>
+        <translation type="unfinished">确定</translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="11"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="15"/>
+        <source>test param {{0}}, only 1 param</source>
+        <translation type="unfinished">测试程序 {{0}},只有1个</translation>
+    </message>
+</context>
+<context>
     <name>MainWindowContent</name>
     <message>
         <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="66"/>
         <source>openCamera</source>
         <translation>翻译打开摄像头</translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="84"/>
-        <source>button2</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -82,6 +95,35 @@
         <location filename="../../qt/UIView/UIView/SystemTray/qml/SystemTray.qml" line="9"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UIManager::UIStringLoader</name>
+    <message>
+        <source>Ok</source>
+        <translation type="vanished">确定</translation>
+    </message>
+    <message>
+        <source>test param , only 1 param</source>
+        <translation type="vanished">测试程序,只有1个</translation>
+    </message>
+    <message>
+        <source>test param {{0}}, only 1 param</source>
+        <translation type="vanished">测试程序 {{0}},只有1个</translation>
+    </message>
+</context>
+<context>
+    <name>UIStringLoader</name>
+    <message>
+        <source>Ok</source>
+        <translation type="obsolete">确定</translation>
+    </message>
+</context>
+<context>
+    <name>UIStrings::UIStringMaps</name>
+    <message>
+        <source>Ok</source>
+        <translation type="vanished">确定</translation>
     </message>
 </context>
 <context>

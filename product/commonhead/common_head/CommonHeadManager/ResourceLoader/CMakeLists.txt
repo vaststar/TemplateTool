@@ -3,6 +3,8 @@ include(BuildModule)
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/ResourceLoader/IResourceLoader.h
     include/commonHead/ResourceLoader/ResourceLoaderModel.h
+    include/commonHead/ResourceLoader/ResourceLocalizedStringModel.h
+    include/commonHead/ResourceLoader/IResourceStringLoader.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -15,6 +17,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/Theme.h
     src/Theme.cpp
     src/ColorConstant.h
+    src/IResourceStringLoader.cpp
 )
 
 BuildModule(

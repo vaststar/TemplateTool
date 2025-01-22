@@ -1,6 +1,18 @@
 #include <UIDataStruct/UIDataUtils.h>
-#include <UIDataStruct/UIElementData.h>
+
+#include <QQmlEngine>
+
 #include <commonHead/ResourceLoader/ResourceLoaderModel.h>
+#include <commonHead/ResourceLoader/ResourceLocalizedStringModel.h>
+
+#include <UIDataStruct/UIElementData.h>
+#include <UIDataStruct/UIStrings.h>
+
+void UIDataUtils::registerMetaObject()
+{
+    UIElementData::registerMetaObject();
+    UIStrings::registerMetaObject();
+}
 
 commonHead::model::ColorItem UIDataUtils::convertUIColorEnumToVMColorItem(UIElementData::UIColorEnum  uiColorItem)
 {
@@ -98,5 +110,33 @@ commonHead::model::FontWeight UIDataUtils::convertUIFontWeightToVMFontWeight(UIE
         return commonHead::model::FontWeight::FontWeight_Black;
     default:
         return commonHead::model::FontWeight::FontWeight_Normal;
+    }
+}
+
+commonHead::model::LocalizedString UIDataUtils::convertUILocalizedStringToVMLocalizedString(UIStrings::LocalizedString uiLocalizedString)
+{
+    switch (uiLocalizedString)
+    {
+    case UIStrings::LocalizedString::LocalizedString_None:
+        return commonHead::model::LocalizedString::None;
+    case UIStrings::LocalizedString::LocalizedString_OkButtonLabel:
+        return commonHead::model::LocalizedString::OkButtonLabel;
+    case UIStrings::LocalizedString::LocalizedString_CancelButtonLabel:
+        return commonHead::model::LocalizedString::CancelButtonLabel;
+    default:
+        return commonHead::model::LocalizedString::None;
+    }
+}
+
+commonHead::model::LocalizedStringWithParam UIDataUtils::convertUILocalizedStringParamToVMLocalizedStringParam(UIStrings::LocalizedStringWithParam uiLocalizedStringWithParam)
+{
+    switch (uiLocalizedStringWithParam)
+    {
+    case UIStrings::LocalizedStringWithParam::LocalizedStringWithParam_None:
+        return commonHead::model::LocalizedStringWithParam::None;
+    case UIStrings::LocalizedStringWithParam::LocalizedStringWithParam_TestParm:
+        return commonHead::model::LocalizedStringWithParam::TestParm;
+    default:
+        return commonHead::model::LocalizedStringWithParam::None;
     }
 }

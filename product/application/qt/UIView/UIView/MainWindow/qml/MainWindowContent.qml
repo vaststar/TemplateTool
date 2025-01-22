@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
 import UTComponent 1.0
-//import UIDataStruct 1.0
+import UIStrings 1.0
 import UIManager 1.0
 
 Item{
@@ -81,7 +81,7 @@ Item{
     }
     UTButton {
         id: butn2
-        text: qsTr("button2")
+        text:  qsTr(ThemeManager.getLocalizedString(UIStrings.LocalizedString_OkButtonLabel)) //qsTr("button2")
         width: 300
         anchors{
             top: parent.top

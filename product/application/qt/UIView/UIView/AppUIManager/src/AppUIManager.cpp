@@ -2,16 +2,20 @@
 
 #include <memory>
 
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ResourceLoader/IResourceLoader.h>
+
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <AppContext/AppContext.h>
 #include <UIManager/TranslatorManager.h>
 
+#include <UIDataStruct/UIDataUtils.h>
+
 #include "LoggerDefine/LoggerDefine.h"
 #include "AppUIController.h"
+#include "AppUIStringLoader.h"
 
-// #include <UIDataStruct/UIColors.h>
-#include <UIDataStruct/UIElementData.h>
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start Impl Logic//////////////////////////////////////////
@@ -24,7 +28,9 @@ public:
     int runApp(){ return mainApp->exec();}
 
     AppContext* getAppContext() const { return mAppContext.get();}
+private:
     void registerQmlTypes();
+    void registerStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
@@ -37,6 +43,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
     registerQmlTypes();
+    registerStringLoader(config.commonHeadFramework);
 }
 
 void AppUIManager::Impl::registerQmlTypes()
@@ -48,14 +55,18 @@ void AppUIManager::Impl::registerQmlTypes()
 		        "UIManager",                 // The name used in QML
 		        "Access to enums only"         // Error message for attempting to create an instance
 		    );
-    UIElementData::registerMetaObject();        
-    // qmlRegisterUncreatableMetaObject(
-	// 	        UIData::staticMetaObject, // The meta-object of the namespace
-	// 	        "UIData",                 // The URI or module name
-	// 	        1, 0,                          // Version
-	// 	        "UIData",                 // The name used in QML
-	// 	        "Access to enums only"         // Error message for attempting to create an instance
-	// 	    );
+    UIDataUtils::registerMetaObject();   
+}
+
+void AppUIManager::Impl::registerStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
+{
+    if (auto commonHeadFramework = commonheadFramework.lock())
+    {
+        if (auto resourceLoader = commonHeadFramework->getResourceLoader())
+        {
+            resourceLoader->setResourceLocalizedString(std::make_shared<AppUIStringLoader>());
+    }
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

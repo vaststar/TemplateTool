@@ -5,8 +5,7 @@
 
 namespace UIElementData{
 Q_NAMESPACE_EXPORT(UIDataStruct_EXPORT)
-
-UIDataStruct_EXPORT void registerMetaObject();
+void registerMetaObject();
 
 enum class UIFontFamily{
     UIFontFamily_SegoeUI,
