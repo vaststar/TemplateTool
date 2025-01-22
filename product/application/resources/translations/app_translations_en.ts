@@ -33,19 +33,22 @@
     </message>
 </context>
 <context>
-    <name>AppUIStringLoader</name>
+    <name>CPP_LocalizedString</name>
     <message>
-        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="10"/>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="9"/>
         <source>Ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="11"/>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="10"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>CPP_LocalizedStringWithParam</name>
     <message>
-        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="15"/>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="14"/>
         <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>

@@ -33,21 +33,24 @@
     </message>
 </context>
 <context>
-    <name>AppUIStringLoader</name>
+    <name>CPP_LocalizedString</name>
+    <message>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="9"/>
+        <source>Ok</source>
+        <translation>确定</translation>
+    </message>
     <message>
         <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="10"/>
-        <source>Ok</source>
-        <translation type="unfinished">确定</translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="11"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>取消</translation>
     </message>
+</context>
+<context>
+    <name>CPP_LocalizedStringWithParam</name>
     <message>
-        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="15"/>
+        <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="14"/>
         <source>test param {{0}}, only 1 param</source>
-        <translation type="unfinished">测试程序 {{0}},只有1个</translation>
+        <translation>测试程序{{0}},只有一个参数</translation>
     </message>
 </context>
 <context>
@@ -55,7 +58,7 @@
     <message>
         <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="66"/>
         <source>openCamera</source>
-        <translation>翻译打开摄像头</translation>
+        <translation>打开摄像头</translation>
     </message>
 </context>
 <context>
@@ -86,7 +89,7 @@
     <message>
         <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="39"/>
         <source>my test window</source>
-        <translation>测试标题</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -95,35 +98,6 @@
         <location filename="../../qt/UIView/UIView/SystemTray/qml/SystemTray.qml" line="9"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>UIManager::UIStringLoader</name>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
-    </message>
-    <message>
-        <source>test param , only 1 param</source>
-        <translation type="vanished">测试程序,只有1个</translation>
-    </message>
-    <message>
-        <source>test param {{0}}, only 1 param</source>
-        <translation type="vanished">测试程序 {{0}},只有1个</translation>
-    </message>
-</context>
-<context>
-    <name>UIStringLoader</name>
-    <message>
-        <source>Ok</source>
-        <translation type="obsolete">确定</translation>
-    </message>
-</context>
-<context>
-    <name>UIStrings::UIStringMaps</name>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
     </message>
 </context>
 <context>

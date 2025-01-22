@@ -22,7 +22,7 @@ public:
     virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const = 0;
     virtual model::Color getColor(model::ColorItem colorItem, model::ColorItemState state) const = 0;
 
-    virtual void setResourceLocalizedString(std::shared_ptr<IResourceStringLoader> resourceStringLoader) = 0;
+    virtual void setResourceLocalizedString(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) = 0;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const = 0;
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const = 0;
 public:

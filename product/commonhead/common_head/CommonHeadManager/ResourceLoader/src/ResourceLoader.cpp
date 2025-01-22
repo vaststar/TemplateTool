@@ -75,11 +75,10 @@ std::shared_ptr<Theme> ResourceLoader::buildTheme(ucf::service::model::ThemeType
     return std::make_shared<Theme>(themeType);
 }
 
-void ResourceLoader::setResourceLocalizedString(std::shared_ptr<IResourceStringLoader> resourceStringLoader)
+void ResourceLoader::setResourceLocalizedString(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader)
 {
-    std::call_once(mResourceStringInitFlag, [resourceStringLoader, this](){
-        mResourceStringLoader = resourceStringLoader;
-    });
+    COMMONHEAD_LOG_WARN("set resourceStringLoader");
+    mResourceStringLoader = std::move(resourceStringLoader);
 }
 
 std::string ResourceLoader::getLocalizedString(model::LocalizedString stringId) const

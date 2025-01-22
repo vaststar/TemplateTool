@@ -30,20 +30,22 @@ public:
     AppContext* getAppContext() const { return mAppContext.get();}
 private:
     void registerQmlTypes();
-    void registerStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    void registerStringLoader();
 private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
     std::unique_ptr<AppContext> mAppContext;
+    commonHead::ICommonHeadFrameworkWPtr mCommonheadFramework;
 };
 
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
     , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
+    , mCommonheadFramework(config.commonHeadFramework)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
     registerQmlTypes();
-    registerStringLoader(config.commonHeadFramework);
+    registerStringLoader();
 }
 
 void AppUIManager::Impl::registerQmlTypes()
@@ -58,14 +60,14 @@ void AppUIManager::Impl::registerQmlTypes()
     UIDataUtils::registerMetaObject();   
 }
 
-void AppUIManager::Impl::registerStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
+void AppUIManager::Impl::registerStringLoader()
 {
-    if (auto commonHeadFramework = commonheadFramework.lock())
+    if (auto commonHeadFramework = mCommonheadFramework.lock())
     {
         if (auto resourceLoader = commonHeadFramework->getResourceLoader())
         {
-            resourceLoader->setResourceLocalizedString(std::make_shared<AppUIStringLoader>());
-    }
+            resourceLoader->setResourceLocalizedString(std::move(std::make_unique<AppUIStringLoader>()));
+        }
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////
