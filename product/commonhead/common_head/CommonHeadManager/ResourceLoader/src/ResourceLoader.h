@@ -1,20 +1,21 @@
 #pragma once
 
-#include <mutex>
 #include <vector>
 #include <memory>
 
 #include <commonHead/ResourceLoader/IResourceLoader.h>
-#include <commonHead/ResourceLoader/IResourceStringLoader.h>
-
-#include "Theme.h"
 
 namespace ucf::framework {
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
+namespace ucf::service::model{
+    enum class ThemeType;
+}
 namespace commonHead{
+class IResourceStringLoader;
+class ResourceThemeLoader;
 class ResourceLoader: public IResourceLoader
 {
 public:
@@ -27,13 +28,9 @@ public:
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const override;
 private:
     ucf::service::model::ThemeType getCurrentThemeType() const;
-    std::shared_ptr<Theme> getOrCreateTheme(ucf::service::model::ThemeType themeType) const;
-    std::shared_ptr<Theme> buildTheme(ucf::service::model::ThemeType themeType) const;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
-    mutable std::mutex mThemeMutex;
-    mutable std::vector<std::shared_ptr<Theme>> mThemes;
-    std::once_flag mResourceStringInitFlag;
+    const std::unique_ptr<ResourceThemeLoader> mResourceThemeLoader;
     std::unique_ptr<IResourceStringLoader> mResourceStringLoader;
 };
 }

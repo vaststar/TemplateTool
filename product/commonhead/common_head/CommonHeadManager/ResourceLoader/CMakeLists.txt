@@ -18,6 +18,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/Theme.cpp
     src/ColorConstant.h
     src/IResourceStringLoader.cpp
+    src/ResourceThemeLoader.h
+    src/ResourceThemeLoader.cpp
 )
 
 BuildModule(

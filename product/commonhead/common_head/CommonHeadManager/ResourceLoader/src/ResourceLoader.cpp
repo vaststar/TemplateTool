@@ -1,7 +1,5 @@
 #include "ResourceLoader.h"
 
-#include <thread>
-
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/ClientInfoModel.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
@@ -9,6 +7,7 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceLoader/IResourceStringLoader.h>
 
+#include "ResourceThemeLoader.h"
 
 namespace commonHead{
 std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
@@ -18,27 +17,30 @@ std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework:
 
 ResourceLoader::ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
+    , mResourceThemeLoader(std::make_unique<ResourceThemeLoader>())
 {
 
 }
 
 model::Font ResourceLoader::getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const
 {
-    if (auto theme = getOrCreateTheme(getCurrentThemeType()))
+    if (mResourceThemeLoader)
     {
-        return theme->getFont(family, size, weight, isItalic);
+        return mResourceThemeLoader->getFont(getCurrentThemeType(), family, size, weight, isItalic);
     }
-    COMMONHEAD_LOG_WARN("can't find theme");
+    
+    COMMONHEAD_LOG_WARN("no mResourceThemeLoader");
     return model::Font();
 }
 
 model::Color ResourceLoader::getColor(model::ColorItem colorItem, model::ColorItemState state) const
 {
-    if (auto theme = getOrCreateTheme(getCurrentThemeType()))
+    if (mResourceThemeLoader)
     {
-         return theme->getColor(colorItem, state);
+        return mResourceThemeLoader->getColor(getCurrentThemeType(), colorItem, state);
     }
-    COMMONHEAD_LOG_WARN("can't find theme");
+
+    COMMONHEAD_LOG_WARN("no mResourceThemeLoader");
     return model::Color();
 }
 
@@ -55,26 +57,6 @@ ucf::service::model::ThemeType ResourceLoader::getCurrentThemeType() const
     return ucf::service::model::ThemeType::SystemDefault;
 }
 
-std::shared_ptr<Theme> ResourceLoader::getOrCreateTheme(ucf::service::model::ThemeType themeType) const
-{
-    std::scoped_lock<std::mutex> loc(mThemeMutex);
-    auto iter = std::find_if(mThemes.cbegin(), mThemes.cend(), [themeType](const auto theme){
-        return themeType == theme->getThemeType();
-    });
-    if (iter != mThemes.cend())
-    {
-        return *iter;
-    }
-
-    mThemes.emplace_back(buildTheme(themeType));
-    return mThemes.back();
-}
-
-std::shared_ptr<Theme> ResourceLoader::buildTheme(ucf::service::model::ThemeType themeType) const
-{
-    return std::make_shared<Theme>(themeType);
-}
-
 void ResourceLoader::setResourceLocalizedString(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader)
 {
     COMMONHEAD_LOG_WARN("set resourceStringLoader");
@@ -87,6 +69,7 @@ std::string ResourceLoader::getLocalizedString(model::LocalizedString stringId) 
     {
         return mResourceStringLoader->getLocalizedString(stringId);
     }
+    COMMONHEAD_LOG_WARN("no resourceStringLoader");
     return {};
 }
 
@@ -96,6 +79,7 @@ std::string ResourceLoader::getLocalizedStringWithParams(model::LocalizedStringW
     {
         return mResourceStringLoader->getLocalizedStringWithParams(stringId, params);
     }
+    COMMONHEAD_LOG_WARN("no resourceStringLoader");
     return {};
 }
 
