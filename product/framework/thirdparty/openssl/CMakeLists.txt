@@ -1,4 +1,8 @@
-set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/windows/x64")
+if(WIN32)
+    set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/windows/x64")
+elseif(APPLE)
+    set(OPENSSL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/macosc/macosx_x86_64_release")
+endif()
 find_package(OpenSSL  REQUIRED)
 
 set(SSL_DLL_FILES)
