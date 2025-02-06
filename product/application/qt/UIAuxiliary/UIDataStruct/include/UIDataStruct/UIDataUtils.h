@@ -25,6 +25,14 @@ enum class LocalizedString;
 enum class LocalizedStringWithParam;
 }
 
+namespace UILanguage{
+enum class LanguageType;
+}
+
+namespace commonHead::viewModels::model {
+    enum class LanguageType;
+}
+
 class UIDataStruct_EXPORT UIDataUtils final
 {
 public:
@@ -38,4 +46,8 @@ public:
 
     static commonHead::model::LocalizedString convertUILocalizedStringToVMLocalizedString(UIStrings::LocalizedString uiLocalizedString);
     static commonHead::model::LocalizedStringWithParam convertUILocalizedStringParamToVMLocalizedStringParam(UIStrings::LocalizedStringWithParam uiLocalizedStringWithParam);
+
+    
+    static UILanguage::LanguageType convertViewModelLanguageToUILanguage(commonHead::viewModels::model::LanguageType language);
+    static commonHead::viewModels::model::LanguageType convertUILanguageToViewModelLanguage(UILanguage::LanguageType language);
 };

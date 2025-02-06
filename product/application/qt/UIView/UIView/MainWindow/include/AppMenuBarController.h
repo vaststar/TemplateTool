@@ -14,7 +14,7 @@ namespace commonHead{
         class IMainWindowViewModel;
     }
 }
-namespace UIManager{
+namespace UILanguage{
     enum class LanguageType;
 }
 
@@ -40,7 +40,7 @@ signals:
     void controllerInitialized();
 public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
-    void switchLanguage(UIManager::LanguageType languageType);
+    void switchLanguage(UILanguage::LanguageType languageType);
 private slots:
     void onMenuItemTriggered(int itemIndex);
 private:

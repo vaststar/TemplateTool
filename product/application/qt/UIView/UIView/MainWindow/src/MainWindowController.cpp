@@ -1,12 +1,17 @@
 #include "MainWindow/include/MainWindowController.h"
 
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+
+#include <UIDataStruct/UILanguage.h>
 #include <UIFabrication/ViewModelFactory.h>
 #include <UIFabrication/UIViewFactory.h>
 #include <UIManager/UIManagerProvider.h>
 #include <UIManager/TranslatorManager.h>
 #include <AppContext/AppContext.h>
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+
+#include <UIUtilities/PlatformUtils.h>
+
 #include "LoggerDefine/LoggerDefine.h"
 
 #include "ContactList/include/ContactListViewController.h"
@@ -52,7 +57,13 @@ void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBar
 
 void MainWindowController::openCamera()
 {
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIManager::LanguageType::ENGLISH);
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
     //mMainViewModel->openCamera();
+}
+
+void MainWindowController::testFunc()
+{
+    UIVIEW_LOG_DEBUG("");
+    UIUtilities::PlatformUtils::openLinkInDefaultBrowser("https://www.baidu.com");
 }

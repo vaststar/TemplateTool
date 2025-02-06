@@ -3,6 +3,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIDataStruct/UIElementData.h
     include/UIDataStruct/UIDataUtils.h
     include/UIDataStruct/UIStrings.h
+    include/UIDataStruct/UILanguage.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -10,6 +11,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/UIElementData.cpp
     src/UIDataUtils.cpp
     src/UIStrings.cpp
+    src/UILanguage.cpp
 )
 
 if (WIN32)
@@ -42,6 +44,7 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        ViewModels
         ResourceLoader
         MasterLog
         UICore

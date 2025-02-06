@@ -1,2 +1,3 @@
+add_subdirectory(UIComponent)
 add_subdirectory(UIUtilities)
 add_subdirectory(UIView)

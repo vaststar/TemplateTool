@@ -56,7 +56,7 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="66"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="65"/>
         <source>openCamera</source>
         <translation>打开摄像头</translation>
     </message>
@@ -87,7 +87,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="39"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="44"/>
         <source>my test window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -103,7 +103,7 @@
 <context>
     <name>UTWindow</name>
     <message>
-        <location filename="../../qt/UIComponent/UTComponent/UTWindow/UTWindow.qml" line="12"/>
+        <location filename="../../qt/UIView/UIComponent/UTComponent/UTWindow/UTWindow.qml" line="12"/>
         <source>test ut window</source>
         <translation type="unfinished"></translation>
     </message>

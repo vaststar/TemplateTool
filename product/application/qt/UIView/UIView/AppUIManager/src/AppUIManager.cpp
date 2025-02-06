@@ -50,13 +50,6 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
 
 void AppUIManager::Impl::registerQmlTypes()
 {
-    qmlRegisterUncreatableMetaObject(
-		        UIManager::staticMetaObject, // The meta-object of the namespace
-		        "UIManager",                 // The URI or module name
-		        1, 0,                          // Version
-		        "UIManager",                 // The name used in QML
-		        "Access to enums only"         // Error message for attempting to create an instance
-		    );
     UIDataUtils::registerMetaObject();   
 }
 

@@ -1,11 +1,11 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIUtilities/UIUtilitiesExport.h
-    include/UIUtilities/LanguageUtils.h
+    include/UIUtilities/PlatformUtils.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h 
-    src/LanguageUtils.cpp
+    src/PlatformUtils.cpp
 )
 
 if (WIN32)

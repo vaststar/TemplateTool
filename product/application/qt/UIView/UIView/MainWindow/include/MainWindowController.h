@@ -37,6 +37,7 @@ public slots:
     void onContactListLoaded(ContactListViewController* contactListController);
     void onInitMenuBarController(AppMenuBarController* menuBarController);
     void openCamera();
+    void testFunc();
 private:
     QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;

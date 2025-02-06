@@ -26,8 +26,8 @@ public:
 
     QString mCurrentLanguage;
 
-    std::string getLanguageString(LanguageType languageType) const;
-    std::map<LanguageType, std::string> getLanguageMap() const;
+    std::string getLanguageString(UILanguage::LanguageType languageType) const;
+    std::map<UILanguage::LanguageType, std::string> getLanguageMap() const;
 };
 
 TranslatorManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
@@ -37,25 +37,25 @@ TranslatorManager::Impl::Impl(UICore::CoreApplication* application, UICore::Core
 {
 }
 
-std::map<LanguageType, std::string> TranslatorManager::Impl::getLanguageMap() const
+std::map<UILanguage::LanguageType, std::string> TranslatorManager::Impl::getLanguageMap() const
 {
-    const std::map<LanguageType, std::string> languageMap = {
-        {LanguageType::ENGLISH, "en"},
-        {LanguageType::CHINESE_SIMPLIFIED, "zh-CN"},
-        {LanguageType::CHINESE_TRADITIONAL, "zh-TW"},
-        {LanguageType::FRENCH, "fr"},
-        {LanguageType::GERMAN, "de"},
-        {LanguageType::ITALIAN, "it"},
-        {LanguageType::SPANISH, "es"},
-        {LanguageType::PORTUGUESE, "pt"},
-        {LanguageType::JAPANESE, "ja"},
-        {LanguageType::KOREAN, "ko"},
-        {LanguageType::RUSSIAN, "ru"}
+    const std::map<UILanguage::LanguageType, std::string> languageMap = {
+        {UILanguage::LanguageType::LanguageType_ENGLISH, "en"},
+        {UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED, "zh-CN"},
+        {UILanguage::LanguageType::LanguageType_CHINESE_TRADITIONAL, "zh-TW"},
+        {UILanguage::LanguageType::LanguageType_FRENCH, "fr"},
+        {UILanguage::LanguageType::LanguageType_GERMAN, "de"},
+        {UILanguage::LanguageType::LanguageType_ITALIAN, "it"},
+        {UILanguage::LanguageType::LanguageType_SPANISH, "es"},
+        {UILanguage::LanguageType::LanguageType_PORTUGUESE, "pt"},
+        {UILanguage::LanguageType::LanguageType_JAPANESE, "ja"},
+        {UILanguage::LanguageType::LanguageType_KOREAN, "ko"},
+        {UILanguage::LanguageType::LanguageType_RUSSIAN, "ru"}
     };
     return languageMap;
 }
 
-std::string TranslatorManager::Impl::getLanguageString(LanguageType languageType) const
+std::string TranslatorManager::Impl::getLanguageString(UILanguage::LanguageType languageType) const
 {
     const auto& languageMap = getLanguageMap();
     if (auto iter = languageMap.find(languageType); iter != languageMap.end())
@@ -121,7 +121,7 @@ void TranslatorManager::loadTranslation(const QString& language)
 
 }
 
-void TranslatorManager::loadTranslation(LanguageType languageType)
+void TranslatorManager::loadTranslation(UILanguage::LanguageType languageType)
 {
     loadTranslation(QString::fromStdString(mImpl->getLanguageString(languageType)));
 }

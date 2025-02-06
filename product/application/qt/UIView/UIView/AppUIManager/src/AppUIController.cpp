@@ -1,18 +1,16 @@
 #include "AppUIController.h"
 
-#include <UIFabrication/ViewModelFactory.h>
-#include <UIFabrication/UIViewFactory.h>
-#include <UIManager/UIManagerProvider.h>
-#include <AppContext/AppContext.h>
-#include <UIManager/TranslatorManager.h>
-// #include <UIManager/ThemeManager.h>
-
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
-#include <UIUtilities/LanguageUtils.h>
+#include <UIDataStruct/UIDataUtils.h>
+#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/UIViewFactory.h>
+#include <UIManager/UIManagerProvider.h>
+#include <AppContext/AppContext.h>
+#include <UIManager/TranslatorManager.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -55,7 +53,7 @@ void AppUIController::initializeUIClient()
     //1, install language
     auto clientInfoVM = mAppContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
     UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(LanguageUtils::convertViewModelLanguageToUILanguage(clientInfoVM->getApplicationLanguage()));
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIDataUtils::convertViewModelLanguageToUILanguage(clientInfoVM->getApplicationLanguage()));
 
     //2, initialize themeManager
     UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));

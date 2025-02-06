@@ -5,6 +5,7 @@
 #include <QString>
 
 #include <UIManager/UIManagerExport.h>
+#include <UIDataStruct/UILanguage.h>
 
 namespace UICore{
     class CoreApplication;
@@ -13,21 +14,6 @@ namespace UICore{
 
 
 namespace UIManager{
-Q_NAMESPACE_EXPORT(UIManager_EXPORT)
-enum class LanguageType {
-    ENGLISH,
-    CHINESE_SIMPLIFIED,
-    CHINESE_TRADITIONAL,
-    FRENCH,
-    GERMAN,
-    ITALIAN,
-    SPANISH,
-    PORTUGUESE,
-    JAPANESE,
-    KOREAN,
-    RUSSIAN
-};
-Q_ENUM_NS(LanguageType)
 
 class UIManager_EXPORT TranslatorManager final: public QObject
 {
@@ -38,7 +24,7 @@ public:
 
     void loadSystemTranslation();
     // 加载特定语言的翻译文件
-    void loadTranslation(LanguageType languageType);
+    void loadTranslation(UILanguage::LanguageType languageType);
 signals:
     void languageChanged(const QString& language);
 private:

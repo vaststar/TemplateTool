@@ -1,13 +1,16 @@
 #include "MainWindow/include/AppMenuBarController.h"
 
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
+
+#include <UIDataStruct/UILanguage.h>
 #include <UIFabrication/ViewModelFactory.h>
 #include <UIFabrication/UIViewFactory.h>
 #include <UIManager/UIManagerProvider.h>
 #include <UIManager/TranslatorManager.h>
 #include <AppContext/AppContext.h>
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
-#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
+
 #include "LoggerDefine/LoggerDefine.h"
 
 #include "ContactList/include/ContactListViewController.h"
@@ -41,7 +44,7 @@ void AppMenuBarController::onContactListLoaded(ContactListViewController* contac
     contactListController->initializeController(mAppContext);
 }
 
-void AppMenuBarController::switchLanguage(UIManager::LanguageType languageType)
+void AppMenuBarController::switchLanguage(UILanguage::LanguageType languageType)
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
 }
@@ -83,6 +86,6 @@ void AppMenuBarController::createMenu()
 void AppMenuBarController::onMenuItemTriggered(int itemIndex)
 {
     UIVIEW_LOG_DEBUG("item clicked:" << itemIndex);
-    switchLanguage(UIManager::LanguageType::CHINESE_SIMPLIFIED);
+    switchLanguage(UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED);
 
 }

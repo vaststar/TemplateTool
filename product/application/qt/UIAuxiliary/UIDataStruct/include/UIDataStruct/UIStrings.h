@@ -1,7 +1,5 @@
 #pragma once
 
-#include <map>
-#include <QtGlobal>
 #include <QObject>
 #include <QString>
 #include <UIDataStruct/UIDataStructExport.h>

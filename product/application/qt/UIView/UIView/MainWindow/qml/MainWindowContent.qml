@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import UIView 1.0
 import UTComponent 1.0
 import UIStrings 1.0
-import UIManager 1.0
 
 Item{
     required property var controller
@@ -95,7 +94,7 @@ Item{
         //     border.width: butn2.activeFocus?3:0
         // }
         onClicked:{
-            console.log("ttt", UIManager.BBB)
+            controller.testFunc()
         }
     }
     UTDialog{
