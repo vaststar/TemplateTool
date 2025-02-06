@@ -139,7 +139,11 @@ std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() cons
 
 void ClientInfoService::setCurrentThemeType(model::ThemeType themeType)
 {
-    mDataPrivate->getClientInfoManager()->setCurrentThemeType(themeType);
+    if (getCurrentThemeType() != themeType)
+    {
+        mDataPrivate->getClientInfoManager()->setCurrentThemeType(themeType);
+        fireNotification(&IClientInfoServiceCallback::onClientThemeChanged, themeType);
+    }
 }
 
 model::ThemeType ClientInfoService::getCurrentThemeType() const
@@ -160,6 +164,7 @@ model::SqliteDBConfig ClientInfoService::getSharedDBConfig() const
 void ClientInfoService::OnDatabaseInitialized(const std::string& dbId)
 {
     mDataPrivate->getClientInfoManager()->databaseInitialized(dbId);
+    fireNotification(&IClientInfoServiceCallback::onClientInfoReady);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

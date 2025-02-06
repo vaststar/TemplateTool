@@ -19,7 +19,19 @@ ResourceLoader::ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
     , mResourceThemeLoader(std::make_unique<ResourceThemeLoader>())
 {
+    COMMONHEAD_LOG_DEBUG("create ResourceLoader, this:" << this);
+}
 
+void ResourceLoader::initResourceLoader()
+{
+    COMMONHEAD_LOG_DEBUG("");
+    if (auto coreFramework = mCoreframeworkWPtr.lock())
+    {
+        if (auto service = coreFramework->getService<ucf::service::IClientInfoService>().lock())
+        {
+            service->registerCallback(shared_from_this());
+        }
+    }
 }
 
 model::Font ResourceLoader::getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const
@@ -83,4 +95,25 @@ std::string ResourceLoader::getLocalizedStringWithParams(model::LocalizedStringW
     return {};
 }
 
+void ResourceLoader::onClientThemeChanged(ucf::service::model::ThemeType themeType)
+{
+    addResourceTheme(themeType);
+}
+
+void ResourceLoader::onClientInfoReady()
+{
+    addResourceTheme(getCurrentThemeType());
+}
+
+void ResourceLoader::addResourceTheme(ucf::service::model::ThemeType themeType)
+{
+    if (mResourceThemeLoader)
+    {
+        mResourceThemeLoader->addTheme(themeType);
+    }
+    else
+    {
+        COMMONHEAD_LOG_WARN("no resourceStringLoader");
+    }
+}
 }

@@ -21,6 +21,7 @@ CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr core
 void CommonHeadFramework::initCommonheadFramework()
 {
     COMMONHEAD_LOG_DEBUG("init CommonHeadFramework, address:"<<this);
+    mResourceLoader->initResourceLoader();
 }
 
 void CommonHeadFramework::exitCommonheadFramework()

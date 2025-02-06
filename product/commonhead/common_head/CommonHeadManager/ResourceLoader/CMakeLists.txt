@@ -14,12 +14,14 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/FontSet.cpp
     src/ColorSet.h
     src/ColorSet.cpp
-    src/Theme.h
-    src/Theme.cpp
+    src/ResourceTheme.h
+    src/ResourceTheme.cpp
     src/ColorConstant.h
     src/IResourceStringLoader.cpp
     src/ResourceThemeLoader.h
     src/ResourceThemeLoader.cpp
+    src/ColorBuilder.h
+    src/ColorBuilder.cpp
 )
 
 BuildModule(

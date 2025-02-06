@@ -6,6 +6,11 @@ namespace commonHead{
 Colors::Colors(model::ColorItem colorEnum, const model::Color& normal)
     : mColorEnum(colorEnum)
     , mNormal(normal)
+    , mHovered(normal)
+    , mPressed(normal)
+    , mDisabled(normal)
+    , mFocused(normal)
+    , mChecked(normal)
 {
 
 }

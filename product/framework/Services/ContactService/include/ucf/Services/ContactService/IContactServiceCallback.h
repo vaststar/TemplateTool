@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 namespace ucf::service{
     namespace model{

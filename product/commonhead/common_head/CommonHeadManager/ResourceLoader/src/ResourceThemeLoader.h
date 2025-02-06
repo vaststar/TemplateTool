@@ -9,7 +9,7 @@ namespace ucf::service::model{
 }
 
 namespace commonHead{
-class Theme;
+class ResourceTheme;
 
 namespace model{
     enum class FontFamily;
@@ -25,13 +25,15 @@ class ResourceThemeLoader
 {
 public:
     ResourceThemeLoader();
+    void addTheme(ucf::service::model::ThemeType themeType);
     model::Font getFont(ucf::service::model::ThemeType themeType, model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const;
     model::Color getColor(ucf::service::model::ThemeType themeType, model::ColorItem colorItem, model::ColorItemState state) const;
+
 private:
-    std::shared_ptr<Theme> getOrCreateTheme(ucf::service::model::ThemeType themeType) const;
-    std::shared_ptr<Theme> buildTheme(ucf::service::model::ThemeType themeType) const;
+    std::shared_ptr<ResourceTheme> buildTheme(ucf::service::model::ThemeType themeType) const;
+    std::shared_ptr<ResourceTheme> getTheme(ucf::service::model::ThemeType themeType) const;
 private:
     mutable std::mutex mThemeMutex;
-    mutable std::vector<std::shared_ptr<Theme>> mThemes;
+    std::vector<std::shared_ptr<ResourceTheme>> mThemes;
 };
 }

@@ -19,6 +19,7 @@ class COMMONHEAD_EXPORT IResourceLoader
 {
 public:
     ~IResourceLoader() = default;
+    virtual void initResourceLoader() = 0;
     virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const = 0;
     virtual model::Color getColor(model::ColorItem colorItem, model::ColorItemState state) const = 0;
 

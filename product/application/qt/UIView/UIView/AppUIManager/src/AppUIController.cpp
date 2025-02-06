@@ -46,10 +46,6 @@ void AppUIController::initializeController(AppContext* appContext)
 
     initializeUIClient();
 
-    // clientInfoVM->setApplicationLanguage(commonHead::viewModels::model::LanguageType::RUSSIAN);
-
-    //UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
-    // mAppContext->getManagerProvider()->getThemeManager();
     emit controllerInitialized();
 }
 

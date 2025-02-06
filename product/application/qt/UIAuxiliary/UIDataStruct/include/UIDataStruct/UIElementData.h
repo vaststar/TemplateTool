@@ -53,4 +53,12 @@ enum class UIColorEnum{
     UIColorEnum_Button_Primary_Border
 };
 Q_ENUM_NS(UIColorEnum)
+
+enum class UIThemeType{
+    UIThemeType_SystemDefault,
+    UIThemeType_Dark,
+    UIThemeType_Light
+};
+Q_ENUM_NS(UIThemeType)
+
 }

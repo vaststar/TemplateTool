@@ -9,10 +9,10 @@ enum class ThemeType;
 }
 namespace commonHead{
 
-class Theme
+class ResourceTheme
 {
 public:
-    Theme(ucf::service::model::ThemeType themeType);
+    ResourceTheme(ucf::service::model::ThemeType themeType);
     ucf::service::model::ThemeType getThemeType() const;
     model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const;
     model::Color getColor(model::ColorItem colorItem, model::ColorItemState state) const;

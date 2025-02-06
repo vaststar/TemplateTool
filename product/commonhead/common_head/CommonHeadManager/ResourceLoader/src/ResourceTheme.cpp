@@ -1,14 +1,15 @@
-#include "Theme.h"
+#include "ResourceTheme.h"
 
 #include <ucf/Services/ClientInfoService/ClientInfoModel.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 
 #include "ColorConstant.h"
+#include "ColorBuilder.h"
 
 namespace commonHead{
 
-Theme::Theme(ucf::service::model::ThemeType themeType)
+ResourceTheme::ResourceTheme(ucf::service::model::ThemeType themeType)
     : mThemeType(themeType)
     , mFontSet(std::make_unique<FontSet>())
     , mColorSet(std::make_unique<ColorSet>())
@@ -17,12 +18,12 @@ Theme::Theme(ucf::service::model::ThemeType themeType)
     initColors();
 }
 
-ucf::service::model::ThemeType Theme::getThemeType() const
+ucf::service::model::ThemeType ResourceTheme::getThemeType() const
 {
     return mThemeType;
 }
 
-model::Font Theme::getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const
+model::Font ResourceTheme::getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const
 {
     if (auto fonts = mFontSet->getFonts(family))
     {
@@ -32,7 +33,7 @@ model::Font Theme::getFont(model::FontFamily family, model::FontSize size, model
     return model::Font();
 }
 
-model::Color Theme::getColor(model::ColorItem colorItem, model::ColorItemState state) const
+model::Color ResourceTheme::getColor(model::ColorItem colorItem, model::ColorItemState state) const
 {
     if (auto colors = mColorSet->getColors(colorItem))
     {
@@ -42,7 +43,7 @@ model::Color Theme::getColor(model::ColorItem colorItem, model::ColorItemState s
     return model::Color();
 }
 
-void Theme::initFonts()
+void ResourceTheme::initFonts()
 {
     std::vector<std::shared_ptr<Fonts>> uiFonts;
     uiFonts.emplace_back(std::make_shared<Fonts>(model::FontFamily::FontFamily_SegoeUI));
@@ -51,13 +52,9 @@ void Theme::initFonts()
     mFontSet->initFonts(uiFonts);
 }
 
-void Theme::initColors()
+void ResourceTheme::initColors()
 {
-    std::vector<std::shared_ptr<Colors>> uiColors;
-    uiColors.emplace_back(std::make_shared<Colors>(model::ColorItem::ColorItem_Button_Primary_Text, model::Color{0,0,0}));
-    uiColors.emplace_back(std::make_shared<Colors>(model::ColorItem::ColorItem_Button_Primary_Background, model::Color{0,122, 163}, model::Color{0,160, 209}, model::Color{82,220, 255}, model::Color{41,41, 41}, model::Color{0,122, 163}, model::Color{0,122, 163}));
-    uiColors.emplace_back(std::make_shared<Colors>(model::ColorItem::ColorItem_Button_Primary_Border, model::Color{0,0,255}));
-    mColorSet->initColors(uiColors);
+    mColorSet->initColors(ColorBuilder().buildColors(mThemeType));
 }
 
 }

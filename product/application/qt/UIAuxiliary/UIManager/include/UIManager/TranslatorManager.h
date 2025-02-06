@@ -28,13 +28,6 @@ enum class LanguageType {
     RUSSIAN
 };
 Q_ENUM_NS(LanguageType)
-enum class TestClass {
- AAA,
- BBB,
- CCC,
- DDD
-};
-Q_ENUM_NS(TestClass)
 
 class UIManager_EXPORT TranslatorManager final: public QObject
 {
