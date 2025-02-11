@@ -13,8 +13,8 @@ BaseButton {
 
     contentItem: Text{
         text: control.text
-        font: ThemeManager.getUIFont(fontSize)
-        color: UTComponentUtil.getColor(control, fontColorEnum)
+        font: UTComponentUtil.getUIFont(fontSize)
+        color: UTComponentUtil.getItemUIColor(control, fontColorEnum)
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
@@ -22,7 +22,7 @@ BaseButton {
     background: Rectangle{
         anchors.fill: parent
         radius: Math.min(control.height, control.width)/2
-        color: UTComponentUtil.getColor(control, backgroundColorEnum)
+        color: UTComponentUtil.getItemUIColor(control, backgroundColorEnum)
 
         Behavior on color {
             ColorAnimation {duration: 250}

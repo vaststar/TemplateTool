@@ -6,7 +6,7 @@ Item {
     property var focusColor: "blue"
     property var focusWidth: 2
     property var focusRadius: 0
-    property var focusMargins: -2
+    property var focusMargins: -3
 
 
     visible: parent.activeFocus
@@ -16,6 +16,7 @@ Item {
     // 绘制焦点框
     Rectangle {
         id: focusRect
+        smooth: true
         anchors.fill: parent
         border.color: focusColor
         border.width: focusWidth
