@@ -5,6 +5,7 @@
 
 namespace commonHead::model{
 enum class ColorItem{
+    ColorItem_Item_Focus_Border,
     ColorItem_Button_Primary_Text,
     ColorItem_Button_Primary_Background,
     ColorItem_Button_Primary_Border

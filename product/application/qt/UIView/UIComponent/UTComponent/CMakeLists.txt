@@ -15,6 +15,8 @@ set(MODULE_QML_TARGET_FILES
     UTMenu/UTMenuItem.qml
     UTMenu/CreateMenus.js
     UTButton/UTButton.qml
+    UTFocusItem/UTFocusItem.qml
+    UTComponentUtil/UTComponentUtil.js
 )
 
 set(MODULE_TARGET_SOURCE_HEADER_BASE_DIR
@@ -41,12 +43,11 @@ BuildQtModule(
         ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PUBLIC
-        UIComponentBase
     TARGET_DEPENDENICES_PRIVATE
         Qt6::Gui Qt6::Quick
         MasterLog 
         UIDataStruct
+        UIComponentBase
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

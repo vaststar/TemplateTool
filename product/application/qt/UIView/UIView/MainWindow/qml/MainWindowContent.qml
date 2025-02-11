@@ -40,7 +40,7 @@ Item{
     }
 
     
-    Button {
+    UTButton {
         id: bbb
         focus: true
         text: "testDialogShowButton"
@@ -53,26 +53,16 @@ Item{
         onClicked:{
             dialog.open()
         }
-        background: Rectangle{
-            anchors.fill: parent
-            border.color: "red"
-            border.width: bbb.activeFocus?3:0
-        }
     }
 
-    Button {
+    UTButton {
         id: butn1
         text: qsTr("openCamera")
         anchors{
             top: parent.top
-            topMargin: 300
+            topMargin: 350
             left: parent.left
-            leftMargin: 200
-        }
-        background: Rectangle{
-            anchors.fill: parent
-            border.color: "red"
-            border.width: butn1.activeFocus?3:0
+            leftMargin: 50
         }
         onClicked:{
             controller.openCamera();
@@ -81,18 +71,12 @@ Item{
     UTButton {
         id: butn2
         text:  qsTr(ThemeManager.getLocalizedString(UIStrings.LocalizedString_OkButtonLabel)) //qsTr("button2")
-        width: 300
         anchors{
             top: parent.top
             topMargin: 300
             left: parent.left
             leftMargin: 400
         }
-        // background: Rectangle{
-        //     anchors.fill: parent
-        //     border.color: "red"
-        //     border.width: butn2.activeFocus?3:0
-        // }
         onClicked:{
             controller.testFunc()
         }

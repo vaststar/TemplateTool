@@ -8,6 +8,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 
 set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
+    BaseFocusItem/BaseFocusItem.qml
 )
 
 set(MODULE_TARGET_SOURCE_HEADER_BASE_DIR

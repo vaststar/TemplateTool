@@ -20,6 +20,5 @@ MenuBar {
     function createMenuItems(){
         console.log("listlength:" + controller.listMenu.length)
         CreateMenus.createMenu(root, controller.rootMenu)
-// CreateMenus.createMenu(root, controller.rootMenu)
     }
 }

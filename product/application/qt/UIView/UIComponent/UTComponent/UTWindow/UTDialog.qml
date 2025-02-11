@@ -5,7 +5,8 @@ import QtQuick.Layouts
 Dialog {
     id: dialog
     title: "myTitle"
-    modal: true
+    modal: false
+    // modality: Qt.ApplicationModal
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy:Popup.NoAutoClose
     anchors.centerIn: parent

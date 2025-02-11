@@ -21,6 +21,8 @@ commonHead::model::ColorItem UIDataUtils::convertUIColorEnumToVMColorItem(UIElem
 {
     switch (uiColorItem)
     {
+    case UIElementData::UIColorEnum::UIColorEnum_Item_Focus_Border:
+        return commonHead::model::ColorItem::ColorItem_Item_Focus_Border;
     case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Text:
         return commonHead::model::ColorItem::ColorItem_Button_Primary_Text;
     case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Background:
