@@ -17,4 +17,8 @@ constexpr auto Gray90 = "#292929";
 
 constexpr auto Black100 = "#000000";
 }
+
+namespace ItemColorConstant {
+constexpr auto FocusItemColor = "#64b4fa";
+}
 }

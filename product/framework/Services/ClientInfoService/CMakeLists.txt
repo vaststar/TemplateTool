@@ -15,6 +15,14 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 
+add_custom_target(update_version)
+set_target_properties(update_version PROPERTIES FOLDER framework/Services)
+
+add_custom_command( TARGET update_version PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/UpdateVersion.cmake
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+) 
+
 BuildModule(
     MODULE_NAME 
         ClientInfoService
@@ -34,6 +42,7 @@ BuildModule(
         StringUtils
         UUIDUtils
         magic_enum
+        
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro
         ServiceDeclaration
@@ -49,3 +58,4 @@ BuildModule(
     IDE_FOLDER
         framework/Services
 )
+add_dependencies(ClientInfoService update_version)
