@@ -37,7 +37,7 @@ function(GenerateAppVersionFile)
     # string(TIMESTAMP PROJECT_COMPILE_YEAR "%Y" UTC)
     # string(TIMESTAMP PROJECT_COMPILE_MONTH "%m" UTC)
     # string(TIMESTAMP PROJECT_COMPILE_DAY "%d" UTC)
-    string(TIMESTAMP PROJECT_COMPILE_TIME "%Y-%m-%d %H:%M:%S" UTC)
+    string(TIMESTAMP PROJECT_COMPILE_TIME "%Y-%m-%dT%H:%M:%SZ" UTC)
     
     # 生成版本文件
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/appVersion.h.in ${CMAKE_BINARY_DIR}/appVersion.h @ONLY)
