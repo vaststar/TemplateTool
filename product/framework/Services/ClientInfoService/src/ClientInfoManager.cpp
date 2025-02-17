@@ -1,5 +1,6 @@
 #include "ClientInfoManager.h"
 
+#include <appVersion.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
@@ -33,7 +34,7 @@ ClientInfoManager::~ClientInfoManager()
 
 model::Version ClientInfoManager::getApplicationVersion() const
 {
-    return model::Version{"1", "0", "1"};
+    return model::Version{ AppVersion::PROJECT_VERSION_MAJOR, AppVersion::PROJECT_VERSION_MINOR, AppVersion::PROJECT_VERSION_PATCH };
 }
 
 model::LanguageType ClientInfoManager::getApplicationLanguage() const

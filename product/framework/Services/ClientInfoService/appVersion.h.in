@@ -1,0 +1,13 @@
+#pragma once
+
+namespace AppVersion{
+inline constexpr auto PROJECT_VERSION_MAJOR = "@PROJECT_VERSION_MAJOR@";
+inline constexpr auto PROJECT_VERSION_MINOR = "@PROJECT_VERSION_MINOR@";
+inline constexpr auto PROJECT_VERSION_PATCH = "@PROJECT_VERSION_PATCH@";
+inline constexpr auto PROJECT_VERSION = "@PROJECT_VERSION@";
+
+inline constexpr auto GIT_COMMIT_HASH = "@GIT_COMMIT_HASH@";
+inline constexpr auto GIT_CURRENT_BRANCH = "@GIT_CURRENT_BRANCH@";
+
+inline constexpr auto PROJECT_COMPILE_TIME = "@PROJECT_COMPILE_TIME@";
+}

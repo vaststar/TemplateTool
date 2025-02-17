@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <sstream>
 #include <format>
+#include <algorithm>
 
 #include "LogConsoleLogger.h"
 #include "LogFileLogger.h"

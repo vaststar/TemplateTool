@@ -1,4 +1,15 @@
 include(BuildModule)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}") 
+
+add_custom_target(update_version)
+set_target_properties(update_version PROPERTIES FOLDER framework/Services)
+
+add_custom_command( TARGET update_version PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/appVersion.h.in ${CMAKE_BINARY_DIR}/appVersion.h.in
+    COMMAND ${CMAKE_COMMAND} -P  ${CMAKE_CURRENT_SOURCE_DIR}/UpdateVersion.cmake
+    ALWAYS
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+) 
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/ClientInfoService/IClientInfoServiceCallback.h
@@ -14,14 +25,6 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/ClientInfoManager.cpp
 )
 
-
-add_custom_target(update_version)
-set_target_properties(update_version PROPERTIES FOLDER framework/Services)
-
-add_custom_command( TARGET update_version PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/UpdateVersion.cmake
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-) 
 
 BuildModule(
     MODULE_NAME 
@@ -49,6 +52,7 @@ BuildModule(
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
         include
     TARGET_INCLUDE_DIRECTORIES_PRIVATE
