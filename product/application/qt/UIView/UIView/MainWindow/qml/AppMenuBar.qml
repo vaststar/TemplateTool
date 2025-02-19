@@ -19,6 +19,8 @@ MenuBar {
 
     function createMenuItems(){
         console.log("listlength:" + controller.listMenu.length)
-        CreateMenus.createMenu(root, controller.rootMenu)
+        for (let index = 0; index < controller.rootMenu.subItems.length; index++) {
+            CreateMenus.createMenu(root, controller.rootMenu.subItems[index])
+        }
     }
 }
