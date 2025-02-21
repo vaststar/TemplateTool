@@ -62,16 +62,7 @@ void AppUIController::initializeUIClient()
 
 void AppUIController::startApp()
 {
-    
-    UIVIEW_LOG_DEBUG("start load main qml");
-
-    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), "MainWindowController", [this](auto controller){
-        if (auto mainController = dynamic_cast<MainWindowController*>(controller))
-        {
-            // mImpl->getAppContext()->getViewFactory()->installTranslation({});
-            mainController->initializeController(mAppContext);
-        }
-    });
-    UIVIEW_LOG_DEBUG("finish load main qml");
+    MainWindowController* mainController = new MainWindowController(mAppContext, this);
+    mainController->startAppWindow();
 
 }
