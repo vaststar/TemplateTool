@@ -13,12 +13,13 @@
 
 #include "LoggerDefine/LoggerDefine.h"
 
-AppMenuBarController::AppMenuBarController(QPointer<AppContext> appContext, QObject* parent)
+#include "ContactList/include/ContactListViewController.h"
+
+AppMenuBarController::AppMenuBarController(QObject* parent)
     : CoreController(parent)
-    , mAppContext(appContext)
+    , mAppContext(nullptr)
 {
     UIVIEW_LOG_DEBUG("create AppMenuBarController");
-    initializeController(appContext);
 }
 
 QString AppMenuBarController::getControllerName() const
@@ -29,11 +30,18 @@ QString AppMenuBarController::getControllerName() const
 
 void AppMenuBarController::initializeController(AppContext* appContext)
 {
+    mAppContext = appContext;
+    assert(mAppContext);
 
     auto clientInfoVM = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
     auto res = clientInfoVM->getSupportedLanguages();
     createMenu();
     emit controllerInitialized();
+}
+
+void AppMenuBarController::onContactListLoaded(ContactListViewController* contactListController)
+{
+    contactListController->initializeController(mAppContext);
 }
 
 void AppMenuBarController::switchLanguage(UILanguage::LanguageType languageType)

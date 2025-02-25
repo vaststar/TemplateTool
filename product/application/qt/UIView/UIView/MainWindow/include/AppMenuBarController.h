@@ -19,6 +19,7 @@ namespace UILanguage{
 }
 
 class AppContext;
+class ContactListViewController;
 class AppMenuBarController : public UICore::CoreController
 {
     Q_OBJECT
@@ -26,7 +27,7 @@ class AppMenuBarController : public UICore::CoreController
     Q_PROPERTY(QList<MenuItemModel*> listMenu READ listMenu CONSTANT)
     QML_ELEMENT
 public:
-    AppMenuBarController(QPointer<AppContext> appContext, QObject* parent = nullptr);
+    AppMenuBarController(QObject* parent = nullptr);
     virtual QString getControllerName() const override;
 
     void initializeController(AppContext* appContext);
@@ -38,11 +39,12 @@ signals:
     void titleChanged();
     void controllerInitialized();
 public slots:
+    void onContactListLoaded(ContactListViewController* contactListController);
     void switchLanguage(UILanguage::LanguageType languageType);
 private slots:
     void onMenuItemTriggered(int itemIndex);
 private:
-    const QPointer<AppContext> mAppContext;
+    QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     MenuItemModel* mRootMenu{nullptr};
 };

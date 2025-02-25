@@ -11,9 +11,8 @@ Item{
     MainWindowTabBar{
         id: navigationBar
     }
-
-    Loader{
-        id: contactListLoader
+    ContactList{
+        id: frame
         width : 400
         height: 200
         anchors{
@@ -21,20 +20,9 @@ Item{
             left: navigationBar.right
         }
     }
-
-    // ContactList{
-    //     id: frame
-    //     width : 400
-    //     height: 200
-    //     anchors{
-    //         top: parent.top
-    //         left: navigationBar.right
-    //     }
-    // }
     
     Component.onCompleted:{
-        contactListLoader.setSource("qrc:/qt/qml/UIView/ContactList/qml/ContactList.qml")
-        // controller.onContactListLoaded(frame.controller)
+        controller.onContactListLoaded(frame.controller)
     }
 
     Text {

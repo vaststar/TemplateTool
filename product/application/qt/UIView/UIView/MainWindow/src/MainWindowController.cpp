@@ -9,7 +9,6 @@
 #include <UIManager/UIManagerProvider.h>
 #include <UIManager/TranslatorManager.h>
 #include <AppContext/AppContext.h>
-#include <UICore/CoreQmlEngine.h>
 
 #include <UIUtilities/PlatformUtils.h>
 
@@ -18,14 +17,11 @@
 #include "ContactList/include/ContactListViewController.h"
 #include "MainWindow/include/AppMenuBarController.h"
 
-MainWindowController::MainWindowController(QPointer<AppContext> appContext, QObject* parent)
+MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)
-    , mAppContext(appContext)
+    , mAppContext(nullptr)
 {
-    assert(mAppContext);
-    appContext->getQmlEngine()->rootContext()->setContextProperty("mainWindowController", this);
     UIVIEW_LOG_DEBUG("create MainWindowController");
-    initializeController(appContext);
 }
 
 QString MainWindowController::getControllerName() const
@@ -33,8 +29,12 @@ QString MainWindowController::getControllerName() const
     return QStringLiteral("MainWindowController");
 }
 
-void MainWindowController::initializeController(QPointer<AppContext> appContext)
+
+void MainWindowController::initializeController(AppContext* appContext)
 {
+    mAppContext = appContext;
+    assert(mAppContext);
+
     mMainViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
     emit controllerInitialized();
 }
@@ -45,10 +45,10 @@ QString MainWindowController::getTitle() const
 }
 
 
-// void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
-// {
-//     contactListController->initializeController(mAppContext);
-// }
+void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
+{
+    contactListController->initializeController(mAppContext);
+}
 
 void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBarController)
 {
@@ -66,18 +66,4 @@ void MainWindowController::testFunc()
 {
     UIVIEW_LOG_DEBUG("");
     UIUtilities::PlatformUtils::openLinkInDefaultBrowser("https://www.baidu.com");
-}
-
-
-void MainWindowController::startAppWindow()
-{
-    UIVIEW_LOG_DEBUG("start load main qml");
-
-    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"));
-    UIVIEW_LOG_DEBUG("finish load main qml");
-
-
-    AppMenuBarController* menuBarController = new AppMenuBarController(mAppContext, this);
-    emit showMenuBar(menuBarController);
-
 }
