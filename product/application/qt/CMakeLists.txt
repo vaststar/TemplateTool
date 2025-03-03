@@ -1,3 +1,7 @@
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Gui Widgets LinguistTools)
 
 qt_standard_project_setup(REQUIRES 6.5)

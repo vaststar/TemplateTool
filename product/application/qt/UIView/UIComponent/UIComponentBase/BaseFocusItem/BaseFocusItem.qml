@@ -6,7 +6,7 @@ Item {
     property var focusColor: "blue"
     property var focusWidth: 2
     property var focusRadius: 0
-    property var focusMargins: -3
+    property var focusMargins: -2
 
 
     visible: parent.activeFocus

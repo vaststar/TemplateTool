@@ -30,7 +30,7 @@ QString MainWindowController::getControllerName() const
 }
 
 
-void MainWindowController::initializeController(AppContext* appContext)
+void MainWindowController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;
     assert(mAppContext);

@@ -28,7 +28,7 @@ public:
 
     QString getTitle() const;
 
-    void initializeController(AppContext* appContext);
+    void initializeController(QPointer<AppContext> appContext);
 
 signals:
     void titleChanged();

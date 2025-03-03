@@ -39,7 +39,6 @@ signals:
     void titleChanged();
     void controllerInitialized();
 public slots:
-    void onContactListLoaded(ContactListViewController* contactListController);
     void switchLanguage(UILanguage::LanguageType languageType);
 private slots:
     void onMenuItemTriggered(int itemIndex);
