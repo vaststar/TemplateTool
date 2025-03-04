@@ -23,7 +23,7 @@ class ContactListViewController: public UICore::CoreController
 public:
     explicit ContactListViewController(QObject *parent = nullptr);
     virtual QString getControllerName() const override;
-    void initializeController(AppContext* appContext);
+    void initializeController(QPointer<AppContext> appContext);
 public slots:
     void buttonClicked();
 private:

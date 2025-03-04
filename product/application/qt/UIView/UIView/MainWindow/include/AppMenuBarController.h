@@ -30,7 +30,7 @@ public:
     AppMenuBarController(QObject* parent = nullptr);
     virtual QString getControllerName() const override;
 
-    void initializeController(AppContext* appContext);
+    void initializeController(QPointer<AppContext> appContext);
 
     void createMenu();
     MenuItemModel* rootMenu() const{return mRootMenu;}

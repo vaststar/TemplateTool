@@ -28,7 +28,7 @@ QString AppMenuBarController::getControllerName() const
 }
 
 
-void AppMenuBarController::initializeController(AppContext* appContext)
+void AppMenuBarController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;
     assert(mAppContext);
@@ -57,7 +57,7 @@ void AppMenuBarController::createMenu()
     fileMenu->addSubItem(fileMenu_saveItem);
 
     
-    auto editMenu = new MenuItemModel("Edit", "Edit operations");
+    auto editMenu = new MenuItemModel("Edit", "Edit operations", mRootMenu);
     auto editMenu_cutItem = new MenuItemModel("Cut", "Cut the selection", editMenu);
     auto editMenu_copyItem = new MenuItemModel("Copy", "Copy the selection", editMenu);
     auto editMenu_pasteItem = new MenuItemModel("Paste", "Paste from clipboard", editMenu);

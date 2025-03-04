@@ -1,12 +1,13 @@
-import QtQuick 2.0
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
 Dialog {
     id: dialog
     title: "myTitle"
-    modal: false
-    // modality: Qt.ApplicationModal
+    modal: true
+    width: 300
+    height: 300
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy:Popup.NoAutoClose
     anchors.centerIn: parent

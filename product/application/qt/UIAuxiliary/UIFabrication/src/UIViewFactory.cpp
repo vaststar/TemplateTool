@@ -79,9 +79,19 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& con
     }
 
     QString actualQmlResource = generateQmlResourcePath(qmlResource);
-    
+
+    UIFabrication_LOG_DEBUG("will clear objectCreated signal for qmlEngine");
+    QObject::disconnect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, nullptr, nullptr);
+    UIFabrication_LOG_DEBUG("clear objectCreated signal for qmlEngine done");
+
     QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [actualQmlResource, controllerObjectName, controllerCallback](QObject* object, const QUrl& url) {
-        if (object && url.toString() == actualQmlResource)
+        if (!object)
+        {
+            UIFabrication_LOG_WARN("object created failed: " << url.toString().toStdString());
+            return;
+        }
+
+        if (url.toString() == actualQmlResource)
         {
             UIFabrication_LOG_DEBUG("object created: " << url.toString().toStdString());
             if (!controllerObjectName.isEmpty() && controllerCallback)
@@ -97,11 +107,9 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& con
                 }
             }
         }
-        else
-        {
-            UIFabrication_LOG_WARN("object created failed: " << actualQmlResource.toStdString());
-        }
     });
+    UIFabrication_LOG_DEBUG("will load: " << actualQmlResource.toStdString());
     mQmlEngine->load(actualQmlResource);
+    UIFabrication_LOG_DEBUG("load finish: " << actualQmlResource.toStdString());
 }   
 }

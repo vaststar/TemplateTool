@@ -28,7 +28,7 @@ Item{
             leftMargin: 100
         }
         onClicked:{
-            console.log("111111111111111")
+            console.log("test")
             controller.buttonClicked()
         }
         background: Rectangle{

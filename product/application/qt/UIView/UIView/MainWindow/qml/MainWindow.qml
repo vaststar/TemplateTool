@@ -8,14 +8,14 @@ ApplicationWindow
     id: root
 
     MainWindowController{
-        id:mainController
+        id: mainController
         objectName: "MainWindowController"
     }
 
     visible: true
     width: 758 
     height: 576
-    title: mainController.title
+    title: qsTr(mainController.title)
     color: "steelblue"
     menuBar: AppMenuBar {
         id: menuBarId

@@ -89,7 +89,7 @@
     <message>
         <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="44"/>
         <source>my test window</source>
-        <translation type="unfinished"></translation>
+        <translation>测试工具窗口</translation>
     </message>
 </context>
 <context>
