@@ -29,7 +29,7 @@ public:
     virtual QPointer<ITranslatorManager> getTranslatorManager() const override;
     virtual QPointer<IThemeManager> getThemeManager() const override;
 private:
-    class Impl;
-    std::unique_ptr<Impl> mImpl;
+    std::unique_ptr<ITranslatorManager> mTranslatorManager;
+    std::unique_ptr<IThemeManager> mThemeManager;
 };
 }

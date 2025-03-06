@@ -12,6 +12,5 @@ Q_OBJECT
 public:
     CoreQmlEngine(QObject* parent = nullptr);
     CoreQmlEngine(const QUrl& url, QObject* parent = nullptr);
-    // QString getDefaultQRCPrefix() const;
 };
 }

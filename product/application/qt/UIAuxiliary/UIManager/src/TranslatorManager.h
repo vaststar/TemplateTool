@@ -3,18 +3,15 @@
 #include <memory>
 #include <QObject>
 #include <QString>
+#include <QTranslator>
+
+#include <UIDataStruct/UILanguage.h>
+#include <UICore/CoreApplication.h>
+#include <UICore/CoreQmlEngine.h>
 
 #include <UIManager/ITranslatorManager.h>
-#include <UIDataStruct/UILanguage.h>
-
-namespace UICore{
-    class CoreApplication;
-    class CoreQmlEngine;
-}
-
 
 namespace UIManager{
-
 class TranslatorManager final: public ITranslatorManager
 {
 Q_OBJECT
@@ -31,8 +28,13 @@ public:
     virtual void loadTranslation(UILanguage::LanguageType languageType) override;
 private:
     void loadTranslation(const QString& language);
+    std::string getLanguageString(UILanguage::LanguageType languageType) const;
+    std::map<UILanguage::LanguageType, std::string> getLanguageMap() const;
 private:
-    class Impl;
-    std::unique_ptr<Impl> mImpl;
+    const QPointer<UICore::CoreApplication> mApplication;
+    const QPointer<UICore::CoreQmlEngine> mQmlEngine;
+    const std::unique_ptr<QTranslator> mTranslator;
+
+    QString mCurrentLanguage;
 };
 }
