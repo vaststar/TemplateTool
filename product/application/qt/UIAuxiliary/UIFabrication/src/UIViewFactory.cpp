@@ -1,4 +1,4 @@
-#include <UIFabrication/UIViewFactory.h>
+#include "UIViewFactory.h"
 #include <UICore/CoreQmlEngine.h>
 #include <UICore/CoreController.h>
 
@@ -9,7 +9,12 @@
 
 
 namespace UIFabrication{
-UIViewFactory::UIViewFactory(UICore::CoreQmlEngine* qmlEngine)
+std::unique_ptr<IUIViewFactory> IUIViewFactory::createInstance(QPointer<UICore::CoreQmlEngine> qmlEngine)
+{
+    return std::make_unique<UIViewFactory>(qmlEngine);
+}
+
+UIViewFactory::UIViewFactory(QPointer<UICore::CoreQmlEngine> qmlEngine)
     : mQmlEngine(qmlEngine)
 {
 }

@@ -6,8 +6,7 @@
 #include <QObject>
 #include <QQuickView>
 #include <UICore/CoreController.h>
-
-#include <UIFabrication/UIFabricationExport.h>
+#include <UIFabrication/IUIViewFactory.h>
 
 namespace UICore{
 class CoreQmlEngine;
@@ -16,20 +15,20 @@ using ControllerCallback = std::function<void(CoreController*)>;
 }
 
 namespace UIFabrication{
-class UIFabrication_EXPORT UIViewFactory final: public QObject
+class UIViewFactory final: public IUIViewFactory
 {
 Q_OBJECT
 public:
-    explicit UIViewFactory(UICore::CoreQmlEngine* qmlEngine);
+    explicit UIViewFactory(QPointer<UICore::CoreQmlEngine> qmlEngine);
     UIViewFactory(const UIViewFactory&) = delete;
     UIViewFactory(UIViewFactory&&) = delete;
     UIViewFactory& operator=(const UIViewFactory&) = delete;
     UIViewFactory& operator=(UIViewFactory&&) = delete;
-    ~UIViewFactory();
+    virtual ~UIViewFactory();
 
-    QPointer<QQuickView> createQmlWindow(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr);
+    virtual QPointer<QQuickView> createQmlWindow(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) override;
 
-    void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const UICore::ControllerCallback& controllerCallback = nullptr);
+    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const UICore::ControllerCallback& controllerCallback = nullptr) override;
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;

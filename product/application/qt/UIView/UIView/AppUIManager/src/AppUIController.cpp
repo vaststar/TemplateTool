@@ -7,10 +7,10 @@
 
 #include <UIDataStruct/UIDataUtils.h>
 #include <UIFabrication/ViewModelFactory.h>
-#include <UIFabrication/UIViewFactory.h>
-#include <UIManager/UIManagerProvider.h>
+#include <UIFabrication/IUIViewFactory.h>
+#include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>
-#include <UIManager/TranslatorManager.h>
+#include <UIManager/ITranslatorManager.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"

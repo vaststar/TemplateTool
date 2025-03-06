@@ -1,11 +1,12 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIFabrication/UIFabricationExport.h
-    include/UIFabrication/UIViewFactory.h
     include/UIFabrication/ViewModelFactory.h
+    include/UIFabrication/IUIViewFactory.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h 
+    src/UIViewFactory.h
     src/UIViewFactory.cpp
     src/ViewModelFactory.cpp
 )

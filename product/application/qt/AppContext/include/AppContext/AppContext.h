@@ -12,12 +12,12 @@ namespace UICore{
 }
 
 namespace UIFabrication{
-    class  UIViewFactory;
+    class  IUIViewFactory;
     class ViewModelFactory;
 }
 
 namespace UIManager{
-    class UIManagerProvider;
+    class IUIManagerProvider;
 }
 namespace commonHead{
     class ICommonHeadFramework;
@@ -28,7 +28,7 @@ class AppContext_EXPORT AppContext final: public QObject
 {
 Q_OBJECT
 public:
-    explicit AppContext(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    explicit AppContext(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~AppContext();
     
     AppContext(const AppContext&) = delete;
@@ -36,9 +36,9 @@ public:
     AppContext& operator=(const AppContext&) = delete;
     AppContext& operator=(AppContext&&) = delete;
 
-    QPointer<UIFabrication::UIViewFactory> getViewFactory() const;
+    QPointer<UIFabrication::IUIViewFactory> getViewFactory() const;
     QPointer<UIFabrication::ViewModelFactory> getViewModelFactory() const;
-    QPointer<UIManager::UIManagerProvider> getManagerProvider() const;
+    QPointer<UIManager::IUIManagerProvider> getManagerProvider() const;
     QPointer<UICore::CoreApplication> getApplication() const;
     QPointer<UICore::CoreQmlEngine> getQmlEngine() const;
 private:

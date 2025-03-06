@@ -8,7 +8,6 @@
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <AppContext/AppContext.h>
-#include <UIManager/TranslatorManager.h>
 
 #include <UIDataStruct/UIDataUtils.h>
 

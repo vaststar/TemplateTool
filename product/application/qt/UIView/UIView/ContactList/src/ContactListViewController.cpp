@@ -5,7 +5,7 @@
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/ViewModelFactory.h>
-#include <UIFabrication/UIViewFactory.h>
+#include <UIFabrication/IUIViewFactory.h>
 
 ContactListViewController::ContactListViewController(QObject *parent)
     : CoreController(parent)
@@ -30,4 +30,6 @@ void ContactListViewController::buttonClicked()
     // mContactListViewModel->getContactList();
     // mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTDialog.qml"));
     mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
+    // mAppContext->getViewFactory()->createQmlWindow(QStringLiteral("UTComponent/UTWindow/UTTest.qml"))->show();
+    
 }

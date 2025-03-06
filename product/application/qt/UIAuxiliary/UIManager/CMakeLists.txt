@@ -1,13 +1,15 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIManager/UIManagerExport.h
-    include/UIManager/TranslatorManager.h
-    include/UIManager/UIManagerProvider.h
+    include/UIManager/ITranslatorManager.h
+    include/UIManager/IUIManagerProvider.h
     include/UIManager/ThemeManager.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h 
+    src/TranslatorManager.h
     src/TranslatorManager.cpp
+    src/UIManagerProvider.h
     src/UIManagerProvider.cpp
     src/ThemeManager.cpp
 )

@@ -5,9 +5,8 @@
 
 #include <UIDataStruct/UILanguage.h>
 #include <UIFabrication/ViewModelFactory.h>
-#include <UIFabrication/UIViewFactory.h>
-#include <UIManager/UIManagerProvider.h>
-#include <UIManager/TranslatorManager.h>
+#include <UIManager/IUIManagerProvider.h>
+#include <UIManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
 #include <UIUtilities/PlatformUtils.h>

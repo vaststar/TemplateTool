@@ -1,4 +1,4 @@
-#include <UIManager/TranslatorManager.h>
+#include "TranslatorManager.h"
 
 #include <map>
 #include <QLocale>
@@ -18,7 +18,7 @@ namespace UIManager{
 class TranslatorManager::Impl
 {
 public:
-    Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine);
+    Impl(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine);
 
     const QPointer<UICore::CoreApplication> mApplication;
     const QPointer<UICore::CoreQmlEngine> mQmlEngine;
@@ -30,7 +30,7 @@ public:
     std::map<UILanguage::LanguageType, std::string> getLanguageMap() const;
 };
 
-TranslatorManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
+TranslatorManager::Impl::Impl(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
     , mTranslator(std::make_unique<QTranslator>())
@@ -73,7 +73,7 @@ std::string TranslatorManager::Impl::getLanguageString(UILanguage::LanguageType 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-TranslatorManager::TranslatorManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine)
+TranslatorManager::TranslatorManager(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine)
     : mImpl(std::make_unique<TranslatorManager::Impl>(application, qmlEngine))
 {
     UIManager_LOG_DEBUG("");
@@ -92,33 +92,43 @@ void TranslatorManager::loadTranslation(const QString& language)
         return;
     }
 
+    if (!mImpl->mApplication)
+    {
+        UIManager_LOG_WARN("application not found");
+        return;
+    }
+
     if (language == mImpl->mCurrentLanguage)
     {
         UIManager_LOG_WARN("won't load same translation file, language:" << language.toStdString());
         return;
     }
 
-    QString translationFileName = QString("app_translations_%1").arg(language);
-    if (mImpl->mTranslator->load(translationFileName, ":/i18n"))
-    {
-        UIManager_LOG_INFO("load translation file succeed, language:" << language.toStdString());
-        if (mImpl->mApplication)
-        {
-            mImpl->mCurrentLanguage = language;
-            mImpl->mApplication->removeTranslator(mImpl->mTranslator.get());
-            mImpl->mApplication->installTranslator(mImpl->mTranslator.get());
-            if (mImpl->mQmlEngine)
-            {
-                mImpl->mQmlEngine->retranslate();
-            }
-            emit languageChanged(language);
-        }
-    }
-    else
-    {
-        UIManager_LOG_WARN("load translation file failed, language:" << language.toStdString());
+    if (!mImpl->mApplication->removeTranslator(mImpl->mTranslator.get()))
+    {//if no translator installed, removeTranslator will return false and this is expected
+        UIManager_LOG_INFO("remove translation file failed");
     }
 
+    if (QString translationFileName = QString("app_translations_%1").arg(language); !mImpl->mTranslator->load(translationFileName, ":/i18n"))
+    {
+        UIManager_LOG_WARN("load translation file failed, language:" << language.toStdString() << ", file:" << translationFileName.toStdString());
+        return;
+    }
+
+    if (!mImpl->mApplication->installTranslator(mImpl->mTranslator.get()))
+    {
+        UIManager_LOG_WARN("install translation file failed, language:" << language.toStdString());
+        return;
+    }
+
+    mImpl->mCurrentLanguage = language;
+    UIManager_LOG_INFO("load translation file succeed, language:" << language.toStdString());
+
+    if (mImpl->mQmlEngine)
+    {
+        mImpl->mQmlEngine->retranslate();
+    }
+    emit languageChanged(language);
 }
 
 void TranslatorManager::loadTranslation(UILanguage::LanguageType languageType)

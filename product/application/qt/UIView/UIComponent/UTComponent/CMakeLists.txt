@@ -11,6 +11,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 set(MODULE_QML_TARGET_FILES
     UTWindow/UTDialog.qml
     UTWindow/UTWindow.qml
+    UTWindow/UTTest.qml
     UTMenu/UTMenu.qml
     UTMenu/UTMenuItem.qml
     UTMenu/CreateMenus.js
