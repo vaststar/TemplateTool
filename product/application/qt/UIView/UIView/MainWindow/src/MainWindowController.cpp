@@ -4,7 +4,7 @@
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 
 #include <UIDataStruct/UILanguage.h>
-#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <UIManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
@@ -34,7 +34,7 @@ void MainWindowController::initializeController(QPointer<AppContext> appContext)
     mAppContext = appContext;
     assert(mAppContext);
 
-    mMainViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
+    mMainViewModel = appContext->getViewModelFactory()->createMainWindowViewModelInstance();
     emit controllerInitialized();
 }
 

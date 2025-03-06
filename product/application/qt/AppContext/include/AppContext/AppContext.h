@@ -12,8 +12,8 @@ namespace UICore{
 }
 
 namespace UIFabrication{
-    class  IUIViewFactory;
-    class ViewModelFactory;
+    class IUIViewFactory;
+    class IViewModelFactory;
 }
 
 namespace UIManager{
@@ -37,7 +37,7 @@ public:
     AppContext& operator=(AppContext&&) = delete;
 
     QPointer<UIFabrication::IUIViewFactory> getViewFactory() const;
-    QPointer<UIFabrication::ViewModelFactory> getViewModelFactory() const;
+    QPointer<UIFabrication::IViewModelFactory> getViewModelFactory() const;
     QPointer<UIManager::IUIManagerProvider> getManagerProvider() const;
     QPointer<UICore::CoreApplication> getApplication() const;
     QPointer<UICore::CoreQmlEngine> getQmlEngine() const;

@@ -2,7 +2,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIManager/UIManagerExport.h
     include/UIManager/ITranslatorManager.h
     include/UIManager/IUIManagerProvider.h
-    include/UIManager/ThemeManager.h
+    include/UIManager/IThemeManager.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -11,6 +11,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/TranslatorManager.cpp
     src/UIManagerProvider.h
     src/UIManagerProvider.cpp
+    src/ThemeManager.h
     src/ThemeManager.cpp
 )
 

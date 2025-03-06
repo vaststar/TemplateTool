@@ -5,7 +5,7 @@
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 
 #include <UIDataStruct/UILanguage.h>
-#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <UIManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
@@ -32,7 +32,7 @@ void AppMenuBarController::initializeController(QPointer<AppContext> appContext)
     mAppContext = appContext;
     assert(mAppContext);
 
-    auto clientInfoVM = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
+    auto clientInfoVM = appContext->getViewModelFactory()->createClientInfoViewModelInstance();
     auto res = clientInfoVM->getSupportedLanguages();
     createMenu();
     emit controllerInitialized();

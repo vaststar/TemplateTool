@@ -21,6 +21,10 @@ Q_OBJECT
 public:
     explicit TranslatorManager(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine);
     ~TranslatorManager();
+    TranslatorManager(const TranslatorManager&) = delete;
+    TranslatorManager(TranslatorManager&&) = delete;
+    TranslatorManager& operator=(const TranslatorManager&) = delete;
+    TranslatorManager& operator=(TranslatorManager&&) = delete;
 
     virtual void loadSystemTranslation() override;
     // 加载特定语言的翻译文件

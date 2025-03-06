@@ -1,4 +1,4 @@
-#include <UIManager/ThemeManager.h>
+#include "ThemeManager.h"
 
 #include <map>
 #include <QLocale>
@@ -54,8 +54,7 @@ std::shared_ptr<commonHead::IResourceLoader> ThemeManager::Impl::getResourceLoad
 /////////////////////////////////////////////////////////////////////////////////////
 
 ThemeManager::ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
-    : QObject(nullptr)
-    , mImpl(std::make_unique<ThemeManager::Impl>(application, qmlEngine, commonheadFramework))
+    : mImpl(std::make_unique<ThemeManager::Impl>(application, qmlEngine, commonheadFramework))
 {
     UIManager_LOG_DEBUG("");
 }

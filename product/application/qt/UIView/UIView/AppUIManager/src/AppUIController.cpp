@@ -6,7 +6,7 @@
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
 #include <UIDataStruct/UIDataUtils.h>
-#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>
@@ -39,7 +39,7 @@ void AppUIController::initializeController(AppContext* appContext)
     UIVIEW_LOG_DEBUG("init app ui controller");
     mAppContext = appContext;
     assert(mAppContext);
-    mViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IAppUIViewModel>();
+    mViewModel = appContext->getViewModelFactory()->createAppUIViewModelInstance();
     mViewModel->initDatabase();
 
     initializeUIClient();
@@ -51,7 +51,7 @@ void AppUIController::initializeUIClient()
 {
     //prepare fontSet、colorSet、language
     //1, install language
-    auto clientInfoVM = mAppContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
+    auto clientInfoVM = mAppContext->getViewModelFactory()->createClientInfoViewModelInstance();
     UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIDataUtils::convertViewModelLanguageToUILanguage(clientInfoVM->getApplicationLanguage()));
 

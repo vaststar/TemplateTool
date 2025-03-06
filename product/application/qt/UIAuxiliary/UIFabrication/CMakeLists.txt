@@ -1,6 +1,6 @@
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
     include/UIFabrication/UIFabricationExport.h
-    include/UIFabrication/ViewModelFactory.h
+    include/UIFabrication/IViewModelFactory.h
     include/UIFabrication/IUIViewFactory.h
 )
 
@@ -8,6 +8,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/LoggerDefine.h 
     src/UIViewFactory.h
     src/UIViewFactory.cpp
+    src/ViewModelFactory.h
     src/ViewModelFactory.cpp
 )
 
@@ -30,6 +31,7 @@ BuildQtModule(
     TARGET_DEPENDENICES_PRIVATE
         UICore
         CommonHeadFramework
+        ViewModels
         MasterLog
     TARGET_DEPENDENICES_PUBLIC
         Qt6::Gui Qt6::Quick Qt6::Widgets 

@@ -6,7 +6,7 @@
 #include <UICore/CoreQmlEngine.h>
 
 #include "TranslatorManager.h"
-#include <UIManager/ThemeManager.h>
+#include "ThemeManager.h"
 
 namespace UIManager{
 std::unique_ptr<IUIManagerProvider> IUIManagerProvider::createInstance(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
@@ -24,7 +24,7 @@ public:
     explicit Impl(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 
     std::unique_ptr<ITranslatorManager> mTranslatorManager;
-    std::unique_ptr<ThemeManager> mThemeManager;
+    std::unique_ptr<IThemeManager> mThemeManager;
 };
 
 UIManagerProvider::Impl::Impl(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
@@ -55,7 +55,7 @@ QPointer<ITranslatorManager> UIManagerProvider::getTranslatorManager() const
     return mImpl->mTranslatorManager.get();
 }
 
-QPointer<ThemeManager> UIManagerProvider::getThemeManager() const
+QPointer<IThemeManager> UIManagerProvider::getThemeManager() const
 {
     return mImpl->mThemeManager.get();
 }

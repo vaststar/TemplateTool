@@ -3,7 +3,7 @@
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <UIFabrication/IUIViewFactory.h>
-#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 
 
@@ -18,7 +18,7 @@ public:
     Impl(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 
     const std::unique_ptr<UIFabrication::IUIViewFactory> mViewFactory;
-    const std::unique_ptr<UIFabrication::ViewModelFactory> mViewModelFactory;
+    const std::unique_ptr<UIFabrication::IViewModelFactory> mViewModelFactory;
     const std::unique_ptr<UIManager::IUIManagerProvider> mManagerProvider;
     const QPointer<UICore::CoreApplication> mApplication;
     const QPointer<UICore::CoreQmlEngine> mQmlEngine;
@@ -27,7 +27,7 @@ public:
 AppContext::Impl::Impl(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
-    , mViewModelFactory(std::make_unique<UIFabrication::ViewModelFactory>(commonheadFramework))
+    , mViewModelFactory(std::move(UIFabrication::IViewModelFactory::createInstance(commonheadFramework)))
     , mViewFactory(std::move(UIFabrication::IUIViewFactory::createInstance(qmlEngine)))
     , mManagerProvider(std::move(UIManager::IUIManagerProvider::createInstance(application, qmlEngine, commonheadFramework)))
 {
@@ -55,7 +55,7 @@ QPointer<UIFabrication::IUIViewFactory> AppContext::getViewFactory() const
     return mImpl->mViewFactory.get();
 }
 
-QPointer<UIFabrication::ViewModelFactory> AppContext::getViewModelFactory() const
+QPointer<UIFabrication::IViewModelFactory> AppContext::getViewModelFactory() const
 {
     return mImpl->mViewModelFactory.get();
 }

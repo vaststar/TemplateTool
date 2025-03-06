@@ -3,7 +3,7 @@
 #include <memory>
 #include <QObject>
 
-#include <UIFabrication/UIFabricationExport.h>
+#include <UIFabrication/IViewModelFactory.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -12,7 +12,7 @@ namespace commonHead{
 
 
 namespace UIFabrication{
-class UIFabrication_EXPORT ViewModelFactory final: public QObject
+class ViewModelFactory final: public IViewModelFactory
 {
 Q_OBJECT
 public:
@@ -23,6 +23,11 @@ public:
     ViewModelFactory& operator=(ViewModelFactory&&) = delete;
     ~ViewModelFactory();
 
+    virtual std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const override;
+    virtual std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const override;
+    virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const override;
+    virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const override;
+private:
     template <typename T, typename... Args>
     std::shared_ptr<T> createViewModelInstance(const Args&... args) const
     {

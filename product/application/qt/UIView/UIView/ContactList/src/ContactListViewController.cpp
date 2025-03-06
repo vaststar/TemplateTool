@@ -4,7 +4,7 @@
 #include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 
 #include <AppContext/AppContext.h>
-#include <UIFabrication/ViewModelFactory.h>
+#include <UIFabrication/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 
 ContactListViewController::ContactListViewController(QObject *parent)
@@ -22,7 +22,7 @@ QString ContactListViewController::getControllerName() const
 void ContactListViewController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;
-    mContactListViewModel = appContext->getViewModelFactory()->createViewModelInstance<commonHead::viewModels::IContactListViewModel>();
+    mContactListViewModel = appContext->getViewModelFactory()->createContactListViewModelInstance();
 }
 
 void ContactListViewController::buttonClicked()

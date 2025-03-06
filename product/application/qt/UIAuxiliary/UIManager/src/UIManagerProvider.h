@@ -15,16 +15,19 @@ namespace UICore{
 }
 
 namespace UIManager{
-class TranslatorManager;
-class ThemeManager;
 class UIManagerProvider final: public IUIManagerProvider
 {
 Q_OBJECT
 public:
     explicit UIManagerProvider(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~UIManagerProvider();
+    UIManagerProvider(const UIManagerProvider&) = delete;
+    UIManagerProvider(UIManagerProvider&&) = delete;
+    UIManagerProvider& operator=(const UIManagerProvider&) = delete;
+    UIManagerProvider& operator=(UIManagerProvider&&) = delete;
+
     virtual QPointer<ITranslatorManager> getTranslatorManager() const override;
-    virtual QPointer<ThemeManager> getThemeManager() const override;
+    virtual QPointer<IThemeManager> getThemeManager() const override;
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;
