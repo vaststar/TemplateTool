@@ -1,5 +1,9 @@
 @echo off
 
+echo ****************************************************
+echo Start generate project on Windows
+echo ROOT_DIR is %ROOT_DIR%
+echo ****************************************************
 echo =========================================================
 
 set ROOT_DIR=%~dp0..\
@@ -28,5 +32,9 @@ echo =========================================================
 
 set EXIT_CODE=%errorlevel%
 
-
+echo ****************************************************
+echo Finish generate project on Windows
+echo ROOT_DIR is %ROOT_DIR%
+echo BUILD_DIR is %BUILD_DIR%
+echo ****************************************************
 exit /B %EXIT_CODE%
