@@ -56,7 +56,7 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="60"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="59"/>
         <source>openCamera</source>
         <translation>打开摄像头</translation>
     </message>

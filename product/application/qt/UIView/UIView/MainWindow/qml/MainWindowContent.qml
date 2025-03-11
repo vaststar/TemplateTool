@@ -26,7 +26,6 @@ Item{
     }
 
     Text {
-        focus: false
         text: controller.mControllerName + "test"
         font.family: "Helvetica"
         font.pointSize: 12

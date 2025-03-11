@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import UIView 1.0
+import UTComponent 1.0
 
 Item{
     id: root
@@ -12,13 +13,13 @@ Item{
     }
 
     Image {
-        focus: false
         height:200
         width:200
         source: "qrc:/qt/qml/UIView/picture/112.png"
     }
 
-    Button {
+    UTButton {
+        focus: true
         id: bbb
         text: "contactListButton"
         anchors{
@@ -31,11 +32,6 @@ Item{
             console.log("test")
             controller.buttonClicked()
         }
-        background: Rectangle{
-            anchors.fill: parent
-            border.color: "red"
-            border.width: bbb.activeFocus?3:0
-        }
     }
 
 
@@ -45,7 +41,6 @@ Item{
 
     TreeView {
         id: treeView
-        focus: false
         anchors{
             left:parent.left
             leftMargin: 200
@@ -63,16 +58,16 @@ Item{
     }
 
     
-    Instantiator{
-        model: 3
-        delegate: Rectangle {
-            width: 100
-            height: 100
-            color: "lightblue"
-            border.color: "black"
-            x: index * (width + 10)
-        }
+    // Instantiator{
+    //     model: 3
+    //     delegate: Rectangle {
+    //         width: 100
+    //         height: 100
+    //         color: "black"
+    //         border.color: "black"
+    //         x: index * (width + 10)
+    //     }
 
-    }
+    // }
 }
 
