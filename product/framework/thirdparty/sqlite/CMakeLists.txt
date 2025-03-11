@@ -2,8 +2,6 @@ include(BuildModule)
 
 if (WIN32)
     set(SQLITE_DEFINITIONS SQLITE_BUILD_DLL SQLITE_BUILD_LIB)
-else()
-    set(SQLITE_DEFINITIONS NO_SQLITE_DEFINITIONS)
 endif()
 
 if (MSVC)
@@ -39,8 +37,6 @@ BuildModule(
         src
     TARGET_DEFINITIONS
         ${SQLITE_DEFINITIONS}
-    INSTALL_PUBLIC_HEADER 
-        src/sqlite3.h
     IDE_FOLDER
         thirdparty
 )

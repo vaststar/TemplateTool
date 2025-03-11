@@ -18,8 +18,8 @@ ${CMAKE} --version
 
 ${CMAKE} -S "${SOURCE_DIR}" \
          -B "${BUILD_PATH}" \
-         -G"Xcode" \
-         -T buildsystem=12 \
+        #  -G"Xcode" \
+        #  -T buildsystem=12 \
          --graphviz="${GRAPHVIZ_FILE}" \
          -DCMAKE_OSX_ARCHITECTURES="x86_64" \
          -DCLANG_DEBUG_INFORMATION_LEVEL_LINE_TABLES_ONLY=YES \

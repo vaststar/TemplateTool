@@ -2,7 +2,7 @@
 
 echo =========================================================
 
-set ROOT_DIR=%~dp0
+set ROOT_DIR=%~dp0..\
 
 set CMAKE=%ROOT_DIR%tools\platforms\windows\x64\cmake\bin\cmake.exe
 set BUILD_DIR=%ROOT_DIR%build

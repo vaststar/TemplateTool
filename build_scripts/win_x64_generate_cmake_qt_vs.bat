@@ -2,7 +2,7 @@
 
 echo =========================================================
 
-set ROOT_DIR=%~dp0
+set ROOT_DIR=%~dp0..\
 
 set BUILD_DIR=%ROOT_DIR%build
 set GRAPHVIZ_FILE=%BUILD_DIR%\cmake_graph\cmake_graph.dot

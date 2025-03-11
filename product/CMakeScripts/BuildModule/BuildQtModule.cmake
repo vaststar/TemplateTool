@@ -131,9 +131,6 @@ function(BuildQtModule)
             message(STATUS "====Finish Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")
         endif()
 
-        #build install 
-        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES PUBLIC_HEADER "${MODULE_INSTALL_PUBLIC_HEADER}")
-
         install(TARGETS ${MODULE_MODULE_NAME} 
                 EXPORT ${MODULE_MODULE_NAME}Config
                 RUNTIME DESTINATION ${MODULE_MODULE_NAME}/bin
