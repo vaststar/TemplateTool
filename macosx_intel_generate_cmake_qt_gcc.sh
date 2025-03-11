@@ -4,10 +4,7 @@ ROOT_DIR="$(pwd)"
 SOURCE_DIR="${ROOT_DIR}"
 BUILD_PATH="${ROOT_DIR}/build"
 OUTPUT_DIR="${ROOT_DIR}/output/build"
-GRAPHVIZ_FILE="${BUILD_PATH}/make_graph.dot"
-# if [ ! -d "$DIRECTORY" ]; then
-#   echo "$DIRECTORY does not exist."
-# fi
+GRAPHVIZ_FILE="${BUILD_PATH}/cmake_graph/cmake_graph.dot"
 OSX_SYSROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
 CMAKE="${ROOT_DIR}/tools/platforms/macosx/universal/cmake/CMake.app/Contents/bin/cmake"
@@ -21,8 +18,8 @@ ${CMAKE} --version
 
 ${CMAKE} -S "${SOURCE_DIR}" \
          -B "${BUILD_PATH}" \
-        #  -G"Xcode" \
-        #  -T buildsystem=12 \
+         -G"Xcode" \
+         -T buildsystem=12 \
          --graphviz="${GRAPHVIZ_FILE}" \
          -DCMAKE_OSX_ARCHITECTURES="x86_64" \
          -DCLANG_DEBUG_INFORMATION_LEVEL_LINE_TABLES_ONLY=YES \
@@ -33,8 +30,3 @@ ${CMAKE} -S "${SOURCE_DIR}" \
          -DCMAKE_INSTALL_BINDIR="." \
          -DCMAKE_INSTALL_PREFIX="${BUILD_PATH}/output" \
           $@
-
-# settings_path="SparkMacDesktop/WebexTeams.xcodeproj/project.xcworkspace/xcuserdata/${USER}.xcuserdatad"
-# mkdir -p "${settings_path}"
-# echo "Create ${settings_path}/WorkspaceSettings.xcsettings"
-# cp WorkspaceSettings_Workaround.xcsettings "${settings_path}/WorkspaceSettings.xcsettings"

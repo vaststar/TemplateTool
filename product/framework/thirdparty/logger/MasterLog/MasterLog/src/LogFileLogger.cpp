@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
 
 namespace LogLogSpace{
     LogFileLogger::LogFileLogger(int logLevels, const std::string& logDirPath, const std::string& logBaseName, unsigned int maxKeepDays, unsigned int maxSignleSize, const std::string& loggerName)

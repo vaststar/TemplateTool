@@ -58,7 +58,7 @@ void MainWindowController::openCamera()
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
-    //mMainViewModel->openCamera();
+    // mMainViewModel->openCamera();
 }
 
 void MainWindowController::testFunc()

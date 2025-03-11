@@ -3,7 +3,7 @@
 #include <sys/sysctl.h>
 
 namespace ucf::utilities{
-std::string OSUtils_Mac::getAppleOSVersion()
+std::string OSUtils_Mac::getOSVersion()
 {
     char str[256];
     size_t size = sizeof(str);
