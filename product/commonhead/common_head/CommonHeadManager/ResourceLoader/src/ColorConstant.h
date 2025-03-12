@@ -21,4 +21,15 @@ constexpr auto Black100 = "#000000";
 namespace ItemColorConstant {
 constexpr auto FocusItemColor = "#64b4fa";
 }
+
+namespace BlackThemeColorConstant{
+constexpr auto MainWindowBackground = "#0E0D0D";
+
+}
+
+namespace WhiteThemeColorConstant{
+constexpr auto MainWindowBackground = "#0E0D0D";
+    
+}
+
 }

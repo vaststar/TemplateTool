@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
+import UIElementData 1.0
 
 ApplicationWindow
 {
@@ -16,7 +17,7 @@ ApplicationWindow
     width: 758 
     height: 576
     title: qsTr(mainController.title)
-    color: "steelblue"
+    color: ThemeManager.getUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
     menuBar: AppMenuBar {
         id: menuBarId
     }

@@ -10,6 +10,7 @@ BaseButton {
     property var fontColorEnum: UIElementData.UIColorEnum_Button_Primary_Text;
     property var fontSize: UIElementData.UIFontSize_Small
     property var backgroundColorEnum: UIElementData.UIColorEnum_Button_Primary_Background;
+    property var radius: Math.min(control.height, control.width)/2
 
     contentItem: Text{
         text: control.text
@@ -21,7 +22,7 @@ BaseButton {
 
     background: Rectangle{
         anchors.fill: parent
-        radius: Math.min(control.height, control.width)/2
+        radius: control.radius
         color: UTComponentUtil.getItemUIColor(control, backgroundColorEnum)
 
         Behavior on color {
@@ -30,6 +31,6 @@ BaseButton {
     }
 
     UTFocusItem{
-        focusRadius: Math.min(control.height, control.width)/2
+        focusRadius: control.radius
     }
 }

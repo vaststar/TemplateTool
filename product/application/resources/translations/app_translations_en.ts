@@ -20,19 +20,6 @@
     </message>
 </context>
 <context>
-    <name>AppHeader</name>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppHeader.qml" line="9"/>
-        <source>‹</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppHeader.qml" line="20"/>
-        <source>⋮</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CPP_LocalizedString</name>
     <message>
         <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="9"/>

@@ -48,6 +48,7 @@ enum class UIColorState{
 Q_ENUM_NS(UIColorState)
 
 enum class UIColorEnum{
+    UIColorEnum_MAIN_WINDOW_BACKGROUND,
     UIColorEnum_Item_Focus_Border,
     UIColorEnum_Button_Primary_Text,
     UIColorEnum_Button_Primary_Background,
