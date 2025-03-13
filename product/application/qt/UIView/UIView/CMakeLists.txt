@@ -11,16 +11,19 @@ set(TARGET_SOURCE_FILES_PRIVATE
     ContactList/src/ContactListViewController.cpp
     ContactList/src/ContactListItemModel.cpp
 
-    MainWindow/include/MainWindowController.h
-    MainWindow/include/AppMenuBarController.h
-    MainWindow/src/MainWindowController.cpp
-    MainWindow/src/AppMenuBarController.cpp
+    MainWindowTitleBar/include/MainWindowTitleBarController.h
+    MainWindowTitleBar/src/MainWindowTitleBarController.cpp
 
     AppUIManager/src/AppUIManager.cpp
     AppUIManager/src/AppUIController.h
     AppUIManager/src/AppUIController.cpp
     AppUIManager/src/AppUIStringLoader.h
     AppUIManager/src/AppUIStringLoader.cpp
+
+    MainWindow/include/MainWindowController.h
+    MainWindow/include/AppMenuBarController.h
+    MainWindow/src/MainWindowController.cpp
+    MainWindow/src/AppMenuBarController.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
@@ -43,8 +46,8 @@ set(UIVIEW_QML_TARGET_RESOURCES
 
 set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
-    
 )
 
 if (WIN32)

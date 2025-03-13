@@ -23,7 +23,7 @@ ApplicationWindow
         id: menuBarId
     }
     header: MainWindowTitleBar {
-        visible: false
+        id: titleBar
     }
     footer: AppFooter {}
 
@@ -40,6 +40,7 @@ ApplicationWindow
 
     function onMainControllerInitialized(){
         mainController.onInitMenuBarController(menuBarId.controller)
+        mainController.onInitTitleBarController(titleBar.controller)
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
     }
 

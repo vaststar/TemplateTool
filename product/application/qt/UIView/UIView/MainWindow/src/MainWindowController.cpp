@@ -15,6 +15,7 @@
 
 #include "ContactList/include/ContactListViewController.h"
 #include "MainWindow/include/AppMenuBarController.h"
+#include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)
@@ -27,7 +28,6 @@ QString MainWindowController::getControllerName() const
 {
     return QStringLiteral("MainWindowController");
 }
-
 
 void MainWindowController::initializeController(QPointer<AppContext> appContext)
 {
@@ -52,6 +52,11 @@ void MainWindowController::onContactListLoaded(ContactListViewController* contac
 void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBarController)
 {
     menuBarController->initializeController(mAppContext);
+}
+
+void MainWindowController::onInitTitleBarController(MainWindowTitleBarController* titleBarController)
+{
+    titleBarController->initializeController(mAppContext);
 }
 
 void MainWindowController::openCamera()

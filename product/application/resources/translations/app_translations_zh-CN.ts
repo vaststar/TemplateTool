@@ -78,6 +78,16 @@
         <source>my test window</source>
         <translation>测试工具窗口</translation>
     </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="16"/>
+        <source>MainWindowTitleBarController</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="26"/>
+        <source>my test window title bar</source>
+        <translation>测试titlebar</translation>
+    </message>
 </context>
 <context>
     <name>SystemTray</name>

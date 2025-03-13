@@ -19,7 +19,6 @@ namespace UILanguage{
 }
 
 class AppContext;
-class ContactListViewController;
 class AppMenuBarController : public UICore::CoreController
 {
     Q_OBJECT

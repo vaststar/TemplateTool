@@ -12,8 +12,6 @@
 
 #include "LoggerDefine/LoggerDefine.h"
 
-#include "ContactList/include/ContactListViewController.h"
-
 AppMenuBarController::AppMenuBarController(QObject* parent)
     : CoreController(parent)
     , mAppContext(nullptr)
