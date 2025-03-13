@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
 import UIElementData 1.0
+import UTComponent 1.0
 
 ApplicationWindow
 {
@@ -17,11 +18,11 @@ ApplicationWindow
     width: 758 
     height: 576
     title: qsTr(mainController.title)
-    color: ThemeManager.getUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
+    color: UTComponentUtil.getPlainUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
     menuBar: AppMenuBar {
         id: menuBarId
     }
-    header: AppHeader {
+    header: MainWindowTitleBar {
         visible: false
     }
     footer: AppFooter {}

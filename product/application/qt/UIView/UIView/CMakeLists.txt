@@ -25,7 +25,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 
 set(UIVIEW_QML_TARGET_FILES
     ContactList/qml/ContactList.qml
-    MainWindow/qml/AppHeader.qml
+    MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindow/qml/AppMenuBar.qml
     MainWindow/qml/AppFooter.qml
     MainWindow/qml/MainWindowContent.qml
