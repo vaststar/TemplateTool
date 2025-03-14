@@ -13,23 +13,24 @@ set(TARGET_SOURCE_FILES_PRIVATE
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
+    
+    MainWindowMenuBar/include/MainWindowMenuBarController.h
+    MainWindowMenuBar/src/MainWindowMenuBarController.cpp
 
+    MainWindow/include/MainWindowController.h
+    MainWindow/src/MainWindowController.cpp
+    
     AppUIManager/src/AppUIManager.cpp
     AppUIManager/src/AppUIController.h
     AppUIManager/src/AppUIController.cpp
     AppUIManager/src/AppUIStringLoader.h
     AppUIManager/src/AppUIStringLoader.cpp
-
-    MainWindow/include/MainWindowController.h
-    MainWindow/include/AppMenuBarController.h
-    MainWindow/src/MainWindowController.cpp
-    MainWindow/src/AppMenuBarController.cpp
 )
 
 set(UIVIEW_QML_TARGET_FILES
     ContactList/qml/ContactList.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
-    MainWindow/qml/AppMenuBar.qml
+    MainWindowMenuBar/qml/MainWindowMenuBar.qml
     MainWindow/qml/AppFooter.qml
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
@@ -47,6 +48,7 @@ set(UIVIEW_QML_TARGET_RESOURCES
 set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowMenuBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
 )
 

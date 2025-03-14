@@ -9,7 +9,7 @@ import UTComponent 1.0
 MenuBar {
     id: root
     property alias controller: controller
-    AppMenuBarController{
+    MainWindowMenuBarController{
         id: controller
     }
 

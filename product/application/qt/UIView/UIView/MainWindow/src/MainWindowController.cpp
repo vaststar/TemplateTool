@@ -14,7 +14,7 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 #include "ContactList/include/ContactListViewController.h"
-#include "MainWindow/include/AppMenuBarController.h"
+#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
 #include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
@@ -49,7 +49,7 @@ void MainWindowController::onContactListLoaded(ContactListViewController* contac
     contactListController->initializeController(mAppContext);
 }
 
-void MainWindowController::onInitMenuBarController(AppMenuBarController* menuBarController)
+void MainWindowController::onInitMenuBarController(MainWindowMenuBarController* menuBarController)
 {
     menuBarController->initializeController(mAppContext);
 }

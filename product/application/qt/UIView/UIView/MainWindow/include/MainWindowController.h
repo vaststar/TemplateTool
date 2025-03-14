@@ -16,11 +16,11 @@ namespace commonHead{
 
 class AppContext;
 class ContactListViewController;
-class AppMenuBarController;
+class MainWindowMenuBarController;
 class MainWindowTitleBarController;
 //forward declaration to use the poinnter in slots
 Q_DECLARE_OPAQUE_POINTER(ContactListViewController*)
-Q_DECLARE_OPAQUE_POINTER(AppMenuBarController*)
+Q_DECLARE_OPAQUE_POINTER(MainWindowMenuBarController*)
 Q_DECLARE_OPAQUE_POINTER(MainWindowTitleBarController*)
 
 class MainWindowController : public UICore::CoreController
@@ -40,12 +40,12 @@ signals:
     void titleChanged();
     void controllerInitialized();
 public slots:
-    void onInitMenuBarController(AppMenuBarController* menuBarController);
+    void onInitMenuBarController(MainWindowMenuBarController* menuBarController);
     void onContactListLoaded(ContactListViewController* contactListController);
     void onInitTitleBarController(MainWindowTitleBarController* titleBarController);
     void openCamera();
     void testFunc();
 private:
-QPointer<AppContext> mAppContext;
+    QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
 };

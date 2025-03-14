@@ -1,4 +1,4 @@
-#include "MainWindow/include/AppMenuBarController.h"
+#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
@@ -12,20 +12,20 @@
 
 #include "LoggerDefine/LoggerDefine.h"
 
-AppMenuBarController::AppMenuBarController(QObject* parent)
+MainWindowMenuBarController::MainWindowMenuBarController(QObject* parent)
     : CoreController(parent)
     , mAppContext(nullptr)
 {
-    UIVIEW_LOG_DEBUG("create AppMenuBarController");
+    UIVIEW_LOG_DEBUG("create MainWindowMenuBarController");
 }
 
-QString AppMenuBarController::getControllerName() const
+QString MainWindowMenuBarController::getControllerName() const
 {
-    return "AppMenuBarController";
+    return "MainWindowMenuBarController";
 }
 
 
-void AppMenuBarController::initializeController(QPointer<AppContext> appContext)
+void MainWindowMenuBarController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;
     assert(mAppContext);
@@ -36,12 +36,12 @@ void AppMenuBarController::initializeController(QPointer<AppContext> appContext)
     emit controllerInitialized();
 }
 
-void AppMenuBarController::switchLanguage(UILanguage::LanguageType languageType)
+void MainWindowMenuBarController::switchLanguage(UILanguage::LanguageType languageType)
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
 }
 
-void AppMenuBarController::createMenu()
+void MainWindowMenuBarController::createMenu()
 {
     // 创建顶级菜单
     mRootMenu = new MenuItemModel("Main Menu", "Root action", this);
@@ -67,15 +67,15 @@ void AppMenuBarController::createMenu()
     mRootMenu->addSubItem(fileMenu);
     mRootMenu->addSubItem(editMenu);
 
-    QObject::connect(fileMenu_openFileItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 0));
-    QObject::connect(fileMenu_saveItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 1));
-    QObject::connect(editMenu_cutItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 2));
-    QObject::connect(editMenu_copyItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 3));
-    QObject::connect(editMenu_pasteItem, &MenuItemModel::triggered, std::bind(&AppMenuBarController::onMenuItemTriggered, this, 4));
+    QObject::connect(fileMenu_openFileItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 0));
+    QObject::connect(fileMenu_saveItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 1));
+    QObject::connect(editMenu_cutItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 2));
+    QObject::connect(editMenu_copyItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 3));
+    QObject::connect(editMenu_pasteItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 4));
 
 }
 
-void AppMenuBarController::onMenuItemTriggered(int itemIndex)
+void MainWindowMenuBarController::onMenuItemTriggered(int itemIndex)
 {
     UIVIEW_LOG_DEBUG("item clicked:" << itemIndex);
     switchLanguage(UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED);

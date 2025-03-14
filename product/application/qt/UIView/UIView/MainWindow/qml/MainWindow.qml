@@ -19,7 +19,7 @@ ApplicationWindow
     height: 576
     title: qsTr(mainController.title)
     color: UTComponentUtil.getPlainUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
-    menuBar: AppMenuBar {
+    menuBar: MainWindowMenuBar {
         id: menuBarId
     }
     header: MainWindowTitleBar {

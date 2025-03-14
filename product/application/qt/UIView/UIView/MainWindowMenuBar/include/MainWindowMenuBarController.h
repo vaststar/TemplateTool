@@ -19,14 +19,14 @@ namespace UILanguage{
 }
 
 class AppContext;
-class AppMenuBarController : public UICore::CoreController
+class MainWindowMenuBarController : public UICore::CoreController
 {
     Q_OBJECT
     Q_PROPERTY(MenuItemModel* rootMenu READ rootMenu CONSTANT)
     Q_PROPERTY(QList<MenuItemModel*> listMenu READ listMenu CONSTANT)
     QML_ELEMENT
 public:
-    AppMenuBarController(QObject* parent = nullptr);
+    MainWindowMenuBarController(QObject* parent = nullptr);
     virtual QString getControllerName() const override;
 
     void initializeController(QPointer<AppContext> appContext);
