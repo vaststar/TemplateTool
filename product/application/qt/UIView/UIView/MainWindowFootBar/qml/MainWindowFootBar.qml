@@ -1,7 +1,13 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import UIView 1.0
+
 ToolBar {
+    property alias controller: controller
+    MainWindowFootBarController {
+        id: controller
+    }
     RowLayout {
         anchors.fill: parent
         ToolButton {
@@ -9,7 +15,7 @@ ToolBar {
             onClicked: stack.pop()
         }
         Label {
-            text: qsTr("Footer")
+            text: qsTr(controller.footerName)
             elide: Label.ElideRight
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter

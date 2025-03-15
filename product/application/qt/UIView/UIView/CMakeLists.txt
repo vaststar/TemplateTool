@@ -14,6 +14,9 @@ set(TARGET_SOURCE_FILES_PRIVATE
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
     
+    MainWindowFootBar/include/MainWindowFootBarController.h
+    MainWindowFootBar/src/MainWindowFootBarController.cpp
+
     MainWindowMenuBar/include/MainWindowMenuBarController.h
     MainWindowMenuBar/src/MainWindowMenuBarController.cpp
 
@@ -31,7 +34,7 @@ set(UIVIEW_QML_TARGET_FILES
     ContactList/qml/ContactList.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
-    MainWindow/qml/AppFooter.qml
+    MainWindowFootBar/qml/MainWindowFootBar.qml
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
     MainWindow/qml/MainWindowTabBar.qml
@@ -49,6 +52,7 @@ set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowMenuBar/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowFootBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
 )
 

@@ -16,6 +16,7 @@
 #include "ContactList/include/ContactListViewController.h"
 #include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
 #include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
+#include "MainWindowFootBar/include/MainWindowFootBarController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)
@@ -57,6 +58,11 @@ void MainWindowController::onInitMenuBarController(MainWindowMenuBarController* 
 void MainWindowController::onInitTitleBarController(MainWindowTitleBarController* titleBarController)
 {
     titleBarController->initializeController(mAppContext);
+}
+
+void MainWindowController::onInitFootBarController(MainWindowFootBarController* footBarController)
+{
+    footBarController->initializeController(mAppContext);
 }
 
 void MainWindowController::openCamera()

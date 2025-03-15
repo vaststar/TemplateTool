@@ -18,10 +18,12 @@ class AppContext;
 class ContactListViewController;
 class MainWindowMenuBarController;
 class MainWindowTitleBarController;
+class MainWindowFootBarController;
 //forward declaration to use the poinnter in slots
 Q_DECLARE_OPAQUE_POINTER(ContactListViewController*)
 Q_DECLARE_OPAQUE_POINTER(MainWindowMenuBarController*)
 Q_DECLARE_OPAQUE_POINTER(MainWindowTitleBarController*)
+Q_DECLARE_OPAQUE_POINTER(MainWindowFootBarController*)
 
 class MainWindowController : public UICore::CoreController
 {
@@ -43,6 +45,7 @@ public slots:
     void onInitMenuBarController(MainWindowMenuBarController* menuBarController);
     void onContactListLoaded(ContactListViewController* contactListController);
     void onInitTitleBarController(MainWindowTitleBarController* titleBarController);
+    void onInitFootBarController(MainWindowFootBarController* footBarController);
     void openCamera();
     void testFunc();
 private:

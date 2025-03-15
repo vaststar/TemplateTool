@@ -25,7 +25,9 @@ ApplicationWindow
     header: MainWindowTitleBar {
         id: titleBar
     }
-    footer: AppFooter {}
+    footer: MainWindowFootBar {
+        id: footBar
+    }
 
     Loader{
         id: mainWindowContentLoader
@@ -41,6 +43,7 @@ ApplicationWindow
     function onMainControllerInitialized(){
         mainController.onInitMenuBarController(menuBarId.controller)
         mainController.onInitTitleBarController(titleBar.controller)
+        mainController.onInitFootBarController(footBar.controller)
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
     }
 

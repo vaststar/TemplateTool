@@ -2,24 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
-    <name>AppFooter</name>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppFooter.qml" line="8"/>
-        <source>‹</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppFooter.qml" line="12"/>
-        <source>Footer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/AppFooter.qml" line="19"/>
-        <source>⋮</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CPP_LocalizedString</name>
     <message>
         <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="9"/>
@@ -49,6 +31,19 @@
     </message>
 </context>
 <context>
+    <name>MainWindowFootBar</name>
+    <message>
+        <location filename="../../qt/UIView/UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="14"/>
+        <source>‹</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="25"/>
+        <source>⋮</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainWindowTabBar</name>
     <message>
         <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="9"/>
@@ -74,13 +69,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="43"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="44"/>
         <source>my test window</source>
         <translation>测试工具窗口</translation>
     </message>
     <message>
         <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="16"/>
         <source>MainWindowTitleBarController</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="16"/>
+        <source>MainWindowFootBarController</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="26"/>
+        <source>my footer bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
