@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>AppSystemTray</name>
+    <message>
+        <location filename="../../qt/UIView/UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CPP_LocalizedString</name>
     <message>
         <location filename="../../qt/UIView/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="9"/>
@@ -25,7 +33,7 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="59"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowContent.qml" line="64"/>
         <source>openCamera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -44,24 +52,6 @@
     </message>
 </context>
 <context>
-    <name>MainWindowTabBar</name>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="9"/>
-        <source>Home</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="21"/>
-        <source>Discover</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/qml/MainWindowTabBar.qml" line="29"/>
-        <source>Activity</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
         <location filename="../../qt/UIView/UIView/ContactList/src/ContactListViewController.cpp" line="19"/>
@@ -69,7 +59,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="44"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="47"/>
         <source>my test window</source>
         <translation>tttt fanyi</translation>
     </message>
@@ -89,16 +79,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="26"/>
-        <source>my test window title bar</source>
+        <location filename="../../qt/UIView/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="16"/>
+        <source>MainWindowSideBarController</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>SystemTray</name>
     <message>
-        <location filename="../../qt/UIView/UIView/SystemTray/qml/SystemTray.qml" line="9"/>
-        <source>Quit</source>
+        <location filename="../../qt/UIView/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="16"/>
+        <source>AppSystemTrayController</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
+        <location filename="../../qt/UIView/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="26"/>
+        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="26"/>
+        <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

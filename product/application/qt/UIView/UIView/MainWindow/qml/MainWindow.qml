@@ -19,12 +19,15 @@ ApplicationWindow
     height: 576
     title: qsTr(mainController.title)
     color: UTComponentUtil.getPlainUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
+
     menuBar: MainWindowMenuBar {
         id: menuBarId
     }
+
     header: MainWindowTitleBar {
         id: titleBar
     }
+
     footer: MainWindowFootBar {
         id: footBar
     }
@@ -39,15 +42,15 @@ ApplicationWindow
         mainController.controllerInitialized.connect(onMainControllerInitialized)
     }
 
-
     function onMainControllerInitialized(){
         mainController.onInitMenuBarController(menuBarId.controller)
         mainController.onInitTitleBarController(titleBar.controller)
         mainController.onInitFootBarController(footBar.controller)
+        mainController.onInitSystemTrayController(systemTray.controller)
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
     }
 
-    SystemTray{
+    AppSystemTray{
         id: systemTray
     }
 }

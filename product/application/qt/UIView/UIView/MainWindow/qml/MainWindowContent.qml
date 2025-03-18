@@ -6,11 +6,15 @@ import UTComponent 1.0
 import UIStrings 1.0
 
 Item{
+    id: mainWindowContent
     required property var controller
 
-    MainWindowTabBar{
+    MainWindowSideBar{
         id: navigationBar
+        width: parent.width/12
+        height: parent.height
     }
+
     ContactList{
         id: frame
         width : 400
@@ -23,6 +27,7 @@ Item{
     
     Component.onCompleted:{
         controller.onContactListLoaded(frame.controller)
+        controller.onInitSideBarController(navigationBar.controller)
     }
 
     Text {

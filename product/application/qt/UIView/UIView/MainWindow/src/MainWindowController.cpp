@@ -17,6 +17,9 @@
 #include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
 #include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
 #include "MainWindowFootBar/include/MainWindowFootBarController.h"
+#include "MainWindowSideBar/include/MainWindowSideBarController.h"
+#include "AppSystemTray/include/AppSystemTrayController.h"
+
 
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)
@@ -63,6 +66,16 @@ void MainWindowController::onInitTitleBarController(MainWindowTitleBarController
 void MainWindowController::onInitFootBarController(MainWindowFootBarController* footBarController)
 {
     footBarController->initializeController(mAppContext);
+}
+
+void MainWindowController::onInitSideBarController(MainWindowSideBarController* sideBarController)
+{
+    sideBarController->initializeController(mAppContext);
+}
+
+void MainWindowController::onInitSystemTrayController(AppSystemTrayController* systemTrayController)
+{
+    systemTrayController->initializeController(mAppContext);
 }
 
 void MainWindowController::openCamera()

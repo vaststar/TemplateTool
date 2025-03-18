@@ -20,6 +20,12 @@ set(TARGET_SOURCE_FILES_PRIVATE
     MainWindowMenuBar/include/MainWindowMenuBarController.h
     MainWindowMenuBar/src/MainWindowMenuBarController.cpp
 
+    MainWindowSideBar/include/MainWindowSideBarController.h
+    MainWindowSideBar/src/MainWindowSideBarController.cpp
+
+    AppSystemTray/include/AppSystemTrayController.h
+    AppSystemTray/src/AppSystemTrayController.cpp
+
     MainWindow/include/MainWindowController.h
     MainWindow/src/MainWindowController.cpp
     
@@ -35,10 +41,10 @@ set(UIVIEW_QML_TARGET_FILES
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
     MainWindowFootBar/qml/MainWindowFootBar.qml
+    MainWindowSideBar/qml/MainWindowSideBar.qml
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
-    MainWindow/qml/MainWindowTabBar.qml
-    SystemTray/qml/SystemTray.qml
+    AppSystemTray/qml/AppSystemTray.qml
 )
 
 set (UIVIEW_QML_TARGET_RESOURCES_DIR
@@ -53,6 +59,8 @@ set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowMenuBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowFootBar/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowSideBar/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppSystemTray/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
 )
 

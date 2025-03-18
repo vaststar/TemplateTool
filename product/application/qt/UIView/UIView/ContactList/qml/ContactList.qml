@@ -6,11 +6,7 @@ import UTComponent 1.0
 Item{
     id: root
     
-    property alias controller: controller
-
-    ContactListViewController{
-        id:controller
-    }
+    property var controller: ContactListViewController{}
 
     Image {
         height:200
@@ -33,7 +29,6 @@ Item{
             controller.buttonClicked()
         }
     }
-
 
     ContactListItemModel{
         id:treeModel

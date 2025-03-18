@@ -5,11 +5,9 @@ import UIView 1.0
 
 Rectangle {
         height: 40
+        property var controller: MainWindowTitleBarController{}
+        
         color: "#3A3F51"  // 设置标题栏颜色
-        property alias controller: controller
-        MainWindowTitleBarController {
-            id: controller
-        }
 
         RowLayout {
             anchors.fill: parent
