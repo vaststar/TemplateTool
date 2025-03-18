@@ -7,50 +7,40 @@ Item{
     id: root
     property var controller: MainWindowSideBarController{}
 
-// ColumnLayout {
-        // anchors.fill: parent
-        // spacing: 5
+    ListView {
+        id: naviListView
+        anchors.fill: parent
+        model: ListModel {
+            ListElement { text: "Option 1" }
+            ListElement { text: "Option 2" }
+            ListElement { text: "Option 3" }
+        }
 
-        ListView {
-            id: naviListView
-            anchors.fill: parent
-            // Layout.fillWidth: true
-            // Layout.fillHeight: true
-            model: ListModel {
-                ListElement { text: "Option 1" }
-                ListElement { text: "Option 2" }
-                ListElement { text: "Option 3" }
-            }
+        delegate: Item {
+            property var isCurrentItem: ListView.isCurrentItem
 
-            delegate: Item {
+            width: ListView.view.width
+            height: ListView.view.height/naviListView.count
+
+            Rectangle {
+                color: isCurrentItem ? "lightblue" : "red"
                 width: parent.width
-                height: parent.height/3
+                height: parent.height
 
-                Rectangle {
-                    color: naviListView.currentIndex == index ? "lightblue" : "red"
-                    width: parent.width
-                    height: parent.height
+                Text {
+                    text: model.text
+                    anchors.centerIn: parent
+                }
 
-                    Text {
-                        text: model.text
-                        anchors.centerIn: parent
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            console.log("click:", index)
-                            naviListView.currentIndex = index
-                        }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("click:", index)
+                        naviListView.currentIndex = index
                     }
                 }
             }
         }
+    }
 
-        // Rectangle {
-        //     Layout.fillHeight: true
-        //     Layout.fillWidth: true
-        //     color: "lightgrey"
-        // }
-    // }
 }

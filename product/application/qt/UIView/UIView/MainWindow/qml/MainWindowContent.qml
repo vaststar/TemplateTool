@@ -11,7 +11,7 @@ Item{
 
     MainWindowSideBar{
         id: navigationBar
-        width: parent.width/12
+        width: parent.width/16
         height: parent.height
     }
 
