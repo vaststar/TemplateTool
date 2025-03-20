@@ -48,7 +48,11 @@ void openImage()
 void openCameraFunc()
 {
     cv::Mat frame;
+    #if(WIN32)
     cv::VideoCapture cap(0, cv::VideoCaptureAPIs::CAP_DSHOW);
+    #else
+    cv::VideoCapture cap(0, cv::VideoCaptureAPIs::CAP_ANY);
+    #endif
     if (!cap.isOpened())
     {
         SERVICE_LOG_DEBUG("camera not opened");
@@ -78,10 +82,10 @@ void MediaService::openCamera()
 {
     //openImage();
     //return;
-    auto thread1 = new std::thread([]() {
+    // auto thread1 = new std::thread([]() {
         openCameraFunc();
-        });
-    thread1->detach();
+        // });
+    // thread1->detach();
     //auto thread2 = new std::thread([]() {
     //    openCameraFunc();
     //    });
