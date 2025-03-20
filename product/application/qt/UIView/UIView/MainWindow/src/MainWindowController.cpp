@@ -13,13 +13,6 @@
 
 #include "LoggerDefine/LoggerDefine.h"
 
-#include "ContactList/include/ContactListViewController.h"
-#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
-#include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
-#include "MainWindowFootBar/include/MainWindowFootBarController.h"
-#include "MainWindowSideBar/include/MainWindowSideBarController.h"
-#include "AppSystemTray/include/AppSystemTrayController.h"
-
 
 MainWindowController::MainWindowController(QObject* parent)
     : CoreController(parent)

@@ -17,14 +17,14 @@ ApplicationWindow
     visible: true
     width: 758 
     height: 576
-    flags: Qt.FramelessWindowHint|Qt.Window
+    // flags: Qt.FramelessWindowHint|Qt.Window
 
     title: qsTr(mainController.title)
     color: UTComponentUtil.getPlainUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
 
     menuBar: MainWindowMenuBar {
         id: menuBarId
-        visible: false
+        // visible: false
     }
 
     header: MainWindowTitleBar {

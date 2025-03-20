@@ -59,7 +59,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="47"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="40"/>
         <source>my test window</source>
         <translation>tttt fanyi</translation>
     </message>

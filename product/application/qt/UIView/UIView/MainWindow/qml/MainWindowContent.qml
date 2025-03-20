@@ -74,7 +74,7 @@ Item{
     }
     UTButton {
         id: butn2
-        text:  qsTr(ThemeManager.getLocalizedString(UIStrings.LocalizedString_OkButtonLabel)) //qsTr("button2")
+        text:  qsTr(UTComponentUtil.getLocalizedString(UIStrings.LocalizedString_OkButtonLabel)) //qsTr("button2")
         anchors{
             top: parent.top
             topMargin: 300

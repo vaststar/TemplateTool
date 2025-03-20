@@ -5,13 +5,17 @@ function getItemUIColor(widget, colorEnum) {
                       widget.hovered ? UIElementData.UIColorState_Hovered :
                       widget.activeFocus ? UIElementData.UIColorState_Focused :
                       widget.checked ? UIElementData.UIColorState_Checked : UIElementData.UIColorState_Normal;
-    return ThemeManager.getUIColor(colorEnum, colorState);
+    return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
 }
 
 function getPlainUIColor(colorEnum, colorState) {
-    return ThemeManager.getUIColor(colorEnum, colorState);
+    return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
 }
 
 function getUIFont(fontSize) {
-    return ThemeManager.getUIFont(fontSize)
+    return ThemeManager ? ThemeManager.getUIFont(fontSize) : {};
+}
+
+function getLocalizedString(key) {
+    return ThemeManager ? ThemeManager.getLocalizedString(key) : "No ThemeManager";
 }
