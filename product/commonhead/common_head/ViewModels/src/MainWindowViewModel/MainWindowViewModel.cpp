@@ -35,7 +35,7 @@ void MainWindowViewModel::openCamera()
     {
         if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
         {
-            media->openCamera();
+            media->openCamera(0);
         }
     }
 }

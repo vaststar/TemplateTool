@@ -1,3 +1,4 @@
+
 #include "LogBaseLogger.h"
 
 #include <format>

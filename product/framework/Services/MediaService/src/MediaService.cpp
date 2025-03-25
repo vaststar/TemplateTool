@@ -4,20 +4,57 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
 
 #include "MediaServiceLogger.h"
 
+#include "CameraManager.h"
+
 
 namespace ucf::service{
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+class MediaService::DataPrivate{
+public:
+    explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
+    std::shared_ptr<CameraManager> getCameraManager() const;
+private:
+    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    std::shared_ptr<CameraManager>  mCameraManagerPtr;
+};
+
+MediaService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
+    : mCoreFrameworkWPtr(coreFramework)
+    , mCameraManagerPtr(std::make_shared<CameraManager>())
+{
+
+}
+
+ucf::framework::ICoreFrameworkWPtr MediaService::DataPrivate::getCoreFramework() const
+{
+    return mCoreFrameworkWPtr;
+}
+
+std::shared_ptr<CameraManager> MediaService::DataPrivate::getCameraManager() const
+{
+    return mCameraManagerPtr;
+}
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Finish DataPrivate Logic//////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
 std::shared_ptr<IMediaService> IMediaService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<MediaService>(coreFramework);
 }
 
 MediaService::MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework)
-    : mCoreFrameworkWPtr(coreFramework)
+    : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
     SERVICE_LOG_INFO("create MediaService, address:" << this);
 }
@@ -78,18 +115,29 @@ void openCameraFunc()
     cv::destroyAllWindows();
 }
 
-void MediaService::openCamera()
+std::string MediaService::openCamera(int cameraNum)
 {
     //openImage();
     //return;
     // auto thread1 = new std::thread([]() {
-        openCameraFunc();
+        // openCameraFunc();
         // });
     // thread1->detach();
     //auto thread2 = new std::thread([]() {
     //    openCameraFunc();
     //    });
     //thread2->detach();
+    return mDataPrivate->getCameraManager()->openCamera(cameraNum);
 }
 
+
+std::vector<std::string> MediaService::getOpenedCameras() const
+{
+    return mDataPrivate->getCameraManager()->getOpenedCameras();
+}
+
+std::optional<model::Image> MediaService::readImageData(const std::string& cameraId)
+{
+    return mDataPrivate->getCameraManager()->readImageData(cameraId);
+}
 }

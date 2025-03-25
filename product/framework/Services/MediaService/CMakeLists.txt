@@ -2,12 +2,15 @@ include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/ucf/Services/MediaService/IMediaService.h
+    include/ucf/Services/MediaService/IMediaServiceCallback.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/MediaServiceLogger.h
     src/MediaService.h
     src/MediaService.cpp
+    src/CameraManager.h
+    src/CameraManager.cpp
 )
 
 BuildModule(
@@ -23,6 +26,8 @@ BuildModule(
         MasterLog
         CoreFramework
         opencv
+        UUIDUtils
+        ImageService
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro
         ServiceDeclaration

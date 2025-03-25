@@ -34,6 +34,7 @@ BuildModule(
         CommonHeadFramework
         ContactService
         MediaService
+        ImageService
         ClientInfoService
         DataWarehouseService
         DataWarehouseSchema

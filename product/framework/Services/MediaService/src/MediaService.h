@@ -18,11 +18,15 @@ public:
     virtual std::string getServiceName() const override;
 
     //MediaService
-    virtual void openCamera() override;
+    virtual std::string openCamera(int cameraNum) override;
+    virtual std::vector<std::string> getOpenedCameras() const override;
+    virtual std::optional<model::Image> readImageData(const std::string& cameraId) override;
 protected:
     //IService
     virtual void initService() override;
 private:
+    class DataPrivate;
+    std::unique_ptr<DataPrivate> mDataPrivate;
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };
 }
