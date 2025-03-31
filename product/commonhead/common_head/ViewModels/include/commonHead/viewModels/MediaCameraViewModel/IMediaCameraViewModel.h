@@ -5,6 +5,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
+#include <commonHead/viewModels/ViewModelDataDefine/Image.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -16,6 +17,7 @@ class COMMONHEAD_EXPORT IMediaCameraViewModelCallback
 {
 public:
     virtual ~IMediaCameraViewModelCallback() = default;
+    virtual void onCameraImageReceived(const model::Image& image) {};
 };
 
 class COMMONHEAD_EXPORT IMediaCameraViewModel: public virtual ucf::utilities::INotificationHelper<IMediaCameraViewModelCallback>
@@ -23,6 +25,8 @@ class COMMONHEAD_EXPORT IMediaCameraViewModel: public virtual ucf::utilities::IN
 public:
     virtual std::string getViewModelName() const = 0;
     virtual void openCamera() = 0;
+    virtual void startCaptureCameraVideo() = 0;
+    virtual void stopCaptureCameraVideo() = 0;
 public:
     static std::shared_ptr<IMediaCameraViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };

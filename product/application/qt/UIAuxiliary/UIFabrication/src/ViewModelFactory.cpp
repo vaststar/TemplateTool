@@ -4,7 +4,7 @@
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
-
+#include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
 namespace UIFabrication{
 
@@ -42,5 +42,10 @@ std::shared_ptr<commonHead::viewModels::IContactListViewModel> ViewModelFactory:
 std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> ViewModelFactory::createMainWindowViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> ViewModelFactory::createMediaCameraViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IMediaCameraViewModel>();
 }
 } // namespace UIFabrication

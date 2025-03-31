@@ -1,5 +1,6 @@
 #include "MediaCameraViewModel.h"
 
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include <ucf/Services/MediaService/IMediaService.h>
@@ -13,8 +14,20 @@ std::shared_ptr<IMediaCameraViewModel> IMediaCameraViewModel::createInstance(com
     return std::make_shared<MediaCameraViewModel>(commonHeadFramework);
 }
 
+MediaCameraViewModel::~MediaCameraViewModel()
+{
+    COMMONHEAD_LOG_DEBUG("");
+    if (mCaptureThread && mCaptureThread->joinable())
+    {
+        stopCaptureCameraVideo();
+        mCaptureThread->join();
+    }
+}
+
 MediaCameraViewModel::MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : mCommonHeadFrameworkWptr(commonHeadFramework)
+    , mVideoCaptureStop(false)
+    , mCaptureThread(nullptr)
 {
     COMMONHEAD_LOG_DEBUG("create MediaCameraViewModel");
 }
@@ -30,8 +43,41 @@ void MediaCameraViewModel::openCamera()
     {
         if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
         {
-            media->openCamera(0);
+            mCameraId = media->openCamera(0);
         }
     }
+}
+
+void MediaCameraViewModel::startCaptureCameraVideo()
+{
+    mCaptureThread = std::make_shared<std::thread>([this](){
+        if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+        {
+            if (auto coreFramework = commonHeadFramework->getCoreFramework().lock())
+            {
+                if (auto mediaService  = coreFramework->getService<ucf::service::IMediaService>().lock())
+                {
+                    while(!mVideoCaptureStop)
+                    {
+                        if (auto image = mediaService->readImageData(mCameraId))
+                        {
+                            fireNotification(&IMediaCameraViewModelCallback::onCameraImageReceived, convertServiceImageToViewModelImage(image.value()));
+                        }
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    }
+                }
+            }
+        }
+    });
+}
+
+void MediaCameraViewModel::stopCaptureCameraVideo()
+{
+    mVideoCaptureStop = true;
+}
+
+model::Image MediaCameraViewModel::convertServiceImageToViewModelImage(const ucf::service::model::Image& image) const
+{
+    return model::Image{image.buffer, image.width, image.height, image.steps};
 }
 }

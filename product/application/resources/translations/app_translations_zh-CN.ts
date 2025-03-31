@@ -59,7 +59,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="40"/>
+        <location filename="../../qt/UIView/UIView/MainWindow/src/MainWindowController.cpp" line="45"/>
         <source>my test window</source>
         <translation>测试工具窗口</translation>
     </message>
@@ -94,6 +94,11 @@
         <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="26"/>
         <source>my test window title bar</source>
         <translation>测试titlebar</translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/UIView/MediaCameraView/src/MediaCameraViewController.cpp" line="27"/>
+        <source>MediaCameraViewController</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

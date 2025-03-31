@@ -7,6 +7,8 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h
     include/commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h
     include/commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h
+    include/commonHead/viewModels/ViewModelDataDefine/Image.h
+    include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -19,6 +21,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/ClientInfoViewModel/ClientInfoViewModel.cpp
     src/AppUIViewModel/AppUIViewModel.h
     src/AppUIViewModel/AppUIViewModel.cpp
+    src/MediaCameraViewModel/MediaCameraViewModel.h
+    src/MediaCameraViewModel/MediaCameraViewModel.cpp
 )
 
 BuildModule(

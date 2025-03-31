@@ -6,6 +6,8 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
 set(TARGET_SOURCE_FILES_PRIVATE
     LoggerDefine/LoggerDefine.h
 
+    ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
+
     ContactList/include/ContactListItemModel.h
     ContactList/include/ContactListViewController.h
     ContactList/src/ContactListViewController.cpp
@@ -26,6 +28,9 @@ set(TARGET_SOURCE_FILES_PRIVATE
     AppSystemTray/include/AppSystemTrayController.h
     AppSystemTray/src/AppSystemTrayController.cpp
 
+    MediaCameraView/include/MediaCameraViewController.h
+    MediaCameraView/src/MediaCameraViewController.cpp
+
     MainWindow/include/MainWindowController.h
     MainWindow/src/MainWindowController.cpp
     
@@ -42,6 +47,7 @@ set(UIVIEW_QML_TARGET_FILES
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
     MainWindowFootBar/qml/MainWindowFootBar.qml
     MainWindowSideBar/qml/MainWindowSideBar.qml
+    MediaCameraView/qml/MediaCameraView.qml
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
     AppSystemTray/qml/AppSystemTray.qml
@@ -61,6 +67,7 @@ set(UIVIEW_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowFootBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowSideBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/AppSystemTray/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MediaCameraView/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindow/include
 )
 

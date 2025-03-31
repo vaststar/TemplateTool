@@ -19,6 +19,7 @@ namespace commonHead{
 
     namespace viewModels{
         class IMainWindowViewModel;
+        class IMediaCameraViewModel;
     }
 }
 

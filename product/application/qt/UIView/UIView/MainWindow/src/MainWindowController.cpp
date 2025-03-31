@@ -5,6 +5,7 @@
 
 #include <UIDataStruct/UILanguage.h>
 #include <UIFabrication/IViewModelFactory.h>
+#include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <UIManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
@@ -12,6 +13,10 @@
 #include <UIUtilities/PlatformUtils.h>
 
 #include "LoggerDefine/LoggerDefine.h"
+
+
+#include "MediaCameraView/include/MediaCameraViewController.h"
+
 
 
 MainWindowController::MainWindowController(QObject* parent)
@@ -76,6 +81,16 @@ void MainWindowController::openCamera()
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
     mMainViewModel->openCamera();
+
+    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), "MediaCameraViewController", [this](auto controller){
+        if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
+        {
+            mediaController->initializeController(mAppContext);
+        }
+    });
+    // mMediaCameraViewModel = mAppContext->getViewModelFactory()->createMediaCameraViewModelInstance();
+    // mMediaCameraViewModel->openCamera();
+    // mMediaCameraViewModel->startCaptureCameraVideo();
 }
 
 void MainWindowController::testFunc()
