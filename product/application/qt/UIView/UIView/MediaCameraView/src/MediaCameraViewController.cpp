@@ -32,11 +32,23 @@ void MediaCameraViewController::initializeController(QPointer<AppContext> appCon
     mAppContext = appContext;
     QObject::connect(mMediaCameraViewModelEmitter.get(), &MediaCameraViewModelEmitter::signals_onCameraImageReceived, this, &MediaCameraViewController::onCameraImageReceived);
     mMediaCameraViewModel = mAppContext->getViewModelFactory()->createMediaCameraViewModelInstance();
+    mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
     mMediaCameraViewModel->openCamera();
     mMediaCameraViewModel->startCaptureCameraVideo();
 }
 
 void MediaCameraViewController::onCameraImageReceived(const commonHead::viewModels::model::Image& image)
 {
+    QImage img(&image.buffer[0], image.width, image.height, static_cast<int>(image.steps), QImage::Format::Format_RGB888);
+    
 
+    QByteArray byteArray;
+QBuffer buffer(&byteArray);
+img.save(&buffer, "PNG");
+mImageData = "data:image/png;base64," + byteArray.toBase64();
+emit showCameraImage(img);
+}
+QString MediaCameraViewController::getImage()
+{
+    return mImageData;
 }

@@ -10,8 +10,27 @@ ApplicationWindow
         id: mediaController
         objectName: "MediaCameraViewController"
     }
+
     visible: true
     width: 758 
     height: 576
     color: "red"
+
+    Image {
+        id: imageItem
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        source: mediaController.imageData
+    }
+
+    
+    Component.onCompleted:{
+        mediaController.showCameraImage.connect(onShowCameraImage)
+    }
+
+    
+    function onShowCameraImage(img){
+        console.log("rrrrrrrr")
+        //  imageItem.source = img;
+    }
 }

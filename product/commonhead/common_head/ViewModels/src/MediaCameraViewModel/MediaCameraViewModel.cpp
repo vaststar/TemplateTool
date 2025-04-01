@@ -63,7 +63,7 @@ void MediaCameraViewModel::startCaptureCameraVideo()
                         {
                             fireNotification(&IMediaCameraViewModelCallback::onCameraImageReceived, convertServiceImageToViewModelImage(image.value()));
                         }
-                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     }
                 }
             }
