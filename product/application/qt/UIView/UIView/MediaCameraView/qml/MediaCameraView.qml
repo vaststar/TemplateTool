@@ -4,9 +4,12 @@ import QtQuick.Layouts
 import QtMultimedia
 import UIView 1.0
 import UTComponent 1.0
+
 ApplicationWindow
 {
     id: root
+    objectName: "MediaCameraView"
+
     MediaCameraViewController{
         id: mediaController
         objectName: "MediaCameraViewController"

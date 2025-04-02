@@ -1,18 +1,6 @@
 #pragma once
 
-#include <memory>
-
-#include <QPointer>
-#include <QObject>
-#include <QQuickView>
-#include <UICore/CoreController.h>
 #include <UIFabrication/IUIViewFactory.h>
-
-namespace UICore{
-class CoreQmlEngine;
-class CoreController;
-using ControllerCallback = std::function<void(CoreController*)>;
-}
 
 namespace UIFabrication{
 class UIViewFactory final: public IUIViewFactory

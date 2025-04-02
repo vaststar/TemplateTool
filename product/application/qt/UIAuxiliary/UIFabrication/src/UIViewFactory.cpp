@@ -4,6 +4,7 @@
 
 #include <QFileInfo>
 #include <QApplication>
+#include <QQmlComponent>
 
 #include "LoggerDefine.h"
 
@@ -84,27 +85,28 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& con
     }
 
     QString actualQmlResource = generateQmlResourcePath(qmlResource);
-
-    UIFabrication_LOG_DEBUG("will clear objectCreated signal for qmlEngine");
-    QObject::disconnect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, nullptr, nullptr);
-    UIFabrication_LOG_DEBUG("clear objectCreated signal for qmlEngine done");
-
-    QObject::connect(mQmlEngine.get(), &QQmlApplicationEngine::objectCreated, [actualQmlResource, controllerObjectName, controllerCallback](QObject* object, const QUrl& url) {
-        if (!object)
+    if (QQmlComponent component(mQmlEngine.get(), actualQmlResource); component.status() == QQmlComponent::Ready)
+    {
+        if (auto object = component.create())
         {
-            UIFabrication_LOG_WARN("object created failed: " << url.toString().toStdString());
-            return;
-        }
+            if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
+            {
+                QObject::connect(window, &QQuickWindow::closing, [window]{ 
+                    if (window)
+                    {
+                        UIFabrication_LOG_DEBUG("will close window: " << window->objectName().toStdString());
+                        window->deleteLater();
+                    }
+                });
+            }
 
-        if (url.toString() == actualQmlResource)
-        {
-            UIFabrication_LOG_DEBUG("object created: " << url.toString().toStdString());
             if (!controllerObjectName.isEmpty() && controllerCallback)
             {
                 if (auto controller = object->findChild<UICore::CoreController*>(controllerObjectName))
                 {
-                    UIFabrication_LOG_DEBUG("controller found, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                    UIFabrication_LOG_DEBUG("controller found, do callback, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
                     controllerCallback(controller);
+                    UIFabrication_LOG_DEBUG("controller found, callback done, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
                 }
                 else
                 {
@@ -112,9 +114,16 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& con
                 }
             }
         }
-    });
-    UIFabrication_LOG_DEBUG("will load: " << actualQmlResource.toStdString());
-    mQmlEngine->load(actualQmlResource);
-    UIFabrication_LOG_DEBUG("load finish: " << actualQmlResource.toStdString());
+        else
+        {
+            UIFabrication_LOG_WARN("create qml failed: " << actualQmlResource.toStdString() << ", error: " << component.errorString().toStdString());
+        }
+    }
+    else
+    {
+        UIFabrication_LOG_WARN("load qml failed: " << actualQmlResource.toStdString() << ", error: " << component.errorString().toStdString());
+        return;
+    }
+
 }   
 }
