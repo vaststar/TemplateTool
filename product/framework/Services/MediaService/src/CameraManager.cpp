@@ -1,6 +1,6 @@
 #include "CameraManager.h"
 
-
+#include <opencv2/opencv.hpp>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 #include "MediaServiceLogger.h"
 #include <ucf/Services/ImageService/ImageTypes.h>
@@ -60,6 +60,7 @@ std::optional<model::Image> CameraManager::readImageData(const std::string& came
             cv::Mat frame;
             if (iter->second->read(frame); !frame.empty())
             {
+                cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
                 std::vector<uchar> vec(frame.datastart, frame.dataend);
                 return model::Image(std::move(vec), frame.cols, frame.rows, frame.step);
             }

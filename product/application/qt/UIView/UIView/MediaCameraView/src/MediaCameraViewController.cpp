@@ -27,6 +27,24 @@ QString MediaCameraViewController::getControllerName() const
     return QObject::tr("MediaCameraViewController");
 }
 
+QVideoSink* MediaCameraViewController::getVideoSink() const 
+{ 
+    return mVideoSink; 
+}
+
+void MediaCameraViewController::setVideoSink(QVideoSink* videoSink) 
+{
+    if (!videoSink) 
+    {
+        return;
+    }
+
+    if (mVideoSink != videoSink) 
+    {
+        mVideoSink = videoSink;
+        emit videoSinkChanged(mVideoSink);
+    }
+}
 void MediaCameraViewController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;
@@ -41,14 +59,23 @@ void MediaCameraViewController::onCameraImageReceived(const commonHead::viewMode
 {
     QImage img(&image.buffer[0], image.width, image.height, static_cast<int>(image.steps), QImage::Format::Format_RGB888);
     
+    if(mVideoSink)
+    {
+        mVideoSink->setVideoFrame(imageToVideoFrame(img));
+    }
 
-    QByteArray byteArray;
-QBuffer buffer(&byteArray);
-img.save(&buffer, "PNG");
-mImageData = "data:image/png;base64," + byteArray.toBase64();
-emit showCameraImage(img);
+    emit showCameraImage(img);
 }
-QString MediaCameraViewController::getImage()
+
+QVideoFrame MediaCameraViewController::imageToVideoFrame(const QImage& image) const
 {
-    return mImageData;
+    QImage convetedImage = image.convertToFormat(QImage::Format_RGBX8888);
+    QVideoFrame videoFrame = QVideoFrameFormat(convetedImage.size(), QVideoFrameFormat::Format_RGBX8888);
+    if (videoFrame.map(QVideoFrame::WriteOnly))
+    {
+        memcpy(videoFrame.bits(0), convetedImage.bits(), convetedImage.sizeInBytes());
+        videoFrame.unmap();
+        return videoFrame;
+    }
+    return {};
 }

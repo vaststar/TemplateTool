@@ -95,7 +95,7 @@ BuildQtModule(
         ResourceLoader
         ViewModels
         CommonHeadFramework
-        Qt6::Gui Qt6::Quick Qt6::Widgets
+        Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
