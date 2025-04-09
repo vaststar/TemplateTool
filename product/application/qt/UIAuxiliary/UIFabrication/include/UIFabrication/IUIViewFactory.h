@@ -21,11 +21,39 @@ Q_OBJECT
 public:
     virtual ~IUIViewFactory() = default;
 
+    /**
+     * * @brief create qml view
+     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
+     * * @param parent parent window, such as MainWindow
+     * * @param controller controller object, such as MainWindowController
+     * * @return qml view pointer
+     * * @note please ensure the qml code is item type
+     */
     virtual QPointer<QQuickView> createQmlView(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) = 0;
 
-    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const UICore::ControllerCallback& controllerCallback = nullptr) = 0;
+    /**
+     * * @brief load qml window with pure qml resource path
+     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
+     * * @note please ensure the qml code is window type
+     */
+    virtual void loadQmlWindow(const QString& qmlResource) = 0;
+
+    /**
+     * * @brief load qml window with qml resource path and controller
+     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
+     * * @param controller controller object, such as MainWindowController
+     * * @note please ensure the qml code is window type
+     */
     virtual void loadQmlWindow(const QString& qmlResource, UICore::CoreController* controller) = 0;
-    // virtual QQuickWindow* loadQmlQindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const UICore::ControllerCallback& controllerCallback = nullptr) = 0;
+
+    /**
+     * * @brief load qml window with qml resource path and controller object name
+     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
+     * * @param controllerObjectName controller object name, such as MainWindowController
+     * * @param controllerCallback callback function to get controller object
+     * * @note please ensure the qml code is window type
+     */
+    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback) = 0;
 
     static std::unique_ptr<IUIViewFactory> createInstance(QPointer<UICore::CoreQmlEngine> qmlEngine);
 };

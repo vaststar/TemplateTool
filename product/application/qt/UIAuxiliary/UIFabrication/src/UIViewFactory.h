@@ -16,8 +16,9 @@ public:
 
     virtual QPointer<QQuickView> createQmlView(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) override;
 
-    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName = QString(), const UICore::ControllerCallback& controllerCallback = nullptr) override;
+    virtual void loadQmlWindow(const QString& qmlResource) override;
     virtual void loadQmlWindow(const QString& qmlResource, UICore::CoreController* controller) override;
+    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback) override;
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;

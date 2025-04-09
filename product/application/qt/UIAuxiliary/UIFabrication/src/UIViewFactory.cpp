@@ -69,6 +69,25 @@ QPointer<QQuickView> UIViewFactory::createQmlView(const QString& qmlResource, QW
     return view;
 }
 
+void UIViewFactory::loadQmlWindow(const QString& qmlResource)
+{
+    if (!mQmlEngine)
+    {
+        UIFabrication_LOG_WARN("no qml engine");
+        return;
+    }
+
+    if (qmlResource.isEmpty())
+    {
+        UIFabrication_LOG_WARN("empty qmlResource url");
+        return;
+    }
+
+    QString actualQmlResource = generateQmlResourcePath(qmlResource);
+    UIFabrication_LOG_DEBUG("start load qml: " << actualQmlResource.toStdString());
+    mQmlEngine->load(actualQmlResource);
+    UIFabrication_LOG_DEBUG("finish load qml: " << actualQmlResource.toStdString());
+}
 
 void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback)
 {
