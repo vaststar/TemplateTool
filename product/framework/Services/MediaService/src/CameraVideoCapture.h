@@ -25,6 +25,8 @@ public:
     void decreaseUseCount();
     int getUseCount() const;
 private:
+    model::Image convertFrameToImage(const cv::Mat& frame) const;
+private:
     const int mCameraNum;
     cv::VideoCapture mVideoCap;
     std::string mCameraId;
