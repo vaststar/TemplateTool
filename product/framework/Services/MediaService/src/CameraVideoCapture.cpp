@@ -113,6 +113,7 @@ std::optional<model::Image> CameraVideoCapture::readImageData()
 
     if (cv::Mat frame; mVideoCap.read(frame) && !frame.empty())
     {
+        processFrame(frame);
         return convertFrameToImage(frame);
     }
     else
@@ -123,9 +124,15 @@ std::optional<model::Image> CameraVideoCapture::readImageData()
     return std::nullopt;
 }
 
+cv::Mat CameraVideoCapture::processFrame(const cv::Mat& frame) const
+{
+    return frame;
+}
+
 model::Image CameraVideoCapture::convertFrameToImage(const cv::Mat& frame) const
 {
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     std::vector<uchar> vec(frame.datastart, frame.dataend);
     return model::Image(std::move(vec), frame.cols, frame.rows, frame.step);
+}
 }
