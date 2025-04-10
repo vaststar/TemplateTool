@@ -11,6 +11,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/MediaService.cpp
     src/CameraManager.h
     src/CameraManager.cpp
+    src/CameraVideoCapture.h
+    src/CameraVideoCapture.cpp
 )
 
 BuildModule(

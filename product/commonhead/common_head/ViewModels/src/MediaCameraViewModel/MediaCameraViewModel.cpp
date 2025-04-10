@@ -22,6 +22,13 @@ MediaCameraViewModel::~MediaCameraViewModel()
         stopCaptureCameraVideo();
         mCaptureThread->join();
     }
+    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    {
+        if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
+        {
+            media->releaseCamera(mCameraId);
+        }
+    }
 }
 
 MediaCameraViewModel::MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
@@ -63,7 +70,7 @@ void MediaCameraViewModel::startCaptureCameraVideo()
                         {
                             fireNotification(&IMediaCameraViewModelCallback::onCameraImageReceived, convertServiceImageToViewModelImage(image.value()));
                         }
-                        std::this_thread::sleep_for(std::chrono::milliseconds(1000/24));
+                        std::this_thread::sleep_for(std::chrono::milliseconds(30));
                     }
                 }
             }

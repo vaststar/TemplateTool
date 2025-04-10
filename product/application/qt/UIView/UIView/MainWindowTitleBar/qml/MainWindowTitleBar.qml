@@ -7,7 +7,8 @@ Rectangle {
         height: 40
         property var controller: MainWindowTitleBarController{}
         
-        color: "#3A3F51"  // 设置标题栏颜色
+        color: controller.color//"#3A3F51"  // 设置标题栏颜色
+        visible: controller.visible
 
         RowLayout {
             anchors.fill: parent

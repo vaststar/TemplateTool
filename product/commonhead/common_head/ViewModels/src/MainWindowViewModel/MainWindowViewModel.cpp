@@ -2,13 +2,6 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
-#include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
-#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
-
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -27,16 +20,5 @@ MainWindowViewModel::MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr co
 std::string MainWindowViewModel::getViewModelName() const
 {
     return "MainWindowViewModel";
-}
-
-void MainWindowViewModel::openCamera()
-{
-    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
-    {
-        if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
-        {
-            media->openCamera(0);
-        }
-    }
 }
 }

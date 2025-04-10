@@ -19,6 +19,7 @@ public:
 
     //MediaService
     virtual std::string openCamera(int cameraNum) override;
+    virtual void releaseCamera(const std::string& cameraId) override;
     virtual std::vector<std::string> getOpenedCameras() const override;
     virtual std::optional<model::Image> readImageData(const std::string& cameraId) override;
 protected:

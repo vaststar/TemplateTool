@@ -117,19 +117,13 @@ void openCameraFunc()
 
 std::string MediaService::openCamera(int cameraNum)
 {
-    //openImage();
-    //return;
-    // auto thread1 = new std::thread([]() {
-        // openCameraFunc();
-        // });
-    // thread1->detach();
-    //auto thread2 = new std::thread([]() {
-    //    openCameraFunc();
-    //    });
-    //thread2->detach();
     return mDataPrivate->getCameraManager()->openCamera(cameraNum);
 }
 
+void MediaService::releaseCamera(const std::string& cameraId)
+{
+    mDataPrivate->getCameraManager()->releaseCamera(cameraId);
+}
 
 std::vector<std::string> MediaService::getOpenedCameras() const
 {

@@ -64,7 +64,7 @@
         <translation>测试工具窗口</translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="16"/>
+        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="18"/>
         <source>MainWindowTitleBarController</source>
         <translation type="unfinished"></translation>
     </message>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../../qt/UIView/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
         <location filename="../../qt/UIView/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="26"/>
-        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="26"/>
+        <location filename="../../qt/UIView/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="28"/>
         <source>my test window title bar</source>
         <translation>测试titlebar</translation>
     </message>

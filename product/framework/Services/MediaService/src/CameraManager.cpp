@@ -2,77 +2,124 @@
 
 #include <opencv2/opencv.hpp>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
-#include "MediaServiceLogger.h"
 #include <ucf/Services/ImageService/ImageTypes.h>
 
+#include "MediaServiceLogger.h"
+#include "CameraVideoCapture.h"
+
 namespace ucf::service{
+CameraManager::CameraManager()
+{
+    SERVICE_LOG_INFO("create CameraManager, address:" << this);
+}
+
 CameraManager::~CameraManager()
 {
     {
         std::scoped_lock loc(mCamerasMutex);
-        for(auto& [id, cv]: mCameras)
-        {
-            cv.release();
-        }
-        mCameras.clear();
+        mCamerasList.clear();
     }
 }
 
 std::string CameraManager::openCamera(int cameraNum)
 {
-#if(WIN32)
-    auto cap = std::make_unique<cv::VideoCapture>(cameraNum, cv::VideoCaptureAPIs::CAP_DSHOW);
-#else
-    auto cap = std::make_unique<cv::VideoCapture>(cameraNum, cv::VideoCaptureAPIs::CAP_ANY);
-#endif
-    if (!cap->isOpened())
+    std::scoped_lock loc(mCamerasMutex);
+    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraNum](const auto& camera) {
+        return camera->getCameraNum() == cameraNum;
+    });
+
+    if (iter != mCamerasList.end())
     {
-        SERVICE_LOG_DEBUG("camera not opened");
+        if ((*iter)->isOpened())
+        {
+            SERVICE_LOG_DEBUG("camera already opened, cameraNum:" << cameraNum);
+            (*iter)->addUseCount();
+            return (*iter)->getCameraId();
+        }
+        else
+        {
+            SERVICE_LOG_DEBUG("camera not opened, cameraNum:" << cameraNum);
+            mCamerasList.erase(iter);
+        }
+    }
+    
+    if (auto camera = std::make_unique<CameraVideoCapture>(cameraNum); camera->isOpened())
+    {
+        SERVICE_LOG_DEBUG("camera opened, index: " << camera->getCameraNum() << ", id: " << camera->getCameraId());
+        mCamerasList.emplace_back(std::move(camera));
+        return mCamerasList.back()->getCameraId();
+    }
+    else
+    {
+        SERVICE_LOG_DEBUG("camera not opened:" << cameraNum);
         return {};
     }
-    std::string uuid = ucf::utilities::UUIDUtils::generateUUID();
+}
+
+void CameraManager::releaseCamera(const std::string& cameraId)
+{
+    std::scoped_lock loc(mCamerasMutex);
+    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
+        return camera->getCameraId() == cameraId;
+    });
+
+    if (iter != mCamerasList.end())
     {
-        SERVICE_LOG_DEBUG("camera opened:" << uuid);
-        std::scoped_lock loc(mCamerasMutex);
-        mCameras[uuid] = std::move(cap);
+        if (!(*iter)->isOpened())
+        {
+            SERVICE_LOG_DEBUG("camera not opened, remove this camera, cameraId:" << cameraId);
+            mCamerasList.erase(iter);
+        }
+        else
+        {
+            if ((*iter)->decreaseUseCount(); (*iter)->getUseCount() <= 0)
+            {
+                SERVICE_LOG_DEBUG("camera use count is 0, remove this camera, cameraId:" << cameraId);
+                mCamerasList.erase(iter);
+            }
+            else
+            {
+                SERVICE_LOG_DEBUG("camera use count decreased, cameraId:" << cameraId << ", count:" << (*iter)->getUseCount());
+            }
+        }
     }
-    return uuid;
+    else
+    {
+        SERVICE_LOG_WARN("camera not found, id:" << cameraId);
+    }
 }
 
 std::vector<std::string> CameraManager::getOpenedCameras() const
 {
-    std::scoped_lock loc(mCamerasMutex);
     std::vector<std::string> results;
-    for(const auto& [id, _]: mCameras)
     {
-        results.push_back(id);
+        std::scoped_lock loc(mCamerasMutex);
+        for(const auto& camera: mCamerasList)
+        {
+            if (camera->isOpened())
+            {
+                results.push_back(camera->getCameraId());
+            }
+        }
     }
     return results;
 }
 
 std::optional<model::Image> CameraManager::readImageData(const std::string& cameraId)
 {
+    std::scoped_lock loc(mCamerasMutex);
+    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
+        return camera->isOpened() && camera->getCameraId() == cameraId;
+    });
 
+    if (iter != mCamerasList.end())
     {
-        std::scoped_lock loc(mCamerasMutex);
-        if(auto iter = mCameras.find(cameraId); iter != mCameras.end())
-        {
-            cv::Mat frame;
-            if (iter->second->read(frame); !frame.empty())
-            {
-                cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
-                std::vector<uchar> vec(frame.datastart, frame.dataend);
-                return model::Image(std::move(vec), frame.cols, frame.rows, frame.step);
-            }
-            else
-            {
-                SERVICE_LOG_WARN("read empty frame:" << cameraId);
-            }
-        }
-        else
-        {
-            SERVICE_LOG_WARN("camera not found:" << cameraId);
-        }
+
+        return (*iter)->readImageData();
+    }
+    else
+    {
+        SERVICE_LOG_WARN("camera not opened:" << cameraId);
     }
     return std::nullopt;
 }

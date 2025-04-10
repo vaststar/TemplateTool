@@ -80,7 +80,6 @@ void MainWindowController::openCamera()
 {
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
-    mMainViewModel->openCamera();
 
     mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), "MediaCameraViewController", [this](auto controller){
         if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
@@ -88,9 +87,6 @@ void MainWindowController::openCamera()
             mediaController->initializeController(mAppContext);
         }
     });
-    // mMediaCameraViewModel = mAppContext->getViewModelFactory()->createMediaCameraViewModelInstance();
-    // mMediaCameraViewModel->openCamera();
-    // mMediaCameraViewModel->startCaptureCameraVideo();
 }
 
 void MainWindowController::testFunc()

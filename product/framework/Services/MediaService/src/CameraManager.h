@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <vector>
 #include <mutex>
 #include <optional>
 
@@ -14,15 +14,19 @@ namespace ucf::service::model{
 }
 
 namespace ucf::service{
+
+class CameraVideoCapture;
 class CameraManager
 {
 public:
+    CameraManager();
     ~CameraManager();
     std::string openCamera(int cameraNum);
+    void releaseCamera(const std::string& cameraId);
     std::vector<std::string> getOpenedCameras() const;
     std::optional<model::Image> readImageData(const std::string& cameraId);
 private:
     mutable std::mutex mCamerasMutex;
-    std::map<std::string, std::unique_ptr<cv::VideoCapture>> mCameras;
+    std::vector<std::unique_ptr<CameraVideoCapture>> mCamerasList;
 };
 }
