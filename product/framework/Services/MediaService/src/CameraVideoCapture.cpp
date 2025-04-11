@@ -1,6 +1,7 @@
 #include "CameraVideoCapture.h"
 
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/Utilities/OSUtils/OSUtils.h>
 
 #include "MediaServiceLogger.h"
 
@@ -8,7 +9,7 @@ namespace ucf::service{
 CameraVideoCapture::CameraVideoCapture(int cameraNum)
     : mCameraNum(cameraNum)
 {
-    if (mVideoCap.open(cameraNum); mVideoCap.isOpened())
+    if (openCamera() && mVideoCap.isOpened())
     {
         mRefCount = 1;
         mCameraId = ucf::utilities::UUIDUtils::generateUUID();
@@ -30,6 +31,19 @@ CameraVideoCapture::~CameraVideoCapture()
     else
     {
         SERVICE_LOG_WARN("camera not opened, won't release, index: " << mCameraNum << ", id: " << mCameraId);
+    }
+}
+
+bool CameraVideoCapture::openCamera()
+{
+    switch (ucf::utilities::OSUtils::getOSType())
+    {
+    case ucf::utilities::OSType::WINDOWS:
+        return mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_DSHOW);
+    case ucf::utilities::OSType::LINUX:
+        return mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_V4L2);
+    default:
+        return !mVideoCap.open(mCameraNum);
     }
 }
 

@@ -29,6 +29,7 @@ BuildModule(
         CoreFramework
         opencv
         UUIDUtils
+        OSUtils
         ImageService
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro

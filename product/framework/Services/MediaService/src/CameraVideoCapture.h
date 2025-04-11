@@ -27,6 +27,7 @@ public:
 private:
     cv::Mat processFrame(const cv::Mat& frame) const;
     model::Image convertFrameToImage(const cv::Mat& frame) const;
+    bool openCamera();
 private:
     const int mCameraNum;
     cv::VideoCapture mVideoCap;
