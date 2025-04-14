@@ -84,9 +84,36 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
     }
 
     QString actualQmlResource = generateQmlResourcePath(qmlResource);
-    UIFabrication_LOG_DEBUG("start load qml: " << actualQmlResource.toStdString());
-    mQmlEngine->load(actualQmlResource);
-    UIFabrication_LOG_DEBUG("finish load qml: " << actualQmlResource.toStdString());
+    if (QQmlComponent component(mQmlEngine.get(), actualQmlResource); component.status() == QQmlComponent::Ready)
+    {
+        if (auto object = component.create())
+        {
+            UIFabrication_LOG_DEBUG("load qml succeed: " << actualQmlResource.toStdString() << ", objectName: "<< object->objectName().toStdString());
+            if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
+            {
+                QObject::connect(window, &QQuickWindow::closing, [window]{ 
+                    if (window)
+                    {
+                        UIFabrication_LOG_DEBUG("will close window: " << window->objectName().toStdString());
+                        window->deleteLater();
+                    }
+                });
+            }
+        }
+        else
+        {
+            UIFabrication_LOG_WARN("load qml failed: " << actualQmlResource.toStdString() << ", error: " << component.errorString().toStdString());
+        }
+    }
+    else
+    {
+        UIFabrication_LOG_WARN("load qml failed: " << actualQmlResource.toStdString() << ", error: " << component.errorString().toStdString());
+    }
+
+    // QString actualQmlResource = generateQmlResourcePath(qmlResource);
+    // UIFabrication_LOG_DEBUG("start load qml: " << actualQmlResource.toStdString());
+    // mQmlEngine->load(actualQmlResource);
+    // UIFabrication_LOG_DEBUG("finish load qml: " << actualQmlResource.toStdString());
 }
 
 void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback)

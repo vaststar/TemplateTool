@@ -25,7 +25,7 @@ public:
     void decreaseUseCount();
     int getUseCount() const;
 private:
-    cv::Mat processFrame(const cv::Mat& frame) const;
+    void processFrame(cv::Mat& frame) const;
     model::Image convertFrameToImage(const cv::Mat& frame) const;
     bool openCamera();
 private:

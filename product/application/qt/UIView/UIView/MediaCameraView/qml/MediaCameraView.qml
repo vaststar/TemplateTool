@@ -25,6 +25,7 @@ ApplicationWindow
         id: videoOutput
         anchors.fill: parent
         fillMode: VideoOutput.PreserveAspectFit
+        antialiasing: true
     }
 
     Component.onCompleted:{

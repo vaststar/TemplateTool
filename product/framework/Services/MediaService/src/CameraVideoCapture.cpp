@@ -9,11 +9,22 @@ namespace ucf::service{
 CameraVideoCapture::CameraVideoCapture(int cameraNum)
     : mCameraNum(cameraNum)
 {
-    if (openCamera() && mVideoCap.isOpened())
+    if (openCamera() && isOpened())
     {
         mRefCount = 1;
         mCameraId = ucf::utilities::UUIDUtils::generateUUID();
-        SERVICE_LOG_DEBUG("camera opened, index: " << cameraNum << ", id: " << mCameraId);
+        
+        mVideoCap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+        mVideoCap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
+        double width = mVideoCap.get(cv::CAP_PROP_FRAME_WIDTH);
+        double height = mVideoCap.get(cv::CAP_PROP_FRAME_HEIGHT);
+
+        // mVideoCap.set(cv::CAP_PROP_AUTO_WB, 0);
+        // mVideoCap.set(cv::CAP_PROP_WB_TEMPERATURE, 5000);  // 5000K色温
+        // // 自动曝光补偿
+        // mVideoCap.set(cv::CAP_PROP_AUTO_EXPOSURE, 0.25);  // 手动曝光模式
+        // mVideoCap.set(cv::CAP_PROP_EXPOSURE, -4);         // 根据环境调整
+        SERVICE_LOG_DEBUG("camera opened, index: " << cameraNum << ", id: " << mCameraId << ", width: " << width << ", height: " << height);
     }
     else
     {
@@ -43,7 +54,7 @@ bool CameraVideoCapture::openCamera()
     case ucf::utilities::OSType::LINUX:
         return mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_V4L2);
     default:
-        return !mVideoCap.open(mCameraNum);
+        return mVideoCap.open(mCameraNum);
     }
 }
 
@@ -138,9 +149,28 @@ std::optional<model::Image> CameraVideoCapture::readImageData()
     return std::nullopt;
 }
 
-cv::Mat CameraVideoCapture::processFrame(const cv::Mat& frame) const
+void CameraVideoCapture::processFrame(cv::Mat& frame) const
 {
-    return frame;
+    // cv::Mat blurred, detail;
+    // cv::GaussianBlur(frame, blurred, cv::Size(0,0), 5);
+    // cv::subtract(frame, blurred, detail);
+    // cv::addWeighted(frame, 1.2, detail, 0.5, 0, frame);
+
+
+    // cv::Mat labImg, claheImg;
+    // cv::cvtColor(frame, labImg, cv::COLOR_BGR2Lab);
+    // std::vector<cv::Mat> channels;
+    // cv::split(labImg, channels);
+    
+    // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(2.0, cv::Size(8,8));
+    // clahe->apply(channels[0], claheImg);
+    // channels[0] = claheImg;
+    // cv::merge(channels, labImg);
+    // cv::cvtColor(labImg, frame, cv::COLOR_Lab2BGR);
+
+//     cv::Mat blurred, sharpened;
+// cv::GaussianBlur(frame, blurred, cv::Size(0,0), 3);
+// cv::addWeighted(frame, 1.5, blurred, -0.5, 0, sharpened);
 }
 
 model::Image CameraVideoCapture::convertFrameToImage(const cv::Mat& frame) const
