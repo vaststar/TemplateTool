@@ -15,8 +15,8 @@ ApplicationWindow
     }
 
     visible: true
-    width: 758 
-    height: 576
+    width: mainController ? mainController.width : 100
+    height: mainController? mainController.height : 100
     // flags: Qt.FramelessWindowHint|Qt.Window
 
     title: qsTr(mainController.title)

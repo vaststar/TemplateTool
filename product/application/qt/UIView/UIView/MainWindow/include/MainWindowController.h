@@ -42,17 +42,22 @@ class MainWindowController : public UICore::CoreController
 {
     Q_OBJECT
     Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
+    Q_PROPERTY(int height READ getHeight NOTIFY windowSizeChanged)
+    Q_PROPERTY(int width READ getWidth NOTIFY windowSizeChanged)
     QML_ELEMENT
 public:
     MainWindowController(QObject* parent = nullptr);
     virtual QString getControllerName() const override;
 
     QString getTitle() const;
+    int getHeight() const;
+    int getWidth() const;
 
     void initializeController(QPointer<AppContext> appContext);
 
 signals:
     void titleChanged();
+    void windowSizeChanged();
     void controllerInitialized();
 public slots:
     void onInitMenuBarController(MainWindowMenuBarController* menuBarController);

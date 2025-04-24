@@ -45,6 +45,15 @@ QString MainWindowController::getTitle() const
     return QObject::tr("my test window");
 }
 
+int MainWindowController::getHeight() const
+{
+    return 576;
+}
+
+int MainWindowController::getWidth() const
+{
+    return 758;
+}
 
 void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
 {

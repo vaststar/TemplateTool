@@ -9,13 +9,15 @@ namespace ucf::service{
 CameraVideoCapture::CameraVideoCapture(int cameraNum)
     : mCameraNum(cameraNum)
 {
+    //mVideoCap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    //mVideoCap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
     if (openCamera() && isOpened())
     {
         mRefCount = 1;
         mCameraId = ucf::utilities::UUIDUtils::generateUUID();
         
-        mVideoCap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
-        mVideoCap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
+        //mVideoCap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+        //mVideoCap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
         double width = mVideoCap.get(cv::CAP_PROP_FRAME_WIDTH);
         double height = mVideoCap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
