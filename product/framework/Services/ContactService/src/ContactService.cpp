@@ -3,7 +3,6 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include "ContactServiceLogger.h"
-#include "ContactModel.h"
 #include "ContactManager.h"
 
 namespace ucf::service{
@@ -16,18 +15,15 @@ class ContactService::DataPrivate{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-    std::shared_ptr<ContactModel> getContactModel() const;
-    std::shared_ptr<ContactManager> getContactManager() const;
+    const std::unique_ptr<ContactManager>& getContactManager() const;
 private:
-    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    std::shared_ptr<ContactModel>  mContactModelPtr;
-    std::shared_ptr<ContactManager> mContactManagerPtr;
+    const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    const std::unique_ptr<ContactManager> mContactManagerPtr;
 };
 
 ContactService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
-    , mContactModelPtr(std::make_shared<ContactModel>(coreFramework))
-    , mContactManagerPtr(std::make_shared<ContactManager>(coreFramework, mContactModelPtr))
+    , mContactManagerPtr(std::make_unique<ContactManager>(coreFramework))
 {
 
 }
@@ -37,12 +33,7 @@ ucf::framework::ICoreFrameworkWPtr ContactService::DataPrivate::getCoreFramework
     return mCoreFrameworkWPtr;
 }
 
-std::shared_ptr<ContactModel> ContactService::DataPrivate::getContactModel() const
-{
-    return mContactModelPtr;
-}
-
-std::shared_ptr<ContactManager> ContactService::DataPrivate::getContactManager() const
+const std::unique_ptr<ContactManager>& ContactService::DataPrivate::getContactManager() const
 {
     return mContactManagerPtr;
 }
@@ -79,8 +70,6 @@ void ContactService::initService()
     {
         coreFramework->registerCallback(shared_from_this());
     }
-
-    mDataPrivate->getContactModel()->initDatabase();
 }
 
 std::string ContactService::getServiceName() const
@@ -115,6 +104,10 @@ std::vector<model::PersonContact> ContactService::getPersonContactList() const
     return mDataPrivate->getContactManager()->getPersonContactList();
 }
 
+std::optional<model::PersonContact> ContactService::getPersonContact(const std::string& contactId) const
+{
+    return mDataPrivate->getContactManager()->getPersonContact(contactId);
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish ContactService Logic///////////////////////////////////////

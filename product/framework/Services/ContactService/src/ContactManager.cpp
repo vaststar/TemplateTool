@@ -12,29 +12,29 @@ namespace ucf::service{
 class ContactManager::DataPrivate
 {
 public:
-    DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework, std::shared_ptr<ContactModel> contactModel);
-    std::shared_ptr<ucf::adapter::ContactAdapter> getContactAdapter() const;
-    std::shared_ptr<ContactModel> getContactModel() const;
+    DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    const std::unique_ptr<ucf::adapter::ContactAdapter>& getContactAdapter() const;
+    const std::unique_ptr<ContactModel>& getContactModel() const;
 private:
-    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    std::shared_ptr<ucf::adapter::ContactAdapter> mContactAdapter;
-    std::shared_ptr<ContactModel>  mContactModelPtr;
+    const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    const std::unique_ptr<ucf::adapter::ContactAdapter> mContactAdapter;
+    const std::unique_ptr<ContactModel>  mContactModelPtr;
 };
 
-ContactManager::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework, std::shared_ptr<ContactModel> contactModel)
+ContactManager::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
-    , mContactModelPtr(contactModel)
-    , mContactAdapter(std::make_shared<ucf::adapter::ContactAdapter>(coreFramework))
+    , mContactModelPtr(std::make_unique<ContactModel>(coreFramework))
+    , mContactAdapter(std::make_unique<ucf::adapter::ContactAdapter>(coreFramework))
 {
 
 }
 
-std::shared_ptr<ContactModel> ContactManager::DataPrivate::getContactModel() const
+const std::unique_ptr<ContactModel>& ContactManager::DataPrivate::getContactModel() const
 {
     return mContactModelPtr;
 }
 
-std::shared_ptr<ucf::adapter::ContactAdapter> ContactManager::DataPrivate::getContactAdapter() const
+const std::unique_ptr<ucf::adapter::ContactAdapter>& ContactManager::DataPrivate::getContactAdapter() const
 {
     return mContactAdapter;
 }
@@ -49,8 +49,8 @@ std::shared_ptr<ucf::adapter::ContactAdapter> ContactManager::DataPrivate::getCo
 ////////////////////Start ContactManager Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-ContactManager::ContactManager(ucf::framework::ICoreFrameworkWPtr coreFramework, std::shared_ptr<ContactModel> contactModel)
-    : mDataPrivate(std::make_unique<DataPrivate>(coreFramework, contactModel))
+ContactManager::ContactManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
+    : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
 
 }
@@ -60,22 +60,18 @@ ContactManager::~ContactManager()
 
 }
 
-
 std::vector<model::PersonContact> ContactManager::getPersonContactList() const
 {
-    if (auto contactAdapter = mDataPrivate->getContactAdapter())
-    {
-        contactAdapter->fetchContactInfo("", [](const ucf::service::model::Contact& contact){
-            SERVICE_LOG_DEBUG("test fetch contactInfo");
-        });
-    }
+    mDataPrivate->getContactAdapter()->fetchContactInfo("", [](const ucf::service::model::Contact& contact){
+        SERVICE_LOG_DEBUG("test fetch contactInfo");
+    });
     
-    if (auto contactModel = mDataPrivate->getContactModel())
-    {
-        return contactModel->getContacts();
-    }
+    return mDataPrivate->getContactModel()->getPersonContacts();
+}
 
-    return {};
+std::optional<model::PersonContact> ContactManager::getPersonContact(const std::string& contactId) const
+{
+    return mDataPrivate->getContactModel()->getPersonContact(contactId);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

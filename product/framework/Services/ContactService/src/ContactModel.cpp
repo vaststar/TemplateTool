@@ -20,8 +20,8 @@ ContactModel::ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     SERVICE_LOG_DEBUG("create ContactModel, address:"  << this);
 
-    mContacts.push_back(model::PersonContact("1234"));
-    mContacts.push_back(model::PersonContact("5678"));
+    addPersonContact(std::make_unique<model::PersonContact>("1234"));
+    addPersonContact(std::make_unique<model::PersonContact>("5678"));
 }
 
 void ContactModel::initDatabase()
@@ -31,37 +31,46 @@ void ContactModel::initDatabase()
     // mContactDatabase->open();
 }
 
-const std::vector<model::PersonContact>& ContactModel::getContacts() const
+std::vector<model::PersonContact> ContactModel::getPersonContacts() const
 {
+    std::vector<model::PersonContact> results;
     std::scoped_lock loc(mContactMutex);
-    return mContacts;
+    std::transform(mPersonContacts.cbegin(), mPersonContacts.cend(), std::back_inserter(results), [](const auto& contactPair) {
+        return *contactPair.second;
+    });
+    return results;
 }
 
-void ContactModel::setContacts(const std::vector<model::PersonContact>& contacts)
+void ContactModel::deletePersonContacts(const std::initializer_list<std::string>& contactIds)
 {
     std::scoped_lock loc(mContactMutex);
-    mContacts = contacts;
-}
-
-void ContactModel::deleteContacts(const std::string& contactId)
-{
-    std::scoped_lock loc(mContactMutex);
-    mContacts.erase(std::remove_if(mContacts.begin(), mContacts.end(),[contactId](const model::PersonContact& contact){
-        return contactId == contact.getContactId();
-    }),mContacts.end());
-}
-
-void ContactModel::addOrUpdateContact(const model::PersonContact& contact)
-{
-    std::scoped_lock loc(mContactMutex);
-    if (auto iter = std::find_if(mContacts.begin(), mContacts.end(), [contact](const model::PersonContact& contactItem) {return contact.getContactId() == contactItem.getContactId();});
-        iter != mContacts.end())
+    for (const auto& contactId : contactIds)
     {
-        //*iter.getContactId() = contact;
+        if (auto iter = mPersonContacts.find(contactId); iter != mPersonContacts.end())
+        {
+            mPersonContacts.erase(iter);
+        }
     }
-    else
+}
+
+void ContactModel::addPersonContact(std::unique_ptr<model::PersonContact>&& contact)
+{
+    std::scoped_lock loc(mContactMutex);
+    if (auto iter = mPersonContacts.find(contact->getContactId()); iter != mPersonContacts.end())
     {
-        mContacts.push_back(contact);
+        SERVICE_LOG_DEBUG("Contact already exists, contactId:" << contact->getContactId());
+        return;
     }
+    mPersonContacts[contact->getContactId()] = std::move(contact);
+}
+
+std::optional<model::PersonContact> ContactModel::getPersonContact(const std::string& contactId) const
+{
+    std::scoped_lock loc(mContactMutex);
+    if (auto iter = mPersonContacts.find(contactId); iter != mPersonContacts.end())
+    {
+        return *iter->second;
+    }
+    return std::nullopt;
 }
 }
