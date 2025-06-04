@@ -6,7 +6,6 @@
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ContactService/Contact.h>
 
 
 namespace ucf::service{
@@ -25,8 +24,8 @@ public:
 
     //IContactService
     // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) override;
-    virtual std::vector<model::PersonContact> getPersonContactList() const override;
-    virtual std::optional<model::PersonContact> getPersonContact(const std::string& contactId) const override;
+    virtual std::vector<model::IPersonContactPtr> getPersonContactList() const override;
+    virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const override;
 
     //IService
     virtual std::string getServiceName() const override;

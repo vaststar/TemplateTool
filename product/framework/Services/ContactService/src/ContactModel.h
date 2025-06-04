@@ -7,15 +7,7 @@
 #include <initializer_list>
 #include <optional>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
-#include <ucf/Services/ContactService/Contact.h>
-
-
-// namespace ucf::utilities::database
-// {
-//     class IDatabaseWrapper;
-// }
-
+#include "ContactEntities.h"
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -35,13 +27,14 @@ public:
 
 public:
     void initDatabase();
-    std::vector<model::PersonContact> getPersonContacts() const;
-    std::optional<model::PersonContact> getPersonContact(const std::string& contactId) const;
-    void addPersonContact(std::unique_ptr<model::PersonContact>&& contacts);
+    std::vector<model::IPersonContactPtr> getPersonContacts() const;
+    model::IPersonContactPtr getPersonContact(const std::string& contactId) const;
+
+    void addPersonContact(const model::PersonContactPtr& contact);
     void deletePersonContacts(const std::initializer_list<std::string>& contactId);
 private:
     mutable std::mutex mContactMutex;
-    std::map<std::string, std::unique_ptr<model::PersonContact>> mPersonContacts;
+    std::map<std::string, model::PersonContactPtr> mPersonContacts;
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     // std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> mContactDatabase;
 };

@@ -99,12 +99,12 @@ void ContactService::onCoreFrameworkExit()
 //     SERVICE_LOG_DEBUG("finish fetchContactList");
 // }
 
-std::vector<model::PersonContact> ContactService::getPersonContactList() const
+std::vector<model::IPersonContactPtr> ContactService::getPersonContactList() const
 {
     return mDataPrivate->getContactManager()->getPersonContactList();
 }
 
-std::optional<model::PersonContact> ContactService::getPersonContact(const std::string& contactId) const
+model::IPersonContactPtr ContactService::getPersonContact(const std::string& contactId) const
 {
     return mDataPrivate->getContactManager()->getPersonContact(contactId);
 }

@@ -60,7 +60,7 @@ ContactManager::~ContactManager()
 
 }
 
-std::vector<model::PersonContact> ContactManager::getPersonContactList() const
+std::vector<model::IPersonContactPtr> ContactManager::getPersonContactList() const
 {
     mDataPrivate->getContactAdapter()->fetchContactInfo("", [](const ucf::service::model::Contact& contact){
         SERVICE_LOG_DEBUG("test fetch contactInfo");
@@ -69,7 +69,7 @@ std::vector<model::PersonContact> ContactManager::getPersonContactList() const
     return mDataPrivate->getContactModel()->getPersonContacts();
 }
 
-std::optional<model::PersonContact> ContactManager::getPersonContact(const std::string& contactId) const
+model::IPersonContactPtr ContactManager::getPersonContact(const std::string& contactId) const
 {
     return mDataPrivate->getContactModel()->getPersonContact(contactId);
 }

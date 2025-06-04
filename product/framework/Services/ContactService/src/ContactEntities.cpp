@@ -1,23 +1,33 @@
 #include <algorithm>
 #include <set>
-#include <ucf/Services/ContactService/Contact.h>
+#include "ContactEntities.h"
 
 namespace ucf::service::model{
+
 PersonContact::PersonContact(const std::string& id)
-    : IContact(id)
+    : mContactId(id)
 {
 
 }
-
-
-const std::string& PersonContact::getContactName() const
+PersonContact::~PersonContact()
 {
-    return mContactName;
+
+}
+std::string PersonContact::getContactId() const
+{
+    return mContactId;
 }
 
-void PersonContact::setContactName(const std::string& name)
+std::string PersonContact::getPersonName() const
 {
-    mContactName = name;
+    std::scoped_lock lock(mDataMutex);
+    return mPersonName;
+}
+
+void PersonContact::setPersonName(const std::string& name)
+{
+    std::scoped_lock lock(mDataMutex);
+    mPersonName = name;
 }
 
 // const std::vector<std::string>& PersonContact::getTags() const
@@ -53,4 +63,28 @@ void PersonContact::setContactName(const std::string& name)
 //         mContactTags.erase(std::remove(mContactTags.begin(), mContactTags.end(), tag),mContactTags.end());
 //     });
 // }
+
+
+GroupContact::GroupContact(const std::string& id)
+    : mContactId(id)
+{
+}
+
+std::string GroupContact::getContactId() const
+{
+    return mContactId;
+}
+
+std::string GroupContact::getGroupName() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mGroupName;
+}
+
+void GroupContact::setGroupName(const std::string& groupName)
+{
+    std::scoped_lock lock(mDataMutex);
+    mGroupName = groupName;
+}
+
 }

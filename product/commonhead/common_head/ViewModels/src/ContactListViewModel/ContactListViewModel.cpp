@@ -2,7 +2,7 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ContactService/Contact.h>
+#include <ucf/Services/ContactService/IContactEntities.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
@@ -39,7 +39,7 @@ std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getCon
                 std::vector<commonHead::viewModels::model::Contact> contacts;
                 for(auto conact: contactList)
                 {
-                    contacts.emplace_back(commonHead::viewModels::model::Contact{conact.getContactId()});
+                    contacts.emplace_back(commonHead::viewModels::model::Contact{conact->getContactId()});
                 }
                 return contacts;
             }

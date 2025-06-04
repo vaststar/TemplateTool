@@ -16,7 +16,8 @@ namespace ucf::framework{
 
 namespace ucf::service{
 namespace model{
-    class PersonContact;
+    class IPersonContact;
+    using IPersonContactPtr = std::shared_ptr<IPersonContact>;
 }
 
 class SERVICE_EXPORT IContactService: public IService, 
@@ -26,17 +27,17 @@ public:
     // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) = 0;
     /**
      * @brief get Full PersonContact List
-     * @return std::vector<model::PersonContact> - List of person contacts
+     * @return std::vector<model::IPersonContactPtr> - List of person contacts
      * @note This function retrieves the full list of person contacts. careful when using it, as it may be a large list.
      */
-    virtual std::vector<model::PersonContact> getPersonContactList() const = 0;
+    virtual std::vector<model::IPersonContactPtr> getPersonContactList() const = 0;
 
     /**
      * @brief get PersonContact by ID
      * @param contactId - ID of the contact to retrieve
-     * @return std::optional<model::PersonContact> - The person contact if found, otherwise an empty optional
+     * @return model::IPersonContactPtr - The person contact if found, otherwise nulptr
      */
-    virtual std::optional<model::PersonContact> getPersonContact(const std::string& contactId) const = 0;
+    virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const = 0;
     static std::shared_ptr<IContactService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

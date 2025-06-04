@@ -12,7 +12,8 @@ namespace ucf::framework{
 
 namespace ucf::service{
 namespace model {
-    class PersonContact;
+    class IPersonContact;
+    using IPersonContactPtr = std::shared_ptr<IPersonContact>;
 }
 
 class ContactManager final
@@ -25,8 +26,8 @@ public:
     ContactManager& operator=(const ContactManager&) = delete;
     ContactManager& operator=(ContactManager&&) = delete;
 public:
-    std::vector<model::PersonContact> getPersonContactList() const;
-    std::optional<model::PersonContact> getPersonContact(const std::string& contactId) const;
+    std::vector<model::IPersonContactPtr> getPersonContactList() const;
+    model::IPersonContactPtr getPersonContact(const std::string& contactId) const;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
