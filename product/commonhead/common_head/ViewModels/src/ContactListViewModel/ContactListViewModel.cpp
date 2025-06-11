@@ -1,11 +1,11 @@
 #include "ContactListViewModel.h"
 
-#include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ContactService/IContactEntities.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ServiceLocator/IServiceLocator.h>
 
 #include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
 
@@ -31,9 +31,9 @@ std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getCon
 {
     if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
     {
-        if (auto coreFramework = commonHeadFramework->getCoreFramework().lock())
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
-            if (auto contactService  = coreFramework->getService<ucf::service::IContactService>().lock())
+            if (auto contactService = serviceLocator->getContactService().lock())
             {
                 auto contactList = contactService->getPersonContactList();
                 std::vector<commonHead::viewModels::model::Contact> contacts;

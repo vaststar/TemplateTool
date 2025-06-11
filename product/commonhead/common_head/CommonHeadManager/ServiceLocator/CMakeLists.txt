@@ -1,29 +1,33 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/commonHead/CommonHeadFramework/ICommonHeadFramework.h
+    include/commonHead/ServiceLocator/IServiceLocator.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    src/CommonHeadFramework.h
-    src/CommonHeadFramework.cpp
+    src/ServiceLocator.h
+    src/ServiceLocator.cpp
 )
 
 BuildModule(
     MODULE_NAME 
-        CommonHeadFramework
+        ServiceLocator
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PRIVATE
-        CoreFramework
     TARGET_DEPENDENICES_PUBLIC
         CommonHeadCommonFile
-        ResourceLoader
-        ServiceLocator
+    TARGET_DEPENDENICES_PRIVATE
+        CoreFramework
+        DataWarehouseService
+        NetworkService
+        ClientInfoService
+        ContactService
+        MediaService
+        ImageService
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE

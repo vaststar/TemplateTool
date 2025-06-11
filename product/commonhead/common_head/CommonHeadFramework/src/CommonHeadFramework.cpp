@@ -4,6 +4,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
+#include <commonHead/ServiceLocator/IServiceLocator.h>
 
 namespace commonHead{
 std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::createInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
@@ -13,9 +14,10 @@ std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::createInstance(ucf::
 
 CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
+    , mServiceLocator(IServiceLocator::createInstance(coreframework))
+    , mResourceLoader(IResourceLoader::createInstance(coreframework))
 {
     COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
-    mResourceLoader = IResourceLoader::createInstance(coreframework);
 }
 
 void CommonHeadFramework::initCommonheadFramework()
@@ -42,5 +44,10 @@ ucf::framework::ICoreFrameworkWPtr CommonHeadFramework::getCoreFramework() const
 IResourceLoaderPtr CommonHeadFramework::getResourceLoader() const
 {
     return mResourceLoader;
+}
+
+IServiceLocatorPtr CommonHeadFramework::getServiceLocator() const
+{
+    return mServiceLocator;
 }
 }

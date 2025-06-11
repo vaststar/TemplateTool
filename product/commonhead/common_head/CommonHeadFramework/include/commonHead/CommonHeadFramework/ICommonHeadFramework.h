@@ -13,6 +13,10 @@ namespace commonHead{
 class IResourceLoader;
 using IResourceLoaderPtr = std::shared_ptr<IResourceLoader>;
 
+class IServiceLocator;
+using IServiceLocatorPtr = std::shared_ptr<IServiceLocator>;
+
+
 class COMMONHEAD_EXPORT ICommonHeadFramework
 {
 public:
@@ -22,6 +26,7 @@ public:
     virtual void exitCommonheadFramework() = 0;
 public:
     virtual IResourceLoaderPtr getResourceLoader() const = 0;
+    virtual IServiceLocatorPtr getServiceLocator() const = 0;
 public:
     static std::shared_ptr<ICommonHeadFramework> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

@@ -1,12 +1,11 @@
 #include "MediaCameraViewModel.h"
 
 
-#include <ucf/CoreFramework/ICoreFramework.h>
-
 #include <ucf/Services/MediaService/IMediaService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ServiceLocator/IServiceLocator.h>
 
 namespace commonHead::viewModels{
 std::shared_ptr<IMediaCameraViewModel> IMediaCameraViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
@@ -22,11 +21,15 @@ MediaCameraViewModel::~MediaCameraViewModel()
         stopCaptureCameraVideo();
         mCaptureThread->join();
     }
-    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    
+    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
     {
-        if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
-            media->releaseCamera(mCameraId);
+            if (auto mediaService = serviceLocator->getMediaService().lock())
+            {
+                mediaService->releaseCamera(mCameraId);
+            }
         }
     }
 }
@@ -46,11 +49,14 @@ std::string MediaCameraViewModel::getViewModelName() const
 
 void MediaCameraViewModel::openCamera()
 {
-    if (auto coreFramework = mCommonHeadFrameworkWptr.lock()->getCoreFramework().lock())
+    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
     {
-        if (auto media = coreFramework->getService<ucf::service::IMediaService>().lock())
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
-            mCameraId = media->openCamera(0);
+            if (auto mediaService = serviceLocator->getMediaService().lock())
+            {
+                mCameraId = mediaService->openCamera(0);
+            }
         }
     }
 }
@@ -60,9 +66,9 @@ void MediaCameraViewModel::startCaptureCameraVideo()
     mCaptureThread = std::make_shared<std::thread>([this](){
         if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
         {
-            if (auto coreFramework = commonHeadFramework->getCoreFramework().lock())
+            if (auto serviceLocator = commonHeadFramework->getServiceLocator())
             {
-                if (auto mediaService  = coreFramework->getService<ucf::service::IMediaService>().lock())
+                if (auto mediaService = serviceLocator->getMediaService().lock())
                 {
                     while(!mVideoCaptureStop)
                     {

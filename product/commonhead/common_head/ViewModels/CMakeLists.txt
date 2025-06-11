@@ -42,7 +42,6 @@ BuildModule(
         ClientInfoService
         DataWarehouseService
         DataWarehouseSchema
-        CoreFramework
     TARGET_DEPENDENICES_PUBLIC
         CommonHeadCommonFile
         NotificationHelper

@@ -16,8 +16,10 @@ public:
     virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const override;
 public:
     IResourceLoaderPtr getResourceLoader() const override;
+    virtual IServiceLocatorPtr getServiceLocator() const override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
+    IServiceLocatorPtr mServiceLocator;
     IResourceLoaderPtr mResourceLoader;
 };
 }

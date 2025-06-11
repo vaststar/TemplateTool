@@ -1,9 +1,8 @@
 #include "MainWindowViewModel.h"
 
-#include <ucf/CoreFramework/ICoreFramework.h>
-
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ServiceLocator/IServiceLocator.h>
 
 namespace commonHead::viewModels{
 std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
