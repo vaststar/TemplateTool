@@ -28,7 +28,7 @@ public:
     virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const override;
     virtual model::Color getColor(model::ColorItem colorItem, model::ColorItemState state) const override;
     
-    virtual void setResourceLocalizedString(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
+    virtual void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const override;
 private:

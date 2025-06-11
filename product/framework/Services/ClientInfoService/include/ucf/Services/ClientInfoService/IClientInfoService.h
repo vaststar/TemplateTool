@@ -24,15 +24,15 @@ class SERVICE_EXPORT IClientInfoService: public IService,
 {
 public:
     virtual model::Version getApplicationVersion() const = 0;
-    virtual model::LanguageType getApplicationLanguage() const = 0;
+    [[nodiscard]] virtual model::LanguageType getApplicationLanguage() const = 0;
     virtual void setApplicationLanguage(model::LanguageType languageType) = 0;
     virtual std::vector<model::LanguageType> getSupportedLanguages() const = 0;
 
     virtual void setCurrentThemeType(model::ThemeType themeType) = 0;
-    virtual model::ThemeType getCurrentThemeType() const = 0;
-    virtual std::vector<model::ThemeType> getSupportedThemeTypes() const = 0;
+    [[nodiscard]] virtual model::ThemeType getCurrentThemeType() const = 0;
+    [[nodiscard]] virtual std::vector<model::ThemeType> getSupportedThemeTypes() const = 0;
 
-    virtual model::SqliteDBConfig getSharedDBConfig() const = 0;
+    [[nodiscard]] virtual model::SqliteDBConfig getSharedDBConfig() const = 0;
     static std::shared_ptr<IClientInfoService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

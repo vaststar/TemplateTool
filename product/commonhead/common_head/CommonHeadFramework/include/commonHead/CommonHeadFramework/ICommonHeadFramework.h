@@ -21,12 +21,11 @@ class COMMONHEAD_EXPORT ICommonHeadFramework
 {
 public:
     virtual std::string getName() const = 0;
-    virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const = 0;
     virtual void initCommonheadFramework() = 0;
     virtual void exitCommonheadFramework() = 0;
 public:
-    virtual IResourceLoaderPtr getResourceLoader() const = 0;
-    virtual IServiceLocatorPtr getServiceLocator() const = 0;
+    [[nodiscard]] virtual IResourceLoaderPtr getResourceLoader() const = 0;
+    [[nodiscard]] virtual IServiceLocatorPtr getServiceLocator() const = 0;
 public:
     static std::shared_ptr<ICommonHeadFramework> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

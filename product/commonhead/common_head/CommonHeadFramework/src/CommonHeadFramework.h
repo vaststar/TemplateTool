@@ -13,10 +13,11 @@ public:
     virtual void initCommonheadFramework() override;
     virtual void exitCommonheadFramework() override;
     virtual std::string getName() const override;
-    virtual ucf::framework::ICoreFrameworkWPtr getCoreFramework() const override;
 public:
-    IResourceLoaderPtr getResourceLoader() const override;
+    virtual IResourceLoaderPtr getResourceLoader() const override;
     virtual IServiceLocatorPtr getServiceLocator() const override;
+private:
+    ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
     IServiceLocatorPtr mServiceLocator;

@@ -30,14 +30,14 @@ public:
      * @return std::vector<model::IPersonContactPtr> - List of person contacts
      * @note This function retrieves the full list of person contacts. careful when using it, as it may be a large list.
      */
-    virtual std::vector<model::IPersonContactPtr> getPersonContactList() const = 0;
+    [[nodiscard]] virtual std::vector<model::IPersonContactPtr> getPersonContactList() const = 0;
 
     /**
      * @brief get PersonContact by ID
      * @param contactId - ID of the contact to retrieve
      * @return model::IPersonContactPtr - The person contact if found, otherwise nulptr
      */
-    virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const = 0;
+    [[nodiscard]] virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const = 0;
     static std::shared_ptr<IContactService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

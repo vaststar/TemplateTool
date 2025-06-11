@@ -36,6 +36,8 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         CommonHeadFramework
+        ResourceLoader
+        ServiceLocator
         ContactService
         MediaService
         ImageService

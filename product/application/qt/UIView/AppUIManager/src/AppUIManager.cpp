@@ -58,7 +58,7 @@ void AppUIManager::Impl::registerStringLoader()
     {
         if (auto resourceLoader = commonHeadFramework->getResourceLoader())
         {
-            resourceLoader->setResourceLocalizedString(std::move(std::make_unique<AppUIStringLoader>()));
+            resourceLoader->setLocalizedStringLoader(std::move(std::make_unique<AppUIStringLoader>()));
         }
     }
 }

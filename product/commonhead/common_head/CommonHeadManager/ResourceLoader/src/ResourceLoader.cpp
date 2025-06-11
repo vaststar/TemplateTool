@@ -69,7 +69,7 @@ ucf::service::model::ThemeType ResourceLoader::getCurrentThemeType() const
     return ucf::service::model::ThemeType::SystemDefault;
 }
 
-void ResourceLoader::setResourceLocalizedString(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader)
+void ResourceLoader::setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader)
 {
     COMMONHEAD_LOG_WARN("set resourceStringLoader");
     mResourceStringLoader = std::move(resourceStringLoader);
