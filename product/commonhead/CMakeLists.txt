@@ -7,5 +7,5 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
                        LANGUAGES CXX
         )
 
-add_subdirectory(common_head)
+add_subdirectory(commonHead)
 add_subdirectory(unit_test)

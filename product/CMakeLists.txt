@@ -2,5 +2,5 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScr
 message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 add_subdirectory(framework)
-add_subdirectory(commonhead)
+add_subdirectory(commonHead)
 add_subdirectory(application)

@@ -1,0 +1,10 @@
+if (WIN32)
+    set(ADD_COMMONHEAD_DEFINITIONS COMMONHEAD_DLL)
+else()
+    set(ADD_COMMONHEAD_DEFINITIONS)
+endif()
+
+add_subdirectory(common_file)
+add_subdirectory(commonHeadManager)
+add_subdirectory(commonHeadFramework)
+add_subdirectory(viewModels)

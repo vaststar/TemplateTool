@@ -8,5 +8,5 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
         )
 
 add_subdirectory(thirdparty)
-add_subdirectory(Utilities)
-add_subdirectory(Services)
+add_subdirectory(utilities)
+add_subdirectory(services)
