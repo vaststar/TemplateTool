@@ -32,11 +32,11 @@ BuildQtModule(
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
+        UICore
         ResourceLoader
         CommonHeadFramework
         ViewModels
         MasterLog
-        UICore
     TARGET_DEPENDENICES_PUBLIC
         Qt6::Widgets
         Qt6::Qml

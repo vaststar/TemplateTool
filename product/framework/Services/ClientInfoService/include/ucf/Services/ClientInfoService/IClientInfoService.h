@@ -19,8 +19,7 @@ namespace ucf::service{
 namespace model{
     class SqliteDBConfig;
 }
-class SERVICE_EXPORT IClientInfoService: public IService, 
-                                      public virtual ucf::utilities::INotificationHelper<IClientInfoServiceCallback>
+class SERVICE_EXPORT IClientInfoService: public IService, public virtual ucf::utilities::INotificationHelper<IClientInfoServiceCallback>
 {
 public:
     virtual model::Version getApplicationVersion() const = 0;

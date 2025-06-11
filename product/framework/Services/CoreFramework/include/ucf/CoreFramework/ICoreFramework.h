@@ -14,8 +14,7 @@ namespace ucf::framework{
 
 class IService;
 
-class SERVICE_EXPORT ICoreFramework: public virtual IServiceAccessor, 
-                                     public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
+class SERVICE_EXPORT ICoreFramework: public virtual IServiceAccessor, public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
 {
 public:
     virtual ~ICoreFramework() = default;

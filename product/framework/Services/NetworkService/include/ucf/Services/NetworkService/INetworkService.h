@@ -21,8 +21,7 @@ namespace network::http{
     using INetworkHttpManagerWPtr = std::weak_ptr<INetworkHttpManager>;
 }
 
-class SERVICE_EXPORT INetworkService: public IService, 
-                                      public virtual ucf::utilities::INotificationHelper<INetworkServiceCallback>
+class SERVICE_EXPORT INetworkService: public IService, public virtual ucf::utilities::INotificationHelper<INetworkServiceCallback>
 {
 public:
     virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() = 0;

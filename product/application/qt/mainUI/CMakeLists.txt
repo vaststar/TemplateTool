@@ -25,9 +25,9 @@ BuildQtModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         UIView
-        CoreFramework
-        CommonHeadFramework
         AppRunner
+        CommonHeadFramework
+        CoreFramework
         MasterLog
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}

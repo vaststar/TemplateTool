@@ -5,14 +5,14 @@
 #include <string>
 #include <atomic>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <ucf/Services/ImageService/ImageTypes.h>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
 namespace commonHead::viewModels{
 class MediaCameraViewModel: public virtual IMediaCameraViewModel, 
-                           public virtual ucf::utilities::NotificationHelper<IMediaCameraViewModelCallback>,
-                           public std::enable_shared_from_this<MediaCameraViewModel>
+                            public virtual commonHead::utilities::VMNotificationHelper<IMediaCameraViewModelCallback>,
+                            public std::enable_shared_from_this<MediaCameraViewModel>
 {
 public:
     explicit MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);

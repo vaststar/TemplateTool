@@ -5,6 +5,7 @@ else()
 endif()
 
 add_subdirectory(common_file)
+add_subdirectory(commonHeadUtils)
 add_subdirectory(commonHeadManager)
 add_subdirectory(commonHeadFramework)
 add_subdirectory(viewModels)

@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 
 namespace commonHead::viewModels{
 class MainWindowViewModel: public virtual IMainWindowViewModel, 
-                           public virtual ucf::utilities::NotificationHelper<IMainWindowViewModelCallback>,
+                           public virtual commonHead::utilities::VMNotificationHelper<IMainWindowViewModelCallback>,
                            public std::enable_shared_from_this<MainWindowViewModel>
 {
 public:

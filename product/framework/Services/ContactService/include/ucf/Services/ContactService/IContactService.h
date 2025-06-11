@@ -20,8 +20,7 @@ namespace model{
     using IPersonContactPtr = std::shared_ptr<IPersonContact>;
 }
 
-class SERVICE_EXPORT IContactService: public IService, 
-                                      public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
+class SERVICE_EXPORT IContactService: public IService, public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
 {
 public:
     // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) = 0;

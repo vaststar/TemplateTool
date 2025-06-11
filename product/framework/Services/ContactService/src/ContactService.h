@@ -10,9 +10,9 @@
 
 namespace ucf::service{
 class ContactService final: public virtual IContactService, 
-                      public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
-                      public ucf::framework::CoreFrameworkCallbackDefault,
-                      public std::enable_shared_from_this<ContactService>
+                            public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
+                            public ucf::framework::CoreFrameworkCallbackDefault,
+                            public std::enable_shared_from_this<ContactService>
 {
 public:
     explicit ContactService(ucf::framework::ICoreFrameworkWPtr coreFramework);

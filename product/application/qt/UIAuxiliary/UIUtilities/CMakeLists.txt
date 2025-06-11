@@ -26,9 +26,9 @@ BuildQtModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         UIManager
+        UICore
         ViewModels
         MasterLog
-        UICore
     TARGET_DEPENDENICES_PUBLIC
         Qt6::Widgets
         Qt6::Qml

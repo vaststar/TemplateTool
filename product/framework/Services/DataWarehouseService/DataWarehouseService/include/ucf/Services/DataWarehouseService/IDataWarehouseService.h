@@ -16,8 +16,7 @@ namespace ucf::framework{
 }
 
 namespace ucf::service{
-class SERVICE_EXPORT IDataWarehouseService: public IService, 
-                                            public virtual ucf::utilities::INotificationHelper<IDataWarehouseServiceCallback>
+class SERVICE_EXPORT IDataWarehouseService: public IService, public virtual ucf::utilities::INotificationHelper<IDataWarehouseServiceCallback>
 {
 public:
     virtual void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables) = 0;

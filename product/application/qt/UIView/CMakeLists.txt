@@ -92,9 +92,9 @@ BuildQtModule(
         UTComponent
         AppContext
         UIManager
-        ResourceLoader
         ViewModels
         CommonHeadFramework
+        ResourceLoader
         Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia
     TARGET_DEFINITIONS
         ${ADD_DEFINITIONS}

@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
-#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
+#include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -18,7 +18,7 @@ public:
     virtual ~IMainWindowViewModelCallback() = default;
 };
 
-class COMMONHEAD_EXPORT IMainWindowViewModel: public virtual ucf::utilities::INotificationHelper<IMainWindowViewModelCallback>
+class COMMONHEAD_EXPORT IMainWindowViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IMainWindowViewModelCallback>
 {
 public:
     virtual std::string getViewModelName() const = 0;

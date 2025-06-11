@@ -9,7 +9,7 @@ namespace ucf::framework{
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 namespace ucf::service{
-class SERVICE_EXPORT MediaService:public IMediaService
+class SERVICE_EXPORT MediaService final: public IMediaService
 {
 public:
     MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework);

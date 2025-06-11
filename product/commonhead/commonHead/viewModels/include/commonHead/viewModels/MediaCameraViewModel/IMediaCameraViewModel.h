@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
-#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
+#include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
 #include <commonHead/viewModels/ViewModelDataDefine/Image.h>
 
 namespace commonHead{
@@ -20,7 +20,7 @@ public:
     virtual void onCameraImageReceived(const model::Image& image) {};
 };
 
-class COMMONHEAD_EXPORT IMediaCameraViewModel: public virtual ucf::utilities::INotificationHelper<IMediaCameraViewModelCallback>
+class COMMONHEAD_EXPORT IMediaCameraViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IMediaCameraViewModelCallback>
 {
 public:
     virtual std::string getViewModelName() const = 0;

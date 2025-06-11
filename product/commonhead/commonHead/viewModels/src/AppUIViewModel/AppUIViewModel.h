@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
 
 namespace commonHead::viewModels::model{
@@ -15,8 +15,8 @@ namespace ucf::service::model{
 
 namespace commonHead::viewModels{
 class AppUIViewModel: public virtual IAppUIViewModel, 
-                            public virtual ucf::utilities::NotificationHelper<IAppUIViewModelCallback>,
-                            public std::enable_shared_from_this<AppUIViewModel>
+                      public virtual commonHead::utilities::VMNotificationHelper<IAppUIViewModelCallback>,
+                      public std::enable_shared_from_this<AppUIViewModel>
 {
 public:
     AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
