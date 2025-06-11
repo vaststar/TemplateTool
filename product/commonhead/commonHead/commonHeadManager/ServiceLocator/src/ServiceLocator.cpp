@@ -18,6 +18,7 @@ ServiceLocator::ServiceLocator(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
 }
+
 std::weak_ptr<ucf::service::IDataWarehouseService> ServiceLocator::getDataWarehouseService() const
 {
     if (auto coreFramework = mCoreFrameworkWPtr.lock())

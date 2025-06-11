@@ -1,2 +1,3 @@
 add_subdirectory(ResourceLoader)
 add_subdirectory(ServiceLocator)
+add_subdirectory(CommandArgumentHandler)

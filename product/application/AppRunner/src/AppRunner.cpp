@@ -13,6 +13,7 @@
 #include <ucf/Services/MediaService/IMediaService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/CommandArgumentHandler/ICommandArgumentHandler.h>
 
 #include "AppRunner/AppRunner.h"
 #include "LoggerDefine.h"
@@ -98,6 +99,18 @@ void ApplicationRunner::DataPrivate::initApp()
         RUNNER_LOG_INFO("===========App initialized=================");
         RUNNER_LOG_INFO("===========================================");
         RUNNER_LOG_INFO("===========================================");
+        //2. handle command line args
+        if (!mCommandLineValues.empty())
+        {
+            RUNNER_LOG_DEBUG("Will handle command line args, size: " << mCommandLineValues.size());
+            if (auto commonHeadFramework = mFrameworkDependencies.commonHeadFramework)
+            {
+                if (auto commandHandler = commonHeadFramework->getCommandArgumentHandler())
+                {
+                    commandHandler->processCommandLineArgs(mCommandLineValues);
+                }
+            }
+        }
     });
 }
 
@@ -128,9 +141,9 @@ void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::st
     std::map<std::string, std::string> commandLineValues;
     for (const std::string& arg: args)
     {
-        if (size_t pos = arg.find("="); pos != std::string::npos)
+        if (size_t pos = arg.find("="); pos != std::string::npos && pos + 1 < arg.size())
         {
-            mCommandLineValues[arg.substr(0, pos)] = arg.substr(pos);
+            mCommandLineValues[arg.substr(0, pos)] = arg.substr(pos+1);
         }
     }
 }

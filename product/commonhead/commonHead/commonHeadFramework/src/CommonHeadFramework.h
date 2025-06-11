@@ -16,11 +16,13 @@ public:
 public:
     virtual IResourceLoaderPtr getResourceLoader() const override;
     virtual IServiceLocatorPtr getServiceLocator() const override;
+    virtual ICommandArgumentHandlerPtr getCommandArgumentHandler() const override;
 private:
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
     IServiceLocatorPtr mServiceLocator;
     IResourceLoaderPtr mResourceLoader;
+    ICommandArgumentHandlerPtr mCommandArgumentHandler;
 };
 }

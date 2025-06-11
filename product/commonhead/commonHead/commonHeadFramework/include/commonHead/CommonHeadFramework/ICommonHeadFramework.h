@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <map>
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 
 namespace ucf::framework{
@@ -16,6 +17,9 @@ using IResourceLoaderPtr = std::shared_ptr<IResourceLoader>;
 class IServiceLocator;
 using IServiceLocatorPtr = std::shared_ptr<IServiceLocator>;
 
+class ICommandArgumentHandler;
+using ICommandArgumentHandlerPtr = std::shared_ptr<ICommandArgumentHandler>;
+
 
 class COMMONHEAD_EXPORT ICommonHeadFramework
 {
@@ -26,6 +30,7 @@ public:
 public:
     [[nodiscard]] virtual IResourceLoaderPtr getResourceLoader() const = 0;
     [[nodiscard]] virtual IServiceLocatorPtr getServiceLocator() const = 0;
+    [[nodiscard]] virtual ICommandArgumentHandlerPtr getCommandArgumentHandler() const = 0;
 public:
     static std::shared_ptr<ICommonHeadFramework> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };
