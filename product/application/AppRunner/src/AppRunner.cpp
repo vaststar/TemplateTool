@@ -36,6 +36,7 @@ private:
     void parseCommandLines(const std::vector<std::string>& args);
     void createFrameworks();
     void initFrameworks();
+    void injectStartupParameters();
     void exitFrameworks();
     void initLogger();
 private:
@@ -99,18 +100,8 @@ void ApplicationRunner::DataPrivate::initApp()
         RUNNER_LOG_INFO("===========App initialized=================");
         RUNNER_LOG_INFO("===========================================");
         RUNNER_LOG_INFO("===========================================");
-        //2. store command line args
-        if (!mCommandLineValues.empty())
-        {
-            RUNNER_LOG_DEBUG("Will set command line args, size: " << mCommandLineValues.size());
-            if (auto coreFramework = mFrameworkDependencies.coreFramework)
-            {
-                if (auto invocationService = coreFramework->getService<ucf::service::IInvocationService>().lock())
-                {
-                    invocationService->setStartupParameters(mCommandLineValues);
-                }
-            }
-        }
+        //2. store command line args if exists
+        injectStartupParameters();
     });
 }
 
@@ -194,6 +185,21 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.commonHeadFramework)
     {
         mFrameworkDependencies.commonHeadFramework->initCommonheadFramework();
+    }
+}
+
+void ApplicationRunner::DataPrivate::injectStartupParameters()
+{
+    if (!mCommandLineValues.empty())
+    {
+        RUNNER_LOG_DEBUG("Will set command line args, size: " << mCommandLineValues.size());
+        if (auto coreFramework = mFrameworkDependencies.coreFramework)
+        {
+            if (auto invocationService = coreFramework->getService<ucf::service::IInvocationService>().lock())
+            {
+                invocationService->setStartupParameters(mCommandLineValues);
+            }
+        }
     }
 }
 
