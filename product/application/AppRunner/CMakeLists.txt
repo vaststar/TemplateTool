@@ -28,13 +28,13 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         CommonHeadFramework
-        CommandArgumentHandler
         ImageService
         DataWarehouseService
         ContactService
         MediaService
         NetworkService
         ClientInfoService
+        InvocationService
         CoreFramework
         MasterLog
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

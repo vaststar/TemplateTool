@@ -1,5 +1,6 @@
 #include "ViewModelFactory.h"
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
@@ -22,6 +23,11 @@ ViewModelFactory::ViewModelFactory(commonHead::ICommonHeadFrameworkWPtr commonHe
 ViewModelFactory::~ViewModelFactory()
 {
     
+}
+
+std::shared_ptr<commonHead::viewModels::IInvocationViewModel> ViewModelFactory::createInvocationViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IInvocationViewModel>();
 }
 
 std::shared_ptr<commonHead::viewModels::IAppUIViewModel> ViewModelFactory::createAppUIViewModelInstance() const

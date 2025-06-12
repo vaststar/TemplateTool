@@ -10,6 +10,7 @@ namespace ucf::framework{
 }
 
 namespace ucf::service{
+    class IInvocationService;
     class IDataWarehouseService;
     class INetworkService;
     class IClientInfoService;
@@ -23,12 +24,13 @@ class COMMONHEAD_EXPORT IServiceLocator
 {
 public:
     virtual ~IServiceLocator() = default;
-    virtual std::weak_ptr<ucf::service::IDataWarehouseService> getDataWarehouseService() const = 0;
-    virtual std::weak_ptr<ucf::service::INetworkService> getNetworkService() const = 0;
-    virtual std::weak_ptr<ucf::service::IClientInfoService> getClientInfoService() const = 0;
-    virtual std::weak_ptr<ucf::service::IContactService> getContactService() const = 0;
-    virtual std::weak_ptr<ucf::service::IImageService> getImageService() const = 0;
-    virtual std::weak_ptr<ucf::service::IMediaService> getMediaService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IInvocationService> getInvocationService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IDataWarehouseService> getDataWarehouseService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::INetworkService> getNetworkService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IClientInfoService> getClientInfoService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IContactService> getContactService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IImageService> getImageService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IMediaService> getMediaService() const = 0;
 public:
     static std::shared_ptr<IServiceLocator> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

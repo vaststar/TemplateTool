@@ -22,6 +22,7 @@ BuildModule(
         CommonHeadCommonFile
     TARGET_DEPENDENICES_PRIVATE
         CoreFramework
+        InvocationService
         DataWarehouseService
         NetworkService
         ClientInfoService

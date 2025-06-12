@@ -23,6 +23,7 @@ public:
     ViewModelFactory& operator=(ViewModelFactory&&) = delete;
     ~ViewModelFactory();
 
+    virtual std::shared_ptr<commonHead::viewModels::IInvocationViewModel> createInvocationViewModelInstance() const override;
     virtual std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const override;
     virtual std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const override;
     virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const override;

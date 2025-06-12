@@ -9,6 +9,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h
     include/commonHead/viewModels/ViewModelDataDefine/Image.h
     include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
+    include/commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -23,6 +24,8 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/AppUIViewModel/AppUIViewModel.cpp
     src/MediaCameraViewModel/MediaCameraViewModel.h
     src/MediaCameraViewModel/MediaCameraViewModel.cpp
+    src/InvocationViewModel/InvocationViewModel.h
+    src/InvocationViewModel/InvocationViewModel.cpp
 )
 
 BuildModule(
@@ -42,6 +45,7 @@ BuildModule(
         MediaService
         ImageService
         ClientInfoService
+        InvocationService
         DataWarehouseService
         DataWarehouseSchema
     TARGET_DEPENDENICES_PUBLIC

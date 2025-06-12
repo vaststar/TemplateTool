@@ -21,7 +21,9 @@ class AppUIViewModel: public virtual IAppUIViewModel,
 public:
     AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
     virtual std::string getViewModelName() const override;
-    virtual void initDatabase() override;
+    virtual void initApplication() override;
+private:    
+    void initDatabase();
 private:
     commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
 };

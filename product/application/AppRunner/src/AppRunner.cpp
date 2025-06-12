@@ -1,10 +1,11 @@
 #include <optional>
-#include <map>
+#include <algorithm>
 #include <mutex>
 
 #include <MasterLog/LogExport.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/InvocationService/IInvocationService.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
@@ -13,7 +14,6 @@
 #include <ucf/Services/MediaService/IMediaService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/CommandArgumentHandler/ICommandArgumentHandler.h>
 
 #include "AppRunner/AppRunner.h"
 #include "LoggerDefine.h"
@@ -40,7 +40,7 @@ private:
     void initLogger();
 private:
     ApplicationConfig mApplicationConfig;
-    std::map<std::string, std::string> mCommandLineValues;
+    std::vector<std::string> mCommandLineValues;
     FrameworkDependencies mFrameworkDependencies;
     std::once_flag mCreate_flag;
     std::once_flag mInit_flag;
@@ -99,15 +99,15 @@ void ApplicationRunner::DataPrivate::initApp()
         RUNNER_LOG_INFO("===========App initialized=================");
         RUNNER_LOG_INFO("===========================================");
         RUNNER_LOG_INFO("===========================================");
-        //2. handle command line args
+        //2. store command line args
         if (!mCommandLineValues.empty())
         {
-            RUNNER_LOG_DEBUG("Will handle command line args, size: " << mCommandLineValues.size());
-            if (auto commonHeadFramework = mFrameworkDependencies.commonHeadFramework)
+            RUNNER_LOG_DEBUG("Will set command line args, size: " << mCommandLineValues.size());
+            if (auto coreFramework = mFrameworkDependencies.coreFramework)
             {
-                if (auto commandHandler = commonHeadFramework->getCommandArgumentHandler())
+                if (auto invocationService = coreFramework->getService<ucf::service::IInvocationService>().lock())
                 {
-                    commandHandler->processCommandLineArgs(mCommandLineValues);
+                    invocationService->setStartupParameters(mCommandLineValues);
                 }
             }
         }
@@ -138,14 +138,12 @@ void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::st
         return;
     }
 
-    std::map<std::string, std::string> commandLineValues;
-    for (const std::string& arg: args)
-    {
-        if (size_t pos = arg.find("="); pos != std::string::npos && pos + 1 < arg.size())
+    std::for_each(args.cbegin(), args.cend(), [this](const std::string& arg){
+        if(!arg.empty())
         {
-            mCommandLineValues[arg.substr(0, pos)] = arg.substr(pos+1);
+            mCommandLineValues.push_back(arg);
         }
-    }
+    });
 }
 
 void ApplicationRunner::DataPrivate::createApplicationConfig()
@@ -182,6 +180,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IInvocationService>(ucf::service::IInvocationService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::IClientInfoService::createInstance(mFrameworkDependencies.coreFramework));
         mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(mFrameworkDependencies.coreFramework));

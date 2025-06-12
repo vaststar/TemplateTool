@@ -22,7 +22,6 @@ BuildModule(
         CoreFramework
         ResourceLoader
         ServiceLocator
-        CommandArgumentHandler
     TARGET_DEPENDENICES_PUBLIC
         CommonHeadCommonFile
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE

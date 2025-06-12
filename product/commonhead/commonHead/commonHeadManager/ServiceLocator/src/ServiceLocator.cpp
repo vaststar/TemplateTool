@@ -1,6 +1,7 @@
 #include "ServiceLocator.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/InvocationService/IInvocationService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
@@ -17,6 +18,15 @@ std::shared_ptr<IServiceLocator> IServiceLocator::createInstance(ucf::framework:
 ServiceLocator::ServiceLocator(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
+}
+
+std::weak_ptr<ucf::service::IInvocationService> ServiceLocator::getInvocationService() const
+{
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        return coreFramework->getService<ucf::service::IInvocationService>();
+    }
+    return {};
 }
 
 std::weak_ptr<ucf::service::IDataWarehouseService> ServiceLocator::getDataWarehouseService() const

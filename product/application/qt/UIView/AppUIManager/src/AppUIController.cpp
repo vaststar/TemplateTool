@@ -1,6 +1,7 @@
 #include "AppUIController.h"
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
@@ -40,7 +41,7 @@ void AppUIController::initializeController(AppContext* appContext)
     mAppContext = appContext;
     assert(mAppContext);
     mViewModel = appContext->getViewModelFactory()->createAppUIViewModelInstance();
-    mViewModel->initDatabase();
+    mViewModel->initApplication();
 
     initializeUIClient();
 
@@ -62,7 +63,9 @@ void AppUIController::initializeUIClient()
 
 void AppUIController::startApp()
 {
-    
+    auto invocationVM = mAppContext->getViewModelFactory()->createInvocationViewModelInstance();
+    invocationVM->processStartupParameters();
+
     UIVIEW_LOG_DEBUG("start load main qml");
 
     mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), "MainWindowController", [this](auto controller){

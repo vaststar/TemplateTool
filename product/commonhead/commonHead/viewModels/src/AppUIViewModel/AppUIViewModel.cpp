@@ -1,5 +1,7 @@
 #include "AppUIViewModel.h"
 
+#include <ucf/Services/InvocationService/IInvocationService.h>
+
 #include <ucf/Services/ClientInfoService/ClientInfoModel.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
@@ -31,6 +33,12 @@ std::string AppUIViewModel::getViewModelName() const
     return "AppUIViewModel";
 }
 
+void AppUIViewModel::initApplication()
+{
+    COMMONHEAD_LOG_DEBUG("AppUIViewModel initialized");
+    initDatabase();
+}
+
 void AppUIViewModel::initDatabase()
 {
     COMMONHEAD_LOG_DEBUG("will init default database");
@@ -51,4 +59,5 @@ void AppUIViewModel::initDatabase()
         }
     }
 }
+
 }

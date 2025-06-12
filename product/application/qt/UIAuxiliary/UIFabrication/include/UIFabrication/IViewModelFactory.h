@@ -16,6 +16,7 @@ namespace commonHead::viewModels{
     class IContactListViewModel;
     class IMainWindowViewModel;
     class IMediaCameraViewModel;
+    class IInvocationViewModel;
 }
 
 namespace UIFabrication{
@@ -25,6 +26,7 @@ Q_OBJECT
 public:
     virtual ~IViewModelFactory() = default;
     virtual std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const = 0;
+    virtual std::shared_ptr<commonHead::viewModels::IInvocationViewModel> createInvocationViewModelInstance() const = 0;
     virtual std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const = 0;
     virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const = 0;
     virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const = 0;
