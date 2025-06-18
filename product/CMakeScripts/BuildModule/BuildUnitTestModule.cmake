@@ -1,10 +1,9 @@
-include (BuildInstallModule)
 include (LinkTargetIncludeDirectories)
 
-function(BuildModule)
-        message(STATUS "====Start Build Module====")
-        set(options TEST_MODULE)
-        set(oneValueArg MODULE_NAME IDE_FOLDER BUILD_LIBRARY_TYPE)
+function(BuildUnitTestModule)
+        message(STATUS "====Start Build Test Module====")
+        set(options)
+        set(oneValueArg MODULE_NAME IDE_FOLDER)
         set(multiValueArgs
             TARGET_SOURCE_PRIVATE TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
             TARGET_DEPENDENICES_PRIVATE TARGET_DEPENDENICES_PUBLIC
@@ -15,7 +14,6 @@ function(BuildModule)
 
         message(STATUS "Parse Args Results:")
         message(STATUS "MODULE_NAME: ${MODULE_MODULE_NAME}")
-        message(STATUS "BUILD_LIBRARY_TYPE: ${MODULE_BUILD_LIBRARY_TYPE}")
         message(STATUS "TARGET_SOURCE_PRIVATE: ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS "TARGET_SOURCE_HEADER_BASE_DIR: ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}")
         message(STATUS "TARGET_SOURCE_PUBLIC_HEADER: ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
@@ -27,14 +25,11 @@ function(BuildModule)
         message(STATUS "TARGET_DEFINITIONS: ${MODULE_TARGET_DEFINITIONS}")
         message(STATUS "IDE_FOLDER: ${MODULE_IDE_FOLDER}")
         
-        message(STATUS "***create library: ${MODULE_MODULE_NAME}***")
+        message(STATUS "***create test exe: ${MODULE_MODULE_NAME}***")
 
-        ##build shared library - default
-        if (DEFINED MODULE_BUILD_LIBRARY_TYPE)
-            add_library(${MODULE_MODULE_NAME} ${MODULE_BUILD_LIBRARY_TYPE} "")
-        else()
-            add_library(${MODULE_MODULE_NAME} SHARED "")
-        endif()
+        ##build exe
+        add_executable(${MODULE_MODULE_NAME} "")
+        
         target_sources(${MODULE_MODULE_NAME}
             PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
             PUBLIC FILE_SET HEADERS 
@@ -69,12 +64,6 @@ function(BuildModule)
         ##define macro for windows
         if (DEFINED MODULE_TARGET_DEFINITIONS)
             target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
-        endif()
-
-        if (NOT DEFINED MODULE_TEST_MODULE)
-            BuildInstallModule(
-                MODULE_NAME ${MODULE_MODULE_NAME}
-            )
         endif()
 
         #for project tree view

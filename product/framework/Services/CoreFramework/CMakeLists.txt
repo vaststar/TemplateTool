@@ -42,3 +42,5 @@ BuildModule(
     IDE_FOLDER
         framework/Services
 )
+
+add_subdirectory(test)
