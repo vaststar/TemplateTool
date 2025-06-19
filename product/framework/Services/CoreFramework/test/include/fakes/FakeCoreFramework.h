@@ -13,7 +13,7 @@ class SERVICE_TEST_EXPORT FakeCoreFramework : public virtual ucf::framework::ICo
 {
 public:
     FakeCoreFramework();
-    //static constexpr bool trompeloeil_movable_mock = true;
+    static constexpr bool trompeloeil_movable_mock = true;
     // FakeCoreFramework(const FakeCoreFramework&) = delete;
     // FakeCoreFramework(FakeCoreFramework&&) = delete;
     // FakeCoreFramework& operator=(const FakeCoreFramework&) = delete;
