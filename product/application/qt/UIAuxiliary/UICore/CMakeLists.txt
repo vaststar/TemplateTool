@@ -13,7 +13,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS UICore_DLL)
+    set(ADD_DEFINITIONS UICore_DLL) #UICore_DLL UICore_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()

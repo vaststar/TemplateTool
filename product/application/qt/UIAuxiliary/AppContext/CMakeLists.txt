@@ -9,7 +9,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS AppContext_DLL)
+    set(ADD_DEFINITIONS AppContext_DLL) #AppContext_DLL AppContext_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()

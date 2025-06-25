@@ -4,11 +4,11 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    include/Main/LoggerDefine.h 
+    src/LoggerDefine.h 
     src/Main.cpp
 )
 if (WIN32)
-    set(ADD_DEFINITIONS Main_DLL)
+    set(ADD_DEFINITIONS Main_DLL)   #Main_DLL Main_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()

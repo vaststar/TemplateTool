@@ -1,10 +1,11 @@
 include (BuildInstallModule)
 include (LinkTargetIncludeDirectories)
+include (TargetBuildType)
 
 function(BuildModule)
         message(STATUS "====Start Build Module====")
-        set(options TEST_MODULE)
-        set(oneValueArg MODULE_NAME IDE_FOLDER BUILD_LIBRARY_TYPE)
+        set(options STATIC_LIB SHARED_LIB)
+        set(oneValueArg MODULE_NAME IDE_FOLDER)
         set(multiValueArgs
             TARGET_SOURCE_PRIVATE TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
             TARGET_DEPENDENICES_PRIVATE TARGET_DEPENDENICES_PUBLIC
@@ -15,7 +16,6 @@ function(BuildModule)
 
         message(STATUS "Parse Args Results:")
         message(STATUS "MODULE_NAME: ${MODULE_MODULE_NAME}")
-        message(STATUS "BUILD_LIBRARY_TYPE: ${MODULE_BUILD_LIBRARY_TYPE}")
         message(STATUS "TARGET_SOURCE_PRIVATE: ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS "TARGET_SOURCE_HEADER_BASE_DIR: ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}")
         message(STATUS "TARGET_SOURCE_PUBLIC_HEADER: ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
@@ -29,12 +29,15 @@ function(BuildModule)
         
         message(STATUS "***create library: ${MODULE_MODULE_NAME}***")
 
-        ##build shared library - default
-        if (DEFINED MODULE_BUILD_LIBRARY_TYPE)
-            add_library(${MODULE_MODULE_NAME} ${MODULE_BUILD_LIBRARY_TYPE} "")
+        #build shared library - default
+        if (DEFINED MODULE_STATIC_LIB)
+            message(STATUS "create static library: ${MODULE_MODULE_NAME}")
+            add_library(${MODULE_MODULE_NAME} STATIC "")
         else()
+            message(STATUS "create shared library: ${MODULE_MODULE_NAME}")
             add_library(${MODULE_MODULE_NAME} SHARED "")
         endif()
+
         target_sources(${MODULE_MODULE_NAME}
             PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
             PUBLIC FILE_SET HEADERS 
@@ -68,14 +71,19 @@ function(BuildModule)
         
         ##define macro for windows
         if (DEFINED MODULE_TARGET_DEFINITIONS)
-            target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
+            target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
+            if (is_shared_lib)
+                message(STATUS "will add definitions for shared library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
+                target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
+            else()
+                message(STATUS "will add definitions for static library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
+                target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEFINITIONS})
+            endif()
         endif()
 
-        if (NOT DEFINED MODULE_TEST_MODULE)
-            BuildInstallModule(
-                MODULE_NAME ${MODULE_MODULE_NAME}
-            )
-        endif()
+        BuildInstallModule(
+            MODULE_NAME ${MODULE_MODULE_NAME}
+        )
 
         #for project tree view
         source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER})

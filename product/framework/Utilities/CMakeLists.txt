@@ -1,5 +1,5 @@
 if (WIN32)
-    set(ADD_UTILITIES_DEFINITIONS Utilities_DLL)
+    set(ADD_UTILITIES_DEFINITIONS Utilities_DLL) #Utilities_DLL Utilities_LIB
 else()
     set(ADD_UTILITIES_DEFINITIONS)
 endif()

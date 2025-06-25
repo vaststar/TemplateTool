@@ -45,18 +45,17 @@ BuildModule(
         StringUtils
         UUIDUtils
         magic_enum
-        
     TARGET_DEPENDENICES_PUBLIC
         ServiceExportMacro
         ServiceDeclaration
         NotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR}
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
         include
     TARGET_INCLUDE_DIRECTORIES_PRIVATE
         src
+        ${CMAKE_BINARY_DIR}
     TARGET_DEFINITIONS
         ${ADD_SERVICE_DEFINITIONS}
     IDE_FOLDER

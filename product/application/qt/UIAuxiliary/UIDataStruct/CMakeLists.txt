@@ -15,7 +15,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIDataStruct_DLL)
+    set(ADD_DEFINITIONS UIDataStruct_DLL) #UIDataStruct_DLL UIDataStruct_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()

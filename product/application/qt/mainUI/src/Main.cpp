@@ -8,7 +8,7 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include "AppRunner/AppRunner.h"
-#include "Main/LoggerDefine.h"
+#include "LoggerDefine.h"
 
 #include "AppUIManager/include/AppUIManager.h"
 

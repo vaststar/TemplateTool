@@ -20,17 +20,16 @@ set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIComponentBase_DLL)
+    set(ADD_DEFINITIONS UIComponentBase_LIB)    #UIComponentBase_DLL
 else()
     set(ADD_DEFINITIONS)
 endif()
 
 include(BuildQtModule)
 BuildQtModule(
+    STATIC_LIB
     MODULE_NAME 
         UIComponentBase
-    BUILD_LIBRARY_TYPE
-        STATIC
     TARGET_SOURCE_PRIVATE 
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR

@@ -1,7 +1,9 @@
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
-    #if defined(UIComponentBase_DLL)
+    #if defined(UIComponentBase_LIB)
+        #define UIComponentBase_EXPORT
+    #elif defined(UIComponentBase_DLL)
         #define UIComponentBase_EXPORT Q_DECL_EXPORT
     #else
         #define UIComponentBase_EXPORT Q_DECL_IMPORT

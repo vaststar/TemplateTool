@@ -16,7 +16,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIManager_DLL)
+    set(ADD_DEFINITIONS UIManager_DLL) #UIManager_DLL UIManager_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()
