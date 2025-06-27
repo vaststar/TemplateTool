@@ -61,12 +61,12 @@ function(BuildModule)
         
         if(DEFINED MODULE_TARGET_DEPENDENICES_PRIVATE)
             message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES_PRIVATE}")
-            target_link_libraries(${MODULE_MODULE_NAME}  PRIVATE ${MODULE_TARGET_DEPENDENICES_PRIVATE})
+            target_link_libraries(${MODULE_MODULE_NAME}  PRIVATE $<BUILD_INTERFACE:${MODULE_TARGET_DEPENDENICES_PRIVATE}>)
         endif()
 
         if (DEFINED MODULE_TARGET_DEPENDENICES_PUBLIC)
             message(STATUS "will add public link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES_PUBLIC}")
-            target_link_libraries(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEPENDENICES_PUBLIC})
+            target_link_libraries(${MODULE_MODULE_NAME} PUBLIC $<BUILD_INTERFACE:${MODULE_TARGET_DEPENDENICES_PUBLIC}>)
         endif()
         
         ##define macro for windows

@@ -33,6 +33,7 @@ SetIDEFolder(
         ${Translation_LIB}_lupdate
         ${Translation_LIB}_lrelease
         ${Translation_LIB}_${Translation_LIB}_translations
+        ${Translation_LIB}_resources_3
         update_translations
         release_translations
     FOLDER_NAME
