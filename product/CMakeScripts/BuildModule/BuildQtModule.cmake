@@ -3,12 +3,12 @@ include (SetIDEFolder)
 function(BuildQtModule)
     message(STATUS "====Start Build Qt Module====")
     set(options STATIC_LIB SHARED_LIB)
-    set(oneValueArg MODULE_NAME IDE_FOLDER)
+    set(oneValueArg MODULE_NAME IDE_FOLDER QML_TARGET_URI)
     set(multiValueArgs TARGET_SOURCE_PRIVATE TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
                        TARGET_DEPENDENICES_PRIVATE TARGET_DEPENDENICES_PUBLIC 
                        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
                        TARGET_DEFINITIONS
-                       QML_TARGET_URI QML_TARGET_FILES QML_TARGET_SOURCES 
+                       QML_TARGET_FILES QML_TARGET_SOURCES 
                        QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES 
                        QML_PUBLIC_BUILD_INTERFACE_FOLDER
 
@@ -35,9 +35,14 @@ function(BuildQtModule)
     message(STATUS "QML_TARGET_RESOURCES: ${MODULE_QML_TARGET_RESOURCES}")
     message(STATUS "QML_PUBLIC_BUILD_INTERFACE_FOLDER: ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER}")
     
+    message(STATUS "***create qt library: ${MODULE_MODULE_NAME}***")
+
+    if (MODULE_UNPARSED_ARGUMENTS)
+        message(WARNING "Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
+    endif()
     
     #build shared library - default
-    if (DEFINED MODULE_STATIC_LIB)
+    if (MODULE_STATIC_LIB)
         message(STATUS "create static library: ${MODULE_MODULE_NAME}")
         add_library(${MODULE_MODULE_NAME} STATIC "")
     else()
@@ -67,17 +72,17 @@ function(BuildQtModule)
         TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
     )
     
-    if(DEFINED MODULE_TARGET_DEPENDENICES_PRIVATE)
+    if(MODULE_TARGET_DEPENDENICES_PRIVATE)
         message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES_PRIVATE}")
         target_link_libraries(${MODULE_MODULE_NAME}  PRIVATE ${MODULE_TARGET_DEPENDENICES_PRIVATE})
     endif()
 
-    if (DEFINED MODULE_TARGET_DEPENDENICES_PUBLIC)
+    if (MODULE_TARGET_DEPENDENICES_PUBLIC)
         message(STATUS "will add public link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES_PUBLIC}")
         target_link_libraries(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEPENDENICES_PUBLIC})
     endif()
     
-    if (DEFINED MODULE_TARGET_DEFINITIONS)
+    if (MODULE_TARGET_DEFINITIONS)
         target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
         if (is_shared_lib)
             message(STATUS "will add definitions for shared library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
@@ -90,7 +95,7 @@ function(BuildQtModule)
 
     if (DEFINED MODULE_QML_TARGET_URI)
         message(STATUS "====Start Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")
-        if (DEFINED MODULE_QML_TARGET_RESOURCES_DIR)
+        if (MODULE_QML_TARGET_RESOURCES_DIR)
             message(STATUS "set alias of resources")
             set(ALL_MODULE_QML_TARGET_RESOURCES "")
             foreach(resource ${MODULE_QML_TARGET_RESOURCES})
@@ -99,6 +104,8 @@ function(BuildQtModule)
             endforeach()
             message(STATUS "qml_resources: ${ALL_MODULE_QML_TARGET_RESOURCES}")
         endif()
+
+        
         qt_add_qml_module(${MODULE_MODULE_NAME}
             URI ${MODULE_QML_TARGET_URI}
             VERSION 1.0
@@ -110,7 +117,7 @@ function(BuildQtModule)
                 ${MODULE_QML_TARGET_SOURCES}
         )
 
-        if (DEFINED MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER)
+        if (MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER)
             foreach(interface_dir ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER})
                 target_include_directories(${MODULE_MODULE_NAME}plugin PUBLIC 
                     $<BUILD_INTERFACE:${interface_dir}>
@@ -133,9 +140,12 @@ function(BuildQtModule)
             FOLDER_NAME
                 ${MODULE_IDE_FOLDER}/internalTargets
         )
-
-        if (TARGET ${MODULE_MODULE_NAME}plugin)
-            target_link_libraries(${MODULE_MODULE_NAME} PRIVATE $<BUILD_INTERFACE:${MODULE_MODULE_NAME}plugin>)
+        
+        target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
+        if (NOT is_shared_lib)
+            if (TARGET ${MODULE_MODULE_NAME}plugin)
+                target_link_libraries(${MODULE_MODULE_NAME} PRIVATE $<BUILD_INTERFACE:${MODULE_MODULE_NAME}plugin>)
+            endif()
         endif()
 
         message(STATUS "====Finish Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")

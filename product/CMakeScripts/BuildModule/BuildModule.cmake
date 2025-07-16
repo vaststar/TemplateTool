@@ -26,11 +26,15 @@ function(BuildModule)
         message(STATUS "TARGET_INCLUDE_DIRECTORIES_PRIVATE: ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}")
         message(STATUS "TARGET_DEFINITIONS: ${MODULE_TARGET_DEFINITIONS}")
         message(STATUS "IDE_FOLDER: ${MODULE_IDE_FOLDER}")
-        
+
         message(STATUS "***create library: ${MODULE_MODULE_NAME}***")
 
+        if (MODULE_UNPARSED_ARGUMENTS)
+            message(WARNING "Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
+        endif()
+
         #build shared library - default
-        if (DEFINED MODULE_STATIC_LIB)
+        if (MODULE_STATIC_LIB)
             message(STATUS "create static library: ${MODULE_MODULE_NAME}")
             add_library(${MODULE_MODULE_NAME} STATIC "")
         else()
@@ -59,18 +63,18 @@ function(BuildModule)
             TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
         )
         
-        if(DEFINED MODULE_TARGET_DEPENDENICES_PRIVATE)
+        if(MODULE_TARGET_DEPENDENICES_PRIVATE)
             message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES_PRIVATE}")
             target_link_libraries(${MODULE_MODULE_NAME}  PRIVATE $<BUILD_INTERFACE:${MODULE_TARGET_DEPENDENICES_PRIVATE}>)
         endif()
 
-        if (DEFINED MODULE_TARGET_DEPENDENICES_PUBLIC)
+        if (MODULE_TARGET_DEPENDENICES_PUBLIC)
             message(STATUS "will add public link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES_PUBLIC}")
             target_link_libraries(${MODULE_MODULE_NAME} PUBLIC $<BUILD_INTERFACE:${MODULE_TARGET_DEPENDENICES_PUBLIC}>)
         endif()
         
         ##define macro for windows
-        if (DEFINED MODULE_TARGET_DEFINITIONS)
+        if (MODULE_TARGET_DEFINITIONS)
             target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
             if (is_shared_lib)
                 message(STATUS "will add definitions for shared library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")

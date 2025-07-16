@@ -15,9 +15,14 @@ function(LinkTargetIncludeDirectories)
     message(STATUS "TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE: ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}")
     message(STATUS "TARGET_INCLUDE_DIRECTORIES_PRIVATE: ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}")
 
-    if (DEFINED MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE)
+    message(STATUS "***start link target directories: ${MODULE_MODULE_NAME}***")
+    if (MODULE_UNPARSED_ARGUMENTS)
+        message(WARNING "Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
+    endif()
+
+    if (MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE)
         foreach(build_interface_dir ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE})
-            if (DEFINED MODULE_INTERFACE)
+            if (MODULE_INTERFACE)
                 message(STATUS "link BUILD_INTERFACE dir for INTERFACE: ${build_interface_dir}")
                 target_include_directories(${MODULE_MODULE_NAME} INTERFACE 
                     $<BUILD_INTERFACE:${build_interface_dir}>
@@ -31,9 +36,9 @@ function(LinkTargetIncludeDirectories)
         endforeach()
     endif()
 
-    if (DEFINED MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE)
+    if (MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE)
         foreach(install_interface_dir ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE})
-            if (DEFINED MODULE_INTERFACE)
+            if (MODULE_INTERFACE)
                 message(STATUS "link INSTALL_INTERFACE dir for INTERFACE: ${install_interface_dir}")
                 target_include_directories(${MODULE_MODULE_NAME} INTERFACE 
                     $<INSTALL_INTERFACE:${install_interface_dir}>
@@ -48,7 +53,7 @@ function(LinkTargetIncludeDirectories)
         endforeach()
     endif()
 
-    if (DEFINED MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE)
+    if (MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE)
         message(STATUS "link PRIVATE dir: ${MODULE_MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}")
         target_include_directories(${MODULE_MODULE_NAME} PRIVATE 
             ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
