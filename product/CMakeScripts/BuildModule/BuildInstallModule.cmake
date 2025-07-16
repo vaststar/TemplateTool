@@ -6,6 +6,14 @@ function(BuildInstallModule)
 
     message(STATUS "MODULE_NAME: ${INSTALL_MODULE_NAME}")
 
+    if (INSTALL_UNPARSED_ARGUMENTS)
+        message(WARNING "Unrecognized arguments: ${INSTALL_UNPARSED_ARGUMENTS}")
+    endif()
+
+    if (NOT DEFINED INSTALL_MODULE_NAME)
+        message(FATAL_ERROR "MODULE_NAME is not defined, please set it.")
+    endif()
+
     install(TARGETS ${INSTALL_MODULE_NAME} 
             EXPORT ${INSTALL_MODULE_NAME}Config
     	    RUNTIME DESTINATION ${INSTALL_MODULE_NAME}/bin

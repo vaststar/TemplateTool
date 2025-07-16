@@ -41,6 +41,10 @@ function(BuildQtModule)
         message(WARNING "Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
     endif()
     
+    if (NOT DEFINED MODULE_MODULE_NAME)
+        message(FATAL_ERROR "MODULE_NAME is not defined, please set it.")
+    endif()
+    
     #build shared library - default
     if (MODULE_STATIC_LIB)
         message(STATUS "create static library: ${MODULE_MODULE_NAME}")

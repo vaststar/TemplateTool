@@ -22,6 +22,9 @@ function(BuildInterface)
     if (INTERFACE_UNPARSED_ARGUMENTS)
         message(WARNING "Unrecognized arguments: ${INTERFACE_UNPARSED_ARGUMENTS}")
     endif()
+    if (NOT DEFINED INTERFACE_MODULE_NAME)
+        message(FATAL_ERROR "MODULE_NAME is not defined, please set it.")
+    endif()
 
     add_library(${INTERFACE_MODULE_NAME} INTERFACE)
     target_sources(${INTERFACE_MODULE_NAME}
