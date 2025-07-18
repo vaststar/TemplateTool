@@ -93,10 +93,6 @@ void CoreFramework::DataPrivate::initialize()
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-std::shared_ptr<ICoreFramework> ICoreFramework::createInstance()
-{
-    return std::make_shared<CoreFramework>();
-}
 
 CoreFramework::CoreFramework()
     : mDataPrivate(std::make_unique<CoreFramework::DataPrivate>())
