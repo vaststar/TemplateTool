@@ -79,6 +79,8 @@ BuildModule(
         src
     IDE_FOLDER
         framework/Services
+    TARGET_DEFINITIONS
+        ${ADD_SERVICE_DEFINITIONS}
 )
 
 BuildModule(

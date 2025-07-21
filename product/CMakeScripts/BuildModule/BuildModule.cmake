@@ -4,7 +4,7 @@ include (TargetBuildType)
 
 function(BuildModule)
         message(STATUS "====Start Build Module====")
-        set(options STATIC_LIB SHARED_LIB)
+        set(options STATIC_LIB SHARED_LIB NO_INSTALL)
         set(oneValueArg MODULE_NAME IDE_FOLDER)
         set(multiValueArgs
             TARGET_SOURCE_PRIVATE TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
@@ -89,9 +89,11 @@ function(BuildModule)
             endif()
         endif()
 
-        BuildInstallModule(
-            MODULE_NAME ${MODULE_MODULE_NAME}
-        )
+        if (NOT MODULE_NO_INSTALL)
+            BuildInstallModule(
+                MODULE_NAME ${MODULE_MODULE_NAME}
+            )
+        endif()
 
         #for project tree view
         source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER})

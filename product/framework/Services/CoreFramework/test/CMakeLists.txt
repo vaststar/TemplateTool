@@ -1,32 +1,25 @@
 cmake_minimum_required(VERSION 3.11)
 
+add_subdirectory(fakes)
 include(BuildUnitTestModule)
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    # ../src/CoreframeworkLogger.h
-    # ../src/ServiceAccessor.h
-    # ../src/CoreFramework.h
-    # ../src/CoreFramework.cpp
-    # # include/fakes/FakeCoreFramework.h
-    # # src/FakeCoreFramework.cpp
-    src/CoreFrameworkTests.cpp
+    CoreFrameworkTests.cpp
 )
 
 
 BuildUnitTestModule(
     MODULE_NAME 
         CoreFrameworkTests
-    TARGET_SOURCE_PRIVATE 
+    TARGET_SOURCE
         ${TARGET_SOURCE_FILES_PRIVATE}
-    TARGET_DEPENDENICES_PRIVATE
+    TARGET_DEPENDENICES
         Catch2::Catch2WithMain
-        trompeloeil
-        CoreFrameworkImpl
         CoreFrameworkFactory
-    # TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        # include
-        # src
-        # ../src
+        CoreFrameworkImpl
+        FakeCoreFramework
+    TARGET_INCLUDE_FOLDER
+        .
     IDE_FOLDER
         framework/Services/unit-test
 )
