@@ -1,4 +1,4 @@
-include(BuildModule)
+include(BuildUCFServiceModule)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}") 
 
 add_custom_target(update_version)
@@ -26,39 +26,87 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 
-BuildModule(
+# BuildModule(
+#     MODULE_NAME 
+#         ClientInfoService
+#     TARGET_SOURCE_PRIVATE 
+#         ${TARGET_SOURCE_FILES_PRIVATE}
+#     TARGET_SOURCE_HEADER_BASE_DIR
+#         ${CMAKE_CURRENT_SOURCE_DIR}/include
+#     TARGET_SOURCE_PUBLIC_HEADER
+#         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
+#     TARGET_DEPENDENICES_PRIVATE
+#         DataWarehouseService
+#         DataWarehouseSchema
+#         MasterLog
+#         CoreFramework
+#         TimeUtils
+#         OSUtils
+#         StringUtils
+#         UUIDUtils
+#         magic_enum
+#     TARGET_DEPENDENICES_PUBLIC
+#         ServiceExportMacro
+#         ServiceDeclaration
+#         NotificationHelper
+#     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+#         ${CMAKE_CURRENT_SOURCE_DIR}/include
+#     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+#         include
+#     TARGET_INCLUDE_DIRECTORIES_PRIVATE
+#         src
+#         ${CMAKE_BINARY_DIR}
+#     TARGET_DEFINITIONS
+#         ${ADD_SERVICE_DEFINITIONS}
+#     IDE_FOLDER
+#         framework/Services
+# )
+
+
+
+set(TARGET_FACTORY_FILES
+    src/ClientInfoServiceFactory.cpp
+)
+
+set(TARGET_MODULE_NAME ClientInfoService)
+
+BuildUCFServiceModule(
     MODULE_NAME 
-        ClientInfoService
-    TARGET_SOURCE_PRIVATE 
-        ${TARGET_SOURCE_FILES_PRIVATE}
-    TARGET_SOURCE_HEADER_BASE_DIR
+        ${TARGET_MODULE_NAME}
+    INTERFACE_BASE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_SOURCE_PUBLIC_HEADER
+    INTERFACE_FILES
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PRIVATE
+    INTERFACE_DEPENDENCIES
+        ServiceExportMacro
+        NotificationHelper
+        ServiceDeclaration
+    INTERFACE_INSTALL_DIR
+        include
+    IDE_FOLDER
+        framework/Services
+    IMPL_FILES
+        ${TARGET_SOURCE_FILES_PRIVATE}
+    IMPL_DEPENDENCIES_PUBLIC
         DataWarehouseService
+        CoreFramework
+    IMPL_DEPENDENCIES_PRIVATE
         DataWarehouseSchema
         MasterLog
-        CoreFramework
         TimeUtils
         OSUtils
         StringUtils
         UUIDUtils
         magic_enum
-    TARGET_DEPENDENICES_PUBLIC
-        ServiceExportMacro
-        ServiceDeclaration
-        NotificationHelper
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        include
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE
+    IMPL_BUILD_INCLUDE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    IMPL_BUILD_INCLUDE_DIR_PRIVATE
         src
         ${CMAKE_BINARY_DIR}
-    TARGET_DEFINITIONS
+    DLL_DEFINITIONS
         ${ADD_SERVICE_DEFINITIONS}
-    IDE_FOLDER
-        framework/Services
+    FACTORY_FILES
+        ${TARGET_FACTORY_FILES}
 )
-add_dependencies(ClientInfoService update_version)
+
+add_dependencies(ClientInfoServiceImpl update_version)

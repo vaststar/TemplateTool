@@ -44,7 +44,7 @@ BuildModule(
         ContactService
         MediaService
         ImageService
-        ClientInfoService
+        ClientInfoServiceInterface
         InvocationService
         DataWarehouseService
         DataWarehouseSchema

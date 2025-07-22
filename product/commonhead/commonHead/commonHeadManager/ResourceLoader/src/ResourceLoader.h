@@ -31,6 +31,7 @@ public:
     virtual void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const override;
+    ~ResourceLoader() = default;
 private:
     //IClientInfoServiceCallback
     virtual void onClientInfoReady() override;

@@ -25,7 +25,7 @@ BuildModule(
         InvocationService
         DataWarehouseService
         NetworkService
-        ClientInfoService
+        ClientInfoServiceInterface
         ContactService
         MediaService
         ImageService

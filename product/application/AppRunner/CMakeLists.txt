@@ -28,12 +28,12 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         CommonHeadFramework
-        ImageService
+        ImageServiceFactory
         DataWarehouseService
         ContactService
         MediaService
         NetworkService
-        ClientInfoService
+        ClientInfoServiceFactory
         InvocationService
         CoreFrameworkFactory
         MasterLog

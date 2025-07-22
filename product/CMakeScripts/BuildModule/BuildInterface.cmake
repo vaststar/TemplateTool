@@ -3,7 +3,7 @@ include (BuildInstallModule)
 function(BuildInterface)
     message(STATUS "====Start Build Interface====")
     set(options)
-    set(oneValueArg MODULE_NAME)
+    set(oneValueArg MODULE_NAME IDE_FOLDER)
     set(multiValueArgs 
                         TARGET_SOURCE_HEADER_BASE_DIR TARGET_SOURCE_PUBLIC_HEADER
                         TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
@@ -17,6 +17,7 @@ function(BuildInterface)
     message(STATUS "TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE: ${INTERFACE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE}")
     message(STATUS "TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE: ${INTERFACE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}")
     message(STATUS "TARGET_DEPENDENICES_PUBLIC: ${INTERFACE_TARGET_DEPENDENICES_PUBLIC}")
+    message(STATUS "IDE_FOLDER: ${INTERFACE_IDE_FOLDER}")
 
     message(STATUS "***create interface : ${INTERFACE_MODULE_NAME}***")
     if (INTERFACE_UNPARSED_ARGUMENTS)
@@ -48,6 +49,13 @@ function(BuildInterface)
     BuildInstallModule(
             MODULE_NAME ${INTERFACE_MODULE_NAME}
     )
+
+    add_custom_target(${INTERFACE_MODULE_NAME}InterfaceHeader SOURCES ${INTERFACE_TARGET_SOURCE_PUBLIC_HEADER})
+    if(DEFINED  INTERFACE_IDE_FOLDER)
+            set_target_properties(${INTERFACE_MODULE_NAME}InterfaceHeader PROPERTIES FOLDER ${INTERFACE_IDE_FOLDER})
+    endif()
+
+    add_library(${INTERFACE_MODULE_NAME}Interface ALIAS ${INTERFACE_MODULE_NAME})
 
     message(STATUS "====Finish Build Interface: ${INTERFACE_MODULE_NAME}====")
 endfunction()

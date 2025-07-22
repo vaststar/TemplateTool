@@ -14,4 +14,6 @@ BuildInterface(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
         include
+    IDE_FOLDER
+        commonhead
 )

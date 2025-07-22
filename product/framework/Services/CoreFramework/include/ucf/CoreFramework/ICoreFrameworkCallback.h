@@ -1,10 +1,8 @@
 #pragma once
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
-
 namespace ucf::framework{
 
-class SERVICE_EXPORT ICoreFrameworkCallback
+class ICoreFrameworkCallback
 {
 public:
     virtual ~ICoreFrameworkCallback() = default;

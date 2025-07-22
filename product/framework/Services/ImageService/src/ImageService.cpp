@@ -5,10 +5,6 @@
 
 
 namespace ucf::service{
-std::shared_ptr<IImageService> IImageService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
-{
-    return std::make_shared<ImageService>(coreFramework);
-}
 
 ImageService::ImageService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)

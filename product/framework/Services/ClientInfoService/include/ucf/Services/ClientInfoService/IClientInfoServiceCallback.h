@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 namespace ucf::service{
 
@@ -9,7 +8,7 @@ namespace model{
 enum class ThemeType;
 }
 
-class SERVICE_EXPORT IClientInfoServiceCallback
+class IClientInfoServiceCallback
 {
 public:
     virtual ~ IClientInfoServiceCallback() = default;
