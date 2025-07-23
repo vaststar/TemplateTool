@@ -1,14 +1,13 @@
 #pragma once
 
 #include <vector>
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 namespace ucf::service{
     namespace model{
         class Contact;
     }
 
-class SERVICE_EXPORT IContactServiceCallback
+class IContactServiceCallback
 {
 public:
     virtual ~ IContactServiceCallback() = default;

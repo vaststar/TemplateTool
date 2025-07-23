@@ -20,4 +20,4 @@ target_include_directories(${TARGETNAME} PUBLIC
                 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${TARGET_SOURCE})
-target_link_libraries(${TARGETNAME} PRIVATE Catch2::Catch2WithMain ContactService CoreFrameworkFactory)
+target_link_libraries(${TARGETNAME} PRIVATE Catch2::Catch2WithMain ContactService CoreFramework)

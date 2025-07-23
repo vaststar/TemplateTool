@@ -42,7 +42,7 @@ function(BuildUCFServiceModule)
         
         BuildInterface(
             MODULE_NAME 
-                ${MODULE_MODULE_NAME}
+                ${MODULE_MODULE_NAME}Interface
             TARGET_SOURCE_HEADER_BASE_DIR
                 ${MODULE_INTERFACE_BASE_DIR}
             TARGET_SOURCE_PUBLIC_HEADER
@@ -67,7 +67,7 @@ function(BuildUCFServiceModule)
                 ${MODULE_IMPL_DEPENDENCIES_PRIVATE}
             TARGET_DEPENDENICES_PUBLIC
                 ${MODULE_IMPL_DEPENDENCIES_PUBLIC}
-                ${MODULE_MODULE_NAME}
+                ${MODULE_MODULE_NAME}Interface
             TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
                 ${MODULE_IMPL_BUILD_INCLUDE_DIR}
             TARGET_INCLUDE_DIRECTORIES_PRIVATE
@@ -81,13 +81,13 @@ function(BuildUCFServiceModule)
         
         BuildModule(
             MODULE_NAME 
-                ${MODULE_MODULE_NAME}Factory
+                ${MODULE_MODULE_NAME}
             TARGET_SOURCE_PRIVATE 
                 ${MODULE_FACTORY_FILES}
             TARGET_DEPENDENICES_PRIVATE
                 ${MODULE_MODULE_NAME}Impl
             TARGET_DEPENDENICES_PUBLIC
-                ${MODULE_MODULE_NAME}
+                ${MODULE_MODULE_NAME}Interface
             TARGET_DEFINITIONS
                 ${MODULE_DLL_DEFINITIONS}
             IDE_FOLDER

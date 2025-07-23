@@ -36,7 +36,7 @@ BuildModule(
     TARGET_DEPENDENICES_PUBLIC
         CommonHeadCommonFile
     TARGET_DEPENDENICES_PRIVATE
-        ClientInfoServiceInterface
+        ClientInfoService
         CoreFramework
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include

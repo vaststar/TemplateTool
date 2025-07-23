@@ -28,14 +28,14 @@ BuildModule(
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
     TARGET_DEPENDENICES_PRIVATE
         CommonHeadFramework
-        ImageServiceFactory
+        ImageService
         DataWarehouseService
         ContactService
         MediaService
         NetworkService
-        ClientInfoServiceFactory
+        ClientInfoService
         InvocationService
-        CoreFrameworkFactory
+        CoreFramework
         MasterLog
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include

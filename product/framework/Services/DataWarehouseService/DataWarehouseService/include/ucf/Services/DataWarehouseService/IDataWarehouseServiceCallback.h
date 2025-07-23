@@ -1,11 +1,10 @@
 #pragma once
 
 #include <string>
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 namespace ucf::service{
 
-class SERVICE_EXPORT IDataWarehouseServiceCallback
+class IDataWarehouseServiceCallback
 {
 public:
     virtual ~ IDataWarehouseServiceCallback() = default;
