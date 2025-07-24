@@ -3,7 +3,7 @@
 #include <optional>
 #include <vector>
 #include <ucf/Services/ServiceDeclaration/IService.h>
-#include <ucf/Services/ImageService/ImageTypes.h>
+//#include <ucf/Services/ImageService/ImageTypes.h>
 
 namespace ucf::framework{
     class ICoreFramework;

@@ -47,10 +47,6 @@ std::shared_ptr<network::http::INetworkHttpManager> NetworkService::DataPrivate:
 ////////////////////Start NetworkService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<INetworkService> INetworkService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
-{
-    return std::make_shared<NetworkService>(coreFramework);
-}
 
 NetworkService::NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
