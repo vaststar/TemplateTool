@@ -15,7 +15,7 @@ BuildUnitTestModule(
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_DEPENDENICES
         Catch2::Catch2WithMain
-        CoreFrameworkFactory
+        CoreFramework
         CoreFrameworkImpl
         FakeCoreFramework
     TARGET_INCLUDE_FOLDER

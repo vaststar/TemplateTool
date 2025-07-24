@@ -59,6 +59,7 @@ function(BuildUCFServiceModule)
 
         BuildModule(
                 STATIC_LIB
+                NO_INSTALL
             MODULE_NAME 
                 ${MODULE_MODULE_NAME}Impl
             TARGET_SOURCE_PRIVATE 

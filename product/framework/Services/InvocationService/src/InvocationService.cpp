@@ -40,10 +40,6 @@ ucf::framework::ICoreFrameworkWPtr InvocationService::DataPrivate::getCoreFramew
 ////////////////////Start InvocationService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<IInvocationService> IInvocationService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
-{
-    return std::make_shared<InvocationService>(coreFramework);
-}
 
 InvocationService::InvocationService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))

@@ -48,11 +48,6 @@ std::shared_ptr<CameraManager> MediaService::DataPrivate::getCameraManager() con
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-std::shared_ptr<IMediaService> IMediaService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
-{
-    return std::make_shared<MediaService>(coreFramework);
-}
-
 MediaService::MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
