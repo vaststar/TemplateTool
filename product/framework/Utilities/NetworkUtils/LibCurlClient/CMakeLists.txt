@@ -32,10 +32,10 @@ BuildModule(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PUBLIC
+    TARGET_DEPENDENCIES_PUBLIC
         NetworkModelTypes
         StringUtils
-    TARGET_DEPENDENICES_PRIVATE
+    TARGET_DEPENDENCIES_PRIVATE
         MasterLog
         openssl
         curl

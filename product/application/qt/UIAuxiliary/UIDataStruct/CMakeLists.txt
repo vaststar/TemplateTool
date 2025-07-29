@@ -43,12 +43,12 @@ BuildQtModule(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PRIVATE
+    TARGET_DEPENDENCIES_PRIVATE
         ViewModels
         ResourceLoader
         MasterLog
         UICore
-    TARGET_DEPENDENICES_PUBLIC
+    TARGET_DEPENDENCIES_PUBLIC
         Qt6::Widgets
         Qt6::Qml
     TARGET_DEFINITIONS

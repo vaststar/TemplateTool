@@ -7,7 +7,7 @@ BuildInterface(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         include/ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h
-    TARGET_DEPENDENICES_PUBLIC
+    TARGET_DEPENDENCIES_PUBLIC
         MasterLog
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include

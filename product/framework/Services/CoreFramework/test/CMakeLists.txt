@@ -7,7 +7,6 @@ set(TARGET_SOURCE_FILES_PRIVATE
     CoreFrameworkTests.cpp
 )
 
-
 BuildUnitTestModule(
     MODULE_NAME 
         CoreFrameworkTests
@@ -16,7 +15,6 @@ BuildUnitTestModule(
     TARGET_DEPENDENICES
         Catch2::Catch2WithMain
         CoreFramework
-        CoreFrameworkImpl
         FakeCoreFramework
     TARGET_INCLUDE_FOLDER
         .

@@ -2,14 +2,14 @@
 
 #include <memory>
 
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 #include "ServiceAccessor.h"
 
-
 namespace ucf::framework{
-class CoreFramework final:  public virtual ICoreFramework,
+class SERVICE_EXPORT CoreFramework final:  public virtual ICoreFramework,
                             public virtual ServiceAccessor,
                             public virtual ucf::utilities::NotificationHelper<ICoreFrameworkCallback>,
                             public std::enable_shared_from_this<CoreFramework>

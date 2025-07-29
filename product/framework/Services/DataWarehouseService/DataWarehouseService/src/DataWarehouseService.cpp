@@ -71,6 +71,11 @@ void DataWarehouseService::DataPrivate::fetchFromDatabase(const std::string& dbI
 ////////////////////Start DataWarehouseService Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+std::shared_ptr<IDataWarehouseService> IDataWarehouseService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+{
+    return std::make_shared<DataWarehouseService>(coreFramework);
+}
+
 DataWarehouseService::DataWarehouseService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataWarehouseService::DataPrivate>(coreFramework))
 {

@@ -48,6 +48,10 @@ const std::unique_ptr<ContactManager>& ContactService::DataPrivate::getContactMa
 ////////////////////Start ContactService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+std::shared_ptr<IContactService> IContactService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+{
+    return std::make_shared<ContactService>(coreFramework);
+}
 
 ContactService::ContactService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))

@@ -57,6 +57,10 @@ ClientInfoManager* ClientInfoService::DataPrivate::getClientInfoManager() const
 ////////////////////Start ClientInfoService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+std::shared_ptr<IClientInfoService> IClientInfoService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+{
+    return std::make_shared<ClientInfoService>(coreFramework);
+}
 
 ClientInfoService::ClientInfoService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))

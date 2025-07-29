@@ -37,7 +37,7 @@ BuildModule(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER
         ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENICES_PRIVATE
+    TARGET_DEPENDENCIES_PRIVATE
         CommonHeadFramework
         ResourceLoader
         ServiceLocator
@@ -48,7 +48,7 @@ BuildModule(
         InvocationService
         DataWarehouseService
         DataWarehouseSchema
-    TARGET_DEPENDENICES_PUBLIC
+    TARGET_DEPENDENCIES_PUBLIC
         CommonHeadCommonFile
         VMNotificationHelper
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
