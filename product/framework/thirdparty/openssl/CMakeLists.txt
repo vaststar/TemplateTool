@@ -31,7 +31,7 @@ target_link_libraries(openssl INTERFACE OpenSSL::Crypto OpenSSL::SSL)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_target(copy_ssl)
-    set_target_properties(copy_ssl PROPERTIES FOLDER thirdparty/openssl)
+    set_target_properties(copy_ssl PROPERTIES FOLDER framework/thirdparty/openssl)
 
     add_custom_command( TARGET copy_ssl POST_BUILD  COMMAND_EXPAND_LISTS
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug"

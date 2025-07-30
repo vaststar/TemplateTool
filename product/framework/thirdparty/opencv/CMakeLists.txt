@@ -16,7 +16,7 @@ if(WIN32)
     file(GLOB OPENCV_LIB_FILES ${OpenCV_DIR}/*.lib)
 
     add_custom_target(copy_opencv)
-    set_target_properties(copy_opencv PROPERTIES FOLDER thirdparty/copy_opencv)
+    set_target_properties(copy_opencv PROPERTIES FOLDER framework/thirdparty/opencv)
 
     add_custom_command( TARGET copy_opencv POST_BUILD  COMMAND_EXPAND_LISTS
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug"

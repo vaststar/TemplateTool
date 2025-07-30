@@ -37,7 +37,7 @@ endif()
 message(STATUS "Found cURL: Lib ${CURL_LIB};Include ${CURL_INCLUDE}")
 
 add_custom_target(copy_curl)
-set_target_properties(copy_curl PROPERTIES FOLDER thirdparty/curl)
+set_target_properties(copy_curl PROPERTIES FOLDER framework/thirdparty/curl)
 
 add_custom_command( TARGET copy_curl POST_BUILD  COMMAND_EXPAND_LISTS
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug"

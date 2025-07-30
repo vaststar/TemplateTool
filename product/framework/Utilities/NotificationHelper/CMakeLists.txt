@@ -1,17 +1,22 @@
 include(BuildInterface)
 
-BuildInterface(
-    MODULE_NAME 
-        NotificationHelper
-    TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_SOURCE_PUBLIC_HEADER
-        include/ucf/Utilities/NotificationHelper/NotificationHelper.h
-        include/ucf/Utilities/NotificationHelper/INotificationHelper.h
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        include
-    IDE_FOLDER
-        framework/Utilities
+set(MODULE_MODULE_NAME NotificationHelper)
+set(MODULE_IDE_FOLDER framework/Utilities)
+
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(MODULE_HEADER_FILES #for include and install header
+    include/ucf/Utilities/NotificationHelper/NotificationHelper.h
+    include/ucf/Utilities/NotificationHelper/INotificationHelper.h
 )
+set(MODULE_INSTALL_INTERFACE_DIR include)
+
+BuildInterface(
+MODULE_NAME ${MODULE_MODULE_NAME}
+TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_HEADER_BASE_DIR}
+TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+IDE_FOLDER ${MODULE_IDE_FOLDER}
+)
+
+add_subdirectory(test)

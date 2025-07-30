@@ -1,5 +1,5 @@
 add_subdirectory(ThreadPool)
 
-set_target_properties(ThreadPool PROPERTIES FOLDER thirdparty)
-set_target_properties(testThreadPool_catch2 PROPERTIES FOLDER thirdparty/unit_test)
-set_target_properties(testThreadPool_cmake PROPERTIES FOLDER thirdparty/unit_test)
+set_target_properties(ThreadPool PROPERTIES FOLDER framework/thirdparty/ThreadPool)
+set_target_properties(testThreadPool_catch2 PROPERTIES FOLDER framework/thirdparty/ThreadPool/unit_test)
+set_target_properties(testThreadPool_cmake PROPERTIES FOLDER framework/thirdparty/ThreadPool/unit_test)

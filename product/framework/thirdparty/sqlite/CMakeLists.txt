@@ -38,5 +38,5 @@ BuildModule(
     TARGET_DEFINITIONS
         ${SQLITE_DEFINITIONS}
     IDE_FOLDER
-        thirdparty
+        framework/thirdparty/sqlite
 )
