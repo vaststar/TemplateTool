@@ -1,6 +1,11 @@
 include(BuildModule)
 
-set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
+set(MODULE_MODULE_NAME ViewModels)
+set(MODULE_IDE_FOLDER commonhead)
+
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(MODULE_HEADER_FILES #for include and install header
     include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
     include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
     include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
@@ -11,8 +16,7 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
     include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
     include/commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h
 )
-
-set(TARGET_SOURCE_FILES_PRIVATE
+set(MODULE_SOURCE_PRIVATE
     src/ContactListViewModel/ContactListViewModel.h
     src/ContactListViewModel/ContactListViewModel.cpp
     src/ContactListViewModel/ContactListModel.cpp
@@ -27,38 +31,37 @@ set(TARGET_SOURCE_FILES_PRIVATE
     src/InvocationViewModel/InvocationViewModel.h
     src/InvocationViewModel/InvocationViewModel.cpp
 )
+set(MODULE_DEPENDENCIES_PUBLIC
+    CommonHeadCommonFile
+    VMNotificationHelper
+)
+set(MODULE_DEPENDENCIES_PRIVATE
+    CommonHeadFramework
+    ResourceLoader
+    ServiceLocator
+    ContactService
+    MediaService
+    ImageService
+    ClientInfoService
+    InvocationService
+    DataWarehouseService
+    DataWarehouseSchema
+)
+
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_INSTALL_INTERFACE_DIR include)
+set(MODULE_BUILD_PRIVATE_DIR src)
 
 BuildModule(
-    MODULE_NAME 
-        ViewModels
-    TARGET_SOURCE_PRIVATE 
-        ${TARGET_SOURCE_FILES_PRIVATE}
-    TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_SOURCE_PUBLIC_HEADER
-        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENCIES_PRIVATE
-        CommonHeadFramework
-        ResourceLoader
-        ServiceLocator
-        ContactService
-        MediaService
-        ImageService
-        ClientInfoService
-        InvocationService
-        DataWarehouseService
-        DataWarehouseSchema
-    TARGET_DEPENDENCIES_PUBLIC
-        CommonHeadCommonFile
-        VMNotificationHelper
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        include
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        src
-    TARGET_DEFINITIONS
-        ${ADD_COMMONHEAD_DEFINITIONS}
-    IDE_FOLDER
-        commonhead
+MODULE_NAME ${MODULE_MODULE_NAME}
+TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
+TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+TARGET_DEPENDENCIES_PRIVATE ${MODULE_DEPENDENCIES_PRIVATE}
+TARGET_DEPENDENCIES_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
+TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
+TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
+TARGET_DEFINITIONS ${ADD_COMMONHEAD_DEFINITIONS}
+IDE_FOLDER ${MODULE_IDE_FOLDER}
 )

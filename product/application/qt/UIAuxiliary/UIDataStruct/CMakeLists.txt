@@ -1,18 +1,4 @@
-set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/UIDataStruct/UIDataStructExport.h
-    include/UIDataStruct/UIElementData.h
-    include/UIDataStruct/UIDataUtils.h
-    include/UIDataStruct/UIStrings.h
-    include/UIDataStruct/UILanguage.h
-)
-
-set(TARGET_SOURCE_FILES_PRIVATE
-    src/LoggerDefine.h
-    src/UIElementData.cpp
-    src/UIDataUtils.cpp
-    src/UIStrings.cpp
-    src/UILanguage.cpp
-)
+include(BuildQtModule)
 
 if (WIN32)
     set(ADD_DEFINITIONS UIDataStruct_DLL) #UIDataStruct_DLL UIDataStruct_LIB
@@ -20,51 +6,50 @@ else()
     set(ADD_DEFINITIONS)
 endif()
 
+set(MODULE_MODULE_NAME UIDataStruct)
+set(MODULE_IDE_FOLDER UI)
 
-# set(UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER
-#     ${CMAKE_CURRENT_SOURCE_DIR}/include/UIDataStruct
-    
-# )
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# set(UIDataStruct_QML_TARGET_SOURCES
-#     include/UIDataStruct/UIColorSet.h
-#     include/UIDataStruct/UIFontSet.h
-#     src/UIColorSet.cpp
-#     src/UIFontSet.cpp
-# )
+set(MODULE_HEADER_FILES #for include and install header
+    include/UIDataStruct/UIDataStructExport.h
+    include/UIDataStruct/UIElementData.h
+    include/UIDataStruct/UIDataUtils.h
+    include/UIDataStruct/UIStrings.h
+    include/UIDataStruct/UILanguage.h
+)
+set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
+    src/UIElementData.cpp
+    src/UIDataUtils.cpp
+    src/UIStrings.cpp
+    src/UILanguage.cpp
+)
+set(MODULE_DEPENDENCIES_PUBLIC
+    Qt6::Widgets
+    Qt6::Qml
+)
+set(MODULE_DEPENDENCIES_PRIVATE
+    ViewModels
+    ResourceLoader
+    MasterLog
+    UICore
+)
 
-include(BuildQtModule)
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_INSTALL_INTERFACE_DIR include)
+set(MODULE_BUILD_PRIVATE_DIR src)
+
 BuildQtModule(
-    MODULE_NAME 
-        UIDataStruct
-    TARGET_SOURCE_PRIVATE 
-        ${TARGET_SOURCE_FILES_PRIVATE}
-    TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_SOURCE_PUBLIC_HEADER
-        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENCIES_PRIVATE
-        ViewModels
-        ResourceLoader
-        MasterLog
-        UICore
-    TARGET_DEPENDENCIES_PUBLIC
-        Qt6::Widgets
-        Qt6::Qml
-    TARGET_DEFINITIONS
-        ${ADD_DEFINITIONS}
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        include
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        src
-    IDE_FOLDER
-        UI
-    # QML_TARGET_URI
-    #     UIDataStruct
-    # QML_TARGET_SOURCES
-    #     ${UIDataStruct_QML_TARGET_SOURCES}
-    # QML_PUBLIC_BUILD_INTERFACE_FOLDER
-    #     ${UIDataStruct_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
+MODULE_NAME ${MODULE_MODULE_NAME}
+TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
+TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+TARGET_DEPENDENCIES_PRIVATE ${MODULE_DEPENDENCIES_PRIVATE}
+TARGET_DEPENDENCIES_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
+TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
+TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
+TARGET_DEFINITIONS ${ADD_DEFINITIONS}
+IDE_FOLDER ${MODULE_IDE_FOLDER}
 )

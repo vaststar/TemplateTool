@@ -1,16 +1,4 @@
-set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/UIFabrication/UIFabricationExport.h
-    include/UIFabrication/IViewModelFactory.h
-    include/UIFabrication/IUIViewFactory.h
-)
-
-set(TARGET_SOURCE_FILES_PRIVATE
-    src/LoggerDefine.h 
-    src/UIViewFactory.h
-    src/UIViewFactory.cpp
-    src/ViewModelFactory.h
-    src/ViewModelFactory.cpp
-)
+include(BuildQtModule)
 
 if (WIN32)
     set(ADD_DEFINITIONS UIFabrication_DLL) #UIFabrication_DLL UIFabrication_LIB
@@ -18,31 +6,49 @@ else()
     set(ADD_DEFINITIONS)
 endif()
 
-include(BuildQtModule)
+set(MODULE_MODULE_NAME UIFabrication)
+set(MODULE_IDE_FOLDER UI)
+
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(MODULE_HEADER_FILES #for include and install header
+    include/UIFabrication/UIFabricationExport.h
+    include/UIFabrication/IViewModelFactory.h
+    include/UIFabrication/IUIViewFactory.h
+)
+set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h 
+    src/UIViewFactory.h
+    src/UIViewFactory.cpp
+    src/ViewModelFactory.h
+    src/ViewModelFactory.cpp
+)
+set(MODULE_DEPENDENCIES_PUBLIC
+    Qt6::Gui
+    Qt6::Quick
+    Qt6::Widgets
+)
+set(MODULE_DEPENDENCIES_PRIVATE
+    UICore
+    CommonHeadFramework
+    ViewModels
+    MasterLog
+)
+
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_INSTALL_INTERFACE_DIR include)
+set(MODULE_BUILD_PRIVATE_DIR src)
+
 BuildQtModule(
-    MODULE_NAME 
-        UIFabrication
-    TARGET_SOURCE_PRIVATE 
-        ${TARGET_SOURCE_FILES_PRIVATE}
-    TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_SOURCE_PUBLIC_HEADER
-        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_DEPENDENCIES_PRIVATE
-        UICore
-        CommonHeadFramework
-        ViewModels
-        MasterLog
-    TARGET_DEPENDENCIES_PUBLIC
-        Qt6::Gui Qt6::Quick Qt6::Widgets 
-    TARGET_DEFINITIONS
-        ${ADD_DEFINITIONS}
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        include
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        src
-    IDE_FOLDER
-        UI
+MODULE_NAME ${MODULE_MODULE_NAME}
+TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
+TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+TARGET_DEPENDENCIES_PRIVATE ${MODULE_DEPENDENCIES_PRIVATE}
+TARGET_DEPENDENCIES_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
+TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
+TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
+TARGET_DEFINITIONS ${ADD_DEFINITIONS}
+IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
