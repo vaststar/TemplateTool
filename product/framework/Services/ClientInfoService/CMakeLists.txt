@@ -64,3 +64,5 @@ IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
 
 add_dependencies(ClientInfoService update_version)
+
+add_subdirectory(test)

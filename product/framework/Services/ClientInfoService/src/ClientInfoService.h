@@ -10,7 +10,7 @@
 
 
 namespace ucf::service{
-class ClientInfoService final: public virtual IClientInfoService, 
+class SERVICE_EXPORT ClientInfoService final: public virtual IClientInfoService, 
                                public virtual ucf::utilities::NotificationHelper<IClientInfoServiceCallback>,
                                public ucf::framework::CoreFrameworkCallbackDefault,
                                public ucf::service::IDataWarehouseServiceCallback,
