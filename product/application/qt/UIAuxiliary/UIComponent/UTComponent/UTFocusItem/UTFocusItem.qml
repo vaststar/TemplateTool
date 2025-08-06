@@ -1,5 +1,3 @@
-import QtQuick
-import QtQuick.Controls
 import UIComponentBase 1.0
 import UIElementData 1.0
 import UTComponent 1.0

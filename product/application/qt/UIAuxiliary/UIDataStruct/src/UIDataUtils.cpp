@@ -31,6 +31,8 @@ commonHead::model::ColorItem UIDataUtils::convertUIColorEnumToVMColorItem(UIElem
         return commonHead::model::ColorItem::ColorItem_Button_Primary_Background;
     case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Border:
         return commonHead::model::ColorItem::ColorItem_Button_Primary_Border;
+    case UIElementData::UIColorEnum::UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND:
+        return commonHead::model::ColorItem::ColorItem_WINDOW_TITLE_BAR_BACKGROUND;
     default:
         return commonHead::model::ColorItem::ColorItem_Button_Primary_Text;
     }

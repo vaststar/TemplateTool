@@ -26,11 +26,13 @@ constexpr auto FocusItemColor = "#64b4fa";
 
 namespace BlackThemeColorConstant{
 constexpr auto MainWindowBackground = "#1f1f1f";
+constexpr auto WindowTitleBarBackground = "#1a1a1a";
 
 }
 
 namespace WhiteThemeColorConstant{
 constexpr auto MainWindowBackground = "#1f1f1f";
+constexpr auto WindowTitleBarBackground = "#1a1a1a";
     
 }
 

@@ -75,6 +75,7 @@ set(MODULE_QML_TARGET_URI
 set(MODULE_QML_TARGET_FILES
     ContactList/qml/ContactList.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
+    MainWindowTitleBar/qml/WindowAnimator.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
     MainWindowFootBar/qml/MainWindowFootBar.qml
     MainWindowSideBar/qml/MainWindowSideBar.qml
@@ -99,6 +100,8 @@ set (MODULE_QML_TARGET_RESOURCES_DIR
 )
 set(MODULE_QML_TARGET_RESOURCES
     picture/112.png
+    picture/title_bar_search.png
+    picture/profile.png
 )
 
 BuildQtModule(

@@ -43,6 +43,7 @@ set(MODULE_QML_TARGET_FILES
     UTMenu/UTMenuItem.qml
     UTMenu/CreateMenus.js
     UTButton/UTButton.qml
+    UTButton/UTImageButton.qml
     UTFocusItem/UTFocusItem.qml
     UTComponentUtil/UTComponentUtil.js
 )

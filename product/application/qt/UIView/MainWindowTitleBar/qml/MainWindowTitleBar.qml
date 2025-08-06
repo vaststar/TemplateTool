@@ -1,46 +1,102 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtGraphicalEffects  // 提供模糊
 import UIView 1.0
+import UTComponent 1.0
+import UIStrings 1.0
+// import "."  // 导入当前目录的所有 QML 组件
 
 Rectangle {
         height: 40
         property var controller: MainWindowTitleBarController{}
         
-        color: controller.color//"#3A3F51"  // 设置标题栏颜色
+        color: controller.color//"#3c5bcaff"  // 设置标题栏颜色
         visible: controller.visible
+        required property ApplicationWindow appWindow
+
+        
+    //     WindowAnimator {
+    //     id: windowAnimator
+    //     appWindow: appWindow
+    //     parentWindow: appWindow.contentItem
+    // }
 
         RowLayout {
             anchors.fill: parent
             spacing: 10
+        UTImageButton {
+    source: "qrc:/qt/qml/UIView/picture/profile.png"
+    sourceHovered: "qrc:/qt/qml/UIView/picture/profile.png"
+    sourcePressed: "qrc:/qt/qml/UIView/picture/profile.png"
+            Layout.preferredWidth: parent.height - 10
+            Layout.fillHeight: true
+            Layout.margins: 5
+    onClicked: {
+        console.log("Image button clicked!")
+    }
+}
 
-            Text {
-                text: qsTr(controller.title)
-                color: "white"
-                verticalAlignment: Text.AlignVCenter
-                Layout.fillWidth: true
-                padding: 10
-            }
+        // UTButton {
+        //     text: "1"
+        //     onClicked: console.log("功能1")
+        //     Layout.preferredWidth: parent.height
+        //     Layout.fillHeight: true
+        //     padding: 0
+        // }
 
-            Button {
-                text: "最小化"
-                onClicked: showMinimized()
-            }
-
-            Button {
-                text: "最大化"
-                onClicked: {
-                    if (visibility === ApplicationWindow.Maximized) {
-                        visibility = ApplicationWindow.Windowed
-                    } else {
-                        visibility = ApplicationWindow.Maximized
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.ArrowCursor
+                onPressed: {
+                    if (mouse.buttons === Qt.LeftButton && appWindow)
+                    {
+                        appWindow.startSystemMove()
                     }
                 }
             }
-
-            Button {
-                text: "关闭"
-                onClicked: Qt.quit()
-            }
         }
-    }
+
+        Button {
+            text: "—"
+            enabled: appWindow !== null
+            onClicked: appWindow && appWindow.showMinimized()
+            Layout.preferredWidth: 40
+            Layout.fillHeight: true
+            padding: 0
+        }
+
+
+        Button {
+            text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "🗗" : "🗖"
+            enabled: appWindow !== null
+            onClicked: {
+                if (!appWindow) return
+                if (appWindow.visibility === ApplicationWindow.Maximized)
+                    appWindow.showNormal()
+                else
+                    appWindow.showMaximized()
+            }
+            Layout.preferredWidth: 40
+            Layout.fillHeight: true
+            padding: 0
+        }
+
+        Button {
+            text: "✕"
+            onClicked: {
+                if (appWindow)
+                    appWindow.close()
+                else
+                    Qt.quit()
+            }
+            Layout.preferredWidth: 40
+            Layout.fillHeight: true
+            padding: 0
+        }
+        }
+
+}

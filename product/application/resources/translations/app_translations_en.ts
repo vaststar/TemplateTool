@@ -91,7 +91,7 @@
     <message>
         <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
         <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="26"/>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="28"/>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="29"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>

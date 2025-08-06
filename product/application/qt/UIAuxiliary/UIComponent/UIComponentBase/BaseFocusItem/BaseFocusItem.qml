@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 
 Item {
     id: focusHighlight
@@ -18,8 +17,8 @@ Item {
         id: focusRect
         smooth: true
         anchors.fill: parent
-        border.color: focusColor
-        border.width: focusWidth
+        border.color: focusHighlight.focusColor
+        border.width: focusHighlight.focusWidth
         color: "transparent"
         radius: focusHighlight.focusRadius
     }

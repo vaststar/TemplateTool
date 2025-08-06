@@ -52,7 +52,8 @@ enum class UIColorEnum{
     UIColorEnum_Item_Focus_Border,
     UIColorEnum_Button_Primary_Text,
     UIColorEnum_Button_Primary_Background,
-    UIColorEnum_Button_Primary_Border
+    UIColorEnum_Button_Primary_Border,
+    UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND
 };
 Q_ENUM_NS(UIColorEnum)
 

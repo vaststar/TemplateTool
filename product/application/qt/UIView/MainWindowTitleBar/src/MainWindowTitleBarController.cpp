@@ -21,6 +21,7 @@ QString MainWindowTitleBarController::getControllerName() const
 void MainWindowTitleBarController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;
+    emit elementUpdated();
 }
 
 QString MainWindowTitleBarController::getTitle() const
@@ -39,7 +40,7 @@ QColor MainWindowTitleBarController::getColor() const
     {
         if (auto themeManager = mAppContext->getManagerProvider()->getThemeManager())
         {
-            return themeManager->getUIColor(UIElementData::UIColorEnum::UIColorEnum_MAIN_WINDOW_BACKGROUND, UIElementData::UIColorState::UIColorState_Normal);
+            return themeManager->getUIColor(UIElementData::UIColorEnum::UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND, UIElementData::UIColorState::UIColorState_Normal);
         }
     }
     return QColor(255, 0, 0);

@@ -34,7 +34,8 @@ std::vector<std::pair<model::ColorItem, std::vector<std::string>>> ColorBuilder:
         {model::ColorItem::ColorItem_Item_Focus_Border, {ItemColorConstant::FocusItemColor}},
         {model::ColorItem::ColorItem_Button_Primary_Text, {ColorConstant::White100}},
         {model::ColorItem::ColorItem_Button_Primary_Background, {ColorConstant::Blue60, ColorConstant::Blue50, ColorConstant::Blue30, ColorConstant::Gray90, ColorConstant::Blue60, ColorConstant::Blue60}},
-        {model::ColorItem::ColorItem_Button_Primary_Border, {ColorConstant::Blue100}}
+        {model::ColorItem::ColorItem_Button_Primary_Border, {ColorConstant::Blue100}},
+        {model::ColorItem::ColorItem_WINDOW_TITLE_BAR_BACKGROUND, {BlackThemeColorConstant::WindowTitleBarBackground}}
     };
 }
 
@@ -46,7 +47,8 @@ std::vector<std::pair<model::ColorItem, std::vector<std::string>>> ColorBuilder:
         {model::ColorItem::ColorItem_Button_Primary_Text, {ColorConstant::Black100}},
         {model::ColorItem::ColorItem_Item_Focus_Border, {ItemColorConstant::FocusItemColor}},
         {model::ColorItem::ColorItem_Button_Primary_Background, {ColorConstant::Blue60, ColorConstant::Blue50, ColorConstant::Blue30, ColorConstant::Gray90, ColorConstant::Blue60, ColorConstant::Blue60}},
-        {model::ColorItem::ColorItem_Button_Primary_Border, {ColorConstant::Blue100}}
+        {model::ColorItem::ColorItem_Button_Primary_Border, {ColorConstant::Blue100}},
+        {model::ColorItem::ColorItem_WINDOW_TITLE_BAR_BACKGROUND, {BlackThemeColorConstant::WindowTitleBarBackground}}
     };
 }
 
