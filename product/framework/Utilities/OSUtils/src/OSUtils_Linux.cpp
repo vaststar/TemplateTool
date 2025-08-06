@@ -48,6 +48,18 @@ std::string OSUtils_Linux::getSystemLanguage()
     return "en-US";
 }
 
+MemoryInfo OSUtils_Linux::getMemoryInfo()
+{
+    struct sysinfo infoLinux;
+    MemoryInfo info = {0, 0};
+    if (sysinfo(&infoLinux) == 0) {
+        uint64_t unit = infoLinux.mem_unit ? infoLinux.mem_unit : 1;
+        info.totalMemoryBytes = infoLinux.totalram * unit;
+        info.availableMemoryBytes = infoLinux.freeram * unit; // 简单用 freeram 代表可用内存
+    }
+    return info;
+}
+
 std::string OSUtils_Linux::execCommand(const std::string& cmd)
 {
     std::array<char, 128> buffer;

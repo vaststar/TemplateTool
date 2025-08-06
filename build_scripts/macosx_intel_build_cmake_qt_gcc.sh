@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_PATH="${ROOT_DIR}/build"
 
 echo "****************************************************"

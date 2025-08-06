@@ -1,6 +1,8 @@
 #include "OSUtils_Mac.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#include <mach/mach.h>
+#include <unistd.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -44,6 +46,25 @@ std::string OSUtils_Mac::getSystemLanguage()
     return "en-US";
 }
 
+MemoryInfo OSUtils_Mac::getMemoryInfo() {
+    MemoryInfo info = {0, 0};
+
+    int64_t memSize = 0;
+    size_t size = sizeof(memSize);
+    if (sysctlbyname("hw.memsize", &memSize, &size, nullptr, 0) == 0) {
+        info.totalMemoryBytes = memSize;
+    }
+
+    mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
+    vm_statistics_data_t vmstat;
+    if (host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vmstat, &count) == KERN_SUCCESS) {
+        uint64_t pageSize = sysconf(_SC_PAGESIZE);
+        info.availableMemoryBytes = (vmstat.free_count + vmstat.inactive_count) * pageSize;
+    }
+
+    return info;
+}
+
 std::string OSUtils_Mac::getGPUInfo()
 {
     CFMutableDictionaryRef matchDict = IOServiceMatching("IOPCIDevice");
@@ -70,4 +91,5 @@ std::string OSUtils_Mac::getGPUInfo()
     }
     IOObjectRelease(iter);
     return result;
+}
 }
