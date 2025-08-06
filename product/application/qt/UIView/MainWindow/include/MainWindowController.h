@@ -44,6 +44,7 @@ class MainWindowController : public UICore::CoreController
     Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
     Q_PROPERTY(int height READ getHeight NOTIFY windowSizeChanged)
     Q_PROPERTY(int width READ getWidth NOTIFY windowSizeChanged)
+    Q_PROPERTY(bool visible READ isVisible NOTIFY visibleChanged)
     QML_ELEMENT
 public:
     MainWindowController(QObject* parent = nullptr);
@@ -55,10 +56,12 @@ public:
 
     void initializeController(QPointer<AppContext> appContext);
 
+    bool isVisible() const;
 signals:
     void titleChanged();
     void windowSizeChanged();
     void controllerInitialized();
+    void visibleChanged();
 public slots:
     void onInitMenuBarController(MainWindowMenuBarController* menuBarController);
     void onContactListLoaded(ContactListViewController* contactListController);

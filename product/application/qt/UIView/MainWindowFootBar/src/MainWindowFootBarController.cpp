@@ -18,6 +18,7 @@ QString MainWindowFootBarController::getControllerName() const
 
 void MainWindowFootBarController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
 }
 

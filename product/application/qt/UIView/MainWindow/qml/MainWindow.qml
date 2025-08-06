@@ -14,7 +14,7 @@ ApplicationWindow
         objectName: "MainWindowController"
     }
 
-    visible: true
+    visible: mainController.visible
     width: mainController ? mainController.width : 100
     height: mainController? mainController.height : 100
     flags: Qt.FramelessWindowHint|Qt.Window

@@ -20,6 +20,7 @@ QString MainWindowTitleBarController::getControllerName() const
 
 void MainWindowTitleBarController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
     emit elementUpdated();
 }

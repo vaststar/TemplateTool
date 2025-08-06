@@ -31,6 +31,7 @@ QString AppUIController::getControllerName() const
 
 void AppUIController::runApp(AppContext* appContext)
 {
+    UIVIEW_LOG_DEBUG("Qt Version: " << qVersion());
     initializeController(appContext);
     startApp();
 }

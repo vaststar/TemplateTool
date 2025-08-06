@@ -1,5 +1,6 @@
 
 #include <ucf/Utilities/OSUtils/OSUtils.h>
+#include <thread>
 
 #if defined(_WIN32)
 #include "OSUtils_Win.h"
@@ -69,5 +70,73 @@ std::string OSUtils::getOSVersion()
     return OSUtils_Linux::getOSVersion();
 #endif
     return "Unknown Version";
+}
+
+unsigned int OSUtils::getCPUCoreCount()
+{
+    return std::thread::hardware_concurrency();
+}
+
+std::string OSUtils::getCPUInfo()
+{
+#if defined(_WIN32)
+    return OSUtils_Win::getCPUInfo();
+#elif defined(__APPLE__)
+    return OSUtils_Mac::getCPUInfo();
+#elif defined(__linux__)
+    return OSUtils_Linux::getCPUInfo();
+#endif
+    return "Unknown CPU";
+}
+
+
+std::string OSUtils::getCompilerInfo()
+{
+#if defined(__clang__)
+    return "Clang " + std::to_string(__clang_major__) + "." + std::to_string(__clang_minor__);
+#elif defined(__GNUC__)
+    return "GCC " + std::to_string(__GNUC__) + "." + std::to_string(__GNUC_MINOR__);
+#elif defined(_MSC_VER)
+    return "MSVC " + std::to_string(_MSC_VER);
+#else
+    return "Unknown Compiler";
+#endif
+}
+
+MemoryInfo OSUtils::getMemoryInfo()
+{
+    MemoryInfo memoryInfo = {0, 0};
+#if defined(_WIN32)
+    memoryInfo = OSUtils_Win::getMemoryInfo();
+#elif defined(__APPLE__)
+    memoryInfo = OSUtils_Mac::getMemoryInfo();
+#elif defined(__linux__)
+    memoryInfo = OSUtils_Linux::getMemoryInfo();
+#endif
+    return memoryInfo;
+}
+
+std::string OSUtils::getSystemLanguage()
+{
+    #if defined(_WIN32)
+        return OSUtils_Win::getSystemLanguage();
+    #elif defined(__APPLE__)
+        return OSUtils_Mac::getSystemLanguage();
+    #elif defined(__linux__)
+        return OSUtils_Linux::getSystemLanguage();
+    #endif
+        return "Unknown Language";
+}
+
+std::string OSUtils::getGPUInfo()
+{
+    #if defined(_WIN32)
+        return OSUtils_Win::getGPUInfo();
+    #elif defined(__APPLE__)
+        return OSUtils_Mac::getGPUInfo();
+    #elif defined(__linux__)
+        return OSUtils_Linux::getGPUInfo();
+    #endif
+        return "Unknown GPU";
 }
 }

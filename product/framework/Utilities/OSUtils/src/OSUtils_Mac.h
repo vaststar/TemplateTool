@@ -6,5 +6,8 @@ class OSUtils_Mac final
 {
 public:
     static std::string getOSVersion();
+    static std::string getCPUInfo();
+    static std::string getSystemLanguage();
+    static std::string getGPUInfo();
 };
 }

@@ -33,11 +33,13 @@ QString MainWindowController::getControllerName() const
 
 void MainWindowController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
     assert(mAppContext);
 
     mMainViewModel = appContext->getViewModelFactory()->createMainWindowViewModelInstance();
     emit controllerInitialized();
+    emit visibleChanged();
 }
 
 QString MainWindowController::getTitle() const
@@ -53,6 +55,11 @@ int MainWindowController::getHeight() const
 int MainWindowController::getWidth() const
 {
     return 758;
+}
+
+bool MainWindowController::isVisible() const
+{
+    return mAppContext != nullptr;
 }
 
 void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)

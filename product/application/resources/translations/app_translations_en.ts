@@ -59,7 +59,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="45"/>
+        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="47"/>
         <source>my test window</source>
         <translation>tttt fanyi</translation>
     </message>
@@ -74,7 +74,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="26"/>
+        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="27"/>
         <source>my footer bar</source>
         <translation type="unfinished"></translation>
     </message>
@@ -90,8 +90,8 @@
     </message>
     <message>
         <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
-        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="26"/>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="29"/>
+        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="27"/>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="30"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>

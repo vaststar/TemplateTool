@@ -27,6 +27,7 @@ QString MainWindowMenuBarController::getControllerName() const
 
 void MainWindowMenuBarController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
     assert(mAppContext);
 

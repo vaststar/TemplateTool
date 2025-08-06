@@ -21,6 +21,7 @@ QString ContactListViewController::getControllerName() const
 
 void ContactListViewController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
     mContactListViewModel = appContext->getViewModelFactory()->createContactListViewModelInstance();
 }

@@ -47,6 +47,7 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 }
 void MediaCameraViewController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
     QObject::connect(mMediaCameraViewModelEmitter.get(), &MediaCameraViewModelEmitter::signals_onCameraImageReceived, this, &MediaCameraViewController::onCameraImageReceived);
     mMediaCameraViewModel = mAppContext->getViewModelFactory()->createMediaCameraViewModelInstance();

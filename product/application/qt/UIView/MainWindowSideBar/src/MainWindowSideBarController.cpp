@@ -18,6 +18,7 @@ QString MainWindowSideBarController::getControllerName() const
 
 void MainWindowSideBarController::initializeController(QPointer<AppContext> appContext)
 {
+    UIVIEW_LOG_DEBUG("");
     mAppContext = appContext;
 }
 
