@@ -6,10 +6,10 @@ namespace ResourceStringName{
 
 {% for enum_name, entries in data.items() %}
 
-enum class {{ enum_name | replace("Strings", "") | capitalize }}
+enum class {{ enum_name }}
 {
     None, // This has to be the first enum
-{% for key in entries.keys()|sort %}
+{% for key in entries.keys() %}
     {{ key }}{{ "," if not loop.last }}
 {% endfor %}
 };
