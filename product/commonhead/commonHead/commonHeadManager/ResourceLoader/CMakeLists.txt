@@ -1,5 +1,6 @@
 include(BuildModule)
 
+add_subdirectory(resource)
 set(MODULE_MODULE_NAME ResourceLoader)
 set(MODULE_IDE_FOLDER commonhead)
 
@@ -11,6 +12,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/commonHead/ResourceLoader/ResourceLocalizedStringModel.h
     include/commonHead/ResourceLoader/IResourceStringLoader.h
 )
+
 set(MODULE_SOURCE_PRIVATE
     src/ResourceLoader.h
     src/ResourceLoader.cpp
@@ -35,9 +37,9 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_BINARY_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src)
+set(MODULE_BUILD_PRIVATE_DIR src ${CMAKE_BINARY_DIR})
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
@@ -52,3 +54,5 @@ TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
 TARGET_DEFINITIONS ${ADD_COMMONHEAD_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
+
+add_dependencies(${MODULE_MODULE_NAME} GenerateResourceHeader)

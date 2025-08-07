@@ -63,6 +63,6 @@ TARGET_DEFINITIONS ${ADD_SERVICE_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
 
-add_dependencies(ClientInfoService update_version)
+add_dependencies(${MODULE_MODULE_NAME} update_version)
 
 add_subdirectory(test)

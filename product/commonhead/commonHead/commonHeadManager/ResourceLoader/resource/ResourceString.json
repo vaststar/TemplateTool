@@ -1,0 +1,14 @@
+{
+    "localizedStrings": {
+        "OKLabel": "OK",
+        "CancelLabel": "Cancel",
+        "CloseLabel": "Close"
+    },
+    "localizedStringsWithParams": {
+        "ProgressLabel": "{{0}} of {{1}} completed"
+    },
+    "nonLocalizedStrings": {
+        "CPU": "CPU",
+        "PronounsHe": "He/Him/His"
+    }
+}

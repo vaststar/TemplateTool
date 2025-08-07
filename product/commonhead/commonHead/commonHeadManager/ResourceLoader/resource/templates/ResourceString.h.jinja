@@ -1,0 +1,17 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+namespace ResourceStringName{
+
+{% for enum_name, entries in data.items() %}
+
+enum class {{ enum_name | replace("Strings", "") | capitalize }}
+{
+    None, // This has to be the first enum
+{% for key in entries.keys()|sort %}
+    {{ key }}{{ "," if not loop.last }}
+{% endfor %}
+};
+{% endfor %}
+}
