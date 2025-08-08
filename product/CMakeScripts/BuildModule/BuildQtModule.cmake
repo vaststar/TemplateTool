@@ -1,3 +1,4 @@
+include_guard()
 include (LinkTargetIncludeDirectories)
 include (SetIDEFolder)
 function(BuildQtModule)

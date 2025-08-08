@@ -1,3 +1,4 @@
+include_guard()
 function(LinkTargetIncludeDirectories)
 
     message(STATUS "====Start LinkTargetIncludeDirectories====")

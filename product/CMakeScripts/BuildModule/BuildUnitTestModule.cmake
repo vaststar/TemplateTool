@@ -1,3 +1,4 @@
+include_guard()
 include (LinkTargetIncludeDirectories)
 
 function(BuildUnitTestModule)
@@ -34,7 +35,7 @@ function(BuildUnitTestModule)
         
         LinkTargetIncludeDirectories(
             MODULE_NAME ${MODULE_MODULE_NAME}
-            TARGET_INCLUDE_FOLDER ${MODULE_TARGET_INCLUDE_FOLDER}
+            TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_FOLDER}
         )
         
         if(DEFINED MODULE_TARGET_DEPENDENICES)

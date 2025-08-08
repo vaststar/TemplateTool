@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtGraphicalEffects  // 提供模糊
+// import QtGraphicalEffects  // 提供模糊
 import UIView 1.0
 import UTComponent 1.0
 import UIStrings 1.0

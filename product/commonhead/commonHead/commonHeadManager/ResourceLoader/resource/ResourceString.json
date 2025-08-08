@@ -2,7 +2,8 @@
     "LocalizedStrings": {
         "OKLabel": "OK",
         "CancelLabel": "Cancel",
-        "CloseLabel": "Close"
+        "CloseLabel": "Close",
+        "TitleLable": "Title"
     },
     "LocalizedStringsWithParams": {
         "ProgressLabel": "{{0}} of {{1}} completed"

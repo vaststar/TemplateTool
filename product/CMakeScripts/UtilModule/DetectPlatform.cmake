@@ -1,3 +1,4 @@
+include_guard()
 function(detect_platform OUT_VAR)
     # -----------------------------------------------
     # 平台/架构组合 (Platform/Architecture Combinations)

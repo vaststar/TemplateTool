@@ -1,3 +1,4 @@
+include_guard()
 function(BuildInstallModule)
     message(STATUS "====Start Build Install Module====")
     set(options)

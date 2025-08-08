@@ -1,3 +1,4 @@
+include_guard()
 function(SetIDEFolder)
     set(options)
     set(oneValueArg FOLDER_NAME)

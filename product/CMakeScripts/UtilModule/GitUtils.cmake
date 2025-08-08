@@ -1,3 +1,4 @@
+include_guard()
 # 定义一个函数来获取 Git 提交深度、提交哈希和当前分支
 function(get_full_git_info depth_variable commit_variable branch_variable)
     # 检查当前目录是否为 Git 仓库

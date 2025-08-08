@@ -3,6 +3,7 @@
 #   target_is_shared_library(MyTarget result)
 #   -> result = TRUE  if MyTarget is SHARED_LIBRARY
 #   -> result = FALSE if MyTarget is STATIC_LIBRARY or others
+include_guard()
 function(target_is_shared_library target_name result_var)
     if(NOT TARGET ${target_name})
         message(FATAL_ERROR "target_is_shared_library: '${target_name}' is not a known CMake target.")

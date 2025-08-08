@@ -1,3 +1,4 @@
+include_guard()
 include (BuildInstallModule)
 include (LinkTargetIncludeDirectories)
 include (TargetBuildType)
