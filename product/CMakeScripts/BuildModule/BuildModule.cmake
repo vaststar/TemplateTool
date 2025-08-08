@@ -97,8 +97,7 @@ function(BuildModule)
         endif()
 
         #for project tree view
-
-        # source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER})
+        source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER})
 
         message(STATUS "====Finish Build Module: ${MODULE_MODULE_NAME}====")
 endfunction()
