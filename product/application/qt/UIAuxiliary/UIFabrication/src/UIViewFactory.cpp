@@ -18,6 +18,13 @@ std::unique_ptr<IUIViewFactory> IUIViewFactory::createInstance(QPointer<UICore::
 UIViewFactory::UIViewFactory(QPointer<UICore::CoreQmlEngine> qmlEngine)
     : mQmlEngine(qmlEngine)
 {
+    if (mQmlEngine)
+    {
+        for (auto path: mQmlEngine->importPathList())
+        {
+            UIFabrication_LOG_DEBUG("QML Import Paths:" << path.toStdString());
+        }
+    }
 }
 
 UIViewFactory::~UIViewFactory() = default;
