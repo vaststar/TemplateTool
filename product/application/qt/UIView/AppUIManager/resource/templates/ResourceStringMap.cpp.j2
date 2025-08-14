@@ -1,0 +1,42 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#include <ResourceStringMap.h>
+
+#include <array>
+
+#include <QObject>
+#include <QtGlobal>
+
+{% macro generate_qt_string(enum_name, val) -%}
+{% if enum_name == "NonLocalizedString" -%}
+"{{ val }}"
+{%- else -%}
+QT_TRANSLATE_NOOP("QObject" , "{{ val }}")
+{%- endif -%}
+{%- endmacro %}
+namespace ResourceStringMap{
+{% for enum_name, entries in data.items() %}
+static {{enum_name}}Map build{{enum_name}}Map()
+{
+    {% set total_strings = entries.items()|length + 2 %}
+    constexpr std::array<std::pair<commonHead::model::{{enum_name}}, const char*>, {{ total_strings }}> localizedArray = 
+    {
+        std::make_pair( commonHead::model::{{enum_name}}::None, "" ),
+        {% for key, val in entries.items() %}
+        std::make_pair( commonHead::model::{{enum_name}}::{{ key }}, {{ generate_qt_string(enum_name, val) }} ),
+        {% endfor %}
+        std::make_pair( commonHead::model::{{enum_name}}::Last{{enum_name}}, "" )
+    };
+
+    return {{enum_name}}Map( localizedArray.begin(), localizedArray.end() );
+}
+
+{% endfor %}
+
+LocalizedStringMaps::LocalizedStringMaps()
+{% for enum_name, entries in data.items() %}
+    {{":" if loop.first else ","}}{{enum_name[0]|lower ~ enum_name[1:]}}s(build{{ enum_name }}Map())
+{% endfor %}
+{
+}
+} // namespace ResourceStringMap

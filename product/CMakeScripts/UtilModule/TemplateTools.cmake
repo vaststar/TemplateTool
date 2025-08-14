@@ -33,15 +33,25 @@ function(jinja_create_venv)
     message(STATUS "[generate_from_template] python3 path: ${Python3_EXECUTABLE}")
 
     # 定义虚拟环境构建命令
-    add_custom_command(
-        OUTPUT ${MARKER_FILE}
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${VENV_DIR}           # 清理旧环境
-        COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_DIR}        # 创建新环境
-        COMMAND ${PIP_PATH} install -r ${REQUIREMENT_FILE}   # 安装依赖
-        COMMAND ${CMAKE_COMMAND} -E touch ${MARKER_FILE}         # 创建标记
-        DEPENDS ${REQUIREMENT_FILE} 
-        COMMENT "Building Jinja2 venv with dependencies"
-    )
+    if (EXISTS ${VENV_DIR})
+        add_custom_command(
+            OUTPUT ${MARKER_FILE}
+            COMMAND ${PIP_PATH} install -r ${REQUIREMENT_FILE}   # 安装依赖
+            COMMAND ${CMAKE_COMMAND} -E touch ${MARKER_FILE}         # 创建标记
+            DEPENDS ${REQUIREMENT_FILE} 
+            COMMENT "Building Jinja2 venv with dependencies"
+        )
+    else()
+        add_custom_command(
+            OUTPUT ${MARKER_FILE}
+            COMMAND ${CMAKE_COMMAND} -E rm -rf ${VENV_DIR}           # 清理旧环境
+            COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_DIR}        # 创建新环境
+            COMMAND ${PIP_PATH} install -r ${REQUIREMENT_FILE}   # 安装依赖
+            COMMAND ${CMAKE_COMMAND} -E touch ${MARKER_FILE}         # 创建标记
+            DEPENDS ${REQUIREMENT_FILE} 
+            COMMENT "Building Jinja2 venv with dependencies"
+        )
+    endif()
 
     # 声明目标以驱动环境创建
     add_custom_target(${JCV_VENV_TARGET_NAME} 
@@ -74,7 +84,7 @@ function(generate_from_template)
         message(FATAL_ERROR "[generate_from_template] Missing required argument: OUTPUT_FILE")
     endif()
     
-    get_filename_component(MODULE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+    get_filename_component(MODULE_NAME ${GFT_OUTPUT_FILE} NAME)
     set(VENV_TARGET "venv_ready_${MODULE_NAME}")
     jinja_create_venv(VENV_TARGET_NAME ${VENV_TARGET})
     if (DEFINED GFT_IDE_FOLDER AND TARGET ${VENV_TARGET})

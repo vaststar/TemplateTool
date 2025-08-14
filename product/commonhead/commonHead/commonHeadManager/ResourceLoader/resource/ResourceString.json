@@ -1,14 +1,15 @@
 {
-    "LocalizedStrings": {
+    "LocalizedString": {
         "OKLabel": "OK",
         "CancelLabel": "Cancel",
         "CloseLabel": "Close",
         "TitleLable": "Title"
     },
-    "LocalizedStringsWithParams": {
-        "ProgressLabel": "{{0}} of {{1}} completed"
+    "LocalizedStringWithParam": {
+        "ProgressLabel": "{{0}} of {{1}} completed",
+        "TestParm": "test param {{0}}, only 1 param"
     },
-    "NonLocalizedStrings": {
+    "NonLocalizedString": {
         "CPU": "CPU",
         "PronounsHe": "He/Him/His"
     }

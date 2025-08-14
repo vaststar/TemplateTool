@@ -1,0 +1,22 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include <string>
+#include <unordered_map>
+#include <ResourceString.h>
+
+namespace ResourceStringMap{
+
+{% for enum_name, entries in data.items() %}
+using {{enum_name}}Map = std::unordered_map<commonHead::model::{{enum_name}}, std::string>;
+{% endfor %}
+struct LocalizedStringMaps
+{
+    LocalizedStringMaps();
+    
+    {% for enum_name, entries in data.items() %}
+    const {{enum_name}}Map {{enum_name[0]|lower ~ enum_name[1:]}}s;
+    {% endfor %}
+};
+} // namespace ResourceStringMap

@@ -9,7 +9,6 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
     include/commonHead/ResourceLoader/IResourceLoader.h
     include/commonHead/ResourceLoader/ResourceLoaderModel.h
-    include/commonHead/ResourceLoader/ResourceLocalizedStringModel.h
     include/commonHead/ResourceLoader/IResourceStringLoader.h
 )
 
@@ -31,6 +30,7 @@ set(MODULE_SOURCE_PRIVATE
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
+    ResourceString
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoService
@@ -55,4 +55,3 @@ TARGET_DEFINITIONS ${ADD_COMMONHEAD_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
 
-add_dependencies(${MODULE_MODULE_NAME} GenerateResourceHeader)

@@ -1,12 +1,39 @@
 include(TemplateTools)
+# 设置资源字符串 JSON 文件路径
+set(RESOURCE_STRING_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ResourceString.json CACHE STRING "Path to ResourceString.json")
+
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
+set(RESOURCE_OUT_PUT_FILE ResourceString.h)
+set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceString)
+set(RESOURCE_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${RESOURCE_OUT_PUT_FILE})
+set(RESOURCE_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ResourceString.h.j2)
+
 generate_from_template(
-    TEMPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ResourceString.h.jinja
-    INPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ResourceString.json
-    OUTPUT_FILE ${CMAKE_BINARY_DIR}/ResourceString.h
+    TEMPLATE_FILE ${RESOURCE_TEMEPLATE_FILE}
+    INPUT_FILE ${RESOURCE_STRING_JSON_PATH}
+    OUTPUT_FILE ${RESOURCE_OUTPUT_PATH}
     IDE_FOLDER ${RESOURCE_IDE_FOLDER}
 )
 
-add_custom_target(GenerateResourceHeader ALL DEPENDS ${CMAKE_BINARY_DIR}/ResourceString.h)
+add_custom_target(GenerateResourceHeader ALL DEPENDS ${RESOURCE_OUTPUT_PATH})
 set_target_properties(GenerateResourceHeader PROPERTIES FOLDER ${RESOURCE_IDE_FOLDER})
+
+
+include(BuildInterface)
+BuildInterface(
+    MODULE_NAME 
+        ResourceString
+    TARGET_SOURCE_HEADER_BASE_DIR
+        ${RESOURCE_OUT_PUT_DIR}
+    TARGET_SOURCE_PUBLIC_HEADER
+        ${RESOURCE_OUTPUT_PATH}
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${RESOURCE_OUT_PUT_DIR}
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        ResourceString
+    IDE_FOLDER
+        ${RESOURCE_IDE_FOLDER}
+)
+add_dependencies(ResourceString GenerateResourceHeader)
+

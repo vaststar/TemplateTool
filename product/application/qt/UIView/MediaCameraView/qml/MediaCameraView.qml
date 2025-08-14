@@ -33,6 +33,6 @@ ApplicationWindow
     }
     
     function onShowCameraImage(img){
-        console.log("rrrrrrrr")
+        // console.log("rrrrrrrr")
     }
 }

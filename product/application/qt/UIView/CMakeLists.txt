@@ -1,5 +1,5 @@
 include(BuildQtModule)
-
+add_subdirectory(AppUIManager/resource)
 if (WIN32)
     set(ADD_DEFINITIONS AppUI_DLL) #AppUI_DLL AppUI_LIB
 else()
@@ -51,6 +51,7 @@ set(MODULE_SOURCE_PRIVATE
     AppUIManager/src/AppUIController.cpp
     AppUIManager/src/AppUIStringLoader.h
     AppUIManager/src/AppUIStringLoader.cpp
+    
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )
@@ -62,6 +63,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ViewModels
     CommonHeadFramework
     ResourceLoader
+    ResourceStringMap
     Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia
 )
 
@@ -122,3 +124,4 @@ QML_TARGET_RESOURCES_DIR ${MODULE_QML_TARGET_RESOURCES_DIR}
 QML_TARGET_RESOURCES ${MODULE_QML_TARGET_RESOURCES}
 QML_PUBLIC_BUILD_INTERFACE_FOLDER ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER}
 )
+add_dependencies(${MODULE_MODULE_NAME} UIResourceStringTarget)

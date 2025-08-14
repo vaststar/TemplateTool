@@ -44,6 +44,7 @@ void TranslatorManager::loadTranslation(const QString& language)
         UIManager_LOG_INFO("remove translation file failed");
     }
 
+    //ps: if the language is en, it may failed because the translation.ts is empty
     if (QString translationFileName = QString("app_translations_%1").arg(language); !mTranslator->load(translationFileName, ":/i18n"))
     {
         UIManager_LOG_WARN("load translation file failed, language:" << language.toStdString() << ", file:" << translationFileName.toStdString());

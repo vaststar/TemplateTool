@@ -2,16 +2,16 @@
 // Generated with {{ self._TemplateReference__context.name }}
 #pragma once
 
-namespace ResourceStringName{
-
+namespace commonHead::model{
+    
 {% for enum_name, entries in data.items() %}
-
 enum class {{ enum_name }}
 {
     None, // This has to be the first enum
 {% for key in entries.keys() %}
-    {{ key }}{{ "," if not loop.last }}
+    {{ key}},  
 {% endfor %}
+    Last{{ enum_name }} // This has to be the last enum
 };
 {% endfor %}
 }

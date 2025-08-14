@@ -6,28 +6,7 @@
     <message>
         <location filename="../../qt/UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CPP_LocalizedString</name>
-    <message>
-        <location filename="../../qt/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="9"/>
-        <source>Ok</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="10"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CPP_LocalizedStringWithParam</name>
-    <message>
-        <location filename="../../qt/UIView/AppUIManager/src/AppUIStringLoader.cpp" line="14"/>
-        <source>test param {{0}}, only 1 param</source>
-        <translation type="unfinished"></translation>
+        <translation>Quit</translation>
     </message>
 </context>
 <context>
@@ -54,6 +33,18 @@
 <context>
     <name>QObject</name>
     <message>
+        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="16"/>
+        <source>AppSystemTrayController</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
+        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="27"/>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="30"/>
+        <source>my test window title bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../qt/UIView/ContactList/src/ContactListViewController.cpp" line="19"/>
         <source>ContactListViewController</source>
         <translation type="unfinished"></translation>
@@ -61,11 +52,6 @@
     <message>
         <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="47"/>
         <source>my test window</source>
-        <translation>tttt fanyi</translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="18"/>
-        <source>MainWindowTitleBarController</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -84,20 +70,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="16"/>
-        <source>AppSystemTrayController</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
-        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="27"/>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="30"/>
-        <source>my test window title bar</source>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="18"/>
+        <source>MainWindowTitleBarController</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../qt/UIView/MediaCameraView/src/MediaCameraViewController.cpp" line="27"/>
         <source>MediaCameraViewController</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="16"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="17"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="18"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="19"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="31"/>
+        <source>{{0}} of {{1}} completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="32"/>
+        <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

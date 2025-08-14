@@ -6,8 +6,6 @@
 
 #include <commonHead/ResourceLoader/ResourceLoaderModel.h>
 #include <ResourceString.h>
-#include <commonHead/ResourceLoader/ResourceLocalizedStringModel.h>
-#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;

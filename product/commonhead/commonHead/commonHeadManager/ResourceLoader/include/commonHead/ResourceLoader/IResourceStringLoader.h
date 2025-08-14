@@ -3,7 +3,7 @@
 #include <string>
 #include <initializer_list>
 #include <map>
-#include <commonHead/ResourceLoader/ResourceLocalizedStringModel.h>
+#include <ResourceString.h>
 
 namespace commonHead{
 

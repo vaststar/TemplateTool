@@ -2,8 +2,8 @@
 
 #include <QQmlEngine>
 
+#include <ResourceString.h>
 #include <commonHead/ResourceLoader/ResourceLoaderModel.h>
-#include <commonHead/ResourceLoader/ResourceLocalizedStringModel.h>
 #include <commonhead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
 #include <UIDataStruct/UIElementData.h>
@@ -129,9 +129,9 @@ commonHead::model::LocalizedString UIDataUtils::convertUILocalizedStringToVMLoca
     case UIStrings::LocalizedString::LocalizedString_None:
         return commonHead::model::LocalizedString::None;
     case UIStrings::LocalizedString::LocalizedString_OkButtonLabel:
-        return commonHead::model::LocalizedString::OkButtonLabel;
+        return commonHead::model::LocalizedString::OKLabel;
     case UIStrings::LocalizedString::LocalizedString_CancelButtonLabel:
-        return commonHead::model::LocalizedString::CancelButtonLabel;
+        return commonHead::model::LocalizedString::CancelLabel;
     default:
         return commonHead::model::LocalizedString::None;
     }
