@@ -13,12 +13,8 @@ generate_from_template(
     TEMPLATE_FILE ${RESOURCE_TEMEPLATE_FILE}
     INPUT_FILE ${RESOURCE_STRING_JSON_PATH}
     OUTPUT_FILE ${RESOURCE_OUTPUT_PATH}
-    IDE_FOLDER ${RESOURCE_IDE_FOLDER}
+    GFT_TARGET
 )
-
-add_custom_target(GenerateResourceHeader ALL DEPENDS ${RESOURCE_OUTPUT_PATH})
-set_target_properties(GenerateResourceHeader PROPERTIES FOLDER ${RESOURCE_IDE_FOLDER})
-
 
 include(BuildInterface)
 BuildInterface(
@@ -35,5 +31,5 @@ BuildInterface(
     IDE_FOLDER
         ${RESOURCE_IDE_FOLDER}
 )
-add_dependencies(ResourceString GenerateResourceHeader)
+add_dependencies(ResourceString ${GFT_TARGET})
 
