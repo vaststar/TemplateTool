@@ -4,28 +4,7 @@
 
 #include "LoggerDefine/LoggerDefine.h"
 
-
-// namespace CPP_LocalizedString{
-// inline static constexpr auto OkButtonLabel = QT_TR_NOOP("Ok");
-// inline static constexpr auto CancelButtonLabel = QT_TR_NOOP("Cancel");
-// }
-
-// namespace CPP_LocalizedStringWithParam{
-// inline static constexpr auto TestParm = QT_TR_NOOP("test param {{0}}, only 1 param");
-// }
-
-
-
 AppUIStringLoader::AppUIStringLoader()
-    // : mLocalizedString({
-    //     {commonHead::model::LocalizedString::None, ""},
-    //     {commonHead::model::LocalizedString::OkButtonLabel, CPP_LocalizedString::OkButtonLabel},
-    //     {commonHead::model::LocalizedString::CancelButtonLabel, CPP_LocalizedString::CancelButtonLabel},
-    // })
-    // , mLocalizedStringWithParam({
-    //     {commonHead::model::LocalizedStringWithParam::None, ""},
-    //     {commonHead::model::LocalizedStringWithParam::TestParm, CPP_LocalizedStringWithParam::TestParm},
-    // })
 {
     UIVIEW_LOG_DEBUG("create string loader");
 }

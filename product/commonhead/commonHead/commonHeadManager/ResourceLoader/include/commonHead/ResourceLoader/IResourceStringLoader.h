@@ -2,7 +2,6 @@
 
 #include <string>
 #include <initializer_list>
-#include <map>
 #include <ResourceString.h>
 
 namespace commonHead{
