@@ -5,7 +5,7 @@
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
-#include <commonHead/ResourceLoader/IResourceStringLoader.h>
+#include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 
 #include "ResourceThemeLoader.h"
 

@@ -1,4 +1,4 @@
-#include <commonHead/ResourceLoader/IResourceStringLoader.h>
+#include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 
 #include <regex>
 

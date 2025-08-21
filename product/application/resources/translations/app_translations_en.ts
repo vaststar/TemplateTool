@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1">
 <context>
     <name>AppSystemTray</name>
     <message>
         <location filename="../../qt/UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
         <source>Quit</source>
-        <translation>Quit</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -82,7 +82,7 @@
     <message>
         <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="17"/>

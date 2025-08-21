@@ -1,3 +1,4 @@
+include_guard()
 # 定义一个函数来获取 Git 提交深度、提交哈希和当前分支
 function(get_full_git_info depth_variable commit_variable branch_variable)
     # 检查当前目录是否为 Git 仓库
@@ -39,9 +40,29 @@ function(get_full_git_info depth_variable commit_variable branch_variable)
 endfunction()
 
 function(GenerateAppVersionFile)
+    set(options)  # 没有布尔选项
+    set(oneValueArgs VERSION_MAJOR VERSION_MINOR INPUT_VERSION_FILE OUTPUT_FOLDER)
+    set(multiValueArgs DEPENDS)
+    cmake_parse_arguments(GAVF "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if(NOT GAVF_INPUT_VERSION_FILE)
+        message(FATAL_ERROR "[GenerateAppVersionFile] Missing required argument: INPUT_VERSION_FILE")
+    endif()
+    if(NOT GAVF_OUTPUT_FOLDER)
+        message(FATAL_ERROR "[GenerateAppVersionFile] Missing required argument: OUTPUT_FOLDER")
+    endif()
+    if(NOT GAVF_VERSION_MAJOR)
+        message(STATUS "[GenerateAppVersionFile] Missing required argument: VERSION_MAJOR")
+        set(GAVF_VERSION_MAJOR 1)
+    endif()
+    if(NOT GAVF_VERSION_MINOR)
+        message(STATUS "[GenerateAppVersionFile] Missing required argument: VERSION_MINOR")
+        set(GAVF_VERSION_MINOR 0)
+    endif()
+
     # 设置项目版本号
-    set(PROJECT_VERSION_MAJOR 1)
-    set(PROJECT_VERSION_MINOR 0)
+    set(PROJECT_VERSION_MAJOR ${GAVF_VERSION_MAJOR})
+    set(PROJECT_VERSION_MINOR ${GAVF_VERSION_MINOR})
     set(PROJECT_VERSION_PATCH 1)
 
     # 调用函数获取完整的 Git 信息
@@ -79,7 +100,19 @@ function(GenerateAppVersionFile)
     string(TIMESTAMP PROJECT_COMPILE_TIME "%Y-%m-%dT%H:%M:%SZ" UTC)
     
     # 生成版本文件
-    configure_file(${CMAKE_BINARY_DIR}/appVersion.h.in ${CMAKE_BINARY_DIR}/appVersion.h @ONLY)
-endfunction()
+    get_filename_component(VERSION_FILE_NAME ${GAVF_INPUT_VERSION_FILE} NAME)
+    string(REGEX REPLACE "\\.in$" "" FILENAME_NO_IN ${VERSION_FILE_NAME})
+    configure_file(${GAVF_INPUT_VERSION_FILE} ${GAVF_OUTPUT_FOLDER}/${FILENAME_NO_IN} @ONLY)
 
-GenerateAppVersionFile()
+
+    list(LENGTH GAVF_UNPARSED_ARGUMENTS unparsed_count)
+    if(NOT unparsed_count EQUAL 1)
+        message(FATAL_ERROR "函数调用错误: 需要指定1个输出变量名表示TARGET_NAME")
+    endif()
+    list(GET GAVF_UNPARSED_ARGUMENTS 0 app_version_target)
+
+    set(MODULE_TARGET_NAME generate_${FILENAME_NO_IN})
+    add_library(${MODULE_TARGET_NAME} INTERFACE)
+    target_include_directories(${MODULE_TARGET_NAME} INTERFACE ${GAVF_OUTPUT_FOLDER})
+    set(${app_version_target} ${MODULE_TARGET_NAME} PARENT_SCOPE)
+endfunction()

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1">
 <context>
     <name>AppSystemTray</name>
     <message>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="64"/>
         <source>openCamera</source>
-        <translation>打开摄像头</translation>
+        <translation>打开相机</translation>
     </message>
 </context>
 <context>
@@ -82,7 +82,7 @@
     <message>
         <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
-        <translation>确定</translation>
+        <translation>确认</translation>
     </message>
     <message>
         <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="17"/>

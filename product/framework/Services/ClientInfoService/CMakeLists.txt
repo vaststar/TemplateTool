@@ -1,15 +1,13 @@
 include(BuildModule)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}") 
+include(GenerateVersion)
 
-add_custom_target(update_version)
-set_target_properties(update_version PROPERTIES FOLDER framework/Services)
-
-add_custom_command( TARGET update_version PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/appVersion.h.in ${CMAKE_BINARY_DIR}/appVersion.h.in
-    COMMAND ${CMAKE_COMMAND} -P  ${CMAKE_CURRENT_SOURCE_DIR}/UpdateVersion.cmake
-    ALWAYS
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-) 
+GenerateAppVersionFile(
+    VERSION_MAJOR 1
+    VERSION_MINOR 0
+    INPUT_VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/appVersion.h.in
+    OUTPUT_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion
+    APP_VERSION_TARGET
+)
 
 set(MODULE_MODULE_NAME ClientInfoService)
 set(MODULE_IDE_FOLDER framework/Services)
@@ -37,6 +35,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseService
     CoreFramework
     DataWarehouseSchema
+    ${APP_VERSION_TARGET}
     MasterLog
     TimeUtils
     OSUtils
@@ -47,7 +46,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src ${CMAKE_BINARY_DIR})
+set(MODULE_BUILD_PRIVATE_DIR src)
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
@@ -62,7 +61,5 @@ TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
 TARGET_DEFINITIONS ${ADD_SERVICE_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
-
-add_dependencies(${MODULE_MODULE_NAME} update_version)
 
 add_subdirectory(test)
