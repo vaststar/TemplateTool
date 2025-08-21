@@ -1,0 +1,16 @@
+{
+  "name": "white",
+  "tokens": {
+    "main-window-background": {
+      "normal": "slate-950"
+    },
+    "button-primary-background": {
+      "normal": "blue-600",
+      "hovered": "blue-500",
+      "pressed": "blue-300",
+      "disabled": "gray-900",
+      "checked": "blue-600",
+      "focused": "blue-600"
+    }
+  }
+}

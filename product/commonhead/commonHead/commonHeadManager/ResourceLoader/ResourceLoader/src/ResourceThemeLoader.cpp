@@ -5,7 +5,6 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 
 #include "FontSet.h"
-#include "ColorSet.h"
 #include "ResourceTheme.h"
 
 namespace commonHead{
@@ -23,16 +22,6 @@ model::Font ResourceThemeLoader::getFont(ucf::service::model::ThemeType themeTyp
     }
     COMMONHEAD_LOG_WARN("can't find theme");
     return model::Font();
-}
-
-model::Color ResourceThemeLoader::getColor(ucf::service::model::ThemeType themeType, model::ColorItem colorItem, model::ColorItemState state) const
-{
-    if (auto theme = getTheme(themeType))
-    {
-         return theme->getColor(colorItem, state);
-    }
-    COMMONHEAD_LOG_WARN("can't find theme");
-    return model::Color();
 }
 
 std::shared_ptr<ResourceTheme> ResourceThemeLoader::buildTheme(ucf::service::model::ThemeType themeType) const

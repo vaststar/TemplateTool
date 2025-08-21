@@ -6,6 +6,8 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
+#include <commonHead/ResourceColorLoader/IResourceColorLoader.h>
+
 
 #include "ResourceThemeLoader.h"
 
@@ -18,6 +20,7 @@ std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework:
 ResourceLoader::ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
     , mResourceThemeLoader(std::make_unique<ResourceThemeLoader>())
+    , mResourceColorLoader(IResourceColorLoader::createInstance())
 {
     COMMONHEAD_LOG_DEBUG("create ResourceLoader, this:" << this);
 }
@@ -45,15 +48,22 @@ model::Font ResourceLoader::getFont(model::FontFamily family, model::FontSize si
     return model::Font();
 }
 
-model::Color ResourceLoader::getColor(model::ColorItem colorItem, model::ColorItemState state) const
+model::Color ResourceLoader::getColor(model::ColorItem colorItem, model::ColorState state) const
 {
-    if (mResourceThemeLoader)
-    {
-        return mResourceThemeLoader->getColor(getCurrentThemeType(), colorItem, state);
-    }
+    return mResourceColorLoader->getColor(model::ColorToken::ButtonPrimaryBackground, state, getCurrentColorThemeType());
+}
 
-    COMMONHEAD_LOG_WARN("no mResourceThemeLoader");
-    return model::Color();
+model::ColorThemeType ResourceLoader::getCurrentColorThemeType() const
+{
+    switch (getCurrentThemeType())
+    {
+    case ucf::service::model::ThemeType::Light:
+        return model::ColorThemeType::White;
+    case ucf::service::model::ThemeType::Dark:
+        return model::ColorThemeType::Dark;
+    default:
+        return model::ColorThemeType::White;
+    }
 }
 
 ucf::service::model::ThemeType ResourceLoader::getCurrentThemeType() const

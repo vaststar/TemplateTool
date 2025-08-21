@@ -3,6 +3,8 @@
 #include <QQmlEngine>
 
 #include <ResourceString.h>
+#include <ColorToken.h>
+#include <commonHead/ResourceColorLoader/model/Color.h>
 #include <commonHead/ResourceLoader/ResourceLoaderModel.h>
 #include <commonhead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
@@ -38,24 +40,24 @@ commonHead::model::ColorItem UIDataUtils::convertUIColorEnumToVMColorItem(UIElem
     }
 }
 
-commonHead::model::ColorItemState UIDataUtils::convertUIColorStateToVMColorItemState(UIElementData::UIColorState uiColorState)
+commonHead::model::ColorState UIDataUtils::convertUIColorStateToVMColorItemState(UIElementData::UIColorState uiColorState)
 {
     switch (uiColorState)
     {
     case UIElementData::UIColorState::UIColorState_Normal:
-        return commonHead::model::ColorItemState::ColorItemState_Normal;
+        return commonHead::model::ColorState::Normal;
     case UIElementData::UIColorState::UIColorState_Hovered:
-        return commonHead::model::ColorItemState::ColorItemState_Hovered;
+        return commonHead::model::ColorState::Hovered;
     case UIElementData::UIColorState::UIColorState_Pressed:
-        return commonHead::model::ColorItemState::ColorItemState_Pressed;
+        return commonHead::model::ColorState::Pressed;
     case UIElementData::UIColorState::UIColorState_Disabled:
-        return commonHead::model::ColorItemState::ColorItemState_Disabled;
+        return commonHead::model::ColorState::Disabled;
     case UIElementData::UIColorState::UIColorState_Focused:
-        return commonHead::model::ColorItemState::ColorItemState_Focused;
+        return commonHead::model::ColorState::Focused;
     case UIElementData::UIColorState::UIColorState_Checked:
-        return commonHead::model::ColorItemState::ColorItemState_Checked;
+        return commonHead::model::ColorState::Checked;
     default:
-        return commonHead::model::ColorItemState::ColorItemState_Normal;
+        return commonHead::model::ColorState::Normal;
     }
 }
 

@@ -1,2 +1,3 @@
 add_subdirectory(ResourceStringLoader)
+add_subdirectory(ResourceColorLoader)
 add_subdirectory(ResourceLoader)

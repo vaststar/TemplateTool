@@ -1,0 +1,32 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include "ThemeColorSet.h"
+
+namespace commonHead::model {
+
+inline ThemeColorSet build{{data.name|capitalize}}ThemeColorSet()
+{
+    ThemeColorSet themeColorSet;
+
+    {% set optional = ['hovered', 'pressed', 'disabled', 'focused', 'checked'] %}
+    {% for token, colorSet in data.tokens.items() %}
+    {% set idx = loop.index %}
+    ColorSet colorSet{{ idx }};
+    colorSet{{ idx }}.token = ColorToken::{{ token.replace("-", " ")|title|replace(" ", "") }};
+    colorSet{{ idx }}.normal = ColorPaletteType::{{ colorSet.normal.replace("-", " ")|title|replace(" ", "") }};
+    {% for key in optional %}
+    {% if key in colorSet %}
+    colorSet{{ idx }}.{{ key }} = ColorPaletteType::{{ colorSet[key].replace("-", " ")|title|replace(" ", "") }};
+    {% else %}
+    colorSet{{ idx }}.{{ key }} = colorSet{{ idx }}.normal;
+    {% endif %}
+    {% endfor %}
+    themeColorSet.colorSets[ColorToken::{{ token.replace("-", " ")|title|replace(" ", "") }}] = colorSet{{ idx }};
+
+    {% endfor %}
+    return {ColorThemeType::{{data.name|capitalize}}, themeColorSet.colorSets};
+}
+
+} // namespace commonHead::model

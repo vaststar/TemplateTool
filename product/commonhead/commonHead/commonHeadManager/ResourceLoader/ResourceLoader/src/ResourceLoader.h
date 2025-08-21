@@ -17,6 +17,7 @@ namespace ucf::service::model{
 }
 namespace commonHead{
 class IResourceStringLoader;
+class IResourceColorLoader;
 class ResourceThemeLoader;
 class ResourceLoader: public IResourceLoader,
                       public ucf::service::IClientInfoServiceCallback,
@@ -26,7 +27,7 @@ public:
     explicit ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework);
     virtual void initResourceLoader() override;
     virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const override;
-    virtual model::Color getColor(model::ColorItem colorItem, model::ColorItemState state) const override;
+    virtual model::Color getColor(model::ColorItem colorItem, model::ColorState state) const override;
     
     virtual void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;
@@ -40,9 +41,11 @@ private:
     void addResourceTheme(ucf::service::model::ThemeType themeType);
 private:
     ucf::service::model::ThemeType getCurrentThemeType() const;
+    model::ColorThemeType getCurrentColorThemeType() const;
 private:
-    ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
+    const ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
     const std::unique_ptr<ResourceThemeLoader> mResourceThemeLoader;
+    const std::shared_ptr<IResourceColorLoader> mResourceColorLoader;
     std::unique_ptr<IResourceStringLoader> mResourceStringLoader;
 };
 }

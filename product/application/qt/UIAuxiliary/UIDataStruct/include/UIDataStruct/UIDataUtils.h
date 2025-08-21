@@ -4,7 +4,7 @@
 
 namespace commonHead::model{
 enum class ColorItem;
-enum class ColorItemState;
+enum class ColorState;
 enum class FontFamily;
 enum class FontSize;
 enum class FontWeight;
@@ -38,7 +38,7 @@ class UIDataStruct_EXPORT UIDataUtils final
 public:
     static void registerMetaObject();
     static commonHead::model::ColorItem convertUIColorEnumToVMColorItem(UIElementData::UIColorEnum  uiColorItem);
-    static commonHead::model::ColorItemState convertUIColorStateToVMColorItemState(UIElementData::UIColorState uiColorState);
+    static commonHead::model::ColorState convertUIColorStateToVMColorItemState(UIElementData::UIColorState uiColorState);
 
     static commonHead::model::FontFamily convertUIFontFamilyToVMFontFamily(UIElementData::UIFontFamily uiFontFamily);
     static commonHead::model::FontSize convertUIFontSizeToVMFontSize(UIElementData::UIFontSize uiFontSize);

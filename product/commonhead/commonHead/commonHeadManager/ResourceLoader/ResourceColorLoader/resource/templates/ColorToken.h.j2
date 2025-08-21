@@ -1,0 +1,16 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include <string>
+#include <map>
+
+namespace commonHead::model{
+
+enum class ColorToken
+{
+    {% for token in data.tokens %}
+    {{ token.replace("-", " ").title().replace(" ", "") }}{{ "," if not loop.last }}
+    {% endfor %}
+};
+}

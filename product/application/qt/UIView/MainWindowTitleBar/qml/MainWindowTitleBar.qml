@@ -51,7 +51,7 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.ArrowCursor
-                onPressed: {
+                onPressed: (mouse) => {
                     if (mouse.buttons === Qt.LeftButton && appWindow)
                     {
                         appWindow.startSystemMove()

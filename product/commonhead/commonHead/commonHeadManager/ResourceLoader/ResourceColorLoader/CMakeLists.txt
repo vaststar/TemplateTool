@@ -1,44 +1,34 @@
+add_subdirectory(model)
+add_subdirectory(resource)
+
 include(BuildModule)
 
-# add_subdirectory(resource)
-set(MODULE_MODULE_NAME ResourceLoader)
+set(MODULE_MODULE_NAME ResourceColorLoader)
 set(MODULE_IDE_FOLDER commonhead)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/commonHead/ResourceLoader/IResourceLoader.h
-    include/commonHead/ResourceLoader/ResourceLoaderModel.h
+    include/commonHead/ResourceColorLoader/IResourceColorLoader.h
 )
 
 set(MODULE_SOURCE_PRIVATE
-    src/ResourceLoader.h
-    src/ResourceLoader.cpp
-    src/FontSet.h
-    src/FontSet.cpp
-    # src/ColorSet.h
-    # src/ColorSet.cpp
-    src/ResourceTheme.h
-    src/ResourceTheme.cpp
-    # src/ColorConstant.h
-    src/ResourceThemeLoader.h
-    src/ResourceThemeLoader.cpp
-    # src/ColorBuilder.h
-    # src/ColorBuilder.cpp
+    src/ResourceColorLoader.h
+    src/ResourceColorLoader.cpp
+)
+
+set (MODULE_DEPENDENCIES_PRIVATE
+    
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
-    ResourceStringLoader
-    ResourceColorLoader
-)
-set(MODULE_DEPENDENCIES_PRIVATE
-    ClientInfoService
-    CoreFramework
+    ResourceColorLoaderModel
+    ResourceColor
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} )
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src )
+set(MODULE_BUILD_PRIVATE_DIR src)
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

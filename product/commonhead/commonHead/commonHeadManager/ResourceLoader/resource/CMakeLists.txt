@@ -1,2 +1,0 @@
-add_subdirectory(ResourceString)
-add_subdirectory(ResourceColor)

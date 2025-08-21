@@ -69,7 +69,7 @@ QColor ThemeManager::getUIColor(UIElementData::UIColorEnum colorEnum, UIElementD
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
         commonHead::model::ColorItem vmColorItem = UIDataUtils::convertUIColorEnumToVMColorItem(colorEnum);
-        commonHead::model::ColorItemState vmColorItemState = UIDataUtils::convertUIColorStateToVMColorItemState(state);
+        commonHead::model::ColorState vmColorItemState = UIDataUtils::convertUIColorStateToVMColorItemState(state);
         auto vmColor = resourceLoader->getColor(vmColorItem, vmColorItemState);
         return QColor(vmColor.r, vmColor.g, vmColor.b, vmColor.a) ;
     }

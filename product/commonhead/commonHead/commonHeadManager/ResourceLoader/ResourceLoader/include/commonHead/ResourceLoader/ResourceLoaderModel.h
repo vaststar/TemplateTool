@@ -13,14 +13,14 @@ enum class ColorItem{
     ColorItem_WINDOW_TITLE_BAR_BACKGROUND
 };
 
-enum class ColorItemState{
-    ColorItemState_Normal,
-    ColorItemState_Hovered,
-    ColorItemState_Pressed,
-    ColorItemState_Disabled,
-    ColorItemState_Focused,
-    ColorItemState_Checked
-};
+// enum class ColorItemState{
+//     ColorItemState_Normal,
+//     ColorItemState_Hovered,
+//     ColorItemState_Pressed,
+//     ColorItemState_Disabled,
+//     ColorItemState_Focused,
+//     ColorItemState_Checked
+// };
 
 enum class FontFamily{
     FontFamily_SegoeUI,
@@ -49,12 +49,12 @@ enum class FontWeight{
     FontWeight_Black
 };
 
-struct COMMONHEAD_EXPORT Color{
-    int r{ 0 };
-    int g{ 0 };
-    int b{ 0 };
-    int a{ 255 };
-};
+// struct COMMONHEAD_EXPORT Color{
+//     int r{ 0 };
+//     int g{ 0 };
+//     int b{ 0 };
+//     int a{ 255 };
+// };
 
 struct COMMONHEAD_EXPORT Font
 {
