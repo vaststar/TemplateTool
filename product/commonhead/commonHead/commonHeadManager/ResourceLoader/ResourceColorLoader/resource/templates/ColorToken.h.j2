@@ -9,8 +9,10 @@ namespace commonHead::model{
 
 enum class ColorToken
 {
+    None = 1,
     {% for token in data.tokens %}
-    {{ token.replace("-", " ").title().replace(" ", "") }}{{ "," if not loop.last }}
+    {{ token.replace("-", " ").title().replace(" ", "") }},
     {% endfor %}
+    LastColor
 };
 }

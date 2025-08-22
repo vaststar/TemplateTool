@@ -172,6 +172,6 @@ function(BuildQtModule)
     # )
 
     #for project tree view
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_FILES})
+    # source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_FILES})
     message(STATUS "====Finish Build Qt Module====")
 endfunction()

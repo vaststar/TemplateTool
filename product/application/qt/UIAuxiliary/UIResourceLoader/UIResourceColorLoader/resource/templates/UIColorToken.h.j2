@@ -1,0 +1,20 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include <QObject>
+#include <QQmlEngine>
+#include <UIResourceColorLoader/UIResourceColorLoaderExport.h>
+
+namespace UIColorToken{
+Q_NAMESPACE_EXPORT(UIResourceColorLoader_EXPORT)
+enum class ColorToken
+{
+    None = 1,
+    {% for token in data.tokens %}
+    {{ token.replace("-", " ").title().replace(" ", "") }},
+    {% endfor %}
+    LastColor
+};
+Q_ENUM_NS(ColorToken)
+}   

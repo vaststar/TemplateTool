@@ -1,6 +1,7 @@
 #include "ResourceColorLoader.h"
 #include <BuildWhiteThemeColorSet.h>
 #include <ColorPaletteModel.h>
+#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 
 namespace commonHead {
 std::shared_ptr<IResourceColorLoader> IResourceColorLoader::createInstance()
@@ -36,6 +37,10 @@ model::Color ResourceColorLoader::getColor(model::ColorToken token, model::Color
                 case model::ColorState::Checked:
                     return model::getColorPalette(colorSet.checked).toColor();
             }
+        }
+        else
+        {
+            COMMONHEAD_LOG_WARN("unrecognized token: " << static_cast<int>(token));
         }
     }
     return model::Color{255, 255, 255, 255}; // Return white color as a default example.

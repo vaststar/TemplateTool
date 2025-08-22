@@ -101,6 +101,8 @@ function(generate_from_template)
 
     get_filename_component(MODULE_NAME ${GFT_OUTPUT_FILE} NAME)
     set(MODULE_TARGET_NAME generate_${MODULE_NAME})
+
+    message(STATUS "generate coden target:${MODULE_TARGET_NAME}")
     add_custom_target(${MODULE_TARGET_NAME} ALL DEPENDS ${GFT_OUTPUT_FILE})
     set_target_properties(${MODULE_TARGET_NAME} PROPERTIES FOLDER codegen)
     set(${generate_from_template_target} ${MODULE_TARGET_NAME} PARENT_SCOPE)

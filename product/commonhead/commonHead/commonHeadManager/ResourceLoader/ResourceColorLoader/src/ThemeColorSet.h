@@ -1,5 +1,3 @@
-// DO NOT EDIT - Auto generated
-// Generated with {{ self._TemplateReference__context.name }}
 #pragma once
 
 #include <map>

@@ -36,7 +36,7 @@ public:
     ThemeManager& operator=(const ThemeManager&) = delete;
     ThemeManager& operator=(ThemeManager&&) = delete;
 public:
-    virtual Q_INVOKABLE QColor getUIColor(UIElementData::UIColorEnum colorEnum, UIElementData::UIColorState state) override;
+    virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) override;
     virtual Q_INVOKABLE QFont getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight = UIElementData::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIElementData::UIFontFamily family = UIElementData::UIFontFamily::UIFontFamily_SegoeUI) override;
 
     virtual Q_INVOKABLE QString getLocalizedString(UIStrings::LocalizedString stringId) override;

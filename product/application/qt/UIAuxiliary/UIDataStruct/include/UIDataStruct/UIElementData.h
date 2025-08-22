@@ -37,25 +37,25 @@ enum class UIFontWeight{
 };
 Q_ENUM_NS(UIFontWeight)
 
-enum class UIColorState{
-    UIColorState_Normal,
-    UIColorState_Hovered,
-    UIColorState_Pressed,
-    UIColorState_Disabled,
-    UIColorState_Focused,
-    UIColorState_Checked
-};
-Q_ENUM_NS(UIColorState)
+// enum class UIColorState{
+//     UIColorState_Normal,
+//     UIColorState_Hovered,
+//     UIColorState_Pressed,
+//     UIColorState_Disabled,
+//     UIColorState_Focused,
+//     UIColorState_Checked
+// };
+// Q_ENUM_NS(UIColorState)
 
-enum class UIColorEnum{
-    UIColorEnum_MAIN_WINDOW_BACKGROUND,
-    UIColorEnum_Item_Focus_Border,
-    UIColorEnum_Button_Primary_Text,
-    UIColorEnum_Button_Primary_Background,
-    UIColorEnum_Button_Primary_Border,
-    UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND
-};
-Q_ENUM_NS(UIColorEnum)
+// enum class UIColorEnum{
+//     UIColorEnum_MAIN_WINDOW_BACKGROUND,
+//     UIColorEnum_Item_Focus_Border,
+//     UIColorEnum_Button_Primary_Text,
+//     UIColorEnum_Button_Primary_Background,
+//     UIColorEnum_Button_Primary_Border,
+//     UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND
+// };
+// Q_ENUM_NS(UIColorEnum)
 
 enum class UIThemeType{
     UIThemeType_SystemDefault,

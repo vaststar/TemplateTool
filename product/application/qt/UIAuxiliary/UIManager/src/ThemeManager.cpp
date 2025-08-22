@@ -10,6 +10,7 @@
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <UIDataStruct/UIDataUtils.h>
+#include <UIResourceColorLoader/UIResourceColorLoader.h>
 
 #include "LoggerDefine.h"
 
@@ -64,14 +65,16 @@ ThemeManager::~ThemeManager()
 
 }
 
-QColor ThemeManager::getUIColor(UIElementData::UIColorEnum colorEnum, UIElementData::UIColorState state)
+QColor ThemeManager::getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
-        commonHead::model::ColorItem vmColorItem = UIDataUtils::convertUIColorEnumToVMColorItem(colorEnum);
-        commonHead::model::ColorState vmColorItemState = UIDataUtils::convertUIColorStateToVMColorItemState(state);
-        auto vmColor = resourceLoader->getColor(vmColorItem, vmColorItemState);
-        return QColor(vmColor.r, vmColor.g, vmColor.b, vmColor.a) ;
+        // commonHead::model::ColorItem vmColorItem = UIDataUtils::convertUIColorEnumToVMColorItem(colorEnum);
+        // commonHead::model::ColorState vmColorItemState = UIDataUtils::convertUIColorStateToVMColorItemState(state);
+        auto vmColorToken = UIResouce::UIResourceColorLoader::convertUIColorTokenToVMColorToken(colorEnum);
+        auto vmColorState = UIResouce::UIResourceColorLoader::convertUIColoStateToVMColorState(state);
+        auto vmColor = resourceLoader->getColor(vmColorToken, vmColorState);
+        return QColor(vmColor.r, vmColor.g, vmColor.b, static_cast<int>(255*vmColor.a)) ;
     }
     UIManager_LOG_WARN("no resourceLoader");
     return QColor();

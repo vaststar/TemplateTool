@@ -1,10 +1,10 @@
 
 function getItemUIColor(widget, colorEnum) {
-    var colorState = !widget.enabled ? UIElementData.UIColorState_Disabled :
-                      widget.pressed ? UIElementData.UIColorState_Pressed :
-                      widget.hovered ? UIElementData.UIColorState_Hovered :
-                      widget.activeFocus ? UIElementData.UIColorState_Focused :
-                      widget.checked ? UIElementData.UIColorState_Checked : UIElementData.UIColorState_Normal;
+    var colorState = !widget.enabled ? UIColorState.Disabled :
+                      widget.pressed ? UIColorState.Pressed :
+                      widget.hovered ? UIColorState.Hovered :
+                      widget.activeFocus ? UIColorState.Focused :
+                      widget.checked ? UIColorState.Checked : UIColorState.Normal;
     return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
 }
 

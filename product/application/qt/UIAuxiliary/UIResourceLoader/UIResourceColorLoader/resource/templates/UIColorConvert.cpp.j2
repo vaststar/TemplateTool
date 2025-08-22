@@ -1,0 +1,25 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+
+#include <UIResourceColorLoader/UIResourceColorLoader.h>
+
+#include <UIColorToken.h>
+#include <ColorToken.h>
+#include "LoggerDefine.h"
+
+namespace UIResouce{
+commonHead::model::ColorToken UIResourceColorLoader::convertUIColorTokenToVMColorToken(UIColorToken::ColorToken  uiColorItem)
+{
+    switch (uiColorItem)
+    {
+    {% for token in data.tokens %}
+    case UIColorToken::ColorToken::{{ token.replace("-", " ").title().replace(" ", "") }}:
+        return commonHead::model::ColorToken::{{ token.replace("-", " ").title().replace(" ", "") }};
+    {% endfor %}    
+    default:
+        UIResourceColorLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiColorItem));
+        return commonHead::model::ColorToken::None;
+    }
+
+}
+}

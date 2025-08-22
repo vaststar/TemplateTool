@@ -23,11 +23,10 @@ struct ColorPalette
     std::string name;
     std::string hex;
     std::array<int, 3> rgb{0,0,0};
-    std::array<int, 4> rgba{0,0,0,1};
 
     Color toColor() const
     {
-        return { rgba[0], rgba[1], rgba[2], rgba[3] };
+        return { rgb[0], rgb[1], rgb[2] };
     }
 };
 
@@ -37,7 +36,7 @@ inline ColorPalette getColorPalette(ColorPaletteType type)
     {
         {% for color in data %}
         case ColorPaletteType::{{ color.name.replace("-", " ").title().replace(" ", "") }}:
-            return { "{{ color.name }}", "{{ color.hex }}", { {{ color.rgb.r }}, {{ color.rgb.g }}, {{ color.rgb.b }} }, { {{ color.rgba.r }}, {{ color.rgba.g }}, {{ color.rgba.b }}, {{ color.rgba.a }} } };
+            return { "{{ color.name }}", "{{ color.hex }}", { {{ color.rgb.r }}, {{ color.rgb.g }}, {{ color.rgb.b }} } };
         {% endfor %}
         default:
             return {};

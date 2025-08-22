@@ -1,7 +1,7 @@
 #pragma once
 
 #include <commonHead/ResourceColorLoader/IResourceColorLoader.h>
-#include <ThemeColorSet.h>
+#include "ThemeColorSet.h"
 
 namespace commonHead {
 class ResourceColorLoader : public IResourceColorLoader

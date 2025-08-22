@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import UIView 1.0
 import UIElementData 1.0
 import UTComponent 1.0
+import UIResourceLoader 1.0
 
 ApplicationWindow
 {
@@ -20,7 +21,7 @@ ApplicationWindow
     flags: Qt.FramelessWindowHint|Qt.Window
 
     title: qsTr(mainController.title)
-    color: UTComponentUtil.getPlainUIColor(UIElementData.UIColorEnum_Window_Background, UIElementData.UIColorState_Normal)
+    color: UTComponentUtil.getPlainUIColor(UIColorToken.MainWindowBackground, UIColorState.Normal)
 
     menuBar: MainWindowMenuBar {
         id: menuBarId

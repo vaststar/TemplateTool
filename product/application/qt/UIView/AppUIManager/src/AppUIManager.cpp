@@ -10,6 +10,7 @@
 #include <AppContext/AppContext.h>
 
 #include <UIDataStruct/UIDataUtils.h>
+#include <UIResourceLoader/UIResourceLoader.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "AppUIController.h"
@@ -50,6 +51,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
 void AppUIManager::Impl::registerQmlTypes()
 {
     UIDataUtils::registerMetaObject();   
+    UIResouce::UIResourceLoader::registerMetaObject();
 }
 
 void AppUIManager::Impl::registerStringLoader()

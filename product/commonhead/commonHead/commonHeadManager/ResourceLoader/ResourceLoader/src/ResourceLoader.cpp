@@ -48,9 +48,9 @@ model::Font ResourceLoader::getFont(model::FontFamily family, model::FontSize si
     return model::Font();
 }
 
-model::Color ResourceLoader::getColor(model::ColorItem colorItem, model::ColorState state) const
+model::Color ResourceLoader::getColor(model::ColorToken colorToken, model::ColorState state) const
 {
-    return mResourceColorLoader->getColor(model::ColorToken::ButtonPrimaryBackground, state, getCurrentColorThemeType());
+    return mResourceColorLoader->getColor(colorToken, state, getCurrentColorThemeType());
 }
 
 model::ColorThemeType ResourceLoader::getCurrentColorThemeType() const

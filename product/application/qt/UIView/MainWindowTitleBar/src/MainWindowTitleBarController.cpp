@@ -41,7 +41,7 @@ QColor MainWindowTitleBarController::getColor() const
     {
         if (auto themeManager = mAppContext->getManagerProvider()->getThemeManager())
         {
-            return themeManager->getUIColor(UIElementData::UIColorEnum::UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND, UIElementData::UIColorState::UIColorState_Normal);
+            return themeManager->getUIColor(UIColorToken::ColorToken::MainWindowBackground, UIColorState::ColorState::Normal);
         }
     }
     return QColor(255, 0, 0);

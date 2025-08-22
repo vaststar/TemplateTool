@@ -19,47 +19,47 @@ void UIDataUtils::registerMetaObject()
     UILanguage::registerMetaObject();
 }
 
-commonHead::model::ColorItem UIDataUtils::convertUIColorEnumToVMColorItem(UIElementData::UIColorEnum  uiColorItem)
-{
-    switch (uiColorItem)
-    {
-    case UIElementData::UIColorEnum::UIColorEnum_MAIN_WINDOW_BACKGROUND:
-        return commonHead::model::ColorItem::ColorItem_MAIN_WINDOW_BACKGROUND;
-    case UIElementData::UIColorEnum::UIColorEnum_Item_Focus_Border:
-        return commonHead::model::ColorItem::ColorItem_Item_Focus_Border;
-    case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Text:
-        return commonHead::model::ColorItem::ColorItem_Button_Primary_Text;
-    case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Background:
-        return commonHead::model::ColorItem::ColorItem_Button_Primary_Background;
-    case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Border:
-        return commonHead::model::ColorItem::ColorItem_Button_Primary_Border;
-    case UIElementData::UIColorEnum::UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND:
-        return commonHead::model::ColorItem::ColorItem_WINDOW_TITLE_BAR_BACKGROUND;
-    default:
-        return commonHead::model::ColorItem::ColorItem_Button_Primary_Text;
-    }
-}
+// commonHead::model::ColorItem UIDataUtils::convertUIColorEnumToVMColorItem(UIElementData::UIColorEnum  uiColorItem)
+// {
+//     switch (uiColorItem)
+//     {
+//     case UIElementData::UIColorEnum::UIColorEnum_MAIN_WINDOW_BACKGROUND:
+//         return commonHead::model::ColorItem::ColorItem_MAIN_WINDOW_BACKGROUND;
+//     case UIElementData::UIColorEnum::UIColorEnum_Item_Focus_Border:
+//         return commonHead::model::ColorItem::ColorItem_Item_Focus_Border;
+//     case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Text:
+//         return commonHead::model::ColorItem::ColorItem_Button_Primary_Text;
+//     case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Background:
+//         return commonHead::model::ColorItem::ColorItem_Button_Primary_Background;
+//     case UIElementData::UIColorEnum::UIColorEnum_Button_Primary_Border:
+//         return commonHead::model::ColorItem::ColorItem_Button_Primary_Border;
+//     case UIElementData::UIColorEnum::UIColorEnum_WINDOW_TITLE_BAR_BACKGROUND:
+//         return commonHead::model::ColorItem::ColorItem_WINDOW_TITLE_BAR_BACKGROUND;
+//     default:
+//         return commonHead::model::ColorItem::ColorItem_Button_Primary_Text;
+//     }
+// }
 
-commonHead::model::ColorState UIDataUtils::convertUIColorStateToVMColorItemState(UIElementData::UIColorState uiColorState)
-{
-    switch (uiColorState)
-    {
-    case UIElementData::UIColorState::UIColorState_Normal:
-        return commonHead::model::ColorState::Normal;
-    case UIElementData::UIColorState::UIColorState_Hovered:
-        return commonHead::model::ColorState::Hovered;
-    case UIElementData::UIColorState::UIColorState_Pressed:
-        return commonHead::model::ColorState::Pressed;
-    case UIElementData::UIColorState::UIColorState_Disabled:
-        return commonHead::model::ColorState::Disabled;
-    case UIElementData::UIColorState::UIColorState_Focused:
-        return commonHead::model::ColorState::Focused;
-    case UIElementData::UIColorState::UIColorState_Checked:
-        return commonHead::model::ColorState::Checked;
-    default:
-        return commonHead::model::ColorState::Normal;
-    }
-}
+// commonHead::model::ColorState UIDataUtils::convertUIColorStateToVMColorItemState(UIElementData::UIColorState uiColorState)
+// {
+//     switch (uiColorState)
+//     {
+//     case UIElementData::UIColorState::UIColorState_Normal:
+//         return commonHead::model::ColorState::Normal;
+//     case UIElementData::UIColorState::UIColorState_Hovered:
+//         return commonHead::model::ColorState::Hovered;
+//     case UIElementData::UIColorState::UIColorState_Pressed:
+//         return commonHead::model::ColorState::Pressed;
+//     case UIElementData::UIColorState::UIColorState_Disabled:
+//         return commonHead::model::ColorState::Disabled;
+//     case UIElementData::UIColorState::UIColorState_Focused:
+//         return commonHead::model::ColorState::Focused;
+//     case UIElementData::UIColorState::UIColorState_Checked:
+//         return commonHead::model::ColorState::Checked;
+//     default:
+//         return commonHead::model::ColorState::Normal;
+//     }
+// }
 
 commonHead::model::FontFamily UIDataUtils::convertUIFontFamilyToVMFontFamily(UIElementData::UIFontFamily uiFontFamily)
 {

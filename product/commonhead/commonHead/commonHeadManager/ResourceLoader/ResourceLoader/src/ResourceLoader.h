@@ -27,7 +27,7 @@ public:
     explicit ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework);
     virtual void initResourceLoader() override;
     virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const override;
-    virtual model::Color getColor(model::ColorItem colorItem, model::ColorState state) const override;
+    virtual model::Color getColor(model::ColorToken colorToken, model::ColorState state) const override;
     
     virtual void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;

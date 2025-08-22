@@ -1,46 +1,40 @@
+add_subdirectory(UIResourceColorLoader)
+
 include(BuildQtModule)
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIManager_DLL) #UIManager_DLL UIManager_LIB
+    set(ADD_DEFINITIONS UIResourceLoader_DLL) #UIDataStruct_DLL UIDataStruct_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()
 
-set(MODULE_MODULE_NAME UIManager)
+set(MODULE_MODULE_NAME UIResourceLoader)
 set(MODULE_IDE_FOLDER UI)
 
-set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include ${UCF_CODE_GENERATOR_DIR}/UIColorToken)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/UIManager/UIManagerExport.h
-    include/UIManager/ITranslatorManager.h
-    include/UIManager/IUIManagerProvider.h
-    include/UIManager/IThemeManager.h
+    include/UIResourceLoader/UIResourceLoaderExport.h
+    include/UIResourceLoader/UIResourceLoader.h
+    ${UCF_CODE_GENERATOR_DIR}/UIColorToken/UIColorToken.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
-    src/TranslatorManager.h
-    src/TranslatorManager.cpp
-    src/UIManagerProvider.h
-    src/UIManagerProvider.cpp
-    src/ThemeManager.h
-    src/ThemeManager.cpp
+    src/UIResourceLoader.cpp
+    # src/UIColorToken.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Widgets
     Qt6::Qml
-    UIDataStruct
-    UIResourceLoader
+    UIResourceColorLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    UICore
-    ResourceLoader
-    CommonHeadFramework
     ViewModels
+    ResourceLoader
     MasterLog
+    UICore
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${UCF_CODE_GENERATOR_DIR}/UIColorToken)
 set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_BUILD_PRIVATE_DIR src)
 
