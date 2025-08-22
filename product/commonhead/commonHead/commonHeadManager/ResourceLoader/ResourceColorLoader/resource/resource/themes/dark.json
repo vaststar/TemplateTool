@@ -4,6 +4,12 @@
     "main-window-background": {
       "normal": "slate-600"
     },
+    "focus-outline":{
+      "normal": "purple-600"
+    },
+    "button-primary-text": {
+      "normal": "slate-950"
+    },
     "button-primary-background": {
       "normal": "blue-600",
       "hovered": "blue-700",
