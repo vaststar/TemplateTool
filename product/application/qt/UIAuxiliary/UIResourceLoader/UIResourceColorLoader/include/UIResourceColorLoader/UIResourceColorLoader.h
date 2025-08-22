@@ -1,7 +1,6 @@
 #pragma once
 #include <UIResourceColorLoader/UIResourceColorLoaderExport.h>
 
-
 namespace commonHead::model{
     enum class ColorState;
     enum class ColorToken;
