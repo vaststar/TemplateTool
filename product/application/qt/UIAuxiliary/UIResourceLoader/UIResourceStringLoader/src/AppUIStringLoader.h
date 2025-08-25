@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include <commonHead/ResourceLoader/IResourceStringLoader.h>
+#include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 #include <ResourceStringMap.h>
 
 class AppUIStringLoader: public commonHead::IResourceStringLoader

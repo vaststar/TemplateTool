@@ -58,11 +58,11 @@ model::ColorThemeType ResourceLoader::getCurrentColorThemeType() const
     switch (getCurrentThemeType())
     {
     case ucf::service::model::ThemeType::Light:
-        return model::ColorThemeType::White;
+        return model::ColorThemeType::Light;
     case ucf::service::model::ThemeType::Dark:
         return model::ColorThemeType::Dark;
     default:
-        return model::ColorThemeType::White;
+        return model::ColorThemeType::Light;
     }
 }
 

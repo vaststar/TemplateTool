@@ -20,7 +20,7 @@ enum class ColorState{
 }; 
 
 enum class ColorThemeType{
-    White,
+    Light,
     Dark
 };
 }

@@ -11,10 +11,10 @@
 
 #include <UIDataStruct/UIDataUtils.h>
 #include <UIResourceLoader/UIResourceLoader.h>
+#include <UIResourceStringLoader/UIResourceStringLoader.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "AppUIController.h"
-#include "AppUIStringLoader.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ void AppUIManager::Impl::registerStringLoader()
     {
         if (auto resourceLoader = commonHeadFramework->getResourceLoader())
         {
-            resourceLoader->setLocalizedStringLoader(std::move(std::make_unique<AppUIStringLoader>()));
+            resourceLoader->setLocalizedStringLoader(UIResouce::UIResourceStringLoader::generateResourceStringLoader());
         }
     }
 }

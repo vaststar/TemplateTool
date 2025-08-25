@@ -2,11 +2,11 @@
 
 #include <QCoreApplication>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 
 AppUIStringLoader::AppUIStringLoader()
 {
-    UIVIEW_LOG_DEBUG("create string loader");
+    UIResourceeStringLoader_LOG_DEBUG("create string loader");
 }
 
 std::string AppUIStringLoader::getLocalizedStringOrigin(commonHead::model::LocalizedString stringId) const

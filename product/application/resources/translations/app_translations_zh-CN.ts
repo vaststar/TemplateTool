@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>AppSystemTray</name>
     <message>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="64"/>
         <source>openCamera</source>
-        <translation>打开相机</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -80,32 +80,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="16"/>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
-        <translation>确认</translation>
+        <translation>好的</translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="17"/>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="17"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="18"/>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="18"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="19"/>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="19"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="31"/>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="31"/>
         <source>{{0}} of {{1}} completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/ResourceStringMap/ResourceStringMap.cpp" line="32"/>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="32"/>
         <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>

@@ -1,4 +1,5 @@
 include(TemplateTools)
+include(CapitalizeString)
 # 设置资源字符串 JSON 文件路径
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
@@ -36,8 +37,11 @@ list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
 
 
 ## BuildThemeColorSet
-set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource//themes/white.json)
-set(THEME_OUT_PUT_FILE BuildWhiteThemeColorSet.h)
+set(THEME_JSON_NAMES "light" "dark")
+foreach(item IN LISTS THEME_JSON_NAMES)
+set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
+capitalize(${item} capital_json_name)
+set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeColorSet.h)
 set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
 set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeColorSet.h.j2)
 
@@ -48,6 +52,7 @@ generate_from_template(
     THEME_TARGET
 )
 list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
+endforeach()
 
 
 include(BuildInterface)

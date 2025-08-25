@@ -1,5 +1,6 @@
 #include "ResourceColorLoader.h"
-#include <BuildWhiteThemeColorSet.h>
+#include <BuildLightThemeColorSet.h>
+#include <BuildDarkThemeColorSet.h>
 #include <ColorPaletteModel.h>
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 
@@ -48,7 +49,8 @@ model::Color ResourceColorLoader::getColor(model::ColorToken token, model::Color
 
 void ResourceColorLoader::buildThemeColorSets()
 {
-    mThemeColorSets[model::ColorThemeType::White] = model::buildWhiteThemeColorSet();
+    mThemeColorSets[model::ColorThemeType::Light] = model::buildLightThemeColorSet();
+    mThemeColorSets[model::ColorThemeType::Dark] = model::buildDarkThemeColorSet();
     // Add other theme color sets as needed.
 }
 } // namespace commonHead

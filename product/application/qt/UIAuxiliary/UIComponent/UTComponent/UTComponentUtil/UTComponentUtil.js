@@ -5,7 +5,7 @@ function getItemUIColor(widget, colorEnum) {
                       widget.hovered ? UIColorState.Hovered :
                       widget.activeFocus ? UIColorState.Focused :
                       widget.checked ? UIColorState.Checked : UIColorState.Normal;
-    return ThemeManager ? ThemeManager.getUIColor(colorEnum, UIColorState.Normal) : {};
+    return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
 }
 
 function getPlainUIColor(colorEnum, colorState) {

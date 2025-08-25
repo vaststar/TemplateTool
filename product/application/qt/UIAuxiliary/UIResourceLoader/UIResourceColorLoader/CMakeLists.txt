@@ -55,10 +55,8 @@ set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Qml
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ViewModels
-    ResourceLoader
+    ResourceColorLoader
     MasterLog
-    UICore
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${RESOURCE_OUT_PUT_DIR})

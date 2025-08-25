@@ -1,0 +1,7 @@
+include_guard()
+function(capitalize input output)
+    string(SUBSTRING "${input}" 0 1 first)
+    string(TOUPPER "${first}" first)
+    string(SUBSTRING "${input}" 1 -1 rest)
+    set(${output} "${first}${rest}" PARENT_SCOPE)
+endfunction()
