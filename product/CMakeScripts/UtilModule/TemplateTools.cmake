@@ -92,6 +92,9 @@ function(generate_from_template)
         COMMENT "Generating ${GFT_OUTPUT_FILE} from ${GFT_TEMPLATE_FILE} using ${GFT_INPUT_FILE}"
         VERBATIM
     )
+
+    #set generated property
+    # set_source_files_properties(${GFT_OUTPUT_FILE} PROPERTIES GENERATED TRUE)
     
     list(LENGTH GFT_UNPARSED_ARGUMENTS unparsed_count)
     if(NOT unparsed_count EQUAL 1)

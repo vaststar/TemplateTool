@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
 import UTComponent 1.0
-import UIStrings 1.0
+import UIResourceLoader 1.0
 
 Item{
     id: mainWindowContent
@@ -61,7 +61,7 @@ Item{
 
     UTButton {
         id: butn1
-        text: qsTr("openCamera")
+        text: qsTr("openCameraHaha")
         anchors{
             top: parent.top
             topMargin: 350
@@ -74,7 +74,7 @@ Item{
     }
     UTButton {
         id: butn2
-        text:  qsTr(UTComponentUtil.getLocalizedString(UIStrings.LocalizedString_OkButtonLabel)) //qsTr("button2")
+        text:  qsTr(UTComponentUtil.getLocalizedString(UIStringToken.OKLabel)) //qsTr("button2")
         anchors{
             top: parent.top
             topMargin: 300

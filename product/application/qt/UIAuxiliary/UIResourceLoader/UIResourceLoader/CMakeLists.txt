@@ -8,6 +8,7 @@ else()
     set(ADD_DEFINITIONS)
 endif()
 
+
 set(MODULE_MODULE_NAME UIResourceLoader)
 set(MODULE_IDE_FOLDER UI)
 

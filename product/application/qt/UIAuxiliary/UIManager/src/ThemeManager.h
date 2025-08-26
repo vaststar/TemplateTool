@@ -8,7 +8,6 @@
 #include <QFont>
 #include <QColor>
 
-#include <UIDataStruct/UIStrings.h>
 #include <UIDataStruct/UIElementData.h>
 #include <UIManager/IThemeManager.h>
 
@@ -39,8 +38,8 @@ public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) override;
     virtual Q_INVOKABLE QFont getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight = UIElementData::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIElementData::UIFontFamily family = UIElementData::UIFontFamily::UIFontFamily_SegoeUI) override;
 
-    virtual Q_INVOKABLE QString getLocalizedString(UIStrings::LocalizedString stringId) override;
-    virtual Q_INVOKABLE QString getLocalizedStringWithParams(UIStrings::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) override;
+    virtual Q_INVOKABLE QString getLocalizedString(UIStringToken::LocalizedString stringId) override;
+    virtual Q_INVOKABLE QString getLocalizedStringWithParams(UIStringToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) override;
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;

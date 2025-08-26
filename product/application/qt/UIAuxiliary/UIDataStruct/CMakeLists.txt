@@ -15,14 +15,12 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UIDataStruct/UIDataStructExport.h
     include/UIDataStruct/UIElementData.h
     include/UIDataStruct/UIDataUtils.h
-    include/UIDataStruct/UIStrings.h
     include/UIDataStruct/UILanguage.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
     src/UIElementData.cpp
     src/UIDataUtils.cpp
-    src/UIStrings.cpp
     src/UILanguage.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC

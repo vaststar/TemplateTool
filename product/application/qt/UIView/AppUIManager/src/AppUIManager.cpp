@@ -11,6 +11,7 @@
 
 #include <UIDataStruct/UIDataUtils.h>
 #include <UIResourceLoader/UIResourceLoader.h>
+#include <UIResourceColorLoader/UIResourceColorLoader.h>
 #include <UIResourceStringLoader/UIResourceStringLoader.h>
 
 #include "LoggerDefine/LoggerDefine.h"
@@ -30,7 +31,6 @@ public:
     AppContext* getAppContext() const { return mAppContext.get();}
 private:
     void registerQmlTypes();
-    void registerStringLoader();
 private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
@@ -45,25 +45,16 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
     registerQmlTypes();
-    registerStringLoader();
 }
 
 void AppUIManager::Impl::registerQmlTypes()
 {
     UIDataUtils::registerMetaObject();   
-    UIResouce::UIResourceLoader::registerMetaObject();
+    
+    UIResource::UIResourceStringLoader::registerResourceStringLoader(mCommonheadFramework);
+    UIResource::UIResourceLoader::registerMetaObject();
 }
 
-void AppUIManager::Impl::registerStringLoader()
-{
-    if (auto commonHeadFramework = mCommonheadFramework.lock())
-    {
-        if (auto resourceLoader = commonHeadFramework->getResourceLoader())
-        {
-            resourceLoader->setLocalizedStringLoader(UIResouce::UIResourceStringLoader::generateResourceStringLoader());
-        }
-    }
-}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish Impl Logic//////////////////////////////////////////

@@ -7,7 +7,7 @@ namespace commonHead::model{
 {% for enum_name, entries in data.items() %}
 enum class {{ enum_name }}
 {
-    None, // This has to be the first enum
+    None = 1, // This has to be the first enum
 {% for key in entries.keys() %}
     {{ key}},  
 {% endfor %}

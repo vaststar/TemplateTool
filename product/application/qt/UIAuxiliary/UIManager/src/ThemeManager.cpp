@@ -10,7 +10,9 @@
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <UIDataStruct/UIDataUtils.h>
+#include <UIResourceLoader/UIResourceLoader.h>
 #include <UIResourceColorLoader/UIResourceColorLoader.h>
+#include <UIResourceStringLoader/UIResourceStringLoader.h>
 
 #include "LoggerDefine.h"
 
@@ -30,7 +32,8 @@ public:
     const commonHead::ICommonHeadFrameworkWPtr mCommonheadFramework;
 
     std::shared_ptr<commonHead::IResourceLoader> getResourceLoader() const;
-
+public:
+    void registerTypes();
 };
 
 ThemeManager::Impl::Impl(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
@@ -48,6 +51,14 @@ std::shared_ptr<commonHead::IResourceLoader> ThemeManager::Impl::getResourceLoad
     }
     return nullptr;
 }
+
+void ThemeManager::Impl::registerTypes()
+{
+    // UIManager_LOG_DEBUG("register ResourceLoader stuff");
+    // UIResource::UIResourceStringLoader::registerResourceStringLoader(mCommonheadFramework);
+    // UIResource::UIResourceLoader::registerMetaObject();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish Impl Logic//////////////////////////////////////////
@@ -71,8 +82,8 @@ QColor ThemeManager::getUIColor(UIColorToken::ColorToken colorEnum, UIColorState
     {
         // commonHead::model::ColorItem vmColorItem = UIDataUtils::convertUIColorEnumToVMColorItem(colorEnum);
         // commonHead::model::ColorState vmColorItemState = UIDataUtils::convertUIColorStateToVMColorItemState(state);
-        auto vmColorToken = UIResouce::UIResourceColorLoader::convertUIColorTokenToVMColorToken(colorEnum);
-        auto vmColorState = UIResouce::UIResourceColorLoader::convertUIColoStateToVMColorState(state);
+        auto vmColorToken = UIResource::UIResourceColorLoader::convertUIColorTokenToVMColorToken(colorEnum);
+        auto vmColorState = UIResource::UIResourceColorLoader::convertUIColoStateToVMColorState(state);
         auto vmColor = resourceLoader->getColor(vmColorToken, vmColorState);
         return QColor(vmColor.r, vmColor.g, vmColor.b, static_cast<int>(255*vmColor.a)) ;
     }
@@ -94,21 +105,21 @@ QFont ThemeManager::getUIFont(UIElementData::UIFontSize size, UIElementData::UIF
     return QFont();
 }
 
-QString ThemeManager::getLocalizedString(UIStrings::LocalizedString stringId)
+QString ThemeManager::getLocalizedString(UIStringToken::LocalizedString stringId)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
-        return resourceLoader->getLocalizedString(UIDataUtils::convertUILocalizedStringToVMLocalizedString(stringId)).c_str();
+        return resourceLoader->getLocalizedString(UIResource::UIResourceStringLoader::convertUILocalizedStringToVMLocalizedString(stringId)).c_str();
     }
     UIManager_LOG_WARN("no resourceLoader");
     return {};
 }
 
-QString ThemeManager::getLocalizedStringWithParams(UIStrings::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params)
+QString ThemeManager::getLocalizedStringWithParams(UIStringToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
-        return resourceLoader->getLocalizedStringWithParams(UIDataUtils::convertUILocalizedStringParamToVMLocalizedStringParam(stringId), params).c_str();
+        return resourceLoader->getLocalizedStringWithParams(UIResource::UIResourceStringLoader::convertUILocalizedStringParamToVMLocalizedStringParam(stringId), params).c_str();
     }
     UIManager_LOG_WARN("no resourceLoader");
     return {};

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1">
 <context>
     <name>AppSystemTray</name>
     <message>
@@ -13,7 +13,7 @@
     <name>MainWindowContent</name>
     <message>
         <location filename="../../qt/UIView/MainWindow/qml/MainWindowContent.qml" line="64"/>
-        <source>openCamera</source>
+        <source>openCameraHaha</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -40,7 +40,6 @@
     <message>
         <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
         <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="27"/>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="30"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>
@@ -75,6 +74,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="30"/>
+        <source>oo window title bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../qt/UIView/MediaCameraView/src/MediaCameraViewController.cpp" line="27"/>
         <source>MediaCameraViewController</source>
         <translation type="unfinished"></translation>
@@ -82,7 +86,7 @@
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
-        <translation>ok</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="17"/>
@@ -100,12 +104,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="31"/>
-        <source>{{0}} of {{1}} completed</source>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="20"/>
+        <source>zz ww</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="32"/>
+        <source>{{0}} of {{1}} completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="33"/>
         <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>

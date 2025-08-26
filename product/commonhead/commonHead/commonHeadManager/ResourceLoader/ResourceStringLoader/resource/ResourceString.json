@@ -3,7 +3,8 @@
         "OKLabel": "OK",
         "CancelLabel": "Cancel",
         "CloseLabel": "Close",
-        "TitleLable": "Title"
+        "TitleLable": "Title",
+        "todotest": "zz ww"
     },
     "LocalizedStringWithParam": {
         "ProgressLabel": "{{0}} of {{1}} completed",

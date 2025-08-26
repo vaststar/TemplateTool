@@ -12,11 +12,12 @@ add_subdirectory(mainUI)
 
 set_target_properties(all_qmllint PROPERTIES FOLDER UI)
 
+file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "*.cpp" "*.qml" "${UCF_CODE_GENERATOR_DIR}/*.cpp")
+set(GENERATED_CPP_FILES
+    "${UCF_CODE_GENERATOR_DIR}/UIResourceStringLoader/ResourceStringMap.cpp"
+)
+list(APPEND ALL_TRANSLATION_SOURCE_FILES ${GENERATED_CPP_FILES})
 
-file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "*.cpp" "*.qml")
-file(GLOB_RECURSE UCF_CODE_GENERATOR_FILES "${UCF_CODE_GENERATOR_DIR}/*.cpp")
-message(STATUS "UCF_CODE_GENERATOR_FILES: ${UCF_CODE_GENERATOR_FILES}")
-list(APPEND ALL_TRANSLATION_SOURCE_FILES ${UCF_CODE_GENERATOR_FILES})
 set(Translation_DIR ../resources/translations)
 set(Translation_LIB UIView)
 
@@ -42,4 +43,5 @@ SetIDEFolder(
         UI/translations
 )
 
-add_dependencies(${Translation_LIB} update_translations)
+add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+add_dependencies(${Translation_LIB} update_translations )

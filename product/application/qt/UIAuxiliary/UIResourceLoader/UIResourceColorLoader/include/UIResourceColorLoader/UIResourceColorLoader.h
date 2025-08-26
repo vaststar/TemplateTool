@@ -13,7 +13,7 @@ namespace UIColorState{
 namespace UIColorToken{
     enum class ColorToken;
 }
-namespace UIResouce{
+namespace UIResource{
 class UIResourceColorLoader_EXPORT UIResourceColorLoader final
 {
 public:

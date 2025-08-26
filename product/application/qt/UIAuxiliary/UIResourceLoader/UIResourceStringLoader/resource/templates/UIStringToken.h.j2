@@ -1,0 +1,23 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include <QObject>
+#include <QString>
+#include <UIResourceStringLoader/UIResourceStringLoaderExport.h>
+
+namespace UIStringToken{
+Q_NAMESPACE_EXPORT(UIResourceStringLoader_EXPORT)
+
+{% for enum_name, entries in data.items() %}
+enum class {{ enum_name }}
+{
+    None = 1, // This has to be the first enum
+{% for key in entries.keys() %}
+    {{ key}},  
+{% endfor %}
+    Last{{ enum_name }} // This has to be the last enum
+};
+Q_ENUM_NS({{ enum_name }})
+{% endfor %}
+}

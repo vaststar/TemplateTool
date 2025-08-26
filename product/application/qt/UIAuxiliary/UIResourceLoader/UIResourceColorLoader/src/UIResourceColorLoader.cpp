@@ -5,7 +5,7 @@
 #include <UIResourceColorLoader/UIColorState.h>
 #include <UIColorToken.h>
 
-namespace UIResouce{
+namespace UIResource{
 void UIResourceColorLoader::registerMetaObject()
 {
     qmlRegisterUncreatableMetaObject(

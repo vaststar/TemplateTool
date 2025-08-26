@@ -17,5 +17,6 @@ function getUIFont(fontSize) {
 }
 
 function getLocalizedString(key) {
+    console.log("6666666666")
     return ThemeManager ? ThemeManager.getLocalizedString(key) : "No ThemeManager";
 }

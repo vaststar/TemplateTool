@@ -4,7 +4,7 @@ import QtQuick.Layouts
 // import QtGraphicalEffects  // 提供模糊
 import UIView 1.0
 import UTComponent 1.0
-import UIStrings 1.0
+import UIResourceLoader 1.0
 // import "."  // 导入当前目录的所有 QML 组件
 
 Rectangle {

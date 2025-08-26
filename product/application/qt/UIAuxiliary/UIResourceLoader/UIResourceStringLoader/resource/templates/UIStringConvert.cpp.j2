@@ -1,0 +1,52 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+
+#include <UIResourceStringLoader/UIResourceStringLoader.h>
+
+#include <UIStringToken.h>
+#include <ResourceString.h>
+#include "LoggerDefine.h"
+
+namespace UIResource{
+commonHead::model::LocalizedString UIResourceStringLoader::convertUILocalizedStringToVMLocalizedString(UIStringToken::LocalizedString uiLocalizedString)
+{
+    switch (uiLocalizedString)
+    {
+    {% for enum_name in data.LocalizedString.keys() %}
+    case UIStringToken::LocalizedString::{{ enum_name }}:
+        return commonHead::model::LocalizedString::{{ enum_name }};
+    {% endfor %}
+    default:
+        UIResourceeStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedString));
+        return commonHead::model::LocalizedString::None;
+    }
+}
+
+commonHead::model::LocalizedStringWithParam UIResourceStringLoader::convertUILocalizedStringParamToVMLocalizedStringParam(UIStringToken::LocalizedStringWithParam uiLocalizedStringWithParam)
+{
+    switch (uiLocalizedStringWithParam)
+    {
+    {% for enum_name in data.LocalizedStringWithParam.keys() %}
+    case UIStringToken::LocalizedStringWithParam::{{ enum_name }}:
+        return commonHead::model::LocalizedStringWithParam::{{ enum_name }};
+    {% endfor %}
+    default:
+        UIResourceeStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedStringWithParam));
+        return commonHead::model::LocalizedStringWithParam::None;
+    }
+}
+
+commonHead::model::NonLocalizedString UIResourceStringLoader::convertUINonLocalizedStringToVMNonLocalizedString(UIStringToken::NonLocalizedString uiNonLocalizedString)
+{
+    switch (uiNonLocalizedString)
+    {
+    {% for enum_name in data.NonLocalizedString.keys() %}
+    case UIStringToken::NonLocalizedString::{{ enum_name }}:
+        return commonHead::model::NonLocalizedString::{{ enum_name }};
+    {% endfor %}
+    default:
+        UIResourceeStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiNonLocalizedString));
+        return commonHead::model::NonLocalizedString::None;
+    }
+}
+}

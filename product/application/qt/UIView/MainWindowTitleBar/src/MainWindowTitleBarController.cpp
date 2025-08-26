@@ -27,7 +27,7 @@ void MainWindowTitleBarController::initializeController(QPointer<AppContext> app
 
 QString MainWindowTitleBarController::getTitle() const
 {
-    return QObject::tr("my test window title bar");
+    return QObject::tr("oo window title bar");
 }
 
 bool MainWindowTitleBarController::isVisible() const

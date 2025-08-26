@@ -1,7 +1,7 @@
 #pragma once
 #include <UIResourceLoader/UIResourceLoaderExport.h>
 
-namespace UIResouce{
+namespace UIResource{
 class UIResourceLoader_EXPORT UIResourceLoader final
 {
 public:
