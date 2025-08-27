@@ -61,7 +61,7 @@ Item{
 
     UTButton {
         id: butn1
-        text: qsTr("openCameraHaha")
+        text: qsTr("IopenCamera")
         anchors{
             top: parent.top
             topMargin: 350

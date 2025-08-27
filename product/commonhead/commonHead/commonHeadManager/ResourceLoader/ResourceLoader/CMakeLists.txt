@@ -16,15 +16,10 @@ set(MODULE_SOURCE_PRIVATE
     src/ResourceLoader.cpp
     src/FontSet.h
     src/FontSet.cpp
-    # src/ColorSet.h
-    # src/ColorSet.cpp
     src/ResourceTheme.h
     src/ResourceTheme.cpp
-    # src/ColorConstant.h
     src/ResourceThemeLoader.h
     src/ResourceThemeLoader.cpp
-    # src/ColorBuilder.h
-    # src/ColorBuilder.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile

@@ -27,8 +27,7 @@ namespace UIResource{
 class UIResourceStringLoader_EXPORT UIResourceStringLoader final
 {
 public:
-    static void registerMetaObject();
-    static void registerResourceStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    static void registerUIResourceStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     static commonHead::model::LocalizedString convertUILocalizedStringToVMLocalizedString(UIStringToken::LocalizedString uiLocalizedString);
     static commonHead::model::LocalizedStringWithParam convertUILocalizedStringParamToVMLocalizedStringParam(UIStringToken::LocalizedStringWithParam uiLocalizedStringWithParam);
     static commonHead::model::NonLocalizedString convertUINonLocalizedStringToVMNonLocalizedString(UIStringToken::NonLocalizedString uiNonLocalizedString);

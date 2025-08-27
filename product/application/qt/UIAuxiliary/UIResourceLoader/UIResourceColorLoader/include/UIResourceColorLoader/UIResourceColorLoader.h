@@ -17,8 +17,8 @@ namespace UIResource{
 class UIResourceColorLoader_EXPORT UIResourceColorLoader final
 {
 public:
-    static void registerMetaObject();
-    static commonHead::model::ColorState convertUIColoStateToVMColorState(UIColorState::ColorState uiColorState);
+    static void registerUIResourceColorLoader();
+    static commonHead::model::ColorState convertUIColorStateToVMColorState(UIColorState::ColorState uiColorState);
     static commonHead::model::ColorToken convertUIColorTokenToVMColorToken(UIColorToken::ColorToken  uiColorItem);
 };
 }

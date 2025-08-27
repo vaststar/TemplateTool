@@ -3,6 +3,12 @@
 #include <regex>
 
 namespace commonHead{
+
+std::string IResourceStringLoader::getNonLocalizedString(model::NonLocalizedString stringId) const
+{
+    return getNonLocalizedStringOrigin(stringId);
+}
+
 std::string IResourceStringLoader::getLocalizedString(model::LocalizedString stringId) const
 {
     return getLocalizedStringOrigin(stringId);

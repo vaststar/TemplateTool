@@ -9,5 +9,9 @@
         #define Utilities_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define Utilities_EXPORT 
+    #if defined(Utilities_DLL)
+        #define Utilities_EXPORT __attribute__((visibility("default")))
+    #else
+        #define Utilities_EXPORT
+    #endif
 #endif

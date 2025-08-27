@@ -5,9 +5,12 @@
 #include <UIResourceColorLoader/UIColorState.h>
 #include <UIColorToken.h>
 
+#include "LoggerDefine.h"
+
 namespace UIResource{
-void UIResourceColorLoader::registerMetaObject()
+void UIResourceColorLoader::registerUIResourceColorLoader()
 {
+    UIResourceColorLoader_LOG_DEBUG("");
     qmlRegisterUncreatableMetaObject(
 	    UIColorToken::staticMetaObject,      // The meta-object of the namespace
 	    "UIResourceLoader",                      // The URI or module name
@@ -26,7 +29,7 @@ void UIResourceColorLoader::registerMetaObject()
 }
 
 
-commonHead::model::ColorState UIResourceColorLoader::convertUIColoStateToVMColorState(UIColorState::ColorState uiColorState)
+commonHead::model::ColorState UIResourceColorLoader::convertUIColorStateToVMColorState(UIColorState::ColorState uiColorState)
 {
     switch (uiColorState)
     {

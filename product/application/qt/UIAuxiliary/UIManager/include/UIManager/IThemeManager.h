@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <initializer_list>
 #include <QObject>
 #include <QString>
@@ -34,6 +33,7 @@ public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) = 0;
     virtual Q_INVOKABLE QFont getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight = UIElementData::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIElementData::UIFontFamily family = UIElementData::UIFontFamily::UIFontFamily_SegoeUI) = 0;
 
+    virtual Q_INVOKABLE QString getNonLocalizedString(UIStringToken::NonLocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedString(UIStringToken::LocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedStringWithParams(UIStringToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) = 0;
 };

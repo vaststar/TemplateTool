@@ -9,5 +9,9 @@
         #define UIDataStruct_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define UIDataStruct_EXPORT 
+    #if defined(UIDataStruct_DLL)
+        #define UIDataStruct_EXPORT __attribute__((visibility("default")))
+    #else
+        #define UIDataStruct_EXPORT
+    #endif
 #endif

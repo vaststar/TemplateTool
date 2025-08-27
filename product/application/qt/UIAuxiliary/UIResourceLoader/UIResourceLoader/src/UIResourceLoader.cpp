@@ -1,11 +1,16 @@
 #include <UIResourceLoader/UIResourceLoader.h>
+
+#include <QQmlEngine>
+
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+
 #include <UIResourceColorLoader/UIResourceColorLoader.h>
 #include <UIResourceStringLoader/UIResourceStringLoader.h>
-#include <QQmlEngine>
+
 namespace UIResource{
-void UIResourceLoader::registerMetaObject()
+void UIResourceLoader::registerUIResourceLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
-    UIResourceColorLoader::registerMetaObject();
-    UIResourceStringLoader::registerMetaObject();
+    UIResourceColorLoader::registerUIResourceColorLoader();
+    UIResourceStringLoader::registerUIResourceStringLoader(commonheadFramework);
 }
 };

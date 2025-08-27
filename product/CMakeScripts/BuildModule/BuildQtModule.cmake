@@ -65,6 +65,11 @@ function(BuildQtModule)
     target_compile_features(${MODULE_MODULE_NAME} PRIVATE cxx_std_20)
     set_target_properties(${MODULE_MODULE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
     set_target_properties(${MODULE_MODULE_NAME} PROPERTIES CXX_EXTENSIONS OFF)
+    set_target_properties(${MODULE_MODULE_NAME} PROPERTIES 
+        AUTOMOC ON
+        AUTORCC ON
+        AUTOUIC ON
+    )
 
     if(DEFINED  MODULE_IDE_FOLDER)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
@@ -88,14 +93,14 @@ function(BuildQtModule)
     endif()
     
     if (MODULE_TARGET_DEFINITIONS)
-        target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
-        if (is_shared_lib)
-            message(STATUS "will add definitions for shared library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
+        # target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
+        # if (is_shared_lib)
+            message(STATUS "will add private definitions for library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
             target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
-        else()
-            message(STATUS "will add definitions for static library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
-            target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEFINITIONS})
-        endif()
+        # else()
+        #     message(STATUS "will add definitions for static library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
+        #     target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEFINITIONS})
+        # endif()
     endif()
 
     if (DEFINED MODULE_QML_TARGET_URI)

@@ -3,16 +3,13 @@
 #include <memory>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/ResourceLoader/IResourceLoader.h>
 
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
 #include <AppContext/AppContext.h>
 
 #include <UIDataStruct/UIDataUtils.h>
-#include <UIResourceLoader/UIResourceLoader.h>
-#include <UIResourceColorLoader/UIResourceColorLoader.h>
-#include <UIResourceStringLoader/UIResourceStringLoader.h>
+#include <UTComponent/UTComponent.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "AppUIController.h"
@@ -35,13 +32,11 @@ private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
     std::unique_ptr<AppContext> mAppContext;
-    commonHead::ICommonHeadFrameworkWPtr mCommonheadFramework;
 };
 
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
     , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
-    , mCommonheadFramework(config.commonHeadFramework)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
     registerQmlTypes();
@@ -49,10 +44,9 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
 
 void AppUIManager::Impl::registerQmlTypes()
 {
+    UIVIEW_LOG_DEBUG("");
     UIDataUtils::registerMetaObject();   
-    
-    UIResource::UIResourceStringLoader::registerResourceStringLoader(mCommonheadFramework);
-    UIResource::UIResourceLoader::registerMetaObject();
+    UTComponent::registerUTComponent();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +67,7 @@ AppUIManager::~AppUIManager()
 
 int AppUIManager::runApp()
 {
+    UIVIEW_LOG_INFO("run AppUIManager, address:" << this);
     auto controller = std::make_unique<AppUIController>();
     controller->runApp(mImpl->getAppContext());
 

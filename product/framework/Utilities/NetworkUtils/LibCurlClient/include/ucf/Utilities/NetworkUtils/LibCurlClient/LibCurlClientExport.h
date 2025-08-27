@@ -9,5 +9,9 @@
         #define LIBCURLCLIENT_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define LIBCURLCLIENT_EXPORT 
+    #if defined(LIBCURLCLIENT_DLL)
+        #define LIBCURLCLIENT_EXPORT __attribute__((visibility("default")))
+    #else
+        #define LIBCURLCLIENT_EXPORT
+    #endif
 #endif

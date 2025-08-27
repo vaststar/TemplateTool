@@ -12,15 +12,19 @@ set(MODULE_IDE_FOLDER UI)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/UTComponentExport.h
+    include/UTComponent/UTComponentExport.h
+    include/UTComponent/UTComponent.h
     UTMenu/MenuItemModel.h
 )
 set(MODULE_SOURCE_PRIVATE
-    include/LoggerDefine.h
+    src/LoggerDefine.h
+    src/UTComponent.cpp
     UTMenu/MenuItemModel.cpp
 )
+
 set(MODULE_DEPENDENCIES_PUBLIC
 )
+
 set(MODULE_DEPENDENCIES_PRIVATE
     Qt6::Gui Qt6::Quick
     MasterLog 

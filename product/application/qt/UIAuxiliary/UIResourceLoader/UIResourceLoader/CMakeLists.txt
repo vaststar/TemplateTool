@@ -32,7 +32,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ResourceLoader
     MasterLog
-    UICore
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${UCF_CODE_GENERATOR_DIR}/UIColorToken)

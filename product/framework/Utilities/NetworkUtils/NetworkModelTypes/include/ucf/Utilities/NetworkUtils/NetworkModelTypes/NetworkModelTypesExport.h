@@ -9,5 +9,9 @@
         #define NETWORKTYPE_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define NETWORKTYPE_EXPORT 
+    #if defined(NETWORKTYPE_DLL)
+        #define NETWORKTYPE_EXPORT __attribute__((visibility("default")))
+    #else
+        #define NETWORKTYPE_EXPORT
+    #endif
 #endif

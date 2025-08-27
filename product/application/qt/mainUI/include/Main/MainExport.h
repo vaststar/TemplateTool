@@ -9,5 +9,9 @@
         #define Main_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define Main_EXPORT 
+    #if defined(Main_DLL)
+        #define Main_EXPORT __attribute__((visibility("default")))
+    #else
+        #define Main_EXPORT
+    #endif
 #endif

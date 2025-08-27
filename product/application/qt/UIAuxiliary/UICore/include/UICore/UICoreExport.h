@@ -9,5 +9,9 @@
         #define UICore_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define UICore_EXPORT 
+    #if defined(UICore_DLL)
+        #define UICore_EXPORT __attribute__((visibility("default")))
+    #else
+        #define UICore_EXPORT
+    #endif
 #endif

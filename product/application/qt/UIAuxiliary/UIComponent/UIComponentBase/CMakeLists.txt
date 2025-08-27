@@ -1,7 +1,7 @@
 include(BuildQtModule)
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIComponentBase_LIB)    #UIComponentBase_DLL
+    set(ADD_DEFINITIONS UIComponentBase_DLL)    #UIComponentBase_DLL
 else()
     set(ADD_DEFINITIONS)
 endif()
@@ -12,10 +12,12 @@ set(MODULE_IDE_FOLDER UI)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/UIComponentBaseExport.h
+    include/UIComponentBase/UIComponentBaseExport.h
+    include/UIComponentBase/UIComponentBase.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
+    src/UIComponentBase.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )
@@ -41,7 +43,6 @@ set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
 )
 
 BuildQtModule(
-STATIC_LIB
 MODULE_NAME ${MODULE_MODULE_NAME}
 TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
 TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}

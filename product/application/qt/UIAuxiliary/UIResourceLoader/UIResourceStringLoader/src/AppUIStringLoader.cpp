@@ -6,7 +6,16 @@
 
 AppUIStringLoader::AppUIStringLoader()
 {
-    UIResourceeStringLoader_LOG_DEBUG("create string loader");
+    UIResourceStringLoader_LOG_DEBUG("create string loader");
+}
+
+std::string AppUIStringLoader::getNonLocalizedStringOrigin(commonHead::model::NonLocalizedString stringId) const
+{
+    if (auto iter = mLocalizedStringMaps.nonLocalizedStrings.find(stringId); iter != mLocalizedStringMaps.nonLocalizedStrings.end())
+    {
+        return iter->second;
+    }
+    return "Unknown NonLocalizedString";
 }
 
 std::string AppUIStringLoader::getLocalizedStringOrigin(commonHead::model::LocalizedString stringId) const

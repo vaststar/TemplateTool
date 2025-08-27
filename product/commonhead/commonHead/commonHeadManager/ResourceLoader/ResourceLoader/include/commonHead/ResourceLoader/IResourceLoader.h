@@ -26,6 +26,7 @@ public:
 
     //set string loader from upper layer before you want to use localized string, otherwise it will return empty string
     virtual void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) = 0;
+    [[nodiscard]] virtual std::string getNonLocalizedString(model::NonLocalizedString stringId) const = 0;
     [[nodiscard]] virtual std::string getLocalizedString(model::LocalizedString stringId) const = 0;
     [[nodiscard]] virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const = 0;
 public:

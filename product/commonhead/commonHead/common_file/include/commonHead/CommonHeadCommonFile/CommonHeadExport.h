@@ -9,5 +9,9 @@
         #define COMMONHEAD_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define COMMONHEAD_EXPORT 
+    #if defined(COMMONHEAD_DLL)
+        #define COMMONHEAD_EXPORT __attribute__((visibility("default")))
+    #else
+        #define COMMONHEAD_EXPORT
+    #endif
 #endif

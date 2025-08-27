@@ -10,5 +10,9 @@
         #define SERVICE_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define SERVICE_EXPORT 
+    #if defined(SERVICE_DLL)
+        #define SERVICE_EXPORT __attribute__((visibility("default")))
+    #else
+        #define SERVICE_EXPORT
+    #endif
 #endif

@@ -9,5 +9,9 @@
         #define UIUtilities_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define UIUtilities_EXPORT 
+    #if defined(UIUtilities_DLL)
+        #define UIUtilities_EXPORT __attribute__((visibility("default")))
+    #else
+        #define UIUtilities_EXPORT
+    #endif
 #endif

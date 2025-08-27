@@ -4,7 +4,7 @@
 #include <QtQml>
 #include <QString>
 #include <QList>
-#include <include/UTComponentExport.h>
+#include <UTComponent/UTComponentExport.h>
 
 class UTCOMPONENT_EXPORT MenuItemModel : public QObject
 {

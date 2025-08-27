@@ -9,5 +9,9 @@
         #define AppContext_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define AppContext_EXPORT 
+    #if defined(AppContext_DLL)
+        #define AppContext_EXPORT __attribute__((visibility("default")))
+    #else
+        #define AppContext_EXPORT
+    #endif
 #endif

@@ -9,5 +9,9 @@
         #define UIManager_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define UIManager_EXPORT 
+    #if defined(UIManager_DLL)
+        #define UIManager_EXPORT __attribute__((visibility("default")))
+    #else
+        #define UIManager_EXPORT
+    #endif
 #endif

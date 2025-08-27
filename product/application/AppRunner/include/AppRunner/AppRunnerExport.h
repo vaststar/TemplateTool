@@ -9,5 +9,9 @@
         #define APPRUNNER_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define APPRUNNER_EXPORT 
+    #if defined(APPRUNNER_DLL)
+        #define APPRUNNER_EXPORT __attribute__((visibility("default")))
+    #else
+        #define APPRUNNER_EXPORT
+    #endif
 #endif

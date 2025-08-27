@@ -30,6 +30,7 @@ public:
     virtual model::Color getColor(model::ColorToken colorToken, model::ColorState state) const override;
     
     virtual void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
+    virtual std::string getNonLocalizedString(model::NonLocalizedString stringId) const override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const override;
     ~ResourceLoader() = default;

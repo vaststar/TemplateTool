@@ -17,7 +17,7 @@ commonHead::model::LocalizedString UIResourceStringLoader::convertUILocalizedStr
         return commonHead::model::LocalizedString::{{ enum_name }};
     {% endfor %}
     default:
-        UIResourceeStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedString));
+        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedString));
         return commonHead::model::LocalizedString::None;
     }
 }
@@ -31,7 +31,7 @@ commonHead::model::LocalizedStringWithParam UIResourceStringLoader::convertUILoc
         return commonHead::model::LocalizedStringWithParam::{{ enum_name }};
     {% endfor %}
     default:
-        UIResourceeStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedStringWithParam));
+        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedStringWithParam));
         return commonHead::model::LocalizedStringWithParam::None;
     }
 }
@@ -45,7 +45,7 @@ commonHead::model::NonLocalizedString UIResourceStringLoader::convertUINonLocali
         return commonHead::model::NonLocalizedString::{{ enum_name }};
     {% endfor %}
     default:
-        UIResourceeStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiNonLocalizedString));
+        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiNonLocalizedString));
         return commonHead::model::NonLocalizedString::None;
     }
 }

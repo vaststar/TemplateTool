@@ -85,6 +85,16 @@ void ResourceLoader::setLocalizedStringLoader(std::unique_ptr<IResourceStringLoa
     mResourceStringLoader = std::move(resourceStringLoader);
 }
 
+std::string ResourceLoader::getNonLocalizedString(model::NonLocalizedString stringId) const
+{
+    if (mResourceStringLoader)
+    {
+        return mResourceStringLoader->getNonLocalizedString(stringId);
+    }
+    COMMONHEAD_LOG_WARN("no resourceStringLoader");
+    return {};
+}
+
 std::string ResourceLoader::getLocalizedString(model::LocalizedString stringId) const
 {
     if (mResourceStringLoader)

@@ -9,5 +9,9 @@
         #define UIFabrication_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define UIFabrication_EXPORT 
+    #if defined(UIFabrication_DLL)
+        #define UIFabrication_EXPORT __attribute__((visibility("default")))
+    #else
+        #define UIFabrication_EXPORT
+    #endif
 #endif

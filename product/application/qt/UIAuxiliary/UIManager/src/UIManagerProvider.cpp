@@ -18,7 +18,7 @@ UIManagerProvider::UIManagerProvider(QPointer<UICore::CoreApplication> applicati
     : mTranslatorManager(std::make_unique<TranslatorManager>(application, qmlEngine))
     , mThemeManager(std::make_unique<ThemeManager>(application, qmlEngine, commonheadFramework))
 {
-    qmlEngine->rootContext()->setContextProperty("ThemeManager",mThemeManager.get());
+    // qmlEngine->rootContext()->setContextProperty("ThemeManager",mThemeManager.get());
 }
 
 UIManagerProvider::~UIManagerProvider()

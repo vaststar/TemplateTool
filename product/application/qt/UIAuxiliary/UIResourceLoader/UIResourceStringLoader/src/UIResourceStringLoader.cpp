@@ -7,10 +7,12 @@
 #include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 
 #include "AppUIStringLoader.h"
+#include "LoggerDefine.h"
 
 namespace UIResource{
-void UIResourceStringLoader::registerMetaObject()
+void UIResourceStringLoader::registerUIResourceStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
+    UIResourceStringLoader_LOG_DEBUG("");
     qmlRegisterUncreatableMetaObject(
 	    UIStringToken::staticMetaObject,      // The meta-object of the namespace
 	    "UIResourceLoader",                      // The URI or module name
@@ -18,9 +20,7 @@ void UIResourceStringLoader::registerMetaObject()
 	    "UIStringToken",                      // The name used in QML
 	    "Access to enums only"         // Error message for attempting to create an instance
 	);
-}
-void UIResourceStringLoader::registerResourceStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
-{
+
     if (auto chFramework = commonheadFramework.lock())
     {
         if (auto resourceLoader = chFramework->getResourceLoader())

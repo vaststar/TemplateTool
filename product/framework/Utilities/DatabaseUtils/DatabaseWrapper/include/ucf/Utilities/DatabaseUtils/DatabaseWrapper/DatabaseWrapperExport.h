@@ -7,5 +7,9 @@
         #define DATABASEWRAPPER_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define DATABASEWRAPPER_EXPORT 
+    #if defined(DATABASEWRAPPER_DLL)
+        #define DATABASEWRAPPER_EXPORT __attribute__((visibility("default")))
+    #else
+        #define DATABASEWRAPPER_EXPORT
+    #endif
 #endif
