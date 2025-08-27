@@ -170,11 +170,14 @@ function(BuildQtModule)
             INCLUDES DESTINATION ${MODULE_MODULE_NAME}/include
     )
     
-    # install(EXPORT ${MODULE_MODULE_NAME}Config
-    #     FILE ${MODULE_MODULE_NAME}Targets.cmake
-    #     DESTINATION ${MODULE_MODULE_NAME}/cmake
-    #     NAMESPACE ${MODULE_MODULE_NAME}Export::
-    # )
+    target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
+    if (is_shared_lib)
+        install(EXPORT ${MODULE_MODULE_NAME}Config
+            FILE ${MODULE_MODULE_NAME}Targets.cmake
+            DESTINATION ${MODULE_MODULE_NAME}/cmake
+            NAMESPACE ${MODULE_MODULE_NAME}Export::
+        )
+    endif()
 
     #for project tree view
     # source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_FILES})
