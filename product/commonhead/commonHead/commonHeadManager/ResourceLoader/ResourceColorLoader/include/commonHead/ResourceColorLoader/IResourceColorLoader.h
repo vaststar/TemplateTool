@@ -13,6 +13,6 @@ public:
 
     virtual model::Color getColor(model::ColorToken token, model::ColorState state, model::ColorThemeType theme) const = 0;
 
-    static std::shared_ptr<IResourceColorLoader> createInstance();
+    static std::unique_ptr<IResourceColorLoader> createInstance();
 };
 } // namespace commonHead

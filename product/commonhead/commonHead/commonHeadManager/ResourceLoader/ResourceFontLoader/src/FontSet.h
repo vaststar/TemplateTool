@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <commonHead/ResourceLoader/ResourceLoaderModel.h>
+#include <commonHead/ResourceFontLoader/ResourceFontModel.h>
 
 namespace commonHead{
 

@@ -9,5 +9,9 @@
         #define UIResourceColorLoader_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define UIResourceColorLoader_EXPORT 
+    #if defined(UIResourceColorLoader_DLL)
+        #define UIResourceColorLoader_EXPORT __attribute__((visibility("default")))
+    #else
+        #define UIResourceColorLoader_EXPORT
+    #endif
 #endif

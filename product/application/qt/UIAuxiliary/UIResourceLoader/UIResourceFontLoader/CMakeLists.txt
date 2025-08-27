@@ -1,34 +1,38 @@
-include(BuildModule)
+include(BuildQtModule)
 
-set(MODULE_MODULE_NAME ResourceLoader)
-set(MODULE_IDE_FOLDER commonhead)
+if (WIN32)
+    set(ADD_DEFINITIONS UIResourceFontLoader_DLL)
+else()
+    set(ADD_DEFINITIONS)
+endif()
+
+set(MODULE_MODULE_NAME UIResourceFontLoader)
+set(MODULE_IDE_FOLDER UI)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/commonHead/ResourceLoader/IResourceLoader.h
+    include/UIResourceFontLoader/UIResourceFontLoaderExport.h
+    include/UIResourceFontLoader/UIResourceFontLoader.h
+    include/UIResourceFontLoader/UIFontToken.h
 )
-
 set(MODULE_SOURCE_PRIVATE
-    src/ResourceLoader.h
-    src/ResourceLoader.cpp
+    src/UIResourceFontLoader.cpp
+    src/LoggerDefine.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
-    CommonHeadCommonFile
-    ResourceStringLoader
-    ResourceColorLoader
-    ResourceFontLoader
+    Qt6::Qml
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ClientInfoService
-    CoreFramework
+    ResourceFontLoader
+    MasterLog
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} )
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src )
+set(MODULE_BUILD_PRIVATE_DIR src)
 
-BuildModule(
+BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
 TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
 TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
@@ -38,7 +42,6 @@ TARGET_DEPENDENCIES_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
-TARGET_DEFINITIONS ${ADD_COMMONHEAD_DEFINITIONS}
+TARGET_DEFINITIONS ${ADD_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
-

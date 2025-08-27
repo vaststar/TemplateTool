@@ -5,9 +5,9 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 
 namespace commonHead {
-std::shared_ptr<IResourceColorLoader> IResourceColorLoader::createInstance()
+std::unique_ptr<IResourceColorLoader> IResourceColorLoader::createInstance()
 {
-    return std::make_shared<ResourceColorLoader>();
+    return std::make_unique<ResourceColorLoader>();
 }
 
 ResourceColorLoader::ResourceColorLoader()

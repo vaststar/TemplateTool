@@ -1,3 +1,4 @@
 add_subdirectory(UIResourceColorLoader)
 add_subdirectory(UIResourceStringLoader)
+add_subdirectory(UIResourceFontLoader)
 add_subdirectory(UIResourceLoader)

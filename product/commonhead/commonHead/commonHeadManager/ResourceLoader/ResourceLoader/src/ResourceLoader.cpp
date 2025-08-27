@@ -7,9 +7,10 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 #include <commonHead/ResourceColorLoader/IResourceColorLoader.h>
+#include <commonHead/ResourceFontLoader/IResourceFontLoader.h>
 
 
-#include "ResourceThemeLoader.h"
+// #include "ResourceThemeLoader.h"
 
 namespace commonHead{
 std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
@@ -19,8 +20,9 @@ std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework:
 
 ResourceLoader::ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
-    , mResourceThemeLoader(std::make_unique<ResourceThemeLoader>())
+    // , mResourceThemeLoader(std::make_unique<ResourceThemeLoader>())
     , mResourceColorLoader(IResourceColorLoader::createInstance())
+    , mResourceFontLoader(IResourceFontLoader::createInstance())
 {
     COMMONHEAD_LOG_DEBUG("create ResourceLoader, this:" << this);
 }
@@ -39,18 +41,22 @@ void ResourceLoader::initResourceLoader()
 
 model::Font ResourceLoader::getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const
 {
-    if (mResourceThemeLoader)
+    if (mResourceFontLoader)
     {
-        return mResourceThemeLoader->getFont(getCurrentThemeType(), family, size, weight, isItalic);
+        return mResourceFontLoader->getFont(family, size, weight, isItalic);
     }
-    
-    COMMONHEAD_LOG_WARN("no mResourceThemeLoader");
+    COMMONHEAD_LOG_WARN("no mResourceFontLoader");
     return model::Font();
 }
 
 model::Color ResourceLoader::getColor(model::ColorToken colorToken, model::ColorState state) const
 {
-    return mResourceColorLoader->getColor(colorToken, state, getCurrentColorThemeType());
+    if (mResourceFontLoader)
+    {
+        return mResourceColorLoader->getColor(colorToken, state, getCurrentColorThemeType());
+    }
+    COMMONHEAD_LOG_WARN("no mResourceColorLoader");
+    return model::Color();
 }
 
 model::ColorThemeType ResourceLoader::getCurrentColorThemeType() const
@@ -127,13 +133,13 @@ void ResourceLoader::onClientInfoReady()
 
 void ResourceLoader::addResourceTheme(ucf::service::model::ThemeType themeType)
 {
-    if (mResourceThemeLoader)
-    {
-        mResourceThemeLoader->addTheme(themeType);
-    }
-    else
-    {
-        COMMONHEAD_LOG_WARN("no resourceStringLoader");
-    }
+    // if (mResourceThemeLoader)
+    // {
+    //     mResourceThemeLoader->addTheme(themeType);
+    // }
+    // else
+    // {
+    //     COMMONHEAD_LOG_WARN("no resourceStringLoader");
+    // }
 }
 }

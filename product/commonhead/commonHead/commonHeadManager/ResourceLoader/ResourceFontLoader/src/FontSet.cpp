@@ -7,9 +7,9 @@
 namespace commonHead{
 
 static const std::map<model::FontFamily, std::string> FontFamilyMap = {
-    {model::FontFamily::FontFamily_SegoeUI, "SegoeUI "},
-    {model::FontFamily::FontFamily_Consolas, "Consolas"},
-    {model::FontFamily::FontFamily_SegoeUIEmoji, "SegoeUI  Emoji"}
+    {model::FontFamily::SegoeUI, "SegoeUI "},
+    {model::FontFamily::Consolas, "Consolas"},
+    {model::FontFamily::SegoeUIEmoji, "SegoeUI  Emoji"}
 };
 
 Fonts::Fonts(model::FontFamily family)
@@ -30,22 +30,22 @@ model::Font Fonts::getFont(model::FontSize size, model::FontWeight weight, bool 
     int fontSize = 12;
     switch (size)
     {
-    case model::FontSize::FontSize_ExtraSmall:
+    case model::FontSize::ExtraSmall:
         fontSize = 12;
         break;
-    case model::FontSize::FontSize_Small:
+    case model::FontSize::Small:
         fontSize = 14;
         break;
-    case model::FontSize::FontSize_MediumSmall:
+    case model::FontSize::MediumSmall:
         fontSize = 16;
         break;
-    case model::FontSize::FontSize_Medium:
+    case model::FontSize::Medium:
         fontSize = 20;
         break;
-    case model::FontSize::FontSize_Large:
+    case model::FontSize::Large:
         fontSize = 26;
         break;
-    case model::FontSize::FontSize_ExtraLarge:
+    case model::FontSize::ExtraLarge:
         fontSize = 40;
         break;
     default:
@@ -55,31 +55,31 @@ model::Font Fonts::getFont(model::FontSize size, model::FontWeight weight, bool 
     int fontWeight = 400;
     switch (weight)
     {
-    case model::FontWeight::FontWeight_Thin:
+    case model::FontWeight::Thin:
         fontWeight = 100;
         break;
-    case model::FontWeight::FontWeight_ExtraLight:
+    case model::FontWeight::ExtraLight:
         fontWeight = 200;
         break;
-    case model::FontWeight::FontWeight_Light:
+    case model::FontWeight::Light:
         fontWeight = 300;
         break;
-    case model::FontWeight::FontWeight_Normal:
+    case model::FontWeight::Normal:
         fontWeight = 400;
         break;
-    case model::FontWeight::FontWeight_Medium:
+    case model::FontWeight::Medium:
         fontWeight = 500;
         break;
-    case model::FontWeight::FontWeight_DemiBold:
+    case model::FontWeight::DemiBold:
         fontWeight = 600;
         break;
-    case model::FontWeight::FontWeight_Bold:
+    case model::FontWeight::Bold:
         fontWeight = 700;
         break;
-    case model::FontWeight::FontWeight_ExtraBold:
+    case model::FontWeight::ExtraBold:
         fontWeight = 800;
         break;
-    case model::FontWeight::FontWeight_Black:
+    case model::FontWeight::Black:
         fontWeight = 900;
         break;
     default:

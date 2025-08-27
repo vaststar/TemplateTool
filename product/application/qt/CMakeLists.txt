@@ -7,6 +7,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Gui Widgets LinguistTools Multim
 qt_standard_project_setup(REQUIRES 6.5)
 
 add_subdirectory(UIAuxiliary)
+add_subdirectory(UIComponent)
 add_subdirectory(UIView)
 add_subdirectory(mainUI)
 

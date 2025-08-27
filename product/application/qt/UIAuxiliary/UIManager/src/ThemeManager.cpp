@@ -9,10 +9,10 @@
 
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>
-#include <UIDataStruct/UIDataUtils.h>
 #include <UIResourceLoader/UIResourceLoader.h>
 #include <UIResourceColorLoader/UIResourceColorLoader.h>
 #include <UIResourceStringLoader/UIResourceStringLoader.h>
+#include <UIResourceFontLoader/UIResourceFontLoader.h>
 
 #include "LoggerDefine.h"
 
@@ -90,13 +90,13 @@ QColor ThemeManager::getUIColor(UIColorToken::ColorToken colorEnum, UIColorState
     return QColor();
 }
 
-QFont ThemeManager::getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight, bool isItalic, UIElementData::UIFontFamily family)
+QFont ThemeManager::getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight, bool isItalic, UIFontToken::UIFontFamily family)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
-        commonHead::model::FontFamily vmFontFamily = UIDataUtils::convertUIFontFamilyToVMFontFamily(family);
-        commonHead::model::FontSize vmFontSize = UIDataUtils::convertUIFontSizeToVMFontSize(size);
-        commonHead::model::FontWeight vmFontWeight = UIDataUtils::convertUIFontWeightToVMFontWeight(weight);
+        commonHead::model::FontFamily vmFontFamily = UIResource::UIResourceFontLoader::convertUIFontFamilyToVMFontFamily(family);
+        commonHead::model::FontSize vmFontSize = UIResource::UIResourceFontLoader::convertUIFontSizeToVMFontSize(size);
+        commonHead::model::FontWeight vmFontWeight = UIResource::UIResourceFontLoader::convertUIFontWeightToVMFontWeight(weight);
         auto vmFont = resourceLoader->getFont(vmFontFamily, vmFontSize, vmFontWeight, isItalic);
         return QFont(QString::fromStdString(vmFont.fontFamily), vmFont.fontSize, vmFont.fontWeight, isItalic);
     }

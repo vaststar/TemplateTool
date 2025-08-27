@@ -33,41 +33,6 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="16"/>
-        <source>OK</source>
-        <translation>确定</translation>
-    </message>
-    <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="17"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="18"/>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="19"/>
-        <source>Title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="20"/>
-        <source>aa ww</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="32"/>
-        <source>{{0}} of {{1}} completed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="33"/>
-        <source>test param {{0}}, only 1 param</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="16"/>
         <source>AppSystemTrayController</source>
         <translation type="unfinished"></translation>
@@ -118,11 +83,46 @@
         <source>MediaCameraViewController</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="16"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="17"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="18"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="19"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="20"/>
+        <source>aa ww</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="32"/>
+        <source>{{0}} of {{1}} completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="33"/>
+        <source>test param {{0}}, only 1 param</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UTWindow</name>
     <message>
-        <location filename="../../qt/UIAuxiliary/UIComponent/UTComponent/UTWindow/UTWindow.qml" line="12"/>
+        <location filename="../../qt/UIComponent/UTComponent/UTWindow/UTWindow.qml" line="12"/>
         <source>test ut window</source>
         <translation type="unfinished"></translation>
     </message>

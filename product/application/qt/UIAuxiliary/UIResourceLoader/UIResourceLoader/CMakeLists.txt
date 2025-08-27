@@ -27,6 +27,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Qml
     UIResourceColorLoader
     UIResourceStringLoader
+    UIResourceFontLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework

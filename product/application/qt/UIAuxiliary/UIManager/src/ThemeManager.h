@@ -8,7 +8,6 @@
 #include <QFont>
 #include <QColor>
 
-#include <UIDataStruct/UIElementData.h>
 #include <UIManager/IThemeManager.h>
 
 namespace commonHead{
@@ -36,7 +35,7 @@ public:
     ThemeManager& operator=(ThemeManager&&) = delete;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) override;
-    virtual Q_INVOKABLE QFont getUIFont(UIElementData::UIFontSize size, UIElementData::UIFontWeight weight = UIElementData::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIElementData::UIFontFamily family = UIElementData::UIFontFamily::UIFontFamily_SegoeUI) override;
+    virtual Q_INVOKABLE QFont getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight = UIFontToken::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIFontToken::UIFontFamily family = UIFontToken::UIFontFamily::UIFontFamily_SegoeUI) override;
 
     virtual Q_INVOKABLE QString getNonLocalizedString(UIStringToken::NonLocalizedString stringId) override;
     virtual Q_INVOKABLE QString getLocalizedString(UIStringToken::LocalizedString stringId) override;

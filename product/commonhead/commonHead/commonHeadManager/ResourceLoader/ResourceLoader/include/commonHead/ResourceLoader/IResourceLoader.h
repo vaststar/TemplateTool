@@ -4,7 +4,7 @@
 #include <string>
 #include <initializer_list>
 
-#include <commonHead/ResourceLoader/ResourceLoaderModel.h>
+#include <commonHead/ResourceFontLoader/ResourceFontModel.h>
 #include <ResourceString.h>
 #include <commonHead/ResourceColorLoader/model/Color.h>
 #include <ColorToken.h>

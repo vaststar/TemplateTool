@@ -18,7 +18,8 @@ namespace ucf::service::model{
 namespace commonHead{
 class IResourceStringLoader;
 class IResourceColorLoader;
-class ResourceThemeLoader;
+class IResourceFontLoader;
+// class ResourceThemeLoader;
 class ResourceLoader: public IResourceLoader,
                       public ucf::service::IClientInfoServiceCallback,
                       public std::enable_shared_from_this<ResourceLoader>
@@ -45,8 +46,9 @@ private:
     model::ColorThemeType getCurrentColorThemeType() const;
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
-    const std::unique_ptr<ResourceThemeLoader> mResourceThemeLoader;
-    const std::shared_ptr<IResourceColorLoader> mResourceColorLoader;
+    // const std::unique_ptr<ResourceThemeLoader> mResourceThemeLoader;
+    const std::unique_ptr<IResourceColorLoader> mResourceColorLoader;
+    const std::unique_ptr<IResourceFontLoader> mResourceFontLoader;
     std::unique_ptr<IResourceStringLoader> mResourceStringLoader;
 };
 }
