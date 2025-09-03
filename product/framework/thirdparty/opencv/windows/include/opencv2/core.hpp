@@ -463,10 +463,6 @@ The function can also be emulated with a matrix expression, for example:
 */
 CV_EXPORTS_W void scaleAdd(InputArray src1, double alpha, InputArray src2, OutputArray dst);
 
-/** @example samples/cpp/tutorial_code/HighGUI/AddingImagesTrackbar.cpp
-Check @ref tutorial_trackbar "the corresponding tutorial" for more details
-*/
-
 /** @brief Calculates the weighted sum of two arrays.
 
 The function addWeighted calculates the weighted sum of two arrays as follows:
@@ -808,6 +804,11 @@ Possible usage with some positive example data:
     // 10.0     1.0     (shift to right border)
     normalize(positiveData, normalizedData_minmax, 1.0, 0.0, NORM_MINMAX);
 @endcode
+
+@note Due to rounding issues, min-max normalization can result in values outside provided boundaries.
+If exact range conformity is needed, following workarounds can be used:
+- use double floating point precision (dtype = CV_64F)
+- manually clip values (`cv::max(res, left_bound, res)`, `cv::min(res, right_bound, res)` or `np.clip`)
 
 @param src input array.
 @param dst output array of the same size as src .
@@ -2008,8 +2009,8 @@ The function solveCubic finds the real roots of a cubic equation:
 
 The roots are stored in the roots array.
 @param coeffs equation coefficients, an array of 3 or 4 elements.
-@param roots output array of real roots that has 1 or 3 elements.
-@return number of real roots. It can be 0, 1 or 2.
+@param roots output array of real roots that has 0, 1, 2 or 3 elements.
+@return number of real roots. It can be -1 (all real numbers), 0, 1, 2 or 3.
 */
 CV_EXPORTS_W int solveCubic(InputArray coeffs, OutputArray roots);
 
