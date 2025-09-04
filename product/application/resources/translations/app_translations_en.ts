@@ -6,7 +6,7 @@
     <message>
         <location filename="../../qt/UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Quit</translation>
     </message>
 </context>
 <context>
@@ -50,7 +50,7 @@
     </message>
     <message>
         <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="47"/>
-        <source>mine test window</source>
+        <source>my test window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -105,7 +105,7 @@
     </message>
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="20"/>
-        <source>qw tt</source>
+        <source>aa ww</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

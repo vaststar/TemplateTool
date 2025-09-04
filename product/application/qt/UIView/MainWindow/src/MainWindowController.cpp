@@ -44,7 +44,7 @@ void MainWindowController::initializeController(QPointer<AppContext> appContext)
 
 QString MainWindowController::getTitle() const
 {
-    return QObject::tr("mine test window");
+    return QObject::tr("my test window");
 }
 
 int MainWindowController::getHeight() const
