@@ -13,23 +13,23 @@ add_subdirectory(mainUI)
 
 set_target_properties(all_qmllint PROPERTIES FOLDER UI)
 
-file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "*.cpp" "*.qml" "${UCF_CODE_GENERATOR_DIR}/*.cpp")
-set(GENERATED_CPP_FILES
-    "${UCF_CODE_GENERATOR_DIR}/UIResourceStringLoader/ResourceStringMap.cpp"
-)
+file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "*.cpp" "*.qml")
+set(GENERATED_CPP_FILES ${UCF_CODE_GENERATOR_DIR}/UIResourceStringLoader/ResourceStringMap.cpp)
 list(APPEND ALL_TRANSLATION_SOURCE_FILES ${GENERATED_CPP_FILES})
 
-set(Translation_DIR ../resources/translations)
+set(Translation_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../resources/translations)
 set(Translation_LIB UIView)
+set(Translation_TS_FILES        
+    ${Translation_DIR}/app_translations_en.ts
+    ${Translation_DIR}/app_translations_zh-CN.ts
+)
 
-qt_add_translations(${Translation_LIB}  
+qt_add_translations(
+    ${Translation_LIB}  
     TS_FILE_BASE app_translations
-    TS_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../resources/translations
-    TS_FILES 
-        ${Translation_DIR}/app_translations_en.ts
-        ${Translation_DIR}/app_translations_zh-CN.ts
-    SOURCES 
-        ${ALL_TRANSLATION_SOURCE_FILES}
+    TS_FILE_DIR ${Translation_DIR}
+    TS_FILES ${Translation_TS_FILES}
+    SOURCES ${ALL_TRANSLATION_SOURCE_FILES}
 )
 
 SetIDEFolder(
@@ -44,5 +44,8 @@ SetIDEFolder(
         UI/translations
 )
 
-add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+if (TARGET ${Translation_LIB}_lupdate)
+    add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+endif()
+
 add_dependencies(${Translation_LIB} update_translations )
