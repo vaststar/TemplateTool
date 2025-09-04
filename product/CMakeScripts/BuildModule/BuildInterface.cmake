@@ -51,10 +51,10 @@ function(BuildInterface)
             MODULE_NAME ${INTERFACE_MODULE_NAME}
     )
 
-    # add_custom_target(${INTERFACE_MODULE_NAME}Header SOURCES ${INTERFACE_TARGET_SOURCE_PUBLIC_HEADER})
-    # if(DEFINED  INTERFACE_IDE_FOLDER)
-    #         set_target_properties(${INTERFACE_MODULE_NAME}Header PROPERTIES FOLDER ${INTERFACE_IDE_FOLDER})
-    # endif()
+    add_custom_target(${INTERFACE_MODULE_NAME}Header SOURCES ${INTERFACE_TARGET_SOURCE_PUBLIC_HEADER})
+    if(DEFINED  INTERFACE_IDE_FOLDER)
+            set_target_properties(${INTERFACE_MODULE_NAME}Header PROPERTIES FOLDER ${INTERFACE_IDE_FOLDER})
+    endif()
 
     # add_library(${INTERFACE_MODULE_NAME}Interface ALIAS ${INTERFACE_MODULE_NAME})
 

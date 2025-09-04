@@ -4,7 +4,7 @@
         "CancelLabel": "Cancel",
         "CloseLabel": "Close",
         "TitleLable": "Title",
-        "todotest": "456 456"
+        "todotest": "qw tt"
     },
     "LocalizedStringWithParam": {
         "ProgressLabel": "{{0}} of {{1}} completed",
