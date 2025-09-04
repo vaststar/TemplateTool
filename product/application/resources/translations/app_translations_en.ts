@@ -105,7 +105,7 @@
     </message>
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="20"/>
-        <source>qw tt</source>
+        <source>456 456</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

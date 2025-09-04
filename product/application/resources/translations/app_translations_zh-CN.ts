@@ -35,7 +35,7 @@
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
-        <translation>可以</translation>
+        <translation>确定</translation>
     </message>
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="17"/>
@@ -54,7 +54,7 @@
     </message>
     <message>
         <location filename="../../../../build/codegen/UIResourceStringLoader/ResourceStringMap.cpp" line="20"/>
-        <source>qw tt</source>
+        <source>456 456</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

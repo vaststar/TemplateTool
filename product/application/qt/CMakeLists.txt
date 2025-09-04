@@ -53,5 +53,5 @@ SetIDEFolder(
 # 确保内部 lupdate target 依赖你的源码
 
 add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
-add_dependencies(${Translation_LIB} ${Translation_LIB}_lupdate)
+add_dependencies(${Translation_LIB} ${Translation_LIB}_lupdate update_translations)
 # add_dependencies(UIView ${Translation_LIB})
