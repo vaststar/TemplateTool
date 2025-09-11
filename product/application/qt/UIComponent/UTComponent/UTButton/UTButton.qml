@@ -10,6 +10,7 @@ BaseButton {
     property var fontSize: UIFontToken.UIFontSize_Small
     property var backgroundColorEnum: UIColorToken.ButtonPrimaryBackground;
     property var radius: Math.min(control.height, control.width)/2
+    clip: false
 
     contentItem: Text{
         text: control.text

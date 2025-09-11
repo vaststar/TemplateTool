@@ -53,7 +53,7 @@ Item{
         delegate: Item {
             implicitWidth: padding + label.x + label.implicitWidth + padding
             implicitHeight: label.implicitHeight * 1.5
-            focus: true
+            focus: treeView.currentRow === row 
 
             readonly property real indentation: 20
             readonly property real padding: 5
@@ -118,10 +118,6 @@ Item{
                 
             }
         }
-
-        // UTFocusItem{
-        //     focusRadius: 2
-        // }
     }
 
     
