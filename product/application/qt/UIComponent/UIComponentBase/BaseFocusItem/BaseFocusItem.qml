@@ -41,16 +41,17 @@ Item {
             // 圆角矩形
             else if (r > 0) {
                 ctx.beginPath()
-                ctx.moveTo(lw2 + r, lw2)
-                ctx.lineTo(w - r + lw2, lw2)
-                ctx.arcTo(w + lw2, lw2, w + lw2, r + lw2, r)
-                ctx.lineTo(w + lw2, h - r + lw2)
-                ctx.arcTo(w + lw2, h + lw2, w - r + lw2, h + lw2, r)
-                ctx.lineTo(lw2 + r, h + lw2)
-                ctx.arcTo(lw2, h + lw2, lw2, h - r + lw2, r)
-                ctx.lineTo(lw2, r + lw2)
-                ctx.arcTo(lw2, lw2, lw2 + r, lw2, r)
-                ctx.closePath()
+                ctx.roundedRect(lw2, lw2, w, h, r, r)
+                // ctx.moveTo(lw2 + r, lw2)
+                // ctx.lineTo(w - r + lw2, lw2)
+                // ctx.arcTo(w + lw2, lw2, w + lw2, r + lw2, r)
+                // ctx.lineTo(w + lw2, h - r + lw2)
+                // ctx.arcTo(w + lw2, h + lw2, w - r + lw2, h + lw2, r)
+                // ctx.lineTo(lw2 + r, h + lw2)
+                // ctx.arcTo(lw2, h + lw2, lw2, h - r + lw2, r)
+                // ctx.lineTo(lw2, r + lw2)
+                // ctx.arcTo(lw2, lw2, lw2 + r, lw2, r)
+                // ctx.closePath()
                 ctx.stroke()
             }
             // 普通矩形
