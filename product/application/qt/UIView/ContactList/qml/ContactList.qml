@@ -44,7 +44,7 @@ Item{
         }
         width:200
         height:200
-        clip: true
+        clip: false
 
         // The model needs to be a QAbstractItemModel
         model: treeModel
@@ -53,7 +53,7 @@ Item{
         delegate: Item {
             implicitWidth: padding + label.x + label.implicitWidth + padding
             implicitHeight: label.implicitHeight * 1.5
-            focus: treeView.currentRow === row 
+            focus: treeView.currentRow === row && treeView.activeFocus
 
             readonly property real indentation: 20
             readonly property real padding: 5
@@ -89,8 +89,6 @@ Item{
                 opacity: (treeView.alternatingRows && row % 2 !== 0) ? 0.8 : 0.5
             }
 
-            UTFocusItem{
-            }
 
             Label {
                 id: indicator
@@ -113,9 +111,11 @@ Item{
                 x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - padding - x
-                clip: true
                 text: model.display
                 
+            }
+            UTFocusItem{
+                z: 10
             }
         }
     }

@@ -33,10 +33,9 @@ Item {
             if (r >= h/2) r = h/2 - 1
 
             // 圆形
+            ctx.beginPath()
             if (parent.width === parent.height && parent.width > 0) {
-                ctx.beginPath()
                 ctx.arc(parent.width/2, parent.height/2, parent.width/2 - lw2, 0, 2*Math.PI)
-                ctx.stroke()
             }
             // 圆角矩形
             else if (r > 0) {
@@ -52,12 +51,12 @@ Item {
                 // ctx.lineTo(lw2, r + lw2)
                 // ctx.arcTo(lw2, lw2, lw2 + r, lw2, r)
                 // ctx.closePath()
-                ctx.stroke()
             }
             // 普通矩形
             else {
-                ctx.strokeRect(lw2, lw2, w, h)
+                ctx.rect(lw2, lw2, w, h)
             }
+            ctx.stroke()
         }
 
         onWidthChanged: requestPaint()
