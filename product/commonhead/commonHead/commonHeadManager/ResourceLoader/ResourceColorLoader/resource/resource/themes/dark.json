@@ -5,26 +5,26 @@
       "normal": "slate-600"
     },
     "focus-outline":{
-      "normal": "purple-600"
+      "normal": "blue-700"
     },
     "button-primary-text": {
-      "normal": "slate-950"
+      "normal": "gray-50"
     },
     "button-primary-background": {
-      "normal": "blue-600",
-      "hovered": "blue-700",
-      "pressed": "blue-800",
-      "disabled": "gray-900",
-      "checked": "blue-600",
-      "focused": "blue-600"
+      "normal": "gray-950",
+      "hovered": "gray-700",
+      "pressed": "gray-600",
+      "disabled": "gray-600",
+      "checked": "gray-950",
+      "focused": "gray-950"
     },
     "button-primary-border": {
-      "normal": "blue-600",
-      "hovered": "blue-700",
-      "pressed": "blue-800",
-      "disabled": "gray-900",
-      "checked": "blue-600",
-      "focused": "blue-600"
+      "normal": "gray-400",
+      "hovered": "gray-400",
+      "pressed": "gray-400",
+      "disabled": "gray-400",
+      "checked": "gray-400",
+      "focused": "gray-400"
     }
   }
 }

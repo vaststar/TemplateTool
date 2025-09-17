@@ -4,5 +4,5 @@ import UTComponent 1.0
 
 BaseFocusItem {
     id: control
-    focusColor: UTComponentUtil.getPlainUIColor(UIColorToken.FocusOutline, UIColorState.Normal);
+    focusColor: UTComponentUtil.getPlainUIColor(UIColorToken.FocusOutline, UIColorState.Normal)
 }

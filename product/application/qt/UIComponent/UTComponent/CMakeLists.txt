@@ -49,7 +49,6 @@ set(MODULE_QML_TARGET_FILES
     UTButton/UTButton.qml
     UTButton/UTImageButton.qml
     UTFocusItem/UTFocusItem.qml
-    UTFocusItem/UTFocusItem1.qml
     UTComponentUtil/UTComponentUtil.js
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
