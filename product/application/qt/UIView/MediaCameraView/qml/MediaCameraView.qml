@@ -8,11 +8,9 @@ import UTComponent 1.0
 ApplicationWindow
 {
     id: root
-    objectName: "MediaCameraView"
-
+    property alias controller: mediaController
     MediaCameraViewController{
         id: mediaController
-        objectName: "MediaCameraViewController"
         videoSink: videoOutput.videoSink
     }
 

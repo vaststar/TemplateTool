@@ -1,5 +1,11 @@
 #include <UTMenu/MenuItemModel.h>
 
+MenuItemModel::MenuItemModel(QObject* parent)
+    : QObject(parent)
+{
+
+}
+
 MenuItemModel::MenuItemModel(const QString& name, const QString& action, QObject* parent)
     : QObject(parent)
     , m_name(name)

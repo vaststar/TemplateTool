@@ -49,11 +49,10 @@ public:
     /**
      * * @brief load qml window with qml resource path and controller object name
      * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
-     * * @param controllerObjectName controller object name, such as MainWindowController
      * * @param controllerCallback callback function to get controller object
      * * @note please ensure the qml code is window type
      */
-    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback) = 0;
+    virtual void loadQmlWindow(const QString& qmlResource, const UICore::ControllerCallback& controllerCallback) = 0;
 
     static std::unique_ptr<IUIViewFactory> createInstance(QPointer<UICore::CoreQmlEngine> qmlEngine);
 };

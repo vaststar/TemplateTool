@@ -14,6 +14,7 @@ class UTCOMPONENT_EXPORT MenuItemModel : public QObject
     Q_PROPERTY(QList<MenuItemModel*> subItems READ subItems CONSTANT)
     QML_ELEMENT
 public:
+    MenuItemModel(QObject* parent = nullptr);
     MenuItemModel(const QString& name, const QString& action, QObject* parent = nullptr);
 
     QString name() const;

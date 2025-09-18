@@ -9,10 +9,10 @@ import UIResourceLoader 1.0
 ApplicationWindow
 {
     id: root
+    property alias controller: mainController
 
     MainWindowController{
         id: mainController
-        objectName: "MainWindowController"
     }
 
     visible: mainController.visible

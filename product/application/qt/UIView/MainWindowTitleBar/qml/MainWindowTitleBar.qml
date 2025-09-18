@@ -8,8 +8,11 @@ import UIResourceLoader 1.0
 // import "."  // 导入当前目录的所有 QML 组件
 
 Rectangle {
+        property alias controller: titleBarController
+        MainWindowTitleBarController{
+            id: titleBarController
+        }
         height: 40
-        property var controller: MainWindowTitleBarController{}
         
         color: controller.color//"#3c5bcaff"  // 设置标题栏颜色
         visible: controller.visible

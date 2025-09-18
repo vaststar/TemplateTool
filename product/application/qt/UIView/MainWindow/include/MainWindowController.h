@@ -6,12 +6,12 @@
 #include <UICore/CoreController.h>
 
 //don't know why this is needed because the linux report unknown type of these controller
-#include "ContactList/include/ContactListViewController.h"
-#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
-#include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
-#include "MainWindowFootBar/include/MainWindowFootBarController.h"
-#include "MainWindowSideBar/include/MainWindowSideBarController.h"
-#include "AppSystemTray/include/AppSystemTrayController.h"
+// #include "ContactList/include/ContactListViewController.h"
+// #include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
+// #include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
+// #include "MainWindowFootBar/include/MainWindowFootBarController.h"
+// #include "MainWindowSideBar/include/MainWindowSideBarController.h"
+// #include "AppSystemTray/include/AppSystemTrayController.h"
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -24,19 +24,19 @@ namespace commonHead{
 }
 
 class AppContext;
-// class ContactListViewController;
-// class MainWindowMenuBarController;
-// class MainWindowTitleBarController;
-// class MainWindowFootBarController;
-// class MainWindowSideBarController;
-// class AppSystemTrayController;
-// //forward declaration to use the poinnter in slots
-// Q_DECLARE_OPAQUE_POINTER(ContactListViewController*)
-// Q_DECLARE_OPAQUE_POINTER(MainWindowMenuBarController*)
-// Q_DECLARE_OPAQUE_POINTER(MainWindowTitleBarController*)
-// Q_DECLARE_OPAQUE_POINTER(MainWindowFootBarController*)
-// Q_DECLARE_OPAQUE_POINTER(MainWindowSideBarController*)
-// Q_DECLARE_OPAQUE_POINTER(AppSystemTrayController*);
+class ContactListViewController;
+class MainWindowMenuBarController;
+class MainWindowTitleBarController;
+class MainWindowFootBarController;
+class MainWindowSideBarController;
+class AppSystemTrayController;
+//forward declaration to use the poinnter in slots
+Q_DECLARE_OPAQUE_POINTER(ContactListViewController*)
+Q_DECLARE_OPAQUE_POINTER(MainWindowMenuBarController*)
+Q_DECLARE_OPAQUE_POINTER(MainWindowTitleBarController*)
+Q_DECLARE_OPAQUE_POINTER(MainWindowFootBarController*)
+Q_DECLARE_OPAQUE_POINTER(MainWindowSideBarController*)
+Q_DECLARE_OPAQUE_POINTER(AppSystemTrayController*);
 
 class MainWindowController : public UICore::CoreController
 {

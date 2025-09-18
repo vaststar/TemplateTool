@@ -8,7 +8,10 @@ import UTComponent 1.0
 
 MenuBar {
     id: root
-    property var controller: MainWindowMenuBarController{}
+    property alias controller: menuBarController
+    MainWindowMenuBarController{
+        id: menuBarController
+    }
 
     Component.onCompleted:{
         controller.controllerInitialized.connect(createMenuItems)

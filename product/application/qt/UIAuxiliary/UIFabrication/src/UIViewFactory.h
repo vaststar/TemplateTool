@@ -18,7 +18,7 @@ public:
 
     virtual void loadQmlWindow(const QString& qmlResource) override;
     virtual void loadQmlWindow(const QString& qmlResource, UICore::CoreController* controller) override;
-    virtual void loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback) override;
+    virtual void loadQmlWindow(const QString& qmlResource, const UICore::ControllerCallback& controllerCallback) override;
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;

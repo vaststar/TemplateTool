@@ -116,14 +116,9 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
     {
         UIFabrication_LOG_WARN("load qml failed: " << actualQmlResource.toStdString() << ", error: " << component.errorString().toStdString());
     }
-
-    // QString actualQmlResource = generateQmlResourcePath(qmlResource);
-    // UIFabrication_LOG_DEBUG("start load qml: " << actualQmlResource.toStdString());
-    // mQmlEngine->load(actualQmlResource);
-    // UIFabrication_LOG_DEBUG("finish load qml: " << actualQmlResource.toStdString());
 }
 
-void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& controllerObjectName, const UICore::ControllerCallback& controllerCallback)
+void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::ControllerCallback& controllerCallback)
 {
     if (!mQmlEngine)
     {
@@ -154,17 +149,20 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const QString& con
                 });
             }
 
-            if (!controllerObjectName.isEmpty() && controllerCallback)
+            if (controllerCallback)
             {
-                if (auto controller = object->findChild<UICore::CoreController*>(controllerObjectName))
+                if (QVariant controllerVar = object->property("controller"); controllerVar.isValid())
                 {
-                    UIFabrication_LOG_DEBUG("controller found, do callback, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
-                    controllerCallback(controller);
-                    UIFabrication_LOG_DEBUG("controller found, callback done, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                    if (auto controller = qobject_cast<UICore::CoreController*>(controllerVar.value<QObject*>())) 
+                    {
+                        UIFabrication_LOG_DEBUG("controller found, do callback, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                        controllerCallback(controller);
+                        UIFabrication_LOG_DEBUG("controller found, callback done, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
+                    }
                 }
                 else
                 {
-                    UIFabrication_LOG_WARN("controller not found, controllerObjectName: " << controllerObjectName.toStdString());
+                    UIFabrication_LOG_WARN("no controller property found in qml object, objectName: " << object->objectName().toStdString());
                 }
             }
         }

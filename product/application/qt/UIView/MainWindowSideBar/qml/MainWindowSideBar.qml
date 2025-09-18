@@ -5,7 +5,10 @@ import UIView 1.0
 import UTComponent 1.0
 Item{
     id: root
-    property var controller: MainWindowSideBarController{}
+    property alias controller: sideBarController
+    MainWindowSideBarController{
+        id: sideBarController
+    }
 
     ListView {
         id: naviListView

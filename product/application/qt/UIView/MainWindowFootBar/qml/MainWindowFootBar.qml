@@ -4,9 +4,9 @@ import QtQuick.Layouts
 import UIView 1.0
 
 ToolBar {
-    property alias controller: controller
+    property alias controller: footBarController
     MainWindowFootBarController {
-        id: controller
+        id: footBarController
     }
     RowLayout {
         anchors.fill: parent

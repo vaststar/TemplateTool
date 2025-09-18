@@ -16,6 +16,12 @@
 
 
 #include "MediaCameraView/include/MediaCameraViewController.h"
+#include "ContactList/include/ContactListViewController.h"
+#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
+#include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
+#include "MainWindowFootBar/include/MainWindowFootBarController.h"
+#include "MainWindowSideBar/include/MainWindowSideBarController.h"
+#include "AppSystemTray/include/AppSystemTrayController.h"
 
 
 
@@ -97,7 +103,7 @@ void MainWindowController::openCamera()
     mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
 
-    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), "MediaCameraViewController", [this](auto controller){
+    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller){
         if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
         {
             mediaController->initializeController(mAppContext);

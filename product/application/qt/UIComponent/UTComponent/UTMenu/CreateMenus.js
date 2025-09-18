@@ -13,7 +13,7 @@ function createMenu(parent, menuItem) {
             }
             else {
                 var subitem_component = Qt.createComponent("UTMenuItem.qml")
-                var subitem = subitem_component.createObject(menu, { text: menuItem.subItems[index].name})
+                var subitem = subitem_component.createObject(null, { text: menuItem.subItems[index].name})
                 subitem.triggered.connect(menuItem.subItems[index].triggered)
                 menu.addItem(subitem)
             }
