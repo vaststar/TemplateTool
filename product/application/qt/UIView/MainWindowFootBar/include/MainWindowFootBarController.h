@@ -13,7 +13,6 @@ class MainWindowFootBarController: public UICore::CoreController
     QML_ELEMENT
 public:
     explicit MainWindowFootBarController(QObject *parent = nullptr);
-    virtual QString getControllerName() const override;
     void initializeController(QPointer<AppContext> appContext);
     QString getFooterName() const;
 signals:

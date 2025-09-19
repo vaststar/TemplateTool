@@ -27,7 +27,6 @@ class MainWindowMenuBarController : public UICore::CoreController
     QML_ELEMENT
 public:
     MainWindowMenuBarController(QObject* parent = nullptr);
-    virtual QString getControllerName() const override;
 
     void initializeController(QPointer<AppContext> appContext);
 

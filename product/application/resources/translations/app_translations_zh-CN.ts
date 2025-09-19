@@ -33,54 +33,24 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="16"/>
-        <source>AppSystemTrayController</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="26"/>
-        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="27"/>
+        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="22"/>
+        <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="21"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/ContactList/src/ContactListViewController.cpp" line="19"/>
-        <source>ContactListViewController</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="53"/>
+        <location filename="../../qt/UIView/MainWindow/src/MainWindowController.cpp" line="45"/>
         <source>my test window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="16"/>
-        <source>MainWindowFootBarController</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="27"/>
+        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="22"/>
         <source>my footer bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="16"/>
-        <source>MainWindowSideBarController</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="18"/>
-        <source>MainWindowTitleBarController</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="30"/>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="25"/>
         <source>oo window title bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt/UIView/MediaCameraView/src/MediaCameraViewController.cpp" line="27"/>
-        <source>MediaCameraViewController</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

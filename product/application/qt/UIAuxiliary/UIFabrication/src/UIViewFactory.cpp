@@ -159,6 +159,10 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::Cont
                         controllerCallback(controller);
                         UIFabrication_LOG_DEBUG("controller found, callback done, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
                     }
+                    else
+                    {
+                        UIFabrication_LOG_WARN("no controller object found in qml object, objectName: " << object->objectName().toStdString());
+                    }
                 }
                 else
                 {

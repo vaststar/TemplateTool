@@ -7,4 +7,9 @@ CoreController::CoreController(QObject* parent)
 {
 
 }
+
+QString CoreController::getControllerName() const
+{
+    return metaObject()->className();
+}
 }

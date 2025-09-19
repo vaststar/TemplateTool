@@ -11,11 +11,6 @@ AppSystemTrayController::AppSystemTrayController(QObject *parent)
     UIVIEW_LOG_DEBUG("create AppSystemTrayController");
 }
 
-QString AppSystemTrayController::getControllerName() const
-{
-    return QObject::tr("AppSystemTrayController");
-}
-
 void AppSystemTrayController::initializeController(QPointer<AppContext> appContext)
 {
     mAppContext = appContext;

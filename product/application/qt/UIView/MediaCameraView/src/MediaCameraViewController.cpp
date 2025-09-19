@@ -22,11 +22,6 @@ MediaCameraViewController::~MediaCameraViewController()
     UIVIEW_LOG_DEBUG("delete MediaCameraViewController");
 }
 
-QString MediaCameraViewController::getControllerName() const
-{
-    return QObject::tr("MediaCameraViewController");
-}
-
 QVideoSink* MediaCameraViewController::getVideoSink() const 
 { 
     return mVideoSink; 

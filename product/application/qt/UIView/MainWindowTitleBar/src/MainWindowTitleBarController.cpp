@@ -13,11 +13,6 @@ MainWindowTitleBarController::MainWindowTitleBarController(QObject *parent)
     UIVIEW_LOG_DEBUG("create MainWindowTitleBarController");
 }
 
-QString MainWindowTitleBarController::getControllerName() const
-{
-    return QObject::tr("MainWindowTitleBarController");
-}
-
 void MainWindowTitleBarController::initializeController(QPointer<AppContext> appContext)
 {
     UIVIEW_LOG_DEBUG("");

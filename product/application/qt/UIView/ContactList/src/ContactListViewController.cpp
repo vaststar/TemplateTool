@@ -14,11 +14,6 @@ ContactListViewController::ContactListViewController(QObject *parent)
     UIVIEW_LOG_DEBUG("create ContactListViewController");
 }
 
-QString ContactListViewController::getControllerName() const
-{
-    return QObject::tr("ContactListViewController");
-}
-
 void ContactListViewController::initializeController(QPointer<AppContext> appContext)
 {
     UIVIEW_LOG_DEBUG("");

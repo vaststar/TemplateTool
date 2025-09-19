@@ -19,12 +19,6 @@ MainWindowMenuBarController::MainWindowMenuBarController(QObject* parent)
     UIVIEW_LOG_DEBUG("create MainWindowMenuBarController");
 }
 
-QString MainWindowMenuBarController::getControllerName() const
-{
-    return "MainWindowMenuBarController";
-}
-
-
 void MainWindowMenuBarController::initializeController(QPointer<AppContext> appContext)
 {
     UIVIEW_LOG_DEBUG("");

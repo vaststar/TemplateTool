@@ -16,34 +16,26 @@
 
 
 #include "MediaCameraView/include/MediaCameraViewController.h"
-#include "ContactList/include/ContactListViewController.h"
-#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
-#include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
-#include "MainWindowFootBar/include/MainWindowFootBarController.h"
-#include "MainWindowSideBar/include/MainWindowSideBarController.h"
-#include "AppSystemTray/include/AppSystemTrayController.h"
+// #include "ContactList/include/ContactListViewController.h"
+// #include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
+// #include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
+// #include "MainWindowFootBar/include/MainWindowFootBarController.h"
+// #include "MainWindowSideBar/include/MainWindowSideBarController.h"
+// #include "AppSystemTray/include/AppSystemTrayController.h"
 
 
 
 MainWindowController::MainWindowController(QObject* parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create MainWindowController");
 }
 
-QString MainWindowController::getControllerName() const
-{
-    return QStringLiteral("MainWindowController");
-}
-
-void MainWindowController::initializeController(QPointer<AppContext> appContext)
+void MainWindowController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
-    assert(mAppContext);
 
-    mMainViewModel = appContext->getViewModelFactory()->createMainWindowViewModelInstance();
+    mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
     emit controllerInitialized();
     emit visibleChanged();
 }
@@ -65,48 +57,48 @@ int MainWindowController::getWidth() const
 
 bool MainWindowController::isVisible() const
 {
-    return mAppContext != nullptr;
+    return getAppContext() != nullptr;
 }
 
 void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
 {
-    contactListController->initializeController(mAppContext);
+    contactListController->initializeController(getAppContext());
 }
 
 void MainWindowController::onInitMenuBarController(MainWindowMenuBarController* menuBarController)
 {
-    menuBarController->initializeController(mAppContext);
+    menuBarController->initializeController(getAppContext());
 }
 
 void MainWindowController::onInitTitleBarController(MainWindowTitleBarController* titleBarController)
 {
-    titleBarController->initializeController(mAppContext);
+    titleBarController->initializeController(getAppContext());
 }
 
 void MainWindowController::onInitFootBarController(MainWindowFootBarController* footBarController)
 {
-    footBarController->initializeController(mAppContext);
+    footBarController->initializeController(getAppContext());
 }
 
 void MainWindowController::onInitSideBarController(MainWindowSideBarController* sideBarController)
 {
-    sideBarController->initializeController(mAppContext);
+    sideBarController->initializeController(getAppContext());
 }
 
 void MainWindowController::onInitSystemTrayController(AppSystemTrayController* systemTrayController)
 {
-    systemTrayController->initializeController(mAppContext);
+    systemTrayController->initializeController(getAppContext());
 }
 
 void MainWindowController::openCamera()
 {
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
+    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
 
-    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller){
+    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller){
         if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
         {
-            mediaController->initializeController(mAppContext);
+            mediaController->initializeController(getAppContext());
         }
     });
 }

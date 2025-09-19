@@ -28,7 +28,6 @@ class MediaCameraViewController: public UICore::CoreController
 public:
     explicit MediaCameraViewController(QObject *parent = nullptr);
     ~MediaCameraViewController();
-    virtual QString getControllerName() const override;
     void initializeController(QPointer<AppContext> appContext);
 
     QVideoSink* getVideoSink() const;

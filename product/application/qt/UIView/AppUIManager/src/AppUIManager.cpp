@@ -12,6 +12,7 @@
 #include <UTComponent/UTComponent.h>
 
 #include "LoggerDefine/LoggerDefine.h"
+#include "UIViewBase/include/UIViewControllerInitializer.h"
 #include "AppUIController.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -32,12 +33,14 @@ private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
     std::unique_ptr<AppContext> mAppContext;
+    std::unique_ptr<UIViewControllerInitializer> mControllerInitializer;
 };
 
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
     , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
+    , mControllerInitializer(std::make_unique<UIViewControllerInitializer>(mAppContext.get()))
 {
     registerQmlTypes();
 }
@@ -47,6 +50,7 @@ void AppUIManager::Impl::registerQmlTypes()
     UIVIEW_LOG_DEBUG("");
     UIDataUtils::registerMetaObject();   
     UTComponent::registerUTComponent();
+    mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

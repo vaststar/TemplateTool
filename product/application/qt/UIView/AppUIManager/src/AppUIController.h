@@ -20,7 +20,6 @@ class AppUIController : public UICore::CoreController
     Q_OBJECT
 public:
     AppUIController(QObject* parent = nullptr);
-    virtual QString getControllerName() const override;
 
     void runApp(AppContext* appContext);
 

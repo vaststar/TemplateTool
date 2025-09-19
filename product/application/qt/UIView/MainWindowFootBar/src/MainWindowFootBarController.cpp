@@ -11,11 +11,6 @@ MainWindowFootBarController::MainWindowFootBarController(QObject *parent)
     UIVIEW_LOG_DEBUG("create MainWindowFootBarController");
 }
 
-QString MainWindowFootBarController::getControllerName() const
-{
-    return QObject::tr("MainWindowFootBarController");
-}
-
 void MainWindowFootBarController::initializeController(QPointer<AppContext> appContext)
 {
     UIVIEW_LOG_DEBUG("");

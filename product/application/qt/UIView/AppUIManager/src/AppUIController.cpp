@@ -24,11 +24,6 @@ AppUIController::AppUIController(QObject* parent)
     UIVIEW_LOG_DEBUG("create AppUIController");
 }
 
-QString AppUIController::getControllerName() const
-{
-    return "AppUIController";
-}
-
 void AppUIController::runApp(AppContext* appContext)
 {
     UIVIEW_LOG_DEBUG("Qt Version: " << qVersion());

@@ -22,7 +22,6 @@ class ContactListViewController: public UICore::CoreController
     QML_ELEMENT
 public:
     explicit ContactListViewController(QObject *parent = nullptr);
-    virtual QString getControllerName() const override;
     void initializeController(QPointer<AppContext> appContext);
 public slots:
     void buttonClicked();

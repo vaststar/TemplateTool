@@ -16,7 +16,6 @@ class MainWindowTitleBarController: public UICore::CoreController
     QML_ELEMENT
 public:
     explicit MainWindowTitleBarController(QObject *parent = nullptr);
-    virtual QString getControllerName() const override;
     void initializeController(QPointer<AppContext> appContext);
 public:
     QString getTitle() const;

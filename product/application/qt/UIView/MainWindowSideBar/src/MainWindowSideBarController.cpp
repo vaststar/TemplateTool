@@ -11,11 +11,6 @@ MainWindowSideBarController::MainWindowSideBarController(QObject *parent)
     UIVIEW_LOG_DEBUG("create MainWindowSideBarController");
 }
 
-QString MainWindowSideBarController::getControllerName() const
-{
-    return QObject::tr("MainWindowSideBarController");
-}
-
 void MainWindowSideBarController::initializeController(QPointer<AppContext> appContext)
 {
     UIVIEW_LOG_DEBUG("");

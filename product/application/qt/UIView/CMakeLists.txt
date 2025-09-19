@@ -17,6 +17,11 @@ set(MODULE_HEADER_FILES #for include and install header
 set(MODULE_SOURCE_PRIVATE
     LoggerDefine/LoggerDefine.h
 
+    UIViewBase/include/UIViewController.h
+    UIViewBase/src/UIViewController.cpp
+    UIViewBase/include/UIViewControllerInitializer.h
+    UIViewBase/src/UIViewControllerInitializer.cpp
+
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
 
     ContactList/include/ContactListItemModel.h
@@ -83,6 +88,7 @@ set(MODULE_QML_TARGET_FILES
     AppSystemTray/qml/AppSystemTray.qml
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
+    ${CMAKE_CURRENT_SOURCE_DIR}/UIViewBase/include
     ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowMenuBar/include

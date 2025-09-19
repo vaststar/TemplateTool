@@ -13,7 +13,6 @@ class MainWindowSideBarController: public UICore::CoreController
     QML_ELEMENT
 public:
     explicit MainWindowSideBarController(QObject *parent = nullptr);
-    virtual QString getControllerName() const override;
     void initializeController(QPointer<AppContext> appContext);
     QString getTitle() const;
 signals:
