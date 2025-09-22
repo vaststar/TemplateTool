@@ -7,16 +7,14 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 MainWindowTitleBarController::MainWindowTitleBarController(QObject *parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create MainWindowTitleBarController");
 }
 
-void MainWindowTitleBarController::initializeController(QPointer<AppContext> appContext)
+void MainWindowTitleBarController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
     emit elementUpdated();
 }
 
@@ -32,11 +30,14 @@ bool MainWindowTitleBarController::isVisible() const
 
 QColor MainWindowTitleBarController::getColor() const
 {
-    if (mAppContext && mAppContext->getManagerProvider())
+    if (auto appContext = getAppContext())
     {
-        if (auto themeManager = mAppContext->getManagerProvider()->getThemeManager())
+        if (auto managerProvider = appContext->getManagerProvider())
         {
-            return themeManager->getUIColor(UIColorToken::ColorToken::MainWindowBackground, UIColorState::ColorState::Normal);
+            if (auto themeManager = managerProvider->getThemeManager())
+            {
+                return themeManager->getUIColor(UIColorToken::ColorToken::MainWindowBackground, UIColorState::ColorState::Normal);
+            }
         }
     }
     return QColor(255, 0, 0);

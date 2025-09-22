@@ -13,19 +13,16 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 MainWindowMenuBarController::MainWindowMenuBarController(QObject* parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create MainWindowMenuBarController");
 }
 
-void MainWindowMenuBarController::initializeController(QPointer<AppContext> appContext)
+void MainWindowMenuBarController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
-    assert(mAppContext);
 
-    auto clientInfoVM = appContext->getViewModelFactory()->createClientInfoViewModelInstance();
+    auto clientInfoVM = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
     auto res = clientInfoVM->getSupportedLanguages();
     createMenu();
     emit controllerInitialized();
@@ -33,7 +30,7 @@ void MainWindowMenuBarController::initializeController(QPointer<AppContext> appC
 
 void MainWindowMenuBarController::switchLanguage(UILanguage::LanguageType languageType)
 {
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
+    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
 }
 
 void MainWindowMenuBarController::createMenu()

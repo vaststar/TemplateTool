@@ -5,16 +5,14 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 MainWindowFootBarController::MainWindowFootBarController(QObject *parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create MainWindowFootBarController");
 }
 
-void MainWindowFootBarController::initializeController(QPointer<AppContext> appContext)
+void MainWindowFootBarController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
 }
 
 QString MainWindowFootBarController::getFooterName() const

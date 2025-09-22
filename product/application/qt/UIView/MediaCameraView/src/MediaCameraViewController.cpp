@@ -10,8 +10,7 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 MediaCameraViewController::MediaCameraViewController(QObject *parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
     , mMediaCameraViewModelEmitter( std::make_shared<MediaCameraViewModelEmitter>(this))
 {
     UIVIEW_LOG_DEBUG("create MediaCameraViewController");
@@ -40,12 +39,11 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
         emit videoSinkChanged(mVideoSink);
     }
 }
-void MediaCameraViewController::initializeController(QPointer<AppContext> appContext)
+void MediaCameraViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
     QObject::connect(mMediaCameraViewModelEmitter.get(), &MediaCameraViewModelEmitter::signals_onCameraImageReceived, this, &MediaCameraViewController::onCameraImageReceived);
-    mMediaCameraViewModel = mAppContext->getViewModelFactory()->createMediaCameraViewModelInstance();
+    mMediaCameraViewModel = getAppContext()->getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
     mMediaCameraViewModel->openCamera();
     mMediaCameraViewModel->startCaptureCameraVideo();

@@ -1,35 +1,26 @@
 #pragma once
 
-#include <QString>
+#include <memory>
 #include <QObject>
-#include <QtQml>
-#include <UICore/CoreController.h>
+#include <QPointer>
 
 namespace commonHead{
-    class ICommonHeadFramework;
-    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
-
     namespace viewModels{
             class IAppUIViewModel;
     }
 }
 
 class AppContext;
-class AppUIController : public UICore::CoreController
+class AppUIController : public QObject
 {
     Q_OBJECT
 public:
-    AppUIController(QObject* parent = nullptr);
+    AppUIController(AppContext* appContext, QObject* parent = nullptr);
 
-    void runApp(AppContext* appContext);
-
-signals:
-    void controllerInitialized();
-private:
-    void initializeController(AppContext* appContext);
-    void initializeUIClient();
     void startApp();
 private:
-    QPointer<AppContext> mAppContext;
+    void initializeController();
+private:
+    const QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mViewModel;
 };

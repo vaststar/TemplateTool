@@ -17,35 +17,21 @@
 #include "MainWindow/include/MainWindowController.h"
 
 
-AppUIController::AppUIController(QObject* parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
-{
-    UIVIEW_LOG_DEBUG("create AppUIController");
-}
-
-void AppUIController::runApp(AppContext* appContext)
+AppUIController::AppUIController(AppContext* appContext, QObject* parent)
+    : QObject(parent)
+    , mAppContext(appContext)
 {
     UIVIEW_LOG_DEBUG("Qt Version: " << qVersion());
-    initializeController(appContext);
-    startApp();
+    UIVIEW_LOG_DEBUG("create AppUIController, address: " << this << ", with appContext: " << appContext);
+    initializeController();
 }
 
-void AppUIController::initializeController(AppContext* appContext)
+void AppUIController::initializeController()
 {
-    UIVIEW_LOG_DEBUG("init app ui controller");
-    mAppContext = appContext;
     assert(mAppContext);
-    mViewModel = appContext->getViewModelFactory()->createAppUIViewModelInstance();
+    mViewModel = mAppContext->getViewModelFactory()->createAppUIViewModelInstance();
     mViewModel->initApplication();
 
-    initializeUIClient();
-
-    emit controllerInitialized();
-}
-
-void AppUIController::initializeUIClient()
-{
     //prepare fontSet、colorSet、language
     //1, install language
     auto clientInfoVM = mAppContext->getViewModelFactory()->createClientInfoViewModelInstance();
@@ -54,7 +40,6 @@ void AppUIController::initializeUIClient()
 
     //2, initialize themeManager
     UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
-
 }
 
 void AppUIController::startApp()
@@ -72,5 +57,4 @@ void AppUIController::startApp()
         }
     });
     UIVIEW_LOG_DEBUG("finish load main qml");
-
 }

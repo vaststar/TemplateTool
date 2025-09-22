@@ -3,8 +3,10 @@
 #include <QString>
 #include <QObject>
 #include <QtQml>
-#include <UICore/CoreController.h>
+
 #include <UTMenu/MenuItemModel.h>
+
+#include "UIViewBase/include/UIViewController.h"
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -19,7 +21,7 @@ namespace UILanguage{
 }
 
 class AppContext;
-class MainWindowMenuBarController : public UICore::CoreController
+class MainWindowMenuBarController : public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(MenuItemModel* rootMenu READ rootMenu CONSTANT)
@@ -27,8 +29,6 @@ class MainWindowMenuBarController : public UICore::CoreController
     QML_ELEMENT
 public:
     MainWindowMenuBarController(QObject* parent = nullptr);
-
-    void initializeController(QPointer<AppContext> appContext);
 
     void createMenu();
     MenuItemModel* rootMenu() const{return mRootMenu;}
@@ -40,8 +40,9 @@ public slots:
     void switchLanguage(UILanguage::LanguageType languageType);
 private slots:
     void onMenuItemTriggered(int itemIndex);
+protected:
+    virtual void init() override;
 private:
-    QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     MenuItemModel* mRootMenu{nullptr};
 };

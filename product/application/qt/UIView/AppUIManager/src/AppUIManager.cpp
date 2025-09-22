@@ -71,9 +71,9 @@ AppUIManager::~AppUIManager()
 
 int AppUIManager::runApp()
 {
-    UIVIEW_LOG_INFO("run AppUIManager, address:" << this);
-    auto controller = std::make_unique<AppUIController>();
-    controller->runApp(mImpl->getAppContext());
+    UIVIEW_LOG_INFO("run AppUIManager, address:" << this << ", appContext's address: " << mImpl->getAppContext());
+    auto controller = std::make_unique<AppUIController>(mImpl->getAppContext());
+    controller->startApp();
 
     return mImpl->runApp();
 }

@@ -33,8 +33,8 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="22"/>
         <location filename="../../qt/UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="21"/>
+        <location filename="../../qt/UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="20"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>
@@ -44,12 +44,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="22"/>
+        <location filename="../../qt/UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="20"/>
         <source>my footer bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="25"/>
+        <location filename="../../qt/UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="23"/>
         <source>oo window title bar</source>
         <translation type="unfinished"></translation>
     </message>

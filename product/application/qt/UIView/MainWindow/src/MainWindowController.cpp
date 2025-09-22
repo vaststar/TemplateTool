@@ -90,6 +90,11 @@ void MainWindowController::onInitSystemTrayController(AppSystemTrayController* s
     systemTrayController->initializeController(getAppContext());
 }
 
+void MainWindowController::onInitializeUIViewController(UIViewController* uiViewController)
+{
+    uiViewController->initializeController(getAppContext());
+}
+
 void MainWindowController::openCamera()
 {
     getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);

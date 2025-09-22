@@ -5,16 +5,14 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 MainWindowSideBarController::MainWindowSideBarController(QObject *parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create MainWindowSideBarController");
 }
 
-void MainWindowSideBarController::initializeController(QPointer<AppContext> appContext)
+void MainWindowSideBarController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
 }
 
 QString MainWindowSideBarController::getTitle() const
