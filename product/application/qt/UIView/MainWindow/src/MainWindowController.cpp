@@ -16,14 +16,6 @@
 
 
 #include "MediaCameraView/include/MediaCameraViewController.h"
-// #include "ContactList/include/ContactListViewController.h"
-// #include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
-// #include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
-// #include "MainWindowFootBar/include/MainWindowFootBarController.h"
-// #include "MainWindowSideBar/include/MainWindowSideBarController.h"
-// #include "AppSystemTray/include/AppSystemTrayController.h"
-
-
 
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
@@ -88,11 +80,6 @@ void MainWindowController::onInitSideBarController(MainWindowSideBarController* 
 void MainWindowController::onInitSystemTrayController(AppSystemTrayController* systemTrayController)
 {
     systemTrayController->initializeController(getAppContext());
-}
-
-void MainWindowController::onInitializeUIViewController(UIViewController* uiViewController)
-{
-    uiViewController->initializeController(getAppContext());
 }
 
 void MainWindowController::openCamera()

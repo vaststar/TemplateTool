@@ -49,7 +49,6 @@ signals:
     void controllerInitialized();
     void visibleChanged();
 public slots:
-    void onInitializeUIViewController(UIViewController* uiViewController);
     void onInitMenuBarController(MainWindowMenuBarController* menuBarController);
     void onContactListLoaded(ContactListViewController* contactListController);
     void onInitTitleBarController(MainWindowTitleBarController* titleBarController);
