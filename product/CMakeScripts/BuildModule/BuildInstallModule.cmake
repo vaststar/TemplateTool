@@ -16,7 +16,7 @@ function(BuildInstallModule)
     endif()
 
     install(TARGETS ${INSTALL_MODULE_NAME} 
-            EXPORT ${INSTALL_MODULE_NAME}Config
+            EXPORT ${INSTALL_MODULE_NAME}Targets
     	    RUNTIME DESTINATION ${INSTALL_MODULE_NAME}/bin
     	    LIBRARY DESTINATION ${INSTALL_MODULE_NAME}/bin
     	    ARCHIVE DESTINATION ${INSTALL_MODULE_NAME}/lib
@@ -24,9 +24,10 @@ function(BuildInstallModule)
             INCLUDES DESTINATION ${INSTALL_MODULE_NAME}/include
     )
     
-    install(EXPORT ${INSTALL_MODULE_NAME}Config 
+    install(EXPORT ${INSTALL_MODULE_NAME}Targets
+            FILE ${INSTALL_MODULE_NAME}Config.cmake 
             DESTINATION ${INSTALL_MODULE_NAME}/cmake
-            NAMESPACE ${INSTALL_MODULE_NAME}Export::
+            NAMESPACE ${INSTALL_MODULE_NAME}::
     )
 
     message(STATUS "====Finish Build Install Module: ${INSTALL_MODULE_NAME} ====")

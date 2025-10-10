@@ -7,6 +7,7 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
                        LANGUAGES CXX
         )
 
+add_subdirectory(version)
 add_subdirectory(thirdparty)
 add_subdirectory(utilities)
 add_subdirectory(services)

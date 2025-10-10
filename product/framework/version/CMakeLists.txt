@@ -1,0 +1,28 @@
+
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+message(STATUS "add CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+
+include(VersionManager)
+include(BuildAppVersionJson)
+
+
+set(VERSION_MAJOR 1 CACHE STRING "Major version")
+set(VERSION_MINOR 1 CACHE STRING "Minor version")
+
+
+
+GenerateAppVersionMeta(
+    VERSION_MAJOR ${VERSION_MAJOR}
+    VERSION_MINOR ${VERSION_MINOR}
+    OUTPUT_FILE ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json
+)
+GenerateAppVersionFile(
+    VERSION_MAJOR ${VERSION_MAJOR}
+    VERSION_MINOR ${VERSION_MINOR}
+    INPUT_VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.h.in
+    OUTPUT_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion
+    APP_VERSION_TARGET
+)
+
+set(GLOBAL_APP_VERSION_TARGET ${APP_VERSION_TARGET} CACHE INTERNAL "Global app version target")

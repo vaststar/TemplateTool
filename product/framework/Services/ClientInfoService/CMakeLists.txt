@@ -1,13 +1,4 @@
 include(BuildModule)
-include(GenerateVersion)
-
-GenerateAppVersionFile(
-    VERSION_MAJOR 1
-    VERSION_MINOR 0
-    INPUT_VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/appVersion.h.in
-    OUTPUT_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion
-    APP_VERSION_TARGET
-)
 
 set(MODULE_MODULE_NAME ClientInfoService)
 set(MODULE_IDE_FOLDER framework/Services)
@@ -35,7 +26,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseService
     CoreFramework
     DataWarehouseSchema
-    ${APP_VERSION_TARGET}
+    ${GLOBAL_APP_VERSION_TARGET} #generate from the version module
     MasterLog
     TimeUtils
     OSUtils
