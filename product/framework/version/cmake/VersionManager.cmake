@@ -74,7 +74,7 @@ function(GenerateAppVersionFile)
                                 -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateVersionFiles.cmake"
     )
     set_target_properties(${CUSTOM_TARGET_ALWAYS_NAME} PROPERTIES FOLDER codegen)
-    add_dependencies(${CUSTOM_TARGET_ALWAYS_NAME} generate_app_version_meta_always)
+    # add_dependencies(${CUSTOM_TARGET_ALWAYS_NAME} generate_app_version_meta_always)
 
     
     list(LENGTH GAVF_UNPARSED_ARGUMENTS unparsed_count)

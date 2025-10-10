@@ -3,26 +3,45 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 message(STATUS "add CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
-include(VersionManager)
-include(BuildAppVersionJson)
+include(GenerateAppVersionHeader)
+include(GenerateAppVersionMeta)
 
 
 set(VERSION_MAJOR 1 CACHE STRING "Major version")
 set(VERSION_MINOR 1 CACHE STRING "Minor version")
 
-
-
-GenerateAppVersionMeta(
+set(GLOBAL_APP_VERSION_JSON ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json)
+generate_app_version_meta(
     VERSION_MAJOR ${VERSION_MAJOR}
     VERSION_MINOR ${VERSION_MINOR}
-    OUTPUT_FILE ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json
+    OUTPUT_FILE ${GLOBAL_APP_VERSION_JSON}
+    VERSION_META_TARGET
 )
-GenerateAppVersionFile(
-    VERSION_MAJOR ${VERSION_MAJOR}
-    VERSION_MINOR ${VERSION_MINOR}
-    INPUT_VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.h.in
-    OUTPUT_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion
+
+set(APP_VERSION_HEADER_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion)
+set(APP_VERSION_HEADER_FILE appVersion.h)
+set(APP_VERSION_HEADER_PATH ${APP_VERSION_HEADER_FOLDER}/${APP_VERSION_HEADER_FILE})
+generate_app_version_header(
+    INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
+    INPUT_JSON_TARGET ${VERSION_META_TARGET}
+    INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.h.in
+    OUTPUT_FILE ${APP_VERSION_HEADER_PATH}
     APP_VERSION_TARGET
 )
 
-set(GLOBAL_APP_VERSION_TARGET ${APP_VERSION_TARGET} CACHE INTERNAL "Global app version target")
+include(BuildInterface)
+BuildInterface(
+    MODULE_NAME 
+        AppVersionHeader
+    TARGET_SOURCE_HEADER_BASE_DIR
+        ${APP_VERSION_HEADER_FOLDER}
+    TARGET_SOURCE_PUBLIC_HEADER
+        ${APP_VERSION_HEADER_PATH}
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${APP_VERSION_HEADER_FOLDER}
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        AppVersion
+    IDE_FOLDER
+        codegen
+)
+add_dependencies(AppVersionHeader ${APP_VERSION_TARGET})

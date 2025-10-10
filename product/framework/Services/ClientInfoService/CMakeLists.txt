@@ -26,7 +26,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseService
     CoreFramework
     DataWarehouseSchema
-    ${GLOBAL_APP_VERSION_TARGET} #generate from the version module
+    AppVersionHeader
     MasterLog
     TimeUtils
     OSUtils
