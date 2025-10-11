@@ -3,6 +3,7 @@ set(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/BuildModule" 
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/FindModule" 
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/UtilModule"
+    "${CMAKE_CURRENT_SOURCE_DIR}/framework/version/cmake"
 )
 
 message(STATUS "set CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")

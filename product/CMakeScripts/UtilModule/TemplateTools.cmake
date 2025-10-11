@@ -93,20 +93,17 @@ function(generate_from_template)
         VERBATIM
     )
 
-    #set generated property
-    # set_source_files_properties(${GFT_OUTPUT_FILE} PROPERTIES GENERATED TRUE)
-    
-    list(LENGTH GFT_UNPARSED_ARGUMENTS unparsed_count)
-    if(NOT unparsed_count EQUAL 1)
-        message(FATAL_ERROR "函数调用错误: 需要指定1个输出变量名表示TARGET_NAME")
-    endif()
-    list(GET GFT_UNPARSED_ARGUMENTS 0 generate_from_template_target)
-
     get_filename_component(MODULE_NAME ${GFT_OUTPUT_FILE} NAME)
     set(MODULE_TARGET_NAME generate_${MODULE_NAME})
 
     message(STATUS "generate coden target:${MODULE_TARGET_NAME}")
     add_custom_target(${MODULE_TARGET_NAME} ALL DEPENDS ${GFT_OUTPUT_FILE})
     set_target_properties(${MODULE_TARGET_NAME} PROPERTIES FOLDER codegen)
+
+    list(LENGTH GFT_UNPARSED_ARGUMENTS unparsed_count)
+    if(NOT unparsed_count EQUAL 1)
+        message(FATAL_ERROR "函数调用错误: 需要指定1个输出变量名表示TARGET_NAME")
+    endif()
+    list(GET GFT_UNPARSED_ARGUMENTS 0 generate_from_template_target)
     set(${generate_from_template_target} ${MODULE_TARGET_NAME} PARENT_SCOPE)
 endfunction()

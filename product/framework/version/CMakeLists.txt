@@ -5,18 +5,16 @@ message(STATUS "add CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 include(GenerateAppVersionHeader)
 include(GenerateAppVersionMeta)
+# include(GenerateAppRCFiles)
 
-
-set(VERSION_MAJOR 1 CACHE STRING "Major version")
-set(VERSION_MINOR 1 CACHE STRING "Minor version")
-
-set(GLOBAL_APP_VERSION_JSON ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json)
+set(GLOBAL_APP_VERSION_JSON ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json CACHE INTERNAL "Global app json version filePath")
 generate_app_version_meta(
-    VERSION_MAJOR ${VERSION_MAJOR}
-    VERSION_MINOR ${VERSION_MINOR}
+    INPUT_META_JSON ${CMAKE_CURRENT_SOURCE_DIR}/product_info.json
+    INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/version_meta.json.in
     OUTPUT_FILE ${GLOBAL_APP_VERSION_JSON}
     VERSION_META_TARGET
 )
+set(GLOBAL_APP_VERSION_JSON_TARGET ${VERSION_META_TARGET} CACHE INTERNAL "Global app json version target")
 
 set(APP_VERSION_HEADER_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion)
 set(APP_VERSION_HEADER_FILE appVersion.h)
@@ -45,3 +43,16 @@ BuildInterface(
         codegen
 )
 add_dependencies(AppVersionHeader ${APP_VERSION_TARGET})
+
+# set(GLOBAL_APP_VERSION_TARGET ${APP_VERSION_TARGET} CACHE INTERNAL "Global app version target")
+
+# set(APP_RC_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion)
+# set(APP_RC_FILE app_resource.rc)
+# set(APP_RC_PATH ${APP_RC_FOLDER}/${APP_RC_FILE})
+# generate_app_rc_files(
+#     INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
+#     INPUT_JSON_TARGET ${VERSION_META_TARGET}
+#     INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.rc.in
+#     OUTPUT_FILE ${APP_RC_PATH}
+#     APP_RC_TARGET
+# )

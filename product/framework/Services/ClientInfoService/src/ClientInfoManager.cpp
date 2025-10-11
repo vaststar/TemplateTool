@@ -34,7 +34,7 @@ ClientInfoManager::~ClientInfoManager()
 
 model::Version ClientInfoManager::getApplicationVersion() const
 {
-    return model::Version{AppVersion::PROJECT_VERSION_MAJOR, AppVersion::PROJECT_VERSION_MINOR, AppVersion::PROJECT_VERSION_PATCH};
+    return model::Version{AppVersion::VERSION_MAJOR, AppVersion::VERSION_MINOR, AppVersion::VERSION_PATCH};
 }
 
 model::LanguageType ClientInfoManager::getApplicationLanguage() const

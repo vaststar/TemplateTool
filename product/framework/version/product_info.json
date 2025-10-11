@@ -1,0 +1,15 @@
+{
+    "version": {
+        "major": "1",
+        "minor": "0",
+        "patch": "0"
+    },
+    "company": {
+        "name": "My Awesome Company",
+        "copyright": "Copyright 2025 My Awesome Company"
+    },
+    "product": {
+        "name": "My Product Suite",
+        "description": "Industry-leading software solution"
+    }
+}

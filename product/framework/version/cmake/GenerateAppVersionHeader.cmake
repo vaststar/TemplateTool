@@ -1,12 +1,13 @@
 if(CMAKE_SCRIPT_MODE_FILE)
     file(READ "${INPUT_JSON_FILE}" json_content)
      # 解析 JSON 内容
-    string(JSON PROJECT_VERSION_MAJOR GET "${json_content}" "PROJECT_VERSION_MAJOR")
-    string(JSON PROJECT_VERSION_MINOR GET "${json_content}" "PROJECT_VERSION_MINOR")
-    string(JSON PROJECT_VERSION_PATCH GET "${json_content}" "PROJECT_VERSION_PATCH")
-    string(JSON GIT_COMMIT_HASH GET "${json_content}" "GIT_COMMIT_HASH")
-    string(JSON GIT_CURRENT_BRANCH GET "${json_content}" "GIT_CURRENT_BRANCH")
-    string(JSON PROJECT_COMPILE_TIME GET "${json_content}" "PROJECT_COMPILE_TIME")
+    string(JSON VERSION_MAJOR GET "${json_content}" "VERSION" "VERSION_MAJOR")
+    string(JSON VERSION_MINOR GET "${json_content}" "VERSION" "VERSION_MINOR")
+    string(JSON VERSION_PATCH GET "${json_content}" "VERSION" "VERSION_PATCH")
+    string(JSON VERSION_BUILD GET "${json_content}" "VERSION" "VERSION_BUILD")
+    string(JSON GIT_COMMIT_HASH GET "${json_content}" "COMPILATION" "GIT_COMMIT_HASH")
+    string(JSON GIT_COMMIT_BRANCH GET "${json_content}" "COMPILATION" "GIT_COMMIT_BRANCH")
+    string(JSON COMPILE_TIME GET "${json_content}" "COMPILATION" "COMPILE_TIME")
 
     # 获取传入变量
     configure_file(${INPUT_TEMPLATE_FILE} ${OUTPUT_H} @ONLY)
@@ -31,17 +32,15 @@ function(generate_app_version_header)
     if(NOT GAVF_INPUT_JSON_FILE)
         message(FATAL_ERROR "[GenerateAppVersionHeader] Missing required argument: INPUT_JSON_FILE")
     endif()
-
     
     # 生成版本文件
     set(CUSTOM_TARGET_NAME "generate_app_version_header")
     add_custom_command(
         OUTPUT ${GAVF_OUTPUT_FILE}
-        # COMMAND ${CMAKE_COMMAND} -E make_directory "${GAVF_OUTPUT_FILE}"
         COMMAND ${CMAKE_COMMAND} -DINPUT_JSON_FILE=${GAVF_INPUT_JSON_FILE}
                                 -DINPUT_TEMPLATE_FILE=${GAVF_INPUT_VERSION_TEMPLATE}
                                 -DOUTPUT_H=${GAVF_OUTPUT_FILE}
-                                -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateAppVersionHeader.cmake"
+                                -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionHeader.cmake"
         COMMENT "Generating ${GAVF_OUTPUT_FILE} from ${GAVF_INPUT_JSON_FILE} using ${GAVF_INPUT_VERSION_TEMPLATE}"
         DEPENDS ${GAVF_INPUT_JSON_FILE}
     )
