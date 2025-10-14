@@ -1,3 +1,4 @@
+add_subdirectory(version)
 include(BuildModule)
 
 set(MODULE_MODULE_NAME ClientInfoService)

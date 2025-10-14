@@ -1,3 +1,4 @@
+include_guard()
 if(CMAKE_SCRIPT_MODE_FILE)
     include("${CMAKE_CURRENT_LIST_DIR}/GitUtils.cmake")
     # 获取 Git 信息

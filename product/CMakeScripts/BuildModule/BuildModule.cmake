@@ -2,6 +2,7 @@ include_guard()
 include (BuildInstallModule)
 include (LinkTargetIncludeDirectories)
 include (TargetBuildType)
+include(BuildRCFileModule)
 
 function(BuildModule)
         message(STATUS "====Start Build Module====")
@@ -78,16 +79,9 @@ function(BuildModule)
             target_link_libraries(${MODULE_MODULE_NAME} PUBLIC $<BUILD_INTERFACE:${MODULE_TARGET_DEPENDENCIES_PUBLIC}>)
         endif()
         
-        ##define macro for windows
         if (MODULE_TARGET_DEFINITIONS)
-            # target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
-            # if (is_shared_lib)
-                message(STATUS "will add private definitions for library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
-                target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
-            # else()
-            #     message(STATUS "will add definitions for static library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
-            #     target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEFINITIONS})
-            # endif()
+            message(STATUS "will add private definitions for library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
+            target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
         endif()
 
         if (NOT MODULE_NO_INSTALL)
@@ -96,8 +90,12 @@ function(BuildModule)
             )
         endif()
 
-        #for project tree view
-        # source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER})
-
+        target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
+        if (is_shared_lib)
+            BuildRCFileModule(
+                MODULE_NAME ${MODULE_MODULE_NAME}
+                FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
+            )
+        endif()
         message(STATUS "====Finish Build Module: ${MODULE_MODULE_NAME}====")
 endfunction()

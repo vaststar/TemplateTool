@@ -1,11 +1,4 @@
-
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-message(STATUS "add CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-
-include(GenerateAppVersionHeader)
 include(GenerateAppVersionMeta)
-# include(GenerateAppRCFiles)
 
 set(GLOBAL_APP_VERSION_JSON ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json CACHE INTERNAL "Global app json version filePath")
 generate_app_version_meta(
@@ -15,44 +8,4 @@ generate_app_version_meta(
     VERSION_META_TARGET
 )
 set(GLOBAL_APP_VERSION_JSON_TARGET ${VERSION_META_TARGET} CACHE INTERNAL "Global app json version target")
-
-set(APP_VERSION_HEADER_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion)
-set(APP_VERSION_HEADER_FILE appVersion.h)
-set(APP_VERSION_HEADER_PATH ${APP_VERSION_HEADER_FOLDER}/${APP_VERSION_HEADER_FILE})
-generate_app_version_header(
-    INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
-    INPUT_JSON_TARGET ${VERSION_META_TARGET}
-    INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.h.in
-    OUTPUT_FILE ${APP_VERSION_HEADER_PATH}
-    APP_VERSION_TARGET
-)
-
-include(BuildInterface)
-BuildInterface(
-    MODULE_NAME 
-        AppVersionHeader
-    TARGET_SOURCE_HEADER_BASE_DIR
-        ${APP_VERSION_HEADER_FOLDER}
-    TARGET_SOURCE_PUBLIC_HEADER
-        ${APP_VERSION_HEADER_PATH}
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${APP_VERSION_HEADER_FOLDER}
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        AppVersion
-    IDE_FOLDER
-        codegen
-)
-add_dependencies(AppVersionHeader ${APP_VERSION_TARGET})
-
-# set(GLOBAL_APP_VERSION_TARGET ${APP_VERSION_TARGET} CACHE INTERNAL "Global app version target")
-
-# set(APP_RC_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion)
-# set(APP_RC_FILE app_resource.rc)
-# set(APP_RC_PATH ${APP_RC_FOLDER}/${APP_RC_FILE})
-# generate_app_rc_files(
-#     INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
-#     INPUT_JSON_TARGET ${VERSION_META_TARGET}
-#     INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.rc.in
-#     OUTPUT_FILE ${APP_RC_PATH}
-#     APP_RC_TARGET
-# )
+set(GLOBAL_APP_RC_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/app_resource.rc.in CACHE INTERNAL "Global app rc template filePath")

@@ -1,15 +1,15 @@
 {
     "version": {
-        "major": "1",
-        "minor": "0",
+        "major": "45",
+        "minor": "11",
         "patch": "0"
     },
     "company": {
-        "name": "My Awesome Company",
-        "copyright": "Copyright 2025 My Awesome Company"
+        "name": "Vast Star",
+        "copyright": "Copyright \u00A9 2025 Vast Star"
     },
     "product": {
-        "name": "My Product Suite",
+        "name": "Template Factory",
         "description": "Industry-leading software solution"
     }
 }

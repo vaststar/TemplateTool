@@ -1,6 +1,8 @@
 include_guard()
 include (LinkTargetIncludeDirectories)
 include (SetIDEFolder)
+include(BuildRCFileModule)
+
 function(BuildQtModule)
     message(STATUS "====Start Build Qt Module====")
     set(options STATIC_LIB SHARED_LIB)
@@ -93,14 +95,8 @@ function(BuildQtModule)
     endif()
     
     if (MODULE_TARGET_DEFINITIONS)
-        # target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
-        # if (is_shared_lib)
-            message(STATUS "will add private definitions for library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
-            target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
-        # else()
-        #     message(STATUS "will add definitions for static library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
-        #     target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_DEFINITIONS})
-        # endif()
+        message(STATUS "will add private definitions for library: ${MODULE_MODULE_NAME}, definitions: ${MODULE_TARGET_DEFINITIONS}")
+        target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
     endif()
 
     if (DEFINED MODULE_QML_TARGET_URI)
@@ -115,7 +111,6 @@ function(BuildQtModule)
             message(STATUS "qml_resources: ${ALL_MODULE_QML_TARGET_RESOURCES}")
         endif()
 
-        
         qt_add_qml_module(${MODULE_MODULE_NAME}
             URI ${MODULE_QML_TARGET_URI}
             VERSION 1.0
@@ -178,8 +173,13 @@ function(BuildQtModule)
             NAMESPACE ${MODULE_MODULE_NAME}Export::
         )
     endif()
+    
+    if (is_shared_lib)
+        BuildRCFileModule(
+            MODULE_NAME ${MODULE_MODULE_NAME}
+            FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
+        )
+    endif()
 
-    #for project tree view
-    # source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_FILES})
     message(STATUS "====Finish Build Qt Module====")
 endfunction()

@@ -1,3 +1,4 @@
+include_guard()
 if(CMAKE_SCRIPT_MODE_FILE)
     file(READ "${INPUT_JSON_FILE}" json_content)
      # 解析 JSON 内容
