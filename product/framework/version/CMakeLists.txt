@@ -1,6 +1,6 @@
 include(GenerateAppVersionMeta)
 
-set(GLOBAL_APP_VERSION_JSON ${UCF_CODE_GENERATOR_DIR}/AppVersion/version_meta.json CACHE INTERNAL "Global app json version filePath")
+set(GLOBAL_APP_VERSION_JSON ${CMAKE_CURRENT_BINARY_DIR}/version_meta.json CACHE INTERNAL "Global app json version filePath")
 generate_app_version_meta(
     INPUT_META_JSON ${CMAKE_CURRENT_SOURCE_DIR}/product_info.json
     INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/version_meta.json.in

@@ -60,7 +60,7 @@ function(generate_app_version_meta)
                                 -DOUTPUT_FILE=${GAVM_OUTPUT_FILE}
                                 -DGIT_INFO_FILE=${GIT_INFO_FILE}
                                 -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionMeta.cmake"
-        DEPENDS ${GAVM_INPUT_META_JSON} ${GIT_INFO_FILE}
+        DEPENDS ${GAVM_INPUT_META_JSON} ${GAVM_INPUT_VERSION_TEMPLATE} ${GIT_INFO_FILE}
         COMMENT "Generating version meta JSON: ${GAVM_OUTPUT_FILE}"
     )
 
@@ -68,15 +68,6 @@ function(generate_app_version_meta)
     add_custom_target(${TARGET_NAME} ALL
         DEPENDS ${GAVM_OUTPUT_FILE}
     )
-    # add_custom_target(${TARGET_NAME} ALL
-    #     COMMAND ${CMAKE_COMMAND}
-    #         -DINPUT_META_JSON=${GAVM_INPUT_META_JSON}
-    #         -DINPUT_TEMPLATE=${GAVM_INPUT_VERSION_TEMPLATE}
-    #         -DOUTPUT_FILE=${GAVM_OUTPUT_FILE}
-    #         -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionMeta.cmake"
-    #     COMMENT "Generating version meta JSON: ${GAVM_OUTPUT_FILE}"
-    #     VERBATIM
-    # )
     set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)
     
     list(LENGTH GAVM_UNPARSED_ARGUMENTS unparsed_count)

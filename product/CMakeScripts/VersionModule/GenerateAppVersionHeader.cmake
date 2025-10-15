@@ -41,8 +41,8 @@ function(generate_app_version_header)
                                 -DINPUT_TEMPLATE_FILE=${GAVF_INPUT_VERSION_TEMPLATE}
                                 -DOUTPUT_H=${GAVF_OUTPUT_FILE}
                                 -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionHeader.cmake"
+        DEPENDS ${GAVF_INPUT_JSON_FILE} ${GAVF_INPUT_VERSION_TEMPLATE}
         COMMENT "Generating ${GAVF_OUTPUT_FILE} from ${GAVF_INPUT_JSON_FILE} using ${GAVF_INPUT_VERSION_TEMPLATE}"
-        DEPENDS ${GAVF_INPUT_JSON_FILE}
     )
     add_custom_target(${CUSTOM_TARGET_NAME} ALL DEPENDS ${GAVF_OUTPUT_FILE})
     set_target_properties(${CUSTOM_TARGET_NAME} PROPERTIES FOLDER codegen)
