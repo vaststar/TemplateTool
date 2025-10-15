@@ -8,7 +8,6 @@ if(CMAKE_SCRIPT_MODE_FILE)
     string(JSON VERSION_BUILD GET "${json_content}" "VERSION" "VERSION_BUILD")
     string(JSON GIT_COMMIT_HASH GET "${json_content}" "COMPILATION" "GIT_COMMIT_HASH")
     string(JSON GIT_COMMIT_BRANCH GET "${json_content}" "COMPILATION" "GIT_COMMIT_BRANCH")
-    string(JSON COMPILE_TIME GET "${json_content}" "COMPILATION" "COMPILE_TIME")
 
     string(JSON COMPANY_NAME GET "${json_content}" "COMPANY" "NAME")
     string(JSON COPYRIGHT GET "${json_content}" "COMPANY" "COPYRIGHT")
@@ -45,7 +44,6 @@ function(generate_app_rc_files)
         message(FATAL_ERROR "[GenerateAppRCFiles] Missing required argument: INPUT_JSON_FILE")
     endif()
 
-    
     add_custom_command(
         OUTPUT ${ARG_OUTPUT_FILE}
         COMMAND ${CMAKE_COMMAND} -DINPUT_JSON_FILE=${ARG_INPUT_JSON_FILE}

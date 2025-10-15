@@ -8,7 +8,6 @@ if(CMAKE_SCRIPT_MODE_FILE)
     string(JSON VERSION_BUILD GET "${json_content}" "VERSION" "VERSION_BUILD")
     string(JSON GIT_COMMIT_HASH GET "${json_content}" "COMPILATION" "GIT_COMMIT_HASH")
     string(JSON GIT_COMMIT_BRANCH GET "${json_content}" "COMPILATION" "GIT_COMMIT_BRANCH")
-    string(JSON COMPILE_TIME GET "${json_content}" "COMPILATION" "COMPILE_TIME")
 
     # 获取传入变量
     configure_file(${INPUT_TEMPLATE_FILE} ${OUTPUT_H} @ONLY)

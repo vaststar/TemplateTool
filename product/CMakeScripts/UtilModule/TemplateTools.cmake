@@ -27,8 +27,8 @@ function(jinja_create_venv)
         COMMAND ${CMAKE_COMMAND} -E rm -rf ${VENV_DIR}           # 清理旧环境
         COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_DIR}        # 创建新环境
         COMMAND ${CMAKE_COMMAND} -E sleep 1                      # 解决权限问题：安装前等待文件系统就绪
-        COMMAND ${PIP_PATH} install -r ${REQUIREMENT_FILE}       # 安装依赖
-        COMMAND ${CMAKE_COMMAND} -E touch ${MARKER_FILE}         # 创建标记
+        COMMAND ${PIP_PATH} install -r "${REQUIREMENT_FILE}"     # 安装依赖
+        COMMAND ${CMAKE_COMMAND} -E touch "${MARKER_FILE}"       # 创建标记
         COMMENT "Building Jinja2 venv with dependencies, create virtual env and install requirements: ${REQUIREMENT_FILE}"
         VERBATIM
     )
@@ -86,9 +86,9 @@ function(generate_from_template)
         DEPENDS
             "${GFT_TEMPLATE_FILE}"
             "${GFT_INPUT_FILE}"
-            ${GFT_DEPENDS}
-            ${SCRIPT_PATH}
-            ${VENV_TARGET_NAME}
+            "${GFT_DEPENDS}"
+            "${SCRIPT_PATH}"
+            "${VENV_TARGET_NAME}"
         COMMENT "Generating ${GFT_OUTPUT_FILE} from ${GFT_TEMPLATE_FILE} using ${GFT_INPUT_FILE}"
         VERBATIM
     )

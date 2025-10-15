@@ -8,6 +8,4 @@ inline constexpr auto VERSION_BUILD = "@VERSION_BUILD@";
 
 inline constexpr auto GIT_COMMIT_HASH = "@GIT_COMMIT_HASH@";
 inline constexpr auto GIT_COMMIT_BRANCH = "@GIT_COMMIT_BRANCH@";
-
-inline constexpr auto COMPILE_TIME = "@COMPILE_TIME@";
 }

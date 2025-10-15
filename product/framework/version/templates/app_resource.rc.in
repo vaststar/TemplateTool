@@ -27,7 +27,6 @@ BEGIN
             VALUE "OriginalFilename", "@ORIGINAL_FILENAME@\0"
             VALUE "ProductName", "@PRODUCT_NAME@\0"
             VALUE "GitCommit", "@GIT_COMMIT_HASH@\0"
-            VALUE "BuildDate", "@COMPILE_TIME@\0"
         END
     END
     
