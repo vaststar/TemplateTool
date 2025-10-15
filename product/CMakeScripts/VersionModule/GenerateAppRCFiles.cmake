@@ -56,11 +56,10 @@ function(generate_app_rc_files)
         COMMENT "Generating ${ARG_OUTPUT_FILE} from ${ARG_INPUT_JSON_FILE} using ${ARG_INPUT_VERSION_TEMPLATE}"
         DEPENDS ${ARG_INPUT_JSON_FILE} ${ARG_INPUT_VERSION_TEMPLATE}
     )
-    set_source_files_properties(${ARG_OUTPUT_FILE} PROPERTIES GENERATED TRUE)
     
     get_filename_component(MODULE_NAME ${ARG_OUTPUT_FILE} NAME)
     set(CUSTOM_TARGET_NAME generate_${MODULE_NAME}_rc)
-    add_custom_target(${CUSTOM_TARGET_NAME} DEPENDS ${ARG_OUTPUT_FILE})
+    add_custom_target(${CUSTOM_TARGET_NAME} ALL DEPENDS ${ARG_OUTPUT_FILE})
     set_target_properties(${CUSTOM_TARGET_NAME} PROPERTIES FOLDER codegen)
     add_dependencies(${CUSTOM_TARGET_NAME} ${ARG_INPUT_JSON_TARGET})
 
