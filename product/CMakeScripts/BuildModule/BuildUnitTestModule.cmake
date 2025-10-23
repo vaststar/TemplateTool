@@ -27,6 +27,12 @@ function(BuildUnitTestModule)
         )
 
         target_compile_features(${MODULE_MODULE_NAME} PRIVATE cxx_std_20)
+        target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE
+            CMAKE_VERSION_STR="${CMAKE_VERSION}"
+            CMAKE_COMPILER_ID_STR="${CMAKE_CXX_COMPILER_ID}"
+            CMAKE_COMPILER_VERSION_STR="${CMAKE_CXX_COMPILER_VERSION}"
+            CMAKE_COMPILER_PATH_STR="${CMAKE_CXX_COMPILER}"
+        )
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES CXX_EXTENSIONS OFF)
         if(DEFINED  MODULE_IDE_FOLDER)

@@ -62,7 +62,7 @@ function(generate_git_info_meta)
         COMMAND ${CMAKE_COMMAND}
             -DOUTPUT_FILE=${GARG_OUTPUT_FILE}
             -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateGitInfoMeta.cmake"
-        DEPENDS "${CMAKE_SOURCE_DIR}/.git/refs/heads/main" ${GARG_OUTPUT_FILE}
+        DEPENDS "${CMAKE_SOURCE_DIR}/.git/refs/heads/main"
         COMMENT "Generating ${GARG_OUTPUT_FILE}"
         VERBATIM
     )

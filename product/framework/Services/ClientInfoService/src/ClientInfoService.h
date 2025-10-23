@@ -51,6 +51,7 @@ protected:
     virtual void initService() override;
 private:
     void printClientInfo() const;
+    void printBuildInfo() const;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

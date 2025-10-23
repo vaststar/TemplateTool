@@ -121,11 +121,39 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os total memory: " << ucf::utilities::OSUtils::getMemoryInfo().totalMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os available memory: " << ucf::utilities::OSUtils::getMemoryInfo().availableMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os gpu info: " << ucf::utilities::OSUtils::getGPUInfo());
+    
     // SERVICE_LOG_DEBUG("client language: " << std::to_string(static_cast<std::underlying_type<decltype(getApplicationLanguage())>::type>(getApplicationLanguage())));
     // SERVICE_LOG_DEBUG("client language: " << magic_enum::enum_name(getApplicationLanguage()));
     //SERVICE_LOG_DEBUG("client language: " << ucf::utilities::StringUtils::enumToString(getApplicationLanguage()));
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
+    printBuildInfo();
     SERVICE_LOG_DEBUG("==================================");
+}
+
+void ClientInfoService::printBuildInfo() const
+{
+    SERVICE_LOG_DEBUG("===========BuildInfo=============");
+    #ifdef CMAKE_VERSION_STR
+        SERVICE_LOG_DEBUG("CMake version: " << CMAKE_VERSION_STR);
+    #else
+        SERVICE_LOG_DEBUG("CMake version macro not defined");
+    #endif
+    #ifdef CMAKE_COMPILER_ID_STR
+        SERVICE_LOG_DEBUG("C++ Compiler ID: " << CMAKE_COMPILER_ID_STR);
+    #else
+        SERVICE_LOG_DEBUG("C++ Compiler ID macro not defined");
+    #endif
+    #ifdef CMAKE_COMPILER_VERSION_STR
+        SERVICE_LOG_DEBUG("C++ Compiler version: " << CMAKE_COMPILER_VERSION_STR);
+    #else
+        SERVICE_LOG_DEBUG("C++ Compiler version macro not defined");
+    #endif
+    #ifdef CMAKE_COMPILER_PATH_STR
+        SERVICE_LOG_DEBUG("C++ Compiler path: " << CMAKE_COMPILER_PATH_STR);
+    #else
+        SERVICE_LOG_DEBUG("C++ Compiler path macro not defined");
+    #endif
+    SERVICE_LOG_DEBUG("===========BuildInfo=============");
 }
 
 model::LanguageType ClientInfoService::getApplicationLanguage() const
