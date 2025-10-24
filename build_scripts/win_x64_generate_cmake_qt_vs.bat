@@ -5,20 +5,29 @@ setlocal enabledelayedexpansion
 rem ==========================================
 rem 🧱 Basic configuration
 rem ==========================================
-set ROOT_DIR=%~dp0..
-set BUILD_DIR=%ROOT_DIR%\build
-set SOURCE_DIR=%ROOT_DIR%
-set GRAPHVIZ_FILE=%BUILD_DIR%\cmake_graph\cmake_graph.dot
+set "ROOT_DIR=%~dp0.."
+set "BUILD_DIR=%ROOT_DIR%\build"
+set "SOURCE_DIR=%ROOT_DIR%"
+set "GRAPHVIZ_FILE=%BUILD_DIR%\cmake_graph.dot"
+set "INSTALL_DIR=%ROOT_DIR%\install"
 
 rem ==========================================
-rem 🔍 Detect system CMake first (fallback to bundled one)
+rem 🔍 Detect system CMake
 rem ==========================================
+set "CMAKE="
 where cmake >nul 2>nul
 if %errorlevel%==0 (
-    for /f "delims=" %%i in ('where cmake') do set "CMAKE=%%i"
-) else (
-    echo [WARN] System CMake not found, using bundled version.
-    set "CMAKE=%ROOT_DIR%\tools\platforms\windows\x64\cmake\bin\cmake.exe"
+    for /f "delims=" %%i in ('where cmake') do (
+        set "CMAKE=%%i"
+        goto :found_cmake
+    )
+)
+:found_cmake
+if not defined CMAKE (
+    echo [ERROR] System CMake not found.
+    echo Please install CMake and ensure it is in your PATH.
+    echo Download: https://cmake.org/download/
+    exit /b 1
 )
 
 rem ==========================================
@@ -26,7 +35,11 @@ rem 🧩 Ensure build directory exists
 rem ==========================================
 if not exist "%BUILD_DIR%" (
     echo [INFO] Build directory not found, creating...
-    mkdir "%BUILD_DIR%"
+    mkdir "%BUILD_DIR%" >nul 2>nul
+    if %errorlevel% neq 0 (
+        echo [ERROR] Failed to create build directory: "%BUILD_DIR%"
+        exit /b 1
+    )
 )
 
 rem ==========================================
@@ -34,10 +47,10 @@ rem 📋 Display configuration summary
 rem ==========================================
 echo ****************************************************
 echo Start generating project on Windows
-echo ROOT_DIR   : %ROOT_DIR%
-echo SOURCE_DIR : %SOURCE_DIR%
-echo BUILD_DIR  : %BUILD_DIR%
-echo CMAKE      : %CMAKE%
+echo ROOT_DIR   : "%ROOT_DIR%"
+echo SOURCE_DIR : "%SOURCE_DIR%"
+echo BUILD_DIR  : "%BUILD_DIR%"
+echo CMAKE      : "%CMAKE%"
 echo ****************************************************
 
 rem ==========================================
@@ -49,15 +62,15 @@ rem ==========================================
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
-    -DCMAKE_INSTALL_PREFIX="%ROOT_DIR%\install" ^
+    -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
     -DCMAKE_VERBOSE_MAKEFILE=ON
 
-set EXIT_CODE=%errorlevel%
+set "EXIT_CODE=%errorlevel%"
 
 rem ==========================================
 rem 📦 Result summary
 rem ==========================================
-if %EXIT_CODE% NEQ 0 (
+if not "%EXIT_CODE%"=="0" (
     echo [ERROR] CMake configuration failed with code %EXIT_CODE%.
     exit /b %EXIT_CODE%
 ) else (
@@ -68,4 +81,4 @@ if %EXIT_CODE% NEQ 0 (
 )
 
 endlocal
-exit /b %EXIT_CODE%
+exit /b 0
