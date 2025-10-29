@@ -12,12 +12,11 @@ endif()
 set(MODULE_MODULE_NAME UIResourceLoader)
 set(MODULE_IDE_FOLDER UI)
 
-set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include ${UCF_CODE_GENERATOR_DIR}/UIColorToken)
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
     include/UIResourceLoader/UIResourceLoaderExport.h
     include/UIResourceLoader/UIResourceLoader.h
-    ${UCF_CODE_GENERATOR_DIR}/UIColorToken/UIColorToken.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/UIResourceLoader.cpp
