@@ -45,6 +45,8 @@ commonHead::model::ColorState UIResourceColorLoader::convertUIColorStateToVMColo
         return commonHead::model::ColorState::Focused;
     case UIColorState::ColorState::Checked:
         return commonHead::model::ColorState::Checked;
+    case UIColorState::ColorState::Selected:
+        return commonHead::model::ColorState::Selected;
     default:
         return commonHead::model::ColorState::Normal;
     }

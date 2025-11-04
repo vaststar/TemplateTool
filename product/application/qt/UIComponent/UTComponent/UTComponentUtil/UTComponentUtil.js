@@ -1,10 +1,16 @@
 
+function computeColorState(widget) {
+    if (!widget.enabled) return UIColorState.Disabled;
+    if (widget.pressed) return UIColorState.Pressed;
+    if (widget.hovered) return UIColorState.Hovered;
+    if (widget.activeFocus) return UIColorState.Focused;
+    if (widget.selected) return UIColorState.Selected;
+    if (widget.checked) return UIColorState.Checked;
+    return UIColorState.Normal;
+}
+
 function getItemUIColor(widget, colorEnum) {
-    var colorState = !widget.enabled ? UIColorState.Disabled :
-                      widget.pressed ? UIColorState.Pressed :
-                      widget.hovered ? UIColorState.Hovered :
-                      widget.activeFocus ? UIColorState.Focused :
-                      widget.checked ? UIColorState.Checked : UIColorState.Normal;
+    const colorState = computeColorState(widget);
     return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
 }
 

@@ -16,7 +16,8 @@ enum class ColorState{
     Pressed,
     Disabled,
     Focused,
-    Checked
+    Checked,
+    Selected
 }; 
 
 enum class ColorThemeType{

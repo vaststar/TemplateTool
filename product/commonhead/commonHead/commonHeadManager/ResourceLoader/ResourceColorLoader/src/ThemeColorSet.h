@@ -15,6 +15,7 @@ struct ColorSet
     ColorPaletteType disabled;
     ColorPaletteType focused;
     ColorPaletteType checked;
+    ColorPaletteType selected;
 };
 
 struct ThemeColorSet

@@ -13,7 +13,8 @@ enum class ColorState{
     Pressed,
     Disabled,
     Focused,
-    Checked
+    Checked,
+    Selected
 };
 Q_ENUM_NS(ColorState)
 }

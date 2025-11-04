@@ -37,6 +37,8 @@ model::Color ResourceColorLoader::getColor(model::ColorToken token, model::Color
                     return model::getColorPalette(colorSet.focused).toColor();
                 case model::ColorState::Checked:
                     return model::getColorPalette(colorSet.checked).toColor();
+                case model::ColorState::Selected:
+                    return model::getColorPalette(colorSet.selected).toColor();
             }
         }
         else
