@@ -11,18 +11,17 @@ function computeColorState(widget) {
 
 function getItemUIColor(widget, colorEnum) {
     const colorState = computeColorState(widget);
-    return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColor(colorEnum, colorState) : {};
 }
 
 function getPlainUIColor(colorEnum, colorState) {
-    return ThemeManager ? ThemeManager.getUIColor(colorEnum, colorState) : {};
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColor(colorEnum, colorState) : {};
 }
 
 function getUIFont(fontSize) {
-    return ThemeManager ? ThemeManager.getUIFont(fontSize) : {};
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getUIFont(fontSize) : {};
 }
 
 function getLocalizedString(key) {
-    console.log("6666666666")
-    return ThemeManager ? ThemeManager.getLocalizedString(key) : "No ThemeManager";
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getLocalizedString(key) : "No UIResourceLoaderManager";
 }

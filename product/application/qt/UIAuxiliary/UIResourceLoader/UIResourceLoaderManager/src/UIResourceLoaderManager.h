@@ -8,7 +8,7 @@
 #include <QFont>
 #include <QColor>
 
-#include <UIManager/IThemeManager.h>
+#include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -20,19 +20,19 @@ namespace UICore{
     class CoreQmlEngine;
 }
 
-namespace UIManager{
-class ThemeManager final: public IThemeManager
+namespace UIResource{
+class UIResourceLoaderManager final: public IUIResourceLoaderManager
 {
 Q_OBJECT
 QML_ELEMENT
-QML_UNCREATABLE("Cannot create a ThemeManager instance. It should create by C++")
+QML_UNCREATABLE("Cannot create a UIResourceLoaderManager instance. It should create by C++")
 public:
-    explicit ThemeManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
-    ~ThemeManager();
-    ThemeManager(const ThemeManager&) = delete;
-    ThemeManager(ThemeManager&&) = delete;
-    ThemeManager& operator=(const ThemeManager&) = delete;
-    ThemeManager& operator=(ThemeManager&&) = delete;
+    explicit UIResourceLoaderManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    ~UIResourceLoaderManager();
+    UIResourceLoaderManager(const UIResourceLoaderManager&) = delete;
+    UIResourceLoaderManager(UIResourceLoaderManager&&) = delete;
+    UIResourceLoaderManager& operator=(const UIResourceLoaderManager&) = delete;
+    UIResourceLoaderManager& operator=(UIResourceLoaderManager&&) = delete;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) override;
     virtual Q_INVOKABLE QFont getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight = UIFontToken::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIFontToken::UIFontFamily family = UIFontToken::UIFontFamily::UIFontFamily_SegoeUI) override;

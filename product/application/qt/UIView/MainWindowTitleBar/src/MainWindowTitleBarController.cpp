@@ -2,7 +2,7 @@
 
 #include <AppContext/AppContext.h>
 #include <UIManager/IUIManagerProvider.h>
-#include <UIManager/IThemeManager.h>
+#include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 
@@ -34,9 +34,9 @@ QColor MainWindowTitleBarController::getColor() const
     {
         if (auto managerProvider = appContext->getManagerProvider())
         {
-            if (auto themeManager = managerProvider->getThemeManager())
+            if (auto resourceLoaderManager = managerProvider->getUIResourceLoaderManager())
             {
-                return themeManager->getUIColor(UIColorToken::ColorToken::MainWindowBackground, UIColorState::ColorState::Normal);
+                return resourceLoaderManager->getUIColor(UIColorToken::ColorToken::MainWindowBackground, UIColorState::ColorState::Normal);
             }
         }
     }

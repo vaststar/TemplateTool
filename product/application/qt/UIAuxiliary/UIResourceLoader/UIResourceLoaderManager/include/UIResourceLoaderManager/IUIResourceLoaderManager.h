@@ -6,7 +6,7 @@
 #include <QFont>
 #include <QColor>
 
-#include <UIManager/UIManagerExport.h>
+#include <UIResourceLoaderManager/UIResourceLoaderManagerExport.h>
 #include <UIResourceColorLoader/UIColorState.h>
 #include <UIResourceFontLoader/UIFontToken.h>
 #include <UIColorToken.h>
@@ -22,12 +22,12 @@ namespace UICore{
     class CoreQmlEngine;
 }
 
-namespace UIManager{
-class UIManager_EXPORT IThemeManager: public QObject
+namespace UIResource{
+class UIResourceLoaderManager_EXPORT IUIResourceLoaderManager: public QObject
 {
 Q_OBJECT
 public:
-    virtual ~IThemeManager() = default;
+    virtual ~IUIResourceLoaderManager() = default;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) = 0;
     virtual Q_INVOKABLE QFont getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight = UIFontToken::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIFontToken::UIFontFamily family = UIFontToken::UIFontFamily::UIFontFamily_SegoeUI) = 0;
@@ -35,5 +35,7 @@ public:
     virtual Q_INVOKABLE QString getNonLocalizedString(UIStringToken::NonLocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedString(UIStringToken::LocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedStringWithParams(UIStringToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) = 0;
+public:
+    static std::unique_ptr<IUIResourceLoaderManager> createInstance(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 };
 }

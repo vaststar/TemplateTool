@@ -61,7 +61,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME UIResourceStringLoader)
-set(MODULE_IDE_FOLDER UI)
+set(MODULE_IDE_FOLDER UI/ResourceLoader)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include ${RESOURCE_OUT_PUT_DIR})
 

@@ -1,30 +1,35 @@
 include(BuildQtModule)
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIResourceFontLoader_DLL)
+    set(ADD_DEFINITIONS UIResourceLoaderManager_DLL) #UIResourceLoaderManager_DLL UIResourceLoaderManager_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()
 
-set(MODULE_MODULE_NAME UIResourceFontLoader)
+set(MODULE_MODULE_NAME UIResourceLoaderManager)
 set(MODULE_IDE_FOLDER UI/ResourceLoader)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/UIResourceFontLoader/UIResourceFontLoaderExport.h
-    include/UIResourceFontLoader/UIResourceFontLoader.h
-    include/UIResourceFontLoader/UIFontToken.h
+    include/UIResourceLoaderManager/UIResourceLoaderManagerExport.h
+    include/UIResourceLoaderManager/IUIResourceLoaderManager.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/UIResourceFontLoader.cpp
-    src/LoggerDefine.h
+    src/LoggerDefine.h 
+    src/UIResourceLoaderManager.h
+    src/UIResourceLoaderManager.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
+    Qt6::Widgets
     Qt6::Qml
+    UIResourceLoader
 )
+
 set(MODULE_DEPENDENCIES_PRIVATE
-    ResourceFontLoader
+    UICore
+    ResourceLoader
+    CommonHeadFramework
     MasterLog
 )
 

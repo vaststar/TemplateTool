@@ -15,35 +15,33 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UIManager/UIManagerExport.h
     include/UIManager/ITranslatorManager.h
     include/UIManager/IUIManagerProvider.h
-    include/UIManager/IThemeManager.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
-    src/TranslatorManager.h
-    src/TranslatorManager.cpp
-    src/UIManagerProvider.h
-    src/UIManagerProvider.cpp
-    src/ThemeManager.h
-    src/ThemeManager.cpp
+    LoggerDefine/LoggerDefine.h 
+
+    UIManagerProvider/UIManagerProvider.h
+    UIManagerProvider/UIManagerProvider.cpp
+
+    TranslatorManager/TranslatorManager.h
+    TranslatorManager/TranslatorManager.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Widgets
     Qt6::Qml
-    UIResourceLoader
     UIDataStruct
+    UIResourceLoaderManager
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
     UICore
     ResourceLoader
     CommonHeadFramework
-    ViewModels
     MasterLog
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src)
+set(MODULE_BUILD_PRIVATE_DIR .)
 
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

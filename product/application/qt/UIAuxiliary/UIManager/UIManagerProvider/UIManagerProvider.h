@@ -27,9 +27,9 @@ public:
     UIManagerProvider& operator=(UIManagerProvider&&) = delete;
 
     virtual QPointer<ITranslatorManager> getTranslatorManager() const override;
-    virtual QPointer<IThemeManager> getThemeManager() const override;
+    virtual QPointer<UIResource::IUIResourceLoaderManager> getUIResourceLoaderManager() const override;
 private:
     std::unique_ptr<ITranslatorManager> mTranslatorManager;
-    std::unique_ptr<IThemeManager> mThemeManager;
+    std::unique_ptr<UIResource::IUIResourceLoaderManager> mUIResourceLoaderManager;
 };
 }

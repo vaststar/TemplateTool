@@ -10,7 +10,7 @@ endif()
 
 
 set(MODULE_MODULE_NAME UIResourceLoader)
-set(MODULE_IDE_FOLDER UI)
+set(MODULE_IDE_FOLDER UI/ResourceLoader)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
