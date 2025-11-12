@@ -2,7 +2,7 @@
   "name": "light",
   "tokens": {
     "main-window-background": {
-      "normal": "slate-600"
+      "normal": "gray-800"
     },
     "focus-outline":{
       "normal": "blue-700"

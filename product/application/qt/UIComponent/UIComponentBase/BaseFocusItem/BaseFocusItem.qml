@@ -3,17 +3,27 @@ import QtQuick 2.15
 Item {
     id: root
 
+    property Item target: parent
+    property bool externallyShown: false
     property color focusColor: "blue"
-    property int borderWidth: 3
-    property real focusRadius: NaN   // 父控件圆角
-    property real focusMargin: 3    // 焦点环外扩距离
-    readonly property int animationDuration: 50 // 动画时长
+    property int borderWidth: 2
+    property real focusRadius: NaN
+    property real focusMargin: NaN
 
-    width: parent ? parent.width + 2 * focusMargin : 0
-    height: parent ? parent.height + 2 * focusMargin : 0
-    anchors.centerIn: parent
+    readonly property real effectiveMargin: isNaN(focusMargin) ? (borderWidth / 2 + 2) : focusMargin
+    readonly property int animationDuration: 50
+    readonly property bool targetOk: !!target && target.visible && target.enabled
+    readonly property bool targetFocused: !!target && target.activeFocus
+    readonly property bool effectiveVisible: targetOk && (targetFocused || externallyShown)
 
-    visible: parent ? parent.activeFocus : false
+    anchors.fill: target
+    anchors.margins: -effectiveMargin
+    anchors.centerIn: target
+
+    focus: false
+    enabled: false
+    z: 9999
+    visible: effectiveVisible
     opacity: visible ? 1.0 : 0.0
     Behavior on opacity { 
         NumberAnimation { 
@@ -24,6 +34,8 @@ Item {
 
     Canvas {
         anchors.fill: parent
+        antialiasing: true
+        renderTarget: Canvas.FramebufferObject
         onPaint: {
             var ctx = getContext("2d")
             ctx.clearRect(0, 0, width, height)
@@ -40,7 +52,6 @@ Item {
         onHeightChanged: requestPaint()
         onVisibleChanged: requestPaint()
 
-        //辅助函数
         function getCTXParam(ctx) {
             var lw2 = ctx.lineWidth / 2
             var w = width - ctx.lineWidth
@@ -51,7 +62,7 @@ Item {
         }
         
         function computeRadius(w, h) {
-            var r = (!isNaN(root.focusRadius)) ? root.focusRadius + root.focusMargin : 0
+            var r = (!isNaN(root.focusRadius)) ? root.focusRadius + root.effectiveMargin : 0
             var maxR = Math.min(w, h) / 2
             return Math.max(0, Math.min(r, maxR))
 

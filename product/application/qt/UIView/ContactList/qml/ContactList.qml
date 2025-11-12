@@ -48,15 +48,35 @@ Item{
         width:200
         height:200
         clip: false
+        activeFocusOnTab: true
 
         // The model needs to be a QAbstractItemModel
         model: treeModel
         selectionModel: ItemSelectionModel {}
 
+        Keys.onTabPressed: function(e) {
+            e.accepted = true; 
+            const next = treeView.nextItemInFocusChain(true);
+            if (next && next !== treeView) next.forceActiveFocus(Qt.TabFocusReason);
+        }
+        Keys.onBacktabPressed: function(e) {
+            e.accepted = true;
+            const prev = treeView.nextItemInFocusChain(false);
+            if (prev && prev !== treeView) prev.forceActiveFocus(Qt.BacktabFocusReason);
+        }
+        onActiveFocusChanged: {
+            if (activeFocus) Qt.callLater(function() {
+                if (treeView.currentRow < 0 && treeView.model && treeView.model.rowCount(treeView.rootIndex) > 0) {
+                    const idx = treeView.index(0, 0, treeView.rootIndex);
+                    treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Rows);
+                }
+            });
+        }
+
         delegate: Item {
             implicitWidth: padding + label.x + label.implicitWidth + padding
             implicitHeight: label.implicitHeight * 1.5
-            focus: treeView.currentRow === row && treeView.activeFocus
+            focus: current === row && treeView.activeFocus
 
             readonly property real indentation: 20
             readonly property real padding: 5
@@ -71,8 +91,6 @@ Item{
             required property int column
             required property bool current
 
-            // Rotate indicator when expanded by the user
-            // (requires TreeView to have a selectionModel)
             property Animation indicatorAnimation: NumberAnimation {
                 target: indicator
                 property: "rotation"
@@ -118,22 +136,9 @@ Item{
                 
             }
             UTFocusItem{
-                z: 10
+                externallyShown: current && treeView.activeFocus
             }
         }
     }
-
-    
-    // Instantiator{
-    //     model: 3
-    //     delegate: Rectangle {
-    //         width: 100
-    //         height: 100
-    //         color: "black"
-    //         border.color: "black"
-    //         x: index * (width + 10)
-    //     }
-
-    // }
 }
 
