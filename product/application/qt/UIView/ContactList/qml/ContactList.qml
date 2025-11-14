@@ -67,7 +67,7 @@ Item{
         onActiveFocusChanged: {
             if (activeFocus) Qt.callLater(function() {
                 if (treeView.currentRow < 0 && treeView.model && treeView.model.rowCount(treeView.rootIndex) > 0) {
-                    const idx = treeView.index(0, 0, treeView.rootIndex);
+                    const idx = treeView.index(0, 0);
                     treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Rows);
                 }
             });
@@ -76,7 +76,6 @@ Item{
         delegate: Item {
             implicitWidth: padding + label.x + label.implicitWidth + padding
             implicitHeight: label.implicitHeight * 1.5
-            focus: current === row && treeView.activeFocus
 
             readonly property real indentation: 20
             readonly property real padding: 5
@@ -120,8 +119,8 @@ Item{
 
                 TapHandler {
                     onSingleTapped: {
-                        let index = treeView.index(row, column)
-                        treeView.selectionModel.setCurrentIndex(index, ItemSelectionModel.NoUpdate)
+                        const idx = treeView.index(row, column);
+                        treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
                         treeView.toggleExpanded(row)
                     }
                 }
