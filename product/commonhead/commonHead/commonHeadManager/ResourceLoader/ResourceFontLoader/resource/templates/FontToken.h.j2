@@ -1,0 +1,18 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include <string>
+#include <map>
+
+namespace commonHead::model{
+
+enum class FontToken
+{
+    None = 1,
+    {% for token in data.tokens %}
+    {{ token.replace("-", " ").title().replace(" ", "") }},
+    {% endfor %}
+    LastFont
+};
+}

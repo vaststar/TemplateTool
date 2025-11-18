@@ -1,0 +1,84 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include <string>
+#include <map>
+#include <array>
+#include <commonHead/ResourceFontLoader/model/Font.h>
+
+namespace commonHead::model{
+
+enum class FontType {
+{% for key in data.FontType.keys() | sort %}
+    {{ key }},
+{% endfor %}
+};
+
+enum class FontWeight {
+{% for key in data.FontWeight.keys() %}
+    {{ key }},
+{% endfor %}
+};
+
+enum class FontSize {
+{% for key in data.FontSize.keys() %}
+    {{ key }},
+{% endfor %}
+};
+
+struct FontFamilys {
+    std::vector<std::string> windows;
+    std::vector<std::string> macosx;
+    std::vector<std::string> linux;
+    std::vector<std::string> ios;
+    std::vector<std::string> android;
+    std::vector<std::string> default_;
+};
+
+inline int getFontWeight(FontWeight type) {
+    switch (type) {
+{% for key, value in data.FontWeight.items() | sort %}
+        case FontWeight::{{ key }}: return {{ value }};
+{% endfor %}
+        default: return 400;
+    }
+}
+
+inline int getFontSize(FontSize type) {
+    switch (type) {
+{% for key, value in data.FontSize.items() | sort %}
+        case FontSize::{{ key }}: return {{ value }};
+{% endfor %}
+        default: return 20;
+    }
+}
+
+inline FontFamilys getFontFamilys(FontType type) {
+    switch (type) {
+{% for font_type_key, platforms in fontPalette.fontType.items() | sort %}
+        case FontType::{{ font_type_key }}: {
+            return FontFamilys{
+                .windows = std::vector<std::string>{ {% for font in platforms.get('Windows', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },
+                .macosx = std::vector<std::string>{ {% for font in platforms.get('MacOSX', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },
+                .linux = std::vector<std::string>{ {% for font in platforms.get('Linux', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },
+                .ios = std::vector<std::string>{ {% for font in platforms.get('iOS', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },
+                .android = std::vector<std::string>{ {% for font in platforms.get('Android', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },
+                .default_ = std::vector<std::string>{ {% for font in platforms.get('Default', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} }
+            };
+        }
+{% endfor %}
+        default: {
+            return FontFamilys{
+                .windows = {},
+                .macosx = {},
+                .linux = {},
+                .ios = {},
+                .android = {},
+                .default_ = {}
+            };
+        }
+    }
+}
+
+} // namespace commonHead::model

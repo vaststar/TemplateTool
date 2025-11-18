@@ -1,0 +1,23 @@
+{
+  "name": "normal",
+  "tokens": {
+    "window-title": {
+      "fontType": "SansSerif",
+      "fontSize": "Medium",
+      "fontWeight": "Bold",
+      "italic": false
+    },
+    "window-body":{
+      "fontType": "SansSerif",
+      "fontSize": "MediumSmall",
+      "fontWeight": "Normal",
+      "italic": false
+    },
+    "button-text": {
+      "fontType": "SansSerif",
+      "fontSize": "Small",
+      "fontWeight": "Normal",
+      "italic": false
+    }
+  }
+}

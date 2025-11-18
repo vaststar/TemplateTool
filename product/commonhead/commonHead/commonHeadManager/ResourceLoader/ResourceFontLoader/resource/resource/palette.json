@@ -1,0 +1,79 @@
+{
+  "FontType": {
+    "Serif": {
+      "Windows": ["Times New Roman", "Georgia", "Cambria", "Arial"],
+      "MacOSX": ["Times New Roman", "Times", "Georgia"],
+      "Linux": ["Liberation Serif", "DejaVu Serif", "Times New Roman"],
+      "iOS": ["Times New Roman", "Georgia", "Times"],
+      "Android": ["serif", "Noto Serif", "Times New Roman"],
+      "Default": ["Times New Roman"]
+    },
+    "SansSerif": {
+      "Windows": ["Microsoft YaHei", "SimSun", "Arial", "Noto Sans CJK SC", "Arial Unicode MS"],
+      "MacOSX": ["PingFang SC", "Helvetica Neue", "Helvetica", "Arial"],
+      "Linux": ["Noto Sans CJK SC", "Noto Sans", "DejaVu Sans", "Arial"],
+      "iOS": ["PingFang SC", "Helvetica Neue", "Helvetica", "Arial"],
+      "Android": ["Noto Sans CJK SC", "Roboto", "Noto Sans", "sans-serif"],
+      "Default": ["Arial"]
+    },
+    "Monospace": {
+      "Windows": ["Consolas", "Courier New", "Lucida Console"],
+      "MacOSX": ["Menlo", "Monaco", "Courier New"],
+      "Linux": ["JetBrains Mono", "DejaVu Sans Mono", "Courier New"],
+      "iOS": ["Courier New", "Menlo", "Courier"],
+      "Android": ["monospace", "Roboto Mono", "Courier New"],
+      "Default": ["Courier New"]
+    },
+    "Script": {
+      "Windows": ["Segoe Script", "Comic Sans MS", "Brush Script MT"],
+      "MacOSX": ["Brush Script MT", "Apple Chancery"],
+      "Linux": ["URW Chancery L", "Comic Sans MS"],
+      "iOS": ["Comic Sans MS", "Brush Script MT"],
+      "Android": ["cursive", "Comic Sans MS"],
+      "Default": ["Comic Sans MS"]
+    },
+    "Display": {
+      "Windows": ["Impact", "Arial Black"],
+      "MacOSX": ["Impact", "Arial Black"],
+      "Linux": ["Arial Black", "Impact"],
+      "iOS": ["Impact", "Arial Black"],
+      "Android": ["Arial Black", "Impact"],
+      "Default": ["Impact"]
+    },
+    "CJK": {
+      "Windows": ["Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Arial Unicode MS"],
+      "MacOSX": ["PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC"],
+      "Linux": ["Noto Sans CJK SC", "Noto Sans CJK JP", "Noto Sans CJK KR", "Arial Unicode MS"],
+      "iOS": ["PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC"],
+      "Android": ["Noto Sans CJK SC", "思源黑体", "Noto Sans CJK", "sans-serif"],
+      "Default": ["Arial Unicode MS"]
+    },
+    "Icon": {
+      "Windows": ["Segoe UI Symbol", "Arial Unicode MS"],
+      "MacOSX": ["SF Symbols", "Arial Unicode MS"],
+      "Linux": ["Noto Color Emoji", "Arial Unicode MS"],
+      "iOS": ["SF Symbols", "Arial Unicode MS"],
+      "Android": ["Noto Color Emoji", "Arial Unicode MS"],
+      "Default": ["Arial Unicode MS"]
+    }
+  },
+  "FontWeight": {
+    "Thin": 100,
+    "ExtraLight": 200,
+    "Light": 300,
+    "Normal": 400,
+    "Medium": 500,
+    "DemiBold": 600,
+    "Bold": 700,
+    "ExtraBold": 800,
+    "Black": 900
+  },
+  "FontSize": {
+    "ExtraSmall": 12,
+    "Small": 14,
+    "MediumSmall": 16,
+    "Medium": 20,
+    "Large": 26,
+    "ExtraLarge": 40
+  }
+}

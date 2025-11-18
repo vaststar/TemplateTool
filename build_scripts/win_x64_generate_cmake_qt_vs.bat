@@ -8,7 +8,8 @@ rem =========================================
 set "ROOT_DIR=%~dp0.."
 set "BUILD_DIR=%ROOT_DIR%\build"
 set "SOURCE_DIR=%ROOT_DIR%"
-set "GRAPHVIZ_FILE=%BUILD_DIR%\cmake_graph.dot"
+set "GRAPHVIZ_DIR=%BUILD_DIR%\graphs"
+set "GRAPHVIZ_FILE=%GRAPHVIZ_DIR%\cmake_graph.dot"
 set "INSTALL_DIR=%ROOT_DIR%\install"
 
 rem =========================================
@@ -40,6 +41,11 @@ if not exist "%BUILD_DIR%" (
         echo [ERROR] Failed to create build directory: "%BUILD_DIR%"
         exit /b 1
     )
+)
+
+if not exist "%GRAPHVIZ_DIR%" (
+    echo [INFO] Creating directory for graphviz files: "%GRAPHVIZ_DIR%"
+    mkdir "%GRAPHVIZ_DIR%" >nul 2>&1
 )
 
 rem =========================================
