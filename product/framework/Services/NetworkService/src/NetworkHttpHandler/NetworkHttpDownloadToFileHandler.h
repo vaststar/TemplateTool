@@ -18,11 +18,11 @@ class NetworkHttpDownloadToFileHandler final: public INetworkHttpHandler
 {
 public:
     NetworkHttpDownloadToFileHandler(const ucf::service::network::http::HttpDownloadToFileRequest& restRequest, const HttpDownloadToFileResponseCallbackFunc& restResponseCallback);
-    virtual ~NetworkHttpDownloadToFileHandler();
-    NetworkHttpDownloadToFileHandler(const NetworkHttpDownloadToFileHandler&) = delete;
-    NetworkHttpDownloadToFileHandler(NetworkHttpDownloadToFileHandler&&) = delete;
-    NetworkHttpDownloadToFileHandler& operator=(const NetworkHttpDownloadToFileHandler&) = delete;
-    NetworkHttpDownloadToFileHandler& operator=(NetworkHttpDownloadToFileHandler&&) = delete;
+    NetworkHttpDownloadToFileHandler(const ucf::service::network::http::NetworkHttpDownloadToFileHandler&) = delete;
+    NetworkHttpDownloadToFileHandler(ucf::service::network::http::NetworkHttpDownloadToFileHandler&&) = delete;
+    NetworkHttpDownloadToFileHandler& operator=(const ucf::service::network::http::NetworkHttpDownloadToFileHandler&) = delete;
+    NetworkHttpDownloadToFileHandler& operator=(ucf::service::network::http::NetworkHttpDownloadToFileHandler&&) = delete;
+    ~NetworkHttpDownloadToFileHandler();
 public:
     virtual const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const override;
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) override;

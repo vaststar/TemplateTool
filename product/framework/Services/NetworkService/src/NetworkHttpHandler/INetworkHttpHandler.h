@@ -11,7 +11,13 @@ namespace ucf::service::network::http{
 class INetworkHttpHandler
 {
 public:
-    ~INetworkHttpHandler() = default;
+    INetworkHttpHandler() = default;
+    INetworkHttpHandler(const INetworkHttpHandler&) = delete;
+    INetworkHttpHandler(INetworkHttpHandler&&) = delete;
+    INetworkHttpHandler& operator=(const INetworkHttpHandler&) = delete;
+    INetworkHttpHandler& operator=(INetworkHttpHandler&&) = delete;
+    virtual ~INetworkHttpHandler() = default;
+public:
     virtual const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const = 0;
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) = 0;
     virtual void appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished) = 0;

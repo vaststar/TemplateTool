@@ -21,7 +21,7 @@ public:
     ContactService(ContactService&&) = delete;
     ContactService& operator=(const ContactService&) = delete;
     ContactService& operator=(ContactService&&) = delete;
-
+public:
     //IContactService
     // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) override;
     virtual std::vector<model::IPersonContactPtr> getPersonContactList() const override;

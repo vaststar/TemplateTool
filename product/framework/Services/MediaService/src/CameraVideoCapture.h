@@ -15,6 +15,10 @@ class CameraVideoCapture
 {
 public:
     explicit CameraVideoCapture(int cameraNum);
+    CameraVideoCapture(const CameraVideoCapture&) = delete;
+    CameraVideoCapture(CameraVideoCapture&&) = delete;
+    CameraVideoCapture& operator=(const CameraVideoCapture&) = delete;
+    CameraVideoCapture& operator=(CameraVideoCapture&&) = delete;
     ~CameraVideoCapture();
 public:
     bool isOpened() const;

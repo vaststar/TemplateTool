@@ -17,11 +17,11 @@ class NetworkHttpRestHandler final: public INetworkHttpHandler
 {
 public:
     NetworkHttpRestHandler(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback);
-    virtual ~NetworkHttpRestHandler();
-    NetworkHttpRestHandler(const NetworkHttpRestHandler&) = delete;
-    NetworkHttpRestHandler(NetworkHttpRestHandler&&) = delete;
-    NetworkHttpRestHandler& operator=(const NetworkHttpRestHandler&) = delete;
-    NetworkHttpRestHandler& operator=(NetworkHttpRestHandler&&) = delete;
+    NetworkHttpRestHandler(const ucf::service::network::http::NetworkHttpRestHandler&) = delete;
+    NetworkHttpRestHandler(ucf::service::network::http::NetworkHttpRestHandler&&) = delete;
+    NetworkHttpRestHandler& operator=(const ucf::service::network::http::NetworkHttpRestHandler&) = delete;
+    NetworkHttpRestHandler& operator=(ucf::service::network::http::NetworkHttpRestHandler&&) = delete;
+    ~NetworkHttpRestHandler();
 public:
     virtual const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const override;
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) override;

@@ -14,9 +14,14 @@ class SERVICE_EXPORT ImageService:public IImageService, public ucf::framework::C
 {
 public:
     ImageService(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    ImageService(const ImageService&) = delete;
+    ImageService(ImageService&&) = delete;
+    ImageService& operator=(const ImageService&) = delete;
+    ImageService& operator=(ImageService&&) = delete;
     ~ImageService();
+public:
     //IService
-    virtual std::string getServiceName() const override;
+    [[nodiscard]] virtual std::string getServiceName() const override;
 protected:
     //IService
     virtual void initService() override;

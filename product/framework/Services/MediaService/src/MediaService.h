@@ -13,7 +13,12 @@ class SERVICE_EXPORT MediaService final: public IMediaService
 {
 public:
     MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    MediaService(const MediaService&) = delete;
+    MediaService(MediaService&&) = delete;
+    MediaService& operator=(const MediaService&) = delete;
+    MediaService& operator=(MediaService&&) = delete;
     ~MediaService();
+public:
     //IService
     virtual std::string getServiceName() const override;
 

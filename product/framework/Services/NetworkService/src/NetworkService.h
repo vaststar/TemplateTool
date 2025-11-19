@@ -16,13 +16,17 @@ class NetworkService final: public virtual INetworkService,
 {
 public:
     explicit NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    NetworkService(const NetworkService&) = delete;
+    NetworkService(NetworkService&&) = delete;
+    NetworkService& operator=(const NetworkService&) = delete;
+    NetworkService& operator=(NetworkService&&) = delete;
     virtual ~NetworkService();
 public:
     //INetworkService
     virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() override;
 
     //IService
-    virtual std::string getServiceName() const override;
+    [[nodiscard]] virtual std::string getServiceName() const override;
 
     //CoreFrameworkCallbackDefault
     virtual void onCoreFrameworkExit() override;

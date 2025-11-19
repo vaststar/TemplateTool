@@ -19,6 +19,13 @@ namespace ucf::service{
 class SERVICE_EXPORT IDataWarehouseService: public IService, public virtual ucf::utilities::INotificationHelper<IDataWarehouseServiceCallback>
 {
 public:
+    IDataWarehouseService() = default;
+    IDataWarehouseService(const IDataWarehouseService&) = delete;
+    IDataWarehouseService(IDataWarehouseService&&) = delete;
+    IDataWarehouseService& operator=(const IDataWarehouseService&) = delete;
+    IDataWarehouseService& operator=(IDataWarehouseService&&) = delete;
+    virtual ~IDataWarehouseService() = default;
+public:
     virtual void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables) = 0;
     virtual void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location = std::source_location::current()) = 0;
     virtual void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit = 0, const std::source_location location = std::source_location::current()) = 0;

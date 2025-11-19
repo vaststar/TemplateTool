@@ -17,6 +17,11 @@ class IService;
 class SERVICE_EXPORT ICoreFramework: public virtual IServiceAccessor, public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
 {
 public:
+    ICoreFramework() = default;
+    ICoreFramework(const ICoreFramework&) = delete;
+    ICoreFramework(ICoreFramework&&) = delete;
+    ICoreFramework& operator=(const ICoreFramework&) = delete;
+    ICoreFramework& operator=(ICoreFramework&&) = delete;
     virtual ~ICoreFramework() = default;
 public:
     virtual std::string getName() const = 0;

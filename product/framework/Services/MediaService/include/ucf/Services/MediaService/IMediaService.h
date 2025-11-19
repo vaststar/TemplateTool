@@ -18,6 +18,11 @@ namespace ucf::service{
 class SERVICE_EXPORT IMediaService: public IService
 {
 public:
+    IMediaService() = default;
+    IMediaService(const IMediaService&) = delete;
+    IMediaService(IMediaService&&) = delete;
+    IMediaService& operator=(const IMediaService&) = delete;
+    IMediaService& operator=(IMediaService&&) = delete;
     virtual ~IMediaService() = default;
     static std::shared_ptr<IMediaService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 public:

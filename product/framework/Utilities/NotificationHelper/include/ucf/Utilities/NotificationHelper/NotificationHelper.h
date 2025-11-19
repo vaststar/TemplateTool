@@ -14,6 +14,13 @@ template <typename CallbackObject>
 class  NotificationHelper: public virtual INotificationHelper<CallbackObject>
 {
 public:
+    NotificationHelper() = default;
+    NotificationHelper(const NotificationHelper&) = delete;
+    NotificationHelper(NotificationHelper&&) = delete;
+    NotificationHelper& operator=(const NotificationHelper&) = delete;
+    NotificationHelper& operator=(NotificationHelper&&) = delete;
+    virtual ~NotificationHelper() = default;
+public:
     using Callback = typename INotificationHelper<CallbackObject>::Callback;
     using CallbackWeakPtr = typename INotificationHelper<CallbackObject>::CallbackWeakPtr;
     using CallbackPtr = typename INotificationHelper<CallbackObject>::CallbackPtr;

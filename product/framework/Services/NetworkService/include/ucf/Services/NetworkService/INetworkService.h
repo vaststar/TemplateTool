@@ -24,6 +24,13 @@ namespace network::http{
 class SERVICE_EXPORT INetworkService: public IService, public virtual ucf::utilities::INotificationHelper<INetworkServiceCallback>
 {
 public:
+    INetworkService() = default;
+    INetworkService(const INetworkService&) = delete;
+    INetworkService(INetworkService&&) = delete;
+    INetworkService& operator=(const INetworkService&) = delete;
+    INetworkService& operator=(INetworkService&&) = delete;
+    virtual ~INetworkService() = default;
+public:
     virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() = 0;
 public: 
     static std::shared_ptr<INetworkService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);

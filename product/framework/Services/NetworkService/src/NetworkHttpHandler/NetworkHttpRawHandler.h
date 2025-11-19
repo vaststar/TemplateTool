@@ -19,11 +19,11 @@ class NetworkHttpRawHandler final: public INetworkHttpHandler
 {
 public:
     NetworkHttpRawHandler(const ucf::service::network::http::HttpRawRequest& restRequest, const HttpRawResponseCallbackFunc& restResponseCallback);
-    virtual ~NetworkHttpRawHandler();
-    NetworkHttpRawHandler(const NetworkHttpRawHandler&) = delete;
-    NetworkHttpRawHandler(NetworkHttpRawHandler&&) = delete;
-    NetworkHttpRawHandler& operator=(const NetworkHttpRawHandler&) = delete;
-    NetworkHttpRawHandler& operator=(NetworkHttpRawHandler&&) = delete;
+    NetworkHttpRawHandler(const ucf::service::network::http::NetworkHttpRawHandler&) = delete;
+    NetworkHttpRawHandler(ucf::service::network::http::NetworkHttpRawHandler&&) = delete;
+    NetworkHttpRawHandler& operator=(const ucf::service::network::http::NetworkHttpRawHandler&) = delete;
+    NetworkHttpRawHandler& operator=(ucf::service::network::http::NetworkHttpRawHandler&&) = delete;
+    ~NetworkHttpRawHandler();
 public:
     virtual const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const override;
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) override;

@@ -16,7 +16,13 @@ namespace ucf::service{
 class SERVICE_EXPORT IInvocationService: public IService, public virtual ucf::utilities::INotificationHelper<IInvocationServiceCallback>
 {
 public:
+    IInvocationService() = default;
+    IInvocationService(const IInvocationService&) = delete;
+    IInvocationService(IInvocationService&&) = delete;
+    IInvocationService& operator=(const IInvocationService&) = delete;
+    IInvocationService& operator=(IInvocationService&&) = delete;
     virtual ~IInvocationService() = default;
+public:
     static std::shared_ptr<IInvocationService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 public:
     virtual void processStartupParameters() = 0;

@@ -18,7 +18,7 @@ public:
     DataWarehouseService(DataWarehouseService&&) = delete;
     DataWarehouseService& operator=(const DataWarehouseService&) = delete;
     DataWarehouseService& operator=(DataWarehouseService&&) = delete;
-
+public:
     //IService
     virtual std::string getServiceName() const override;
 

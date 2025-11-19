@@ -23,6 +23,13 @@ namespace model{
 class SERVICE_EXPORT IContactService: public IService, public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
 {
 public:
+    IContactService() = default;
+    IContactService(const IContactService&) = delete;
+    IContactService(IContactService&&) = delete;
+    IContactService& operator=(const IContactService&) = delete;
+    IContactService& operator=(IContactService&&) = delete;
+    virtual ~IContactService() = default;
+public:
     // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) = 0;
     /**
      * @brief get Full PersonContact List

@@ -47,6 +47,11 @@ struct SqliteDatabaseConfig{
 class DATABASEWRAPPER_EXPORT IDatabaseWrapper
 {
 public:
+    IDatabaseWrapper() = default;
+    IDatabaseWrapper(const IDatabaseWrapper&) = delete;
+    IDatabaseWrapper(IDatabaseWrapper&&) = delete;
+    IDatabaseWrapper& operator=(const IDatabaseWrapper&) = delete;
+    IDatabaseWrapper& operator=(IDatabaseWrapper&&) = delete;
     virtual ~IDatabaseWrapper() = default;
 public:
     virtual void open() = 0;

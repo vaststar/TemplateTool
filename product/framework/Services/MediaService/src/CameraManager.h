@@ -20,7 +20,12 @@ class CameraManager
 {
 public:
     CameraManager();
+    CameraManager(const CameraManager&) = delete;
+    CameraManager(CameraManager&&) = delete;
+    CameraManager& operator=(const CameraManager&) = delete;
+    CameraManager& operator=(CameraManager&&) = delete;
     ~CameraManager();
+public:
     std::string openCamera(int cameraNum);
     void releaseCamera(const std::string& cameraId);
     std::vector<std::string> getOpenedCameras() const;

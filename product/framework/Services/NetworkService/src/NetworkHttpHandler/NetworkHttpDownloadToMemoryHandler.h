@@ -18,11 +18,11 @@ class NetworkHttpDownloadToMemoryHandler final: public INetworkHttpHandler
 {
 public:
     NetworkHttpDownloadToMemoryHandler(const ucf::service::network::http::HttpDownloadToMemoryRequest& restRequest, const HttpDownloadToMemoryResponseCallbackFunc& restResponseCallback);
-    virtual ~NetworkHttpDownloadToMemoryHandler();
-    NetworkHttpDownloadToMemoryHandler(const NetworkHttpDownloadToMemoryHandler&) = delete;
-    NetworkHttpDownloadToMemoryHandler(NetworkHttpDownloadToMemoryHandler&&) = delete;
-    NetworkHttpDownloadToMemoryHandler& operator=(const NetworkHttpDownloadToMemoryHandler&) = delete;
-    NetworkHttpDownloadToMemoryHandler& operator=(NetworkHttpDownloadToMemoryHandler&&) = delete;
+    NetworkHttpDownloadToMemoryHandler(const ucf::service::network::http::NetworkHttpDownloadToMemoryHandler&) = delete;
+    NetworkHttpDownloadToMemoryHandler(ucf::service::network::http::NetworkHttpDownloadToMemoryHandler&&) = delete;
+    NetworkHttpDownloadToMemoryHandler& operator=(const ucf::service::network::http::NetworkHttpDownloadToMemoryHandler&) = delete;
+    NetworkHttpDownloadToMemoryHandler& operator=(ucf::service::network::http::NetworkHttpDownloadToMemoryHandler&&) = delete;
+    ~NetworkHttpDownloadToMemoryHandler();
 public:
     virtual const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const override;
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) override;

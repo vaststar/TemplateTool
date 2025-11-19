@@ -24,6 +24,7 @@ public:
     ClientInfoService& operator=(const ClientInfoService&) = delete;
     ClientInfoService& operator=(ClientInfoService&&) = delete;
 
+public:
     //IService
     virtual std::string getServiceName() const override;
 

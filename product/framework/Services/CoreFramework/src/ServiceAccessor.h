@@ -17,6 +17,13 @@ namespace ucf::framework{
 class ServiceAccessor: public virtual IServiceAccessor
 {
 public:
+    ServiceAccessor() = default;
+    ServiceAccessor(const ServiceAccessor&) = delete;
+    ServiceAccessor(ServiceAccessor&&) = delete;
+    ServiceAccessor& operator=(const ServiceAccessor&) = delete;
+    ServiceAccessor& operator=(ServiceAccessor&&) = delete;
+    virtual ~ServiceAccessor() = default;
+public:
     virtual std::vector<std::weak_ptr<ucf::service::IService>> getAllServices() override
     {
         std::vector<std::weak_ptr<ucf::service::IService>> services;

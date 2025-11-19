@@ -14,6 +14,13 @@ namespace ucf::framework{
 class SERVICE_EXPORT IServiceAccessor
 {
 public:
+    IServiceAccessor() = default;
+    IServiceAccessor(const IServiceAccessor&) = delete;
+    IServiceAccessor(IServiceAccessor&&) = delete;
+    IServiceAccessor& operator=(const IServiceAccessor&) = delete;
+    IServiceAccessor& operator=(IServiceAccessor&&) = delete;
+    virtual ~IServiceAccessor() = default;
+public:
     template<typename T>
     std::weak_ptr<T> getService()
     {

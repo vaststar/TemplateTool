@@ -13,8 +13,13 @@ class HttpDownloadToFileRequest;
 class SERVICE_EXPORT INetworkHttpManager
 {
 public:
+    INetworkHttpManager() = default;
+    INetworkHttpManager(const INetworkHttpManager&) = delete;
+    INetworkHttpManager(INetworkHttpManager&&) = delete;
+    INetworkHttpManager& operator=(const INetworkHttpManager&) = delete;
+    INetworkHttpManager& operator=(INetworkHttpManager&&) = delete;
     virtual ~INetworkHttpManager() = default;
-    
+public:    
     virtual void startHttpNetwork() = 0;
     virtual void sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const ucf::service::network::http::HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location = std::source_location::current()) = 0;
     virtual void sendHttpRawRequest(const ucf::service::network::http::HttpRawRequest& rawRequest, const ucf::service::network::http::HttpRawResponseCallbackFunc& rawResponseCallback, const std::source_location location = std::source_location::current()) = 0;
