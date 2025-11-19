@@ -20,11 +20,23 @@ namespace commonHead::viewModels{
 class COMMONHEAD_EXPORT IAppUIViewModelCallback
 {
 public:
+    IAppUIViewModelCallback() = default;
+    IAppUIViewModelCallback(const IAppUIViewModelCallback&) = delete;
+    IAppUIViewModelCallback(IAppUIViewModelCallback&&) = delete;
+    IAppUIViewModelCallback& operator=(const IAppUIViewModelCallback&) = delete;
+    IAppUIViewModelCallback& operator=(IAppUIViewModelCallback&&) = delete;
     virtual ~IAppUIViewModelCallback() = default;
 };
 
 class COMMONHEAD_EXPORT IAppUIViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IAppUIViewModelCallback>
 {
+public:
+    IAppUIViewModel() = default;
+    IAppUIViewModel(const IAppUIViewModel&) = delete;
+    IAppUIViewModel(IAppUIViewModel&&) = delete;
+    IAppUIViewModel& operator=(const IAppUIViewModel&) = delete;
+    IAppUIViewModel& operator=(IAppUIViewModel&&) = delete;
+    virtual ~IAppUIViewModel() = default;
 public:
     virtual std::string getViewModelName() const = 0;
     /**

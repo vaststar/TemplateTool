@@ -16,7 +16,13 @@ class InvocationViewModel: public virtual IInvocationViewModel,
 {
 public:
     explicit InvocationViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    InvocationViewModel() = default;
+    InvocationViewModel(const InvocationViewModel&) = delete;
+    InvocationViewModel(InvocationViewModel&&) = delete;
+    InvocationViewModel& operator=(const InvocationViewModel&) = delete;
+    InvocationViewModel& operator=(InvocationViewModel&&) = delete;
     ~InvocationViewModel();
+public:
     virtual std::string getViewModelName() const override;
 
     virtual void processStartupParameters() override;

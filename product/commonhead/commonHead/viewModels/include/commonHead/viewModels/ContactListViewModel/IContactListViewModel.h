@@ -19,12 +19,25 @@ namespace commonHead::viewModels{
 class COMMONHEAD_EXPORT IContactListViewModelCallback
 {
 public:
+    IContactListViewModelCallback() = default;
+    IContactListViewModelCallback(const IContactListViewModelCallback&) = delete;
+    IContactListViewModelCallback(IContactListViewModelCallback&&) = delete;
+    IContactListViewModelCallback& operator=(const IContactListViewModelCallback&) = delete;
+    IContactListViewModelCallback& operator=(IContactListViewModelCallback&&) = delete;
     virtual ~IContactListViewModelCallback() = default;
+public:
     virtual void onContactListAvaliable(const std::vector<model::Contact>& contactList) = 0;
 };
 
 class COMMONHEAD_EXPORT IContactListViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IContactListViewModelCallback>
 {
+public:
+    IContactListViewModel() = default;
+    IContactListViewModel(const IContactListViewModel&) = delete;
+    IContactListViewModel(IContactListViewModel&&) = delete;
+    IContactListViewModel& operator=(const IContactListViewModel&) = delete;
+    IContactListViewModel& operator=(IContactListViewModel&&) = delete;
+    virtual ~IContactListViewModel() = default;
 public:
     virtual std::string getViewModelName() const = 0;
     virtual std::vector<commonHead::viewModels::model::Contact> getContactList() const = 0;

@@ -24,7 +24,13 @@ class UIManager_EXPORT IUIManagerProvider: public QObject
 {
 Q_OBJECT
 public:
+    IUIManagerProvider() = default;
+    IUIManagerProvider(const IUIManagerProvider&) = delete;
+    IUIManagerProvider(IUIManagerProvider&&) = delete;
+    IUIManagerProvider& operator=(const IUIManagerProvider&) = delete;
+    IUIManagerProvider& operator=(IUIManagerProvider&&) = delete;
     virtual ~IUIManagerProvider() = default;
+public:
     virtual QPointer<ITranslatorManager> getTranslatorManager() const = 0;
     //UIResourceLoaderManager is unique for application and use UIResource namesapace
     virtual QPointer<UIResource::IUIResourceLoaderManager> getUIResourceLoaderManager() const = 0;

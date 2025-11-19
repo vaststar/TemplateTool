@@ -20,7 +20,13 @@ class IResourceStringLoader;
 class COMMONHEAD_EXPORT IResourceLoader
 {
 public:
-    ~IResourceLoader() = default;
+    IResourceLoader() = default;
+    IResourceLoader(const IResourceLoader&) = delete;
+    IResourceLoader(IResourceLoader&&) = delete;
+    IResourceLoader& operator=(const IResourceLoader&) = delete;
+    IResourceLoader& operator=(IResourceLoader&&) = delete;
+    virtual ~IResourceLoader() = default;
+public:
     virtual void initResourceLoader() = 0;
     [[nodiscard]] virtual model::Font getFont(model::FontToken fontToken) const = 0;
     [[nodiscard]] virtual model::Color getColor(model::ColorToken colorToken, model::ColorState state) const = 0;

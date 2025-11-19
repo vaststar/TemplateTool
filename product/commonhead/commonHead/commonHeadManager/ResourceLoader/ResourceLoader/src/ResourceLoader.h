@@ -26,6 +26,12 @@ class ResourceLoader final: public IResourceLoader,
 {
 public:
     explicit ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework);
+    ResourceLoader(const ResourceLoader&) = delete;
+    ResourceLoader(ResourceLoader&&) = delete;
+    ResourceLoader& operator=(const ResourceLoader&) = delete;
+    ResourceLoader& operator=(ResourceLoader&&) = delete;
+    ~ResourceLoader() = default;
+public:
     virtual void initResourceLoader() override;
     virtual model::Font getFont(model::FontToken fontToken) const override;
     virtual model::Color getColor(model::ColorToken colorToken, model::ColorState state) const override;
@@ -34,7 +40,6 @@ public:
     virtual std::string getNonLocalizedString(model::NonLocalizedString stringId) const override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const override;
-    ~ResourceLoader() = default;
 private:
     //IClientInfoServiceCallback
     virtual void onClientInfoReady() override;

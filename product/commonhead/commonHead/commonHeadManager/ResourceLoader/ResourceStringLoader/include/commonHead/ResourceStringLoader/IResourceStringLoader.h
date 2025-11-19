@@ -10,7 +10,13 @@ namespace commonHead{
 class COMMONHEAD_EXPORT IResourceStringLoader
 {
 public:
+    IResourceStringLoader() = default;
+    IResourceStringLoader(const IResourceStringLoader&) = delete;
+    IResourceStringLoader(IResourceStringLoader&&) = delete;
+    IResourceStringLoader& operator=(const IResourceStringLoader&) = delete;
+    IResourceStringLoader& operator=(IResourceStringLoader&&) = delete;
     virtual ~IResourceStringLoader() = default;
+public:
     std::string getNonLocalizedString(model::NonLocalizedString stringId) const;
     std::string getLocalizedString(model::LocalizedString stringId) const;
     std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const;

@@ -16,11 +16,23 @@ namespace commonHead::viewModels{
 class COMMONHEAD_EXPORT IInvocationViewModelCallback
 {
 public:
+    IInvocationViewModelCallback() = default;
+    IInvocationViewModelCallback(const IInvocationViewModelCallback&) = delete;
+    IInvocationViewModelCallback(IInvocationViewModelCallback&&) = delete;
+    IInvocationViewModelCallback& operator=(const IInvocationViewModelCallback&) = delete;
+    IInvocationViewModelCallback& operator=(IInvocationViewModelCallback&&) = delete;
     virtual ~IInvocationViewModelCallback() = default;
 };
 
 class COMMONHEAD_EXPORT IInvocationViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IInvocationViewModelCallback>
 {
+public:
+    IInvocationViewModel() = default;
+    IInvocationViewModel(const IInvocationViewModel&) = delete;
+    IInvocationViewModel(IInvocationViewModel&&) = delete;
+    IInvocationViewModel& operator=(const IInvocationViewModel&) = delete;
+    IInvocationViewModel& operator=(IInvocationViewModel&&) = delete;
+    virtual ~IInvocationViewModel() = default;
 public:
     virtual std::string getViewModelName() const = 0;
 

@@ -20,6 +20,13 @@ class AppUIViewModel: public virtual IAppUIViewModel,
 {
 public:
     AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    AppUIViewModel() = default;
+    AppUIViewModel(const AppUIViewModel&) = delete;
+    AppUIViewModel(AppUIViewModel&&) = delete;
+    AppUIViewModel& operator=(const AppUIViewModel&) = delete;
+    AppUIViewModel& operator=(AppUIViewModel&&) = delete;
+    ~AppUIViewModel() = default;
+public:
     virtual std::string getViewModelName() const override;
     virtual void initApplication() override;
 private:    

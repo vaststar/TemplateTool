@@ -20,6 +20,13 @@ using IServiceLocatorPtr = std::shared_ptr<IServiceLocator>;
 class COMMONHEAD_EXPORT ICommonHeadFramework
 {
 public:
+    ICommonHeadFramework() = default;
+    ICommonHeadFramework(const ICommonHeadFramework&) = delete;
+    ICommonHeadFramework(ICommonHeadFramework&&) = delete;
+    ICommonHeadFramework& operator=(const ICommonHeadFramework&) = delete;
+    ICommonHeadFramework& operator=(ICommonHeadFramework&&) = delete;
+    virtual ~ICommonHeadFramework() = default;
+public:
     virtual std::string getName() const = 0;
     virtual void initCommonheadFramework() = 0;
     virtual void exitCommonheadFramework() = 0;

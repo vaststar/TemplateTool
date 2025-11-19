@@ -6,10 +6,16 @@ namespace ucf::framework {
 }
 
 namespace commonHead{
-class CommonHeadFramework: public ICommonHeadFramework, std::enable_shared_from_this<CommonHeadFramework>
+class CommonHeadFramework final: public ICommonHeadFramework, std::enable_shared_from_this<CommonHeadFramework>
 {
 public:
     CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr coreframework);
+    CommonHeadFramework(const CommonHeadFramework&) = delete;
+    CommonHeadFramework(CommonHeadFramework&&) = delete;
+    CommonHeadFramework& operator=(const CommonHeadFramework&) = delete;
+    CommonHeadFramework& operator=(CommonHeadFramework&&) = delete;
+    ~CommonHeadFramework() = default;
+public:
     virtual void initCommonheadFramework() override;
     virtual void exitCommonheadFramework() override;
     virtual std::string getName() const override;

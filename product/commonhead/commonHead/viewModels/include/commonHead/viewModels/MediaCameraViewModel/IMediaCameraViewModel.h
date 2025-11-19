@@ -16,12 +16,25 @@ namespace commonHead::viewModels{
 class COMMONHEAD_EXPORT IMediaCameraViewModelCallback
 {
 public:
+    IMediaCameraViewModelCallback() = default;
+    IMediaCameraViewModelCallback(const IMediaCameraViewModelCallback&) = delete;
+    IMediaCameraViewModelCallback(IMediaCameraViewModelCallback&&) = delete;
+    IMediaCameraViewModelCallback& operator=(const IMediaCameraViewModelCallback&) = delete;
+    IMediaCameraViewModelCallback& operator=(IMediaCameraViewModelCallback&&) = delete;
     virtual ~IMediaCameraViewModelCallback() = default;
+public:
     virtual void onCameraImageReceived(const model::Image& image) {};
 };
 
 class COMMONHEAD_EXPORT IMediaCameraViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IMediaCameraViewModelCallback>
 {
+public:
+    IMediaCameraViewModel() = default;
+    IMediaCameraViewModel(const IMediaCameraViewModel&) = delete;
+    IMediaCameraViewModel(IMediaCameraViewModel&&) = delete;
+    IMediaCameraViewModel& operator=(const IMediaCameraViewModel&) = delete;
+    IMediaCameraViewModel& operator=(IMediaCameraViewModel&&) = delete;
+    virtual ~IMediaCameraViewModel() = default;
 public:
     virtual std::string getViewModelName() const = 0;
     virtual void openCamera() = 0;

@@ -16,7 +16,7 @@ class SERVICE_EXPORT CoreFramework final:  public virtual ICoreFramework,
 {
 public:
     CoreFramework();
-    virtual ~CoreFramework();
+    ~CoreFramework();
     CoreFramework(const CoreFramework&) = delete;
     CoreFramework(CoreFramework&&) = delete;
     CoreFramework& operator=(const CoreFramework&) = delete;

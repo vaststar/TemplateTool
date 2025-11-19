@@ -28,6 +28,11 @@ class UIResourceLoaderManager_EXPORT IUIResourceLoaderManager: public QObject
 {
 Q_OBJECT
 public:
+    IUIResourceLoaderManager() = default;
+    IUIResourceLoaderManager(const IUIResourceLoaderManager&) = delete;
+    IUIResourceLoaderManager(IUIResourceLoaderManager&&) = delete;
+    IUIResourceLoaderManager& operator=(const IUIResourceLoaderManager&) = delete;
+    IUIResourceLoaderManager& operator=(IUIResourceLoaderManager&&) = delete;
     virtual ~IUIResourceLoaderManager() = default;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) = 0;

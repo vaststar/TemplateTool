@@ -21,11 +21,23 @@ namespace commonHead::viewModels{
 class COMMONHEAD_EXPORT IClientInfoViewModelCallback
 {
 public:
+    IClientInfoViewModelCallback() = default;
+    IClientInfoViewModelCallback(const IClientInfoViewModelCallback&) = delete;
+    IClientInfoViewModelCallback(IClientInfoViewModelCallback&&) = delete;
+    IClientInfoViewModelCallback& operator=(const IClientInfoViewModelCallback&) = delete;
+    IClientInfoViewModelCallback& operator=(IClientInfoViewModelCallback&&) = delete;
     virtual ~IClientInfoViewModelCallback() = default;
 };
 
 class COMMONHEAD_EXPORT IClientInfoViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IClientInfoViewModelCallback>
 {
+public:
+    IClientInfoViewModel() = default;
+    IClientInfoViewModel(const IClientInfoViewModel&) = delete;
+    IClientInfoViewModel(IClientInfoViewModel&&) = delete;
+    IClientInfoViewModel& operator=(const IClientInfoViewModel&) = delete;
+    IClientInfoViewModel& operator=(IClientInfoViewModel&&) = delete;
+    virtual ~IClientInfoViewModel() = default;
 public:
     virtual std::string getViewModelName() const = 0;
 

@@ -13,7 +13,7 @@ public:
     UIViewFactory& operator=(const UIViewFactory&) = delete;
     UIViewFactory& operator=(UIViewFactory&&) = delete;
     virtual ~UIViewFactory();
-
+public:
     virtual QPointer<QQuickView> createQmlView(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) override;
 
     virtual void loadQmlWindow(const QString& qmlResource) override;

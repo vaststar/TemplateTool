@@ -16,7 +16,13 @@ class MediaCameraViewModel: public virtual IMediaCameraViewModel,
 {
 public:
     explicit MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    MediaCameraViewModel() = default;
+    MediaCameraViewModel(const MediaCameraViewModel&) = delete;
+    MediaCameraViewModel(MediaCameraViewModel&&) = delete;
+    MediaCameraViewModel& operator=(const MediaCameraViewModel&) = delete;
+    MediaCameraViewModel& operator=(MediaCameraViewModel&&) = delete;
     ~MediaCameraViewModel();
+public:
     virtual std::string getViewModelName() const override;
 
     virtual void openCamera() override;

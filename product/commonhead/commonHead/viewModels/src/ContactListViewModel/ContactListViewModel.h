@@ -12,6 +12,13 @@ class ContactListViewModel: public virtual IContactListViewModel,
 {
 public:
     ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    ContactListViewModel() = default;
+    ContactListViewModel(const ContactListViewModel&) = delete;
+    ContactListViewModel(ContactListViewModel&&) = delete;
+    ContactListViewModel& operator=(const ContactListViewModel&) = delete;
+    ContactListViewModel& operator=(ContactListViewModel&&) = delete;
+    ~ContactListViewModel() = default;
+public:
     virtual std::string getViewModelName() const override;
     virtual std::vector<commonHead::viewModels::model::Contact> getContactList() const override;
 

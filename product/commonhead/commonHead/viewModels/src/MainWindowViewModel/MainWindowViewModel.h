@@ -12,6 +12,13 @@ class MainWindowViewModel: public virtual IMainWindowViewModel,
 {
 public:
     MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    MainWindowViewModel() = default;
+    MainWindowViewModel(const MainWindowViewModel&) = delete;
+    MainWindowViewModel(MainWindowViewModel&&) = delete;
+    MainWindowViewModel& operator=(const MainWindowViewModel&) = delete;
+    MainWindowViewModel& operator=(MainWindowViewModel&&) = delete;
+    ~MainWindowViewModel() = default;
+public:
     virtual std::string getViewModelName() const override;
 
 private:
