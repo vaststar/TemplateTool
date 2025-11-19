@@ -7,7 +7,8 @@ set -e
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT_DIR/build"
 SOURCE_DIR="$ROOT_DIR"
-GRAPHVIZ_FILE="$BUILD_DIR/cmake_graph/cmake_graph.dot"
+GRAPHVIZ_DIR="$BUILD_DIR/cmake_graph"
+GRAPHVIZ_FILE="$GRAPHVIZ_DIR/cmake_graph.dot"
 
 # ==========================================
 # 🔍 Detect system CMake
@@ -40,6 +41,10 @@ if [ ! -d "$BUILD_DIR" ]; then
     mkdir -p "$BUILD_DIR"
 fi
 
+if [ ! -d "$GRAPHVIZ_DIR" ]; then
+    echo "[INFO] graphviz directory not found, creating..."
+    mkdir -p "$GRAPHVIZ_DIR"
+fi
 # ==========================================
 # 📋 Display configuration summary
 # ==========================================
