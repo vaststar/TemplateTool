@@ -35,7 +35,7 @@ public:
     UIResourceLoaderManager& operator=(UIResourceLoaderManager&&) = delete;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) override;
-    virtual Q_INVOKABLE QFont getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight = UIFontToken::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIFontToken::UIFontFamily family = UIFontToken::UIFontFamily::UIFontFamily_SegoeUI) override;
+    virtual Q_INVOKABLE QFont getUIFont(UIFontToken::FontToken fontToken) override;
 
     virtual Q_INVOKABLE QString getNonLocalizedString(UIStringToken::NonLocalizedString stringId) override;
     virtual Q_INVOKABLE QString getLocalizedString(UIStringToken::LocalizedString stringId) override;

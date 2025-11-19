@@ -1,3 +1,6 @@
+add_subdirectory(model)
+add_subdirectory(resource)
+
 include(BuildModule)
 
 set(MODULE_MODULE_NAME ResourceFontLoader)
@@ -7,22 +10,22 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
     include/commonHead/ResourceFontLoader/IResourceFontLoader.h
-    include/commonHead/ResourceFontLoader/ResourceFontModel.h
 )
 
 set(MODULE_SOURCE_PRIVATE
     src/ResourceFontLoader.h
     src/ResourceFontLoader.cpp
-    src/FontSet.h
-    src/FontSet.cpp
+    src/ThemeFontSet.h
 )
 
 set (MODULE_DEPENDENCIES_PRIVATE
-    
+    OSUtils
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
+    ResourceFontLoaderModel
+    ResourceFont
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

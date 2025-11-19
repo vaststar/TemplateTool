@@ -7,10 +7,11 @@
 #include <QColor>
 
 #include <UIResourceLoaderManager/UIResourceLoaderManagerExport.h>
+
 #include <UIResourceColorLoader/UIColorState.h>
-#include <UIResourceFontLoader/UIFontToken.h>
 #include <UIColorToken.h>
 #include <UIStringToken.h>
+#include <UIFontToken.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -30,7 +31,7 @@ public:
     virtual ~IUIResourceLoaderManager() = default;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) = 0;
-    virtual Q_INVOKABLE QFont getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight = UIFontToken::UIFontWeight::UIFontWeight_Normal, bool isItalic = false, UIFontToken::UIFontFamily family = UIFontToken::UIFontFamily::UIFontFamily_SegoeUI) = 0;
+    virtual Q_INVOKABLE QFont getUIFont(UIFontToken::FontToken fontToken) = 0;
 
     virtual Q_INVOKABLE QString getNonLocalizedString(UIStringToken::NonLocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedString(UIStringToken::LocalizedString stringId) = 0;

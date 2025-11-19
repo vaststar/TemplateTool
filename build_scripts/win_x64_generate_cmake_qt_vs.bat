@@ -8,7 +8,7 @@ rem =========================================
 set "ROOT_DIR=%~dp0.."
 set "BUILD_DIR=%ROOT_DIR%\build"
 set "SOURCE_DIR=%ROOT_DIR%"
-set "GRAPHVIZ_DIR=%BUILD_DIR%\graphs"
+set "GRAPHVIZ_DIR=%BUILD_DIR%\cmake_graph"
 set "GRAPHVIZ_FILE=%GRAPHVIZ_DIR%\cmake_graph.dot"
 set "INSTALL_DIR=%ROOT_DIR%\install"
 

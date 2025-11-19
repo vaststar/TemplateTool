@@ -7,7 +7,7 @@ import UIResourceLoader 1.0
 BaseButton {
     id: control
     property var fontColorEnum: UIColorToken.ButtonPrimaryText;
-    property var fontSize: UIFontToken.UIFontSize_Small
+    property var fontEnum: UIFontToken.Button_Text;
     property var backgroundColorEnum: UIColorToken.ButtonPrimaryBackground;
     property var borderColorEnum: UIColorToken.ButtonPrimaryBorder;
     property var radius: Math.min(control.height, control.width)/2
@@ -16,7 +16,7 @@ BaseButton {
 
     contentItem: Text{
         text: control.text
-        font: UTComponentUtil.getUIFont(fontSize)
+        font: UTComponentUtil.getUIFont(fontEnum)
         color: UTComponentUtil.getItemUIColor(control, fontColorEnum)
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

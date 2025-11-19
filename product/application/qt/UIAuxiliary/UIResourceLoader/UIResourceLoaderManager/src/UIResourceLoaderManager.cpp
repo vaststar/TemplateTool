@@ -93,15 +93,13 @@ QColor UIResourceLoaderManager::getUIColor(UIColorToken::ColorToken colorEnum, U
     return QColor();
 }
 
-QFont UIResourceLoaderManager::getUIFont(UIFontToken::UIFontSize size, UIFontToken::UIFontWeight weight, bool isItalic, UIFontToken::UIFontFamily family)
+QFont UIResourceLoaderManager::getUIFont(UIFontToken::FontToken fontToken)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
-        commonHead::model::FontFamily vmFontFamily = UIResource::UIResourceFontLoader::convertUIFontFamilyToVMFontFamily(family);
-        commonHead::model::FontSize vmFontSize = UIResource::UIResourceFontLoader::convertUIFontSizeToVMFontSize(size);
-        commonHead::model::FontWeight vmFontWeight = UIResource::UIResourceFontLoader::convertUIFontWeightToVMFontWeight(weight);
-        auto vmFont = resourceLoader->getFont(vmFontFamily, vmFontSize, vmFontWeight, isItalic);
-        return QFont(QString::fromStdString(vmFont.fontFamily), vmFont.fontSize, vmFont.fontWeight, isItalic);
+        auto vmFontToken = UIResource::UIResourceFontLoader::convertUIFontTokenToVMFontToken(fontToken);
+        auto vmFont = resourceLoader->getFont(vmFontToken);
+        return QFont(QString::fromStdString(vmFont.fontFamily), vmFont.fontSize, vmFont.fontWeight, vmFont.isItalic);
     }
     UIResourceLoaderManager_LOG_WARN("no resourceLoader");
     return QFont();

@@ -3,11 +3,23 @@
   "tokens": {
     "window-title": {
       "fontType": "SansSerif",
+      "fontSize": "Small",
+      "fontWeight": "Normal",
+      "italic": false
+    },
+    "window-header": {
+      "fontType": "SansSerif",
       "fontSize": "Medium",
       "fontWeight": "Bold",
       "italic": false
     },
-    "window-body":{
+    "window-body-primary":{
+      "fontType": "SansSerif",
+      "fontSize": "MediumSmall",
+      "fontWeight": "Normal",
+      "italic": false
+    },
+    "window-body-secondary":{
       "fontType": "SansSerif",
       "fontSize": "MediumSmall",
       "fontWeight": "Normal",

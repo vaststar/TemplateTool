@@ -10,8 +10,6 @@
 #include <commonHead/ResourceFontLoader/IResourceFontLoader.h>
 
 
-// #include "ResourceThemeLoader.h"
-
 namespace commonHead{
 std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework::ICoreFrameworkWPtr coreframework)
 {
@@ -20,7 +18,6 @@ std::shared_ptr<IResourceLoader> IResourceLoader::createInstance(ucf::framework:
 
 ResourceLoader::ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
-    // , mResourceThemeLoader(std::make_unique<ResourceThemeLoader>())
     , mResourceColorLoader(IResourceColorLoader::createInstance())
     , mResourceFontLoader(IResourceFontLoader::createInstance())
 {
@@ -39,11 +36,11 @@ void ResourceLoader::initResourceLoader()
     }
 }
 
-model::Font ResourceLoader::getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const
+model::Font ResourceLoader::getFont(model::FontToken fontToken) const
 {
     if (mResourceFontLoader)
     {
-        return mResourceFontLoader->getFont(family, size, weight, isItalic);
+        return mResourceFontLoader->getFont(fontToken, getCurrentFontThemeType());
     }
     COMMONHEAD_LOG_WARN("no mResourceFontLoader");
     return model::Font();
@@ -69,6 +66,19 @@ model::ColorThemeType ResourceLoader::getCurrentColorThemeType() const
         return model::ColorThemeType::Dark;
     default:
         return model::ColorThemeType::Light;
+    }
+}
+
+model::FontThemeType ResourceLoader::getCurrentFontThemeType() const
+{
+    switch (getCurrentThemeType())
+    {
+    case ucf::service::model::ThemeType::Light:
+        return model::FontThemeType::Normal;
+    case ucf::service::model::ThemeType::Dark:
+        return model::FontThemeType::Normal;
+    default:
+        return model::FontThemeType::Normal;
     }
 }
 

@@ -4,26 +4,26 @@
 
 #include <string>
 #include <map>
-#include <array>
+#include <vector>
 #include <commonHead/ResourceFontLoader/model/Font.h>
 
 namespace commonHead::model{
 
 enum class FontType {
 {% for key in data.FontType.keys() | sort %}
-    {{ key }},
+    {{ key | replace(" ", "") }},
 {% endfor %}
 };
 
 enum class FontWeight {
 {% for key in data.FontWeight.keys() %}
-    {{ key }},
+    {{ key | replace(" ", "") }},
 {% endfor %}
 };
 
 enum class FontSize {
 {% for key in data.FontSize.keys() %}
-    {{ key }},
+    {{ key | replace(" ", "") }},
 {% endfor %}
 };
 
@@ -39,7 +39,7 @@ struct FontFamilys {
 inline int getFontWeight(FontWeight type) {
     switch (type) {
 {% for key, value in data.FontWeight.items() | sort %}
-        case FontWeight::{{ key }}: return {{ value }};
+        case FontWeight::{{ key | replace(" ", "") }}: return {{ value }};
 {% endfor %}
         default: return 400;
     }
@@ -48,7 +48,7 @@ inline int getFontWeight(FontWeight type) {
 inline int getFontSize(FontSize type) {
     switch (type) {
 {% for key, value in data.FontSize.items() | sort %}
-        case FontSize::{{ key }}: return {{ value }};
+        case FontSize::{{ key | replace(" ", "") }}: return {{ value }};
 {% endfor %}
         default: return 20;
     }
@@ -56,8 +56,8 @@ inline int getFontSize(FontSize type) {
 
 inline FontFamilys getFontFamilys(FontType type) {
     switch (type) {
-{% for font_type_key, platforms in fontPalette.fontType.items() | sort %}
-        case FontType::{{ font_type_key }}: {
+{% for font_type_key, platforms in data.FontType.items() | sort %}
+        case FontType::{{ font_type_key | replace(" ", "") }}: {
             return FontFamilys{
                 .windows = std::vector<std::string>{ {% for font in platforms.get('Windows', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },
                 .macosx = std::vector<std::string>{ {% for font in platforms.get('MacOSX', []) %}"{{ font }}"{% if not loop.last %}, {% endif %}{% endfor %} },

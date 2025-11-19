@@ -18,8 +18,8 @@ function getPlainUIColor(colorEnum, colorState) {
     return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColor(colorEnum, colorState) : {};
 }
 
-function getUIFont(fontSize) {
-    return UIResourceLoaderManager ? UIResourceLoaderManager.getUIFont(fontSize) : {};
+function getUIFont(fontToken) {
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getUIFont(fontToken) : {};
 }
 
 function getLocalizedString(key) {

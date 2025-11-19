@@ -2,11 +2,11 @@
 // Generated with {{ self._TemplateReference__context.name }}
 #pragma once
 
-#include <string>
-#include <map>
+#include <UIResourceFontLoader/UIResourceFontLoaderExport.h>
+#include <QObject>
 
-namespace commonHead::model{
-
+namespace UIFontToken{
+Q_NAMESPACE_EXPORT(UIResourceFontLoader_EXPORT)
 enum class FontToken
 {
     None = 1,
@@ -15,4 +15,5 @@ enum class FontToken
     {% endfor %}
     LastFont
 };
-}
+Q_ENUM_NS(FontToken)
+}   

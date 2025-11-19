@@ -12,6 +12,7 @@ std::unique_ptr<IResourceColorLoader> IResourceColorLoader::createInstance()
 
 ResourceColorLoader::ResourceColorLoader()
 {
+    COMMONHEAD_LOG_DEBUG("ResourceColorLoader created");
     buildThemeColorSets();
 }
 

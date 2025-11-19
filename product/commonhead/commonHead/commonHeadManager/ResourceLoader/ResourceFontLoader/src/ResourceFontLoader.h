@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <commonHead/ResourceFontLoader/IResourceFontLoader.h>
-#include "FontSet.h"
+#include "ThemeFontSet.h"
 
 namespace commonHead{
 class ResourceFontLoader: public IResourceFontLoader
@@ -10,10 +10,11 @@ class ResourceFontLoader: public IResourceFontLoader
 public:
     ResourceFontLoader();
     ~ResourceFontLoader() = default;
-    virtual model::Font getFont(model::FontFamily family, model::FontSize size, model::FontWeight weight, bool isItalic) const override;
+
+    virtual model::Font getFont(model::FontToken fontToken, model::FontThemeType theme) const override;
 private:
-    void initFonts();
+    void buildThemeFontSets();
 private:
-    std::unique_ptr<FontSet> mFontSet;
+    std::map<model::FontThemeType, model::ThemeFontSet> mThemeFontSets;
 };
 }

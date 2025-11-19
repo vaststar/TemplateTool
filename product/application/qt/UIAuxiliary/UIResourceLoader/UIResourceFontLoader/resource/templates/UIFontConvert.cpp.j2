@@ -1,0 +1,25 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+
+#include <UIResourceFontLoader/UIResourceFontLoader.h>
+
+#include <UIFontToken.h>
+#include <FontToken.h>
+#include "LoggerDefine.h"
+
+namespace UIResource{
+commonHead::model::FontToken UIResourceFontLoader::convertUIFontTokenToVMFontToken(UIFontToken::FontToken  uiFontItem)
+{
+    switch (uiFontItem)
+    {
+    {% for token in data.tokens %}
+    case UIFontToken::FontToken::{{ token | replace(' ', '') | title | replace('-', '_') }}:
+        return commonHead::model::FontToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    {% endfor %}    
+    default:
+        UIResourceFontLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiFontItem));
+        return commonHead::model::FontToken::None;
+    }
+
+}
+}
