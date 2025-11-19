@@ -14,16 +14,16 @@ inline ThemeColorSet build{{data.name|capitalize}}ThemeColorSet()
     {% for token, colorSet in data.tokens.items() %}
     {% set idx = loop.index %}
     ColorSet colorSet{{ idx }};
-    colorSet{{ idx }}.token = ColorToken::{{ token.replace("-", " ")|title|replace(" ", "") }};
-    colorSet{{ idx }}.normal = ColorPaletteType::{{ colorSet.normal.replace("-", " ")|title|replace(" ", "") }};
+    colorSet{{ idx }}.token = ColorToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    colorSet{{ idx }}.normal = ColorPaletteType::{{ colorSet.normal | replace(' ', '') | title | replace('-', '_') }};
     {% for key in optional %}
     {% if key in colorSet %}
-    colorSet{{ idx }}.{{ key }} = ColorPaletteType::{{ colorSet[key].replace("-", " ")|title|replace(" ", "") }};
+    colorSet{{ idx }}.{{ key }} = ColorPaletteType::{{ colorSet[key] | replace(' ', '') | title | replace('-', '_') }};
     {% else %}
     colorSet{{ idx }}.{{ key }} = colorSet{{ idx }}.normal;
     {% endif %}
     {% endfor %}
-    themeColorSet.colorSets[ColorToken::{{ token.replace("-", " ")|title|replace(" ", "") }}] = colorSet{{ idx }};
+    themeColorSet.colorSets[ColorToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = colorSet{{ idx }};
 
     {% endfor %}
     return {ColorThemeType::{{data.name|capitalize}}, themeColorSet.colorSets};

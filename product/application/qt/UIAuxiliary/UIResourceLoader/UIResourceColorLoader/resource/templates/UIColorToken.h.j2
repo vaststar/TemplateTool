@@ -1,5 +1,6 @@
 // DO NOT EDIT - Auto generated
 // Generated with {{ self._TemplateReference__context.name }}
+// rule replace "-" to "_" and capitalize each word, eg. "button-color" -> "Button_Color"
 #pragma once
 
 #include <UIResourceColorLoader/UIResourceColorLoaderExport.h>
@@ -11,7 +12,7 @@ enum class ColorToken
 {
     None = 1,
     {% for token in data.tokens %}
-    {{ token.replace("-", " ").title().replace(" ", "") }},
+    {{ token | replace(' ', '') | title | replace('-', '_') }},
     {% endfor %}
     LastColor
 };

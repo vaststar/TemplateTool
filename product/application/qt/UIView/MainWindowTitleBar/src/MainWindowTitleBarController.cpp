@@ -36,7 +36,7 @@ QColor MainWindowTitleBarController::getColor() const
         {
             if (auto resourceLoaderManager = managerProvider->getUIResourceLoaderManager())
             {
-                return resourceLoaderManager->getUIColor(UIColorToken::ColorToken::MainWindowBackground, UIColorState::ColorState::Normal);
+                return resourceLoaderManager->getUIColor(UIColorToken::ColorToken::Main_Window_Background, UIColorState::ColorState::Normal);
             }
         }
     }

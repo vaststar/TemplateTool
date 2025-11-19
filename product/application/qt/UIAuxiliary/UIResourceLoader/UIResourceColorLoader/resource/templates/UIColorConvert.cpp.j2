@@ -13,8 +13,8 @@ commonHead::model::ColorToken UIResourceColorLoader::convertUIColorTokenToVMColo
     switch (uiColorItem)
     {
     {% for token in data.tokens %}
-    case UIColorToken::ColorToken::{{ token.replace("-", " ").title().replace(" ", "") }}:
-        return commonHead::model::ColorToken::{{ token.replace("-", " ").title().replace(" ", "") }};
+    case UIColorToken::ColorToken::{{ token | replace(' ', '') | title | replace('-', '_') }}:
+        return commonHead::model::ColorToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
     {% endfor %}    
     default:
         UIResourceColorLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiColorItem));

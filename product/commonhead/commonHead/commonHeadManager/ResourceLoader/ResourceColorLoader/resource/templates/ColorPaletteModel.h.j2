@@ -13,7 +13,7 @@ enum class ColorPaletteType
 {
     None,
     {% for color in data %}
-    {{ color.name.replace("-", " ").title().replace(" ", "") }},
+    {{ color.name | replace(' ', '') | title | replace('-', '_') }},
     {% endfor %}
     LastColor
 };
@@ -35,7 +35,7 @@ inline ColorPalette getColorPalette(ColorPaletteType type)
     switch (type)
     {
         {% for color in data %}
-        case ColorPaletteType::{{ color.name.replace("-", " ").title().replace(" ", "") }}:
+        case ColorPaletteType::{{ color.name | replace(' ', '') | title | replace('-', '_') }}:
             return { "{{ color.name }}", "{{ color.hex }}", { {{ color.rgb.r }}, {{ color.rgb.g }}, {{ color.rgb.b }} } };
         {% endfor %}
         default:
@@ -47,7 +47,7 @@ inline ColorPalette getColorPalette(const std::string& colorName)
 {
     static const std::map<std::string, ColorPaletteType> colorMap = {
         {% for color in data %}
-        { "{{ color.name }}", ColorPaletteType::{{ color.name.replace("-", " ").title().replace(" ", "") }} },
+        { "{{ color.name }}", ColorPaletteType::{{ color.name | replace(' ', '') | title | replace('-', '_') }} },
         {% endfor %}
     };
 

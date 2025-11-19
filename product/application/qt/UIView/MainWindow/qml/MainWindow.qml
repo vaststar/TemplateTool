@@ -21,7 +21,7 @@ ApplicationWindow
     flags: Qt.FramelessWindowHint|Qt.Window
 
     title: qsTr(mainController.title)
-    color: UTComponentUtil.getPlainUIColor(UIColorToken.MainWindowBackground, UIColorState.Normal)
+    color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
 
     menuBar: MainWindowMenuBar {
         id: menuBarId
