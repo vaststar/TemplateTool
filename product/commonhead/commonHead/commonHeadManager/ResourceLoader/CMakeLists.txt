@@ -1,4 +1,5 @@
 add_subdirectory(ResourceStringLoader)
 add_subdirectory(ResourceColorLoader)
 add_subdirectory(ResourceFontLoader)
+add_subdirectory(ResourceAssetLoader)
 add_subdirectory(ResourceLoader)

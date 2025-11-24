@@ -1,0 +1,76 @@
+include(TemplateTools)
+include(CapitalizeString)
+# 设置资源字符串 JSON 文件路径
+
+set(RESOURCE_IDE_FOLDER commonhead/codegen)
+set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceAsset)
+
+set(RESOURCE_TARGETS )
+
+# ## AssetPalette
+# set(Asset_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json)
+# set(Asset_OUT_PUT_FILE AssetPaletteModel.h)
+# set(Asset_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${Asset_OUT_PUT_FILE})
+# set(Asset_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/AssetPaletteModel.h.j2)
+
+# generate_from_template(
+#     TEMPLATE_FILE ${Asset_TEMEPLATE_FILE}
+#     INPUT_FILE ${Asset_JSON_PATH}
+#     OUTPUT_FILE ${Asset_OUTPUT_PATH}
+#     Asset_TARGET
+# )
+# list(APPEND RESOURCE_TARGETS ${Asset_TARGET})
+
+## AssetToken
+set(Asset_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json")
+set(TOKEN_OUT_PUT_FILE AssetToken.h)
+set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
+set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/AssetToken.h.j2)
+
+generate_from_template(
+    TEMPLATE_FILE ${TOKEN_TEMEPLATE_FILE}
+    INPUT_FILE ${Asset_TOKEN_JSON_PATH}
+    OUTPUT_FILE ${TOKEN_OUTPUT_PATH}
+    TOKEN_TARGET
+)
+list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
+
+
+## BuildThemeAssetSet
+set(THEME_JSON_NAMES "normal" )
+foreach(item IN LISTS THEME_JSON_NAMES)
+set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
+capitalize(${item} capital_json_name)
+set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
+set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
+set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeAssetSet.h.j2)
+
+generate_from_template(
+    TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
+    INPUT_FILE ${THEME_JSON_PATH}
+    OUTPUT_FILE ${THEME_OUTPUT_PATH}
+    THEME_TARGET
+)
+list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
+endforeach()
+
+
+include(BuildInterface)
+BuildInterface(
+    MODULE_NAME 
+        ResourceAsset
+    TARGET_SOURCE_HEADER_BASE_DIR
+        ${RESOURCE_OUT_PUT_DIR}
+    TARGET_SOURCE_PUBLIC_HEADER
+        ${RESOURCE_OUTPUT_PATH}
+    TARGET_DEPENDENCIES_PUBLIC
+        ResourceAssetLoaderModel
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${RESOURCE_OUT_PUT_DIR}
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        ResourceAsset
+    IDE_FOLDER
+        ${RESOURCE_IDE_FOLDER}
+)
+add_dependencies(ResourceAsset ${RESOURCE_TARGETS})
+

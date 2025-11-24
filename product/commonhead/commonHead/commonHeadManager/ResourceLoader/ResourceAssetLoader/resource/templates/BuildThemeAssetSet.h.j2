@@ -1,0 +1,34 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+#pragma once
+
+#include "ThemeAssetSet.h"
+
+namespace commonHead::model {
+
+inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
+{
+    ThemeAssetSet themeAssetSet;
+
+    themeAssetSet.themeType = AssetThemeType::{{data.name|capitalize}};
+
+    {% for token, AssetSet in data.tokens.images.items() %}
+    {% set idx = loop.index %}
+    AssetImageSet assetImages{{ idx }};
+    assetImages{{ idx }}.token = AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    assetImages{{ idx }}.imagePath = "{{ AssetSet.path }}";
+    themeAssetSet.imageSets[AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetImages{{ idx }};
+    {% endfor %}
+
+    {% for token, AssetSet in data.tokens.videos.items() %}
+    {% set idx = loop.index %}
+    AssetVideoSet assetVideos{{ idx }};
+    assetVideos{{ idx }}.token = AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    assetVideos{{ idx }}.videoPath = "{{ AssetSet.path }}";
+    themeAssetSet.videoSets[AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetVideos{{ idx }};
+    {% endfor %}
+
+    return themeAssetSet;
+}
+
+} // namespace commonHead::model

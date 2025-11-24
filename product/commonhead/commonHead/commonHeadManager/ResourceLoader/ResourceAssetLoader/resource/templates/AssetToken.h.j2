@@ -1,0 +1,28 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+// rule replace "-" to "_" and capitalize each word, eg. "button-text" -> "Button_Text"
+#pragma once
+
+#include <string>
+#include <map>
+
+namespace commonHead::model{
+
+enum class AssetImageToken
+{
+    None = 1,
+    {% for token in data.tokens.images %}
+    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {% endfor %}
+    LastImage
+};
+
+enum class AssetVideoToken
+{
+    None = 1,
+    {% for token in data.tokens.videos %}
+    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {% endfor %}
+    LastVideo
+};
+}

@@ -1,0 +1,21 @@
+{
+  "name": "normal",
+  "tokens": {
+    "images": {
+        "logo": {
+          "path": "assets/images/112.png"
+      },
+      "icon-user": {
+          "path": "assets/images/profile.png"
+      }
+    },
+    "videos": {
+      "welcome-video": {
+          "path": "assets/videos/welcome.mp4"
+      },
+      "tutorial-video": {
+          "path": "assets/videos/tutorial.mp4"
+      }
+    }
+  }
+}
