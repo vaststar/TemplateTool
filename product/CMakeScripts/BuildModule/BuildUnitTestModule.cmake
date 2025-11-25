@@ -6,14 +6,14 @@ function(BuildUnitTestModule)
         set(options)
         set(oneValueArg MODULE_NAME IDE_FOLDER)
         set(multiValueArgs
-            TARGET_SOURCE TARGET_DEPENDENICES TARGET_INCLUDE_FOLDER
+            TARGET_SOURCE TARGET_ADD_LINK_LIBRARY_PRIVATE TARGET_INCLUDE_FOLDER
         )
         cmake_parse_arguments(MODULE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
 
         message(STATUS "Parse Args Results:")
         message(STATUS "MODULE_NAME: ${MODULE_MODULE_NAME}")
         message(STATUS "TARGET_SOURCE: ${MODULE_TARGET_SOURCE}")
-        message(STATUS "TARGET_DEPENDENICES: ${MODULE_TARGET_DEPENDENICES}")
+        message(STATUS "TARGET_ADD_LINK_LIBRARY_PRIVATE: ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE}")
         message(STATUS "TARGET_INCLUDE_FOLDER: ${MODULE_TARGET_INCLUDE_FOLDER}")
         message(STATUS "IDE_FOLDER: ${MODULE_IDE_FOLDER}")
         
@@ -44,9 +44,9 @@ function(BuildUnitTestModule)
             TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_FOLDER}
         )
         
-        if(DEFINED MODULE_TARGET_DEPENDENICES)
-            message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_DEPENDENICES}")
-            target_link_libraries(${MODULE_MODULE_NAME}  PRIVATE ${MODULE_TARGET_DEPENDENICES})
+        if(DEFINED MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE)
+            message(STATUS "will add private link to ${MODULE_MODULE_NAME}, link librarys: ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE}")
+            target_link_libraries(${MODULE_MODULE_NAME}  PRIVATE ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE})
         endif()
 
         #for project tree view
