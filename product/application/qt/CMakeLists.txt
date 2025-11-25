@@ -46,6 +46,15 @@ SetIDEFolder(
 
 if (TARGET ${Translation_LIB}_lupdate)
     add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+    if (TARGET ${Translation_LIB}_lrelease)
+        add_dependencies(${Translation_LIB}_lrelease ${Translation_LIB}_lupdate)
+    endif()
 endif()
 
-add_dependencies(${Translation_LIB} update_translations )
+if (TARGET release_translations AND TARGET update_translations)
+    add_dependencies(release_translations update_translations)
+endif()
+
+if (TARGET release_translations)
+    add_dependencies(${Translation_LIB} release_translations )
+endif()

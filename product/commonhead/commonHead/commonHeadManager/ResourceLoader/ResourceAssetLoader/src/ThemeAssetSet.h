@@ -10,15 +10,16 @@ struct AssetImageSet
 {
     AssetImageToken token;
     std::string imagePath;
+    std::string format;
+    bool isAnimated{ false };
 };
 
 struct AssetVideoSet
 {
     AssetVideoToken token;
     std::string videoPath;
+    std::string format;
 };
-
-
 
 struct ThemeAssetSet
 {

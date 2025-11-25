@@ -3,18 +3,24 @@
   "tokens": {
     "images": {
         "logo": {
-          "path": "assets/images/112.png"
+          "path": "assets/images/112.png",
+          "format": "png",
+          "animated": false
       },
       "icon-user": {
-          "path": "assets/images/profile.png"
+          "path": "assets/images/profile.png",
+          "format": "png",
+          "animated": false
       }
     },
     "videos": {
       "welcome-video": {
-          "path": "assets/videos/welcome.mp4"
+          "path": "assets/videos/welcome.mp4",
+          "format": "mp4"
       },
       "tutorial-video": {
-          "path": "assets/videos/tutorial.mp4"
+          "path": "assets/videos/tutorial.mp4",
+          "format": "mp4"
       }
     }
   }

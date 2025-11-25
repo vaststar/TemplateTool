@@ -17,6 +17,8 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     AssetImageSet assetImages{{ idx }};
     assetImages{{ idx }}.token = AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
     assetImages{{ idx }}.imagePath = "{{ AssetSet.path }}";
+    assetImages{{ idx }}.format = "{{ AssetSet.format }}";
+    assetImages{{ idx }}.isAnimated = {{ "true" if AssetSet.animated else "false" }};
     themeAssetSet.imageSets[AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetImages{{ idx }};
     {% endfor %}
 
@@ -25,6 +27,7 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     AssetVideoSet assetVideos{{ idx }};
     assetVideos{{ idx }}.token = AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
     assetVideos{{ idx }}.videoPath = "{{ AssetSet.path }}";
+    assetVideos{{ idx }}.format = "{{ AssetSet.format }}";
     themeAssetSet.videoSets[AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetVideos{{ idx }};
     {% endfor %}
 

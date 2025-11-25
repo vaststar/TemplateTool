@@ -1,0 +1,38 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+
+#include <UIResourceAssetLoader/UIResourceAssetLoader.h>
+
+#include <UIAssetToken.h>
+#include <AssetToken.h>
+#include "LoggerDefine.h"
+
+namespace UIResource{
+commonHead::model::AssetImageToken UIResourceAssetLoader::convertUIAssetImageTokenToVMAssetImageToken(UIAssetImageToken::AssetImageToken  uiAssetImageItem)
+{
+    switch (uiAssetImageItem)
+    {
+    {% for token in data.tokens.images %}
+    case UIAssetImageToken::AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }}:
+        return commonHead::model::AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    {% endfor %}    
+    default:
+        UIResourceAssetLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiAssetImageItem));
+        return commonHead::model::AssetImageToken::None;
+    }
+}
+
+commonHead::model::AssetVideoToken UIResourceAssetLoader::convertUIAssetVideoTokenToVMAssetVideoToken(UIAssetVideoToken::AssetVideoToken  uiAssetVideoItem)
+{
+    switch (uiAssetVideoItem)
+    {
+    {% for token in data.tokens.videos %}
+    case UIAssetVideoToken::AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }}:
+        return commonHead::model::AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    {% endfor %}    
+    default:
+        UIResourceAssetLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiAssetVideoItem));
+        return commonHead::model::AssetVideoToken::None;
+    }
+}
+}

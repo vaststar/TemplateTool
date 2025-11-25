@@ -1,0 +1,35 @@
+// DO NOT EDIT - Auto generated
+// Generated with {{ self._TemplateReference__context.name }}
+// rule replace "-" to "_" and capitalize each word, eg. "button-text" -> "Button_Text"
+#pragma once
+
+#include <UIResourceAssetLoader/UIResourceAssetLoaderExport.h>
+#include <QObject>
+
+namespace UIAssetImageToken{
+Q_NAMESPACE_EXPORT(UIResourceAssetLoader_EXPORT)
+
+enum class AssetImageToken
+{
+    None = 1,
+    {% for token in data.tokens.images %}
+    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {% endfor %}
+    LastImage
+};
+Q_ENUM_NS(AssetImageToken)
+}
+
+namespace UIAssetVideoToken{
+Q_NAMESPACE_EXPORT(UIResourceAssetLoader_EXPORT)
+
+enum class AssetVideoToken
+{
+    None = 1,
+    {% for token in data.tokens.videos %}
+    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {% endfor %}
+    LastVideo
+};
+Q_ENUM_NS(AssetVideoToken)
+}   
