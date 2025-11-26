@@ -37,16 +37,52 @@ SetIDEFolder(
 
 if (TARGET ${Translation_LIB}_lupdate)
     add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+else()
+    message(STATUS "[I18N] ${Translation_LIB}_lupdate not found, creating with qt_add_lupdate")
+
+    qt_add_lupdate(
+        LUPDATE_TARGET ${Translation_LIB}_lupdate
+        TS_FILES ${Translation_TS_FILES}
+        SOURCES  ${ALL_TRANSLATION_SOURCE_FILES}
+        OPTIONS -no-obsolete
+    )
+    add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
 endif()
+add_custom_target(update_all_i18n)
+add_dependencies(update_all_i18n ${Translation_LIB}_lupdate)
+
 
 option(I18N_UPDATE_TS "Run lupdate during build (OFF = only when explicitly invoked)" OFF)
 if(I18N_UPDATE_TS)
-    if (TARGET ${Translation_LIB}_lrelease)
+    message(STATUS "I18N_UPDATE_TS is ON")
+
+    if (TARGET ${Translation_LIB}_${Translation_LIB}_translations)
+    message(STATUS "got ${Translation_LIB}_${Translation_LIB}_translations")
+    endif()
+
+    if (TARGET ${Translation_LIB}_lupdate)
+    message(STATUS "got ${Translation_LIB}_lupdate")
+    endif()
+
+    if (TARGET release_translations)
+    message(STATUS "got release_translations")
+    endif()
+
+    if (TARGET ${Translation_LIB}_lrelease AND TARGET ${Translation_LIB}_lupdate)
+        message(STATUS "add dependencies: ${Translation_LIB}_lrelease ${Translation_LIB}_lupdate")
+
         add_dependencies(${Translation_LIB}_lrelease ${Translation_LIB}_lupdate)
     endif()
+    if (TARGET ${Translation_LIB}_${Translation_LIB}_translations AND TARGET ${Translation_LIB}_lupdate)
+        message(STATUS "add dependencies: ${Translation_LIB}_${Translation_LIB}_translations ${Translation_LIB}_lupdate")
+        add_dependencies(${Translation_LIB}_${Translation_LIB}_translations ${Translation_LIB}_lupdate)
+    endif()
     if (TARGET release_translations AND TARGET update_translations)
+        message(STATUS "add dependencies: release_translations update_translations")
         add_dependencies(release_translations update_translations)
     endif()
+else()
+    message(STATUS "I18N_UPDATE_TS is OFF")
 endif()
 
 if (TARGET release_translations)

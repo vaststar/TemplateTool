@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-
 # ==========================================
 # 🧱 Basic configuration
 # ==========================================
@@ -59,18 +58,18 @@ echo "CXX        : $CXX"
 echo "****************************************************"
 
 # ==========================================
-# 🚀 Run CMake configuration
+# 🚀 Run CMake configuration Ninja/Unix Makefiles
 # ==========================================
-"$CMAKE" -S "$SOURCE_DIR" -B "$BUILD_DIR" \
-    -G "Unix Makefiles" \
-    --graphviz="$GRAPHVIZ_FILE" \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
-    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
-    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
-    -DCMAKE_INSTALL_PREFIX="$ROOT_DIR/install" \
-    -DCMAKE_VERBOSE_MAKEFILE=ON \
-    -DI18N_UPDATE_TS=OFF
+"$CMAKE" -S "$SOURCE_DIR" -B "$BUILD_DIR" -G "Unix Makefiles" \
+  --graphviz="$GRAPHVIZ_FILE" \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
+  -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
+  -DCMAKE_INSTALL_PREFIX="$ROOT_DIR/install" \
+  -DCMAKE_VERBOSE_MAKEFILE=ON \
+  -DI18N_UPDATE_TS=ON
+
 
 EXIT_CODE=$?
 
