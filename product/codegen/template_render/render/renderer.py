@@ -15,6 +15,16 @@ class TemplateRenderer:
             lstrip_blocks=True
         )
 
+        self.env.filters['clean_capitalize'] = self._clean_capitalize
+
+    def _clean_capitalize(self, s):
+        """去除空格并首字母大写，其他字符保持原样"""
+        if not s:
+            return s
+        s = str(s)
+        no_spaces = ''.join(s.split())
+        return no_spaces[0].upper() + no_spaces[1:] if no_spaces else ''
+    
     def load_template(self):
         try:
             return self.env.get_template(self.template_name)
