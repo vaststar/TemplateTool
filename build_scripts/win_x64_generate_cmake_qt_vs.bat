@@ -144,7 +144,7 @@ rem =========================================
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
     -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
     -DCMAKE_VERBOSE_MAKEFILE=ON ^
-    -DI18N_UPDATE_TS=OFF
+    -DI18N_UPDATE_TS=ON
 
 set "EXIT_CODE=%errorlevel%"
 
