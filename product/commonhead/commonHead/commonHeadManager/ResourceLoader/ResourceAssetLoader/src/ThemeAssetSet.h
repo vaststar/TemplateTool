@@ -12,6 +12,8 @@ struct AssetImageSet
     std::string imagePath;
     std::string format;
     bool isAnimated{ false };
+    std::string groupName;
+    std::string fileName;
 };
 
 struct AssetVideoSet
@@ -19,6 +21,8 @@ struct AssetVideoSet
     AssetVideoToken token;
     std::string videoPath;
     std::string format;
+    std::string groupName;
+    std::string fileName;
 };
 
 struct ThemeAssetSet

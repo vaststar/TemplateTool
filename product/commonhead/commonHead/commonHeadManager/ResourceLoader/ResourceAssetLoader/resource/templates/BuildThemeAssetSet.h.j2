@@ -19,8 +19,11 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     assetImages{{ idx }}.imagePath = "{{ AssetSet.path }}";
     assetImages{{ idx }}.format = "{{ AssetSet.format }}";
     assetImages{{ idx }}.isAnimated = {{ "true" if AssetSet.animated else "false" }};
+    assetImages{{ idx }}.groupName = "images";
+    assetImages{{ idx }}.fileName = "{{ AssetSet.path.replace('\\', '/').split('/')[-1] }}";
     themeAssetSet.imageSets[AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetImages{{ idx }};
-    {% endfor %}
+
+    {% endfor -%}
 
     {% for token, AssetSet in data.tokens.videos.items() %}
     {% set idx = loop.index %}
@@ -28,8 +31,11 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     assetVideos{{ idx }}.token = AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
     assetVideos{{ idx }}.videoPath = "{{ AssetSet.path }}";
     assetVideos{{ idx }}.format = "{{ AssetSet.format }}";
+    assetVideos{{ idx }}.groupName = "videos";
+    assetVideos{{ idx }}.fileName = "{{ AssetSet.path.replace('\\', '/').split('/')[-1] }}";
     themeAssetSet.videoSets[AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetVideos{{ idx }};
-    {% endfor %}
+
+    {% endfor -%}
 
     return themeAssetSet;
 }
