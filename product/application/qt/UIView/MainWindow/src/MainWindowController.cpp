@@ -34,7 +34,7 @@ void MainWindowController::init()
 
 QString MainWindowController::getTitle() const
 {
-    return QObject::tr("my test window");
+    return QObject::tr("my test window aa");
 }
 
 int MainWindowController::getHeight() const

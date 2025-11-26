@@ -69,7 +69,8 @@ echo "****************************************************"
     -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
     -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$BUILD_DIR/bin" \
     -DCMAKE_INSTALL_PREFIX="$ROOT_DIR/install" \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+    -DI18N_UPDATE_TS=OFF
 
 EXIT_CODE=$?
 

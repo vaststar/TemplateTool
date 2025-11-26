@@ -61,6 +61,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIUtilities
     UTComponent
     AppContext
+    Translation_obj_i18n #for translation
     UIManager
     ViewModels
     CommonHeadFramework
