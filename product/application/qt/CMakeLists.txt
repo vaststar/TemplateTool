@@ -8,7 +8,6 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 add_subdirectory(UIAuxiliary)
 add_subdirectory(UIComponent)
-add_subdirectory(UITranslation)
 add_subdirectory(UIView)
 add_subdirectory(mainUI)
 
