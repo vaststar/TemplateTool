@@ -8,45 +8,20 @@
 #include "LoggerDefine.h"
 
 namespace UIResource{
-commonHead::model::LocalizedString UIResourceStringLoader::convertUILocalizedStringToVMLocalizedString(UIStringToken::LocalizedString uiLocalizedString)
+{% for enum_name, entries in data.items() %}
+commonHead::model::{{enum_name}} UIResourceStringLoader::convertUI{{enum_name}}ToVM{{enum_name}}(UI{{enum_name}}Token::{{enum_name}} uiString)
 {
-    switch (uiLocalizedString)
+    switch (uiString)
     {
-    {% for enum_name in data.LocalizedString.keys() %}
-    case UIStringToken::LocalizedString::{{ enum_name }}:
-        return commonHead::model::LocalizedString::{{ enum_name }};
+    {% for key in entries.keys() %}
+    {% set upperKey = (key | replace(" ", ""))[0] | upper + (key | replace(" ", ""))[1:] %}
+    case UI{{enum_name}}Token::{{enum_name}}::{{ upperKey }}:
+        return commonHead::model::{{enum_name}}::{{ upperKey }};
     {% endfor %}
     default:
-        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedString));
-        return commonHead::model::LocalizedString::None;
+        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiString));
+        return commonHead::model::{{enum_name}}::None;
     }
 }
-
-commonHead::model::LocalizedStringWithParam UIResourceStringLoader::convertUILocalizedStringParamToVMLocalizedStringParam(UIStringToken::LocalizedStringWithParam uiLocalizedStringWithParam)
-{
-    switch (uiLocalizedStringWithParam)
-    {
-    {% for enum_name in data.LocalizedStringWithParam.keys() %}
-    case UIStringToken::LocalizedStringWithParam::{{ enum_name }}:
-        return commonHead::model::LocalizedStringWithParam::{{ enum_name }};
-    {% endfor %}
-    default:
-        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiLocalizedStringWithParam));
-        return commonHead::model::LocalizedStringWithParam::None;
-    }
-}
-
-commonHead::model::NonLocalizedString UIResourceStringLoader::convertUINonLocalizedStringToVMNonLocalizedString(UIStringToken::NonLocalizedString uiNonLocalizedString)
-{
-    switch (uiNonLocalizedString)
-    {
-    {% for enum_name in data.NonLocalizedString.keys() %}
-    case UIStringToken::NonLocalizedString::{{ enum_name }}:
-        return commonHead::model::NonLocalizedString::{{ enum_name }};
-    {% endfor %}
-    default:
-        UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiNonLocalizedString));
-        return commonHead::model::NonLocalizedString::None;
-    }
-}
+{% endfor %}
 }

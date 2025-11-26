@@ -17,9 +17,14 @@ namespace commonHead{
     }
 }
 
-namespace UIStringToken{
+namespace UILocalizedStringToken{
     enum class LocalizedString;
+}
+
+namespace UILocalizedStringWithParamToken{
     enum class LocalizedStringWithParam;
+}
+namespace UINonLocalizedStringToken{
     enum class NonLocalizedString;
 }
 
@@ -35,8 +40,8 @@ public:
     ~UIResourceStringLoader() = delete;
 public:
     static void registerUIResourceStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
-    static commonHead::model::LocalizedString convertUILocalizedStringToVMLocalizedString(UIStringToken::LocalizedString uiLocalizedString);
-    static commonHead::model::LocalizedStringWithParam convertUILocalizedStringParamToVMLocalizedStringParam(UIStringToken::LocalizedStringWithParam uiLocalizedStringWithParam);
-    static commonHead::model::NonLocalizedString convertUINonLocalizedStringToVMNonLocalizedString(UIStringToken::NonLocalizedString uiNonLocalizedString);
+    static commonHead::model::LocalizedString convertUILocalizedStringToVMLocalizedString(UILocalizedStringToken::LocalizedString uiLocalizedString);
+    static commonHead::model::LocalizedStringWithParam convertUILocalizedStringWithParamToVMLocalizedStringWithParam(UILocalizedStringWithParamToken::LocalizedStringWithParam uiLocalizedStringWithParam);
+    static commonHead::model::NonLocalizedString convertUINonLocalizedStringToVMNonLocalizedString(UINonLocalizedStringToken::NonLocalizedString uiNonLocalizedString);
 };
 }

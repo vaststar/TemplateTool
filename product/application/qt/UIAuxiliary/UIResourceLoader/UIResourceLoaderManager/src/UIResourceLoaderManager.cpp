@@ -105,7 +105,7 @@ QFont UIResourceLoaderManager::getUIFont(UIFontToken::FontToken fontToken)
     return QFont();
 }
 
-QString UIResourceLoaderManager::getNonLocalizedString(UIStringToken::NonLocalizedString stringId)
+QString UIResourceLoaderManager::getNonLocalizedString(UINonLocalizedStringToken::NonLocalizedString stringId)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
@@ -115,7 +115,7 @@ QString UIResourceLoaderManager::getNonLocalizedString(UIStringToken::NonLocaliz
     return {};
 }
 
-QString UIResourceLoaderManager::getLocalizedString(UIStringToken::LocalizedString stringId)
+QString UIResourceLoaderManager::getLocalizedString(UILocalizedStringToken::LocalizedString stringId)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
@@ -125,11 +125,11 @@ QString UIResourceLoaderManager::getLocalizedString(UIStringToken::LocalizedStri
     return {};
 }
 
-QString UIResourceLoaderManager::getLocalizedStringWithParams(UIStringToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params)
+QString UIResourceLoaderManager::getLocalizedStringWithParams(UILocalizedStringWithParamToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
-        return resourceLoader->getLocalizedStringWithParams(UIResource::UIResourceStringLoader::convertUILocalizedStringParamToVMLocalizedStringParam(stringId), params).c_str();
+        return resourceLoader->getLocalizedStringWithParams(UIResource::UIResourceStringLoader::convertUILocalizedStringWithParamToVMLocalizedStringWithParam(stringId), params).c_str();
     }
     UIResourceLoaderManager_LOG_WARN("no resourceLoader");
     return {};

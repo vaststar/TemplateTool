@@ -74,7 +74,7 @@ Item{
     }
     UTButton {
         id: butn2
-        text:  qsTr(UTComponentUtil.getLocalizedString(UIStringToken.OKLabel)) //qsTr("button2")
+        text:  qsTr(UTComponentUtil.getLocalizedString(UILocalizedStringToken.OKLabel)) //qsTr("button2")
         anchors{
             top: parent.top
             topMargin: 300

@@ -14,12 +14,27 @@ void UIResourceStringLoader::registerUIResourceStringLoader(commonHead::ICommonH
 {
     UIResourceStringLoader_LOG_DEBUG("");
     qmlRegisterUncreatableMetaObject(
-	    UIStringToken::staticMetaObject,      // The meta-object of the namespace
-	    "UIResourceLoader",                      // The URI or module name
-	    1, 0,                          // Version
-	    "UIStringToken",                      // The name used in QML
-	    "Access to enums only"         // Error message for attempting to create an instance
+	    UILocalizedStringToken::staticMetaObject,      // The meta-object of the namespace
+	    "UIResourceLoader",                            // The URI or module name
+	    1, 0,                                          // Version
+	    "UILocalizedStringToken",                      // The name used in QML
+	    "Access to enums only"                         // Error message for attempting to create an instance
 	);
+
+    // qmlRegisterUncreatableMetaObject(
+	//     UILocalizedStringWithParamToken::staticMetaObject,      // The meta-object of the namespace
+	//     "UIResourceLoader",                                     // The URI or module name
+	//     1, 0,                                                   // Version
+	//     "UILocalizedStringWithParamToken",                      // The name used in QML
+	//     "Access to enums only"                                  // Error message for attempting to create an instance
+	// );
+    // qmlRegisterUncreatableMetaObject(
+	//     UINonLocalizedStringToken::staticMetaObject,      // The meta-object of the namespace
+	//     "UIResourceLoader",                               // The URI or module name
+	//     1, 0,                                             // Version
+	//     "UINonLocalizedStringToken",                      // The name used in QML
+	//     "Access to enums only"                            // Error message for attempting to create an instance
+	// );
 
     if (auto chFramework = commonheadFramework.lock())
     {

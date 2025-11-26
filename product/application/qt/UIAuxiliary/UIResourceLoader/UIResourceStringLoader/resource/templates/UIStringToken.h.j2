@@ -6,18 +6,19 @@
 #include <QString>
 #include <UIResourceStringLoader/UIResourceStringLoaderExport.h>
 
-namespace UIStringToken{
-Q_NAMESPACE_EXPORT(UIResourceStringLoader_EXPORT)
-
 {% for enum_name, entries in data.items() %}
+namespace UI{{ enum_name }}Token{
+Q_NAMESPACE_EXPORT(UIResourceStringLoader_EXPORT)
 enum class {{ enum_name }}
 {
     None = 1, // This has to be the first enum
 {% for key in entries.keys() %}
-    {{ key}},  
+{% set upperKey = (key | replace(" ", ""))[0] | upper + (key | replace(" ", ""))[1:] %}
+    {{ upperKey }},  
 {% endfor %}
     Last{{ enum_name }} // This has to be the last enum
 };
 Q_ENUM_NS({{ enum_name }})
-{% endfor %}
 }
+
+{% endfor %}

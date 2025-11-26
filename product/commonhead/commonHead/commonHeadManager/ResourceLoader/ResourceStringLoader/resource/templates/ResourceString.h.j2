@@ -9,7 +9,8 @@ enum class {{ enum_name }}
 {
     None = 1, // This has to be the first enum
 {% for key in entries.keys() %}
-    {{ key}},  
+{% set result = (key | replace(" ", ""))[0] | upper + (key | replace(" ", ""))[1:] %}
+    {{ result }},
 {% endfor %}
     Last{{ enum_name }} // This has to be the last enum
 };
