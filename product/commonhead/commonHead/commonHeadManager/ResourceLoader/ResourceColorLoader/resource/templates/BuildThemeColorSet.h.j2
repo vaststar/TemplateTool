@@ -11,19 +11,19 @@ inline ThemeColorSet build{{data.name|capitalize}}ThemeColorSet()
     ThemeColorSet themeColorSet;
 
     {% set optional = ['hovered', 'pressed', 'disabled', 'focused', 'checked'] %}
-    {% for token, colorSet in data.tokens.items() %}
+    {% for colorItem in data.resource %}
     {% set idx = loop.index %}
     ColorSet colorSet{{ idx }};
-    colorSet{{ idx }}.token = ColorToken::{{ token | str_to_enum }};
-    colorSet{{ idx }}.normal = ColorPaletteType::{{ colorSet.normal | str_to_enum }};
+    colorSet{{ idx }}.token = ColorToken::{{ colorItem.token | str_to_enum }};
+    colorSet{{ idx }}.normal = ColorPaletteType::{{ colorItem.color.normal | str_to_enum }};
     {% for key in optional %}
-    {% if key in colorSet %}
-    colorSet{{ idx }}.{{ key }} = ColorPaletteType::{{ colorSet[key] | str_to_enum }};
+    {% if key in colorItem.color %}
+    colorSet{{ idx }}.{{ key }} = ColorPaletteType::{{ colorItem.color[key] | str_to_enum }};
     {% else %}
     colorSet{{ idx }}.{{ key }} = colorSet{{ idx }}.normal;
     {% endif %}
     {% endfor %}
-    themeColorSet.colorSets[ColorToken::{{ token | str_to_enum }}] = colorSet{{ idx }};
+    themeColorSet.colorSets[ColorToken::{{ colorItem.token | str_to_enum }}] = colorSet{{ idx }};
 
     {% endfor %}
     return {ColorThemeType::{{data.name|capitalize}}, themeColorSet.colorSets};

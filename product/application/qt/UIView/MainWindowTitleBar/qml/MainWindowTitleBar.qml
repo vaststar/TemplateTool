@@ -29,9 +29,12 @@ Rectangle {
             anchors.fill: parent
             spacing: 10
         UTImageButton {
-    source: "qrc:/qt/qml/UIView/picture/profile.png"
-    sourceHovered: "qrc:/qt/qml/UIView/picture/profile.png"
-    sourcePressed: "qrc:/qt/qml/UIView/picture/profile.png"
+    // source: "qrc:/qt/qml/UIView/picture/profile.png"
+    // sourceHovered: "qrc:/qt/qml/UIView/picture/profile.png"
+    // sourcePressed: "qrc:/qt/qml/UIView/picture/profile.png"
+    source: "qrc:/images/profile.png"
+    sourceHovered: "qrc:/images/profile.png"
+    sourcePressed: "qrc:/images/profile.png"
             Layout.preferredWidth: parent.height - 10
             Layout.fillHeight: true
             Layout.margins: 5

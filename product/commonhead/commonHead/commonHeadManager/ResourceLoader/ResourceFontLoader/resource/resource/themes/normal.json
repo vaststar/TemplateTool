@@ -1,35 +1,50 @@
 {
   "name": "normal",
-  "tokens": {
-    "window-title": {
-      "fontType": "SansSerif",
-      "fontSize": "Small",
-      "fontWeight": "Normal",
-      "italic": false
+  "resource": [
+    {
+      "token": "window-title",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Small",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     },
-    "window-header": {
-      "fontType": "SansSerif",
-      "fontSize": "Medium",
-      "fontWeight": "Bold",
-      "italic": false
+    {
+      "token": "window-header",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Medium",
+        "fontWeight": "Bold",
+        "italic": false
+      }
     },
-    "window-body-primary":{
-      "fontType": "SansSerif",
-      "fontSize": "MediumSmall",
-      "fontWeight": "Normal",
-      "italic": false
+    {
+      "token": "window-body-primary",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "MediumSmall",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     },
-    "window-body-secondary":{
-      "fontType": "SansSerif",
-      "fontSize": "MediumSmall",
-      "fontWeight": "Normal",
-      "italic": false
+    {
+      "token": "window-body-secondary",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "MediumSmall",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     },
-    "button-text": {
-      "fontType": "SansSerif",
-      "fontSize": "Small",
-      "fontWeight": "Normal",
-      "italic": false
+    {
+      "token": "button-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Small",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     }
-  }
+  ]
 }

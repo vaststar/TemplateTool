@@ -10,16 +10,16 @@ inline ThemeFontSet build{{data.name|capitalize}}ThemeFontSet()
 {
     ThemeFontSet themeFontSet;
 
-    {% for token, fontSet in data.tokens.items() %}
+    {% for fontItem in data.resource %}
     {% set idx = loop.index %}
     FontSet fontSet{{ idx }};
-    fontSet{{ idx }}.token = FontToken::{{ token | str_to_enum }};
-    fontSet{{ idx }}.fontType = FontType::{{ fontSet.fontType }};
-    fontSet{{ idx }}.fontSize = FontSize::{{ fontSet.fontSize }};
-    fontSet{{ idx }}.fontWeight = FontWeight::{{ fontSet.fontWeight }};
-    fontSet{{ idx }}.isItalic = {{ "true" if fontSet.isItalic else "false" }};
+    fontSet{{ idx }}.token = FontToken::{{ fontItem.token | str_to_enum }};
+    fontSet{{ idx }}.fontType = FontType::{{ fontItem.font.fontType }};
+    fontSet{{ idx }}.fontSize = FontSize::{{ fontItem.font.fontSize }};
+    fontSet{{ idx }}.fontWeight = FontWeight::{{ fontItem.font.fontWeight }};
+    fontSet{{ idx }}.isItalic = {{ "true" if fontItem.font.isItalic else "false" }};
 
-    themeFontSet.fontSets[FontToken::{{ token | str_to_enum }}] = fontSet{{ idx }};
+    themeFontSet.fontSets[FontToken::{{ fontItem.token | str_to_enum }}] = fontSet{{ idx }};
     {% endfor %}
     return {FontThemeType::{{data.name|capitalize}}, themeFontSet.fontSets};
 }
