@@ -11,8 +11,8 @@ namespace commonHead::model{
 enum class AssetImageToken
 {
     None = 1,
-    {% for image in data.tokens.images %}
-    {{ image.token | str_to_enum }},
+    {% for token in data.tokens.images %}
+    {{ token | str_to_enum }},
     {% endfor %}
     LastImage
 };
@@ -20,8 +20,8 @@ enum class AssetImageToken
 enum class AssetVideoToken
 {
     None = 1,
-    {% for video in data.tokens.videos %}
-    {{ video.token | str_to_enum }},
+    {% for token in data.tokens.videos %}
+    {{ token | str_to_enum }},
     {% endfor %}
     LastVideo
 };

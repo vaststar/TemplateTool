@@ -18,6 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ResourceStringLoader
     ResourceColorLoader
     ResourceFontLoader
+    ResourceAssetLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoService

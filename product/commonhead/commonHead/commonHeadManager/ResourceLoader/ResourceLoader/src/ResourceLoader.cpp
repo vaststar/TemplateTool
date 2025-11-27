@@ -8,6 +8,7 @@
 #include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 #include <commonHead/ResourceColorLoader/IResourceColorLoader.h>
 #include <commonHead/ResourceFontLoader/IResourceFontLoader.h>
+#include <commonHead/ResourceAssetLoader/IResourceAssetLoader.h>
 
 
 namespace commonHead{
@@ -20,6 +21,7 @@ ResourceLoader::ResourceLoader(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
     , mResourceColorLoader(IResourceColorLoader::createInstance())
     , mResourceFontLoader(IResourceFontLoader::createInstance())
+    , mResourceAssetLoader(IResourceAssetLoader::createInstance())
 {
     COMMONHEAD_LOG_DEBUG("create ResourceLoader, this:" << this);
 }
@@ -82,6 +84,19 @@ model::FontThemeType ResourceLoader::getCurrentFontThemeType() const
     }
 }
 
+model::AssetThemeType ResourceLoader::getCurrentAssetThemeType() const
+{
+    switch (getCurrentThemeType())
+    {
+    case ucf::service::model::ThemeType::Light:
+        return model::AssetThemeType::Normal;
+    case ucf::service::model::ThemeType::Dark:
+        return model::AssetThemeType::Normal;
+    default:
+        return model::AssetThemeType::Normal;
+    }
+}
+
 ucf::service::model::ThemeType ResourceLoader::getCurrentThemeType() const
 {
     if (auto coreFramework = mCoreframeworkWPtr.lock())
@@ -128,6 +143,24 @@ std::string ResourceLoader::getLocalizedStringWithParams(model::LocalizedStringW
         return mResourceStringLoader->getLocalizedStringWithParams(stringId, params);
     }
     COMMONHEAD_LOG_WARN("no resourceStringLoader");
+    return {};
+}
+
+std::string ResourceLoader::getAssetImagePath(model::AssetImageToken assetImageToken) const
+{
+    if (mResourceAssetLoader)
+    {
+        return mResourceAssetLoader->getAssetImagePath(assetImageToken, getCurrentAssetThemeType());
+    }
+    return {};
+}
+
+std::string ResourceLoader::getAssetVideoPath(model::AssetVideoToken assetVideoToken) const
+{
+    if (mResourceAssetLoader)
+    {
+        return mResourceAssetLoader->getAssetVideoPath(assetVideoToken, getCurrentAssetThemeType());
+    }
     return {};
 }
 

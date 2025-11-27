@@ -14,7 +14,8 @@ public:
     ResourceAssetLoader& operator=(ResourceAssetLoader&&) = delete;
     ~ResourceAssetLoader() = default;
 public:
-    // virtual model::Asset getAsset(model::AssetToken token, model::AssetState state, model::AssetThemeType theme) const override;
+    std::string getAssetImagePath(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const override;
+    std::string getAssetVideoPath(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const override;
 private:
     void buildThemeAssetSets();
 private:

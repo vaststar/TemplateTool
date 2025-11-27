@@ -19,6 +19,7 @@ namespace commonHead{
 class IResourceStringLoader;
 class IResourceColorLoader;
 class IResourceFontLoader;
+class IResourceAssetLoader;
 
 class ResourceLoader final: public IResourceLoader,
                       public ucf::service::IClientInfoServiceCallback,
@@ -40,6 +41,9 @@ public:
     virtual std::string getNonLocalizedString(model::NonLocalizedString stringId) const override;
     virtual std::string getLocalizedString(model::LocalizedString stringId) const override;
     virtual std::string getLocalizedStringWithParams(model::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) const override;
+    
+    virtual std::string getAssetImagePath(model::AssetImageToken assetImageToken) const override;
+    virtual std::string getAssetVideoPath(model::AssetVideoToken assetVideoToken) const override;
 private:
     //IClientInfoServiceCallback
     virtual void onClientInfoReady() override;
@@ -50,10 +54,12 @@ private:
     ucf::service::model::ThemeType getCurrentThemeType() const;
     model::ColorThemeType getCurrentColorThemeType() const;
     model::FontThemeType getCurrentFontThemeType() const;
+    model::AssetThemeType getCurrentAssetThemeType() const;
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreframeworkWPtr;
     const std::unique_ptr<IResourceColorLoader> mResourceColorLoader;
     const std::unique_ptr<IResourceFontLoader> mResourceFontLoader;
     std::unique_ptr<IResourceStringLoader> mResourceStringLoader;
+    const std::unique_ptr<IResourceAssetLoader> mResourceAssetLoader;
 };
 }

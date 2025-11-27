@@ -12,7 +12,7 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
 
     themeAssetSet.themeType = AssetThemeType::{{data.name|capitalize}};
 
-    {% for image in data.tokens.images %}
+    {% for image in data.resources.images %}
     {% set idx = loop.index %}
     AssetImageSet assetImages{{ idx }};
     assetImages{{ idx }}.token = AssetImageToken::{{ image.token | str_to_enum }};
@@ -25,7 +25,7 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
 
     {% endfor -%}
 
-    {% for video in data.tokens.videos %}
+    {% for video in data.resources.videos %}
     {% set idx = loop.index %}
     AssetVideoSet assetVideos{{ idx }};
     assetVideos{{ idx }}.token = AssetVideoToken::{{ video.token | str_to_enum }};
