@@ -12,28 +12,28 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
 
     themeAssetSet.themeType = AssetThemeType::{{data.name|capitalize}};
 
-    {% for token, AssetSet in data.tokens.images.items() %}
+    {% for image in data.tokens.images %}
     {% set idx = loop.index %}
     AssetImageSet assetImages{{ idx }};
-    assetImages{{ idx }}.token = AssetImageToken::{{ token | str_to_enum }};
-    assetImages{{ idx }}.imagePath = "{{ AssetSet.path }}";
-    assetImages{{ idx }}.format = "{{ AssetSet.format }}";
-    assetImages{{ idx }}.isAnimated = {{ "true" if AssetSet.animated else "false" }};
+    assetImages{{ idx }}.token = AssetImageToken::{{ image.token | str_to_enum }};
+    assetImages{{ idx }}.imagePath = "{{ image.path }}";
+    assetImages{{ idx }}.format = "{{ image.format }}";
+    assetImages{{ idx }}.isAnimated = {{ "true" if image.animated else "false" }};
     assetImages{{ idx }}.groupName = "images";
-    assetImages{{ idx }}.fileName = "{{ AssetSet.path.replace('\\', '/').split('/')[-1] }}";
-    themeAssetSet.imageSets[AssetImageToken::{{ token | str_to_enum }}] = assetImages{{ idx }};
+    assetImages{{ idx }}.fileName = "{{ image.path.replace('\\', '/').split('/')[-1] }}";
+    themeAssetSet.imageSets[AssetImageToken::{{ image.token | str_to_enum }}] = assetImages{{ idx }};
 
     {% endfor -%}
 
-    {% for token, AssetSet in data.tokens.videos.items() %}
+    {% for video in data.tokens.videos %}
     {% set idx = loop.index %}
     AssetVideoSet assetVideos{{ idx }};
-    assetVideos{{ idx }}.token = AssetVideoToken::{{ token | str_to_enum }};
-    assetVideos{{ idx }}.videoPath = "{{ AssetSet.path }}";
-    assetVideos{{ idx }}.format = "{{ AssetSet.format }}";
+    assetVideos{{ idx }}.token = AssetVideoToken::{{ video.token | str_to_enum }};
+    assetVideos{{ idx }}.videoPath = "{{ video.path }}";
+    assetVideos{{ idx }}.format = "{{ video.format }}";
     assetVideos{{ idx }}.groupName = "videos";
-    assetVideos{{ idx }}.fileName = "{{ AssetSet.path.replace('\\', '/').split('/')[-1] }}";
-    themeAssetSet.videoSets[AssetVideoToken::{{ token | str_to_enum }}] = assetVideos{{ idx }};
+    assetVideos{{ idx }}.fileName = "{{ video.path.replace('\\', '/').split('/')[-1] }}";
+    themeAssetSet.videoSets[AssetVideoToken::{{ video.token | str_to_enum }}] = assetVideos{{ idx }};
 
     {% endfor -%}
 

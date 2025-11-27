@@ -1,3 +1,4 @@
+add_subdirectory(resource)
 include(TemplateTools)
 # 设置资源字符串 JSON 文件路径
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
@@ -49,7 +50,7 @@ set(MODULE_SOURCE_PRIVATE
     ${CONVERTER_OUTPUT_PATH}
 )
 set(MODULE_DEPENDENCIES_PUBLIC
-    Qt6::Qml
+    Qt6::Qml Qt6::Core
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     ResourceAssetLoader

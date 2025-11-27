@@ -1,27 +1,33 @@
 {
   "name": "normal",
-  "tokens": {
-    "images": {
-        "logo": {
-          "path": "assets/images/112.png",
-          "format": "png",
-          "animated": false
+  "resources": {
+    "images": [
+      {
+        "token": "logo",
+        "path": "assets/images/112.png",
+        "format": "png",
+        "animated": false
       },
-      "icon-user": {
-          "path": "assets/images/profile.png",
-          "format": "png",
-          "animated": false
+      {
+        "token": "icon_user",
+        "path": "assets/images/profile.png",
+        "format": "png",
+        "animated": false
       }
-    },
-    "videos": {
-      "welcome-video": {
-          "path": "assets/videos/welcome.mp4",
-          "format": "mp4"
+    ],
+    "videos": [
+      {
+        "token": "welcome_video",
+        "path": "assets/videos/welcome.mp4",
+        "format": "mp4",
+        "animated": false
       },
-      "tutorial-video": {
-          "path": "assets/videos/tutorial.mp4",
-          "format": "mp4"
+      {
+        "token": "tutorial_video",
+        "path": "assets/videos/tutorial.mp4",
+        "format": "mp4",
+        "animated": false
       }
-    }
+    ]
   }
 }

@@ -1,3 +1,5 @@
+add_subdirectory(cmake)
+
 include(TemplateTools)
 include(CapitalizeString)
 # 设置资源字符串 JSON 文件路径
@@ -6,20 +8,6 @@ set(RESOURCE_IDE_FOLDER commonhead/codegen)
 set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceAsset)
 
 set(RESOURCE_TARGETS )
-
-# ## AssetPalette
-# set(Asset_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json)
-# set(Asset_OUT_PUT_FILE AssetPaletteModel.h)
-# set(Asset_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${Asset_OUT_PUT_FILE})
-# set(Asset_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/AssetPaletteModel.h.j2)
-
-# generate_from_template(
-#     TEMPLATE_FILE ${Asset_TEMEPLATE_FILE}
-#     INPUT_FILE ${Asset_JSON_PATH}
-#     OUTPUT_FILE ${Asset_OUTPUT_PATH}
-#     Asset_TARGET
-# )
-# list(APPEND RESOURCE_TARGETS ${Asset_TARGET})
 
 ## AssetToken
 set(Asset_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json")
@@ -34,7 +22,6 @@ generate_from_template(
     TOKEN_TARGET
 )
 list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
-
 
 ## BuildThemeAssetSet
 set(THEME_JSON_NAMES "normal" )
