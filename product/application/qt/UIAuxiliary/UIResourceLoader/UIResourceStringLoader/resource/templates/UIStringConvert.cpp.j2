@@ -14,9 +14,8 @@ commonHead::model::{{enum_name}} UIResourceStringLoader::convertUI{{enum_name}}T
     switch (uiString)
     {
     {% for key in entries.keys() %}
-    {% set upperKey = (key | replace(" ", ""))[0] | upper + (key | replace(" ", ""))[1:] %}
-    case UI{{enum_name}}Token::{{enum_name}}::{{ upperKey }}:
-        return commonHead::model::{{enum_name}}::{{ upperKey }};
+    case UI{{enum_name}}Token::{{enum_name}}::{{ key | str_to_enum }}:
+        return commonHead::model::{{enum_name}}::{{ key | str_to_enum }};
     {% endfor %}
     default:
         UIResourceStringLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiString));

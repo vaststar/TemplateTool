@@ -13,13 +13,13 @@ inline ThemeFontSet build{{data.name|capitalize}}ThemeFontSet()
     {% for token, fontSet in data.tokens.items() %}
     {% set idx = loop.index %}
     FontSet fontSet{{ idx }};
-    fontSet{{ idx }}.token = FontToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    fontSet{{ idx }}.token = FontToken::{{ token | str_to_enum }};
     fontSet{{ idx }}.fontType = FontType::{{ fontSet.fontType }};
     fontSet{{ idx }}.fontSize = FontSize::{{ fontSet.fontSize }};
     fontSet{{ idx }}.fontWeight = FontWeight::{{ fontSet.fontWeight }};
     fontSet{{ idx }}.isItalic = {{ "true" if fontSet.isItalic else "false" }};
 
-    themeFontSet.fontSets[FontToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = fontSet{{ idx }};
+    themeFontSet.fontSets[FontToken::{{ token | str_to_enum }}] = fontSet{{ idx }};
     {% endfor %}
     return {FontThemeType::{{data.name|capitalize}}, themeFontSet.fontSets};
 }

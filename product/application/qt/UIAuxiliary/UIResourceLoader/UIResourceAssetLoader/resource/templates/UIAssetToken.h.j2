@@ -13,7 +13,7 @@ enum class AssetImageToken
 {
     None = 1,
     {% for token in data.tokens.images %}
-    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {{ token | str_to_enum }},
     {% endfor %}
     LastImage
 };
@@ -27,7 +27,7 @@ enum class AssetVideoToken
 {
     None = 1,
     {% for token in data.tokens.videos %}
-    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {{ token | str_to_enum }},
     {% endfor %}
     LastVideo
 };

@@ -15,25 +15,25 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     {% for token, AssetSet in data.tokens.images.items() %}
     {% set idx = loop.index %}
     AssetImageSet assetImages{{ idx }};
-    assetImages{{ idx }}.token = AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    assetImages{{ idx }}.token = AssetImageToken::{{ token | str_to_enum }};
     assetImages{{ idx }}.imagePath = "{{ AssetSet.path }}";
     assetImages{{ idx }}.format = "{{ AssetSet.format }}";
     assetImages{{ idx }}.isAnimated = {{ "true" if AssetSet.animated else "false" }};
     assetImages{{ idx }}.groupName = "images";
     assetImages{{ idx }}.fileName = "{{ AssetSet.path.replace('\\', '/').split('/')[-1] }}";
-    themeAssetSet.imageSets[AssetImageToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetImages{{ idx }};
+    themeAssetSet.imageSets[AssetImageToken::{{ token | str_to_enum }}] = assetImages{{ idx }};
 
     {% endfor -%}
 
     {% for token, AssetSet in data.tokens.videos.items() %}
     {% set idx = loop.index %}
     AssetVideoSet assetVideos{{ idx }};
-    assetVideos{{ idx }}.token = AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    assetVideos{{ idx }}.token = AssetVideoToken::{{ token | str_to_enum }};
     assetVideos{{ idx }}.videoPath = "{{ AssetSet.path }}";
     assetVideos{{ idx }}.format = "{{ AssetSet.format }}";
     assetVideos{{ idx }}.groupName = "videos";
     assetVideos{{ idx }}.fileName = "{{ AssetSet.path.replace('\\', '/').split('/')[-1] }}";
-    themeAssetSet.videoSets[AssetVideoToken::{{ token | replace(' ', '') | title | replace('-', '_') }}] = assetVideos{{ idx }};
+    themeAssetSet.videoSets[AssetVideoToken::{{ token | str_to_enum }}] = assetVideos{{ idx }};
 
     {% endfor -%}
 

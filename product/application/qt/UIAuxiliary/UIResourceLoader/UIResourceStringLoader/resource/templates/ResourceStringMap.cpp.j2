@@ -23,8 +23,7 @@ static {{enum_name}}Map build{{enum_name}}Map()
     {
         std::make_pair( commonHead::model::{{enum_name}}::None, "" ),
         {% for key, val in entries.items() %}
-        {% set upperKey = (key | replace(" ", ""))[0] | upper + (key | replace(" ", ""))[1:] %}
-        std::make_pair( commonHead::model::{{enum_name}}::{{ upperKey }}, {{ generate_qt_string(enum_name, val) }} ),
+        std::make_pair( commonHead::model::{{enum_name}}::{{ key | str_to_enum }}, {{ generate_qt_string(enum_name, val) }} ),
         {% endfor %}
         std::make_pair( commonHead::model::{{enum_name}}::Last{{enum_name}}, "" )
     };

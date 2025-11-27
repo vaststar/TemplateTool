@@ -12,7 +12,7 @@ enum class ColorToken
 {
     None = 1,
     {% for token in data.tokens %}
-    {{ token | replace(' ', '') | title | replace('-', '_') }},
+    {{ token | str_to_enum }},
     {% endfor %}
     LastColor
 };

@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -16,6 +17,7 @@ class TemplateRenderer:
         )
 
         self.env.filters['clean_capitalize'] = self._clean_capitalize
+        self.env.filters['str_to_enum'] = self._str_to_enum
 
     def _clean_capitalize(self, s):
         """去除空格并首字母大写，其他字符保持原样"""
@@ -24,6 +26,15 @@ class TemplateRenderer:
         s = str(s)
         no_spaces = ''.join(s.split())
         return no_spaces[0].upper() + no_spaces[1:] if no_spaces else ''
+    
+    def _str_to_enum(self, s):
+        """将字符串转换为枚举格式,即去除首尾空格,每个单词首字母大写,短横和中间空格替换为下划线, eg."example-token name" -> "Example_Token_Name" """
+        if not s:
+            return ""
+        s = re.sub(r'[\s-]+', '_', s.strip())
+        if not s:
+            return ""
+        return '_'.join(p[:1].upper() + p[1:] for p in s.split('_') if p)
     
     def load_template(self):
         try:

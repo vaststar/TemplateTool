@@ -13,8 +13,8 @@ commonHead::model::FontToken UIResourceFontLoader::convertUIFontTokenToVMFontTok
     switch (uiFontItem)
     {
     {% for token in data.tokens %}
-    case UIFontToken::FontToken::{{ token | replace(' ', '') | title | replace('-', '_') }}:
-        return commonHead::model::FontToken::{{ token | replace(' ', '') | title | replace('-', '_') }};
+    case UIFontToken::FontToken::{{ token | str_to_enum }}:
+        return commonHead::model::FontToken::{{ token | str_to_enum }};
     {% endfor %}    
     default:
         UIResourceFontLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiFontItem));
