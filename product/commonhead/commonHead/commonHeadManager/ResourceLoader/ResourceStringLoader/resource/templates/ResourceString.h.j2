@@ -8,8 +8,8 @@ namespace commonHead::model{
 enum class {{ enum_name }}
 {
     None = 1, // This has to be the first enum
-{% for key in entries.keys() %}
-    {{ key | str_to_enum }},
+{% for entry in entries %}
+    {{ entry.token | str_to_enum }},
 {% endfor %}
     Last{{ enum_name }} // This has to be the last enum
 };

@@ -2,7 +2,7 @@ import os
 import json
 import re
 from jinja2 import Environment, FileSystemLoader
-
+import sys
 
 class TemplateRenderer:
     def __init__(self, template_path: str):
@@ -18,6 +18,7 @@ class TemplateRenderer:
 
         self.env.filters['clean_capitalize'] = self._clean_capitalize
         self.env.filters['str_to_enum'] = self._str_to_enum
+        self.env.filters['get_platform_string'] = self._get_platform_string
 
     def _clean_capitalize(self, s):
         """去除空格并首字母大写，其他字符保持原样"""
@@ -35,6 +36,42 @@ class TemplateRenderer:
         if not s:
             return ""
         return '_'.join(p[:1].upper() + p[1:] for p in s.split('_') if p)
+    
+    def _get_platform_string(self, string_obj: dict) -> str:
+        """
+        根据平台从字符串对象获取对应值
+
+        Args:
+            string_obj: 单个字符串对象 {"token": "...", "value": "...", "conditions": [...]}
+        Returns:
+            对应平台的字符串值
+        """
+        if not string_obj or not isinstance(string_obj, dict):
+            return ""
+
+        # 返回平台特定值或默认值
+        result = string_obj.get('value', '')
+        conditions = string_obj.get('conditions', [])
+        current_platform = self._get_platform()
+        if conditions and isinstance(conditions, list):
+            for condition in conditions:
+                if isinstance(condition, dict) and condition.get('platform') == current_platform:
+                    result = condition.get('value', result)
+                    break
+                
+        return result
+    def _get_platform(self):
+        """获取操作系统平台"""
+        platform = sys.platform
+
+        if platform.startswith('win'):
+            return 'windows'
+        elif platform.startswith('darwin'):
+            return 'macos'
+        elif platform.startswith('linux'):
+            return 'linux'
+        else:
+            return 'common'
     
     def load_template(self):
         try:

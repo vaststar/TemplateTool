@@ -1,17 +1,57 @@
 {
-    "LocalizedString": {
-        "OKLabel": "OK",
-        "CancelLabel": "Cancel",
-        "CloseLabel": "Close",
-        "TitleLable": "Title",
-        "todotest": "aab"
+  "LocalizedString": [
+    {
+      "token": "OKLabel",
+      "value": "OK",
+      "conditions": []
     },
-    "LocalizedStringWithParam": {
-        "ProgressLabel": "{{0}} of {{1}} completed",
-        "TestParm": "test param {{0}}, only 1 param"
+    {
+      "token": "CancelLabel", 
+      "value": "Cancel",
+      "conditions": []
     },
-    "NonLocalizedString": {
-        "CPU": "CPU",
-        "PronounsHe": "He/Him/His"
+    {
+      "token": "CloseLabel",
+      "value": "Close",
+      "conditions": []
+    },
+    {
+      "token": "TitleLable",
+      "value": "Title",
+      "conditions": [
+        { "platform": "windows", "value": "Window Title" },
+        { "platform": "macos", "value": "macOS Title" },
+        { "platform": "linux", "value": "Linux Title" }
+      ]
+    },
+    {
+      "token": "todotest",
+      "value": "aab", 
+      "conditions": []
     }
+  ],
+  "LocalizedStringWithParam": [
+    {
+      "token": "ProgressLabel",
+      "value": "{{0}} of {{1}} completed",
+      "conditions": []
+    },
+    {
+      "token": "TestParm",
+      "value": "test param {{0}}, only 1 param",
+      "conditions": []
+    }
+  ],
+  "NonLocalizedString": [
+    {
+      "token": "CPU",
+      "value": "CPU",
+      "conditions": []
+    },
+    {
+      "token": "PronounsHe",
+      "value": "He/Him/His",
+      "conditions": []
+    }
+  ]
 }

@@ -18,12 +18,12 @@ namespace ResourceStringMap{
 {% for enum_name, entries in data.items() %}
 static {{enum_name}}Map build{{enum_name}}Map()
 {
-    {% set total_strings = entries.items()|length + 2 %}
+    {% set total_strings = entries|length + 2 %}
     constexpr std::array<std::pair<commonHead::model::{{enum_name}}, const char*>, {{ total_strings }}> localizedArray = 
     {
         std::make_pair( commonHead::model::{{enum_name}}::None, "" ),
-        {% for key, val in entries.items() %}
-        std::make_pair( commonHead::model::{{enum_name}}::{{ key | str_to_enum }}, {{ generate_qt_string(enum_name, val) }} ),
+        {% for entry in entries %}
+        std::make_pair( commonHead::model::{{enum_name}}::{{ entry.token | str_to_enum }}, {{ generate_qt_string(enum_name, entry| get_platform_string) }} ),
         {% endfor %}
         std::make_pair( commonHead::model::{{enum_name}}::Last{{enum_name}}, "" )
     };
