@@ -12,9 +12,9 @@ commonHead::model::AssetImageToken UIResourceAssetLoader::convertUIAssetImageTok
 {
     switch (uiAssetImageItem)
     {
-    {% for image in data.tokens.images %}
-    case UIAssetImageToken::AssetImageToken::{{ image.token | str_to_enum }}:
-        return commonHead::model::AssetImageToken::{{ image.token | str_to_enum }};
+    {% for token in data.tokens.images %}
+    case UIAssetImageToken::AssetImageToken::{{ token | str_to_enum }}:
+        return commonHead::model::AssetImageToken::{{ token | str_to_enum }};
     {% endfor %}    
     default:
         UIResourceAssetLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiAssetImageItem));
@@ -26,9 +26,9 @@ commonHead::model::AssetVideoToken UIResourceAssetLoader::convertUIAssetVideoTok
 {
     switch (uiAssetVideoItem)
     {
-    {% for video in data.tokens.videos %}
-    case UIAssetVideoToken::AssetVideoToken::{{ video.token | str_to_enum }}:
-        return commonHead::model::AssetVideoToken::{{ video.token | str_to_enum }};
+    {% for token in data.tokens.videos %}
+    case UIAssetVideoToken::AssetVideoToken::{{ token | str_to_enum }}:
+        return commonHead::model::AssetVideoToken::{{ token | str_to_enum }};
     {% endfor %}    
     default:
         UIResourceAssetLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiAssetVideoItem));

@@ -16,7 +16,7 @@
       "conditions": []
     },
     {
-      "token": "TitleLable",
+      "token": "TitleLabel",
       "value": "Title",
       "conditions": [
         { "platform": "windows", "value": "Window Title" },
