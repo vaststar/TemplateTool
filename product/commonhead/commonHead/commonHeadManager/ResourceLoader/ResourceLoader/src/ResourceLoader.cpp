@@ -146,20 +146,20 @@ std::string ResourceLoader::getLocalizedStringWithParams(model::LocalizedStringW
     return {};
 }
 
-std::string ResourceLoader::getAssetImagePath(model::AssetImageToken assetImageToken) const
+std::string ResourceLoader::getAssetImageTokenName(model::AssetImageToken assetImageToken) const
 {
     if (mResourceAssetLoader)
     {
-        return mResourceAssetLoader->getAssetImagePath(assetImageToken, getCurrentAssetThemeType());
+        return mResourceAssetLoader->getAssetImageTokenName(assetImageToken, getCurrentAssetThemeType());
     }
     return {};
 }
 
-std::string ResourceLoader::getAssetVideoPath(model::AssetVideoToken assetVideoToken) const
+std::string ResourceLoader::getAssetVideoTokenName(model::AssetVideoToken assetVideoToken) const
 {
     if (mResourceAssetLoader)
     {
-        return mResourceAssetLoader->getAssetVideoPath(assetVideoToken, getCurrentAssetThemeType());
+        return mResourceAssetLoader->getAssetVideoTokenName(assetVideoToken, getCurrentAssetThemeType());
     }
     return {};
 }

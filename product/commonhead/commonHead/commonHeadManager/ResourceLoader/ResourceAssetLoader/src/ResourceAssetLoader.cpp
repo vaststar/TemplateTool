@@ -17,7 +17,7 @@ ResourceAssetLoader::ResourceAssetLoader()
     buildThemeAssetSets();
 }
 
-std::string ResourceAssetLoader::getAssetImagePath(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const
+std::string ResourceAssetLoader::getAssetImageTokenName(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const
 {
      if (auto it = mThemeAssetSets.find(theme); it != mThemeAssetSets.end())
     {
@@ -25,7 +25,7 @@ std::string ResourceAssetLoader::getAssetImagePath(model::AssetImageToken assetI
         if (auto imageSetIt = themeAssetSet.imageSets.find(assetImageToken); imageSetIt != themeAssetSet.imageSets.end())
         {
             const auto& imageSet = imageSetIt->second;
-            return imageSet.imagePath;
+            return imageSet.tokenName;
         }
         else
         {
@@ -39,7 +39,7 @@ std::string ResourceAssetLoader::getAssetImagePath(model::AssetImageToken assetI
     return {};
 }
 
-std::string ResourceAssetLoader::getAssetVideoPath(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const
+std::string ResourceAssetLoader::getAssetVideoTokenName(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const
 {
     if (auto it = mThemeAssetSets.find(theme); it != mThemeAssetSets.end())
     {
@@ -47,7 +47,7 @@ std::string ResourceAssetLoader::getAssetVideoPath(model::AssetVideoToken assetV
         if (auto videoSetIt = themeAssetSet.videoSets.find(assetVideoToken); videoSetIt != themeAssetSet.videoSets.end())
         {
             const auto& videoSet = videoSetIt->second;
-            return videoSet.videoPath;
+            return videoSet.tokenName;
         }
         else
         {

@@ -27,6 +27,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     UIResourceColorLoader
     UIResourceStringLoader
     UIResourceFontLoader
+    UIResourceAssetLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework

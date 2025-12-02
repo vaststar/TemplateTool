@@ -17,8 +17,8 @@ public:
     IResourceAssetLoader& operator=(IResourceAssetLoader&&) = delete;
     virtual ~IResourceAssetLoader() = default;
 public:
-    [[nodiscard]] virtual std::string getAssetImagePath(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const = 0;
-    [[nodiscard]] virtual std::string getAssetVideoPath(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const = 0;
+    [[nodiscard]] virtual std::string getAssetImageTokenName(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const = 0;
+    [[nodiscard]] virtual std::string getAssetVideoTokenName(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const = 0;
 
     static std::unique_ptr<IResourceAssetLoader> createInstance();
 };

@@ -9,6 +9,7 @@ namespace commonHead::model{
 struct AssetImageSet
 {
     AssetImageToken token;
+    std::string tokenName;
     std::string imagePath;
     std::string format;
     bool isAnimated{ false };
@@ -19,6 +20,7 @@ struct AssetImageSet
 struct AssetVideoSet
 {
     AssetVideoToken token;
+    std::string tokenName;
     std::string videoPath;
     std::string format;
     std::string groupName;

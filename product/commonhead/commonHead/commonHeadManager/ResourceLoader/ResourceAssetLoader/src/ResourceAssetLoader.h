@@ -14,8 +14,8 @@ public:
     ResourceAssetLoader& operator=(ResourceAssetLoader&&) = delete;
     ~ResourceAssetLoader() = default;
 public:
-    std::string getAssetImagePath(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const override;
-    std::string getAssetVideoPath(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const override;
+    std::string getAssetImageTokenName(model::AssetImageToken assetImageToken, model::AssetThemeType theme) const override;
+    std::string getAssetVideoTokenName(model::AssetVideoToken assetVideoToken, model::AssetThemeType theme) const override;
 private:
     void buildThemeAssetSets();
 private:

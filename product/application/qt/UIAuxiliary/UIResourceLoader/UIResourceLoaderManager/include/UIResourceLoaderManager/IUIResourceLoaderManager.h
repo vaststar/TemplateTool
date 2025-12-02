@@ -12,6 +12,7 @@
 #include <UIColorToken.h>
 #include <UIStringToken.h>
 #include <UIFontToken.h>
+#include <UIAssetToken.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -41,6 +42,9 @@ public:
     virtual Q_INVOKABLE QString getNonLocalizedString(UINonLocalizedStringToken::NonLocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedString(UILocalizedStringToken::LocalizedString stringId) = 0;
     virtual Q_INVOKABLE QString getLocalizedStringWithParams(UILocalizedStringWithParamToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) = 0;
+
+    virtual Q_INVOKABLE QString getImageResourcePath(UIAssetImageToken::AssetImageToken imageToken) = 0;
+    virtual Q_INVOKABLE QString getVideoResourcePath(UIAssetVideoToken::AssetVideoToken videoToken) = 0;
 public:
     static std::unique_ptr<IUIResourceLoaderManager> createInstance(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 };

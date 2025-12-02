@@ -32,9 +32,9 @@ Rectangle {
     // source: "qrc:/qt/qml/UIView/picture/profile.png"
     // sourceHovered: "qrc:/qt/qml/UIView/picture/profile.png"
     // sourcePressed: "qrc:/qt/qml/UIView/picture/profile.png"
-    source: "qrc:/images/icon_user"
-    sourceHovered: "qrc:/images/icon_user"
-    sourcePressed: "qrc:/images/icon_user"
+    source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
+    sourceHovered: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
+    sourcePressed: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
             Layout.preferredWidth: parent.height - 10
             Layout.fillHeight: true
             Layout.margins: 5

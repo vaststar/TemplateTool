@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import UIView 1.0
 import UTComponent 1.0
+import UIResourceLoader 1.0
 
 Item{
     id: root
@@ -15,7 +16,7 @@ Item{
         height:200
         width:200
         // source: "qrc:/qt/qml/UIView/picture/112.png"
-        source: "qrc:/images/logo"
+        source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Logo)//"qrc:/images/logo"
     }
 
     UTButton {

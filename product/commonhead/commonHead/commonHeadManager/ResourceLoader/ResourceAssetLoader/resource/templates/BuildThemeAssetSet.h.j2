@@ -16,6 +16,7 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     {% set idx = loop.index %}
     AssetImageSet assetImages{{ idx }};
     assetImages{{ idx }}.token = AssetImageToken::{{ image.token | str_to_enum }};
+    assetImages{{ idx }}.tokenName = "{{ image.token }}";
     assetImages{{ idx }}.imagePath = "{{ image.path }}";
     assetImages{{ idx }}.format = "{{ image.format }}";
     assetImages{{ idx }}.isAnimated = {{ "true" if image.animated else "false" }};
@@ -29,6 +30,7 @@ inline ThemeAssetSet build{{data.name|capitalize}}ThemeAssetSet()
     {% set idx = loop.index %}
     AssetVideoSet assetVideos{{ idx }};
     assetVideos{{ idx }}.token = AssetVideoToken::{{ video.token | str_to_enum }};
+    assetVideos{{ idx }}.tokenName = "{{ video.token }}";
     assetVideos{{ idx }}.videoPath = "{{ video.path }}";
     assetVideos{{ idx }}.format = "{{ video.format }}";
     assetVideos{{ idx }}.groupName = "videos";

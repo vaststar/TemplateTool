@@ -25,3 +25,7 @@ function getUIFont(fontToken) {
 function getLocalizedString(key) {
     return UIResourceLoaderManager ? UIResourceLoaderManager.getLocalizedString(key) : "No UIResourceLoaderManager";
 }
+
+function getImageResourcePath(imageToken) {
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getImageResourcePath(imageToken) : {};
+}

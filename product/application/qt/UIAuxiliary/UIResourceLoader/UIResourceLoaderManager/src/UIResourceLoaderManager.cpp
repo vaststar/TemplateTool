@@ -11,6 +11,7 @@
 #include <UIResourceColorLoader/UIResourceColorLoader.h>
 #include <UIResourceStringLoader/UIResourceStringLoader.h>
 #include <UIResourceFontLoader/UIResourceFontLoader.h>
+#include <UIResourceAssetLoader/UIResourceAssetLoader.h>
 
 #include "LoggerDefine.h"
 
@@ -130,6 +131,44 @@ QString UIResourceLoaderManager::getLocalizedStringWithParams(UILocalizedStringW
     if (auto resourceLoader = mImpl->getResourceLoader())
     {
         return resourceLoader->getLocalizedStringWithParams(UIResource::UIResourceStringLoader::convertUILocalizedStringWithParamToVMLocalizedStringWithParam(stringId), params).c_str();
+    }
+    UIResourceLoaderManager_LOG_WARN("no resourceLoader");
+    return {};
+}
+
+QString UIResourceLoaderManager::getImageResourcePath(UIAssetImageToken::AssetImageToken imageToken)
+{
+    if (auto resourceLoader = mImpl->getResourceLoader())
+    {
+        if (const std::string& tokenName = resourceLoader->getAssetImageTokenName(UIResource::UIResourceAssetLoader::convertUIAssetImageTokenToVMAssetImageToken(imageToken));
+            !tokenName.empty())
+        {
+            return QString("qrc:/images/%1").arg(tokenName.c_str());
+        }
+        else
+        {
+            UIResourceLoaderManager_LOG_WARN("no tokenName found for token: " << static_cast<int>(imageToken));
+            return {};
+        }
+    }
+    UIResourceLoaderManager_LOG_WARN("no resourceLoader");
+    return {};
+}
+
+QString UIResourceLoaderManager::getVideoResourcePath(UIAssetVideoToken::AssetVideoToken videoToken)
+{
+    if (auto resourceLoader = mImpl->getResourceLoader())
+    {
+        if (const std::string& tokenName = resourceLoader->getAssetVideoTokenName(UIResource::UIResourceAssetLoader::convertUIAssetVideoTokenToVMAssetVideoToken(videoToken));
+            !tokenName.empty())
+        {
+            return QString("qrc:/videos/%1").arg(tokenName.c_str());
+        }
+        else
+        {
+            UIResourceLoaderManager_LOG_WARN("no tokenName found for token: " << static_cast<int>(videoToken));
+            return {};
+        }
     }
     UIResourceLoaderManager_LOG_WARN("no resourceLoader");
     return {};

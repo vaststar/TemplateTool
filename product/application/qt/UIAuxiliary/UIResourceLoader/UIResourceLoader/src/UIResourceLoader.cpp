@@ -7,6 +7,7 @@
 #include <UIResourceColorLoader/UIResourceColorLoader.h>
 #include <UIResourceStringLoader/UIResourceStringLoader.h>
 #include <UIResourceFontLoader/UIResourceFontLoader.h>
+#include <UIResourceAssetLoader/UIResourceAssetLoader.h>
 
 namespace UIResource{
 void UIResourceLoader::registerUIResourceLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
@@ -14,5 +15,6 @@ void UIResourceLoader::registerUIResourceLoader(commonHead::ICommonHeadFramework
     UIResourceColorLoader::registerUIResourceColorLoader();
     UIResourceStringLoader::registerUIResourceStringLoader(commonheadFramework);
     UIResourceFontLoader::registerUIResourceFontLoader();
+    UIResourceAssetLoader::registerUIResourceAssetLoader();
 }
 };

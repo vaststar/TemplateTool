@@ -40,6 +40,9 @@ public:
     virtual Q_INVOKABLE QString getNonLocalizedString(UINonLocalizedStringToken::NonLocalizedString stringId) override;
     virtual Q_INVOKABLE QString getLocalizedString(UILocalizedStringToken::LocalizedString stringId) override;
     virtual Q_INVOKABLE QString getLocalizedStringWithParams(UILocalizedStringWithParamToken::LocalizedStringWithParam stringId, const std::initializer_list<std::string>& params) override;
+    
+    virtual Q_INVOKABLE QString getImageResourcePath(UIAssetImageToken::AssetImageToken imageToken) override;
+    virtual Q_INVOKABLE QString getVideoResourcePath(UIAssetVideoToken::AssetVideoToken videoToken) override;
 private:
     void registerTypes();
 private:
