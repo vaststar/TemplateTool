@@ -152,7 +152,9 @@ void CoreFramework::initServices()
         std::for_each(allServices.begin(), allServices.end(), [](std::weak_ptr<ucf::service::IService> service){
             if (auto servicePtr = service.lock())
             {
+                CORE_LOG_INFO("start init service: " << servicePtr->getServiceName());
                 servicePtr->initComponent();
+                CORE_LOG_INFO("finish init service: " << servicePtr->getServiceName());
             }
         }); 
         fireNotification(&ICoreFrameworkCallback::onServiceInitialized);

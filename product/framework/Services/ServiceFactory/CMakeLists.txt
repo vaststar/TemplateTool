@@ -1,41 +1,35 @@
 include(BuildModule)
 
-if (WIN32)
-    set(ADD_APPRUNNER_DEFINITIONS APPRUNNER_DLL) #APPRUNNER_DLL APPRUNNER_LIB
-else()
-    set(ADD_APPRUNNER_DEFINITIONS)
-endif()
-
-set(MODULE_MODULE_NAME AppRunner)
-set(MODULE_IDE_FOLDER main)
+set(MODULE_MODULE_NAME ServiceFactory)
+set(MODULE_IDE_FOLDER framework/Services)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/AppRunner/AppRunner.h
-    include/AppRunner/AppRunnerExport.h
+    include/ucf/Services/ServiceFactory/IServiceFactory.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/AppRunner.cpp
-    src/LoggerDefine.h
+    src/ServiceFactoryLogger.h
+    src/ServiceFactory.h
+    src/ServiceFactory.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
+    ServiceExportMacro
 )
+
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadFramework
-    ServiceFactory
-    ImageService
-    DataWarehouseService
-    ContactService
     MediaService
+    ImageService
+    ContactService
     NetworkService
     ClientInfoService
+    DataWarehouseService
     InvocationService
     CoreFramework
     MasterLog
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_BUILD_PRIVATE_DIR src)
 
@@ -49,6 +43,6 @@ TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
-TARGET_DEFINITIONS ${ADD_APPRUNNER_DEFINITIONS}
+TARGET_DEFINITIONS ${ADD_SERVICE_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )

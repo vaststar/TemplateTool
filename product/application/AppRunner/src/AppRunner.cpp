@@ -5,6 +5,7 @@
 #include <MasterLog/LogExport.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/ServiceFactory/IServiceFactory.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
@@ -43,6 +44,7 @@ private:
     ApplicationConfig mApplicationConfig;
     std::vector<std::string> mCommandLineValues;
     FrameworkDependencies mFrameworkDependencies;
+    std::shared_ptr<ucf::service::IServiceFactory> mServiceFactory;
     std::once_flag mCreate_flag;
     std::once_flag mInit_flag;
     std::once_flag mExit_flag;
@@ -158,6 +160,7 @@ void ApplicationRunner::DataPrivate::createFrameworks()
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
     mFrameworkDependencies.coreFramework = ucf::framework::ICoreFramework::createInstance();
+    mServiceFactory = ucf::service::IServiceFactory::createInstance(mFrameworkDependencies.coreFramework);
     mFrameworkDependencies.commonHeadFramework = commonHead::ICommonHeadFramework::createInstance(mFrameworkDependencies.coreFramework);
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
@@ -171,13 +174,13 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IInvocationService>(ucf::service::IInvocationService::createInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::IDataWarehouseService::createInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::IClientInfoService::createInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::createInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::createInstance(mFrameworkDependencies.coreFramework));
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(ucf::service::IMediaService::createInstance(mFrameworkDependencies.coreFramework));
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IInvocationService>(mServiceFactory->createInvocationService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(mServiceFactory->createDataWarehouseService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(mServiceFactory->createClientInfoService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(mServiceFactory->createNetworkService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(mServiceFactory->createContactService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(mServiceFactory->createImageService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(mServiceFactory->createMediaService());
         
         mFrameworkDependencies.coreFramework->initServices();
     }
