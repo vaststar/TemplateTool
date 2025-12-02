@@ -1,10 +1,10 @@
 
 file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../../*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/../../../*.qml")
-set(GENERATED_CPP_FILES ${UCF_CODE_GENERATOR_DIR}/UIResourceStringLoader/ResourceStringMap.cpp)
+set(GENERATED_CPP_FILES ${GLOBAL_RESOURCE_STRING_CPP_OUTPUT_PATH})
 list(APPEND ALL_TRANSLATION_SOURCE_FILES ${GENERATED_CPP_FILES})
 
 set(Translation_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
-set(Translation_LIB Translation_obj_i18n)
+set(Translation_LIB UIResourcecTranslation)
 set(Translation_TS_FILES        
     ${Translation_DIR}/app_translations_en.ts
     ${Translation_DIR}/app_translations_zh-CN.ts

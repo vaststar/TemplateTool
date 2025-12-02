@@ -27,6 +27,8 @@ function(get_full_git_info depth_variable commit_variable branch_variable)
             OUTPUT_VARIABLE git_branch
             OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+        
+        message(STATUS "Git command result, branch: ${git_branch}, commit: ${git_commit}, depth: ${git_depth}")
 
         set(${depth_variable} ${git_depth} PARENT_SCOPE)
         set(${commit_variable} ${git_commit} PARENT_SCOPE)

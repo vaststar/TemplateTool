@@ -1,6 +1,6 @@
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
-set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/UIResourceAssetLoader)
+set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/UIResourceAsset)
 
 set(RCC_FILES)
 set(RCC_TARGETS)
@@ -23,19 +23,19 @@ foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
   list(APPEND RCC_TARGETS ${GFT_RCC_TARGET})
 endforeach()
 
-  set(Resourrce_RCC_Target ResourrceRCC)
-  add_library(${Resourrce_RCC_Target} OBJECT)
-  set_target_properties(${Resourrce_RCC_Target} PROPERTIES
-    POSITION_INDEPENDENT_CODE ON
-    AUTORCC ON
-    AUTOMOC OFF
-    AUTOUIC OFF
-    FOLDER ${RESOURCE_IDE_FOLDER}
-  )
-  target_link_libraries(${Resourrce_RCC_Target} PRIVATE Qt6::Core)
-  target_sources(${Resourrce_RCC_Target} PRIVATE ${RCC_FILES})
+set(Resourrce_RCC_Target ResourrceRCC)
+add_library(${Resourrce_RCC_Target} OBJECT)
+set_target_properties(${Resourrce_RCC_Target} PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  AUTORCC ON
+  AUTOMOC OFF
+  AUTOUIC OFF
+  FOLDER ${RESOURCE_IDE_FOLDER}
+)
+target_link_libraries(${Resourrce_RCC_Target} PRIVATE Qt6::Core)
+target_sources(${Resourrce_RCC_Target} PRIVATE ${RCC_FILES})
+add_dependencies(${Resourrce_RCC_Target} ${RCC_TARGETS})
 
-  add_dependencies(${Resourrce_RCC_Target} ${RCC_TARGETS})
-  add_library(ResPack INTERFACE)
-  target_sources(ResPack INTERFACE $<TARGET_OBJECTS:${Resourrce_RCC_Target}>)
+add_library(UIResourceAssetRCCInterface INTERFACE)
+target_sources(UIResourceAssetRCCInterface INTERFACE $<TARGET_OBJECTS:${Resourrce_RCC_Target}>)
 

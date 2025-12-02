@@ -1,6 +1,6 @@
 include(TemplateTools)
 # 设置资源字符串 JSON 文件路径
-set(RESOURCE_STRING_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ResourceString.json CACHE STRING "Path to ResourceString.json")
+set(GLOBAL_RESOURCE_STRING_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ResourceString.json CACHE STRING "Path to ResourceString.json")
 
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
@@ -11,7 +11,7 @@ set(RESOURCE_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ResourceString
 
 generate_from_template(
     TEMPLATE_FILE ${RESOURCE_TEMEPLATE_FILE}
-    INPUT_FILE ${RESOURCE_STRING_JSON_PATH}
+    INPUT_FILE ${GLOBAL_RESOURCE_STRING_JSON_PATH}
     OUTPUT_FILE ${RESOURCE_OUTPUT_PATH}
     GFT_TARGET
 )

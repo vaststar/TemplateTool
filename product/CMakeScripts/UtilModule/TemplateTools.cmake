@@ -94,9 +94,9 @@ function(generate_from_template)
         DEPENDS
             "${GFT_TEMPLATE_FILE}"
             "${GFT_INPUT_FILE}"
-            "${GFT_DEPENDS}"
             "${SCRIPT_PATH}"
-            "${VENV_TARGET_NAME}"
+            ${GFT_DEPENDS}
+            ${VENV_TARGET_NAME}
         COMMENT "Generating ${GFT_OUTPUT_FILE} from ${GFT_TEMPLATE_FILE} using ${GFT_INPUT_FILE}"
         VERBATIM
     )
@@ -104,7 +104,7 @@ function(generate_from_template)
     get_filename_component(MODULE_NAME ${GFT_OUTPUT_FILE} NAME)
     set(MODULE_TARGET_NAME generate_${MODULE_NAME})
 
-    message(STATUS "generate coden target:${MODULE_TARGET_NAME}")
+    message(STATUS "generate coden target:${MODULE_TARGET_NAME} for ${GFT_OUTPUT_FILE}")
     add_custom_target(${MODULE_TARGET_NAME} ALL DEPENDS ${GFT_OUTPUT_FILE})
     set_target_properties(${MODULE_TARGET_NAME} PROPERTIES FOLDER codegen)
 

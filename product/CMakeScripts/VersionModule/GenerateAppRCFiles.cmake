@@ -44,6 +44,8 @@ function(generate_app_rc_files)
         message(FATAL_ERROR "[GenerateAppRCFiles] Missing required argument: INPUT_JSON_FILE")
     endif()
 
+    message(STATUS "[generate_app_rc_files] Generating '${ARG_OUTPUT_FILE}' from template '${ARG_INPUT_VERSION_TEMPLATE}' using input '${ARG_INPUT_JSON_FILE}'")
+   
     add_custom_command(
         OUTPUT ${ARG_OUTPUT_FILE}
         COMMAND ${CMAKE_COMMAND} -DINPUT_JSON_FILE=${ARG_INPUT_JSON_FILE}

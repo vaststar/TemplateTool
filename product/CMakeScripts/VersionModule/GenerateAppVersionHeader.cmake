@@ -33,6 +33,8 @@ function(generate_app_version_header)
         message(FATAL_ERROR "[GenerateAppVersionHeader] Missing required argument: INPUT_JSON_FILE")
     endif()
     
+    message(STATUS "[generate_app_version_header] Generating '${GAVF_OUTPUT_FILE}' from template '${GAVF_INPUT_VERSION_TEMPLATE}' using input '${GAVF_INPUT_JSON_FILE}'")
+   
     # 生成版本文件
     set(CUSTOM_TARGET_NAME "generate_app_version_header")
     add_custom_command(

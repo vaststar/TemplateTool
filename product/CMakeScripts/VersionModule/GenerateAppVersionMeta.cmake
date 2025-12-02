@@ -43,15 +43,25 @@ if(CMAKE_SCRIPT_MODE_FILE)
 endif()
 
 function(generate_app_version_meta)
-    set(oneValueArgs VERSION_MAJOR VERSION_MINOR VERSION_PATCH INPUT_META_JSON INPUT_VERSION_TEMPLATE OUTPUT_FILE)
+    set(oneValueArgs INPUT_META_JSON INPUT_VERSION_TEMPLATE OUTPUT_FILE)
     cmake_parse_arguments(GAVM "" "${oneValueArgs}" "" ${ARGN})
 
     if(NOT GAVM_OUTPUT_FILE)
         message(FATAL_ERROR "[GenerateAppVersionMeta] OUTPUT_FILE is required")
     endif()
 
+    if(NOT GAVM_INPUT_VERSION_TEMPLATE)
+        message(FATAL_ERROR "[GenerateAppVersionMeta] INPUT_VERSION_TEMPLATE is required")
+    endif()
+    
+    if(NOT GAVM_INPUT_META_JSON)
+        message(FATAL_ERROR "[GenerateAppVersionMeta] INPUT_META_JSON is required")
+    endif()
+
     set(GIT_INFO_FILE "${CMAKE_CURRENT_BINARY_DIR}/git_info.meta")
 
+    message(STATUS "[generate_app_version_meta] Generating '${GIT_INFO_FILE}' from template '${GAVM_INPUT_VERSION_TEMPLATE}' using input '${GAVM_INPUT_META_JSON}'")
+    
     generate_git_info_meta(OUTPUT_FILE "${GIT_INFO_FILE}")
     add_custom_command(
         OUTPUT ${GAVM_OUTPUT_FILE}
