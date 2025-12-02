@@ -88,10 +88,16 @@ class TemplateRenderer:
         except FileNotFoundError:
             raise FileNotFoundError(f"JSON input file not found: {input_path}")
 
-    def render(self, input_path: str, output_path: str):
+    def render(self, input_path: str, output_path: str, **extra_params):
         context = self.load_json(input_path)
         template = self.load_template()
-        rendered = template.render(data=context)
+        render_context = {'data': context}
+        if extra_params:
+            render_context['extra'] = extra_params
+        else:
+            render_context['extra'] = {}
+
+        rendered = template.render(render_context)
 
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         with open(output_path, 'w', encoding='utf-8') as f:

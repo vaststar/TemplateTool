@@ -15,7 +15,7 @@ Item{
         height:200
         width:200
         // source: "qrc:/qt/qml/UIView/picture/112.png"
-        source: "qrc:/images/112.png"
+        source: "qrc:/images/logo"
     }
 
     UTButton {

@@ -25,22 +25,25 @@ list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
 
 ## BuildThemeAssetSet
 set(THEME_JSON_NAMES "normal" )
+set(THEME_JSON_PATH_SET)
 foreach(item IN LISTS THEME_JSON_NAMES)
-set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
-capitalize(${item} capital_json_name)
-set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
-set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
-set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeAssetSet.h.j2)
-
-generate_from_template(
-    TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
-    INPUT_FILE ${THEME_JSON_PATH}
-    OUTPUT_FILE ${THEME_OUTPUT_PATH}
-    THEME_TARGET
-)
-list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
+  set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
+  list(APPEND THEME_JSON_PATH_SET ${THEME_JSON_PATH})
+  capitalize(${item} capital_json_name)
+  set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
+  set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
+  set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeAssetSet.h.j2)
+  
+  generate_from_template(
+      TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
+      INPUT_FILE ${THEME_JSON_PATH}
+      OUTPUT_FILE ${THEME_OUTPUT_PATH}
+      THEME_TARGET
+  )
+  list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
 endforeach()
-
+set(GLOBAL_ASSET_THEME_FILES "${THEME_JSON_PATH_SET}" CACHE STRING "all asset json files")
+set(GLOBAL_ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource CACHE STRING "base asset dir")
 
 include(BuildInterface)
 BuildInterface(

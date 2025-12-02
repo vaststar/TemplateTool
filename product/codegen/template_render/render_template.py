@@ -8,11 +8,22 @@ def main():
     parser.add_argument('--template', required=True, help='Path to the Jinja2 template file')
     parser.add_argument('--input', required=True, help='Path to the input JSON file')
     parser.add_argument('--output', required=True, help='Path to the output file to generate')
+    parser.add_argument('--param', action='append', help='Extra parameters in format key=value')
     args = parser.parse_args()
 
     try:
         renderer = TemplateRenderer(args.template)
-        renderer.render(args.input, args.output)
+        
+        extra_params = {}
+        if args.param:
+            for param in args.param:
+                if '=' in param:
+                    key, value = param.split('=', 1)
+                    extra_params[key] = value
+                else:
+                    print(f"[WARNING] Invalid parameter format: {param}, expected key=value")
+        
+        renderer.render(args.input, args.output, **extra_params)
         print(f"Generated: {args.output}")
     except Exception as e:
         print(f"[ERROR] {e}")

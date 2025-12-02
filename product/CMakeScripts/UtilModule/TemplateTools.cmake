@@ -50,7 +50,7 @@ endfunction()
 function(generate_from_template)
     set(options)  # 没有布尔选项
     set(oneValueArgs TEMPLATE_FILE INPUT_FILE OUTPUT_FILE)
-    set(multiValueArgs DEPENDS)
+    set(multiValueArgs DEPENDS EXTRA_PARAMS)
     cmake_parse_arguments(GFT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # === 参数检查 ===
@@ -76,13 +76,21 @@ function(generate_from_template)
 
     message(STATUS "[generate_from_template] Generating '${GFT_OUTPUT_FILE}' from template '${GFT_TEMPLATE_FILE}' using input '${GFT_INPUT_FILE}'")
     # === 构建命令 ===
+    set(PYTHON_CMD ${VENV_PYTHON_PATH} ${SCRIPT_PATH} 
+        --template "${GFT_TEMPLATE_FILE}"
+        --input "${GFT_INPUT_FILE}" 
+        --output "${GFT_OUTPUT_FILE}"
+    )
+    if(GFT_EXTRA_PARAMS)
+        foreach(param IN LISTS GFT_EXTRA_PARAMS)
+            message(STATUS "[generate_from_template] render extra param: ${param}")
+            list(APPEND PYTHON_CMD --param "${param}")
+        endforeach()
+    endif()
+
     add_custom_command(
         OUTPUT "${GFT_OUTPUT_FILE}"
-        COMMAND ${VENV_PYTHON_PATH}
-                ${SCRIPT_PATH}
-                --template "${GFT_TEMPLATE_FILE}"
-                --input "${GFT_INPUT_FILE}"
-                --output "${GFT_OUTPUT_FILE}"
+        COMMAND ${PYTHON_CMD}
         DEPENDS
             "${GFT_TEMPLATE_FILE}"
             "${GFT_INPUT_FILE}"

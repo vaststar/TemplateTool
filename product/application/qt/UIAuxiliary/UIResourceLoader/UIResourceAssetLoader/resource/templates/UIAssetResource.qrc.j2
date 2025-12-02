@@ -1,0 +1,14 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/images">
+        {% for image in data.resources.images %}
+        <file alias="{{ image.token }}">{{ extra.base_dir }}/{{image.path }}</file>
+        {% endfor %}
+    </qresource>
+
+    <qresource prefix="/videos">
+        {% for video in data.resources.videos %}
+        <file alias="{{ video.token }}">{{ extra.base_dir }}/{{ video.path }}</file>
+        {% endfor %}
+    </qresource>
+</RCC>
