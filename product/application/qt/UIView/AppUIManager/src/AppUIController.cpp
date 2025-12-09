@@ -21,7 +21,6 @@ AppUIController::AppUIController(AppContext* appContext, QObject* parent)
     : QObject(parent)
     , mAppContext(appContext)
 {
-    UIVIEW_LOG_DEBUG("Qt Version: " << qVersion());
     UIVIEW_LOG_DEBUG("create AppUIController, address: " << this << ", with appContext: " << appContext);
     initializeController();
 }

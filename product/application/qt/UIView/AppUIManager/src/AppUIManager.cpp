@@ -42,6 +42,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
     , mControllerInitializer(std::make_unique<UIViewControllerInitializer>(mAppContext.get()))
 {
+    UIVIEW_LOG_INFO("Qt Version: " << qVersion());
     registerQmlTypes();
 }
 
