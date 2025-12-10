@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 基本标识 -->
+    <key>CFBundleName</key>
+    <string>@PRODUCT_NAME@</string>
+
+    <!-- 可执行文件名：由 CMake 填充 -->
+    <key>CFBundleExecutable</key>
+    <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+
+    <!-- Bundle ID：这里用 Company + InternalName 拼一下，你也可以改成固定前缀 -->
+    <key>CFBundleIdentifier</key>
+    <string>com.@COMPANY_NAME@.@INTERNAL_NAME@</string>
+
+    <!-- “对外”版本号：对应 rc 里的 ProductVersion / PRODUCT_VERSION_STR -->
+    <key>CFBundleShortVersionString</key>
+    <string>@PRODUCT_VERSION_STR@</string>
+
+    <!-- 内部 build 号：对应 rc 里的 FileVersion / FILE_VERSION_STR -->
+    <key>CFBundleVersion</key>
+    <string>@FILE_VERSION_STR@</string>
+
+    <!-- 展示名称：用 FileDescription 更贴近 Windows 的含义 -->
+    <key>CFBundleDisplayName</key>
+    <string>@FILE_DESCRIPTION@</string>
+
+    <!-- 版权 -->
+    <key>NSHumanReadableCopyright</key>
+    <string>@COPYRIGHT@</string>
+
+    <!-- 原始文件名（Windows 的 OriginalFilename），放到自定义 key 里 -->
+    <key>OriginalFilename</key>
+    <string>@ORIGINAL_FILENAME@</string>
+
+    <!-- 公司名、自定义字段 -->
+    <key>CompanyName</key>
+    <string>@COMPANY_NAME@</string>
+
+    <!-- 内部名称（对应 rc 的 InternalName） -->
+    <key>InternalName</key>
+    <string>@INTERNAL_NAME@</string>
+
+    <!-- 产品名（和 CFBundleName 一样再放一份，方便对齐 Windows 字段） -->
+    <key>ProductName</key>
+    <string>@PRODUCT_NAME@</string>
+
+    <!-- Git 提交哈希 -->
+    <key>GitCommit</key>
+    <string>@GIT_COMMIT_HASH@</string>
+
+    <!-- 额外：可以加个最小系统版本，按需改 -->
+    <key>LSMinimumSystemVersion</key>
+    <string>10.13</string>
+</dict>
+</plist>

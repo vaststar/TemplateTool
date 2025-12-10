@@ -186,11 +186,13 @@ function(BuildQtModule)
         )
     endif()
     
-    if (is_shared_lib)
-        BuildRCFileModule(
-            MODULE_NAME ${MODULE_MODULE_NAME}
-            FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
-        )
+    if (WIN32)
+        if (is_shared_lib)
+            BuildRCFileModule(
+                MODULE_NAME ${MODULE_MODULE_NAME}
+                FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
+            )
+        endif()
     endif()
 
     message(STATUS "====Finish Build Qt Module====")

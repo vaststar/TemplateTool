@@ -103,12 +103,14 @@ function(BuildModule)
             )
         endif()
 
-        target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
-        if (is_shared_lib)
-            BuildRCFileModule(
-                MODULE_NAME ${MODULE_MODULE_NAME}
-                FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
-            )
+        if (WIN32)
+            target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
+            if (is_shared_lib)
+                BuildRCFileModule(
+                    MODULE_NAME ${MODULE_MODULE_NAME}
+                    FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
+                )
+            endif()
         endif()
         message(STATUS "====Finish Build Module: ${MODULE_MODULE_NAME}====")
 endfunction()

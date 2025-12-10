@@ -22,29 +22,29 @@ if(CMAKE_SCRIPT_MODE_FILE)
 
     # 获取传入变量
     configure_file(${INPUT_TEMPLATE_FILE} ${OUTPUT_H} @ONLY)
-    message(STATUS "[GenerateAppRCFiles] Generated ${OUTPUT_H}")
+    message(STATUS "[GenerateAppInfoFiles] Generated ${OUTPUT_H}")
 endif()
 
-function(generate_app_rc_files)
+function(generate_app_info_files)
     set(options)  # 没有布尔选项
     set(oneValueArgs INPUT_JSON_FILE INPUT_JSON_TARGET INPUT_VERSION_TEMPLATE OUTPUT_FILE INTERNAL_NAME FILE_DESCRIPTION ORIGINAL_FILENAME)
     set(multiValueArgs DEPENDS)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(NOT ARG_INPUT_VERSION_TEMPLATE)
-        message(FATAL_ERROR "[GenerateAppRCFiles] Missing required argument: INPUT_VERSION_TEMPLATE")
+        message(FATAL_ERROR "[GenerateAppInfoFiles] Missing required argument: INPUT_VERSION_TEMPLATE")
     endif()
     if(NOT ARG_INPUT_JSON_TARGET)
-        message(FATAL_ERROR "[GenerateAppRCFiles] Missing required argument: INPUT_JSON_TARGET")
+        message(FATAL_ERROR "[GenerateAppInfoFiles] Missing required argument: INPUT_JSON_TARGET")
     endif()
     if(NOT ARG_OUTPUT_FILE)
-        message(FATAL_ERROR "[GenerateAppRCFiles] Missing required argument: OUTPUT_FILE")
+        message(FATAL_ERROR "[GenerateAppInfoFiles] Missing required argument: OUTPUT_FILE")
     endif()
     if(NOT ARG_INPUT_JSON_FILE)
-        message(FATAL_ERROR "[GenerateAppRCFiles] Missing required argument: INPUT_JSON_FILE")
+        message(FATAL_ERROR "[GenerateAppInfoFiles] Missing required argument: INPUT_JSON_FILE")
     endif()
 
-    message(STATUS "[generate_app_rc_files] Generating '${ARG_OUTPUT_FILE}' from template '${ARG_INPUT_VERSION_TEMPLATE}' using input '${ARG_INPUT_JSON_FILE}'")
+    message(STATUS "[generate_app_info_files] Generating '${ARG_OUTPUT_FILE}' from template '${ARG_INPUT_VERSION_TEMPLATE}' using input '${ARG_INPUT_JSON_FILE}'")
    
     add_custom_command(
         OUTPUT ${ARG_OUTPUT_FILE}
@@ -54,7 +54,7 @@ function(generate_app_rc_files)
                                  -DINTERNAL_NAME=${ARG_INTERNAL_NAME}
                                  -DORIGINAL_FILENAME=${ARG_ORIGINAL_FILENAME}
                                  -DOUTPUT_H=${ARG_OUTPUT_FILE}
-                                 -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppRCFiles.cmake"
+                                 -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppInfoFiles.cmake"
         COMMENT "Generating ${ARG_OUTPUT_FILE} from ${ARG_INPUT_JSON_FILE} using ${ARG_INPUT_VERSION_TEMPLATE}"
         DEPENDS ${ARG_INPUT_JSON_FILE} ${ARG_INPUT_VERSION_TEMPLATE}
     )
