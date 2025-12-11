@@ -98,6 +98,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
             UIFabrication_LOG_DEBUG("load qml succeed: " << actualQmlResource.toStdString() << ", objectName: "<< object->objectName().toStdString());
             if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
             {
+                UIFabrication_LOG_DEBUG("window created, install closing handler, qmlResource: " << actualQmlResource.toStdString() << ", window objectName: " << window->objectName().toStdString());
                 QObject::connect(window, &QQuickWindow::closing, [window]{ 
                     if (window)
                     {
@@ -105,6 +106,11 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
                         window->deleteLater();
                     }
                 });
+            }
+            else
+            {
+                UIFabrication_LOG_DEBUG("non-window qml object created, set parent to qml engine, qmlResource: " << actualQmlResource.toStdString() << ", objectName: " << object->objectName().toStdString());
+                object->setParent(mQmlEngine.get());
             }
         }
         else
@@ -140,6 +146,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::Cont
             UIFabrication_LOG_DEBUG("create qml succeed: " << actualQmlResource.toStdString() << ", objectName: "<< object->objectName().toStdString());
             if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
             {
+                UIFabrication_LOG_DEBUG("window created, install closing handler, qmlResource: " << actualQmlResource.toStdString() << ", window objectName: " << window->objectName().toStdString());
                 QObject::connect(window, &QQuickWindow::closing, [window]{ 
                     if (window)
                     {
@@ -147,6 +154,11 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::Cont
                         window->deleteLater();
                     }
                 });
+            }
+            else
+            {
+                UIFabrication_LOG_DEBUG("non-window qml object created, set parent to qml engine, qmlResource: " << actualQmlResource.toStdString() << ", objectName: " << object->objectName().toStdString());
+                object->setParent(mQmlEngine.get());
             }
 
             if (controllerCallback)
@@ -208,6 +220,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, UICore::CoreContro
             UIFabrication_LOG_DEBUG("create qml succeed: " << actualQmlResource.toStdString() << ", objectName: "<< object->objectName().toStdString() << ", controllerName: " << controller->getControllerName().toStdString());
             if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
             {
+                UIFabrication_LOG_DEBUG("window created, install closing handler, qmlResource: " << actualQmlResource.toStdString() << ", window objectName: " << window->objectName().toStdString());
                 QObject::connect(window, &QQuickWindow::closing, [window]{ 
                     if (window)
                     {
@@ -215,6 +228,11 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, UICore::CoreContro
                         window->deleteLater();
                     }
                 });
+            }
+            else
+            {
+                UIFabrication_LOG_DEBUG("non-window qml object created, set parent to qml engine, qmlResource: " << actualQmlResource.toStdString() << ", objectName: " << object->objectName().toStdString());
+                object->setParent(mQmlEngine.get());
             }
         }
         else
