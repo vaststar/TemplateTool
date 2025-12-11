@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include <UIUtilities/UIUtilitiesExport.h>
+#include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
 
 namespace UIUtilities{
-class UIUtilities_EXPORT PlatformUtils final
+class UIUtilities_EXPORT UIPlatformUtils final
 {
 public:
     static void openLinkInDefaultBrowser(const std::string& url, const std::string& params = {});

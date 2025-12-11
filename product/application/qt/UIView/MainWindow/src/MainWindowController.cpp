@@ -10,7 +10,7 @@
 #include <UIManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
-#include <UIUtilities/PlatformUtils.h>
+#include <UIUtilities/UIPlatformUtils.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 
@@ -98,5 +98,5 @@ void MainWindowController::openCamera()
 void MainWindowController::testFunc()
 {
     UIVIEW_LOG_DEBUG("");
-    UIUtilities::PlatformUtils::openLinkInDefaultBrowser("https://www.baidu.com");
+    UIUtilities::UIPlatformUtils::openLinkInDefaultBrowser("https://www.baidu.com");
 }
