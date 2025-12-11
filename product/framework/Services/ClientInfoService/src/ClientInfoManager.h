@@ -29,6 +29,8 @@ public:
 public:
     model::Version getApplicationVersion() const;
 
+    model::ProductInfo getProductInfo() const;
+
     model::LanguageType getApplicationLanguage() const;
     void setApplicationLanguage(model::LanguageType languageType);
     std::vector<model::LanguageType> getSupportedLanguages() const;
@@ -39,6 +41,9 @@ public:
 
     model::SqliteDBConfig getSharedDBConfig() const;
     void databaseInitialized(const std::string& dbId);
+
+    std::string getDataStoragePath() const;
+    std::string getLogStoragePath() const;
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::atomic<model::LanguageType> mLanguageType;

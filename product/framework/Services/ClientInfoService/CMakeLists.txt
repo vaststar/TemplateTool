@@ -33,6 +33,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     OSUtils
     StringUtils
     UUIDUtils
+    FilePathUtils
     magic_enum
 )
 

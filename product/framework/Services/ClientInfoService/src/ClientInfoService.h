@@ -38,6 +38,8 @@ public:
     //IClientInfoService
     virtual model::Version getApplicationVersion() const override;
 
+    virtual model::ProductInfo getProductInfo() const override;
+
     virtual model::LanguageType getApplicationLanguage() const override;
     virtual void setApplicationLanguage(model::LanguageType languageType) override;
     virtual std::vector<model::LanguageType> getSupportedLanguages() const override;
@@ -47,6 +49,9 @@ public:
     virtual std::vector<model::ThemeType> getSupportedThemeTypes() const override;
 
     virtual model::SqliteDBConfig getSharedDBConfig() const override;
+    
+    virtual std::string getAppDataStoragePath() const override;
+    virtual std::string getAppLogStoragePath() const override;
 protected:
     //IService
     virtual void initService() override;

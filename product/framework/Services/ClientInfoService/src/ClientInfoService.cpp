@@ -106,10 +106,21 @@ model::Version ClientInfoService::getApplicationVersion() const
     return mDataPrivate->getClientInfoManager()->getApplicationVersion();
 }
 
+model::ProductInfo ClientInfoService::getProductInfo() const
+{
+    return mDataPrivate->getClientInfoManager()->getProductInfo();
+}
+
 void ClientInfoService::printClientInfo() const
 {
     SERVICE_LOG_DEBUG("==================================");
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
+    SERVICE_LOG_DEBUG("app data storage path: " << getAppDataStoragePath());
+    SERVICE_LOG_DEBUG("app log storage path: " << getAppLogStoragePath());
+    SERVICE_LOG_DEBUG("product name: " << getProductInfo().productName);
+    SERVICE_LOG_DEBUG("copyright: " << getProductInfo().copyright);
+    SERVICE_LOG_DEBUG("company name: " << getProductInfo().companyName);
+    SERVICE_LOG_DEBUG("product description: " << getProductInfo().productDescription);
     SERVICE_LOG_DEBUG("client version: " << getApplicationVersion().toString());
     SERVICE_LOG_DEBUG("client compiler: " << ucf::utilities::OSUtils::getCompilerInfo());
     SERVICE_LOG_DEBUG("os platform: " << ucf::utilities::OSUtils::getOSTypeName());
@@ -121,10 +132,6 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os total memory: " << ucf::utilities::OSUtils::getMemoryInfo().totalMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os available memory: " << ucf::utilities::OSUtils::getMemoryInfo().availableMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os gpu info: " << ucf::utilities::OSUtils::getGPUInfo());
-    
-    // SERVICE_LOG_DEBUG("client language: " << std::to_string(static_cast<std::underlying_type<decltype(getApplicationLanguage())>::type>(getApplicationLanguage())));
-    // SERVICE_LOG_DEBUG("client language: " << magic_enum::enum_name(getApplicationLanguage()));
-    //SERVICE_LOG_DEBUG("client language: " << ucf::utilities::StringUtils::enumToString(getApplicationLanguage()));
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
     printBuildInfo();
     SERVICE_LOG_DEBUG("==================================");
@@ -193,6 +200,16 @@ std::vector<model::ThemeType> ClientInfoService::getSupportedThemeTypes() const
 model::SqliteDBConfig ClientInfoService::getSharedDBConfig() const
 {
     return mDataPrivate->getClientInfoManager()->getSharedDBConfig();
+}
+
+std::string ClientInfoService::getAppDataStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager()->getDataStoragePath();
+}
+
+std::string ClientInfoService::getAppLogStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager()->getLogStoragePath();
 }
 
 void ClientInfoService::OnDatabaseInitialized(const std::string& dbId)

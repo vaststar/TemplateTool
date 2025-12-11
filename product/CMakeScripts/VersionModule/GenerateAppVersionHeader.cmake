@@ -8,6 +8,10 @@ if(CMAKE_SCRIPT_MODE_FILE)
     string(JSON VERSION_BUILD GET "${json_content}" "VERSION" "VERSION_BUILD")
     string(JSON GIT_COMMIT_HASH GET "${json_content}" "COMPILATION" "GIT_COMMIT_HASH")
     string(JSON GIT_COMMIT_BRANCH GET "${json_content}" "COMPILATION" "GIT_COMMIT_BRANCH")
+    string(JSON COMPANY_NAME GET "${json_content}" "COMPANY" "NAME")
+    string(JSON COPYRIGHT GET "${json_content}" "COMPANY" "COPYRIGHT")
+    string(JSON PRODUCT_NAME GET "${json_content}" "PRODUCT" "NAME")
+    string(JSON PRODUCT_DESCRIPTION GET "${json_content}" "PRODUCT" "DESCRIPTION")
 
     # 获取传入变量
     configure_file(${INPUT_TEMPLATE_FILE} ${OUTPUT_H} @ONLY)

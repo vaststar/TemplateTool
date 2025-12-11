@@ -9,3 +9,10 @@ inline constexpr auto VERSION_BUILD = "@VERSION_BUILD@";
 inline constexpr auto GIT_COMMIT_HASH = "@GIT_COMMIT_HASH@";
 inline constexpr auto GIT_COMMIT_BRANCH = "@GIT_COMMIT_BRANCH@";
 }
+
+namespace AppInfo{
+inline constexpr auto COMPANY_NAME = "@COMPANY_NAME@";
+inline constexpr auto COPYRIGHT = "@COPYRIGHT@";
+inline constexpr auto PRODUCT_NAME = "@PRODUCT_NAME@";
+inline constexpr auto PRODUCT_DESCRIPTION = "@PRODUCT_DESCRIPTION@";
+}

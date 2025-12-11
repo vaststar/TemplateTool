@@ -4,6 +4,8 @@
 
 #include <MasterLog/LogExport.h>
 
+#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceFactory/IServiceFactory.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
@@ -40,6 +42,7 @@ private:
     void injectStartupParameters();
     void exitFrameworks();
     void initLogger();
+
 private:
     ApplicationConfig mApplicationConfig;
     std::vector<std::string> mCommandLineValues;
@@ -83,6 +86,7 @@ void ApplicationRunner::DataPrivate::initLogger()
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========Logger Initialzied==============");
+    RUNNER_LOG_INFO("=Logger Folder Path: " << mApplicationConfig.appLogConfig.logDirPath << ", BaseFileName: " << mApplicationConfig.appLogConfig.logBaseFileName << " =");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
 }
@@ -141,8 +145,28 @@ void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::st
 
 void ApplicationRunner::DataPrivate::createApplicationConfig()
 {
+    //1, setup log config
+    constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
+    constexpr const char* APP_INTERNAL_NAME_DEBUG = "TemplateToolAppDebug";
+    constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
+    std::filesystem::path logDirPath;
+#if defined(_DEBUG) || !defined(NDEBUG)
+    logDirPath = ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME_DEBUG,
+        APP_LOG_FOLDER_NAME
+    );
+#else
+    logDirPath = ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME,
+        APP_LOG_FOLDER_NAME
+    );
+#endif
+    ucf::utilities::FilePathUtils::EnsureDirectoryExists(logDirPath);
+
     AppLogConfig logConfig{
-        "app_logs",
+        logDirPath.string(),
         "AppLog",
         MasterLogUtil::ALL_LOG_LEVEL,
         180,

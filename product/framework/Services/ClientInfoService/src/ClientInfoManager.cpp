@@ -10,9 +10,15 @@
 
 
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
 #include "ClientInfoServiceLogger.h"
 
 namespace ucf::service{
+static constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
+static constexpr const char* APP_INTERNAL_NAME_DEBUG = "TemplateToolAppDebug";
+static constexpr const char* APP_DATA_FOLDER_NAME = "app_data";
+static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start ClientInfoManager Logic//////////////////////////////////////////
@@ -24,7 +30,15 @@ ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFram
     , mThemeType(model::ThemeType::SystemDefault)
     , mIsLanguageReadFromDB (false)
 {
-
+    SERVICE_LOG_DEBUG("Create ClientInfoManager, address:" << this);
+    if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(getDataStoragePath()))
+    {
+        SERVICE_LOG_DEBUG("Create data storage directory failed, path:" << getDataStoragePath());
+    }
+    if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(getLogStoragePath()))
+    {
+        SERVICE_LOG_DEBUG("Create log storage directory failed, path:" << getLogStoragePath());
+    }
 }
 
 ClientInfoManager::~ClientInfoManager()
@@ -34,7 +48,17 @@ ClientInfoManager::~ClientInfoManager()
 
 model::Version ClientInfoManager::getApplicationVersion() const
 {
-    return model::Version{AppVersion::VERSION_MAJOR, AppVersion::VERSION_MINOR, AppVersion::VERSION_PATCH};
+    return model::Version{AppVersion::VERSION_MAJOR, AppVersion::VERSION_MINOR, AppVersion::VERSION_PATCH, AppVersion::VERSION_BUILD};
+}
+
+model::ProductInfo ClientInfoManager::getProductInfo() const
+{
+    return model::ProductInfo{
+        AppInfo::COMPANY_NAME,
+        AppInfo::COPYRIGHT,
+        AppInfo::PRODUCT_NAME,
+        AppInfo::PRODUCT_DESCRIPTION
+    };
 }
 
 model::LanguageType ClientInfoManager::getApplicationLanguage() const
@@ -84,7 +108,7 @@ std::vector<model::ThemeType> ClientInfoManager::getSupportedThemeTypes() const
 
 model::SqliteDBConfig ClientInfoManager::getSharedDBConfig() const
 {
-    return model::SqliteDBConfig("test", "app_data/shared_db.db");
+    return model::SqliteDBConfig("test", ucf::utilities::FilePathUtils::joinPaths(std::filesystem::path(getDataStoragePath()), "shared_database.db").string(), "");
 }
 
 void ClientInfoManager::databaseInitialized(const std::string& dbId)
@@ -123,6 +147,42 @@ void ClientInfoManager::databaseInitialized(const std::string& dbId)
                 }
         });
     }
+}
+
+std::string ClientInfoManager::getDataStoragePath() const
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME_DEBUG,
+        APP_DATA_FOLDER_NAME
+    ).string();
+#else
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME,
+        APP_DATA_FOLDER_NAME
+    ).string();
+#endif
+    return {};
+}
+
+std::string ClientInfoManager::getLogStoragePath() const
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME_DEBUG,
+        APP_LOG_FOLDER_NAME
+    ).string();
+#else
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME,
+        APP_LOG_FOLDER_NAME
+    ).string();
+#endif
+    return {};
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,9 @@ public:
     virtual ~IClientInfoService() = default;
 public:
     [[nodiscard]] virtual model::Version getApplicationVersion() const = 0;
+
+    [[nodiscard]] virtual model::ProductInfo getProductInfo() const = 0;
+
     [[nodiscard]] virtual model::LanguageType getApplicationLanguage() const = 0;
     virtual void setApplicationLanguage(model::LanguageType languageType) = 0;
     [[nodiscard]] virtual std::vector<model::LanguageType> getSupportedLanguages() const = 0;
@@ -39,6 +42,9 @@ public:
     [[nodiscard]] virtual std::vector<model::ThemeType> getSupportedThemeTypes() const = 0;
 
     [[nodiscard]] virtual model::SqliteDBConfig getSharedDBConfig() const = 0;
+
+    [[nodiscard]] virtual std::string getAppDataStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppLogStoragePath() const = 0;
     static std::shared_ptr<IClientInfoService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

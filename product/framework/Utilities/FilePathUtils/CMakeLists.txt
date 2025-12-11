@@ -1,40 +1,43 @@
 include(BuildModule)
 
-if (WIN32)
-    set(ADD_APPRUNNER_DEFINITIONS APPRUNNER_DLL) #APPRUNNER_DLL APPRUNNER_LIB
-else()
-    set(ADD_APPRUNNER_DEFINITIONS)
-endif()
-
-set(MODULE_MODULE_NAME AppRunner)
-set(MODULE_IDE_FOLDER main)
+set(MODULE_MODULE_NAME FilePathUtils)
+set(MODULE_IDE_FOLDER framework/Utilities)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/AppRunner/AppRunner.h
-    include/AppRunner/AppRunnerExport.h
+    include/ucf/Utilities/FilePathUtils/FilePathUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/AppRunner.cpp
-    src/LoggerDefine.h
+    src/FilePathUtils.cpp
 )
+if (WIN32)
+    list(APPEND MODULE_SOURCE_PRIVATE 
+    src/FilePathUtils_Win.h
+    src/FilePathUtils_Win.cpp)
+elseif (APPLE)
+    list(APPEND MODULE_SOURCE_PRIVATE 
+    src/FilePathUtils_Mac.h
+    src/FilePathUtils_Mac.cpp)
+elseif (UNIX)
+    list(APPEND MODULE_SOURCE_PRIVATE 
+    src/FilePathUtils_Linux.h
+    src/FilePathUtils_Linux.cpp)
+endif()
 set(MODULE_DEPENDENCIES_PUBLIC
+    UtilitiesCommonFile
 )
+
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadFramework
-    ServiceFactory
-    ImageService
-    DataWarehouseService
-    ContactService
-    MediaService
-    NetworkService
-    ClientInfoService
-    InvocationService
-    CoreFramework
-    FilePathUtils
-    MasterLog
 )
+if (APPLE)
+    find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
+    find_library(IOKIT_FRAMEWORK IOKit)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE 
+        ${COREFOUNDATION_FRAMEWORK}
+        ${IOKIT_FRAMEWORK}
+    )
+endif()
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
@@ -50,6 +53,6 @@ TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
-TARGET_DEFINITIONS ${ADD_APPRUNNER_DEFINITIONS}
+TARGET_DEFINITIONS ${ADD_UTILITIES_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )

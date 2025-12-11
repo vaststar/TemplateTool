@@ -10,9 +10,18 @@ struct Version
     std::string majorVersion;
     std::string minorVersion;
     std::string patchVersion;
+    std::string buildVersion;
     std::string toString() const{
-        return std::format("{}.{}.{}", majorVersion, minorVersion, patchVersion);
+        return std::format("{}.{}.{}.{}", majorVersion, minorVersion, patchVersion, buildVersion);
     }
+};
+
+struct ProductInfo
+{
+    std::string companyName;
+    std::string copyright;
+    std::string productName;
+    std::string productDescription;
 };
 
 enum class OSType
