@@ -15,7 +15,9 @@ class ContactService::DataPrivate{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-    const std::unique_ptr<ContactManager>& getContactManager() const;
+
+    ContactManager& getContactManager();
+    const ContactManager& getContactManager() const;
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     const std::unique_ptr<ContactManager> mContactManagerPtr;
@@ -33,9 +35,14 @@ ucf::framework::ICoreFrameworkWPtr ContactService::DataPrivate::getCoreFramework
     return mCoreFrameworkWPtr;
 }
 
-const std::unique_ptr<ContactManager>& ContactService::DataPrivate::getContactManager() const
+ContactManager& ContactService::DataPrivate::getContactManager()
 {
-    return mContactManagerPtr;
+    return *mContactManagerPtr;
+}
+
+const ContactManager& ContactService::DataPrivate::getContactManager() const
+{
+    return *mContactManagerPtr;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -101,12 +108,12 @@ void ContactService::onCoreFrameworkExit()
 
 std::vector<model::IPersonContactPtr> ContactService::getPersonContactList() const
 {
-    return mDataPrivate->getContactManager()->getPersonContactList();
+    return mDataPrivate->getContactManager().getPersonContactList();
 }
 
 model::IPersonContactPtr ContactService::getPersonContact(const std::string& contactId) const
 {
-    return mDataPrivate->getContactManager()->getPersonContact(contactId);
+    return mDataPrivate->getContactManager().getPersonContact(contactId);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

@@ -42,8 +42,12 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
     , mControllerInitializer(std::make_unique<UIViewControllerInitializer>(mAppContext.get()))
 {
+    UIVIEW_LOG_INFO("===========================================");
+    UIVIEW_LOG_INFO("===========create AppUIManagerImpl=========");
     UIVIEW_LOG_INFO("Qt Version: " << qVersion());
     registerQmlTypes();
+    UIVIEW_LOG_INFO("===========create AppUIManagerImpl done====");
+    UIVIEW_LOG_INFO("===========================================");
 }
 
 void AppUIManager::Impl::registerQmlTypes()
@@ -62,7 +66,9 @@ void AppUIManager::Impl::registerQmlTypes()
 AppUIManager::AppUIManager(const AppUIManager::ApplicationConfig& config)
     : mImpl(std::make_unique<AppUIManager::Impl>(config))
 {
+    UIVIEW_LOG_INFO("===========================================");
     UIVIEW_LOG_INFO("create AppUIManager, address:" << this);
+    UIVIEW_LOG_INFO("============================================");
 }
 
 AppUIManager::~AppUIManager()
@@ -72,9 +78,20 @@ AppUIManager::~AppUIManager()
 
 int AppUIManager::runApp()
 {
+    UIVIEW_LOG_INFO("===========================================");
     UIVIEW_LOG_INFO("run AppUIManager, address:" << this << ", appContext's address: " << mImpl->getAppContext());
     auto controller = std::make_unique<AppUIController>(mImpl->getAppContext());
+    UIVIEW_LOG_INFO("=======start UI with AppUIController======");
     controller->startApp();
+    UIVIEW_LOG_INFO("=====start UI with AppUIController done===");
+    UIVIEW_LOG_INFO("===========================================");
 
-    return mImpl->runApp();
+    UIVIEW_LOG_INFO("===========================================");
+    UIVIEW_LOG_INFO("==start runApp in AppUIController==========");
+    UIVIEW_LOG_INFO("===========================================");
+    int res = mImpl->runApp();
+    UIVIEW_LOG_INFO("===========================================");
+    UIVIEW_LOG_INFO("======quit mainApp in AppUIController======");
+    UIVIEW_LOG_INFO("===========================================");
+    return res;
 }

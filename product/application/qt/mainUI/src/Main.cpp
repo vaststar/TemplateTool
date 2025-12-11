@@ -60,14 +60,24 @@ int Main::runMain(int argc, char *argv[])
     mDataPrivate->initApp(argc, argv);
     MAINUI_LOG_DEBUG("init dependencies done");
 
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========start run mainApp===============");
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========================================");
     int runResult = 0;
     {
         AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, mDataPrivate->getCommonHeadFramework()});
         runResult = AppUIManager.runApp();
     }
+    MAINUI_LOG_DEBUG("===========mainApp run result:" << runResult << "=======");
     
-    MAINUI_LOG_DEBUG("start quit App");
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========start quit mainApp==============");
+    MAINUI_LOG_DEBUG("===========================================");
     mDataPrivate->exitApp();
-    MAINUI_LOG_DEBUG("finish quit App");
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========finish quit mainApp=============");
+    MAINUI_LOG_DEBUG("===========================================");
     return runResult;
 }

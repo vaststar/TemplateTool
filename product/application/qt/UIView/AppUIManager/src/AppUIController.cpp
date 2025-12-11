@@ -27,6 +27,7 @@ AppUIController::AppUIController(AppContext* appContext, QObject* parent)
 
 void AppUIController::initializeController()
 {
+    UIVIEW_LOG_DEBUG("start initializeController AppUIController, address: " << this);
     assert(mAppContext);
     mViewModel = mAppContext->getViewModelFactory()->createAppUIViewModelInstance();
     mViewModel->initApplication();
@@ -39,6 +40,9 @@ void AppUIController::initializeController()
 
     //2, initialize themeManager
     UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
+
+    
+    UIVIEW_LOG_DEBUG("finish initializeController AppUIController, address: " << this);
 }
 
 void AppUIController::startApp()

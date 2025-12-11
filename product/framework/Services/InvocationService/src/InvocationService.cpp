@@ -2,6 +2,7 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
+#include "InvocationManager.h"
 #include "InvocationServiceLogger.h"
 
 namespace ucf::service{
@@ -14,14 +15,18 @@ class InvocationService::DataPrivate{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
+
+    InvocationManager& getInvocationManager();
+    const InvocationManager& getInvocationManager() const;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    std::unique_ptr<InvocationManager> mInvocationManager;
 };
 
 InvocationService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
+    , mInvocationManager(std::make_unique<InvocationManager>(coreFramework))
 {
-
 }
 
 ucf::framework::ICoreFrameworkWPtr InvocationService::DataPrivate::getCoreFramework() const
@@ -29,6 +34,16 @@ ucf::framework::ICoreFrameworkWPtr InvocationService::DataPrivate::getCoreFramew
     return mCoreFrameworkWPtr;
 }
 
+
+InvocationManager& InvocationService::DataPrivate::getInvocationManager()
+{
+    return *mInvocationManager;
+}
+
+const InvocationManager& InvocationService::DataPrivate::getInvocationManager() const
+{
+    return *mInvocationManager;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -82,21 +97,24 @@ void InvocationService::onCoreFrameworkExit()
 void InvocationService::processStartupParameters()
 {
     SERVICE_LOG_DEBUG("");
+    mDataPrivate->getInvocationManager().processStartupParameters();
 }
 
 void InvocationService::setStartupParameters(const std::vector<std::string>& args)
 {
-
+    SERVICE_LOG_DEBUG("args size:" << args.size());
+    mDataPrivate->getInvocationManager().setStartupParameters(args);
 }
 
 std::vector<std::string> InvocationService::getStartupParameters() const
 {
-    return {};
+    return mDataPrivate->getInvocationManager().getStartupParameters();
 }
 
 void InvocationService::processCommandMessage(const std::string& message)
 {
     SERVICE_LOG_DEBUG("message:" << message);
+    mDataPrivate->getInvocationManager().processCommandMessage(message);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

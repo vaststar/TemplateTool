@@ -24,7 +24,8 @@ class ClientInfoService::DataPrivate{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-    ClientInfoManager* getClientInfoManager() const;
+    ClientInfoManager& getClientInfoManager();
+    const ClientInfoManager& getClientInfoManager() const;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::unique_ptr<ClientInfoManager> mClientInfoManager;
@@ -42,9 +43,14 @@ ucf::framework::ICoreFrameworkWPtr ClientInfoService::DataPrivate::getCoreFramew
     return mCoreFrameworkWPtr;
 }
 
-ClientInfoManager* ClientInfoService::DataPrivate::getClientInfoManager() const
+ClientInfoManager& ClientInfoService::DataPrivate::getClientInfoManager()
 {
-    return mClientInfoManager.get();
+    return *mClientInfoManager;
+}
+
+const ClientInfoManager& ClientInfoService::DataPrivate::getClientInfoManager() const
+{
+    return *mClientInfoManager;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -103,12 +109,12 @@ void ClientInfoService::onCoreFrameworkExit()
 
 model::Version ClientInfoService::getApplicationVersion() const
 {
-    return mDataPrivate->getClientInfoManager()->getApplicationVersion();
+    return mDataPrivate->getClientInfoManager().getApplicationVersion();
 }
 
 model::ProductInfo ClientInfoService::getProductInfo() const
 {
-    return mDataPrivate->getClientInfoManager()->getProductInfo();
+    return mDataPrivate->getClientInfoManager().getProductInfo();
 }
 
 void ClientInfoService::printClientInfo() const
@@ -165,56 +171,56 @@ void ClientInfoService::printBuildInfo() const
 
 model::LanguageType ClientInfoService::getApplicationLanguage() const
 {
-    return mDataPrivate->getClientInfoManager()->getApplicationLanguage();
+    return mDataPrivate->getClientInfoManager().getApplicationLanguage();
 }
 
 void ClientInfoService::setApplicationLanguage(model::LanguageType languageType)
 {
-    mDataPrivate->getClientInfoManager()->setApplicationLanguage(languageType);
+    mDataPrivate->getClientInfoManager().setApplicationLanguage(languageType);
 }
 
 std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() const
 {
-    return mDataPrivate->getClientInfoManager()->getSupportedLanguages();
+    return mDataPrivate->getClientInfoManager().getSupportedLanguages();
 }
 
 void ClientInfoService::setCurrentThemeType(model::ThemeType themeType)
 {
     if (getCurrentThemeType() != themeType)
     {
-        mDataPrivate->getClientInfoManager()->setCurrentThemeType(themeType);
+        mDataPrivate->getClientInfoManager().setCurrentThemeType(themeType);
         fireNotification(&IClientInfoServiceCallback::onClientThemeChanged, themeType);
     }
 }
 
 model::ThemeType ClientInfoService::getCurrentThemeType() const
 {
-    return mDataPrivate->getClientInfoManager()->getCurrentThemeType();
+    return mDataPrivate->getClientInfoManager().getCurrentThemeType();
 }
 
 std::vector<model::ThemeType> ClientInfoService::getSupportedThemeTypes() const
 {
-    return mDataPrivate->getClientInfoManager()->getSupportedThemeTypes();
+    return mDataPrivate->getClientInfoManager().getSupportedThemeTypes();
 }
 
 model::SqliteDBConfig ClientInfoService::getSharedDBConfig() const
 {
-    return mDataPrivate->getClientInfoManager()->getSharedDBConfig();
+    return mDataPrivate->getClientInfoManager().getSharedDBConfig();
 }
 
 std::string ClientInfoService::getAppDataStoragePath() const
 {
-    return mDataPrivate->getClientInfoManager()->getDataStoragePath();
+    return mDataPrivate->getClientInfoManager().getDataStoragePath();
 }
 
 std::string ClientInfoService::getAppLogStoragePath() const
 {
-    return mDataPrivate->getClientInfoManager()->getLogStoragePath();
+    return mDataPrivate->getClientInfoManager().getLogStoragePath();
 }
 
 void ClientInfoService::OnDatabaseInitialized(const std::string& dbId)
 {
-    mDataPrivate->getClientInfoManager()->databaseInitialized(dbId);
+    mDataPrivate->getClientInfoManager().databaseInitialized(dbId);
     fireNotification(&IClientInfoServiceCallback::onClientInfoReady);
 }
 /////////////////////////////////////////////////////////////////////////////////////

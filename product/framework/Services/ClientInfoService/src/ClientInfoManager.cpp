@@ -115,20 +115,14 @@ void ClientInfoManager::databaseInitialized(const std::string& dbId)
 {
     if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
     {
-        
-        //for test
-        // ucf::service::model::ListOfDBValues values;
-        // values.emplace_back(ucf::service::model::DBDataValues{ std::string("test_id"), std::string("test_name"), std::string("243@qq.com") });
-        // values.emplace_back(ucf::service::model::DBDataValues{ std::string("test_id111"), std::string("test_name11"), std::string("11243@qq.com") });
-
-        // dbService->insertIntoDatabase("test", "UserContact", {"CONTACT_ID", "CONTACT_FULL_NAME", "CONTACT_EMAIL"}, values);
-
-        // ucf::service::model::ListOfDBValues values_test;
-        // values_test.emplace_back(ucf::service::model::DBDataValues{ std::string("Language"), 5});
-        // dbService->insertIntoDatabase("test", "Settings", {"Key", "Value"}, values_test);
-
         dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
             {{db::schema::SettingsTable::KeyField, "Language", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
+                if (results.empty())
+                {
+                    SERVICE_LOG_DEBUG("no language setting found in database, use default");
+                    return;
+                }
+
                 for (const auto& res: results)
                 {
                     auto  val = res.getColumnData(db::schema::SettingsTable::ValField);
@@ -139,6 +133,12 @@ void ClientInfoManager::databaseInitialized(const std::string& dbId)
         
         dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
             {{db::schema::SettingsTable::KeyField, "Theme", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
+                if (results.empty())
+                {
+                    SERVICE_LOG_DEBUG("no theme setting found in database, use default");
+                    return;
+                }
+
                 for (const auto& res: results)
                 {
                     auto  val = res.getColumnData(db::schema::SettingsTable::ValField);

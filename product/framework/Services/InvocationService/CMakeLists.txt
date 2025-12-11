@@ -13,6 +13,8 @@ set(MODULE_SOURCE_PRIVATE
     src/InvocationServiceLogger.h
     src/InvocationService.h
     src/InvocationService.cpp
+    src/InvocationManager.h
+    src/InvocationManager.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceExportMacro
