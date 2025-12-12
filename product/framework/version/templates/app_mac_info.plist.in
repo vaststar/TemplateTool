@@ -9,7 +9,7 @@
 
     <!-- 可执行文件名：由 CMake 填充 -->
     <key>CFBundleExecutable</key>
-    <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+    <string>@INTERNAL_NAME@</string>
 
     <!-- Bundle ID：这里用 Company + InternalName 拼一下，你也可以改成固定前缀 -->
     <key>CFBundleIdentifier</key>
@@ -50,6 +50,9 @@
     <!-- Git 提交哈希 -->
     <key>GitCommit</key>
     <string>@GIT_COMMIT_HASH@</string>
+
+    <key>CFBundleIconFile</key>
+    <string>logo</string>
 
     <!-- 额外：可以加个最小系统版本，按需改 -->
     <key>LSMinimumSystemVersion</key>

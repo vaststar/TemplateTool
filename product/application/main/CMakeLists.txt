@@ -15,8 +15,9 @@ if(APPLE)
     )
 
     set_target_properties(${MAIN_ENTRY} PROPERTIES
-        MACOSX_BUNDLE_ICON_FILE "logo.icns"
+        MACOSX_BUNDLE_ICON_FILE "logo"
     )
+
 
     set(APP_ICON ${CMAKE_CURRENT_SOURCE_DIR}/logo.icns)
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
