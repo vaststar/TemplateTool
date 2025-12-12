@@ -69,6 +69,9 @@ function(BuildModule)
         if(DEFINED  MODULE_IDE_FOLDER)
             set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
         endif()
+        if (APPLE)
+            set_target_properties(${MODULE_MODULE_NAME} PROPERTIES INSTALL_NAME_DIR "@rpath")
+        endif()
         
         LinkTargetIncludeDirectories(
             MODULE_NAME ${MODULE_MODULE_NAME}

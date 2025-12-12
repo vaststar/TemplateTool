@@ -17,7 +17,9 @@ if(APPLE)
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "logo"
     )
-
+    set_target_properties(${MAIN_ENTRY} PROPERTIES
+        INSTALL_RPATH "@executable_path/../Frameworks"
+    )
 
     set(APP_ICON ${CMAKE_CURRENT_SOURCE_DIR}/logo.icns)
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
@@ -50,9 +52,9 @@ target_link_libraries(${MAIN_ENTRY} PRIVATE
 
 install(TARGETS ${MAIN_ENTRY} 
     EXPORT ${MAIN_ENTRY}Config
-    BUNDLE DESTINATION ${INSTALL_MODULE_NAME}/bin
-    RUNTIME DESTINATION ${INSTALL_MODULE_NAME}/bin
-    LIBRARY DESTINATION ${INSTALL_MODULE_NAME}/bin
-    ARCHIVE DESTINATION ${INSTALL_MODULE_NAME}/lib
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION .
+    LIBRARY DESTINATION .
+    ARCHIVE DESTINATION lib
 )
 message(STATUS "finish build mainEntry.exe")

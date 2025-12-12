@@ -15,18 +15,29 @@ function(BuildInstallModule)
         message(FATAL_ERROR "MODULE_NAME is not defined, please set it.")
     endif()
 
+    if (APPLE)
     install(TARGETS ${INSTALL_MODULE_NAME} 
             EXPORT ${INSTALL_MODULE_NAME}Targets
-    	    RUNTIME DESTINATION ${INSTALL_MODULE_NAME}/bin
-    	    LIBRARY DESTINATION ${INSTALL_MODULE_NAME}/bin
-    	    ARCHIVE DESTINATION ${INSTALL_MODULE_NAME}/lib
-            FILE_SET HEADERS DESTINATION ${INSTALL_MODULE_NAME}/include
-            INCLUDES DESTINATION ${INSTALL_MODULE_NAME}/include
+    	    RUNTIME DESTINATION mainEntry.app/Contents/Frameworks
+    	    LIBRARY DESTINATION mainEntry.app/Contents/Frameworks
+    	    ARCHIVE DESTINATION lib
+            FILE_SET HEADERS DESTINATION include
+            INCLUDES DESTINATION include
     )
+    else()
+    install(TARGETS ${INSTALL_MODULE_NAME} 
+            EXPORT ${INSTALL_MODULE_NAME}Targets
+    	    RUNTIME DESTINATION bin
+    	    LIBRARY DESTINATION bin
+    	    ARCHIVE DESTINATION lib
+            FILE_SET HEADERS DESTINATION include
+            INCLUDES DESTINATION include
+    )
+    endif()
     
     install(EXPORT ${INSTALL_MODULE_NAME}Targets
             FILE ${INSTALL_MODULE_NAME}Config.cmake 
-            DESTINATION ${INSTALL_MODULE_NAME}/cmake
+            DESTINATION cmake/${INSTALL_MODULE_NAME}
             NAMESPACE ${INSTALL_MODULE_NAME}::
     )
 
