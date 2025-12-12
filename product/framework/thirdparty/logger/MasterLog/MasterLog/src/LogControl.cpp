@@ -77,7 +77,7 @@ void LogControl::stopLogger()
 
 std::string LogControl::getCurrentFormatedTime() const
 {
-    const auto start = std::chrono::utc_clock::now();
+    const auto start = std::chrono::system_clock::now();
     return std::format("{:%Y-%m-%dT%H:%M:%SZ}",start);
 }
 

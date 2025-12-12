@@ -73,7 +73,7 @@ if [ $EXIT_CODE -ne 0 ]; then
 else
     echo "****************************************************"
     echo "[SUCCESS] Build succeeded."
-    echo "Output directory: $BUILD_DIR/$BUILD_TYPE"
+    echo "Output directory: $BUILD_DIR"
     echo "****************************************************"
 fi
 

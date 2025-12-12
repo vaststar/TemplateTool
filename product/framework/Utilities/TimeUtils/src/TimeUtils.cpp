@@ -10,11 +10,11 @@ std::string TimeUtils::getUTCCurrentTime()
 
 time_t TimeUtils::getUTCNowInMilliseconds()
 {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::utc_clock::now().time_since_epoch()).count();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 std::string TimeUtils::getLocalTimeZone()
 {
-    return std::string{std::chrono::current_zone()->name()};
+    return {};//std::string{std::chrono::current_zone()->name()};
 }
 }

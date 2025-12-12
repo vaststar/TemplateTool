@@ -83,6 +83,10 @@ function(BuildQtModule)
     if(DEFINED  MODULE_IDE_FOLDER)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
     endif()
+
+    if (APPLE)
+        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES INSTALL_NAME_DIR "@rpath")
+    endif()
     
     LinkTargetIncludeDirectories(
         MODULE_NAME ${MODULE_MODULE_NAME}
@@ -168,20 +172,31 @@ function(BuildQtModule)
         message(STATUS "====Finish Build QML Module, URI: ${MODULE_QML_TARGET_URI}====")
     endif()
 
-    install(TARGETS ${MODULE_MODULE_NAME}
-            EXPORT ${MODULE_MODULE_NAME}Config
-            RUNTIME DESTINATION ${MODULE_MODULE_NAME}/bin
-            LIBRARY DESTINATION ${MODULE_MODULE_NAME}/bin
-            ARCHIVE DESTINATION ${MODULE_MODULE_NAME}/lib
-            FILE_SET HEADERS DESTINATION ${MODULE_MODULE_NAME}/include
-            INCLUDES DESTINATION ${MODULE_MODULE_NAME}/include
-    )
+    if (APPLE)
+        install(TARGETS ${MODULE_MODULE_NAME} 
+                EXPORT ${MODULE_MODULE_NAME}Config
+        	    RUNTIME DESTINATION mainEntry.app/Contents/Frameworks
+        	    LIBRARY DESTINATION mainEntry.app/Contents/Frameworks
+        	    ARCHIVE DESTINATION lib
+                FILE_SET HEADERS DESTINATION include
+                INCLUDES DESTINATION include
+        )
+    else()
+        install(TARGETS ${MODULE_MODULE_NAME}
+                EXPORT ${MODULE_MODULE_NAME}Config
+                RUNTIME DESTINATION bin
+                LIBRARY DESTINATION bin
+                ARCHIVE DESTINATION lib
+                FILE_SET HEADERS DESTINATION include
+                INCLUDES DESTINATION include
+        )
+    endif()
     
     target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
     if (is_shared_lib)
         install(EXPORT ${MODULE_MODULE_NAME}Config
             FILE ${MODULE_MODULE_NAME}Targets.cmake
-            DESTINATION ${MODULE_MODULE_NAME}/cmake
+            DESTINATION cmake/${MODULE_MODULE_NAME}
             NAMESPACE ${MODULE_MODULE_NAME}Export::
         )
     endif()
