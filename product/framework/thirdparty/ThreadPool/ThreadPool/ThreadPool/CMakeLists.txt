@@ -44,6 +44,10 @@ if (WIN32)
     target_compile_definitions(${MODULE_NAME} PRIVATE THREADPOOL_DLL THREADPOOL_LIB)
 endif(WIN32)
 
+if (APPLE)
+    set_target_properties(${MODULE_NAME} PROPERTIES INSTALL_NAME_DIR "@rpath")
+endif()
+
 target_include_directories(${MODULE_NAME} PUBLIC 
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                 $<INSTALL_INTERFACE:${MODULE_NAME}/include>
@@ -51,17 +55,30 @@ target_include_directories(${MODULE_NAME} PUBLIC
 )
 
 ## install 
-install(TARGETS ${MODULE_NAME} 
-        EXPORT ${MODULE_NAME}Config
-		RUNTIME DESTINATION ${MODULE_NAME}/bin
-		LIBRARY DESTINATION ${MODULE_NAME}/bin
-		ARCHIVE DESTINATION ${MODULE_NAME}/lib
-                INCLUDES DESTINATION ${MODULE_NAME}/include
-                FILE_SET HEADERS DESTINATION ${MODULE_NAME}/include)
+if (UNIX)
+    install(TARGETS ${MODULE_NAME} 
+            EXPORT ${MODULE_NAME}Targets
+    	    RUNTIME DESTINATION bin
+    	    LIBRARY DESTINATION bin
+    	    ARCHIVE DESTINATION lib
+            FILE_SET HEADERS DESTINATION include
+            INCLUDES DESTINATION include
+    )
+else()
+    install(TARGETS ${MODULE_NAME} 
+            EXPORT ${MODULE_NAME}Targets
+    	    RUNTIME DESTINATION bin
+    	    LIBRARY DESTINATION lib
+    	    ARCHIVE DESTINATION lib
+            FILE_SET HEADERS DESTINATION include
+            INCLUDES DESTINATION include
+    )
+endif()
 
-install(EXPORT ${MODULE_NAME}Config 
-        DESTINATION ${MODULE_NAME}/cmake
-        NAMESPACE ${MODULE_NAME}Export::
+install(EXPORT ${MODULE_NAME}Targets 
+        FILE ${MODULE_NAME}Config.cmake 
+        DESTINATION cmake/${MODULE_NAME}
+        NAMESPACE ${ExportProjectNameSpace}::
         )
 
 ##for project tree view

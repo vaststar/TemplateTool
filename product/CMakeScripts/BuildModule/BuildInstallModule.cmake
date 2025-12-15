@@ -15,24 +15,24 @@ function(BuildInstallModule)
         message(FATAL_ERROR "MODULE_NAME is not defined, please set it.")
     endif()
 
-    if (APPLE)
-    install(TARGETS ${INSTALL_MODULE_NAME} 
-            EXPORT ${INSTALL_MODULE_NAME}Targets
-    	    RUNTIME DESTINATION mainEntry.app/Contents/Frameworks
-    	    LIBRARY DESTINATION mainEntry.app/Contents/Frameworks
-    	    ARCHIVE DESTINATION lib
-            FILE_SET HEADERS DESTINATION include
-            INCLUDES DESTINATION include
-    )
+    if (UNIX)
+        install(TARGETS ${INSTALL_MODULE_NAME} 
+                EXPORT ${INSTALL_MODULE_NAME}Targets
+        	    RUNTIME DESTINATION bin
+        	    LIBRARY DESTINATION bin
+        	    ARCHIVE DESTINATION lib
+                FILE_SET HEADERS DESTINATION include
+                INCLUDES DESTINATION include
+        )
     else()
-    install(TARGETS ${INSTALL_MODULE_NAME} 
-            EXPORT ${INSTALL_MODULE_NAME}Targets
-    	    RUNTIME DESTINATION bin
-    	    LIBRARY DESTINATION bin
-    	    ARCHIVE DESTINATION lib
-            FILE_SET HEADERS DESTINATION include
-            INCLUDES DESTINATION include
-    )
+        install(TARGETS ${INSTALL_MODULE_NAME} 
+                EXPORT ${INSTALL_MODULE_NAME}Targets
+        	    RUNTIME DESTINATION bin
+        	    LIBRARY DESTINATION lib
+        	    ARCHIVE DESTINATION lib
+                FILE_SET HEADERS DESTINATION include
+                INCLUDES DESTINATION include
+        )
     endif()
     
     install(EXPORT ${INSTALL_MODULE_NAME}Targets

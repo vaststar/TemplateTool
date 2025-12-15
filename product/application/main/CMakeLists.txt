@@ -51,10 +51,8 @@ target_link_libraries(${MAIN_ENTRY} PRIVATE
 )
 
 install(TARGETS ${MAIN_ENTRY} 
-    EXPORT ${MAIN_ENTRY}Config
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION .
-    LIBRARY DESTINATION .
-    ARCHIVE DESTINATION lib
+    EXPORT ${MAIN_ENTRY}Targets
+    BUNDLE DESTINATION bin
+    RUNTIME DESTINATION bin
 )
 message(STATUS "finish build mainEntry.exe")
