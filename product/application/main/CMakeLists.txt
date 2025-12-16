@@ -25,6 +25,7 @@ if(APPLE)
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
     target_sources(${MAIN_ENTRY} PRIVATE ${APP_ICON})
 
+    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_copy_dylibs.cmake")
 elseif(WIN32)
     add_executable(${MAIN_ENTRY} main.cpp logo.rc)
 
