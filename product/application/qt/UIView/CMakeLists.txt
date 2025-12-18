@@ -22,6 +22,7 @@ set(MODULE_SOURCE_PRIVATE
     UIViewBase/include/UIViewControllerInitializer.h
     UIViewBase/src/UIViewControllerInitializer.cpp
 
+    ViewModelSingalEmitter/ViewModelTypeRegistry.h
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
     ViewModelSingalEmitter/AppUiViewModelEmitter.h
 

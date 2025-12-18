@@ -14,7 +14,7 @@ class UIViewControllerInitializer: public QObject
     QML_UNCREATABLE("Cannot create UIViewControllerInitializer in QML")
 public:
     UIViewControllerInitializer(const QPointer<AppContext>& appContext, QObject* parent = nullptr);
-    void initializeController(const QPointer<UIViewController>& controller);
+    Q_INVOKABLE void initializeController(UIViewController* controller);
 private:
     QPointer<AppContext> mAppContext;
 };

@@ -10,7 +10,7 @@ UIViewControllerInitializer::UIViewControllerInitializer(const QPointer<AppConte
 {
 }
 
-void UIViewControllerInitializer::initializeController(const QPointer<UIViewController>& controller)
+void UIViewControllerInitializer::initializeController(UIViewController* controller)
 {
     if (controller)
     {

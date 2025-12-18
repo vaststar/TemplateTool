@@ -12,7 +12,6 @@ public:
     MediaCameraViewModelEmitter(QObject* parent = nullptr)
         :QObject(parent)
     {
-        qRegisterMetaType<commonHead::viewModels::model::Image>("commonHead::viewModels::model::Image");
     }
 
     virtual void onCameraImageReceived(const commonHead::viewModels::model::Image& image) override {

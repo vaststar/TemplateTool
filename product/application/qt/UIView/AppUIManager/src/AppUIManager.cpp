@@ -14,6 +14,7 @@
 #include "LoggerDefine/LoggerDefine.h"
 #include "UIViewBase/include/UIViewControllerInitializer.h"
 #include "AppUIController.h"
+#include "ViewModelSingalEmitter/ViewModelTypeRegistry.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,9 @@ void AppUIManager::Impl::registerQmlTypes()
     UIVIEW_LOG_DEBUG("");
     UIDataUtils::registerMetaObject();   
     UTComponent::registerUTComponent();
+    UIViewModelTypeRegistry::registerTypes();
     mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());
+    UIVIEW_LOG_DEBUG("done");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

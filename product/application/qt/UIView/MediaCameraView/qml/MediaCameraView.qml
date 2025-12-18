@@ -28,6 +28,7 @@ ApplicationWindow
 
     Component.onCompleted:{
         mediaController.showCameraImage.connect(onShowCameraImage)
+        // ControllerInitializer.initializeController(mediaController)
     }
     
     function onShowCameraImage(img){
