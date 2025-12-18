@@ -15,6 +15,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h
     include/ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h
     include/ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h
+    include/ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/INetworkHttpClient.h
     include/ucf/Utilities/NetworkUtils/NetworkModelTypes/NetworkModelTypesExport.h
 )
 set(MODULE_SOURCE_PRIVATE

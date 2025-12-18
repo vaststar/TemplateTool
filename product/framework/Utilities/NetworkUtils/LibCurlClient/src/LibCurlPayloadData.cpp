@@ -1,6 +1,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <algorithm>
 #include "LibCurlPayloadData.h"
 
 
@@ -48,12 +49,9 @@ size_t StringPayloadData::readData(char* data, size_t size)
 {
     if (auto sizeCopy = mDataPrivate->getSizeLeft(); sizeCopy > 0)
     {
-        if (sizeCopy > size)
-        {
-            sizeCopy = size;
-        }
-        std::string slice = mDataPrivate->getData().substr(mDataPrivate->getOffset(), sizeCopy);
-        std::memcpy(data, slice.data(), sizeCopy);
+        sizeCopy = std::min<size_t>(sizeCopy, size);
+        const char* sourceData = mDataPrivate->getData().data() + mDataPrivate->getOffset();
+        std::memcpy(data, sourceData, sizeCopy);
         mDataPrivate->setOffset(mDataPrivate->getOffset() + sizeCopy);
         return sizeCopy;
     }
@@ -210,8 +208,16 @@ public:
         if (!mFileHandle.is_open())
         {
             mFileHandle.open(mFilePath);
+            if (!mFileHandle.is_open()) 
+            {
+                throw std::runtime_error("Failed to open file: " + mFilePath);
+            }
         }
         mFileHandle.read(buffer, readSize);
+        if (mFileHandle.fail() && !mFileHandle.eof()) 
+        {
+            throw std::runtime_error("Failed to read from file: " + mFilePath);
+        }
     }
     void seek(size_t offset, std::ios_base::seekdir way)
     {

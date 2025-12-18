@@ -70,7 +70,7 @@
     </message>
     <message>
         <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="19"/>
-        <source>macOS Title</source>
+        <source>Window Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

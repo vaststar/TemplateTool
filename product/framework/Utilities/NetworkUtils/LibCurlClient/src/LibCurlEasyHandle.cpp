@@ -133,7 +133,7 @@ static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t s
 class LibCurlEasyHandle::DataPrivate
 {
 public:
-    DataPrivate(const ucf::utilities::network::http::HttpHeaderCallback& headerCallback, const ucf::utilities::network::http::HttpBodyCallback& bodyCallback, const ucf::utilities::network::http::HttpCompletionCallback& completionCallback);
+    DataPrivate(ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback);
     ~DataPrivate();
 
     CURL* getHandle();
@@ -192,7 +192,7 @@ private:
     std::shared_ptr<PayloadData> mPayloadData;
 };
 
-LibCurlEasyHandle::DataPrivate::DataPrivate(const ucf::utilities::network::http::HttpHeaderCallback& headerCallback, const ucf::utilities::network::http::HttpBodyCallback& bodyCallback, const ucf::utilities::network::http::HttpCompletionCallback& completionCallback)
+LibCurlEasyHandle::DataPrivate::DataPrivate(ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback)
     : mHandle(curl_easy_init())
     , mUrl(curl_url())
     , mHeaders(nullptr)
@@ -364,7 +364,7 @@ std::shared_ptr<PayloadData> LibCurlEasyHandle::DataPrivate::getPayloadData() co
 ////////////////////Start LibCurlEasyHandle Logic////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-LibCurlEasyHandle::LibCurlEasyHandle(const ucf::utilities::network::http::HttpHeaderCallback& headerCallback, const ucf::utilities::network::http::HttpBodyCallback& bodyCallback, const ucf::utilities::network::http::HttpCompletionCallback& completionCallback)
+LibCurlEasyHandle::LibCurlEasyHandle(ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback)
     : mDataPrivate(std::make_unique<DataPrivate>(headerCallback, bodyCallback, completionCallback))
 {
 

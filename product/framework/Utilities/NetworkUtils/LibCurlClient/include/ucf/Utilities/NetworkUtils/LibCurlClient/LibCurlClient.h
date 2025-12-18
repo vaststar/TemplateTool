@@ -2,12 +2,10 @@
 #include <memory>
 #include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClientExport.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/INetworkHttpClient.h>
 
-namespace ucf::utilities::network::http{
-    class NetworkHttpRequest;
-}
 namespace ucf::utilities::network::libcurl{
-class LIBCURLCLIENT_EXPORT LibCurlClient final
+class LIBCURLCLIENT_EXPORT LibCurlClient final: public ucf::utilities::network::http::INetworkHttpClient
 {
 public:
     LibCurlClient();
@@ -17,9 +15,11 @@ public:
     LibCurlClient& operator=(const LibCurlClient&) = delete;
     LibCurlClient& operator=(LibCurlClient&&) = delete;
 
-    void makeGenericRequest(const ucf::utilities::network::http::NetworkHttpRequest& request, const ucf::utilities::network::http::HttpHeaderCallback& headerCallback, const ucf::utilities::network::http::HttpBodyCallback& bodyCallback, const ucf::utilities::network::http::HttpCompletionCallback& completionCallback);
-    void startService();
-    void stopService();
+    virtual void makeGenericRequest(const ucf::utilities::network::http::NetworkHttpRequest& request,
+                 ucf::utilities::network::http::HttpHeaderCallback headerCallback,
+                 ucf::utilities::network::http::HttpBodyCallback bodyCallback,
+                 ucf::utilities::network::http::HttpCompletionCallback completionCallback) override;
+    virtual void startService() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

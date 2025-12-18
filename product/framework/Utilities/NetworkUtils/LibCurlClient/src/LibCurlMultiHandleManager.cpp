@@ -27,7 +27,6 @@ public:
 private:
     std::unique_ptr<LibCurlMultiHandle> mMultiHandle;
     std::mutex mStopMutex;
-    std::condition_variable mCondition;
     std::atomic_bool mStop;
     std::thread mLoopThread;
 };
@@ -42,15 +41,7 @@ LibCurlMultiHandleManager::DataPrivate::DataPrivate()
 LibCurlMultiHandleManager::DataPrivate::~DataPrivate()
 {
     LIBCURL_LOG_DEBUG("delete LibCurlMultiHandleManager::DataPrivate");
-    {
-        std::scoped_lock lo(mStopMutex);
-        mStop = true;
-    }
-    
-    if (mLoopThread.joinable())
-    {
-        mLoopThread.join();
-    }
+    stopLoop();
     LIBCURL_LOG_DEBUG("delete LibCurlMultiHandleManager::DataPrivate done");
 }
 
@@ -62,24 +53,20 @@ void LibCurlMultiHandleManager::DataPrivate::insertRequest(std::shared_ptr<LibCu
 void LibCurlMultiHandleManager::DataPrivate::runLoop()
 {
     mLoopThread = std::thread([this](){
-        while(true)
+        while(!mStop.load(std::memory_order_acquire))
         {
             mMultiHandle->performRequests();
-            std::unique_lock<std::mutex> lo(mStopMutex);
-            if (mStop)
-            {
-                break;
-            }
         }
-        mCondition.notify_all();
     });
 }
 
 void LibCurlMultiHandleManager::DataPrivate::stopLoop()
 {
-    std::unique_lock<std::mutex> lo(mStopMutex);
-    mStop = true;
-    mCondition.wait(lo);
+    mStop.store(true, std::memory_order_release);
+    if (mLoopThread.joinable())
+    {
+        mLoopThread.join();
+    }
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

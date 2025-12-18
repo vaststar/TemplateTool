@@ -30,20 +30,20 @@ class NetworkHttpManager::DataPrivate
 {
 public:
     DataPrivate();
-    std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> getLibCurlClient() const;
+    std::shared_ptr<ucf::utilities::network::http::INetworkHttpClient> getNetworkHttpClient() const;
 private:
-    std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> mLibcurlClient;
+    std::shared_ptr<ucf::utilities::network::http::INetworkHttpClient> mNetworkHttpClient;
 };
 
 NetworkHttpManager::DataPrivate::DataPrivate()
-    :mLibcurlClient(std::make_shared<ucf::utilities::network::libcurl::LibCurlClient>())
+    :mNetworkHttpClient(std::make_shared<ucf::utilities::network::libcurl::LibCurlClient>())
 {
 
 }
 
-std::shared_ptr<ucf::utilities::network::libcurl::LibCurlClient> NetworkHttpManager::DataPrivate::getLibCurlClient() const
+std::shared_ptr<ucf::utilities::network::http::INetworkHttpClient> NetworkHttpManager::DataPrivate::getNetworkHttpClient() const
 {
-    return mLibcurlClient;
+    return mNetworkHttpClient;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ NetworkHttpManager::~NetworkHttpManager()
 
 void NetworkHttpManager::startHttpNetwork()
 {
-    mDataPrivate->getLibCurlClient()->startService();
+    mDataPrivate->getNetworkHttpClient()->startService();
 }
 
 void NetworkHttpManager::sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location)
@@ -145,7 +145,7 @@ void NetworkHttpManager::sendHttpRequest(std::shared_ptr<INetworkHttpHandler> ht
             httpHandler->completeResponse(metrics);
         }
     };
-    mDataPrivate->getLibCurlClient()->makeGenericRequest(httpHandler->getHttpRequest(), curlHeaderCallback, curlBodyCallback, curlCompletionCallback);
+    mDataPrivate->getNetworkHttpClient()->makeGenericRequest(httpHandler->getHttpRequest(), curlHeaderCallback, curlBodyCallback, curlCompletionCallback);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

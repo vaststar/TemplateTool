@@ -8,7 +8,7 @@ namespace ucf::utilities::network::libcurl{
 class LibCurlEasyHandle final
 {
 public:
-    LibCurlEasyHandle(const ucf::utilities::network::http::HttpHeaderCallback& headerCallback, const ucf::utilities::network::http::HttpBodyCallback& bodyCallback, const ucf::utilities::network::http::HttpCompletionCallback& completionCallback);
+    LibCurlEasyHandle(ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback);
     ~LibCurlEasyHandle();
     LibCurlEasyHandle(const LibCurlEasyHandle&) = delete;
     LibCurlEasyHandle(LibCurlEasyHandle&&) = delete;
