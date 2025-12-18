@@ -88,7 +88,12 @@ int Main::runMain(int argc, char *argv[])
 {
     if (UIUtilities::SingleInstanceChecker singleInstanceChecker("MyUniqueApplicationName_MainUI"); singleInstanceChecker.tryToRun())
     {
-        return mDataPrivate->runApp(argc, argv);
+        int result = mDataPrivate->runApp(argc, argv);
+        MAINUI_LOG_DEBUG("===========================================");
+        MAINUI_LOG_DEBUG("===========================================");
+        MAINUI_LOG_DEBUG("===========================================");
+        MAINUI_LOG_DEBUG("===========================================");
+        return result;
     }
     return -1;
 }
