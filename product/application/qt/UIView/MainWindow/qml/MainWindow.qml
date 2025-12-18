@@ -40,8 +40,8 @@ ApplicationWindow
     }
 
     Component.onCompleted:{
+        root.controller.logInfo("MainWindow QML Component onCompleted")
         root.controller.controllerInitialized.connect(onMainControllerInitialized)
-        root.controller.onComponentCompleted();
         ControllerInitializer.initializeController(root.controller)
     }
 

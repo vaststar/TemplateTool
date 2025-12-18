@@ -7,7 +7,7 @@ import UIResourceLoader 1.0
 
 Item{
     id: mainWindowContent
-    required property var controller
+    required property MainWindowController controller
 
     MainWindowSideBar{
         id: navigationBar

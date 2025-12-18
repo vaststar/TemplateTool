@@ -7,7 +7,8 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
-#include "AppRunner/AppRunner.h"
+#include <AppRunner/AppRunner.h>
+#include <UISingleInstance/UISingleInstanceChecker.h>
 #include "LoggerDefine.h"
 
 #include "AppUIManager/include/AppUIManager.h"
@@ -22,9 +23,11 @@
 class Main::DataPrivate
 {
 public:
-    void initApp(int argc, char *argv[]);
+    int runApp(int argc, char *argv[]);
     void exitApp();
     commonHead::ICommonHeadFrameworkWPtr getCommonHeadFramework(){ return mApplicationRunner.getCommonheadFramework();}
+private:
+    void initApp(int argc, char *argv[]);
 private:
     AppRunner::ApplicationRunner mApplicationRunner;
 };
@@ -39,6 +42,32 @@ void Main::DataPrivate::exitApp()
     mApplicationRunner.exitApp();
 }
 
+int Main::DataPrivate::runApp(int argc, char *argv[])
+{
+    initApp(argc, argv);
+    MAINUI_LOG_DEBUG("init dependencies done");
+
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========start run mainApp===============");
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========================================");
+    int runResult = 0;
+    {
+        AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, getCommonHeadFramework()});
+        runResult = AppUIManager.runApp();
+    }
+    MAINUI_LOG_DEBUG("===========mainApp run result:" << runResult << "=======");
+    
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========start quit mainApp==============");
+    MAINUI_LOG_DEBUG("===========================================");
+    exitApp();
+    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("===========finish quit mainApp=============");
+    MAINUI_LOG_DEBUG("===========================================");
+    return runResult;
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -57,27 +86,9 @@ Main::~Main()
 
 int Main::runMain(int argc, char *argv[])
 {
-    mDataPrivate->initApp(argc, argv);
-    MAINUI_LOG_DEBUG("init dependencies done");
-
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========start run mainApp===============");
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========================================");
-    int runResult = 0;
+    if (UIUtilities::SingleInstanceChecker singleInstanceChecker("MyUniqueApplicationName_MainUI"); singleInstanceChecker.tryToRun())
     {
-        AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, mDataPrivate->getCommonHeadFramework()});
-        runResult = AppUIManager.runApp();
+        return mDataPrivate->runApp(argc, argv);
     }
-    MAINUI_LOG_DEBUG("===========mainApp run result:" << runResult << "=======");
-    
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========start quit mainApp==============");
-    MAINUI_LOG_DEBUG("===========================================");
-    mDataPrivate->exitApp();
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========finish quit mainApp=============");
-    MAINUI_LOG_DEBUG("===========================================");
-    return runResult;
+    return -1;
 }

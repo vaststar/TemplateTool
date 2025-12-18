@@ -1,33 +1,21 @@
 include(BuildQtModule)
 
-if (WIN32)
-    set(ADD_DEFINITIONS Main_DLL)   #Main_DLL Main_LIB
-else()
-    set(ADD_DEFINITIONS)
-endif()
-
-set(MODULE_MODULE_NAME MainUI)
-set(MODULE_IDE_FOLDER main)
+set(MODULE_MODULE_NAME UISingleInstance)
+set(MODULE_IDE_FOLDER UI)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/Main/Main.h
-    include/Main/MainExport.h
+    include/UISingleInstance/UISingleInstanceChecker.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
-    src/Main.cpp
+    src/UISingleInstanceChecker.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
+    UIUtilitiesCommonFile
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    UIView
-    UISingleInstance
-    AppRunner
-    CommonHeadFramework
-    CoreFramework
-    MasterLog
+    Qt6::Core
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
@@ -44,6 +32,6 @@ TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
-TARGET_DEFINITIONS ${ADD_DEFINITIONS}
+TARGET_DEFINITIONS ${ADD_UIUtilities_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )

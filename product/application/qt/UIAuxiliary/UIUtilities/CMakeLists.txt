@@ -6,3 +6,4 @@ endif()
 
 add_subdirectory(common_file)
 add_subdirectory(UIPlatformUtils)
+add_subdirectory(UISingleInstance)

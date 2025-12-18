@@ -41,7 +41,6 @@ signals:
     void controllerInitialized();
     void visibleChanged();
 public slots:
-    void onComponentCompleted();
     void openCamera();
     void testFunc();
 protected:

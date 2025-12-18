@@ -31,9 +31,7 @@ void MainWindowController::init()
     emit controllerInitialized();
     emit visibleChanged();
 }
-void MainWindowController::onComponentCompleted(){
-        UIVIEW_LOG_DEBUG("MainWindowController Component completed");
-    }
+
 QString MainWindowController::getTitle() const
 {
     return QObject::tr("my test window aa");

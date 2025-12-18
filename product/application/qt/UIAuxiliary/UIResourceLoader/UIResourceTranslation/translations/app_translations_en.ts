@@ -39,7 +39,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="39"/>
+        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="37"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
