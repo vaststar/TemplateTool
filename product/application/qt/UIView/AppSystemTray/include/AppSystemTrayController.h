@@ -3,20 +3,19 @@
 #include <QObject>
 #include <QPointer>
 #include <QtQml>
-#include <UICore/CoreController.h>
+#include "UIViewBase/include/UIViewController.h"
 
 class AppContext;
-class AppSystemTrayController: public UICore::CoreController
+class AppSystemTrayController: public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
     QML_ELEMENT
 public:
     explicit AppSystemTrayController(QObject *parent = nullptr);
-    void initializeController(QPointer<AppContext> appContext);
     QString getTitle() const;
+protected:
+    void init() override;
 signals:
     void titleChanged();
-private:
-    QPointer<AppContext> mAppContext;
 };

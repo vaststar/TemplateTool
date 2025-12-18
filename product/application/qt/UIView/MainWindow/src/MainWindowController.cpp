@@ -31,7 +31,9 @@ void MainWindowController::init()
     emit controllerInitialized();
     emit visibleChanged();
 }
-
+void MainWindowController::onComponentCompleted(){
+        UIVIEW_LOG_DEBUG("MainWindowController Component completed");
+    }
 QString MainWindowController::getTitle() const
 {
     return QObject::tr("my test window aa");
@@ -52,36 +54,6 @@ bool MainWindowController::isVisible() const
     return getAppContext() != nullptr;
 }
 
-void MainWindowController::onContactListLoaded(ContactListViewController* contactListController)
-{
-    contactListController->initializeController(getAppContext());
-}
-
-void MainWindowController::onInitMenuBarController(MainWindowMenuBarController* menuBarController)
-{
-    menuBarController->initializeController(getAppContext());
-}
-
-void MainWindowController::onInitTitleBarController(MainWindowTitleBarController* titleBarController)
-{
-    titleBarController->initializeController(getAppContext());
-}
-
-void MainWindowController::onInitFootBarController(MainWindowFootBarController* footBarController)
-{
-    footBarController->initializeController(getAppContext());
-}
-
-void MainWindowController::onInitSideBarController(MainWindowSideBarController* sideBarController)
-{
-    sideBarController->initializeController(getAppContext());
-}
-
-void MainWindowController::onInitSystemTrayController(AppSystemTrayController* systemTrayController)
-{
-    systemTrayController->initializeController(getAppContext());
-}
-
 void MainWindowController::openCamera()
 {
     getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
@@ -90,7 +62,7 @@ void MainWindowController::openCamera()
     getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller){
         if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
         {
-            mediaController->initializeController(getAppContext());
+            // mediaController->initializeController(getAppContext());
         }
     });
 }

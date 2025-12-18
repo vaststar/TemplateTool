@@ -9,18 +9,14 @@ import UIResourceLoader 1.0
 ApplicationWindow
 {
     id: root
-    property alias controller: mainController
+    property MainWindowController controller: MainWindowController{}
 
-    MainWindowController{
-        id: mainController
-    }
-
-    visible: mainController.visible
-    width: mainController ? mainController.width : 100
-    height: mainController? mainController.height : 100
+    visible: root.controller.visible
+    width: root.controller ? root.controller.width : 100
+    height: root.controller ? root.controller.height : 100
     flags: Qt.FramelessWindowHint|Qt.Window
 
-    title: qsTr(mainController.title)
+    title: qsTr(root.controller.title)
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
 
     menuBar: MainWindowMenuBar {
@@ -44,15 +40,13 @@ ApplicationWindow
     }
 
     Component.onCompleted:{
-        mainController.controllerInitialized.connect(onMainControllerInitialized)
+        root.controller.controllerInitialized.connect(onMainControllerInitialized)
+        root.controller.onComponentCompleted();
+        ControllerInitializer.initializeController(root.controller)
     }
 
     function onMainControllerInitialized(){
-        mainController.onInitMenuBarController(menuBarId.controller)
-        mainController.onInitTitleBarController(titleBar.controller)
-        mainController.onInitFootBarController(footBar.controller)
-        mainController.onInitSystemTrayController(systemTray.controller)
-        mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":mainController});
+        mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":root.controller});
     }
 
     AppSystemTray{

@@ -26,8 +26,8 @@ Item{
     }
     
     Component.onCompleted:{
-        controller.onContactListLoaded(frame.controller)
-        controller.onInitSideBarController(navigationBar.controller)
+        // controller.onContactListLoaded(frame.controller)
+        // controller.onInitSideBarController(navigationBar.controller)
     }
 
     Text {

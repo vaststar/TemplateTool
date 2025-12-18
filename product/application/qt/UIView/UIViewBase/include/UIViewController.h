@@ -13,8 +13,9 @@ public:
     UIViewController(QObject* parent = nullptr);
     virtual ~UIViewController() = default;
 
-    Q_INVOKABLE void initializeController(const QPointer<AppContext>& appContext);
+    virtual void initializeController(const QPointer<AppContext>& appContext) final;
     
+    Q_INVOKABLE void logInfo(const QString& message);
 protected:
     virtual void init() = 0;
     QPointer<AppContext> getAppContext() const;

@@ -4,10 +4,8 @@ import QtQuick.Layouts
 import UIView 1.0
 
 ToolBar {
-    property alias controller: footBarController
-    MainWindowFootBarController {
-        id: footBarController
-    }
+    id: root
+    property MainWindowFootBarController controller: MainWindowFootBarController{}
     RowLayout {
         anchors.fill: parent
         ToolButton {
@@ -15,7 +13,7 @@ ToolBar {
             onClicked: stack.pop()
         }
         Label {
-            text: qsTr(controller.footerName)
+            text: qsTr(root.controller.footerName)
             elide: Label.ElideRight
             horizontalAlignment: Qt.AlignHCenter
             verticalAlignment: Qt.AlignVCenter
@@ -25,5 +23,8 @@ ToolBar {
             text: qsTr("⋮")
             onClicked: menu.open()
         }
+    }
+    Component.onCompleted:{
+        ControllerInitializer.initializeController(root.controller)
     }
 }

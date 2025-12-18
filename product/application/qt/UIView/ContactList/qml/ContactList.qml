@@ -7,9 +7,9 @@ import UIResourceLoader 1.0
 Item{
     id: root
     
-    property alias controller: contactListController
-    ContactListViewController{
-        id: contactListController
+    property ContactListViewController controller:  ContactListViewController{}
+    Component.onCompleted:{
+        ControllerInitializer.initializeController(root.controller)
     }
 
     Image {

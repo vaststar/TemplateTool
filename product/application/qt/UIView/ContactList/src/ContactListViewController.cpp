@@ -8,24 +8,23 @@
 #include <UIFabrication/IUIViewFactory.h>
 
 ContactListViewController::ContactListViewController(QObject *parent)
-    : CoreController(parent)
-    , mAppContext(nullptr)
+    : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create ContactListViewController");
 }
 
-void ContactListViewController::initializeController(QPointer<AppContext> appContext)
+void ContactListViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    mAppContext = appContext;
-    mContactListViewModel = appContext->getViewModelFactory()->createContactListViewModelInstance();
+    mContactListViewModel = getAppContext()->getViewModelFactory()->createContactListViewModelInstance();
+    UIVIEW_LOG_DEBUG("done");
 }
 
 void ContactListViewController::buttonClicked()
 {
     // mContactListViewModel->getContactList();
     // mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTDialog.qml"));
-    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
+    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
     // mAppContext->getViewFactory()->createQmlWindow(QStringLiteral("UTComponent/UTWindow/UTTest.qml"))->show();
     
 }

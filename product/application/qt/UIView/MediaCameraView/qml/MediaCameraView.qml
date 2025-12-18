@@ -8,10 +8,7 @@ import UTComponent 1.0
 ApplicationWindow
 {
     id: root
-    property alias controller: mediaController
-    MediaCameraViewController{
-        id: mediaController
-        videoSink: videoOutput.videoSink
+    property MediaCameraViewController controller: MediaCameraViewController{
     }
 
     visible: true
@@ -27,11 +24,13 @@ ApplicationWindow
     }
 
     Component.onCompleted:{
-        mediaController.showCameraImage.connect(onShowCameraImage)
-        // ControllerInitializer.initializeController(mediaController)
+        controller.logInfo("onCompleted")
+        controller.videoSink = videoOutput.videoSink
+        controller.showCameraImage.connect(onShowCameraImage)
+        ControllerInitializer.initializeController(controller)
     }
     
     function onShowCameraImage(img){
-        // console.log("rrrrrrrr")
+        // controller.logInfo("MediaCameraView received image")
     }
 }

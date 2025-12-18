@@ -21,3 +21,8 @@ QPointer<AppContext> UIViewController::getAppContext() const
 {
     return mAppContext;
 }
+
+void UIViewController::logInfo(const QString& message)
+{
+    UIVIEW_LOG_INFO("[" << getControllerName().toStdString() << "] " << message.toStdString());
+}

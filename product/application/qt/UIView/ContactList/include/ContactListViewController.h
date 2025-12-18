@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QtQml>
-#include <UICore/CoreController.h>
+#include "UIViewBase/include/UIViewController.h"
 
 namespace commonHead::viewModels
 {
@@ -15,17 +15,16 @@ namespace commonHead{
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
-class AppContext;
-class ContactListViewController: public UICore::CoreController
+class ContactListViewController: public UIViewController
 {
     Q_OBJECT
     QML_ELEMENT
 public:
     explicit ContactListViewController(QObject *parent = nullptr);
-    void initializeController(QPointer<AppContext> appContext);
 public slots:
     void buttonClicked();
+protected:
+    void init() override;
 private:
-    QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IContactListViewModel> mContactListViewModel;
 };

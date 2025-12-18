@@ -6,14 +6,6 @@
 
 #include "UIViewBase/include/UIViewController.h"
 
-//do not do forward declare since QML need the full declaration
-#include "ContactList/include/ContactListViewController.h"
-#include "MainWindowMenuBar/include/MainWindowMenuBarController.h"
-#include "MainWindowTitleBar/include/MainWindowTitleBarController.h"
-#include "MainWindowFootBar/include/MainWindowFootBarController.h"
-#include "MainWindowSideBar/include/MainWindowSideBarController.h"
-#include "AppSystemTray/include/AppSystemTrayController.h"
-
 namespace commonHead{
     class ICommonHeadFramework;
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
@@ -49,12 +41,7 @@ signals:
     void controllerInitialized();
     void visibleChanged();
 public slots:
-    void onInitMenuBarController(MainWindowMenuBarController* menuBarController);
-    void onContactListLoaded(ContactListViewController* contactListController);
-    void onInitTitleBarController(MainWindowTitleBarController* titleBarController);
-    void onInitFootBarController(MainWindowFootBarController* footBarController);
-    void onInitSideBarController(MainWindowSideBarController* sideBarController);
-    void onInitSystemTrayController(AppSystemTrayController* systemTrayController);
+    void onComponentCompleted();
     void openCamera();
     void testFunc();
 protected:

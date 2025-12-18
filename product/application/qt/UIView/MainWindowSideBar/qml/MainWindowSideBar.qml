@@ -5,10 +5,8 @@ import UIView 1.0
 import UTComponent 1.0
 Item{
     id: root
-    property alias controller: sideBarController
-    MainWindowSideBarController{
-        id: sideBarController
-    }
+    property MainWindowSideBarController controller: MainWindowSideBarController{}
+    
 
     ListView {
         id: naviListView
@@ -44,6 +42,9 @@ Item{
                 }
             }
         }
+    }
+    Component.onCompleted:{
+        ControllerInitializer.initializeController(root.controller)
     }
 
 }

@@ -4,7 +4,7 @@
 <context>
     <name>AppSystemTray</name>
     <message>
-        <location filename="../../../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
+        <location filename="../../../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="18"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -20,12 +20,12 @@
 <context>
     <name>MainWindowFootBar</name>
     <message>
-        <location filename="../../../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="14"/>
+        <location filename="../../../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="12"/>
         <source>‹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="25"/>
+        <location filename="../../../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="23"/>
         <source>⋮</source>
         <translation type="unfinished"></translation>
     </message>
@@ -33,13 +33,13 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="21"/>
+        <location filename="../../../../UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="15"/>
         <location filename="../../../../UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="20"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="37"/>
+        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="39"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
