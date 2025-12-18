@@ -11,7 +11,7 @@
 
 MediaCameraViewController::MediaCameraViewController(QObject *parent)
     : UIViewController(parent)
-    , mMediaCameraViewModelEmitter( std::make_shared<MediaCameraViewModelEmitter>(this))
+    , mMediaCameraViewModelEmitter(std::make_shared<UIVMSignalEmitter::MediaCameraViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create MediaCameraViewController");
 }
@@ -42,7 +42,7 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 void MediaCameraViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    QObject::connect(mMediaCameraViewModelEmitter.get(), &MediaCameraViewModelEmitter::signals_onCameraImageReceived, this, &MediaCameraViewController::onCameraImageReceived);
+    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIVMSignalEmitter::MediaCameraViewModelEmitter::signals_onCameraImageReceived, this, &MediaCameraViewController::onCameraImageReceived);
     mMediaCameraViewModel = getAppContext()->getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
     mMediaCameraViewModel->openCamera();

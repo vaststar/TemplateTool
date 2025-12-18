@@ -23,6 +23,7 @@ set(MODULE_SOURCE_PRIVATE
     UIViewBase/src/UIViewControllerInitializer.cpp
 
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
+    ViewModelSingalEmitter/AppUiViewModelEmitter.h
 
     ContactList/include/ContactListItemModel.h
     ContactList/include/ContactListViewController.h

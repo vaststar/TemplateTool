@@ -3,6 +3,7 @@
 #include <QObject>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
+namespace UIVMSignalEmitter{
 class MediaCameraViewModelEmitter: public QObject,
                                    public commonHead::viewModels::IMediaCameraViewModelCallback
 {
@@ -21,3 +22,4 @@ public:
 signals:
     void signals_onCameraImageReceived(const commonHead::viewModels::model::Image& image);
 };
+}

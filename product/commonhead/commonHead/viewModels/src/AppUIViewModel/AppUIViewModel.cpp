@@ -37,6 +37,8 @@ void AppUIViewModel::initApplication()
 {
     COMMONHEAD_LOG_DEBUG("AppUIViewModel initialized");
     initDatabase();
+
+    fireNotification(&IAppUIViewModelCallback::onShowMainWindow);
 }
 
 void AppUIViewModel::initDatabase()
@@ -54,6 +56,7 @@ void AppUIViewModel::initDatabase()
                     COMMONHEAD_LOG_DEBUG("init database with dbId:" << dbConfig.getDBId() << ", dbFilePath:" << dbConfig.getDBFilePath());
                     std::vector<ucf::service::model::DBTableModel> tables{ db::schema::UserContactTable{}, db::schema::GroupContactTable{}, db::schema::SettingsTable{} };
                     dataWarehouseService->initializeDB(std::make_shared<ucf::service::model::SqliteDBConfig>(clientInfoService->getSharedDBConfig().getDBId(), clientInfoService->getSharedDBConfig().getDBFilePath()), tables);
+                    fireNotification(&IAppUIViewModelCallback::onDatabaseInitialized);
                 }
             }
         }

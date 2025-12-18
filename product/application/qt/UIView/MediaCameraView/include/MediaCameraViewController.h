@@ -20,7 +20,9 @@ namespace commonHead{
 }
 
 class AppContext;
+namespace UIVMSignalEmitter{
 class MediaCameraViewModelEmitter;
+}
 class MediaCameraViewController: public UIViewController
 {
     Q_OBJECT
@@ -43,6 +45,6 @@ protected:
     virtual void init() override;
 private:
     std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> mMediaCameraViewModel;
-    std::shared_ptr<MediaCameraViewModelEmitter>  mMediaCameraViewModelEmitter;
+    std::shared_ptr<UIVMSignalEmitter::MediaCameraViewModelEmitter>  mMediaCameraViewModelEmitter;
     QVideoSink* mVideoSink = nullptr;
 };
