@@ -5,7 +5,7 @@
 
 
 namespace UIUtilities{
-struct SingleInstanceChecker::Impl
+struct UISingleInstanceChecker::Impl
 {
 public:
     explicit Impl(const QString &name)
@@ -23,17 +23,17 @@ private:
 };
 
 
-// ---------------- SingleInstanceChecker 接口实现 ----------------
+// ---------------- UISingleInstanceChecker 接口实现 ----------------
 
-SingleInstanceChecker::SingleInstanceChecker(const std::string &name)
+UISingleInstanceChecker::UISingleInstanceChecker(const std::string &name)
     : pImpl(std::make_unique<Impl>(QString::fromStdString(name)))
 {
 }
 
-SingleInstanceChecker::~SingleInstanceChecker() = default;
+UISingleInstanceChecker::~UISingleInstanceChecker() = default;
 
 
-bool SingleInstanceChecker::tryToRun()
+bool UISingleInstanceChecker::tryToRun()
 {
     return pImpl->tryToRun();
 }

@@ -12,7 +12,11 @@ namespace commonHead{
 
 class AppContext;
 namespace UIVMSignalEmitter{
-class AppUIViewModelEmitter;
+    class AppUIViewModelEmitter;
+}
+
+namespace UIUtilities{
+    class UIIPCServer;
 }
 class AppUIController : public QObject
 {
@@ -26,8 +30,10 @@ private slots:
     void onDatabaseInitialized();
 private:
     void initializeController();
+    void startIPCServer();
 private:
     const QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mAppUIViewModel;
     std::shared_ptr<UIVMSignalEmitter::AppUIViewModelEmitter> mAppUIViewModelEmitter;
+    std::shared_ptr<UIUtilities::UIIPCServer> mIPCServer;
 };

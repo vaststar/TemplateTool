@@ -34,12 +34,20 @@ void AppUIController::initializeController()
 
     mAppUIViewModel = mAppContext->getViewModelFactory()->createAppUIViewModelInstance();
     mAppUIViewModel->registerCallback(mAppUIViewModelEmitter);
+
     QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onShowMainWindow,
                      this, &AppUIController::onShowMainWindow);
     QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onDatabaseInitialized,
                      this, &AppUIController::onDatabaseInitialized);
 
+    startIPCServer();
     UIVIEW_LOG_DEBUG("finish initializeController AppUIController, address: " << this);
+}
+
+void AppUIController::startIPCServer()
+{
+    mIPCServer = std::make_shared<UIUtilities::UIIPCServer>("UniqueAppIPCServerName");
+    mIPCServer->start();
 }
 
 void AppUIController::onShowMainWindow()
@@ -48,6 +56,7 @@ void AppUIController::onShowMainWindow()
     mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), [this](auto controller){
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
+            UIVIEW_LOG_DEBUG("MainWindow.qml load done, see MainWindowController");
             // mImpl->getAppContext()->getViewFactory()->installTranslation({});
             // mainController->initializeController(mAppContext);
         }

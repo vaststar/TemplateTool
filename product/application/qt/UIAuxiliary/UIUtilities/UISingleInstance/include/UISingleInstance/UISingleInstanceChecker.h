@@ -5,17 +5,17 @@
 #include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
 
 namespace UIUtilities{
-class UIUtilities_EXPORT SingleInstanceChecker final
+class UIUtilities_EXPORT UISingleInstanceChecker final
 {
 public:
-    explicit SingleInstanceChecker(const std::string &name);
-    ~SingleInstanceChecker();
+    explicit UISingleInstanceChecker(const std::string &name);
+    ~UISingleInstanceChecker();
     
-    SingleInstanceChecker(SingleInstanceChecker&& other) = delete;
-    SingleInstanceChecker& operator=(SingleInstanceChecker&& other) = delete;
+    UISingleInstanceChecker(UISingleInstanceChecker&& other) = delete;
+    UISingleInstanceChecker& operator=(UISingleInstanceChecker&& other) = delete;
 
-    SingleInstanceChecker(const SingleInstanceChecker&) = delete;
-    SingleInstanceChecker& operator=(const SingleInstanceChecker&) = delete;
+    UISingleInstanceChecker(const UISingleInstanceChecker&) = delete;
+    UISingleInstanceChecker& operator=(const UISingleInstanceChecker&) = delete;
 
     bool tryToRun();
 

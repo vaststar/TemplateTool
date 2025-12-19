@@ -61,6 +61,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     UIPlatformUtils
+    UIIPCChannel
     UTComponent
     AppContext
     UIResourceAssetRCCInterface #for asset resource
