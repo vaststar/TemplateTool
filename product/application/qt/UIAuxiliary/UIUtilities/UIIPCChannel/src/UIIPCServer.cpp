@@ -1,9 +1,10 @@
-#include "ipc_channel.h"
+#include <UIIPCChannel/UIIPCServer.h>
 
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
 #include <QtCore/QDebug>
 #include <QtNetwork/QLocalServer>
+#include <QtNetwork/QLocalSocket>
 
 #include "LoggerDefine.h"
 
@@ -30,16 +31,23 @@ public:
             while (auto* client = server.nextPendingConnection())
             {
                 QObject::connect(client, &QLocalSocket::readyRead, client, [this, client]() {
-                    if (const QByteArray data = client->readAll(); handler)
+                    if (std::string dataMessage = client->readAll().toStdString(); dataMessage.empty())
                     {
-                        UIIPCChannel_LOG_DEBUG("UIIPCServer receive message:" << server.errorString().toStdString());
-                        handler(data.toStdString());
+                        UIIPCChannel_LOG_DEBUG("UIIPCServer receive message:" << dataMessage);
+                        if (handler)
+                        {
+                            handler(dataMessage);
+                        }
+                        else
+                        {
+                            UIIPCChannel_LOG_WARN("no handler set");
+                        }
                     }
                 });
                 QObject::connect(client, &QLocalSocket::disconnected, client, &QLocalSocket::deleteLater);
             }
         });
-
+        UIIPCChannel_LOG_INFO("UIIPCServer listen succeed, serverName:" << serverName.toStdString());
         return true;
     }
 

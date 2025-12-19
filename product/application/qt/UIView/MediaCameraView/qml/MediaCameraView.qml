@@ -11,10 +11,11 @@ ApplicationWindow
     property MediaCameraViewController controller: MediaCameraViewController{
     }
 
-    visible: true
+    // visible: true
     width: 758 
     height: 576
     color: "red"
+    visible: controller.visible
     
     VideoOutput {
         id: videoOutput

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <functional>
 #include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
 
 namespace UIUtilities{
 
-class UIIPCServer final
+class UIUtilities_EXPORT UIIPCServer final
 {
 public:
     using MessageHandler = std::function<void(const std::string&)>;

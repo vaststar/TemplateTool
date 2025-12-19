@@ -91,7 +91,7 @@ private:
     int timeoutMs = 1000;
     QLocalSocket socket;
 };
-UIIPCClient::UIIPCClient(std::string serverName, int timeoutMs)
+UIIPCClient::UIIPCClient(const std::string& serverName, int timeoutMs)
     : pImpl(std::make_unique<Impl>(serverName, timeoutMs))
 {
 }

@@ -24,6 +24,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     UIView
     UISingleInstance
+    UIIPCChannel
     AppRunner
     CommonHeadFramework
     CoreFramework

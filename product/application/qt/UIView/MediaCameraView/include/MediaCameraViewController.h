@@ -27,6 +27,7 @@ class MediaCameraViewController: public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(QVideoSink* videoSink READ getVideoSink WRITE setVideoSink NOTIFY videoSinkChanged)
+    Q_PROPERTY(bool visible READ isVisible NOTIFY visibleChanged)
     QML_ELEMENT
 public:
     explicit MediaCameraViewController(QObject *parent = nullptr);
@@ -36,11 +37,14 @@ public:
     void setVideoSink(QVideoSink* videoSink);
 
     QVideoFrame imageToVideoFrame(const QImage& image) const;
+    
+    bool isVisible() const;
 private slots:
     virtual void onCameraImageReceived(const commonHead::viewModels::model::Image& image);
 signals:
     void showCameraImage(const QImage& image);
     void videoSinkChanged(QVideoSink* videoSink);
+    void visibleChanged();
 protected:
     virtual void init() override;
 private:

@@ -9,11 +9,10 @@
 
 #include <AppRunner/AppRunner.h>
 #include <UISingleInstance/UISingleInstanceChecker.h>
+#include <UIIPCChannel/UIIPCClient.h>
 #include "LoggerDefine.h"
 
 #include "AppUIManager/include/AppUIManager.h"
-
-
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +85,7 @@ Main::~Main()
 
 int Main::runMain(int argc, char *argv[])
 {
-    if (UIUtilities::SingleInstanceChecker singleInstanceChecker("MyUniqueApplicationName_MainUI"); singleInstanceChecker.tryToRun())
+    if (UIUtilities::UISingleInstanceChecker singleInstanceChecker("MyUniqueApplicationName_MainUI"); singleInstanceChecker.tryToRun())
     {
         int result = mDataPrivate->runApp(argc, argv);
         MAINUI_LOG_DEBUG("===========================================");
@@ -94,6 +93,11 @@ int Main::runMain(int argc, char *argv[])
         MAINUI_LOG_DEBUG("===========================================");
         MAINUI_LOG_DEBUG("===========================================");
         return result;
+    }
+    else
+    {
+        UIUtilities::UIIPCClient client("UniqueAppIPCServerName");
+        client.send("test message");
     }
     return -1;
 }

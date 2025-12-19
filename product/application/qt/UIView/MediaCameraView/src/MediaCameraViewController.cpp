@@ -49,6 +49,11 @@ void MediaCameraViewController::init()
     mMediaCameraViewModel->startCaptureCameraVideo();
 }
 
+bool MediaCameraViewController::isVisible() const
+{
+    return getAppContext() != nullptr;
+}
+
 void MediaCameraViewController::onCameraImageReceived(const commonHead::viewModels::model::Image& image)
 {
     QImage img(&image.buffer[0], image.width, image.height, static_cast<int>(image.steps), QImage::Format::Format_RGB888);
@@ -59,6 +64,8 @@ void MediaCameraViewController::onCameraImageReceived(const commonHead::viewMode
     }
 
     emit showCameraImage(img);
+
+    emit visibleChanged();
 }
 
 QVideoFrame MediaCameraViewController::imageToVideoFrame(const QImage& image) const

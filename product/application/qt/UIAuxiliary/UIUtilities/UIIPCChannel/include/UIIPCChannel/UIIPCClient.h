@@ -5,7 +5,7 @@
 #include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
 
 namespace UIUtilities{
-class UIIPCClient
+class UIUtilities_EXPORT UIIPCClient final
 {
 
 public:

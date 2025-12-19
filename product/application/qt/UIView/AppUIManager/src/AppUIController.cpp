@@ -12,6 +12,7 @@
 #include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>
 #include <UIManager/ITranslatorManager.h>
+#include <UIIPCChannel/UIIPCServer.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
