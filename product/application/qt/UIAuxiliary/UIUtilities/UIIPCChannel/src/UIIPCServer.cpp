@@ -31,7 +31,7 @@ public:
             while (auto* client = server.nextPendingConnection())
             {
                 QObject::connect(client, &QLocalSocket::readyRead, client, [this, client]() {
-                    if (std::string dataMessage = client->readAll().toStdString(); dataMessage.empty())
+                    if (std::string dataMessage = client->readAll().toStdString(); !dataMessage.empty())
                     {
                         UIIPCChannel_LOG_DEBUG("UIIPCServer receive message:" << dataMessage);
                         if (handler)
@@ -55,6 +55,18 @@ public:
     {
         handler = std::move(h);
     }
+
+    void stop()
+    {
+        UIIPCChannel_LOG_INFO("will stop server");
+        if (server.isListening())
+        {
+            UIIPCChannel_LOG_INFO("close server");
+            server.close();
+        }
+        UIIPCChannel_LOG_INFO("remove server name: " << serverName.toStdString());
+        QLocalServer::removeServer(serverName);
+    }
 private:
     QString serverName;
     QLocalServer server;
@@ -66,7 +78,10 @@ UIIPCServer::UIIPCServer(std::string serverName)
 {
 }
 
-UIIPCServer::~UIIPCServer() = default;
+UIIPCServer::~UIIPCServer()
+{
+    pImpl->stop();
+}
 
 bool UIIPCServer::start()
 {

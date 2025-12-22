@@ -61,6 +61,10 @@ std::vector<std::string> InvocationViewModel::getStartupParameters() const
 
 void InvocationViewModel::processCommandMessage(const std::string& message)
 {
+    if (message == "ActivateWindow")
+    {
+        fireNotification(&IInvocationViewModelCallback::onActivateMainApp);
+    }
     if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())

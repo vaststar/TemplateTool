@@ -17,12 +17,12 @@
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
 #include "ViewModelSingalEmitter/AppUIViewModelEmitter.h"
+#include "ViewModelSingalEmitter/InvocationViewModelEmitter.h"
 
 
 AppUIController::AppUIController(AppContext* appContext, QObject* parent)
     : QObject(parent)
     , mAppContext(appContext)
-    , mAppUIViewModelEmitter(std::make_shared<UIVMSignalEmitter::AppUIViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create AppUIController, address: " << this << ", with appContext: " << appContext);
     initializeController();
@@ -34,6 +34,7 @@ void AppUIController::initializeController()
     assert(mAppContext);
 
     mAppUIViewModel = mAppContext->getViewModelFactory()->createAppUIViewModelInstance();
+    mAppUIViewModelEmitter = std::make_shared<UIVMSignalEmitter::AppUIViewModelEmitter>();
     mAppUIViewModel->registerCallback(mAppUIViewModelEmitter);
 
     QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onShowMainWindow,
@@ -41,14 +42,32 @@ void AppUIController::initializeController()
     QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onDatabaseInitialized,
                      this, &AppUIController::onDatabaseInitialized);
 
-    startIPCServer();
     UIVIEW_LOG_DEBUG("finish initializeController AppUIController, address: " << this);
 }
 
 void AppUIController::startIPCServer()
 {
-    mIPCServer = std::make_shared<UIUtilities::UIIPCServer>("UniqueAppIPCServerName");
+    UIVIEW_LOG_DEBUG("start ipc server");
+    constexpr auto IPC_SERVER_NAME = "TemplateTool_IPC_Server";
+    mIPCServer = std::make_shared<UIUtilities::UIIPCServer>(IPC_SERVER_NAME);
+    mIPCViewModel = mAppContext->getViewModelFactory()->createInvocationViewModelInstance();
+    mInvocationViewModelEmitter = std::make_shared<UIVMSignalEmitter::InvocationViewModelEmitter>();
+    mIPCViewModel->registerCallback(mInvocationViewModelEmitter);
+
+    mIPCServer->setMessageHandler([wekPtr = std::weak_ptr<commonHead::viewModels::IInvocationViewModel>(mIPCViewModel)](const std::string& ipcMessage){
+        if (auto ptr = wekPtr.lock()) 
+        {
+            UIVIEW_LOG_DEBUG("start process new message: " << ipcMessage);
+            ptr->processCommandMessage(ipcMessage);
+            UIVIEW_LOG_DEBUG("finish process message");
+        }
+        else
+        {
+            UIVIEW_LOG_INFO("no InvocationViewModel");
+        }
+    });
     mIPCServer->start();
+    UIVIEW_LOG_DEBUG("start ipc server succeed");
 }
 
 void AppUIController::onShowMainWindow()
@@ -58,6 +77,11 @@ void AppUIController::onShowMainWindow()
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
             UIVIEW_LOG_DEBUG("MainWindow.qml load done, see MainWindowController");
+            if (mInvocationViewModelEmitter)
+            {
+                connect(mInvocationViewModelEmitter.get(), &UIVMSignalEmitter::InvocationViewModelEmitter::signals_onActivateMainApp, 
+                mainController, &MainWindowController::activateMainWindow);
+            }
             // mImpl->getAppContext()->getViewFactory()->installTranslation({});
             // mainController->initializeController(mAppContext);
         }
@@ -79,6 +103,7 @@ void AppUIController::onDatabaseInitialized()
 void AppUIController::startApp()
 {
     UIVIEW_LOG_DEBUG("startApp start");
+    startIPCServer();
     mAppUIViewModel->initApplication();
     UIVIEW_LOG_DEBUG("startApp finish");
 

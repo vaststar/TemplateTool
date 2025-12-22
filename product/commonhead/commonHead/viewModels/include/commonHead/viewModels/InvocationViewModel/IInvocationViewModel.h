@@ -22,6 +22,8 @@ public:
     IInvocationViewModelCallback& operator=(const IInvocationViewModelCallback&) = delete;
     IInvocationViewModelCallback& operator=(IInvocationViewModelCallback&&) = delete;
     virtual ~IInvocationViewModelCallback() = default;
+public:
+    virtual void onActivateMainApp() = 0;
 };
 
 class COMMONHEAD_EXPORT IInvocationViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IInvocationViewModelCallback>

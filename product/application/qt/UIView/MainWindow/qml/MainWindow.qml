@@ -42,11 +42,19 @@ ApplicationWindow
     Component.onCompleted:{
         root.controller.logInfo("MainWindow QML Component onCompleted")
         root.controller.controllerInitialized.connect(onMainControllerInitialized)
+        root.controller.activateWindow.connect(onShowActivateWindow)
         ControllerInitializer.initializeController(root.controller)
     }
 
     function onMainControllerInitialized(){
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":root.controller});
+    }
+
+    function onShowActivateWindow() {
+        root.show()
+        root.visibility = Window.Windowed
+        root.raise()
+        root.requestActivate()
     }
 
     AppSystemTray{

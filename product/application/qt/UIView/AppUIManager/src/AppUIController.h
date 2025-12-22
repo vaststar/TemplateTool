@@ -6,13 +6,15 @@
 
 namespace commonHead{
     namespace viewModels{
-            class IAppUIViewModel;
+        class IAppUIViewModel;
+        class IInvocationViewModel;
     }
 }
 
 class AppContext;
 namespace UIVMSignalEmitter{
     class AppUIViewModelEmitter;
+    class InvocationViewModelEmitter;
 }
 
 namespace UIUtilities{
@@ -36,4 +38,6 @@ private:
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mAppUIViewModel;
     std::shared_ptr<UIVMSignalEmitter::AppUIViewModelEmitter> mAppUIViewModelEmitter;
     std::shared_ptr<UIUtilities::UIIPCServer> mIPCServer;
+    std::shared_ptr<commonHead::viewModels::IInvocationViewModel> mIPCViewModel;
+    std::shared_ptr<UIVMSignalEmitter::InvocationViewModelEmitter> mInvocationViewModelEmitter;
 };

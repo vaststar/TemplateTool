@@ -19,6 +19,9 @@
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+static constexpr auto SINGLE_INSTANCE_NAME = "TemplateTool_SingleInstance";
+static constexpr auto IPC_SERVER_NAME = "TemplateTool_IPC_Server";
+
 class Main::DataPrivate
 {
 public:
@@ -85,7 +88,7 @@ Main::~Main()
 
 int Main::runMain(int argc, char *argv[])
 {
-    if (UIUtilities::UISingleInstanceChecker singleInstanceChecker("MyUniqueApplicationName_MainUI"); singleInstanceChecker.tryToRun())
+    if (UIUtilities::UISingleInstanceChecker singleInstanceChecker(SINGLE_INSTANCE_NAME); singleInstanceChecker.tryToRun())
     {
         int result = mDataPrivate->runApp(argc, argv);
         MAINUI_LOG_DEBUG("===========================================");
@@ -96,8 +99,8 @@ int Main::runMain(int argc, char *argv[])
     }
     else
     {
-        UIUtilities::UIIPCClient client("UniqueAppIPCServerName");
-        client.send("test message");
+        UIUtilities::UIIPCClient client(IPC_SERVER_NAME);
+        client.send("ActivateWindow");
     }
     return -1;
 }

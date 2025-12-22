@@ -40,9 +40,11 @@ signals:
     void windowSizeChanged();
     void controllerInitialized();
     void visibleChanged();
+    void activateWindow();
 public slots:
     void openCamera();
     void testFunc();
+    void activateMainWindow();
 protected:
     virtual void init() override;
 private:
