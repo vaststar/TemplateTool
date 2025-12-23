@@ -13,5 +13,7 @@ public:
     IInvocationServiceCallback& operator=(const IInvocationServiceCallback&) = delete;
     IInvocationServiceCallback& operator=(IInvocationServiceCallback&&) = delete;
     virtual ~ IInvocationServiceCallback() = default;
+public:
+    virtual void onCommandMessageReceived(const std::string& message) = 0;
 };
 }

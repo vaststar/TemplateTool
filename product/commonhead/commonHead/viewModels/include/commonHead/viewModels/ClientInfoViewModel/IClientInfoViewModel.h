@@ -6,6 +6,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
+#include <commonHead/viewModels/IViewModel/IViewModel.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -29,10 +30,10 @@ public:
     virtual ~IClientInfoViewModelCallback() = default;
 };
 
-class COMMONHEAD_EXPORT IClientInfoViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IClientInfoViewModelCallback>
+class COMMONHEAD_EXPORT IClientInfoViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IClientInfoViewModelCallback>
 {
 public:
-    IClientInfoViewModel() = default;
+    using IViewModel::IViewModel;
     IClientInfoViewModel(const IClientInfoViewModel&) = delete;
     IClientInfoViewModel(IClientInfoViewModel&&) = delete;
     IClientInfoViewModel& operator=(const IClientInfoViewModel&) = delete;

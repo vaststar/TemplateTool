@@ -16,6 +16,7 @@
 
 
 #include "MediaCameraView/include/MediaCameraViewController.h"
+#include "ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
@@ -28,6 +29,11 @@ void MainWindowController::init()
     UIVIEW_LOG_DEBUG("");
 
     mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
+    mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
+    mMainViewModel->registerCallback(mMainViewModelEmitter);
+    connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow, 
+                this, &MainWindowController::activateMainWindow);
+    mMainViewModel->initViewModel();
     emit controllerInitialized();
     emit visibleChanged();
 }

@@ -115,6 +115,7 @@ void InvocationService::processCommandMessage(const std::string& message)
 {
     SERVICE_LOG_DEBUG("message:" << message);
     mDataPrivate->getInvocationManager().processCommandMessage(message);
+    fireNotification(&IInvocationServiceCallback::onCommandMessageReceived, message);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

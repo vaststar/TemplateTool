@@ -26,6 +26,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
     ViewModelSingalEmitter/InvocationViewModelEmitter.h
     ViewModelSingalEmitter/AppUiViewModelEmitter.h
+    ViewModelSingalEmitter/MainWindowViewModelEmitter.h
 
     ContactList/include/ContactListItemModel.h
     ContactList/include/ContactListViewController.h

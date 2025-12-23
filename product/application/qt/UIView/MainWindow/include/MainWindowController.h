@@ -16,6 +16,10 @@ namespace commonHead{
     }
 }
 
+namespace UIVMSignalEmitter{
+    class MainWindowViewModelEmitter;
+}
+
 class AppContext;
 
 class MainWindowController : public UIViewController
@@ -49,4 +53,6 @@ protected:
     virtual void init() override;
 private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
+    std::shared_ptr<UIVMSignalEmitter::MainWindowViewModelEmitter> mMainViewModelEmitter;
+
 };

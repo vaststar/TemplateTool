@@ -3,6 +3,7 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
+#include <ucf/Services/InvocationService/IInvocationService.h>
 
 namespace commonHead::viewModels{
 std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
@@ -11,7 +12,7 @@ std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::createInstance(commo
 }
 
 MainWindowViewModel::MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : mCommonHeadFrameworkWptr(commonHeadFramework)
+    : IMainWindowViewModel(commonHeadFramework)
 {
     COMMONHEAD_LOG_DEBUG("create MainWindowViewModel");
 }
@@ -19,5 +20,27 @@ MainWindowViewModel::MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr co
 std::string MainWindowViewModel::getViewModelName() const
 {
     return "MainWindowViewModel";
+}
+
+void MainWindowViewModel::init()
+{
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto service = serviceLocator->getInvocationService().lock())
+            {
+                service->registerCallback(shared_from_this());
+            }
+        }
+    }
+
+}
+void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
+{
+    if (message == "ActivateWindow")
+    {
+        fireNotification(&IMainWindowViewModelCallback::onActivateMainWindow);
+    }
 }
 }

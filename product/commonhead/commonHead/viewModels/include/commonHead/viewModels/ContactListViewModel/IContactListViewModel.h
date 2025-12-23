@@ -5,6 +5,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
+#include <commonHead/viewModels/IViewModel/IViewModel.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -29,10 +30,10 @@ public:
     virtual void onContactListAvaliable(const std::vector<model::Contact>& contactList) = 0;
 };
 
-class COMMONHEAD_EXPORT IContactListViewModel: public virtual commonHead::utilities::IVMNotificationHelper<IContactListViewModelCallback>
+class COMMONHEAD_EXPORT IContactListViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IContactListViewModelCallback>
 {
 public:
-    IContactListViewModel() = default;
+    using IViewModel::IViewModel;
     IContactListViewModel(const IContactListViewModel&) = delete;
     IContactListViewModel(IContactListViewModel&&) = delete;
     IContactListViewModel& operator=(const IContactListViewModel&) = delete;

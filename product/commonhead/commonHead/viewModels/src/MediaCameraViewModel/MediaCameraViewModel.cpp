@@ -22,7 +22,7 @@ MediaCameraViewModel::~MediaCameraViewModel()
         mCaptureThread->join();
     }
     
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -35,7 +35,7 @@ MediaCameraViewModel::~MediaCameraViewModel()
 }
 
 MediaCameraViewModel::MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : mCommonHeadFrameworkWptr(commonHeadFramework)
+    : IMediaCameraViewModel(commonHeadFramework)
     , mVideoCaptureStop(false)
     , mCaptureThread(nullptr)
 {
@@ -47,9 +47,14 @@ std::string MediaCameraViewModel::getViewModelName() const
     return "MediaCameraViewModel";
 }
 
+void MediaCameraViewModel::init()
+{
+
+}
+
 void MediaCameraViewModel::openCamera()
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -64,7 +69,7 @@ void MediaCameraViewModel::openCamera()
 void MediaCameraViewModel::startCaptureCameraVideo()
 {
     mCaptureThread = std::make_shared<std::thread>([this](){
-        if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+        if (auto commonHeadFramework = getCommonHeadFramework().lock())
         {
             if (auto serviceLocator = commonHeadFramework->getServiceLocator())
             {

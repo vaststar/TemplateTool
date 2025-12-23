@@ -77,11 +77,11 @@ void AppUIController::onShowMainWindow()
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
             UIVIEW_LOG_DEBUG("MainWindow.qml load done, see MainWindowController");
-            if (mInvocationViewModelEmitter)
-            {
-                connect(mInvocationViewModelEmitter.get(), &UIVMSignalEmitter::InvocationViewModelEmitter::signals_onActivateMainApp, 
-                mainController, &MainWindowController::activateMainWindow);
-            }
+            // if (mInvocationViewModelEmitter)
+            // {
+            //     connect(mInvocationViewModelEmitter.get(), &UIVMSignalEmitter::InvocationViewModelEmitter::signals_onActivateMainApp, 
+            //     mainController, &MainWindowController::activateMainWindow);
+            // }
             // mImpl->getAppContext()->getViewFactory()->installTranslation({});
             // mainController->initializeController(mAppContext);
         }

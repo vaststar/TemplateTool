@@ -11,7 +11,7 @@ class ContactListViewModel: public virtual IContactListViewModel,
                             public std::enable_shared_from_this<ContactListViewModel>
 {
 public:
-    ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
+    explicit ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
     ContactListViewModel() = default;
     ContactListViewModel(const ContactListViewModel&) = delete;
     ContactListViewModel(ContactListViewModel&&) = delete;
@@ -22,7 +22,7 @@ public:
     virtual std::string getViewModelName() const override;
     virtual std::vector<commonHead::viewModels::model::Contact> getContactList() const override;
 
-private:
-    commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
+protected:
+    virtual void init() override;
 };
 }

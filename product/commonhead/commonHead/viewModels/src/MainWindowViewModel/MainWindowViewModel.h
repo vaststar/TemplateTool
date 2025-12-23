@@ -4,10 +4,12 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <ucf/Services/InvocationService/IInvocationServiceCallback.h>
 
 namespace commonHead::viewModels{
 class MainWindowViewModel: public virtual IMainWindowViewModel, 
                            public virtual commonHead::utilities::VMNotificationHelper<IMainWindowViewModelCallback>,
+                           public ucf::service::IInvocationServiceCallback,
                            public std::enable_shared_from_this<MainWindowViewModel>
 {
 public:
@@ -21,7 +23,9 @@ public:
 public:
     virtual std::string getViewModelName() const override;
 
-private:
-    commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
+    virtual void onCommandMessageReceived(const std::string& message) override;
+
+protected:
+    virtual void init();
 };
 }

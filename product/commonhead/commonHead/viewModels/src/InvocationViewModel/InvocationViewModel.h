@@ -28,7 +28,7 @@ public:
     virtual void processStartupParameters() override;
     virtual std::vector<std::string> getStartupParameters() const override;
     virtual void processCommandMessage(const std::string& message) override;
-private:
-    commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
+protected:
+    virtual void init() override;
 };
 }

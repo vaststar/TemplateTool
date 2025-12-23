@@ -16,7 +16,7 @@ std::shared_ptr<IClientInfoViewModel> IClientInfoViewModel::createInstance(commo
 }
 
 ClientInfoViewModel::ClientInfoViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : mCommonHeadFrameworkWptr(commonHeadFramework)
+    : IClientInfoViewModel(commonHeadFramework)
 {
     COMMONHEAD_LOG_DEBUG("create ClientInfoViewModel");
 }
@@ -26,9 +26,14 @@ std::string ClientInfoViewModel::getViewModelName() const
     return "ClientInfoViewModel";
 }
 
+void ClientInfoViewModel::init()
+{
+
+}
+
 std::string ClientInfoViewModel::getApplicationVersion() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -43,7 +48,7 @@ std::string ClientInfoViewModel::getApplicationVersion() const
 
 commonHead::viewModels::model::LanguageType ClientInfoViewModel::getApplicationLanguage() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -59,7 +64,7 @@ commonHead::viewModels::model::LanguageType ClientInfoViewModel::getApplicationL
 
 void ClientInfoViewModel::setApplicationLanguage(commonHead::viewModels::model::LanguageType language)
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -165,7 +170,7 @@ ucf::service::model::ThemeType ClientInfoViewModel::convertModelThemeTypeToServi
 
 std::vector<commonHead::viewModels::model::LanguageType> ClientInfoViewModel::getSupportedLanguages() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -185,7 +190,7 @@ std::vector<commonHead::viewModels::model::LanguageType> ClientInfoViewModel::ge
 
 void ClientInfoViewModel::setCurrentThemeType(commonHead::viewModels::model::ThemeType themeType)
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -199,7 +204,7 @@ void ClientInfoViewModel::setCurrentThemeType(commonHead::viewModels::model::The
 
 commonHead::viewModels::model::ThemeType ClientInfoViewModel::getCurrentThemeType() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -214,7 +219,7 @@ commonHead::viewModels::model::ThemeType ClientInfoViewModel::getCurrentThemeTyp
 
 std::vector<commonHead::viewModels::model::ThemeType> ClientInfoViewModel::getSupportedThemeTypes() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {

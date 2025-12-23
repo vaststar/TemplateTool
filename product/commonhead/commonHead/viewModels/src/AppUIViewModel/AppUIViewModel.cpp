@@ -23,7 +23,7 @@ std::shared_ptr<IAppUIViewModel> IAppUIViewModel::createInstance(commonHead::ICo
 }
 
 AppUIViewModel::AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : mCommonHeadFrameworkWptr(commonHeadFramework)
+    : IAppUIViewModel(commonHeadFramework)
 {
     COMMONHEAD_LOG_DEBUG("create AppUIViewModel");
 }
@@ -31,6 +31,11 @@ AppUIViewModel::AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFr
 std::string AppUIViewModel::getViewModelName() const
 {
     return "AppUIViewModel";
+}
+
+void AppUIViewModel::init()
+{
+
 }
 
 void AppUIViewModel::initApplication()
@@ -44,7 +49,7 @@ void AppUIViewModel::initApplication()
 void AppUIViewModel::initDatabase()
 {
     COMMONHEAD_LOG_DEBUG("will init default database");
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {

@@ -28,6 +28,8 @@ public:
     virtual void openCamera() override;
     virtual void startCaptureCameraVideo() override;
     virtual void stopCaptureCameraVideo() override;
+protected:
+    virtual void init() override;
 private:
     model::Image convertServiceImageToViewModelImage(const ucf::service::model::Image& image) const;
 private:

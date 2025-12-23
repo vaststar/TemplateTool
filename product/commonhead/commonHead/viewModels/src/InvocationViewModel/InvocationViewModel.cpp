@@ -20,7 +20,7 @@ InvocationViewModel::~InvocationViewModel()
 }
 
 InvocationViewModel::InvocationViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : mCommonHeadFrameworkWptr(commonHeadFramework)
+    : IInvocationViewModel(commonHeadFramework)
 {
     COMMONHEAD_LOG_DEBUG("create InvocationViewModel");
 }
@@ -30,9 +30,14 @@ std::string InvocationViewModel::getViewModelName() const
     return "InvocationViewModel";
 }
 
+void InvocationViewModel::init()
+{
+
+}
+
 void InvocationViewModel::processStartupParameters()
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -46,7 +51,7 @@ void InvocationViewModel::processStartupParameters()
 
 std::vector<std::string> InvocationViewModel::getStartupParameters() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
@@ -61,11 +66,7 @@ std::vector<std::string> InvocationViewModel::getStartupParameters() const
 
 void InvocationViewModel::processCommandMessage(const std::string& message)
 {
-    if (message == "ActivateWindow")
-    {
-        fireNotification(&IInvocationViewModelCallback::onActivateMainApp);
-    }
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {

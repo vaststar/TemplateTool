@@ -17,7 +17,7 @@ std::shared_ptr<IContactListViewModel> IContactListViewModel::createInstance(com
 }
 
 ContactListViewModel::ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : mCommonHeadFrameworkWptr(commonHeadFramework)
+    : IContactListViewModel(commonHeadFramework)
 {
     COMMONHEAD_LOG_DEBUG("create ContactListViewModel");
 }
@@ -27,9 +27,14 @@ std::string ContactListViewModel::getViewModelName() const
     return "ContactListViewModel";
 }
 
+void ContactListViewModel::init()
+{
+
+}
+
 std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getContactList() const
 {
-    if (auto commonHeadFramework = mCommonHeadFrameworkWptr.lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {

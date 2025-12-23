@@ -19,8 +19,7 @@ class AppUIViewModel: public virtual IAppUIViewModel,
                       public std::enable_shared_from_this<AppUIViewModel>
 {
 public:
-    AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
-    AppUIViewModel() = default;
+    explicit AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
     AppUIViewModel(const AppUIViewModel&) = delete;
     AppUIViewModel(AppUIViewModel&&) = delete;
     AppUIViewModel& operator=(const AppUIViewModel&) = delete;
@@ -29,9 +28,9 @@ public:
 public:
     virtual std::string getViewModelName() const override;
     virtual void initApplication() override;
+protected:
+    void init();
 private:    
     void initDatabase();
-private:
-    commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
 };
 }

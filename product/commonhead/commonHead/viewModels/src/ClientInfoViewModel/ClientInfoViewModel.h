@@ -21,8 +21,7 @@ class ClientInfoViewModel: public virtual IClientInfoViewModel,
                            public std::enable_shared_from_this<ClientInfoViewModel>
 {
 public:
-    ClientInfoViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
-    ClientInfoViewModel() = default;
+    explicit ClientInfoViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
     ClientInfoViewModel(const ClientInfoViewModel&) = delete;
     ClientInfoViewModel(ClientInfoViewModel&&) = delete;
     ClientInfoViewModel& operator=(const ClientInfoViewModel&) = delete;
@@ -39,7 +38,8 @@ public:
     virtual void setCurrentThemeType(commonHead::viewModels::model::ThemeType themeType) override;
     virtual commonHead::viewModels::model::ThemeType getCurrentThemeType() const override;
     virtual std::vector<commonHead::viewModels::model::ThemeType> getSupportedThemeTypes() const override;
-
+protected:
+    void init();
 private:
     commonHead::viewModels::model::LanguageType convertServiceLanguageToModelLanguage(ucf::service::model::LanguageType language) const;
     ucf::service::model::LanguageType convertModelLanguageToServiceLanguage(commonHead::viewModels::model::LanguageType language) const;
@@ -47,8 +47,5 @@ private:
     
     commonHead::viewModels::model::ThemeType convertServiceThemeTypeToModelThemeType(ucf::service::model::ThemeType theme) const;
     ucf::service::model::ThemeType convertModelThemeTypeToServiceThemeType(commonHead::viewModels::model::ThemeType theme) const;
-
-private:
-    commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
 };
 }

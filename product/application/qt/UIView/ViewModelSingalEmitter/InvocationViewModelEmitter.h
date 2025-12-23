@@ -14,11 +14,5 @@ public:
     {
     }
 
-    virtual void onActivateMainApp() override
-    {
-        emit signals_onActivateMainApp();
-    };
-signals:
-    void signals_onActivateMainApp();
 };
 }
