@@ -1,49 +1,16 @@
 #include "ContactList/include/ContactListItemModel.h"
 
+#include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
+
+enum Roles {
+    IdRole = Qt::UserRole + 1,
+    DisplayNameRole,
+    TypeRole  // 0 = Person, 1 = Group
+};
+
 ContactListItemModel::ContactListItemModel(QObject *parent)
+    : QAbstractItemModel(parent)
 {
-    commonHead::viewModels::model::Contact contact1("1");
-    contact1.setContactName("1");
-    contact1.setLowerIds({"2","3"});
-    mContacts.push_back(contact1);
-
-    
-    commonHead::viewModels::model::Contact contact2("2");
-    contact2.setContactName("2");
-    contact2.setUpperId({"1"});
-    mContacts.push_back(contact2);
-
-    
-    commonHead::viewModels::model::Contact contact3("3");
-    contact3.setContactName("3");
-    contact3.setUpperId({"1"});
-    contact3.setLowerIds({"31"});
-    
-    mContacts.push_back(contact3);
-
-    commonHead::viewModels::model::Contact contact31("31");
-    contact31.setContactName("31");
-    contact31.setUpperId({"3"});
-    
-    mContacts.push_back(contact31);
-
-    
-    commonHead::viewModels::model::Contact contact11("11");
-    contact11.setContactName("11");
-    contact11.setLowerIds({"12","13"});
-    mContacts.push_back(contact11);
-
-    
-    commonHead::viewModels::model::Contact contact12("12");
-    contact12.setContactName("12");
-    contact12.setUpperId({"11"});
-    mContacts.push_back(contact12);
-
-    
-    commonHead::viewModels::model::Contact contact13("13");
-    contact13.setContactName("13");
-    contact13.setUpperId({"11"});
-    mContacts.push_back(contact13);
 
 }
 
@@ -54,100 +21,167 @@ ContactListItemModel::~ContactListItemModel()
 
 QVariant ContactListItemModel::data(const QModelIndex &index, int role) const
 {
-     if (!index.isValid() || role != Qt::DisplayRole)
+    if (!mViewModel || !index.isValid()) {
         return {};
+    }
 
-    const auto *item = static_cast<const commonHead::viewModels::model::Contact*>(index.internalPointer());
-    return QString::fromStdString(item->getContactName());
+    commonHead::viewModels::model::IContactTreeNode* node = nodeFromIndex(index);
+    if (!node) {
+        return {};
+    }
+
+    commonHead::viewModels::model::ContactNodeData nodeData = node->getNodeData();
+
+    switch (role) {
+    case Qt::DisplayRole:
+    case DisplayNameRole:
+        return QString::fromStdString(nodeData.displayName);
+    case IdRole:
+        return QString::fromStdString(nodeData.id);
+    case TypeRole:
+        return (nodeData.type ==
+                commonHead::viewModels::model::ContactNodeType::Person) ? 0 : 1;
+    default:
+        break;
+    }
+
+    return {};
 }
 
 Qt::ItemFlags ContactListItemModel::flags(const QModelIndex &index) const
 {
-    return index.isValid()
-        ? QAbstractItemModel::flags(index) : Qt::ItemFlags(Qt::NoItemFlags);
+    if (!index.isValid()) {
+        return Qt::NoItemFlags;
+    }
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
 QVariant ContactListItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
-        return "testHeader";
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+        if (section == 0) {
+            return QStringLiteral("Contact");
+        }
     }
     return {};
 }
 
 QModelIndex ContactListItemModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (!parent.isValid())
-    {
-        int  i = 0;
-        for(const auto& contact: mContacts)
-        {
-            if (contact.getUpperId().empty())
-            {
-                if (i == row)
-                {
-                    return createIndex(row, column, &contact);
-                }
-                ++i;
-            }
-        }
+    if (!mViewModel) {
         return {};
     }
-    else if(commonHead::viewModels::model::Contact* contact = static_cast<commonHead::viewModels::model::Contact*>(parent.internalPointer()))
-    {
-        if (row <= contact->getLowerIds().size())
-        {
-            auto item = std::find_if(mContacts.begin(), mContacts.end(),[id = contact->getLowerIds()[row]](const commonHead::viewModels::model::Contact& contactItem){ return id == contactItem.getContactId();});
-            if (item != mContacts.end())
-            {
-                return createIndex(row, column, &(*item));
-            }
-        }
+    if (row < 0 || column < 0 || column >= columnCount()) {
+        return {};
     }
-    return {};
+    
+    commonHead::viewModels::model::IContactTreeNode* parentNode = nodeFromIndex(parent);
+    if (!parentNode) {
+        return {};
+    }
+
+    if (static_cast<std::size_t>(row) >= parentNode->getChildCount()) {
+        return {};
+    }
+
+    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> child =
+        parentNode->getChild(static_cast<std::size_t>(row));
+
+    if (!child) {
+        return {};
+    }
+
+    return createIndex(
+        row,
+        column,
+        static_cast<void*>(child.get())
+    );
 }
 
 QModelIndex ContactListItemModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid())
+     if (!mViewModel || !index.isValid()) {
         return {};
-
-    if (auto *childItem = static_cast<commonHead::viewModels::model::Contact*>(index.internalPointer()))
-    {
-        int row = 0;
-        for(const auto& contact: mContacts)
-        {
-            if (contact.getContactId() == childItem->getUpperId())
-            {
-                return createIndex(row, 0, &contact);
-            }
-            ++row;
-        }
-
     }
-    return {};
+
+    commonHead::viewModels::model::ContactTreePtr tree = mViewModel->getContactList();
+    if (!tree) {
+        return {};
+    }
+
+    commonHead::viewModels::model::IContactTreeNode* node = nodeFromIndex(index);
+    if (!node) {
+        return {};
+    }
+
+    std::weak_ptr<commonHead::viewModels::model::IContactTreeNode> parentWeak = node->getParent();
+    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> parentShared = parentWeak.lock();
+
+    if (!parentShared) {
+        return {};
+    }
+
+    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> root = tree->getRoot();
+    if (!root) {
+        return {};
+    }
+
+    if (parentShared == root) {
+        return {};
+    }
+
+    std::weak_ptr<commonHead::viewModels::model::IContactTreeNode> gWeak = parentShared->getParent();
+    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> grandParent = gWeak.lock();
+
+    if (!grandParent) {
+        return {};
+    }
+
+    const std::size_t count = grandParent->getChildCount();
+    int row = -1;
+
+    for (std::size_t i = 0; i < count; ++i) {
+        std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> child =
+            grandParent->getChild(i);
+
+        if (child && child.get() == parentShared.get()) {
+            row = static_cast<int>(i);
+            break;
+        }
+    }
+
+    if (row < 0) {
+        return {};
+    }
+
+    return createIndex(
+        row,
+        0,
+        static_cast<void*>(parentShared.get())
+    );
 }
 
 int ContactListItemModel::rowCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
-    {
-        int  i = 0;
-        for(const auto& contact: mContacts)
-        {
-            if (contact.getUpperId().empty())
-            {
-                ++i;
-            }
-        }
-        return i;
+    if (!mViewModel) {
+        return 0;
     }
-    else if (auto* item = static_cast<commonHead::viewModels::model::Contact*>(parent.internalPointer()))
-    {
-        return static_cast<int>(item->getLowerIds().size());
+
+    if (parent.isValid() && parent.column() != 0) {
+        return 0;
     }
-    return 0;
+
+    commonHead::viewModels::model::ContactTreePtr tree = mViewModel->getContactList();
+    if (!tree) {
+        return 0;
+    }
+
+    commonHead::viewModels::model::IContactTreeNode* parentNode = nodeFromIndex(parent);
+    if (!parentNode) {
+        return 0;
+    }
+
+    return static_cast<int>(parentNode->getChildCount());
 }
 
 int ContactListItemModel::columnCount(const QModelIndex &parent) const
@@ -155,9 +189,46 @@ int ContactListItemModel::columnCount(const QModelIndex &parent) const
     return 1;
 }
 
-void ContactListItemModel::setupModelData(const std::vector<commonHead::viewModels::model::Contact>& contacts)
+QHash<int, QByteArray> ContactListItemModel::roleNames() const
 {
-	beginResetModel();
-	mContacts = contacts;
-	endResetModel();
+    QHash<int, QByteArray> roles;
+    roles[IdRole]          = "id";
+    roles[DisplayNameRole] = "displayName";
+    roles[TypeRole]        = "nodeType";
+    return roles;
+}
+
+commonHead::viewModels::model::IContactTreeNode*
+ContactListItemModel::nodeFromIndex(const QModelIndex &index) const
+{
+    if (!mViewModel) {
+        return nullptr;
+    }
+
+    commonHead::viewModels::model::ContactTreePtr tree = mViewModel->getContactList();
+    if (!tree) {
+        return nullptr;
+    }
+
+    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> root = tree->getRoot();
+    if (!root) {
+        return nullptr;
+    }
+
+    if (!index.isValid()) {
+        return root.get();
+    }
+
+    return static_cast<commonHead::viewModels::model::IContactTreeNode*>(index.internalPointer());
+}
+
+void ContactListItemModel::setUpViewModel(const std::shared_ptr<commonHead::viewModels::IContactListViewModel>& viewModel)
+{
+    if (mViewModel == viewModel)
+    {
+        return;
+    }
+    beginResetModel();
+    mViewModel = viewModel;
+    endResetModel();
 }

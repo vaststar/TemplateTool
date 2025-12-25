@@ -8,7 +8,7 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
     include/commonHead/viewModels/IViewModel/IViewModel.h
     include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
-    include/commonHead/viewModels/ContactListViewModel/ContactListModel.h
+    include/commonHead/viewModels/ContactListViewModel/IContactListModel.h
     include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
     include/commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h
     include/commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h
@@ -22,6 +22,7 @@ set(MODULE_SOURCE_PRIVATE
     src/ContactListViewModel/ContactListViewModel.h
     src/ContactListViewModel/ContactListViewModel.cpp
     src/ContactListViewModel/ContactListModel.cpp
+    src/ContactListViewModel/ContactListModel.h
     src/MainWindowViewModel/MainWindowViewModel.h
     src/MainWindowViewModel/MainWindowViewModel.cpp
     src/ClientInfoViewModel/ClientInfoViewModel.h

@@ -3,7 +3,13 @@
 #include <QAbstractItemModel>
 #include <QtQml>
 
-#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
+namespace commonHead::viewModels{
+    class IContactListViewModel;
+}
+
+namespace commonHead::viewModels::model{
+    class IContactTreeNode;
+}
 
 class ContactListItemModel : public QAbstractItemModel
 {
@@ -22,7 +28,15 @@ public:
     int rowCount(const QModelIndex &parent = {}) const override;
     int columnCount(const QModelIndex &parent = {}) const override;
 
-    void setupModelData(const std::vector<commonHead::viewModels::model::Contact>& contacts);
+    void setUpViewModel(const std::shared_ptr<commonHead::viewModels::IContactListViewModel>& viewModel);
+protected:
+    // 为 QML 提供角色名
+    QHash<int, QByteArray> roleNames() const override;
+
 private:
-    std::vector<commonHead::viewModels::model::Contact> mContacts;
+    // 帮助函数：从 QModelIndex 取出节点指针
+    commonHead::viewModels::model::IContactTreeNode* nodeFromIndex(const QModelIndex& index) const;
+
+private:
+    std::shared_ptr<commonHead::viewModels::IContactListViewModel> mViewModel;
 };

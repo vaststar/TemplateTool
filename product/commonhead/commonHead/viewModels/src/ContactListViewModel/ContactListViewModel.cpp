@@ -7,7 +7,7 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 
-#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
+#include "ContactListModel.h"
 
 
 namespace commonHead::viewModels{
@@ -29,10 +29,10 @@ std::string ContactListViewModel::getViewModelName() const
 
 void ContactListViewModel::init()
 {
-
+    buildContactTree();
 }
 
-std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getContactList() const
+void ContactListViewModel::buildContactTree()
 {
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
@@ -40,16 +40,21 @@ std::vector<commonHead::viewModels::model::Contact> ContactListViewModel::getCon
         {
             if (auto contactService = serviceLocator->getContactService().lock())
             {
-                auto contactList = contactService->getPersonContactList();
-                std::vector<commonHead::viewModels::model::Contact> contacts;
-                for(auto conact: contactList)
-                {
-                    contacts.emplace_back(commonHead::viewModels::model::Contact{conact->getContactId()});
-                }
-                return contacts;
+                std::vector<ucf::service::model::IContactPtr> allContacts;
+                auto allPersonContacts = contactService->getPersonContactList();
+                auto allGroupContacts = contactService->getGroupContactList();
+                allContacts.insert(allContacts.end(), allPersonContacts.begin(), allPersonContacts.end());
+                allContacts.insert(allContacts.end(), allGroupContacts.begin(), allGroupContacts.end());
+                auto allRelations = contactService->getContactRelations();
+
+                mContactTreePtr = std::make_shared<model::ContactTree>(allContacts, allRelations);
             }
         }
     }
-    return {};
+}
+
+model::ContactTreePtr ContactListViewModel::getContactList() const
+{
+    return mContactTreePtr;
 }
 }

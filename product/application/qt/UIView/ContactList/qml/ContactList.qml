@@ -35,10 +35,6 @@ Item{
         }
     }
 
-    ContactListItemModel{
-        id:treeModel
-    }
-
     TreeView {
         id: treeView
         anchors{
@@ -46,15 +42,17 @@ Item{
             leftMargin: 300
             top: parent.top
             topMargin: 10
+
         }
-        width:200
-        height:200
+        width:treeView.contentWidth
+        height:300
         clip: false
         activeFocusOnTab: true
 
         // The model needs to be a QAbstractItemModel
-        model: treeModel
+        model: controller.orgTreeModel
         selectionModel: ItemSelectionModel {}
+
 
         Keys.onTabPressed: function(e) {
             e.accepted = true; 
@@ -133,7 +131,7 @@ Item{
                 x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - padding - x
-                text: model.display
+                text: model.displayName
                 
             }
             UTFocusItem{

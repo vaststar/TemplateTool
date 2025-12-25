@@ -1,7 +1,7 @@
 #include "ContactList/include/ContactListViewController.h"
 #include "LoggerDefine/LoggerDefine.h"
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
-#include <commonHead/viewModels/ContactListViewModel/ContactListModel.h>
+#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IViewModelFactory.h>
@@ -17,6 +17,8 @@ void ContactListViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
     mContactListViewModel = getAppContext()->getViewModelFactory()->createContactListViewModelInstance();
+    mContactListViewModel->initViewModel();
+    buildContactTreeModel();
     UIVIEW_LOG_DEBUG("done");
 }
 
@@ -27,4 +29,30 @@ void ContactListViewController::buttonClicked()
     getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
     // mAppContext->getViewFactory()->createQmlWindow(QStringLiteral("UTComponent/UTWindow/UTTest.qml"))->show();
     
+}
+
+QAbstractItemModel* ContactListViewController::getOrgTreeModel() const
+{
+    return mOrgTreeModel;
+}
+
+void ContactListViewController::buildContactTreeModel()
+{
+    if (!mContactListViewModel)
+    {
+        UIVIEW_LOG_ERROR("mContactListViewModel is null");
+        return;
+    }
+
+    if (mOrgTreeModel)
+    {
+        delete mOrgTreeModel;
+        mOrgTreeModel = nullptr;
+    }
+
+    mOrgTreeModel = new ContactListItemModel(this);
+    mOrgTreeModel->setUpViewModel(mContactListViewModel);
+    // mOrgTreeModel->setupModelData(mContactListViewModel->getContactList()->getAllContacts());
+
+    emit orgTreeModelChanged();
 }

@@ -20,9 +20,12 @@ public:
     ~ContactListViewModel() = default;
 public:
     virtual std::string getViewModelName() const override;
-    virtual std::vector<commonHead::viewModels::model::Contact> getContactList() const override;
+    virtual model::ContactTreePtr getContactList() const override;
 
 protected:
     virtual void init() override;
+private:
+    void buildContactTree();
+    model::ContactTreePtr mContactTreePtr;
 };
 }

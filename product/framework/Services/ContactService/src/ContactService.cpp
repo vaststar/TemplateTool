@@ -94,18 +94,6 @@ void ContactService::onCoreFrameworkExit()
     SERVICE_LOG_DEBUG("");
 }
 
-// void ContactService::fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback)
-// {
-//     SERVICE_LOG_DEBUG("start fetchContactList");
-//     std::vector<model::Contact> contactList;
-//     if (auto contactModel = mDataPrivate->getContactModel())
-//     {
-//         contactList = contactModel->getContacts();
-//     }
-//     fireNotification(&IContactServiceCallback::OnContactListAvailable, contactList);
-//     SERVICE_LOG_DEBUG("finish fetchContactList");
-// }
-
 std::vector<model::IPersonContactPtr> ContactService::getPersonContactList() const
 {
     return mDataPrivate->getContactManager().getPersonContactList();
@@ -114,6 +102,21 @@ std::vector<model::IPersonContactPtr> ContactService::getPersonContactList() con
 model::IPersonContactPtr ContactService::getPersonContact(const std::string& contactId) const
 {
     return mDataPrivate->getContactManager().getPersonContact(contactId);
+}
+
+std::vector<model::IGroupContactPtr> ContactService::getGroupContactList() const
+{
+    return mDataPrivate->getContactManager().getGroupContactList();
+}
+
+model::IGroupContactPtr ContactService::getGroupContact(const std::string& contactId) const
+{
+    return mDataPrivate->getContactManager().getGroupContact(contactId);
+}
+
+std::vector<model::IContactRelationPtr> ContactService::getContactRelations() const
+{
+    return mDataPrivate->getContactManager().getContactRelations();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

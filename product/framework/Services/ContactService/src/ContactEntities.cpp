@@ -30,40 +30,17 @@ void PersonContact::setPersonName(const std::string& name)
     mPersonName = name;
 }
 
-// const std::vector<std::string>& PersonContact::getTags() const
-// {
-//     return mContactTags;
-// }
+IContact::ContactStatus PersonContact::getContactStatus() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mStatus;
+}
 
-// void PersonContact::setTags(const std::vector<std::string>& tags)
-// {
-//     mContactTags = tags;
-// }
-
-// void PersonContact::addTags(const std::vector<std::string>& tags)
-// {
-
-//     std::set<std::string> tempSet;
-//     std::for_each(mContactTags.cbegin(), mContactTags.cend(), [&tempSet](const std::string& tag){
-//         tempSet.insert(tag);
-//     });
-
-//     std::for_each(tags.cbegin(), tags.cend(),[this, &tempSet](const std::string& tag){
-//         if (!tempSet.contains(tag))
-//         {
-//             mContactTags.push_back(tag);
-//             tempSet.insert(tag);
-//         }
-//     });
-// }
-
-// void PersonContact::removeTags(const std::vector<std::string>& tags)
-// {
-//     std::for_each(tags.cbegin(), tags.cend(),[this](const std::string& tag){
-//         mContactTags.erase(std::remove(mContactTags.begin(), mContactTags.end(), tag),mContactTags.end());
-//     });
-// }
-
+void PersonContact::setContactStatus(ContactStatus status)
+{
+    std::scoped_lock lock(mDataMutex);
+    mStatus = status;
+}
 
 GroupContact::GroupContact(const std::string& id)
     : mContactId(id)
@@ -87,4 +64,55 @@ void GroupContact::setGroupName(const std::string& groupName)
     mGroupName = groupName;
 }
 
+IContact::ContactStatus GroupContact::getContactStatus() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mStatus;
 }
+
+void GroupContact::setContactStatus(ContactStatus status)
+{
+    std::scoped_lock lock(mDataMutex);
+    mStatus = status;
+}
+
+ContactRelation::ContactRelation(const std::string& childId,
+                                 const std::string& parentId)
+    : mChildId(childId)
+    , mParentId(parentId)
+{
+}
+
+ContactRelation::~ContactRelation()
+{
+}
+
+std::string ContactRelation::getChildId() const
+{
+    return mChildId;
+}
+
+std::string ContactRelation::getParentId() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mParentId;
+}
+
+void ContactRelation::setParentId(const std::string& parentId)
+{
+    std::scoped_lock lock(mDataMutex);
+    mParentId = parentId;
+}
+
+IContactRelation::RelationType ContactRelation::getRelationType() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mRelationType;
+}
+
+void ContactRelation::setRelationType(IContactRelation::RelationType type)
+{
+    std::scoped_lock lock(mDataMutex);
+    mRelationType = type;
+}
+} // namespace ucf::service::model

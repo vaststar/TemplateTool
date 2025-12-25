@@ -23,9 +23,13 @@ public:
     ContactService& operator=(ContactService&&) = delete;
 public:
     //IContactService
-    // virtual void fetchContactList(std::function<void(const std::vector<model::Contact>&)> contactListCallback) override;
     virtual std::vector<model::IPersonContactPtr> getPersonContactList() const override;
     virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const override;
+
+    virtual std::vector<model::IGroupContactPtr> getGroupContactList() const override;
+    virtual model::IGroupContactPtr getGroupContact(const std::string& contactId) const override;
+
+    virtual std::vector<model::IContactRelationPtr> getContactRelations() const override;
 
     //IService
     virtual std::string getServiceName() const override;
