@@ -79,8 +79,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_CXX_FLAGS": "/Zc:__cplusplus /utf-8"
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON"
       }
     },
     {
@@ -96,8 +95,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_CXX_FLAGS": "/Zc:__cplusplus /utf-8"
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON"
       }
     },
     {

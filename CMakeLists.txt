@@ -9,8 +9,10 @@ message(STATUS "C++ Compiler path: ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMake generator: ${CMAKE_GENERATOR}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
+# MSVC 编译器特定选项
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>")
 
 set(CMAKE_DEBUG_POSTFIX "")
 set(CMAKE_RELEASE_POSTFIX "_r")
