@@ -4,6 +4,7 @@
 #include <vector>
 #include <tuple>
 #include <variant>
+#include <cstdint>
 #include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
 namespace ucf::service::model{

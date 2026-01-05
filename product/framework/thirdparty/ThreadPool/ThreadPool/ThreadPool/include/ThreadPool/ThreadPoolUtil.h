@@ -1,13 +1,14 @@
-#ifndef ThreadPool_global_h__
-#define ThreadPool_global_h__
+#ifndef ThreadPoolUtil_h__
+#define ThreadPoolUtil_h__
 
 #include <string>
 #include <functional>
+#include <cstdint>
 #include <ThreadPool/ThreadPoolExport.h>
 
 namespace ThreadPoolUtil
 {
-	enum class ThreadLevel:uint32_t{
+	enum class ThreadLevel: uint32_t{
 		Level_Urgent = 0,
 		Level_High,
 		Level_Normal,
@@ -18,4 +19,4 @@ namespace ThreadPoolUtil
     THREADPOOL_EXPORT void initThreadPool(uint32_t maxThreadNumber = 500, const std::string& threadPoolName = DefaultThreadPoolName);
     THREADPOOL_EXPORT void createThreadTask(std::function<void()> func, ThreadLevel urgentLevel = ThreadLevel::Level_Normal, const std::string& poolName = DefaultThreadPoolName, const std::string& functionTag = DefaultFunctionTag);
 }
-#endif // ThreadPool_global_h__
+#endif // ThreadPoolUtil_h__

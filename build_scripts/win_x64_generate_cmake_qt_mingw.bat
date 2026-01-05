@@ -41,6 +41,8 @@ where gcc >nul 2>nul
 if %errorlevel%==0 (
     for /f "delims=" %%i in ('where gcc') do (
         set "MINGW_GCC=%%i"
+        rem Convert backslashes to forward slashes for CMake
+        set "MINGW_GCC_CMAKE=!MINGW_GCC:\=/!"
         goto :found_gcc
     )
 )
@@ -50,6 +52,8 @@ where g++ >nul 2>nul
 if %errorlevel%==0 (
     for /f "delims=" %%i in ('where g++') do (
         set "MINGW_GXX=%%i"
+        rem Convert backslashes to forward slashes for CMake
+        set "MINGW_GXX_CMAKE=!MINGW_GXX:\=/!"
         goto :found_gxx
     )
 )
@@ -74,11 +78,14 @@ rem 🔍 Detect make/ninja
 rem =========================================
 set "GENERATOR=MinGW Makefiles"
 set "MAKE_TOOL="
+set "MAKE_TOOL_CMAKE="
 
 where mingw32-make >nul 2>nul
 if %errorlevel%==0 (
     for /f "delims=" %%i in ('where mingw32-make') do (
         set "MAKE_TOOL=%%i"
+        rem Convert backslashes to forward slashes for CMake
+        set "MAKE_TOOL_CMAKE=!MAKE_TOOL:\=/!"
         set "GENERATOR=MinGW Makefiles"
         goto :found_make
     )
@@ -88,6 +95,8 @@ where ninja >nul 2>nul
 if %errorlevel%==0 (
     for /f "delims=" %%i in ('where ninja') do (
         set "MAKE_TOOL=%%i"
+        rem Convert backslashes to forward slashes for CMake
+        set "MAKE_TOOL_CMAKE=!MAKE_TOOL:\=/!"
         set "GENERATOR=Ninja"
         goto :found_make
     )
@@ -123,13 +132,28 @@ rem =========================================
 rem 🔍 Detect Qt installation (optional, for info only)
 rem =========================================
 set "QT_INFO="
+set "QT_DIR_CMAKE="
+set "CMAKE_PREFIX_PATH_CMAKE="
+
 if defined Qt6_DIR (
     set "QT_INFO=Qt6_DIR: %Qt6_DIR%"
+    rem Convert backslashes to forward slashes for CMake
+    set "QT_DIR_CMAKE=!Qt6_DIR:\=/!"
 ) else if defined CMAKE_PREFIX_PATH (
     set "QT_INFO=CMAKE_PREFIX_PATH: %CMAKE_PREFIX_PATH%"
+    rem Convert backslashes to forward slashes for CMake
+    set "CMAKE_PREFIX_PATH_CMAKE=!CMAKE_PREFIX_PATH:\=/!"
 ) else (
     set "QT_INFO=Not set (will use system default or CMake will search)"
 )
+
+rem =========================================
+rem 🔧 Convert other paths for CMake
+rem =========================================
+set "SOURCE_DIR_CMAKE=!SOURCE_DIR:\=/!"
+set "BUILD_DIR_CMAKE=!BUILD_DIR:\=/!"
+set "INSTALL_DIR_CMAKE=!INSTALL_DIR:\=/!"
+set "GRAPHVIZ_FILE_CMAKE=!GRAPHVIZ_FILE:\=/!"
 
 rem =========================================
 rem 📋 Display configuration summary
@@ -153,18 +177,31 @@ rem 🚀 Run CMake configuration with MinGW
 rem =========================================
 echo [INFO] Running CMake configuration...
 
-"%CMAKE%" -S "%SOURCE_DIR%" -B "%BUILD_DIR%" ^
+"%CMAKE%" -S "%SOURCE_DIR_CMAKE%" -B "%BUILD_DIR_CMAKE%" ^
     -G "%GENERATOR%" ^
-    -DCMAKE_C_COMPILER="%MINGW_GCC%" ^
-    -DCMAKE_CXX_COMPILER="%MINGW_GXX%" ^
-    --graphviz "%GRAPHVIZ_FILE%" ^
+    -DCMAKE_C_COMPILER="%MINGW_GCC_CMAKE%" ^
+    -DCMAKE_CXX_COMPILER="%MINGW_GXX_CMAKE%" ^
+    --graphviz="%GRAPHVIZ_FILE_CMAKE%" ^
     -DCMAKE_BUILD_TYPE=Release ^
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
-    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
-    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="%BUILD_DIR%\bin" ^
-    -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
+    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="%BUILD_DIR_CMAKE%\bin" ^
+    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="%BUILD_DIR_CMAKE%\bin" ^
+    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="%BUILD_DIR_CMAKE%\bin" ^
+    -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR_CMAKE%" ^
     -DCMAKE_VERBOSE_MAKEFILE=ON ^
     -DI18N_UPDATE_TS=ON
+
+if defined MAKE_TOOL_CMAKE (
+    "%CMAKE%" -S "%SOURCE_DIR_CMAKE%" -B "%BUILD_DIR_CMAKE%" ^
+        -DCMAKE_MAKE_PROGRAM="%MAKE_TOOL_CMAKE%"
+)
+
+if defined QT_DIR_CMAKE (
+    "%CMAKE%" -S "%SOURCE_DIR_CMAKE%" -B "%BUILD_DIR_CMAKE%" ^
+        -DQt6_DIR="%QT_DIR_CMAKE%"
+) else if defined CMAKE_PREFIX_PATH_CMAKE (
+    "%CMAKE%" -S "%SOURCE_DIR_CMAKE%" -B "%BUILD_DIR_CMAKE%" ^
+        -DCMAKE_PREFIX_PATH="%CMAKE_PREFIX_PATH_CMAKE%"
+)
 
 set "EXIT_CODE=%errorlevel%"
 

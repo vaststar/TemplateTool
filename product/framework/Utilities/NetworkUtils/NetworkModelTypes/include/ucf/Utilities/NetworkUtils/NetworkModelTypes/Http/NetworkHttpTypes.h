@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include <optional>
+#include <cstdint>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/NetworkModelTypesExport.h>
 
 namespace ucf::utilities::network::http{

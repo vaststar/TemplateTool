@@ -8,14 +8,22 @@
 #include <vector>
 #include <MasterLog/LogDefine.h>
 
-#ifdef MASTERLOG_DLL
-#ifdef MASTERLOG_LIB
-#define LOG_LIB_API _declspec(dllexport)
+
+#if defined(_WIN32) || defined(_WIN64)
+#pragma warning(disable:4251)//for template class member with dll-export, it will report warning, so, just disable it
+    #if defined(MASTERLOG_LIB) // for static library
+        #define LOG_LIB_API
+    #elif defined(MASTERLOG_DLL) // for dynamic library
+        #define LOG_LIB_API __declspec(dllexport)
+    #else
+        #define LOG_LIB_API __declspec(dllimport)
+    #endif
 #else
-#define LOG_LIB_API _declspec(dllimport)
-#endif
-#else 
-#define LOG_LIB_API 
+    #if defined(MASTERLOG_DLL)
+        #define LOG_LIB_API __attribute__((visibility("default")))
+    #else
+        #define LOG_LIB_API
+    #endif
 #endif
 
 namespace MasterLogUtil{

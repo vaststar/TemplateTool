@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 #include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
 

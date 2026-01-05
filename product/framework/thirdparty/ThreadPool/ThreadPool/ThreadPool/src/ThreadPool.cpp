@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <algorithm>
 #include <stdexcept>
 
 namespace ThreadPoolSpace{

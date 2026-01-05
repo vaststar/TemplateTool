@@ -1,5 +1,6 @@
 #include <vector>
 #include <mutex>
+#include <algorithm>
 
 #include <curl/curl.h>
 

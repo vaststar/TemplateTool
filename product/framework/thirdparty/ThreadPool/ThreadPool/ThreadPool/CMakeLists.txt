@@ -41,7 +41,7 @@ target_compile_features(${MODULE_NAME} PUBLIC cxx_std_20)
 set_target_properties(${MODULE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${MODULE_NAME} PROPERTIES CXX_EXTENSIONS OFF)
 if (WIN32)
-    target_compile_definitions(${MODULE_NAME} PRIVATE THREADPOOL_DLL THREADPOOL_LIB)
+    target_compile_definitions(${MODULE_NAME} PRIVATE THREADPOOL_DLL)
 endif(WIN32)
 
 if (APPLE)

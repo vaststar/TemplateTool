@@ -49,7 +49,7 @@ target_include_directories(${MODULE_NAME} PUBLIC
 )
 ##define macro for windows
 if (WIN32)
-    target_compile_definitions(${MODULE_NAME} PRIVATE MASTERLOG_DLL MASTERLOG_LIB)
+    target_compile_definitions(${MODULE_NAME} PRIVATE MASTERLOG_DLL)
 endif(WIN32)
 
 if (APPLE)
