@@ -44,8 +44,17 @@ if (WIN32)
     target_compile_definitions(${MODULE_NAME} PRIVATE THREADPOOL_DLL)
 endif(WIN32)
 
-if (APPLE)
-    set_target_properties(${MODULE_NAME} PROPERTIES INSTALL_NAME_DIR "@rpath")
+if(APPLE)
+    set_target_properties(${MODULE_NAME} PROPERTIES
+        INSTALL_NAME_DIR "@rpath"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH "@loader_path;@executable_path"
+    )
+elseif(UNIX AND NOT APPLE)
+    set_target_properties(${MODULE_NAME} PROPERTIES
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH "$ORIGIN"
+    )
 endif()
 
 target_include_directories(${MODULE_NAME} PUBLIC 

@@ -56,7 +56,7 @@ function(BuildModule)
             FILES ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}
         )
 
-        target_compile_features(${MODULE_MODULE_NAME} PRIVATE cxx_std_20)
+        target_compile_features(${MODULE_MODULE_NAME} PUBLIC cxx_std_20)
         target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE
             CMAKE_VERSION_STR="${CMAKE_VERSION}"
             CMAKE_COMPILER_ID_STR="${CMAKE_CXX_COMPILER_ID}"
@@ -69,8 +69,17 @@ function(BuildModule)
         if(DEFINED  MODULE_IDE_FOLDER)
             set_target_properties(${MODULE_MODULE_NAME} PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
         endif()
-        if (APPLE)
-            set_target_properties(${MODULE_MODULE_NAME} PROPERTIES INSTALL_NAME_DIR "@rpath")
+        if(APPLE)
+            set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
+                INSTALL_NAME_DIR "@rpath"
+                BUILD_WITH_INSTALL_RPATH OFF
+                INSTALL_RPATH "@loader_path;@executable_path"
+            )
+        elseif(UNIX AND NOT APPLE)
+            set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
+                BUILD_WITH_INSTALL_RPATH OFF
+                INSTALL_RPATH "$ORIGIN"
+            )
         endif()
         
         LinkTargetIncludeDirectories(

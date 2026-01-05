@@ -59,6 +59,11 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin"
       }
     },
     {
