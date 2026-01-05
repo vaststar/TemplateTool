@@ -112,7 +112,6 @@ case "$ACTION" in
         echo "[INFO] Building and packaging..."
         "$CMAKE" --build --preset "$PRESET"
         if [ $? -eq 0 ]; then
-            # 在根目录运行 cpack，指定 build 目录
             cpack --preset "$PRESET" -B "$BUILD_DIR"
             EXIT_CODE=$?
         else

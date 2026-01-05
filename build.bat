@@ -101,10 +101,8 @@ call :ensure_configured
 echo [INFO] Building and packaging...
 "%CMAKE%" --build --preset %PRESET%
 if %errorlevel%==0 (
-    cd /d "%BUILD_DIR%"
-    cpack --preset %PRESET%
+    cpack --preset %PRESET% -B "%BUILD_DIR%"
     set "EXIT_CODE=%errorlevel%"
-    cd /d "%ROOT_DIR%"
 ) else (
     set "EXIT_CODE=%errorlevel%"
 )
