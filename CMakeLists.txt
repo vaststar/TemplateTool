@@ -13,9 +13,14 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/W4>")  # 添加警告
 
-set(CMAKE_DEBUG_POSTFIX "")
-set(CMAKE_RELEASE_POSTFIX "_r")
+# GCC/Clang 编译器特定选项
+add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wall>")
+add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wextra>")
+
+# set(CMAKE_DEBUG_POSTFIX "")
+# set(CMAKE_RELEASE_POSTFIX "_r")
 
 # set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
 
