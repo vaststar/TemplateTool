@@ -1,5 +1,3 @@
-.pragma library
-
 function computeColorState(widget) {
     if (!widget.enabled) return UIColorState.Disabled;
     if (widget.pressed) return UIColorState.Pressed;
