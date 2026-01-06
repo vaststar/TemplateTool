@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.23)
 
-set(TARGETNAME "common_head_unit_test")
-set(PROJECTFOLDER "commonhead")
-project(${TARGETNAME})
+include(BuildUnitTestModule)
 
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} DIR_SRCS)
-
-add_executable(${TARGETNAME} ${DIR_SRCS})
-target_compile_features(${TARGETNAME} PRIVATE cxx_std_20)
-set_target_properties(${TARGETNAME} PROPERTIES FOLDER ${PROJECTFOLDER})
-target_link_libraries(${TARGETNAME} PRIVATE Catch2::Catch2WithMain ViewModels CommonHeadFramework)
+BuildUnitTestModule(
+    MODULE_NAME "common_head_unit_test"
+    IDE_FOLDER "commonhead/unit-tests"
+    TARGET_SOURCE 
+        ${CMAKE_CURRENT_SOURCE_DIR}/CommonHeadFramework_tests.cpp
+    TARGET_ADD_LINK_LIBRARY_PRIVATE 
+        Catch2::Catch2WithMain 
+        ViewModels 
+        CommonHeadFramework
+)

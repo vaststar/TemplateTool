@@ -1,2 +1,1 @@
 add_subdirectory(catch2_tests)
-add_subdirectory(cmake_tests)

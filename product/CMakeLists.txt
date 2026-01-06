@@ -6,6 +6,7 @@ set(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/FindModule" 
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/UtilModule"
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/VersionModule"
+    "${CMAKE_CURRENT_SOURCE_DIR}/framework/thirdparty/Catch2/Catch2/extras"
 )
 
 set(UCF_CODE_GENERATOR_DIR ${CMAKE_BINARY_DIR}/codegen)

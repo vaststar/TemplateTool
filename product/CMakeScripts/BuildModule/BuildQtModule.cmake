@@ -66,7 +66,7 @@ function(BuildQtModule)
         FILES ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}
     )
     
-    target_compile_features(${MODULE_MODULE_NAME} PRIVATE cxx_std_20)
+    target_compile_features(${MODULE_MODULE_NAME} PUBLIC cxx_std_20)
     target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE
         CMAKE_VERSION_STR="${CMAKE_VERSION}"
         CMAKE_COMPILER_ID_STR="${CMAKE_CXX_COMPILER_ID}"

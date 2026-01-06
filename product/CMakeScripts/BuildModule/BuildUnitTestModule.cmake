@@ -52,5 +52,9 @@ function(BuildUnitTestModule)
         #for project tree view
         source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${MODULE_TARGET_SOURCE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER})
 
+        include(CTest)
+        include(Catch)
+        catch_discover_tests(${MODULE_MODULE_NAME})
+
         message(STATUS "====Finish Build Module: ${MODULE_MODULE_NAME}====")
 endfunction()

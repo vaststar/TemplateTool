@@ -1,3 +1,4 @@
+.pragma library
 
 function computeColorState(widget) {
     if (!widget.enabled) return UIColorState.Disabled;

@@ -39,7 +39,7 @@ target_sources(${MODULE_NAME}
         FILES ${TARGET_SOURCE_PUBLIC_HEADER}
 )
 
-target_compile_features(${MODULE_NAME} PRIVATE cxx_std_20)
+target_compile_features(${MODULE_NAME} PUBLIC cxx_std_20)
 set_target_properties(${MODULE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${MODULE_NAME} PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(${MODULE_NAME} PUBLIC 
