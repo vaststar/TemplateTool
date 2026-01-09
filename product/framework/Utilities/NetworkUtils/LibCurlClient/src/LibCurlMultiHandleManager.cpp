@@ -63,6 +63,7 @@ void LibCurlMultiHandleManager::DataPrivate::runLoop()
 void LibCurlMultiHandleManager::DataPrivate::stopLoop()
 {
     mStop.store(true, std::memory_order_release);
+    mMultiHandle->stop();
     if (mLoopThread.joinable())
     {
         mLoopThread.join();

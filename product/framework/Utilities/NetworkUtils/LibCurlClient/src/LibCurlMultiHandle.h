@@ -19,6 +19,7 @@ public:
     int removeEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle);
 
     void performRequests();
+    void stop();
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

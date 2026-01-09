@@ -1,6 +1,7 @@
 #include <vector>
 #include <mutex>
 #include <algorithm>
+#include <atomic>
 
 #include <curl/curl.h>
 
@@ -24,6 +25,9 @@ public:
     int perform(int* count);
     int poll(int timeout_ms);
     void completeCurrentRequest();
+    void stop();
+    bool isStopped();
+    void cancelAllPendingRequests();
 private:
     CURLMsg* read();
     std::shared_ptr<LibCurlEasyHandle> getEasyHanleFromCURL(CURL* handle);
@@ -33,10 +37,13 @@ private:
 
     std::mutex mRequestsAccess;
     std::vector<std::shared_ptr<LibCurlEasyHandle>> mRequests;
+
+    std::atomic_bool mStop;
 };
 
 LibCurlMultiHandle::DataPrivate::DataPrivate()
     : mHandle(curl_multi_init())
+    , mStop(false)
 {
 }
 
@@ -67,6 +74,7 @@ int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHa
 
 int LibCurlMultiHandle::DataPrivate::removeEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle)
 {
+    if (easyHandle)
     {
         std::scoped_lock lo(mRequestsAccess);
         std::erase(mRequests, easyHandle);
@@ -136,11 +144,51 @@ void LibCurlMultiHandle::DataPrivate::completeCurrentRequest()
                 libCurlHandle->finishHandle(msg->data.result);
                 removeEasyHandle(libCurlHandle);
             }
+            else
+            {
+                LIBCURL_LOG_WARN("cannot find the EasyHandle");
+                std::scoped_lock lo(mCURLAccess);
+                curl_multi_remove_handle(mHandle, msg->easy_handle);
+            }
         }
         else
         {
             LIBCURL_LOG_WARN("Invalid message's code: " << msg->msg);
         }
+    }
+}
+
+void LibCurlMultiHandle::DataPrivate::stop()
+{
+    mStop.store(true, std::memory_order_release);
+    if (mHandle)
+    {
+        curl_multi_wakeup(mHandle);
+    }
+}
+
+bool LibCurlMultiHandle::DataPrivate::isStopped()
+{
+    return mStop.load(std::memory_order_acquire);
+}
+
+void LibCurlMultiHandle::DataPrivate::cancelAllPendingRequests()
+{
+    std::vector<std::shared_ptr<LibCurlEasyHandle>> requestsToCancel;
+    {
+        std::scoped_lock lo(mRequestsAccess);
+        requestsToCancel = mRequests;
+        mRequests.clear();
+    }
+
+    for(auto& request: requestsToCancel)
+    {
+        {
+            std::scoped_lock lo(mCURLAccess);
+            curl_multi_remove_handle(mHandle, request->getHandle());
+        }
+        request->finishHandle(CURLE_ABORTED_BY_CALLBACK);
+        LIBCURL_LOG_INFO("Request canceled during shutdown:")
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////
@@ -181,11 +229,20 @@ void LibCurlMultiHandle::performRequests()
     int runningHandles = 0;
     do
     {
+        if (mDataPrivate->isStopped())
+        {
+            LIBCURL_LOG_WARN("stop signal received, cancaling:" << runningHandles << "pending requests");
+            mDataPrivate->cancelAllPendingRequests();
+            break;
+        }
+
         if (auto code = mDataPrivate->perform(&runningHandles); CURLM_OK !=  code)
         {
             LIBCURL_LOG_WARN("multi perform failed:" << code);
             break;
         }
+
+        mDataPrivate->completeCurrentRequest();
 
         if (runningHandles > 0)
         {
@@ -196,7 +253,12 @@ void LibCurlMultiHandle::performRequests()
             }
         }
     }while(runningHandles > 0);
-    mDataPrivate->completeCurrentRequest();
+}
+
+void LibCurlMultiHandle::stop()
+{
+    LIBCURL_LOG_INFO("");
+    mDataPrivate->stop();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
