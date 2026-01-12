@@ -32,7 +32,6 @@ class MainWindowController : public UIViewController
     QML_ELEMENT
 public:
     MainWindowController(QObject* parent = nullptr);
-    ~MainWindowController();
 
     QString getTitle() const;
     int getHeight() const;

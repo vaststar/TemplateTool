@@ -24,15 +24,6 @@ MainWindowController::MainWindowController(QObject* parent)
     UIVIEW_LOG_DEBUG("create MainWindowController");
 }
 
-MainWindowController::~MainWindowController()
-{
-    UIVIEW_LOG_DEBUG("delete MainWindowController");
-    // if (mMainViewModel && mMainViewModelEmitter)
-    // {
-    //     mMainViewModel->unRegisterCallback(mMainViewModelEmitter);
-    // }
-}
-
 void MainWindowController::init()
 {
     UIVIEW_LOG_DEBUG("");
@@ -42,12 +33,6 @@ void MainWindowController::init()
     mMainViewModel->registerCallback(mMainViewModelEmitter);
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow, 
                 this, &MainWindowController::activateMainWindow);
-    // connect(mMainViewModelEmitter.get(), &QObject::destroyed, this, [this]() {
-    //         if (mMainViewModel)
-    //         {
-    //             mMainViewModel->unRegisterCallback(mMainViewModelEmitter);
-    //         }
-    // });
     mMainViewModel->initViewModel();
     emit controllerInitialized();
     emit visibleChanged();
