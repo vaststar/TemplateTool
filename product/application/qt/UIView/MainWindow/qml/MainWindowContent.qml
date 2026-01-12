@@ -26,6 +26,10 @@ Item{
     }
     
     Component.onCompleted:{
+        if (!controller){
+            console.log("MainWindowContent controller is null")
+            return
+        }
         // controller.onContactListLoaded(frame.controller)
         // controller.onInitSideBarController(navigationBar.controller)
     }

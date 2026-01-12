@@ -9,7 +9,12 @@ import UIResourceLoader 1.0
 ApplicationWindow
 {
     id: root
-    property MainWindowController controller: MainWindowController{}
+    property MainWindowController controller: MainWindowController{
+        Component.onCompleted:{
+            root.controller.logInfo("MainWindow QML Component onCompleted")
+            ControllerInitializer.initializeController(root.controller)
+        }
+    }
 
     visible: root.controller.visible
     width: root.controller ? root.controller.width : 100
@@ -38,12 +43,16 @@ ApplicationWindow
         anchors.fill: parent
         focus: true
     }
-
-    Component.onCompleted:{
-        root.controller.logInfo("MainWindow QML Component onCompleted")
-        root.controller.controllerInitialized.connect(onMainControllerInitialized)
-        root.controller.activateWindow.connect(onShowActivateWindow)
-        ControllerInitializer.initializeController(root.controller)
+    Connections {
+        target: root.controller
+        
+        function onControllerInitialized() {
+            onMainControllerInitialized()
+        }
+        
+        function onActivateWindow() {
+            onShowActivateWindow()
+        }
     }
 
     function onMainControllerInitialized(){

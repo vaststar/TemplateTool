@@ -19,7 +19,7 @@ public:
     MainWindowViewModel(MainWindowViewModel&&) = delete;
     MainWindowViewModel& operator=(const MainWindowViewModel&) = delete;
     MainWindowViewModel& operator=(MainWindowViewModel&&) = delete;
-    ~MainWindowViewModel() = default;
+    ~MainWindowViewModel();
 public:
     virtual std::string getViewModelName() const override;
 

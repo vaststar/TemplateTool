@@ -17,6 +17,21 @@ MainWindowViewModel::MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr co
     COMMONHEAD_LOG_DEBUG("create MainWindowViewModel");
 }
 
+MainWindowViewModel::~MainWindowViewModel()
+{
+    COMMONHEAD_LOG_DEBUG("delete MainWindowViewModel");
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto service = serviceLocator->getInvocationService().lock())
+            {
+                service->unRegisterCallback(shared_from_this());
+            }
+        }
+    }
+}
+
 std::string MainWindowViewModel::getViewModelName() const
 {
     return "MainWindowViewModel";
@@ -34,7 +49,6 @@ void MainWindowViewModel::init()
             }
         }
     }
-
 }
 void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
 {
