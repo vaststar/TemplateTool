@@ -87,6 +87,7 @@ void LibCurlMultiHandleManager::DataPrivate::stopLoop()
     mMultiHandle->stop();
     if (mLoopThread.joinable())
     {
+        mRequestCV.notify_one();
         mLoopThread.join();
     }
 }
