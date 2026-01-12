@@ -54,37 +54,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="16"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
         <translation>ok</translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="17"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="17"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="18"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="18"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="19"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="19"/>
         <source>Window Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="20"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="20"/>
         <source>aab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="32"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="32"/>
         <source>{{0}} of {{1}} completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../../build/codegen/UIResourceString/ResourceStringMap.cpp" line="33"/>
+        <location filename="../../../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="33"/>
         <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>

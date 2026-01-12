@@ -26,14 +26,17 @@ public:
     void stopLoop();
 private:
     std::unique_ptr<LibCurlMultiHandle> mMultiHandle;
-    std::mutex mStopMutex;
     std::atomic_bool mStop;
     std::thread mLoopThread;
+    std::condition_variable mRequestCV;
+    std::mutex mRequestCVMutex;
+    std::atomic_bool mHasReuqests;
 };
 
 LibCurlMultiHandleManager::DataPrivate::DataPrivate()
     : mMultiHandle(std::make_unique<LibCurlMultiHandle>())
     , mStop(false)
+    , mHasReuqests(false)
 {
 
 }
@@ -48,6 +51,11 @@ LibCurlMultiHandleManager::DataPrivate::~DataPrivate()
 void LibCurlMultiHandleManager::DataPrivate::insertRequest(std::shared_ptr<LibCurlEasyHandle> request)
 {
     mMultiHandle->addEasyHandle(request);
+    {
+        std::scoped_lock lo(mRequestCVMutex);
+        mHasReuqests.store(true, std::memory_order_release);
+    }
+    mRequestCV.notify_one();
 }
 
 void LibCurlMultiHandleManager::DataPrivate::runLoop()
@@ -55,6 +63,19 @@ void LibCurlMultiHandleManager::DataPrivate::runLoop()
     mLoopThread = std::thread([this](){
         while(!mStop.load(std::memory_order_acquire))
         {
+            {
+                std::unique_lock lo(mRequestCVMutex);
+                mRequestCV.wait(lo,[this](){
+                    return mHasReuqests.load(std::memory_order_acquire) || mStop.load(std::memory_order_acquire);
+                });
+
+                mHasReuqests.store(false, std::memory_order_release);
+            }
+            if (mStop.load(std::memory_order_acquire))
+            {
+                LIBCURL_LOG_DEBUG("already stopped, won't perform requests any more");
+                break;
+            }
             mMultiHandle->performRequests();
         }
     });
