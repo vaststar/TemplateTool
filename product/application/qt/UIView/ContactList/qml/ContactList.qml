@@ -8,9 +8,6 @@ Item{
     id: root
     
     property ContactListViewController controller:  ContactListViewController{}
-    Component.onCompleted:{
-        ControllerInitializer.initializeController(root.controller)
-    }
 
     Image {
         height:200

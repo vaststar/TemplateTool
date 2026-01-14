@@ -11,7 +11,6 @@ ApplicationWindow
     property MediaCameraViewController controller: MediaCameraViewController{
     }
 
-    // visible: true
     width: 758 
     height: 576
     color: "red"
@@ -24,14 +23,33 @@ ApplicationWindow
         antialiasing: true
     }
 
-    Component.onCompleted:{
-        controller.logInfo("onCompleted")
-        controller.videoSink = videoOutput.videoSink
-        controller.showCameraImage.connect(onShowCameraImage)
-        ControllerInitializer.initializeController(controller)
+    Connections {
+        target: controller
+        
+        function onControllerInitialized() {
+            cameraHandlers.onControllerInitialized()
+        }
+
+        function onShowCameraImage(img) {
+            cameraHandlers.onShowCameraImage(img)
+        }
     }
-    
-    function onShowCameraImage(img){
-        // controller.logInfo("MediaCameraView received image")
+
+    Component.onCompleted:{
+        controller.logInfo("qml load onCompleted")
+        controller.videoSink = videoOutput.videoSink
+        // ControllerInitializer.initializeController(controller)
+    }
+
+    QtObject {
+        id: cameraHandlers
+        
+        function onControllerInitialized() {
+            controller.logInfo("MediaCameraView controller initialized")
+        }
+
+        function onShowCameraImage(img) {
+            controller.logInfo("Camera frame received")
+        }
     }
 }

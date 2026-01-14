@@ -43,8 +43,4 @@ Item{
             }
         }
     }
-    Component.onCompleted:{
-        ControllerInitializer.initializeController(root.controller)
-    }
-
 }

@@ -30,8 +30,8 @@ Item{
             console.log("MainWindowContent controller is null")
             return
         }
-        // controller.onContactListLoaded(frame.controller)
-        // controller.onInitSideBarController(navigationBar.controller)
+        controller.initController(navigationBar.controller)
+        controller.initController(frame.controller)
     }
 
     Text {

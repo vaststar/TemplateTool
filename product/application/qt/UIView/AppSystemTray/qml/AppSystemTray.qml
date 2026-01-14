@@ -6,9 +6,6 @@ import UIView 1.0
 SystemTrayIcon {
     id: root
     property AppSystemTrayController controller: AppSystemTrayController{}
-    Component.onCompleted:{
-        ControllerInitializer.initializeController(root.controller)
-    }
 
     visible: true
     icon.source: "qrc:/qt/qml/UIView/picture/112.png"

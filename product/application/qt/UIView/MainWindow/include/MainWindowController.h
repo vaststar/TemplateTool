@@ -32,6 +32,7 @@ class MainWindowController : public UIViewController
     QML_ELEMENT
 public:
     MainWindowController(QObject* parent = nullptr);
+    ~MainWindowController();
 
     QString getTitle() const;
     int getHeight() const;
@@ -39,10 +40,12 @@ public:
 
 
     bool isVisible() const;
+
+    Q_INVOKABLE void initController(UIViewController* controller);
+    Q_INVOKABLE void componentCompleted();
 signals:
     void titleChanged();
     void windowSizeChanged();
-    void controllerInitialized();
     void visibleChanged();
     void activateWindow();
 public slots:
@@ -52,7 +55,8 @@ public slots:
 protected:
     virtual void init() override;
 private:
+    void connectSignals(UIViewController* controller);
+private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     std::shared_ptr<UIVMSignalEmitter::MainWindowViewModelEmitter> mMainViewModelEmitter;
-
 };

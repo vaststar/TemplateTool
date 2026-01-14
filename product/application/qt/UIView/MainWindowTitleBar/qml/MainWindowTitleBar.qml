@@ -10,16 +10,11 @@ import UIResourceLoader 1.0
 Rectangle {
     id: root
         property MainWindowTitleBarController controller: MainWindowTitleBarController{}
-        height: 40
         
         color: controller.color//"#3c5bcaff"  // 设置标题栏颜色
         visible: controller.visible
         required property ApplicationWindow appWindow
-
         
-        Component.onCompleted:{
-            ControllerInitializer.initializeController(root.controller)
-        }
     //     WindowAnimator {
     //     id: windowAnimator
     //     appWindow: appWindow

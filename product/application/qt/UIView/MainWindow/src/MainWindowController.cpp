@@ -18,10 +18,17 @@
 #include "MediaCameraView/include/MediaCameraViewController.h"
 #include "ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
 
+#include "ContactList/include/ContactListViewController.h"
+
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create MainWindowController");
+}
+
+MainWindowController::~MainWindowController()
+{
+    UIVIEW_LOG_DEBUG("destroy MainWindowController");
 }
 
 void MainWindowController::init()
@@ -34,8 +41,6 @@ void MainWindowController::init()
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow, 
                 this, &MainWindowController::activateMainWindow);
     mMainViewModel->initViewModel();
-    emit controllerInitialized();
-    emit visibleChanged();
 }
 
 QString MainWindowController::getTitle() const
@@ -66,7 +71,9 @@ void MainWindowController::openCamera()
     getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller){
         if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
         {
-            // mediaController->initializeController(getAppContext());
+            UIVIEW_LOG_DEBUG("MediaCameraView.qml load done, will start init MediaCameraViewController");
+            mediaController->initializeController(getAppContext());
+            UIVIEW_LOG_DEBUG("MediaCameraViewController init done, callback end");
         }
     });
 }
@@ -80,4 +87,41 @@ void MainWindowController::testFunc()
 void MainWindowController::activateMainWindow()
 {
     emit activateWindow();
+}
+
+void MainWindowController::initController(UIViewController* controller)
+{
+    if (controller)
+    {
+        if (auto appContext = getAppContext())
+        {
+            UIVIEW_LOG_DEBUG("start initialize controller from mainwindowController, controllerName:" << controller->getControllerName().toStdString());
+            connectSignals(controller);
+            controller->initializeController(appContext);
+            UIVIEW_LOG_DEBUG("finish initialze controller from mainwindowController, controllerName: " << controller->getControllerName().toStdString());
+        }
+        else
+        {
+            UIVIEW_LOG_DEBUG("initialize controller success");
+        }
+    }
+    else
+    {
+        UIVIEW_LOG_WARN("controller is null");
+    }
+}
+
+
+void MainWindowController::connectSignals(UIViewController* controller)
+{
+    if (auto contactListController = dynamic_cast<ContactListViewController*>(controller))
+    {
+        UIVIEW_LOG_DEBUG("connectSignals for ContactListViewController");
+        // contactListController->buttonClicked();
+    }
+}
+
+void MainWindowController::componentCompleted()
+{
+    emit visibleChanged();
 }

@@ -24,7 +24,4 @@ ToolBar {
             onClicked: menu.open()
         }
     }
-    Component.onCompleted:{
-        ControllerInitializer.initializeController(root.controller)
-    }
 }

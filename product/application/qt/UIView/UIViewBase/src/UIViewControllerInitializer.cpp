@@ -4,7 +4,7 @@
 
 #include "UIViewBase/include/UIViewController.h"
 
-UIViewControllerInitializer::UIViewControllerInitializer(const QPointer<AppContext>& appContext, QObject* parent)
+UIViewControllerInitializer::UIViewControllerInitializer(QPointer<AppContext> appContext, QObject* parent)
     : QObject(parent)
     , mAppContext(appContext)
 {

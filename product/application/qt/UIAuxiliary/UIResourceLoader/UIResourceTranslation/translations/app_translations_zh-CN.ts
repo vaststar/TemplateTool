@@ -4,7 +4,7 @@
 <context>
     <name>AppSystemTray</name>
     <message>
-        <location filename="../../../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="18"/>
+        <location filename="../../../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12,7 +12,7 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../../../UIView/MainWindow/qml/MainWindowContent.qml" line="64"/>
+        <location filename="../../../../UIView/MainWindow/qml/MainWindowContent.qml" line="68"/>
         <source>IopenCamera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -39,7 +39,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="43"/>
+        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="48"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>

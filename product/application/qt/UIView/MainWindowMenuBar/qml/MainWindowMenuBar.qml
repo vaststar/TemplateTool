@@ -10,11 +10,11 @@ MenuBar {
     id: root
     property MainWindowMenuBarController controller: MainWindowMenuBarController{}
 
-    Component.onCompleted:{
-        controller.controllerInitialized.connect(createMenuItems)
-        ControllerInitializer.initializeController(controller)
-        }
-
+    Connections {
+        target: controller
+        onControllerInitialized: createMenuItems()
+    }
+    
     function createMenuItems(){
         console.log("listlength:" + controller.listMenu.length)
         for (let index = 0; index < controller.rootMenu.subItems.length; index++) {

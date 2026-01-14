@@ -9,12 +9,7 @@ import UIResourceLoader 1.0
 ApplicationWindow
 {
     id: root
-    property MainWindowController controller: MainWindowController{
-        Component.onCompleted:{
-            root.controller.logInfo("MainWindow QML Component onCompleted")
-            ControllerInitializer.initializeController(root.controller)
-        }
-    }
+    property MainWindowController controller: MainWindowController{}
 
     visible: root.controller.visible
     width: root.controller ? root.controller.width : 100
@@ -25,13 +20,14 @@ ApplicationWindow
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
 
     menuBar: MainWindowMenuBar {
-        id: menuBarId
+        id: menuBar
         visible: false
     }
 
     header: MainWindowTitleBar {
         id: titleBar
         appWindow: root
+        height: 40
     }
 
     footer: MainWindowFootBar {
@@ -43,6 +39,11 @@ ApplicationWindow
         anchors.fill: parent
         focus: true
     }
+    
+    AppSystemTray{
+        id: systemTray
+    }
+
     Connections {
         target: root.controller
         
@@ -56,7 +57,17 @@ ApplicationWindow
     }
 
     function onMainControllerInitialized(){
+        if(!root.controller){
+            console.log("MainWindow controller is null")
+            return
+        }
+        root.controller.logInfo("MainWindowController onMainControllerInitialized")
+        root.controller.initController(menuBar.controller)
+        root.controller.initController(titleBar.controller)
+        root.controller.initController(footBar.controller)
+        root.controller.initController(systemTray.controller)
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":root.controller});
+        root.controller.componentCompleted()
     }
 
     function onShowActivateWindow() {
@@ -65,8 +76,8 @@ ApplicationWindow
         root.raise()
         root.requestActivate()
     }
-
-    AppSystemTray{
-        id: systemTray
+    
+    Component.onCompleted:{
+        root.controller.logInfo("MainWindow QML Component onCompleted")
     }
 }

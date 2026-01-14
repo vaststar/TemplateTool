@@ -76,14 +76,9 @@ void AppUIController::onShowMainWindow()
     mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), [this](auto controller){
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
-            UIVIEW_LOG_DEBUG("MainWindow.qml load done, see MainWindowController");
-            // if (mInvocationViewModelEmitter)
-            // {
-            //     connect(mInvocationViewModelEmitter.get(), &UIVMSignalEmitter::InvocationViewModelEmitter::signals_onActivateMainApp, 
-            //     mainController, &MainWindowController::activateMainWindow);
-            // }
-            // mImpl->getAppContext()->getViewFactory()->installTranslation({});
-            // mainController->initializeController(mAppContext);
+            UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
+            mainController->initializeController(mAppContext);
+            UIVIEW_LOG_DEBUG("MainWindowController init done, callback end");
         }
     });
     UIVIEW_LOG_DEBUG("finish load main qml");
@@ -106,7 +101,4 @@ void AppUIController::startApp()
     startIPCServer();
     mAppUIViewModel->initApplication();
     UIVIEW_LOG_DEBUG("startApp finish");
-
-    // auto invocationVM = mAppContext->getViewModelFactory()->createInvocationViewModelInstance();
-    // invocationVM->processStartupParameters();
 }

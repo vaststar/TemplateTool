@@ -83,7 +83,7 @@ ContactAdapter::~ContactAdapter()
 
 void ContactAdapter::fetchContactInfo(const std::string& contactId, fetchContactInfoCallBack)
 {
-    testFunc();
+    // testFunc();
 }
 
 void ContactAdapter::testFunc()
