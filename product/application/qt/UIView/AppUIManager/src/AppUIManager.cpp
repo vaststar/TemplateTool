@@ -12,7 +12,7 @@
 #include <UTComponent/UTComponent.h>
 
 #include "LoggerDefine/LoggerDefine.h"
-#include "UIViewBase/include/UIViewControllerInitializer.h"
+// #include "UIViewBase/include/UIViewControllerInitializer.h"
 #include "AppUIController.h"
 #include "ViewModelSingalEmitter/ViewModelTypeRegistry.h"
 
@@ -34,14 +34,14 @@ private:
     std::unique_ptr<UICore::CoreApplication> mainApp;
     std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
     std::unique_ptr<AppContext> mAppContext;
-    std::unique_ptr<UIViewControllerInitializer> mControllerInitializer;
+    // std::unique_ptr<UIViewControllerInitializer> mControllerInitializer;
 };
 
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
     , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
-    , mControllerInitializer(std::make_unique<UIViewControllerInitializer>(mAppContext.get()))
+    // , mControllerInitializer(std::make_unique<UIViewControllerInitializer>(mAppContext.get()))
 {
     UIVIEW_LOG_INFO("===========================================");
     UIVIEW_LOG_INFO("===========create AppUIManagerImpl=========");
@@ -57,7 +57,7 @@ void AppUIManager::Impl::registerQmlTypes()
     UIDataUtils::registerMetaObject();   
     UTComponent::registerUTComponent();
     UIViewModelTypeRegistry::registerTypes();
-    mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());
+    // mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());
     UIVIEW_LOG_DEBUG("done");
 }
 
