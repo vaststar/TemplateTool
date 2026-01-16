@@ -24,6 +24,17 @@ Item{
             left: navigationBar.right
         }
     }
+    UTQRCode {
+    text: "https://example.com"
+    displaySize: 300
+    errorLevel: QRCodeGenerator.High
+    darkColor: "#FF5722"
+    lightColor: "#FFF3E0"
+    anchors{
+            top: parent.top
+            left: frame.right
+        }
+}
     
     Component.onCompleted:{
         if (!controller){

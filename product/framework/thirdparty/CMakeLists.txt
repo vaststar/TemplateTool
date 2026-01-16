@@ -7,6 +7,7 @@ add_subdirectory(curl)
 add_subdirectory(opencv)
 add_subdirectory(magic_enum)
 add_subdirectory(trompeloeil)
+add_subdirectory(qrcodegen)
 
 #my lib
 add_subdirectory(threadpool)

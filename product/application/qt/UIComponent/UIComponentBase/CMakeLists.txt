@@ -14,17 +14,20 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(MODULE_HEADER_FILES #for include and install header
     include/UIComponentBase/UIComponentBaseExport.h
     include/UIComponentBase/UIComponentBase.h
+    BaseQRCode/QRCodeGenerator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
     src/UIComponentBase.cpp
+    BaseQRCode/QRCodeGenerator.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     Qt6::Gui
     Qt6::Quick
-    MasterLog 
+    MasterLog
+    QRCodeUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -37,9 +40,10 @@ set(MODULE_QML_TARGET_URI
 set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
     BaseFocusItem/BaseFocusItem.qml
+    BaseQRCode/BaseQRCode.qml
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
-    ""
+    ${CMAKE_CURRENT_SOURCE_DIR}/BaseQRCode
 )
 
 BuildQtModule(
