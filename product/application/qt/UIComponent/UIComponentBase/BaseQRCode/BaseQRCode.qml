@@ -1,5 +1,6 @@
 import QtQuick 2.15
 
+import UIComponentBase 1.0
 Item {
     id: root
 
@@ -11,7 +12,6 @@ Item {
     property alias valid: generator.valid
 
     property int displaySize: 200
-    property bool antialiasing: true
 
     implicitWidth: displaySize
     implicitHeight: displaySize
@@ -24,10 +24,12 @@ Item {
         id: qrImage
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        smooth: root.antialiasing
-        antialiasing: root.antialiasing
+        smooth: false
+        antialiasing: false
+        mipmap: false
         source: generator.valid ? "data:image/svg+xml;utf8," + generator.svgData : ""
         visible: generator.valid
+        sourceSize: Qt.Size(displaySize*4, displaySize*4)
 
         Behavior on opacity {
             NumberAnimation {

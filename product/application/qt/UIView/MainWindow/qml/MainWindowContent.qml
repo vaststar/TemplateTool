@@ -24,15 +24,16 @@ Item{
             left: navigationBar.right
         }
     }
+
     UTQRCode {
-    text: "https://example.com"
-    displaySize: 300
+    text: "这是测试这是测试这是测试，我靠"
+    displaySize: 200
     errorLevel: QRCodeGenerator.High
     darkColor: "#FF5722"
     lightColor: "#FFF3E0"
     anchors{
-            top: parent.top
-            left: frame.right
+            bottom: parent.bottom
+            right: parent.right
         }
 }
     

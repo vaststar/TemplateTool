@@ -12,7 +12,7 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../../../UIView/MainWindow/qml/MainWindowContent.qml" line="68"/>
+        <location filename="../../../../UIView/MainWindow/qml/MainWindowContent.qml" line="80"/>
         <source>IopenCamera</source>
         <translation type="unfinished"></translation>
     </message>
