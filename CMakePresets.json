@@ -9,12 +9,15 @@
     {
       "name": "default",
       "hidden": true,
-      "description": "默认配置（基础）",
+      "description": "Base configuration for all platforms",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_VERBOSE_MAKEFILE": "ON",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
         "I18N_UPDATE_TS": "ON"
       }
     },
@@ -22,54 +25,39 @@
       "name": "windows-base",
       "hidden": true,
       "inherits": "default",
-      "description": "Windows 平台基础配置",
+      "description": "Windows platform base configuration",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
-      },
-      "cacheVariables": {
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin"
       }
     },
     {
       "name": "macos-base",
       "hidden": true,
       "inherits": "default",
-      "description": "macOS 平台基础配置",
+      "description": "macOS platform base configuration",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
-      },
-      "cacheVariables": {
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin"
       }
     },
     {
       "name": "linux-base",
       "hidden": true,
       "inherits": "default",
-      "description": "Linux 平台基础配置",
+      "description": "Linux platform base configuration",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
-      },
-      "cacheVariables": {
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/build/${presetName}/bin"
       }
     },
     {
       "name": "windows-msvc-debug",
       "displayName": "Windows MSVC Debug",
-      "description": "Windows MSVC 编译器 - Debug 配置",
+      "description": "Windows MSVC compiler - Debug configuration",
       "inherits": "windows-base",
       "generator": "Visual Studio 17 2022",
       "architecture": {
@@ -85,7 +73,7 @@
     {
       "name": "windows-msvc-release",
       "displayName": "Windows MSVC Release",
-      "description": "Windows MSVC 编译器 - Release 配置",
+      "description": "Windows MSVC compiler - Release configuration with debug info",
       "inherits": "windows-base",
       "generator": "Visual Studio 17 2022",
       "architecture": {
@@ -95,13 +83,16 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON"
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_CXX_FLAGS_RELEASE": "/MD /O2 /Ob2 /DNDEBUG /Zi",
+        "CMAKE_EXE_LINKER_FLAGS_RELEASE": "/DEBUG /OPT:REF /OPT:ICF",
+        "CMAKE_SHARED_LINKER_FLAGS_RELEASE": "/DEBUG /OPT:REF /OPT:ICF"
       }
     },
     {
       "name": "windows-mingw-debug",
       "displayName": "Windows MinGW Debug",
-      "description": "Windows MinGW 编译器 - Debug 配置",
+      "description": "Windows MinGW compiler - Debug configuration",
       "inherits": "windows-base",
       "generator": "Ninja",
       "cacheVariables": {
@@ -113,7 +104,7 @@
     {
       "name": "windows-mingw-release",
       "displayName": "Windows MinGW Release",
-      "description": "Windows MinGW 编译器 - Release 配置",
+      "description": "Windows MinGW compiler - Release configuration",
       "inherits": "windows-base",
       "generator": "Ninja",
       "cacheVariables": {
@@ -125,31 +116,31 @@
     {
       "name": "macos-debug",
       "displayName": "macOS Debug",
-      "description": "macOS GCC - Debug 配置",
+      "description": "macOS Clang - Debug configuration",
       "inherits": "macos-base",
       "generator": "Unix Makefiles",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     },
     {
       "name": "macos-release",
       "displayName": "macOS Release",
-      "description": "macOS GCC - Release 配置",
+      "description": "macOS Clang - Release configuration",
       "inherits": "macos-base",
       "generator": "Unix Makefiles",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     },
     {
       "name": "linux-debug",
       "displayName": "Linux Debug",
-      "description": "Linux GCC - Debug 配置",
+      "description": "Linux GCC - Debug configuration",
       "inherits": "linux-base",
       "generator": "Ninja",
       "cacheVariables": {
@@ -159,7 +150,7 @@
     {
       "name": "linux-release",
       "displayName": "Linux Release",
-      "description": "Linux GCC - Release 配置",
+      "description": "Linux GCC - Release configuration",
       "inherits": "linux-base",
       "generator": "Ninja",
       "cacheVariables": {
@@ -255,8 +246,8 @@
   ],
   "testPresets": [
     {
-      "name": "windows-msvc-debug",
-      "configurePreset": "windows-msvc-debug",
+      "name": "test-base",
+      "hidden": true,
       "output": {
         "outputOnFailure": true
       },
@@ -264,83 +255,46 @@
         "noTestsAction": "error",
         "stopOnFailure": false
       }
+    },
+    {
+      "name": "windows-msvc-debug",
+      "configurePreset": "windows-msvc-debug",
+      "inherits": "test-base"
     },
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     },
     {
       "name": "windows-mingw-debug",
       "configurePreset": "windows-mingw-debug",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     },
     {
       "name": "windows-mingw-release",
       "configurePreset": "windows-mingw-release",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     },
     {
       "name": "macos-debug",
       "configurePreset": "macos-debug",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     },
     {
       "name": "macos-release",
       "configurePreset": "macos-release",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     },
     {
       "name": "linux-debug",
       "configurePreset": "linux-debug",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     },
     {
       "name": "linux-release",
       "configurePreset": "linux-release",
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": false
-      }
+      "inherits": "test-base"
     }
   ]
 }

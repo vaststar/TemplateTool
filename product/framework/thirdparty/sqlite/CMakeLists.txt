@@ -1,7 +1,7 @@
 include(BuildModule)
 
 if (WIN32)
-    set(SQLITE_DEFINITIONS SQLITE_BUILD_DLL SQLITE_BUILD_LIB)
+    set(SQLITE_DEFINITIONS SQLITE_BUILD_DLL)
 endif()
 
 if (MSVC)

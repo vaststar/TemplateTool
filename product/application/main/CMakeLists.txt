@@ -3,10 +3,12 @@ include(BuildBundlePListModule)
 project(application VERSION 1.0 LANGUAGES CXX)
 
 set(MAIN_ENTRY "mainEntry")
-message(STATUS "start build ${MAIN_ENTRY}")
+message(STATUS "Building ${MAIN_ENTRY}...")
 
-set(INSTALL_MODULE_NAME ${MAIN_ENTRY})
 if(APPLE)
+    message(STATUS "  Platform: macOS")
+    message(STATUS "  Bundle: ${MAIN_ENTRY}.app")
+    
     add_executable(${MAIN_ENTRY} MACOSX_BUNDLE main.cpp)
 
     BuildBundlePListModule(
@@ -16,17 +18,22 @@ if(APPLE)
 
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "logo"
-    )
-    set_target_properties(${MAIN_ENTRY} PROPERTIES
         INSTALL_RPATH "@executable_path/../Frameworks"
     )
+    message(STATUS "  RPATH: @executable_path/../Frameworks")
 
     set(APP_ICON ${CMAKE_CURRENT_SOURCE_DIR}/logo.icns)
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
     target_sources(${MAIN_ENTRY} PRIVATE ${APP_ICON})
+    message(STATUS "  Icon: logo.icns")
 
-    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_copy_dylibs.cmake")
+    set(POST_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_macosx.cmake")
+    install(SCRIPT "${POST_INSTALL_SCRIPT}")
+    message(STATUS "  Post-install: post_install_macosx.cmake")
 elseif(WIN32)
+    message(STATUS "  Platform: Windows")
+    message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID}")
+    
     add_executable(${MAIN_ENTRY} main.cpp logo.rc)
 
     BuildRCFileModule(
@@ -34,26 +41,38 @@ elseif(WIN32)
         FILE_DESCRIPTION "TemplateTool Application Executable"
     )
 
-    if(${CMAKE_CXX_COMPILER} MATCHES ".*/(g\\+\\+)(\\..*)")
-        set_target_properties(${MAIN_ENTRY} PROPERTIES LINK_FLAGS_DEBUG "-mwindows")
-        set_target_properties(${MAIN_ENTRY} PROPERTIES LINK_FLAGS_RELEASE "-mwindows")
-    elseif(${CMAKE_CXX_COMPILER} MATCHES ".*/(cl)(\\..*)")
-        set_target_properties(${MAIN_ENTRY} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-        set_target_properties(${MAIN_ENTRY} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    # Set Windows GUI subsystem options
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_link_options(${MAIN_ENTRY} PRIVATE -mwindows)
+        message(STATUS "  Link options: -mwindows")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_link_options(${MAIN_ENTRY} PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+        message(STATUS "  Link options: /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
     endif()
+
+    set(POST_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_windows.cmake")
+    install(CODE "set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")")
+    install(SCRIPT "${POST_INSTALL_SCRIPT}")
+    message(STATUS "  Post-install: post_install_windows.cmake")
 else()
+    message(STATUS "  Platform: Linux")
     add_executable(${MAIN_ENTRY} main.cpp)
 endif()
 
 
 target_compile_features(${MAIN_ENTRY} PRIVATE cxx_std_20)
+message(STATUS "  C++ Standard: C++20")
+
 target_link_libraries(${MAIN_ENTRY} PRIVATE
     MainUI
 )
+message(STATUS "  Dependencies: MainUI")
 
 install(TARGETS ${MAIN_ENTRY} 
     EXPORT ${MAIN_ENTRY}Targets
     BUNDLE DESTINATION bin
     RUNTIME DESTINATION bin
 )
-message(STATUS "finish build mainEntry.exe")
+message(STATUS "  Install destination: bin/")
+
+message(STATUS "Finished building ${MAIN_ENTRY}")
