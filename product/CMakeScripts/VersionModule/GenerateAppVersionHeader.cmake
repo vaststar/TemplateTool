@@ -1,63 +1,103 @@
 include_guard()
+
+# ==========================================
+# Script mode: Generate version header file
+# ==========================================
 if(CMAKE_SCRIPT_MODE_FILE)
+    if(NOT DEFINED INPUT_JSON_FILE)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] INPUT_JSON_FILE variable not defined")
+    endif()
+    if(NOT EXISTS "${INPUT_JSON_FILE}")
+        message(FATAL_ERROR "[GenerateAppVersionHeader] Input JSON file not found: ${INPUT_JSON_FILE}")
+    endif()
+    if(NOT DEFINED INPUT_TEMPLATE_FILE)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] INPUT_TEMPLATE_FILE variable not defined")
+    endif()
+    if(NOT DEFINED OUTPUT_H)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] OUTPUT_H variable not defined")
+    endif()
+
     file(READ "${INPUT_JSON_FILE}" json_content)
-     # 解析 JSON 内容
+    
+    # Parse version info
     string(JSON VERSION_MAJOR GET "${json_content}" "VERSION" "VERSION_MAJOR")
     string(JSON VERSION_MINOR GET "${json_content}" "VERSION" "VERSION_MINOR")
     string(JSON VERSION_PATCH GET "${json_content}" "VERSION" "VERSION_PATCH")
     string(JSON VERSION_BUILD GET "${json_content}" "VERSION" "VERSION_BUILD")
+    
+    # Parse compilation info
     string(JSON GIT_COMMIT_HASH GET "${json_content}" "COMPILATION" "GIT_COMMIT_HASH")
     string(JSON GIT_COMMIT_BRANCH GET "${json_content}" "COMPILATION" "GIT_COMMIT_BRANCH")
+    
+    # Parse company info
     string(JSON COMPANY_NAME GET "${json_content}" "COMPANY" "NAME")
     string(JSON COPYRIGHT GET "${json_content}" "COMPANY" "COPYRIGHT")
+    
+    # Parse product info
     string(JSON PRODUCT_NAME GET "${json_content}" "PRODUCT" "NAME")
     string(JSON PRODUCT_DESCRIPTION GET "${json_content}" "PRODUCT" "DESCRIPTION")
 
-    # 获取传入变量
     configure_file(${INPUT_TEMPLATE_FILE} ${OUTPUT_H} @ONLY)
     message(STATUS "[GenerateAppVersionHeader] Generated ${OUTPUT_H}")
 endif()
 
+# ==========================================
+# Function: generate_app_version_header
+# ==========================================
 function(generate_app_version_header)
-    set(options)  # 没有布尔选项
-    set(oneValueArgs INPUT_JSON_FILE INPUT_JSON_TARGET INPUT_VERSION_TEMPLATE OUTPUT_FILE)
-    set(multiValueArgs DEPENDS)
-    cmake_parse_arguments(GAVF "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    set(oneValueArgs INPUT_JSON_FILE INPUT_JSON_TARGET INPUT_VERSION_TEMPLATE OUTPUT_FILE OUTPUT_TARGET_VAR)
+    cmake_parse_arguments(ARG "" "${oneValueArgs}" "" ${ARGN})
 
-    if(NOT GAVF_INPUT_VERSION_TEMPLATE)
-        message(FATAL_ERROR "[GenerateAppVersionHeader] Missing required argument: INPUT_VERSION_TEMPLATE")
+    # Validate required arguments
+    if(NOT ARG_INPUT_VERSION_TEMPLATE)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] INPUT_VERSION_TEMPLATE is required")
     endif()
-    if(NOT GAVF_INPUT_JSON_TARGET)
-        message(FATAL_ERROR "[GenerateAppVersionHeader] Missing required argument: INPUT_JSON_TARGET")
+    if(NOT ARG_INPUT_JSON_TARGET)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] INPUT_JSON_TARGET is required")
     endif()
-    if(NOT GAVF_OUTPUT_FILE)
-        message(FATAL_ERROR "[GenerateAppVersionHeader] Missing required argument: OUTPUT_FILE")
+    if(NOT ARG_OUTPUT_FILE)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] OUTPUT_FILE is required")
     endif()
-    if(NOT GAVF_INPUT_JSON_FILE)
-        message(FATAL_ERROR "[GenerateAppVersionHeader] Missing required argument: INPUT_JSON_FILE")
+    if(NOT ARG_INPUT_JSON_FILE)
+        message(FATAL_ERROR "[GenerateAppVersionHeader] INPUT_JSON_FILE is required")
     endif()
+
+    # Generate unique target name based on output file path hash
+    string(MD5 PATH_HASH "${ARG_OUTPUT_FILE}")
+    string(SUBSTRING "${PATH_HASH}" 0 8 SHORT_HASH)
+    get_filename_component(OUTPUT_NAME "${ARG_OUTPUT_FILE}" NAME_WE)
+    set(TARGET_NAME "generate_${OUTPUT_NAME}_${SHORT_HASH}")
     
-    message(STATUS "[generate_app_version_header] Generating '${GAVF_OUTPUT_FILE}' from template '${GAVF_INPUT_VERSION_TEMPLATE}' using input '${GAVF_INPUT_JSON_FILE}'")
+    message(STATUS "")
+    message(STATUS "============================================================")
+    message(STATUS "[GenerateAppVersionHeader] Configuring version header generation")
+    message(STATUS "============================================================")
+    message(STATUS "  Output File  : ${ARG_OUTPUT_FILE}")
+    message(STATUS "  Template     : ${ARG_INPUT_VERSION_TEMPLATE}")
+    message(STATUS "  Input JSON   : ${ARG_INPUT_JSON_FILE}")
+    message(STATUS "  JSON Target  : ${ARG_INPUT_JSON_TARGET}")
+    message(STATUS "  Target Name  : ${TARGET_NAME}")
+    message(STATUS "------------------------------------------------------------")
    
-    # 生成版本文件
-    set(CUSTOM_TARGET_NAME "generate_app_version_header")
+    # Add custom command to generate version header
     add_custom_command(
-        OUTPUT ${GAVF_OUTPUT_FILE}
-        COMMAND ${CMAKE_COMMAND} -DINPUT_JSON_FILE=${GAVF_INPUT_JSON_FILE}
-                                -DINPUT_TEMPLATE_FILE=${GAVF_INPUT_VERSION_TEMPLATE}
-                                -DOUTPUT_H=${GAVF_OUTPUT_FILE}
-                                -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionHeader.cmake"
-        DEPENDS ${GAVF_INPUT_JSON_FILE} ${GAVF_INPUT_VERSION_TEMPLATE}
-        COMMENT "Generating ${GAVF_OUTPUT_FILE} from ${GAVF_INPUT_JSON_FILE} using ${GAVF_INPUT_VERSION_TEMPLATE}"
+        OUTPUT ${ARG_OUTPUT_FILE}
+        COMMAND ${CMAKE_COMMAND} 
+            -DINPUT_JSON_FILE=${ARG_INPUT_JSON_FILE}
+            -DINPUT_TEMPLATE_FILE=${ARG_INPUT_VERSION_TEMPLATE}
+            -DOUTPUT_H=${ARG_OUTPUT_FILE}
+            -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionHeader.cmake"
+        DEPENDS ${ARG_INPUT_JSON_FILE} ${ARG_INPUT_VERSION_TEMPLATE}
+        COMMENT "[GenerateAppVersionHeader] Generating ${ARG_OUTPUT_FILE}"
     )
-    add_custom_target(${CUSTOM_TARGET_NAME} ALL DEPENDS ${GAVF_OUTPUT_FILE})
-    set_target_properties(${CUSTOM_TARGET_NAME} PROPERTIES FOLDER codegen)
-    add_dependencies(${CUSTOM_TARGET_NAME} ${GAVF_INPUT_JSON_TARGET})
     
-    list(LENGTH GAVF_UNPARSED_ARGUMENTS unparsed_count)
-    if(NOT unparsed_count EQUAL 1)
-        message(FATAL_ERROR "函数调用错误: 需要指定1个输出变量名表示TARGET_NAME")
+    # Create custom target
+    add_custom_target(${TARGET_NAME} ALL DEPENDS ${ARG_OUTPUT_FILE})
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)
+    add_dependencies(${TARGET_NAME} ${ARG_INPUT_JSON_TARGET})
+    
+    # Return target name if output variable specified
+    if(ARG_OUTPUT_TARGET_VAR)
+        set(${ARG_OUTPUT_TARGET_VAR} ${TARGET_NAME} PARENT_SCOPE)
     endif()
-    list(GET GAVF_UNPARSED_ARGUMENTS 0 app_version_target)
-    set(${app_version_target} ${CUSTOM_TARGET_NAME} PARENT_SCOPE)
 endfunction()

@@ -33,7 +33,7 @@ function(BuildBundlePListModule)
             INTERNAL_NAME ${MODULE_MODULE_NAME}
             FILE_DESCRIPTION ${MODULE_FILE_DESCRIPTION}
             ORIGINAL_FILENAME $<TARGET_FILE_NAME:${MODULE_MODULE_NAME}>
-            APP_RC_TARGET
+            OUTPUT_TARGET_VAR APP_RC_TARGET
         )
         add_dependencies(${MODULE_MODULE_NAME} ${APP_RC_TARGET})
 
