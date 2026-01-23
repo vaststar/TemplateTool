@@ -103,7 +103,7 @@ if(NOT QT_DIR)
         file(STRINGS "${CACHE_FILE}" QT6_DIR_LINE REGEX "Qt6_DIR:PATH=")
         if(QT6_DIR_LINE)
             string(REGEX REPLACE "Qt6_DIR:PATH=" "" QT_DIR "${QT6_DIR_LINE}")
-            string(REGEX REPLACE "//.*$" "" QT_DIR "${QT6_DIR_LINE}")
+            string(REGEX REPLACE "//.*$" "" QT_DIR "${QT_DIR}")
         endif()
     endif()
 endif()
@@ -113,9 +113,13 @@ if(NOT QT_DIR)
     return()
 endif()
 
-string(REPLACE "/" "\\" QT_DIR "${QT_DIR}")
-string(REPLACE "\\lib\\cmake\\Qt6" "" QT_ROOT "${QT_DIR}")
+# Normalize path: convert all backslashes to forward slashes
+string(REPLACE "\\" "/" QT_DIR "${QT_DIR}")
+string(REPLACE "/lib/cmake/Qt6" "" QT_ROOT "${QT_DIR}")
 set(WINDEPLOYQT "${QT_ROOT}/bin/windeployqt.exe")
+
+# Convert to native path for Windows
+file(TO_NATIVE_PATH "${WINDEPLOYQT}" WINDEPLOYQT)
 
 if(NOT EXISTS "${WINDEPLOYQT}")
     message(WARNING "windeployqt.exe not found at: ${WINDEPLOYQT}")
