@@ -2,6 +2,20 @@ cmake_minimum_required(VERSION 3.23)
 
 project(TemplateTool)
 
+# ============================================================================
+# C++ 标准设置 (项目要求，不可由 preset 覆盖)
+# ============================================================================
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# ============================================================================
+# 输出目录设置 (项目结构要求)
+# ============================================================================
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 message(STATUS "C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "C++ Compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
@@ -19,14 +33,18 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/W4>")  # 添加警告
 add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wall>")
 add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wextra>")
 
-# set(CMAKE_DEBUG_POSTFIX "")
-# set(CMAKE_RELEASE_POSTFIX "_r")
-
-# set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install)
-
-# set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-# set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# macOS: Fix AGL framework issue - AGL is deprecated and removed from newer SDKs
+# Qt's FindWrapOpenGL.cmake tries to link AGL which doesn't exist in modern macOS SDK
+# We create WrapOpenGL target ourselves without AGL before Qt can find it
+if(APPLE)
+    find_package(OpenGL QUIET)
+    if(OpenGL_FOUND AND NOT TARGET WrapOpenGL::WrapOpenGL)
+        add_library(WrapOpenGL::WrapOpenGL INTERFACE IMPORTED)
+        # Link only OpenGL framework, not AGL (which is deprecated/removed)
+        target_link_libraries(WrapOpenGL::WrapOpenGL INTERFACE "-framework OpenGL")
+        set(WrapOpenGL_FOUND ON CACHE BOOL "WrapOpenGL found" FORCE)
+    endif()
+endif()
 
 # 启用 CTest 支持
 enable_testing()

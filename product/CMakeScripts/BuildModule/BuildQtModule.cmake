@@ -111,28 +111,31 @@ function(BuildQtModule)
     # ==========================================
     # Set target properties
     # ==========================================
-    set(TARGET_PROPERTIES
+    set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
         CXX_EXTENSIONS OFF
         AUTOMOC ON
         AUTORCC ON
         AUTOUIC ON
     )
+
     if(DEFINED MODULE_IDE_FOLDER)
-        list(APPEND TARGET_PROPERTIES FOLDER ${MODULE_IDE_FOLDER})
+        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
+            FOLDER ${MODULE_IDE_FOLDER}
+        )
     endif()
+
     if(APPLE)
-        list(APPEND TARGET_PROPERTIES
+        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
             INSTALL_NAME_DIR "@rpath"
             BUILD_WITH_INSTALL_RPATH OFF
             INSTALL_RPATH "@loader_path;@executable_path"
         )
     elseif(UNIX AND NOT APPLE)
-        list(APPEND TARGET_PROPERTIES
+        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
             BUILD_WITH_INSTALL_RPATH OFF
             INSTALL_RPATH "$ORIGIN"
         )
     endif()
-    set_target_properties(${MODULE_MODULE_NAME} PROPERTIES ${TARGET_PROPERTIES})
     
     # ==========================================
     # Include directories
