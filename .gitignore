@@ -4,3 +4,6 @@
 .DS_Store
 __pycache__/
 venv/
+
+# CMake user presets (local machine specific)
+CMakeUserPresets.json

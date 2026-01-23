@@ -23,7 +23,12 @@
   - 验证：`cmake --version`
 
 - **Qt 6.5+** （必需）
-  - [下载地址](https://www.qt.io/download-qt-installer)
+  - [官方安装器](https://www.qt.io/download-qt-installer)
+  - 或使用 aqtinstall 命令行安装：
+    ```bash
+    pip install aqtinstall
+    aqt install-qt mac desktop 6.8.3 clang_64 -O ~/Qt
+    ```
 
 ### Windows
 
@@ -44,10 +49,12 @@
 ### macOS
 
 ```bash
-# 使用 Homebrew 安装
+# 使用 Homebrew 安装基础工具
 brew install cmake
-brew install gcc
-brew install qt6
+
+# Qt 建议使用官方安装器或 aqtinstall
+pip install aqtinstall
+aqt install-qt mac desktop 6.8.3 clang_64 -O ~/Qt
 ```
 
 ### Linux
@@ -140,8 +147,8 @@ build.bat [preset] [action]
 
 | Preset | 编译器 | 构建类型 | 说明 |
 |--------|--------|----------|------|
-| `macos-debug` | GCC | Debug | 用于调试 |
-| `macos-release` | GCC | Release | 用于发布 |
+| `macos-debug` | Clang | Debug | 用于调试 |
+| `macos-release` | Clang | Release | 用于发布 |
 
 ### Linux 配置
 
@@ -201,21 +208,40 @@ rm -rf build/macos-release
 # IDE 会自动识别 CMakePresets.json
 ```
 
-### 场景 5：指定 Qt 路径
+### 场景 5：配置 Qt 路径（首次构建必须）
 
-如果 Qt 不在系统默认路径，需要设置环境变量：
+本项目使用 `CMakeUserPresets.json` 管理本地 Qt 路径：
 
-#### Windows:
-```batch
-set CMAKE_PREFIX_PATH=C:\Qt\6.5.3\msvc2019_64
-build.bat windows-msvc-release
-```
-
-#### macOS/Linux:
 ```bash
-export CMAKE_PREFIX_PATH=/usr/local/Qt-6.5.3
-./build.sh macos-release
+# 复制模板文件
+cp CMakeUserPresets.json.example CMakeUserPresets.json
+
+# 编辑 CMakeUserPresets.json，修改 CMAKE_PREFIX_PATH 为你的 Qt 安装路径
 ```
+
+示例配置：
+```json
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "macos-release",
+      "inherits": "macos-release",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
+      }
+    }
+  ]
+}
+```
+
+常见 Qt 路径：
+| 平台 | 安装方式 | 路径示例 |
+|------|----------|----------|
+| macOS | 官方安装器/aqtinstall | `~/Qt/6.8.3/macos` |
+| macOS | Homebrew | `/opt/homebrew/opt/qt@6`（不推荐） |
+| Windows | 官方安装器 | `C:/Qt/6.8.3/msvc2022_64` |
+| Linux | 官方安装器/aqtinstall | `~/Qt/6.8.3/gcc_64` |
 
 ---
 
@@ -248,14 +274,15 @@ CMake Error: Qt6 could not be found.
 
 **解决方法**:
 ```bash
-# 设置 Qt 路径
-# Windows
-set CMAKE_PREFIX_PATH=C:\Qt\6.5.3\msvc2019_64
+# 1. 确保已安装 Qt
+pip install aqtinstall
+aqt install-qt mac desktop 6.8.3 clang_64 -O ~/Qt
 
-# macOS/Linux
-export CMAKE_PREFIX_PATH=/usr/local/Qt-6.5.3
+# 2. 配置 CMakeUserPresets.json
+cp CMakeUserPresets.json.example CMakeUserPresets.json
+# 编辑文件，设置正确的 Qt 路径
 
-# 然后重新运行
+# 3. 重新运行
 ./build.sh macos-release
 ```
 
@@ -331,14 +358,34 @@ cmake --build --list-presets
 cpack --list-presets
 ```
 
-### 自定义配置（高级用户）
+### 自定义配置（CMakeUserPresets.json）
 
-创建 `CMakeUserPresets.json`（不会被 Git 跟踪）：
+`CMakeUserPresets.json` 用于存储本地机器特定的配置（如 Qt 路径），不会被 Git 跟踪。
 
+**初始化：**
+```bash
+cp CMakeUserPresets.json.example CMakeUserPresets.json
+```
+
+**文件结构：**
+| 文件 | 用途 | Git |
+|------|------|-----|
+| `CMakePresets.json` | 项目通用配置 | ✅ 提交 |
+| `CMakeUserPresets.json` | 本地机器配置（Qt 路径等） | ❌ 忽略 |
+| `CMakeUserPresets.json.example` | 模板文件 | ✅ 提交 |
+
+**添加自定义 preset：**
 ```json
 {
   "version": 6,
   "configurePresets": [
+    {
+      "name": "macos-release",
+      "inherits": "macos-release",
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
+      }
+    },
     {
       "name": "my-dev",
       "inherits": "macos-release",
@@ -349,11 +396,6 @@ cpack --list-presets
     }
   ]
 }
-```
-
-使用自定义配置：
-```bash
-./build.sh my-dev
 ```
 
 ### 生成依赖关系图
