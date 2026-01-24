@@ -3,7 +3,6 @@
 #include <mutex>
 #include <condition_variable>
 
-
 #include "LibCurlMultiHandle.h"
 #include "LibCurlEasyHandle.h"
 #include "LibCurlMultiHandleManager.h"

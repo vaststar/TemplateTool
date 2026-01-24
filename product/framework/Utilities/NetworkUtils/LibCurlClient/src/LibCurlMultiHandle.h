@@ -3,6 +3,10 @@
 #include <memory>
 
 namespace ucf::utilities::network::libcurl{
+
+/// @brief Ensures curl is globally initialized (thread-safe, call before any curl operations)
+void ensureCurlGlobalInit();
+
 class LibCurlEasyHandle;
 class LibCurlMultiHandle final
 {

@@ -20,7 +20,5 @@ public:
         ucf::utilities::network::http::HttpHeaderCallback headerCallback,
         ucf::utilities::network::http::HttpBodyCallback bodyCallback,
         ucf::utilities::network::http::HttpCompletionCallback completionCallback) = 0;
-        
-    virtual void startService() = 0;
 };
 }

@@ -67,11 +67,6 @@ NetworkHttpManager::~NetworkHttpManager()
    SERVICE_LOG_DEBUG("");
 }
 
-void NetworkHttpManager::startHttpNetwork()
-{
-    mDataPrivate->getNetworkHttpClient()->startService();
-}
-
 void NetworkHttpManager::sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location)
 {
     auto httpHandler = std::make_shared<NetworkHttpRestHandler>(restRequest, restResponseCallback);

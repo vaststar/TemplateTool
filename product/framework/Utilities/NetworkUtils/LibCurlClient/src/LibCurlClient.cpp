@@ -6,6 +6,7 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 
 #include "LibCurlClientLogger.h"
+#include "LibCurlMultiHandle.h"
 #include "LibCurlMultiHandleManager.h"
 #include "LibCurlEasyHandle.h"
 
@@ -19,7 +20,7 @@ class LibCurlClient::DataPrivate
 {
 public:
     DataPrivate();
-    void start();
+    void ensureStarted();
     void stop();
     std::shared_ptr<LibCurlEasyHandle> buildEasyHandle(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest, ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback) const;
     void insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle);
@@ -37,20 +38,23 @@ LibCurlClient::DataPrivate::DataPrivate()
 {
 }
 
-void LibCurlClient::DataPrivate::start()
+void LibCurlClient::DataPrivate::ensureStarted()
 {
     std::call_once(start_flag, [this]() {
+        LIBCURL_LOG_DEBUG("auto starting service");
         mMultiHandleManager->runLoop();
     });
 }
 
 void LibCurlClient::DataPrivate::stop()
 {
-    LIBCURL_LOG_DEBUG("stop service");
+    LIBCURL_LOG_DEBUG("start stop service");
     std::call_once(stop_flag, [this]() {
+        LIBCURL_LOG_DEBUG("stop service");
         mMultiHandleManager->stopLoop();
+        LIBCURL_LOG_DEBUG("stop service done");
     });
-    LIBCURL_LOG_DEBUG("stop service done");
+    LIBCURL_LOG_DEBUG("finish stop service done");
 }
 
 void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle)
@@ -113,6 +117,7 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
 LibCurlClient::LibCurlClient()
     : mDataPrivate(std::make_unique<DataPrivate>())
 {
+    ensureCurlGlobalInit();
     LIBCURL_LOG_DEBUG("create LibCurlClient, "<<this);
 }
 
@@ -123,15 +128,9 @@ LibCurlClient::~LibCurlClient()
     LIBCURL_LOG_DEBUG("delete LibCurlClient done, " << this);
 }
 
-void LibCurlClient::startService()
-{
-    LIBCURL_LOG_DEBUG("start service, " << this);
-    mDataPrivate->start();
-    LIBCURL_LOG_DEBUG("start service done, " << this);
-}
-
 void LibCurlClient::makeGenericRequest(const ucf::utilities::network::http::NetworkHttpRequest& request, ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback)
 {
+    mDataPrivate->ensureStarted();
     LIBCURL_LOG_DEBUG("make request, requestId: " << request.getRequestId() << ", trackingId: " << request.getTrackingId());
     auto easyHandle = mDataPrivate->buildEasyHandle(request, headerCallback, bodyCallback, completionCallback);
     mDataPrivate->insertEasyHandle(easyHandle);

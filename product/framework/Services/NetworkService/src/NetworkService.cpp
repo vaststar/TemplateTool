@@ -75,7 +75,6 @@ void NetworkService::initService()
     // {
     //     coreFramework->registerCallback(shared_from_this());
     // }
-    mDataPrivate->getNetworkHttpManager()->startHttpNetwork();
     SERVICE_LOG_DEBUG("init NetworkService done, address:" << this);
 }
 

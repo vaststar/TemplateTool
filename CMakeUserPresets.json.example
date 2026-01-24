@@ -2,46 +2,78 @@
   "version": 6,
   "configurePresets": [
     {
-      "name": "macos-release",
+      "name": "local-macos-release",
+      "displayName": "Local macOS Release",
       "inherits": "macos-release",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
       }
     },
     {
-      "name": "macos-debug",
+      "name": "local-macos-debug",
+      "displayName": "Local macOS Debug",
       "inherits": "macos-debug",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
       }
     },
     {
-      "name": "windows-msvc-release",
+      "name": "local-windows-msvc-release",
+      "displayName": "Local Windows MSVC Release",
       "inherits": "windows-msvc-release",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "C:/Qt/6.8.3/msvc2022_64"
       }
     },
     {
-      "name": "windows-msvc-debug",
+      "name": "local-windows-msvc-debug",
+      "displayName": "Local Windows MSVC Debug",
       "inherits": "windows-msvc-debug",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "C:/Qt/6.8.3/msvc2022_64"
       }
     },
     {
-      "name": "linux-release",
+      "name": "local-linux-release",
+      "displayName": "Local Linux Release",
       "inherits": "linux-release",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/gcc_64"
       }
     },
     {
-      "name": "linux-debug",
+      "name": "local-linux-debug",
+      "displayName": "Local Linux Debug",
       "inherits": "linux-debug",
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/gcc_64"
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "local-macos-release",
+      "configurePreset": "local-macos-release"
+    },
+    {
+      "name": "local-macos-debug",
+      "configurePreset": "local-macos-debug"
+    },
+    {
+      "name": "local-windows-msvc-release",
+      "configurePreset": "local-windows-msvc-release"
+    },
+    {
+      "name": "local-windows-msvc-debug",
+      "configurePreset": "local-windows-msvc-debug"
+    },
+    {
+      "name": "local-linux-release",
+      "configurePreset": "local-linux-release"
+    },
+    {
+      "name": "local-linux-debug",
+      "configurePreset": "local-linux-debug"
     }
   ]
 }

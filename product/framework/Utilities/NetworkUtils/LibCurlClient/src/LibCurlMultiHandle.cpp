@@ -2,6 +2,7 @@
 #include <mutex>
 #include <algorithm>
 #include <atomic>
+#include <cstdlib>
 
 #include <curl/curl.h>
 
@@ -10,6 +11,26 @@
 #include "LibCurlEasyHandle.h"
 
 namespace ucf::utilities::network::libcurl{
+
+namespace {
+    std::once_flag g_curlInitFlag;
+    std::atomic<bool> g_curlInitialized{false};
+}
+
+void ensureCurlGlobalInit() {
+    std::call_once(g_curlInitFlag, []() {
+        LIBCURL_LOG_DEBUG("curl_global_init called");
+        if (curl_global_init(CURL_GLOBAL_ALL) == CURLE_OK) {
+            g_curlInitialized.store(true, std::memory_order_release);
+            std::atexit([]() {
+                LIBCURL_LOG_DEBUG("curl_global_cleanup called");
+                curl_global_cleanup();
+            });
+        } else {
+            LIBCURL_LOG_ERROR("curl_global_init failed");
+        }
+    });
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
