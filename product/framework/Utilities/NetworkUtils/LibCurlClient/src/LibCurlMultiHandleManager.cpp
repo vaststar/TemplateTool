@@ -23,6 +23,7 @@ public:
     void insertRequest(std::shared_ptr<LibCurlEasyHandle> request);
     void runLoop();
     void stopLoop();
+    bool cancelRequest(const std::string& requestId);
 private:
     std::unique_ptr<LibCurlMultiHandle> mMultiHandle;
     std::atomic_bool mStop;
@@ -129,6 +130,16 @@ void LibCurlMultiHandleManager::stopLoop()
 void LibCurlMultiHandleManager::insert(std::shared_ptr<LibCurlEasyHandle> request)
 {
     mDataPrivate->insertRequest(request);
+}
+
+bool LibCurlMultiHandleManager::cancelRequest(const std::string& requestId)
+{
+    return mDataPrivate->cancelRequest(requestId);
+}
+
+bool LibCurlMultiHandleManager::DataPrivate::cancelRequest(const std::string& requestId)
+{
+    return mMultiHandle->cancelRequest(requestId);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

@@ -21,6 +21,7 @@ public:
 public:
     int addEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle);
     int removeEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle);
+    bool cancelRequest(const std::string& requestId);
 
     void performRequests();
     void stop();

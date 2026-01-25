@@ -19,6 +19,8 @@ public:
     void setURI(const std::string& uri);
     void setHeaders(const ucf::utilities::network::http::NetworkHttpHeaders& headers);
     void setTrackingId(const std::string& trackingId);
+    void setRequestId(const std::string& requestId);
+    std::string getRequestId() const;
     void setTimeout(int timeoutSecs);
     void setInFileSizeLarge(size_t file_size);
     void setCommonOptions();

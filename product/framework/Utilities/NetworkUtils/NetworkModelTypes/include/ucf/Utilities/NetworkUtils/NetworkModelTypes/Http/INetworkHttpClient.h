@@ -20,5 +20,6 @@ public:
         ucf::utilities::network::http::HttpHeaderCallback headerCallback,
         ucf::utilities::network::http::HttpBodyCallback bodyCallback,
         ucf::utilities::network::http::HttpCompletionCallback completionCallback) = 0;
+    virtual bool cancelRequest(const std::string& requestId) = 0;
 };
 }

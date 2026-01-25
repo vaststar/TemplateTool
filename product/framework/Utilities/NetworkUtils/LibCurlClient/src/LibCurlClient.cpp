@@ -24,6 +24,7 @@ public:
     void stop();
     std::shared_ptr<LibCurlEasyHandle> buildEasyHandle(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest, ucf::utilities::network::http::HttpHeaderCallback headerCallback, ucf::utilities::network::http::HttpBodyCallback bodyCallback, ucf::utilities::network::http::HttpCompletionCallback completionCallback) const;
     void insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle);
+    bool cancelRequest(const std::string& requestId);
 private:
     ucf::utilities::network::http::NetworkHttpHeaders buildHeaders(const ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
 private:
@@ -81,6 +82,7 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
     easyHandle->setURI(httpRequest.getRequestUri());
     easyHandle->setHeaders(buildHeaders(httpRequest));
     easyHandle->setTrackingId(httpRequest.getTrackingId());
+    easyHandle->setRequestId(httpRequest.getRequestId());
     easyHandle->setTimeout(httpRequest.getTimeout());
     easyHandle->setCommonOptions();
     // easyHandle->enableCURLDebugPrint();
@@ -134,6 +136,23 @@ void LibCurlClient::makeGenericRequest(const ucf::utilities::network::http::Netw
     LIBCURL_LOG_DEBUG("make request, requestId: " << request.getRequestId() << ", trackingId: " << request.getTrackingId());
     auto easyHandle = mDataPrivate->buildEasyHandle(request, headerCallback, bodyCallback, completionCallback);
     mDataPrivate->insertEasyHandle(easyHandle);
+}
+
+bool LibCurlClient::cancelRequest(const std::string& requestId)
+{
+    LIBCURL_LOG_INFO("[CANCEL_REQUEST] requestId: " << requestId);
+    bool result = mDataPrivate->cancelRequest(requestId);
+    if (result) {
+        LIBCURL_LOG_INFO("[CANCEL_REQUEST] requestId: " << requestId << " cancelled successfully");
+    } else {
+        LIBCURL_LOG_WARN("[CANCEL_REQUEST] requestId: " << requestId << " not found or already completed");
+    }
+    return result;
+}
+
+bool LibCurlClient::DataPrivate::cancelRequest(const std::string& requestId)
+{
+    return mMultiHandleManager->cancelRequest(requestId);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

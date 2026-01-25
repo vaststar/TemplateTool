@@ -146,6 +146,8 @@ public:
 
     void setTrackingId(const std::string& trackingId){mTrackingId = trackingId;}
     std::string getTrackingId() const{return mTrackingId;}
+    void setRequestId(const std::string& requestId){mRequestId = requestId;}
+    std::string getRequestId() const{return mRequestId;}
 
     int setHttpMethod(ucf::utilities::network::http::HTTPMethod method);
     int setURI(const std::string& uri);
@@ -187,6 +189,7 @@ private:
     ucf::utilities::network::http::HttpBodyCallback mBodyCallback;
     ucf::utilities::network::http::HttpCompletionCallback mCompletionCallback;
     std::string mTrackingId;
+    std::string mRequestId;
 
     ucf::utilities::network::http::NetworkHttpHeaders mResponseHeader;
     std::shared_ptr<PayloadData> mPayloadData;
@@ -399,6 +402,16 @@ void LibCurlEasyHandle::setTrackingId(const std::string& trackingId)
     mDataPrivate->setTrackingId(trackingId);
 }
 
+void LibCurlEasyHandle::setRequestId(const std::string& requestId)
+{
+    mDataPrivate->setRequestId(requestId);
+}
+
+std::string LibCurlEasyHandle::getRequestId() const
+{
+    return mDataPrivate->getRequestId();
+}
+
 void LibCurlEasyHandle::setTimeout(int timeoutSecs)
 {
     mDataPrivate->setOption(CURLOPT_TIMEOUT, timeoutSecs);
@@ -492,7 +505,10 @@ void LibCurlEasyHandle::headersCompleted()
 
 void LibCurlEasyHandle::finishHandle(CURLcode code)
 {
-    LIBCURL_LOG_DEBUG("finish rquest, trackingId=" << mDataPrivate->getTrackingId());
+    LIBCURL_LOG_INFO("[REQUEST_FINISH] requestId=" << mDataPrivate->getRequestId() 
+                     << ", trackingId=" << mDataPrivate->getTrackingId() 
+                     << ", code=" << static_cast<int>(code) 
+                     << " (" << curl_easy_strerror(code) << ")");
     if (code == CURLE_OK)
     {
         if (mDataPrivate->getBodyCallback() != nullptr)

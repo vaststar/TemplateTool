@@ -15,6 +15,11 @@ namespace ucf::utilities::network::libcurl{
 namespace {
     std::once_flag g_curlInitFlag;
     std::atomic<bool> g_curlInitialized{false};
+    
+    // Connection pool limits
+    constexpr long kMaxTotalConnections = 50;   // Max simultaneous connections (queued if exceeded)
+    constexpr long kMaxHostConnections = 6;     // Max connections per host (HTTP/1.1 browser standard)
+    constexpr long kMaxConnectionCache = 100;   // Keep-alive connection cache size
 }
 
 void ensureCurlGlobalInit() {
@@ -49,6 +54,7 @@ public:
     void stop();
     bool isStopped();
     void cancelAllPendingRequests();
+    bool cancelRequest(const std::string& requestId);
 private:
     CURLMsg* read();
     std::shared_ptr<LibCurlEasyHandle> getEasyHanleFromCURL(CURL* handle);
@@ -60,12 +66,18 @@ private:
     std::vector<std::shared_ptr<LibCurlEasyHandle>> mRequests;
 
     std::atomic_bool mStop;
+    std::atomic<int> mLastRunningCount{0};  // Cache running count for logging
 };
 
 LibCurlMultiHandle::DataPrivate::DataPrivate()
     : mHandle(curl_multi_init())
     , mStop(false)
 {
+    if (mHandle) {
+        curl_multi_setopt(mHandle, CURLMOPT_MAX_TOTAL_CONNECTIONS, kMaxTotalConnections);
+        curl_multi_setopt(mHandle, CURLMOPT_MAX_HOST_CONNECTIONS, kMaxHostConnections);
+        curl_multi_setopt(mHandle, CURLMOPT_MAXCONNECTS, kMaxConnectionCache);
+    }
 }
 
 LibCurlMultiHandle::DataPrivate::~DataPrivate()
@@ -78,10 +90,16 @@ LibCurlMultiHandle::DataPrivate::~DataPrivate()
 
 int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle)
 {
+    size_t totalCount;
     {
         std::scoped_lock lo(mRequestsAccess);
         mRequests.push_back(easyHandle);
+        totalCount = mRequests.size();
     }
+    
+    int running = mLastRunningCount.load(std::memory_order_acquire);
+    int queued = std::max(0, static_cast<int>(totalCount) - running);
+    LIBCURL_LOG_INFO("[REQUEST_ADDED] total=" << totalCount << ", running=" << running << ", queued=" << queued);
     
     std::scoped_lock lo(mCURLAccess);
     auto code = curl_multi_add_handle(mHandle, easyHandle->getHandle());
@@ -95,11 +113,17 @@ int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHa
 
 int LibCurlMultiHandle::DataPrivate::removeEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle)
 {
+    size_t totalCount = 0;
     if (easyHandle)
     {
         std::scoped_lock lo(mRequestsAccess);
         std::erase(mRequests, easyHandle);
+        totalCount = mRequests.size();
     }
+
+    int running = mLastRunningCount.load(std::memory_order_acquire);
+    int queued = std::max(0, static_cast<int>(totalCount) - running);
+    LIBCURL_LOG_INFO("[REQUEST_COMPLETED] total=" << totalCount << ", running=" << running << ", queued=" << queued);
 
     std::scoped_lock lo(mCURLAccess);
     auto code = curl_multi_remove_handle(mHandle, easyHandle->getHandle());
@@ -119,6 +143,7 @@ int LibCurlMultiHandle::DataPrivate::perform(int* count)
     {
         LIBCURL_LOG_INFO("multi handle perform error: " << curl_multi_strerror(code));
     }
+    mLastRunningCount.store(*count, std::memory_order_release);
     return code;
 }
 
@@ -280,6 +305,45 @@ void LibCurlMultiHandle::stop()
 {
     LIBCURL_LOG_INFO("");
     mDataPrivate->stop();
+}
+
+bool LibCurlMultiHandle::cancelRequest(const std::string& requestId)
+{
+    return mDataPrivate->cancelRequest(requestId);
+}
+
+bool LibCurlMultiHandle::DataPrivate::cancelRequest(const std::string& requestId)
+{
+    std::shared_ptr<LibCurlEasyHandle> handleToCancel;
+    size_t totalCount = 0;
+    {
+        std::scoped_lock lo(mRequestsAccess);
+        auto iter = std::find_if(mRequests.begin(), mRequests.end(),
+            [&requestId](const auto& request) {
+                return request->getRequestId() == requestId;
+            });
+        
+        if (iter == mRequests.end()) {
+            LIBCURL_LOG_WARN("[REQUEST_CANCEL] requestId=" << requestId << " not found");
+            return false;
+        }
+        
+        handleToCancel = *iter;
+        mRequests.erase(iter);
+        totalCount = mRequests.size();
+    }
+
+    {
+        std::scoped_lock lo(mCURLAccess);
+        curl_multi_remove_handle(mHandle, handleToCancel->getHandle());
+    }
+    
+    int running = mLastRunningCount.load(std::memory_order_acquire);
+    int queued = std::max(0, static_cast<int>(totalCount) - running);
+    LIBCURL_LOG_INFO("[REQUEST_CANCELLED] requestId=" << requestId << ", total=" << totalCount << ", running=" << running << ", queued=" << queued);
+    
+    handleToCancel->finishHandle(CURLE_ABORTED_BY_CALLBACK);
+    return true;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

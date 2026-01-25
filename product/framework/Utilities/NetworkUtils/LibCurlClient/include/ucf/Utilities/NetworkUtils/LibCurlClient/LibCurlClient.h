@@ -19,6 +19,7 @@ public:
                  ucf::utilities::network::http::HttpHeaderCallback headerCallback,
                  ucf::utilities::network::http::HttpBodyCallback bodyCallback,
                  ucf::utilities::network::http::HttpCompletionCallback completionCallback) override;
+    virtual bool cancelRequest(const std::string& requestId) override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

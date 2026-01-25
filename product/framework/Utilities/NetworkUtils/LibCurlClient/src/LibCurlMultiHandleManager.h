@@ -17,6 +17,7 @@ public:
     void runLoop();
     void stopLoop();
     void insert(std::shared_ptr<LibCurlEasyHandle> request);
+    bool cancelRequest(const std::string& requestId);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
