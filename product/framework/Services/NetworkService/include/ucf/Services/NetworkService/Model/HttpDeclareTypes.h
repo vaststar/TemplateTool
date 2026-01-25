@@ -16,7 +16,7 @@ enum class SERVICE_EXPORT HTTPMethod{
     DEL,
     PATCH,
     OPTIONS,
-    Unknwon
+    Unknown
 };
 
 enum class SERVICE_EXPORT ResponseErrorType

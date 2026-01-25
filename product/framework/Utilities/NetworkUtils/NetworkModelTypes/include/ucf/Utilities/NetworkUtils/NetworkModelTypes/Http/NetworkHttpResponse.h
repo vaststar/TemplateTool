@@ -7,6 +7,15 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::utilities::network::http{
+
+/**
+ * @brief HTTP response object containing the result of an HTTP request.
+ * 
+ * This class encapsulates response data including status code, headers,
+ * body content, and error information if the request failed.
+ * 
+ * @note This class is non-copyable and non-movable due to PIMPL implementation.
+ */
 class NETWORKTYPE_EXPORT NetworkHttpResponse final
 {
 public:

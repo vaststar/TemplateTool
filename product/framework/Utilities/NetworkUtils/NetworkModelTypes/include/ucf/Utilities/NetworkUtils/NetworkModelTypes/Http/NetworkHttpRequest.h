@@ -1,13 +1,21 @@
 #pragma once
 
 #include <memory>
-#include <map>
 #include <string>
 
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/NetworkModelTypesExport.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::utilities::network::http{
+
+/**
+ * @brief HTTP request object containing all data needed to make an HTTP request.
+ * 
+ * This class encapsulates request parameters including method, URI, headers,
+ * timeout, and payload. Request ID and Tracking ID are auto-generated if not set.
+ * 
+ * @note This class is non-copyable and non-movable due to PIMPL implementation.
+ */
 class NETWORKTYPE_EXPORT NetworkHttpRequest final
 {
 public:

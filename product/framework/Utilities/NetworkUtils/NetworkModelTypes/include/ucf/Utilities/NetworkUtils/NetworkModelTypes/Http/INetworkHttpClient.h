@@ -6,11 +6,17 @@
 
 namespace ucf::utilities::network::http{
 
+/**
+ * @brief Abstract interface for HTTP client implementations.
+ * 
+ * Provides a streaming callback-based API for making HTTP requests.
+ * Implementations should handle connection pooling, SSL, and async I/O.
+ */
 class INetworkHttpClient
 {
 public:
-    INetworkHttpClient() {};
-    INetworkHttpClient(const INetworkHttpClient&) = default;
+    INetworkHttpClient() = default;
+    INetworkHttpClient(const INetworkHttpClient&) = delete;
     INetworkHttpClient(INetworkHttpClient&&) = delete;
     INetworkHttpClient& operator=(const INetworkHttpClient&) = delete;
     INetworkHttpClient& operator=(INetworkHttpClient&&) = delete;

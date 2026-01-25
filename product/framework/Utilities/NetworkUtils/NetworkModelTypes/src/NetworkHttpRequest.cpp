@@ -66,8 +66,8 @@ private:
 
 NetworkHttpRequest::DataPrivate::DataPrivate()
     : mRequestId("RequestID_"+ucf::utilities::UUIDUtils::generateUUID())
-    , mTrackingId("TrackindID_" + ucf::utilities::UUIDUtils::generateUUID())
-    , mMethod(HTTPMethod::Unknwon)
+    , mTrackingId("TrackingID_" + ucf::utilities::UUIDUtils::generateUUID())
+    , mMethod(HTTPMethod::Unknown)
     , mPayloadType(NetworkHttpPayloadType::None)
     , mTimeoutSecs(0)
 {
@@ -78,11 +78,11 @@ void NetworkHttpRequest::DataPrivate::clear()
 {
     mRequestId.clear();
     mTrackingId.clear();
-    mMethod = HTTPMethod::Unknwon;
+    mMethod = HTTPMethod::Unknown;
     mUri.clear();
     mHeaders.clear();
     mTimeoutSecs = 0;
-    mTrackingId.clear();
+    mPayloadType = NetworkHttpPayloadType::None;
     mPayloadString.clear();
     mPayloadFilePath.clear();
     mPayloadBuffer.reset();
@@ -184,9 +184,16 @@ size_t NetworkHttpRequest::getPayloadSize() const
     case NetworkHttpPayloadType::String:
         return getPayloadString().size();
     case NetworkHttpPayloadType::Memory:
-        return getPayloadMemoryBuffer()->size();
+    {
+        auto buffer = getPayloadMemoryBuffer();
+        return buffer ? buffer->size() : 0;
+    }
     case NetworkHttpPayloadType::File:
-        return std::filesystem::file_size(getPayloadFilePath());
+    {
+        std::error_code ec;
+        auto size = std::filesystem::file_size(getPayloadFilePath(), ec);
+        return ec ? 0 : size;
+    }
     default:
         return 0;
     }

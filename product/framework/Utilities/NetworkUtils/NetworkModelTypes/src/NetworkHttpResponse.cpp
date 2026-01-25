@@ -1,6 +1,7 @@
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 #include <algorithm>
+#include <cctype>
 
 namespace ucf::utilities::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -124,8 +125,12 @@ void NetworkHttpResponse::clear()
 std::optional<std::string> NetworkHttpResponse::getHeaderValue(const std::string& key) const
 {
     const auto& headers = getResponseHeaders();
-    auto item = std::find_if(headers.cbegin(), headers.cend(), [key](const auto& headerKeyVal){
-        return headerKeyVal.first == key;
+    // HTTP header names are case-insensitive (RFC 7230)
+    auto item = std::find_if(headers.cbegin(), headers.cend(), [&key](const auto& headerKeyVal){
+        return std::ranges::equal(headerKeyVal.first, key, [](char a, char b){
+            return std::tolower(static_cast<unsigned char>(a)) == 
+                   std::tolower(static_cast<unsigned char>(b));
+        });
     });
     if (item != headers.cend())
     {

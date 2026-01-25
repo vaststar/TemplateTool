@@ -441,6 +441,13 @@ void LibCurlEasyHandle::setCommonOptions()
     mDataPrivate->setOption(CURLOPT_SSL_VERIFYHOST, 0L);
 
     mDataPrivate->setOption(CURLOPT_NOSIGNAL, 1L);
+    
+    // Connection timeout (TCP + TLS handshake), default 30 seconds
+    mDataPrivate->setOption(CURLOPT_CONNECTTIMEOUT, 30L);
+    
+    // Low speed detection: timeout if speed < 1KB/s for 30 seconds
+    mDataPrivate->setOption(CURLOPT_LOW_SPEED_LIMIT, 1000L);
+    mDataPrivate->setOption(CURLOPT_LOW_SPEED_TIME, 30L);
 }
 
 void LibCurlEasyHandle::enableCURLDebugPrint()
