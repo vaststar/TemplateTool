@@ -7,8 +7,8 @@ namespace ucf::service::model{
 class DBConfig;
 class DBTableModel;
 
-class DataBaseDataValue;
-using DBDataValues = std::vector<DataBaseDataValue>;
+class DatabaseDataValue;
+using DBDataValues = std::vector<DatabaseDataValue>;
 using ListOfDBValues = std::vector<DBDataValues>;    
 using DBColumnFields = std::vector<std::string>;
 
@@ -17,7 +17,7 @@ using DatabaseDataRecords = std::vector<DatabaseDataRecord>;
 using DatabaseDataRecordsCallback = std::function<void(const DatabaseDataRecords&)>;
 
 enum class DBOperatorType;
-using WhereCondition = std::tuple<std::string, DataBaseDataValue, DBOperatorType>;
+using WhereCondition = std::tuple<std::string, DatabaseDataValue, DBOperatorType>;
 using ListsOfWhereCondition = std::vector<WhereCondition>;
 
 

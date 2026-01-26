@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ucf/Services/ServiceExportMacro/ServiceExport.h>
-#include <ucf/Services/DataWarehouseService/DataBaseTableModel.h>
+#include <ucf/Services/DataWarehouseService/DatabaseTableModel.h>
 namespace db::schema{
 struct SERVICE_EXPORT UserContactTable: public ucf::service::model::DBTableModel
 {

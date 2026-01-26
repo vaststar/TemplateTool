@@ -8,18 +8,18 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/Services/DataWarehouseService/DatabaseModelDeclare.h
     include/ucf/Services/DataWarehouseService/IDataWarehouseService.h
-    include/ucf/Services/DataWarehouseService/DataBaseConfig.h
-    include/ucf/Services/DataWarehouseService/DataBaseTableModel.h
-    include/ucf/Services/DataWarehouseService/DataBaseDataValue.h
+    include/ucf/Services/DataWarehouseService/DatabaseConfig.h
+    include/ucf/Services/DataWarehouseService/DatabaseTableModel.h
+    include/ucf/Services/DataWarehouseService/DatabaseDataValue.h
     include/ucf/Services/DataWarehouseService/DatabaseDataRecord.h
     include/ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DataWarehouseServiceLogger.h
-    src/DataBaseTableModel.cpp
-    src/DataBaseDataValue.cpp
+    src/DatabaseTableModel.cpp
+    src/DatabaseDataValue.cpp
     src/DatabaseDataRecord.cpp
-    src/DataBaseConfig.cpp
+    src/DatabaseConfig.cpp
     src/DataWarehouseService.h
     src/DataWarehouseService.cpp
     src/DataWarehouseManager.h

@@ -14,15 +14,19 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h
+    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseConfig.h
+    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFactory.h
     include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h
-    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseDataValue.h
+    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataValue.h
     include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h
+    include/ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseWrapperExport.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DatabaseWrapperLogger.h
+    src/DatabaseFactory.cpp
     src/DatabaseDataRecord.cpp
     src/DatabaseSchema.cpp
-    src/DataBaseDataValue.cpp
+    src/DatabaseDataValue.cpp
     src/SqliteWrapper/SqliteDatabaseWrapper.h
     src/SqliteWrapper/SqliteDatabaseWrapper.cpp
 )

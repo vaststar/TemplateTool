@@ -3,19 +3,19 @@
 #include <string>
 #include <map>
 #include <ucf/Services/ServiceExportMacro/ServiceExport.h>
-#include <ucf/Services/DataWarehouseService/DataBaseDataValue.h>
+#include <ucf/Services/DataWarehouseService/DatabaseDataValue.h>
 
 namespace ucf::service::model{
 
-class DataBaseDataValue;
+class DatabaseDataValue;
 
 class SERVICE_EXPORT DatabaseDataRecord final
 {
 public:
-    void addColumnData(const std::string& key, const DataBaseDataValue& value);
-    void addColumnData(const std::string& key, DataBaseDataValue&& value);
-    DataBaseDataValue getColumnData(const std::string& key) const;
+    void addColumnData(const std::string& key, const DatabaseDataValue& value);
+    void addColumnData(const std::string& key, DatabaseDataValue&& value);
+    DatabaseDataValue getColumnData(const std::string& key) const;
 private:
-    std::map<std::string, DataBaseDataValue> mValueMaps;
+    std::map<std::string, DatabaseDataValue> mValueMaps;
 };
 }

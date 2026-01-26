@@ -98,7 +98,7 @@ int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHa
     }
     
     int running = mLastRunningCount.load(std::memory_order_acquire);
-    int queued = std::max(0, static_cast<int>(totalCount) - running);
+    int queued = (std::max)(0, static_cast<int>(totalCount) - running);
     LIBCURL_LOG_INFO("[REQUEST_ADDED] total=" << totalCount << ", running=" << running << ", queued=" << queued);
     
     std::scoped_lock lo(mCURLAccess);
@@ -122,7 +122,7 @@ int LibCurlMultiHandle::DataPrivate::removeEasyHandle(std::shared_ptr<LibCurlEas
     }
 
     int running = mLastRunningCount.load(std::memory_order_acquire);
-    int queued = std::max(0, static_cast<int>(totalCount) - running);
+    int queued = (std::max)(0, static_cast<int>(totalCount) - running);
     LIBCURL_LOG_INFO("[REQUEST_COMPLETED] total=" << totalCount << ", running=" << running << ", queued=" << queued);
 
     std::scoped_lock lo(mCURLAccess);
@@ -339,7 +339,7 @@ bool LibCurlMultiHandle::DataPrivate::cancelRequest(const std::string& requestId
     }
     
     int running = mLastRunningCount.load(std::memory_order_acquire);
-    int queued = std::max(0, static_cast<int>(totalCount) - running);
+    int queued = (std::max)(0, static_cast<int>(totalCount) - running);
     LIBCURL_LOG_INFO("[REQUEST_CANCELLED] requestId=" << requestId << ", total=" << totalCount << ", running=" << running << ", queued=" << queued);
     
     handleToCancel->finishHandle(CURLE_ABORTED_BY_CALLBACK);

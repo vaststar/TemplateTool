@@ -27,8 +27,13 @@ public:
     virtual ~IDataWarehouseService() = default;
 public:
     virtual void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables) = 0;
-    virtual void insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location = std::source_location::current()) = 0;
+    virtual bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location = std::source_location::current()) = 0;
     virtual void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit = 0, const std::source_location location = std::source_location::current()) = 0;
+    virtual int64_t updateInDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::DBDataValues& values, const model::ListsOfWhereCondition& whereConditions, const std::source_location location = std::source_location::current()) = 0;
+    virtual bool updateBatch(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& keyColumns, const model::DBColumnFields& valueColumns, const model::ListOfDBValues& items, const std::source_location location = std::source_location::current()) = 0;
+    virtual int64_t deleteFromDatabase(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions, const std::source_location location = std::source_location::current()) = 0;
+    virtual bool exists(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions) = 0;
+    virtual int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions) = 0;
     static std::shared_ptr<IDataWarehouseService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

@@ -1,146 +1,108 @@
 #include <tuple>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DataBaseDataValue.h>
+#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataValue.h>
 
 namespace ucf::utilities::database{
-DataBaseDataValue::DataBaseDataValue(const std::string& value)
+DatabaseDataValue::DatabaseDataValue(const std::string& value)
     : mVariantValue(std::move(value))
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(const char* value)
+DatabaseDataValue::DatabaseDataValue(const char* value)
     : mVariantValue(DBSupportedTypes::STRING(value))
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(long value)
+DatabaseDataValue::DatabaseDataValue(long value)
     : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(long long value)
+DatabaseDataValue::DatabaseDataValue(long long value)
     : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(int value)
+DatabaseDataValue::DatabaseDataValue(int value)
     : mVariantValue(value)
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(float value)
+DatabaseDataValue::DatabaseDataValue(float value)
     : mVariantValue(value)
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(bool value)
+DatabaseDataValue::DatabaseDataValue(bool value)
     : mVariantValue(static_cast<DBSupportedTypes::INT>(value))
 {
 }
 
-DataBaseDataValue::DataBaseDataValue(std::vector<uint8_t> buffer)
+DatabaseDataValue::DatabaseDataValue(std::vector<uint8_t> buffer)
     : mVariantValue(std::move(buffer))
 {
 }
 
-DBSupportedTypes::STRING DataBaseDataValue::getStringValue() const
+DatabaseDataValue::DatabaseDataValue(DBSupportedTypes::NULL_TYPE)
+    : mVariantValue(DBSupportedTypes::NULL_TYPE{})
+{
+}
+
+bool DatabaseDataValue::isNull() const
+{
+    return std::holds_alternative<DBSupportedTypes::NULL_TYPE>(mVariantValue);
+}
+
+DBSupportedTypes::STRING DatabaseDataValue::getStringValue() const
 {
     static const DBSupportedTypes::STRING defaultString = {};
     return getVariantValue<DBSupportedTypes::STRING>(defaultString);
 }
 
-DBSupportedTypes::INT DataBaseDataValue::getIntValue() const
+DBSupportedTypes::INT DatabaseDataValue::getIntValue() const
 {
     static DBSupportedTypes::INT defaultInt{ 0 };
     return getVariantValue<DBSupportedTypes::INT>(defaultInt);
 }
 
-DBSupportedTypes::FLOAT DataBaseDataValue::getFloatValue() const
+DBSupportedTypes::FLOAT DatabaseDataValue::getFloatValue() const
 {
     static DBSupportedTypes::FLOAT defaultFloat{ 0.0 };
     return getVariantValue<DBSupportedTypes::FLOAT>(defaultFloat);
 }
 
-DBSupportedTypes::BLOB DataBaseDataValue::getBufferValue() const
+DBSupportedTypes::BLOB DatabaseDataValue::getBufferValue() const
 {
     static const DBSupportedTypes::BLOB defaultBlob{};
     return getVariantValue<DBSupportedTypes::BLOB>(defaultBlob);
 }
 
-bool DataBaseDataValue::operator>(const DataBaseDataValue& rhs) const
+bool DatabaseDataValue::operator>(const DatabaseDataValue& rhs) const
 {
-    if (holdsType<DBSupportedTypes::INT>())
-    {
-        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) > *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
-    }
-    else if (holdsType<DBSupportedTypes::FLOAT>())
-    {
-        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) > *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
-    }
-    return false;
+    return mVariantValue > rhs.mVariantValue;
 }
 
-bool DataBaseDataValue::operator>=(const DataBaseDataValue& rhs) const
+bool DatabaseDataValue::operator>=(const DatabaseDataValue& rhs) const
 {
-    if (holdsType<DBSupportedTypes::INT>())
-    {
-        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) >= *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
-    }
-    else if (holdsType<DBSupportedTypes::FLOAT>())
-    {
-        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) >= *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
-    }
-    return false;
+    return mVariantValue >= rhs.mVariantValue;
 }
 
-bool DataBaseDataValue::operator<(const DataBaseDataValue& rhs) const
+bool DatabaseDataValue::operator<(const DatabaseDataValue& rhs) const
 {
-    if (holdsType<DBSupportedTypes::STRING>())
-    {
-        return *std::get_if<DBSupportedTypes::STRING>(&mVariantValue) < *std::get_if<DBSupportedTypes::STRING>(&rhs.mVariantValue);
-    }
-    else  if (holdsType<DBSupportedTypes::INT>())
-    {
-        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) < *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
-    }
-    else if (holdsType<DBSupportedTypes::FLOAT>())
-    {
-        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) < *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
-    }
-    return false;
+    return mVariantValue < rhs.mVariantValue;
 }
 
-bool DataBaseDataValue::operator<=(const DataBaseDataValue& rhs) const
+bool DatabaseDataValue::operator<=(const DatabaseDataValue& rhs) const
 {
-    if (holdsType<DBSupportedTypes::INT>())
-    {
-        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) <= *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
-    }
-    else if (holdsType<DBSupportedTypes::FLOAT>())
-    {
-        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) <= *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
-    }
-    return false;
+    return mVariantValue <= rhs.mVariantValue;
 }
 
-bool DataBaseDataValue::operator==(const DataBaseDataValue& rhs) const
+bool DatabaseDataValue::operator==(const DatabaseDataValue& rhs) const
 {
-    if (holdsType<DBSupportedTypes::STRING>())
-    {
-        return *std::get_if<DBSupportedTypes::STRING>(&mVariantValue) == *std::get_if<DBSupportedTypes::STRING>(&rhs.mVariantValue);
-    }
-    else if (holdsType<DBSupportedTypes::INT>())
-    {
-        return *std::get_if<DBSupportedTypes::INT>(&mVariantValue) == *std::get_if<DBSupportedTypes::INT>(&rhs.mVariantValue);
-    }
-    else if (holdsType<DBSupportedTypes::FLOAT>())
-    {
-        return *std::get_if<DBSupportedTypes::FLOAT>(&mVariantValue) == *std::get_if<DBSupportedTypes::FLOAT>(&rhs.mVariantValue);
-    }
-    return false;
+    return mVariantValue == rhs.mVariantValue;
 }
 
-bool DataBaseDataValue::operator!=(const DataBaseDataValue& rhs) const
+bool DatabaseDataValue::operator!=(const DatabaseDataValue& rhs) const
 {
-    return !operator==(rhs);
+    return mVariantValue != rhs.mVariantValue;
 }
 }
