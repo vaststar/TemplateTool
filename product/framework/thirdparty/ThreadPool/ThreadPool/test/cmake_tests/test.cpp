@@ -1,24 +1,25 @@
-#include "ThreadPool/ThreadPoolUtil.h"
+#include "ThreadPool/IThreadPool.h"
 
 #include <vector>
 #include <string>
 #include <iostream>
 #include <functional>
 
-void threadPool_export_util_api()
+void threadPool_test_submit_api()
 {
-	auto testFunc = [](int i){/*std::this_thread::sleep_for(std::chrono::milliseconds(100));*/ std::cout << i*i<<std::endl; };
-	ThreadPoolUtil::initThreadPool(3);
-	for (int i = 2000; i < 3000; ++i) {
-		ThreadPoolUtil::createThreadTask(std::bind(testFunc,i), ThreadPoolUtil::ThreadLevel::Level_Normal);
+	auto pool = ThreadPool::IThreadPool::create(3, "test-pool");
+	auto testFunc = [](int i){ std::cout << i*i << std::endl; };
+	
+	for (int i = 2000; i < 2100; ++i) {
+		pool->submit(std::bind(testFunc, i), ThreadPool::Priority::Normal);
 	}
-	for (int i = 3100; i < 3400; ++i) {
-		ThreadPoolUtil::createThreadTask(std::bind(testFunc,i), ThreadPoolUtil::ThreadLevel::Level_High);
+	for (int i = 3100; i < 3200; ++i) {
+		pool->submit(std::bind(testFunc, i), ThreadPool::Priority::High);
 	}
 }
 
 int main(int argc, char* argv[])
 {
-	threadPool_export_util_api();
+	threadPool_test_submit_api();
 	return 0;
 }

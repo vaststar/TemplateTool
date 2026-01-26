@@ -16,14 +16,11 @@ configure_file(ThreadPoolConfig.h.in ThreadPoolConfig.h)
 set(TARGET_SOURCE_PRIVATE 
         src/ThreadPool.h
         src/ThreadPool.cpp
-        src/ThreadPoolControl.h
-        src/ThreadPoolControl.cpp
-        src/ThreadPoolUtil.cpp
 )
 
 set(TARGET_SOURCE_PUBLIC_HEADER
         include/ThreadPool/ThreadPoolExport.h
-        include/ThreadPool/ThreadPoolUtil.h
+        include/ThreadPool/IThreadPool.h
 )
 
 

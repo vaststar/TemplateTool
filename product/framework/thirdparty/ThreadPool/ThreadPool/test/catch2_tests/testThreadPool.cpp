@@ -1,28 +1,52 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ThreadPool/ThreadPoolUtil.h"
+#include "ThreadPool/IThreadPool.h"
 
 #include <vector>
 #include <string>
 #include <iostream>
 #include <functional>
 
-void threadPool_export_util_api()
+void threadPool_test_submit_api()
 {
-	auto testFunc = [](int i){/*std::this_thread::sleep_for(std::chrono::milliseconds(100));*/ std::cout << i*i<<std::endl; };
-	ThreadPoolUtil::initThreadPool(3);
-	for (int i = 2000; i < 3000; ++i) {
-		ThreadPoolUtil::createThreadTask(std::bind(testFunc,i), ThreadPoolUtil::ThreadLevel::Level_Normal);
+	auto pool = ThreadPool::IThreadPool::create(3, "test-pool");
+	auto testFunc = [](int i){ std::cout << i*i << std::endl; };
+	
+	for (int i = 2000; i < 2100; ++i) {
+		pool->submit(std::bind(testFunc, i), ThreadPool::Priority::Normal);
 	}
-	for (int i = 3100; i < 3400; ++i) {
-		ThreadPoolUtil::createThreadTask(std::bind(testFunc,i), ThreadPoolUtil::ThreadLevel::Level_High);
+	for (int i = 3100; i < 3200; ++i) {
+		pool->submit(std::bind(testFunc, i), ThreadPool::Priority::High);
 	}
 }
 
-TEST_CASE("all platform thread pool","[testThreadPool]")
+void threadPool_test_future_api()
 {
-	SECTION("test util api")
+	auto pool = ThreadPool::IThreadPool::create(3, "future-pool");
+	auto testFunc = [](int i) -> int { return i * i; };
+	
+	std::vector<std::future<int>> futures;
+	for (int i = 0; i < 50; ++i) {
+		futures.push_back(pool->submitWithFuturePriority(ThreadPool::Priority::Normal, testFunc, i));
+	}
+	for (int i = 100; i < 120; ++i) {
+		futures.push_back(pool->submitWithFuturePriority(ThreadPool::Priority::Urgent, testFunc, i));
+	}
+	
+	for (auto& f : futures) {
+		std::cout << f.get() << std::endl;
+	}
+}
+
+TEST_CASE("ThreadPool submit API", "[testThreadPool]")
+{
+	SECTION("test submit")
 	{
-		threadPool_export_util_api();
+		threadPool_test_submit_api();
+	}
+	
+	SECTION("test future")
+	{
+		threadPool_test_future_api();
 	}
 }
