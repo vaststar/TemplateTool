@@ -10,7 +10,7 @@ namespace ucf::utilities::database{
 
 namespace DBSupportedTypes{
     using STRING = std::string;
-    using INT = int;
+    using INT = int64_t;
     using FLOAT = float;
     using BLOB = std::vector<uint8_t>;
     

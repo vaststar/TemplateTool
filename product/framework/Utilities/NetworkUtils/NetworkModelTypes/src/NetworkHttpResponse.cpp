@@ -17,14 +17,14 @@ public:
     int getHttpResponseCode() const{ return mResponseCode;}
 
     void setResponseHeaders(const NetworkHttpHeaders& headers){ mResponseHeaders = headers;}
-    NetworkHttpHeaders getResponseHeaders() const{ return mResponseHeaders;}
+    const NetworkHttpHeaders& getResponseHeaders() const{ return mResponseHeaders;}
 
     void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
     std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
 
     void appendResponseBody(const ByteBuffer& buffer){ mResponseBody.insert(mResponseBody.end(), buffer.begin(), buffer.end());}
     void setResponseBody(const ByteBuffer& buffer){ mResponseBody = buffer;}
-    ByteBuffer getResponseBody() const{ return mResponseBody;}
+    const ByteBuffer& getResponseBody() const{ return mResponseBody;}
 
     void clear();
 private:
@@ -84,7 +84,7 @@ void NetworkHttpResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
     mDataPrivate->setResponseHeaders(headers);
 }
 
-NetworkHttpHeaders NetworkHttpResponse::getResponseHeaders() const
+const NetworkHttpHeaders& NetworkHttpResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
@@ -112,7 +112,7 @@ void NetworkHttpResponse::setResponseBody(const ByteBuffer& buffer)
     mDataPrivate->setResponseBody(buffer);
 }
 
-ByteBuffer NetworkHttpResponse::getResponseBody() const
+const ByteBuffer& NetworkHttpResponse::getResponseBody() const
 {
     return mDataPrivate->getResponseBody();
 }

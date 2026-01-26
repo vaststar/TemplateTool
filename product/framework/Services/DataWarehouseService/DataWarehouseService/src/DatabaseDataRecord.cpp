@@ -19,6 +19,16 @@ DatabaseDataValue DatabaseDataRecord::getColumnData(const std::string& key) cons
     {
         return iter->second;
     }
-    return DatabaseDataValue("");
+    return DatabaseDataValue{};  // Return NULL instead of empty string
+}
+
+bool DatabaseDataRecord::hasColumn(const std::string& key) const
+{
+    return mValueMaps.contains(key);
+}
+
+const std::map<std::string, DatabaseDataValue>& DatabaseDataRecord::getData() const
+{
+    return mValueMaps;
 }
 }

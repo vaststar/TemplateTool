@@ -30,14 +30,14 @@ public:
     int getHttpResponseCode() const;
 
     void setResponseHeaders(const NetworkHttpHeaders& headers);
-    NetworkHttpHeaders getResponseHeaders() const;
+    const NetworkHttpHeaders& getResponseHeaders() const;
 
     void setErrorData(const ResponseErrorStruct& errorData);
     std::optional<ResponseErrorStruct> getErrorData() const;
 
     void appendResponseBody(const ByteBuffer& buffer);
     void setResponseBody(const ByteBuffer& buffer);
-    ByteBuffer getResponseBody() const;
+    const ByteBuffer& getResponseBody() const;
 
     std::optional<std::string> getHeaderValue(const std::string& key) const;
 

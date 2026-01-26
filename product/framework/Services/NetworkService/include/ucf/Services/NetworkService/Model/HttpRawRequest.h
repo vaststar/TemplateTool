@@ -20,16 +20,16 @@ public:
     HttpRawRequest& operator=(HttpRawRequest&&) = delete;
     ~HttpRawRequest();
 
-    std::string getRequestId() const;
-    std::string getTrackingId() const;
+    const std::string& getRequestId() const;
+    const std::string& getTrackingId() const;
     HTTPMethod getRequestMethod() const;
-    std::string getRequestUri() const;
-    NetworkHttpHeaders getRequestHeaders() const;
+    const std::string& getRequestUri() const;
+    const NetworkHttpHeaders& getRequestHeaders() const;
     int getTimeout() const;
 
     size_t getPayloadSize() const;
-    std::string getPayloadString() const;
-private:private:
+    const std::string& getPayloadString() const;
+private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
 };

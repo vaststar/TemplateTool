@@ -23,7 +23,7 @@ public:
     int getHttpResponseCode() const;
 
     void setResponseHeaders(const NetworkHttpHeaders& headers);
-    NetworkHttpHeaders getResponseHeaders() const;
+    const NetworkHttpHeaders& getResponseHeaders() const;
 
     void setErrorData(const ResponseErrorStruct& errorData);
     std::optional<ResponseErrorStruct> getErrorData() const;
@@ -36,6 +36,8 @@ public:
 
     bool isFinished() const;
     void setFinished();
+
+    void clear();
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

@@ -7,6 +7,8 @@
 #include <ucf/Services/NetworkService/Model/HttpRestRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
 
+#include "NetworkHttpTypeConverter.h"
+
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +21,7 @@ public:
     
     const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
     ucf::utilities::network::http::NetworkHttpResponse& getHttpResponse(){return mHttpResponse;}
-    ucf::service::network::http::HttpRestResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
+    const ucf::service::network::http::HttpRestResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
     int getRedirectCount() const{ return mRedirectCount;}
     void prepareRedirect();
@@ -60,34 +62,7 @@ void NetworkHttpRestHandler::DataPrivate::prepareRetry()
 
 void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
 {
-    ucf::utilities::network::http::HTTPMethod httpMethod = ucf::utilities::network::http::HTTPMethod::GET;
-    switch (restRequest.getRequestMethod())
-    {
-    case HTTPMethod::GET:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::GET;
-        break;
-    case HTTPMethod::POST:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::POST;
-        break;
-    case HTTPMethod::HEAD:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::HEAD;
-        break;
-    case HTTPMethod::PUT:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::PUT;
-        break;
-    case HTTPMethod::DEL:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::DEL;
-        break;
-    case HTTPMethod::PATCH:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::PATCH;
-        break;
-    case HTTPMethod::OPTIONS:
-        httpMethod = ucf::utilities::network::http::HTTPMethod::OPTIONS;
-        break;
-    default:
-        break;
-    }
-    httpRequest.setRequestMethod(httpMethod);
+    httpRequest.setRequestMethod(convertToUtilitiesHttpMethod(restRequest.getRequestMethod()));
     httpRequest.setRequestHeaders(restRequest.getRequestHeaders());
     httpRequest.setRequestId(restRequest.getRequestId());
     httpRequest.setTrackingId(restRequest.getTrackingId());
@@ -107,39 +82,7 @@ void NetworkHttpRestHandler::DataPrivate::convertHttpResponseToRestResponse(cons
     
     if (auto errorData = httpResponse.getErrorData())
     {
-        ResponseErrorStruct restErrorData;
-        restErrorData.errorCode = errorData->errorCode;
-        restErrorData.errorDescription = errorData->errorDescription;
-        switch (errorData->errorType)
-        {
-        case ucf::utilities::network::http::ResponseErrorType::NoError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::NoError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::DNSError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::DNSError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::SocketError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::SocketError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::TLSError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TLSError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::TimeoutError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TimeoutError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::CanceledError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::CanceledError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::OtherError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::OtherError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::UnHandledError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::UnHandledError;
-            break;
-        default:
-            break;
-        }
-        restResponse.setErrorData(restErrorData);
+        restResponse.setErrorData(convertToServiceErrorStruct(*errorData));
     }
 }
 
@@ -206,7 +149,7 @@ bool NetworkHttpRestHandler::shouldRedirectRequest() const
         307 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
         308 == mDataPrivate->getHttpResponse().getHttpResponseCode())
     {
-        return mDataPrivate->getRedirectCount() <= 2;
+        return mDataPrivate->getRedirectCount() < kMaxRedirectCount;
     }
     return false;
 }
@@ -219,7 +162,7 @@ void NetworkHttpRestHandler::prepareRedirectRequest()
     }
 }
 
-bool NetworkHttpRestHandler::shoudRetryRequest() const
+bool NetworkHttpRestHandler::shouldRetryRequest() const
 {
     return false;
 }
@@ -231,7 +174,7 @@ int NetworkHttpRestHandler::getRetryAfterMillSecs() const
 
 void NetworkHttpRestHandler::prepareRetryRequest()
 {
-    if (shouldRedirectRequest())
+    if (shouldRetryRequest())
     {
         mDataPrivate->prepareRetry();
     }

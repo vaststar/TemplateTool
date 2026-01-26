@@ -30,7 +30,7 @@ public:
     virtual bool shouldRedirectRequest() const override;
     virtual void prepareRedirectRequest() override;
     
-    virtual bool shoudRetryRequest() const override;
+    virtual bool shouldRetryRequest() const override;
     virtual int getRetryAfterMillSecs() const override;
     virtual void prepareRetryRequest() override;
 private:

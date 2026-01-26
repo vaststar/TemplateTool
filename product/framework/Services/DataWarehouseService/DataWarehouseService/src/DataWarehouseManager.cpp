@@ -143,7 +143,11 @@ ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::con
 
 ucf::utilities::database::DatabaseDataValue DataWarehouseManager::DataPrivate::convertToDatabaseDataValue(const model::DatabaseDataValue& value) const
 {
-    if (value.holdsType<model::DBSupportedTypes::STRING>())
+    if (value.isNull())
+    {
+        return ucf::utilities::database::DatabaseDataValue{};
+    }
+    else if (value.holdsType<model::DBSupportedTypes::STRING>())
     {
         return ucf::utilities::database::DatabaseDataValue(value.getStringValue());
     }
@@ -242,7 +246,11 @@ ucf::utilities::database::ListsOfWhereCondition DataWarehouseManager::DataPrivat
 
 model::DatabaseDataValue DataWarehouseManager::DataPrivate::convertFromDatabaseDataValue(const ucf::utilities::database::DatabaseDataValue& value) const
 {
-    if (value.holdsType<ucf::utilities::database::DBSupportedTypes::STRING>())
+    if (value.isNull())
+    {
+        return model::DatabaseDataValue{};
+    }
+    else if (value.holdsType<ucf::utilities::database::DBSupportedTypes::STRING>())
     {
         return model::DatabaseDataValue(value.getStringValue());
     }
@@ -403,6 +411,7 @@ void DataWarehouseManager::fetchFromDatabase(const std::string& dbId, const std:
     {
         SERVICE_LOG_WARN("wrong fetch param, dbId" << dbId << ", tableName: " << tableName);
         func({});
+        return;
     }
     mDataPrivate->fetchFromDatabase(dbId, tableName, columnFields, whereConditions, func, limit, location);
 }

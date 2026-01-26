@@ -42,6 +42,11 @@ DatabaseDataValue::DatabaseDataValue(std::vector<uint8_t> buffer)
 {
 }
 
+bool DatabaseDataValue::isNull() const
+{
+    return std::holds_alternative<DBSupportedTypes::NULL_TYPE>(mVariantValue);
+}
+
 DBSupportedTypes::STRING DatabaseDataValue::getStringValue() const
 {
     static const DBSupportedTypes::STRING defaultString = {};

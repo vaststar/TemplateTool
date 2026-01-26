@@ -1,6 +1,7 @@
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
 
 #include <algorithm>
+#include <cctype>
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,7 @@ public:
     int getHttpResponseCode() const{ return mResponseCode;}
 
     void setResponseHeaders(const NetworkHttpHeaders& headers){ mResponseHeaders = headers;}
-    NetworkHttpHeaders getResponseHeaders() const{ return mResponseHeaders;}
+    const NetworkHttpHeaders& getResponseHeaders() const{ return mResponseHeaders;}
 
     void setErrorData(const ResponseErrorStruct& errorData){ mErrorData = errorData;}
     std::optional<ResponseErrorStruct> getErrorData() const{ return mErrorData;}
@@ -25,6 +26,15 @@ public:
     
     bool isFinished() const{ return mIsFinished;}
     void setFinished(){ mIsFinished = true;}
+
+    void clear(){
+        mResponseCode = 0;
+        mResponseHeaders.clear();
+        mErrorData.reset();
+        mTotalSize = 0;
+        mCurrentSize = 0;
+        mIsFinished = false;
+    }
 
     size_t getCurrentSize() const{ return mCurrentSize;}
     void addCurrentSize( size_t _size) { mCurrentSize += _size;}
@@ -82,16 +92,25 @@ int HttpDownloadToFileResponse::getHttpResponseCode() const
 void HttpDownloadToFileResponse::setResponseHeaders(const NetworkHttpHeaders& headers)
 {
     mDataPrivate->setResponseHeaders(headers);
+    // Case-insensitive comparison for HTTP headers (RFC 7230)
     auto item = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
-        return headerKeyVal.first == "Content-Length";
+        constexpr std::string_view contentLength = "Content-Length";
+        if (headerKeyVal.first.size() != contentLength.size()) return false;
+        return std::equal(headerKeyVal.first.begin(), headerKeyVal.first.end(), 
+                          contentLength.begin(), contentLength.end(),
+                          [](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b)); });
     });
     if (item != headers.cend())
     {
-        mDataPrivate->setTotalSize(static_cast<size_t>(std::stoull(item->second)));
+        try {
+            mDataPrivate->setTotalSize(static_cast<size_t>(std::stoull(item->second)));
+        } catch (const std::exception&) {
+            // Invalid Content-Length value, ignore
+        }
     }
 }
 
-NetworkHttpHeaders HttpDownloadToFileResponse::getResponseHeaders() const
+const NetworkHttpHeaders& HttpDownloadToFileResponse::getResponseHeaders() const
 {
     return mDataPrivate->getResponseHeaders();
 }
@@ -129,6 +148,11 @@ bool HttpDownloadToFileResponse::isFinished() const
 void HttpDownloadToFileResponse::setFinished()
 {
     mDataPrivate->setFinished();
+}
+
+void HttpDownloadToFileResponse::clear()
+{
+    mDataPrivate->clear();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

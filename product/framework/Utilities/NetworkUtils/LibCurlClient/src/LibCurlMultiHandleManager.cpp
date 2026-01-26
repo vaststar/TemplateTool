@@ -30,13 +30,13 @@ private:
     std::thread mLoopThread;
     std::condition_variable mRequestCV;
     std::mutex mRequestCVMutex;
-    std::atomic_bool mHasReuqests;
+    std::atomic_bool mHasRequests;
 };
 
 LibCurlMultiHandleManager::DataPrivate::DataPrivate()
     : mMultiHandle(std::make_unique<LibCurlMultiHandle>())
     , mStop(false)
-    , mHasReuqests(false)
+    , mHasRequests(false)
 {
 
 }
@@ -53,7 +53,7 @@ void LibCurlMultiHandleManager::DataPrivate::insertRequest(std::shared_ptr<LibCu
     mMultiHandle->addEasyHandle(request);
     {
         std::scoped_lock lo(mRequestCVMutex);
-        mHasReuqests.store(true, std::memory_order_release);
+        mHasRequests.store(true, std::memory_order_release);
     }
     mRequestCV.notify_one();
 }
@@ -66,10 +66,10 @@ void LibCurlMultiHandleManager::DataPrivate::runLoop()
             {
                 std::unique_lock lo(mRequestCVMutex);
                 mRequestCV.wait(lo,[this](){
-                    return mHasReuqests.load(std::memory_order_acquire) || mStop.load(std::memory_order_acquire);
+                    return mHasRequests.load(std::memory_order_acquire) || mStop.load(std::memory_order_acquire);
                 });
 
-                mHasReuqests.store(false, std::memory_order_release);
+                mHasRequests.store(false, std::memory_order_release);
             }
             if (mStop.load(std::memory_order_acquire))
             {

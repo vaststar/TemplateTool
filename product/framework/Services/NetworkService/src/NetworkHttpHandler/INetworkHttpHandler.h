@@ -26,7 +26,7 @@ public:
     virtual bool shouldRedirectRequest() const {return false;}
     virtual void prepareRedirectRequest() {}
 
-    virtual bool shoudRetryRequest() const {return false;}
+    virtual bool shouldRetryRequest() const {return false;}
     virtual int getRetryAfterMillSecs() const {return 1;}
     virtual void prepareRetryRequest() {}
 

@@ -12,25 +12,25 @@ class HttpRawRequest::DataPrivate
 public:
     DataPrivate();
     void setRequestId(const std::string& requestId){ mRequestId = requestId;}
-    std::string getRequestId() const{ return mRequestId;}
+    const std::string& getRequestId() const{ return mRequestId;}
 
     void setMethod(const HTTPMethod& method){ mMethod = method;}
     HTTPMethod getMethod() const{ return mMethod;}
 
     void setUri(const std::string& uri){ mUri = uri;}
-    std::string getUri() const{ return mUri;}
+    const std::string& getUri() const{ return mUri;}
 
     void setHeaders(const NetworkHttpHeaders& headers){ mHeaders = headers;}
-    NetworkHttpHeaders getHeaders() const{ return mHeaders;}
+    const NetworkHttpHeaders& getHeaders() const{ return mHeaders;}
 
     void setTimeoutSecs(int timeout){ mTimeoutSecs = timeout;}
     int getTimeoutSecs() const{ return mTimeoutSecs;}
     
     void setTrackingId(const std::string& trackingId){ mTrackingId = trackingId;}
-    std::string getTrackingId() const{ return mTrackingId;}
+    const std::string& getTrackingId() const{ return mTrackingId;}
 
     void setPayloadString(const std::string& str){ mPayload = str;}
-    std::string getPayloadString() const{ return mPayload;}
+    const std::string& getPayloadString() const{ return mPayload;}
 private:
     std::string mRequestId;
     HTTPMethod mMethod;
@@ -61,6 +61,7 @@ HttpRawRequest::DataPrivate::DataPrivate()
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 HttpRawRequest::HttpRawRequest()
+    : mDataPrivate(std::make_unique<HttpRawRequest::DataPrivate>())
 {
 
 }
@@ -80,11 +81,11 @@ HttpRawRequest::~HttpRawRequest()
 }
 
 
-std::string HttpRawRequest::getRequestId() const
+const std::string& HttpRawRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
 }
-std::string HttpRawRequest::getTrackingId() const
+const std::string& HttpRawRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
 }
@@ -94,12 +95,12 @@ HTTPMethod HttpRawRequest::getRequestMethod() const
     return mDataPrivate->getMethod();
 }
 
-std::string HttpRawRequest::getRequestUri() const
+const std::string& HttpRawRequest::getRequestUri() const
 {
     return mDataPrivate->getUri();
 }
 
-NetworkHttpHeaders HttpRawRequest::getRequestHeaders() const
+const NetworkHttpHeaders& HttpRawRequest::getRequestHeaders() const
 {
     return mDataPrivate->getHeaders();
 }
@@ -114,7 +115,7 @@ size_t HttpRawRequest::getPayloadSize() const
     return getPayloadString().size();
 }
 
-std::string HttpRawRequest::getPayloadString() const
+const std::string& HttpRawRequest::getPayloadString() const
 {
     return mDataPrivate->getPayloadString();
 }

@@ -257,7 +257,7 @@ LibCurlMultiHandle::LibCurlMultiHandle()
 
 LibCurlMultiHandle::~LibCurlMultiHandle()
 {
-    LIBCURL_LOG_DEBUG("destory multi handle");
+    LIBCURL_LOG_DEBUG("destroy multi handle");
 }
 
 int LibCurlMultiHandle::addEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle)
@@ -277,7 +277,7 @@ void LibCurlMultiHandle::performRequests()
     {
         if (mDataPrivate->isStopped())
         {
-            LIBCURL_LOG_WARN("stop signal received, cancaling:" << runningHandles << "pending requests");
+            LIBCURL_LOG_WARN("stop signal received, cancelling: " << runningHandles << " pending requests");
             mDataPrivate->cancelAllPendingRequests();
             break;
         }

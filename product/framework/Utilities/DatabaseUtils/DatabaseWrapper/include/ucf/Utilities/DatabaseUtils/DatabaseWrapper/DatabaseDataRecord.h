@@ -7,8 +7,6 @@
 
 namespace ucf::utilities::database{
 
-class DatabaseDataValue;
-
 /**
  * @brief Represents a single row of database query results.
  */

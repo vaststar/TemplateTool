@@ -23,13 +23,13 @@ public:
     int getHttpResponseCode() const;
 
     void setResponseHeaders(const NetworkHttpHeaders& headers);
-    NetworkHttpHeaders getResponseHeaders() const;
+    const NetworkHttpHeaders& getResponseHeaders() const;
 
     void setErrorData(const ResponseErrorStruct& errorData);
     std::optional<ResponseErrorStruct> getErrorData() const;
 
     void setResponseBody(const ByteBuffer& body);
-    ByteBuffer getResponseBody() const;
+    const ByteBuffer& getResponseBody() const;
 
 private:
     class DataPrivate;

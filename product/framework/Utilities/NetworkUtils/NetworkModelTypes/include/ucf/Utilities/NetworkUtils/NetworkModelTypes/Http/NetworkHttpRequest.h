@@ -28,20 +28,20 @@ public:
 
     //requestID could be autofilled
     void setRequestId(const std::string& requestId);
-    std::string getRequestId() const;
+    const std::string& getRequestId() const;
 
     //trackingID could be autofilled
     void setTrackingId(const std::string& trackingId);
-    std::string getTrackingId() const;
+    const std::string& getTrackingId() const;
 
     void setRequestMethod(const ucf::utilities::network::http::HTTPMethod& httpMethod);
     ucf::utilities::network::http::HTTPMethod getRequestMethod() const;
 
     void setRequestUri(const std::string& requestUri);
-    std::string getRequestUri() const;
+    const std::string& getRequestUri() const;
 
     void setRequestHeaders(const NetworkHttpHeaders& headers);
-    NetworkHttpHeaders getRequestHeaders() const;
+    const NetworkHttpHeaders& getRequestHeaders() const;
 
     void setTimeout(int timeout);
     int getTimeout() const;
@@ -50,10 +50,10 @@ public:
     size_t getPayloadSize() const;
 
     void setPayloadString(const std::string& stringPayload);
-    std::string getPayloadString() const;
+    const std::string& getPayloadString() const;
 
     void setPayloadFilePath(const std::string& filePath);
-    std::string getPayloadFilePath() const;
+    const std::string& getPayloadFilePath() const;
 
     void setPayloadMemoryBuffer(ByteBufferPtr byteBuffer);
     ByteBufferPtr getPayloadMemoryBuffer() const;

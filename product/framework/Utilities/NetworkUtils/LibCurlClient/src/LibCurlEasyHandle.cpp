@@ -140,9 +140,9 @@ public:
 
     ucf::utilities::network::http::HttpResponseMetrics getResponseMetrics() const;
 
-    ucf::utilities::network::http::HttpHeaderCallback getHeaderCallback() {return mHeaderCallback;}
-    ucf::utilities::network::http::HttpBodyCallback getBodyCallback() {return mBodyCallback;}
-    ucf::utilities::network::http::HttpCompletionCallback getCompletionCallback() {return mCompletionCallback;}
+    const ucf::utilities::network::http::HttpHeaderCallback& getHeaderCallback() const {return mHeaderCallback;}
+    const ucf::utilities::network::http::HttpBodyCallback& getBodyCallback() const {return mBodyCallback;}
+    const ucf::utilities::network::http::HttpCompletionCallback& getCompletionCallback() const {return mCompletionCallback;}
 
     void setTrackingId(const std::string& trackingId){mTrackingId = trackingId;}
     std::string getTrackingId() const{return mTrackingId;}

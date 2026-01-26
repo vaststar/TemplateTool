@@ -20,14 +20,14 @@ public:
     HttpDownloadToFileRequest& operator=(HttpDownloadToFileRequest&&) = delete;
     ~HttpDownloadToFileRequest();
 
-    std::string getRequestId() const;
-    std::string getTrackingId() const;
-    std::string getRequestUri() const;
-    NetworkHttpHeaders getRequestHeaders() const;
+    const std::string& getRequestId() const;
+    const std::string& getTrackingId() const;
+    const std::string& getRequestUri() const;
+    const NetworkHttpHeaders& getRequestHeaders() const;
     int getTimeout() const;
 
-    std::string getDownloadFilePath() const;
-private:private:
+    const std::string& getDownloadFilePath() const;
+private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
 };

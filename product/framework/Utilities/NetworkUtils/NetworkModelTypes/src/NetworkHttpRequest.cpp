@@ -16,31 +16,31 @@ public:
     DataPrivate();
 
     void setRequestId(const std::string& requestId){ mRequestId = requestId;}
-    std::string getRequestId() const{ return mRequestId;}
+    const std::string& getRequestId() const{ return mRequestId;}
 
     void setMethod(const HTTPMethod& method){ mMethod = method;}
     HTTPMethod getMethod() const{ return mMethod;}
 
     void setUri(const std::string& uri){ mUri = uri;}
-    std::string getUri() const{ return mUri;}
+    const std::string& getUri() const{ return mUri;}
 
     void setHeaders(const NetworkHttpHeaders& headers){ mHeaders = headers;}
-    NetworkHttpHeaders getHeaders() const{ return mHeaders;}
+    const NetworkHttpHeaders& getHeaders() const{ return mHeaders;}
 
     void setTimeoutSecs(int timeout){ mTimeoutSecs = timeout;}
     int getTimeoutSecs() const{ return mTimeoutSecs;}
     
     void setTrackingId(const std::string& trackingId){ mTrackingId = trackingId;}
-    std::string getTrackingId() const{ return mTrackingId;}
+    const std::string& getTrackingId() const{ return mTrackingId;}
 
     void setPayloadType(const NetworkHttpPayloadType& payloadType){ mPayloadType = payloadType;}
     NetworkHttpPayloadType getPayloadType() const{ return mPayloadType;}
 
     void setPayloadString(const std::string& str){ mPayloadString = str;}
-    std::string getPayloadString() const{ return mPayloadString;}
+    const std::string& getPayloadString() const{ return mPayloadString;}
 
     void setPayloadFilePath(const std::string& filePath){ mPayloadFilePath = filePath;}
-    std::string getPayloadFilePath() const{ return mPayloadFilePath;}
+    const std::string& getPayloadFilePath() const{ return mPayloadFilePath;}
 
     void setPayloadMemoryBuffer(ByteBufferPtr buffer){ mPayloadBuffer = buffer;}
     ByteBufferPtr getPayloadMemoryBuffer() const{ return mPayloadBuffer;}
@@ -115,7 +115,7 @@ void NetworkHttpRequest::setRequestId(const std::string& requestId)
     mDataPrivate->setRequestId(requestId);
 }
 
-std::string NetworkHttpRequest::getRequestId() const
+const std::string& NetworkHttpRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
 }
@@ -125,7 +125,7 @@ void NetworkHttpRequest::setTrackingId(const std::string& trackingId)
     mDataPrivate->setTrackingId(trackingId);
 }
 
-std::string NetworkHttpRequest::getTrackingId() const
+const std::string& NetworkHttpRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
 }
@@ -145,7 +145,7 @@ void NetworkHttpRequest::setRequestUri(const std::string& uri)
     mDataPrivate->setUri(uri);
 }
 
-std::string NetworkHttpRequest::getRequestUri() const
+const std::string& NetworkHttpRequest::getRequestUri() const
 {
     return mDataPrivate->getUri();
 }
@@ -155,7 +155,7 @@ void NetworkHttpRequest::setRequestHeaders(const NetworkHttpHeaders& headers)
     mDataPrivate->setHeaders(headers);
 }
 
-NetworkHttpHeaders NetworkHttpRequest::getRequestHeaders() const
+const NetworkHttpHeaders& NetworkHttpRequest::getRequestHeaders() const
 {
     return mDataPrivate->getHeaders();
 }
@@ -205,7 +205,7 @@ void NetworkHttpRequest::setPayloadString(const std::string& str)
     mDataPrivate->setPayloadString(str);
 }
 
-std::string NetworkHttpRequest::getPayloadString() const
+const std::string& NetworkHttpRequest::getPayloadString() const
 {
     return mDataPrivate->getPayloadString();
 }
@@ -216,7 +216,7 @@ void NetworkHttpRequest::setPayloadFilePath(const std::string& filePath)
     mDataPrivate->setPayloadFilePath(filePath);
 }
 
-std::string NetworkHttpRequest::getPayloadFilePath() const
+const std::string& NetworkHttpRequest::getPayloadFilePath() const
 {
     return mDataPrivate->getPayloadFilePath();
 }

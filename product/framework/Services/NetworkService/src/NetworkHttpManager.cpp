@@ -129,7 +129,7 @@ void NetworkHttpManager::sendHttpRequest(std::shared_ptr<INetworkHttpHandler> ht
             httpHandler->prepareRedirectRequest();
             sendHttpRequest(httpHandler);
         }
-        else if (httpHandler->shoudRetryRequest())
+        else if (httpHandler->shouldRetryRequest())
         {
             SERVICE_LOG_DEBUG("will retry after" << httpHandler->getRetryAfterMillSecs()<< "ms, requestId: "<< requestId<< ", trackingId: "<< trackingId);
             httpHandler->prepareRetryRequest();

@@ -1,11 +1,16 @@
 
 #include "NetworkHttpDownloadToMemoryHandler.h"
 
+#include <algorithm>
+#include <cctype>
+
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
 #include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
+
+#include "NetworkHttpTypeConverter.h"
 
 
 namespace ucf::service::network::http{
@@ -16,22 +21,25 @@ namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////
 class NetworkHttpDownloadToMemoryHandler::DataPrivate{
 public:
-    DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const HttpDownloadToMemoryResponseCallbackFunc& restResponseCallback);
+    DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const HttpDownloadToMemoryResponseCallbackFunc& downloadResponseCallback);
     
     const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
     ucf::service::network::http::HttpDownloadToMemoryResponse& getDownloadResponse(){return mDownloadResponse;}
-    ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc getResponseCallback() const{return mResponseCallBack;}
+    const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
+
+    int getRedirectCount() const{ return mRedirectCount;}
+    void prepareRedirect();
 
     void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
 private:
     ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc mResponseCallBack;
     ucf::service::network::http::HttpDownloadToMemoryResponse mDownloadResponse;
-    std::string mDownloadFilePath;
     ucf::utilities::network::http::NetworkHttpRequest mHttpRequest;
+    int mRedirectCount{0};
 };
 
-NetworkHttpDownloadToMemoryHandler::DataPrivate::DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& restResponseCallback)
-    : mResponseCallBack(restResponseCallback)
+NetworkHttpDownloadToMemoryHandler::DataPrivate::DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& downloadResponseCallback)
+    : mResponseCallBack(downloadResponseCallback)
 {
     convertDownloadRequestToHttpRequest(downloadRequest, mHttpRequest);
 }
@@ -44,6 +52,26 @@ void NetworkHttpDownloadToMemoryHandler::DataPrivate::convertDownloadRequestToHt
     httpRequest.setTrackingId(downloadRequest.getTrackingId());
     httpRequest.setRequestUri(downloadRequest.getRequestUri());
     httpRequest.setTimeout(downloadRequest.getTimeout());
+}
+
+void NetworkHttpDownloadToMemoryHandler::DataPrivate::prepareRedirect()
+{
+    ++mRedirectCount;
+    // Find Location header (case-insensitive)
+    const auto& headers = mDownloadResponse.getResponseHeaders();
+    auto it = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
+        constexpr std::string_view location = "Location";
+        if (headerKeyVal.first.size() != location.size()) return false;
+        return std::equal(headerKeyVal.first.begin(), headerKeyVal.first.end(),
+                          location.begin(), location.end(),
+                          [](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b)); });
+    });
+    if (it != headers.cend())
+    {
+        mHttpRequest.setRequestUri(it->second);
+    }
+    
+    mDownloadResponse.clear();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -81,39 +109,7 @@ void NetworkHttpDownloadToMemoryHandler::setResponseHeader(int statusCode, const
     
     if (errorData)
     {
-        ResponseErrorStruct restErrorData;
-        restErrorData.errorCode = errorData->errorCode;
-        restErrorData.errorDescription = errorData->errorDescription;
-        switch (errorData->errorType)
-        {
-        case ucf::utilities::network::http::ResponseErrorType::NoError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::NoError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::DNSError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::DNSError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::SocketError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::SocketError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::TLSError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TLSError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::TimeoutError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::TimeoutError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::CanceledError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::CanceledError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::OtherError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::OtherError;
-            break;
-        case ucf::utilities::network::http::ResponseErrorType::UnHandledError:
-            restErrorData.errorType = ucf::service::network::http::ResponseErrorType::UnHandledError;
-            break;
-        default:
-            break;
-        }
-        mDataPrivate->getDownloadResponse().setErrorData(restErrorData);
+        mDataPrivate->getDownloadResponse().setErrorData(convertToServiceErrorStruct(*errorData));
     }
 }
 
@@ -136,6 +132,27 @@ void NetworkHttpDownloadToMemoryHandler::completeResponse(const ucf::utilities::
     {
         mDataPrivate->getDownloadResponse().setFinished();
         callback(mDataPrivate->getDownloadResponse());
+    }
+}
+
+bool NetworkHttpDownloadToMemoryHandler::shouldRedirectRequest() const
+{
+    if (301 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
+        302 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
+        303 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
+        307 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
+        308 == mDataPrivate->getDownloadResponse().getHttpResponseCode())
+    {
+        return mDataPrivate->getRedirectCount() < kMaxRedirectCount;
+    }
+    return false;
+}
+
+void NetworkHttpDownloadToMemoryHandler::prepareRedirectRequest()
+{
+    if (shouldRedirectRequest())
+    {
+        mDataPrivate->prepareRedirect();
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////

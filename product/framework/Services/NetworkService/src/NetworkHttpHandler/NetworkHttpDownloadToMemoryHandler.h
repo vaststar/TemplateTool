@@ -28,6 +28,9 @@ public:
     virtual void setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) override;
     virtual void appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished) override;
     virtual void completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics) override;
+
+    virtual bool shouldRedirectRequest() const override;
+    virtual void prepareRedirectRequest() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

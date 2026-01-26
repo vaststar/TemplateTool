@@ -12,19 +12,19 @@ class HttpDownloadToMemoryRequest::DataPrivate
 public:
     DataPrivate();
     void setRequestId(const std::string& requestId){ mRequestId = requestId;}
-    std::string getRequestId() const{ return mRequestId;}
+    const std::string& getRequestId() const{ return mRequestId;}
 
     void setUri(const std::string& uri){ mUri = uri;}
-    std::string getUri() const{ return mUri;}
+    const std::string& getUri() const{ return mUri;}
 
     void setHeaders(const NetworkHttpHeaders& headers){ mHeaders = headers;}
-    NetworkHttpHeaders getHeaders() const{ return mHeaders;}
+    const NetworkHttpHeaders& getHeaders() const{ return mHeaders;}
 
     void setTimeoutSecs(int timeout){ mTimeoutSecs = timeout;}
     int getTimeoutSecs() const{ return mTimeoutSecs;}
     
     void setTrackingId(const std::string& trackingId){ mTrackingId = trackingId;}
-    std::string getTrackingId() const{ return mTrackingId;}
+    const std::string& getTrackingId() const{ return mTrackingId;}
 
 private:
     std::string mRequestId;
@@ -53,6 +53,7 @@ HttpDownloadToMemoryRequest::DataPrivate::DataPrivate()
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 HttpDownloadToMemoryRequest::HttpDownloadToMemoryRequest()
+    : mDataPrivate(std::make_unique<HttpDownloadToMemoryRequest::DataPrivate>())
 {
 
 }
@@ -70,21 +71,21 @@ HttpDownloadToMemoryRequest::~HttpDownloadToMemoryRequest()
 }
 
 
-std::string HttpDownloadToMemoryRequest::getRequestId() const
+const std::string& HttpDownloadToMemoryRequest::getRequestId() const
 {
     return mDataPrivate->getRequestId();
 }
-std::string HttpDownloadToMemoryRequest::getTrackingId() const
+const std::string& HttpDownloadToMemoryRequest::getTrackingId() const
 {
     return mDataPrivate->getTrackingId();
 }
 
-std::string HttpDownloadToMemoryRequest::getRequestUri() const
+const std::string& HttpDownloadToMemoryRequest::getRequestUri() const
 {
     return mDataPrivate->getUri();
 }
 
-NetworkHttpHeaders HttpDownloadToMemoryRequest::getRequestHeaders() const
+const NetworkHttpHeaders& HttpDownloadToMemoryRequest::getRequestHeaders() const
 {
     return mDataPrivate->getHeaders();
 }
