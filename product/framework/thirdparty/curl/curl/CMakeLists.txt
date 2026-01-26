@@ -1,3 +1,9 @@
-
-
-add_subdirectory(windows)
+if(WIN32)
+    add_subdirectory(windows)
+elseif(APPLE)
+    if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        add_subdirectory(ios)
+    else()
+        add_subdirectory(macos)
+    endif()
+endif()
