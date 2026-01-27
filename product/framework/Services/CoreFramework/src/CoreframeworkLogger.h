@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * FrameworkLoggerName = "APP";
-#define CORE_LOG_DEBUG(message)     LOG_DEBUG("CoreFramework",message,FrameworkLoggerName)
-#define CORE_LOG_INFO(message)      LOG_INFO("CoreFramework",message,FrameworkLoggerName)
-#define CORE_LOG_WARN(message)      LOG_WARN("CoreFramework",message,FrameworkLoggerName)
-#define CORE_LOG_ERROR(message)     LOG_ERROR("CoreFramework",message,FrameworkLoggerName)
-#define CORE_LOG_FATAL(message)     LOG_FATAL("CoreFramework",message,FrameworkLoggerName)
+static inline const char* FrameworkLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* FrameworkLoggerTag = "CoreFramework";
+
+#define CORE_LOG_DEBUG(message)     UCF_LOG_DEBUG(FrameworkLoggerTag, message, FrameworkLoggerName)
+#define CORE_LOG_INFO(message)      UCF_LOG_INFO(FrameworkLoggerTag, message, FrameworkLoggerName)
+#define CORE_LOG_WARN(message)      UCF_LOG_WARN(FrameworkLoggerTag, message, FrameworkLoggerName)
+#define CORE_LOG_ERROR(message)     UCF_LOG_ERROR(FrameworkLoggerTag, message, FrameworkLoggerName)
+#define CORE_LOG_FATAL(message)     UCF_LOG_FATAL(FrameworkLoggerTag, message, FrameworkLoggerName)

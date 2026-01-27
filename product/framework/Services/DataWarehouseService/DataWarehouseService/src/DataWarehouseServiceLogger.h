@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline constexpr auto LOGGER_NAME = "APP";
-#define SERVICE_LOG_DEBUG(message)     LOG_DEBUG("DataWarehouseService",message,LOGGER_NAME)
-#define SERVICE_LOG_INFO(message)      LOG_INFO("DataWarehouseService",message,LOGGER_NAME)
-#define SERVICE_LOG_WARN(message)      LOG_WARN("DataWarehouseService",message,LOGGER_NAME)
-#define SERVICE_LOG_ERROR(message)     LOG_ERROR("DataWarehouseService",message,LOGGER_NAME)
-#define SERVICE_LOG_FATAL(message)     LOG_FATAL("DataWarehouseService",message,LOGGER_NAME)
+static inline constexpr auto LOGGER_NAME = ucf::utilities::kAppLoggerName;
+static inline constexpr auto LOGGER_TAG = "DataWarehouseService";
+
+#define SERVICE_LOG_DEBUG(message)     UCF_LOG_DEBUG(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_INFO(message)      UCF_LOG_INFO(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_WARN(message)      UCF_LOG_WARN(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_ERROR(message)     UCF_LOG_ERROR(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_FATAL(message)     UCF_LOG_FATAL(LOGGER_TAG, message, LOGGER_NAME)

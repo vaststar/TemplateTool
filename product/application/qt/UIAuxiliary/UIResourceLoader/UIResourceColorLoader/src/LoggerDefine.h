@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * UIResourceColorLoaderLoggerName = "APP";
-#define UIResourceColorLoader_LOG_DEBUG(message)     LOG_DEBUG("UIResourceColorLoader",message,UIResourceColorLoaderLoggerName)
-#define UIResourceColorLoader_LOG_INFO(message)      LOG_INFO("UIResourceColorLoader",message,UIResourceColorLoaderLoggerName)
-#define UIResourceColorLoader_LOG_WARN(message)      LOG_WARN("UIResourceColorLoader",message,UIResourceColorLoaderLoggerName)
-#define UIResourceColorLoader_LOG_ERROR(message)     LOG_ERROR("UIResourceColorLoader",message,UIResourceColorLoaderLoggerName)
-#define UIResourceColorLoader_LOG_FATAL(message)     LOG_FATAL("UIResourceColorLoader",message,UIResourceColorLoaderLoggerName)
+static inline const char* UIResourceColorLoaderLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UIResourceColorLoaderLoggerTag = "UIResourceColorLoader";
+
+#define UIResourceColorLoader_LOG_DEBUG(message)     UCF_LOG_DEBUG(UIResourceColorLoaderLoggerTag, message, UIResourceColorLoaderLoggerName)
+#define UIResourceColorLoader_LOG_INFO(message)      UCF_LOG_INFO(UIResourceColorLoaderLoggerTag, message, UIResourceColorLoaderLoggerName)
+#define UIResourceColorLoader_LOG_WARN(message)      UCF_LOG_WARN(UIResourceColorLoaderLoggerTag, message, UIResourceColorLoaderLoggerName)
+#define UIResourceColorLoader_LOG_ERROR(message)     UCF_LOG_ERROR(UIResourceColorLoaderLoggerTag, message, UIResourceColorLoaderLoggerName)
+#define UIResourceColorLoader_LOG_FATAL(message)     UCF_LOG_FATAL(UIResourceColorLoaderLoggerTag, message, UIResourceColorLoaderLoggerName)

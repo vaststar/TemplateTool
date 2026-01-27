@@ -53,7 +53,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UUIDUtils
     OSUtils
     LibCurlClient
-    MasterLog
+    LoggerUtils
     ThreadPool
 )
 

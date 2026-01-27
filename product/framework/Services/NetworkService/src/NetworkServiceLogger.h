@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline constexpr auto LOGGER_NAME = "APP";
-#define SERVICE_LOG_DEBUG(message)     LOG_DEBUG("NetworkService",message,LOGGER_NAME)
-#define SERVICE_LOG_INFO(message)      LOG_INFO("NetworkService",message,LOGGER_NAME)
-#define SERVICE_LOG_WARN(message)      LOG_WARN("NetworkService",message,LOGGER_NAME)
-#define SERVICE_LOG_ERROR(message)     LOG_ERROR("NetworkService",message,LOGGER_NAME)
-#define SERVICE_LOG_FATAL(message)     LOG_FATAL("NetworkService",message,LOGGER_NAME)
+static inline constexpr auto LOGGER_NAME = ucf::utilities::kAppLoggerName;
+static inline constexpr auto LOGGER_TAG = "NetworkService";
+
+#define SERVICE_LOG_DEBUG(message)     UCF_LOG_DEBUG(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_INFO(message)      UCF_LOG_INFO(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_WARN(message)      UCF_LOG_WARN(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_ERROR(message)     UCF_LOG_ERROR(LOGGER_TAG, message, LOGGER_NAME)
+#define SERVICE_LOG_FATAL(message)     UCF_LOG_FATAL(LOGGER_TAG, message, LOGGER_NAME)

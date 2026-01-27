@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * RunnerLoggerName = "APP";
-#define RUNNER_LOG_DEBUG(message)     LOG_DEBUG("AppRunner",message,RunnerLoggerName)
-#define RUNNER_LOG_INFO(message)      LOG_INFO("AppRunner",message,RunnerLoggerName)
-#define RUNNER_LOG_WARN(message)      LOG_WARN("AppRunner",message,RunnerLoggerName)
-#define RUNNER_LOG_ERROR(message)     LOG_ERROR("AppRunner",message,RunnerLoggerName)
-#define RUNNER_LOG_FATAL(message)     LOG_FATAL("AppRunner",message,RunnerLoggerName)
+static inline const char* RunnerLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* RunnerLoggerTag = "AppRunner";
+
+#define RUNNER_LOG_DEBUG(message)     UCF_LOG_DEBUG(RunnerLoggerTag, message, RunnerLoggerName)
+#define RUNNER_LOG_INFO(message)      UCF_LOG_INFO(RunnerLoggerTag, message, RunnerLoggerName)
+#define RUNNER_LOG_WARN(message)      UCF_LOG_WARN(RunnerLoggerTag, message, RunnerLoggerName)
+#define RUNNER_LOG_ERROR(message)     UCF_LOG_ERROR(RunnerLoggerTag, message, RunnerLoggerName)
+#define RUNNER_LOG_FATAL(message)     UCF_LOG_FATAL(RunnerLoggerTag, message, RunnerLoggerName)

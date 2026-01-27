@@ -28,7 +28,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
     DataWarehouseSchema
     AppVersionHeader
-    MasterLog
+    LoggerUtils
     TimeUtils
     OSUtils
     StringUtils

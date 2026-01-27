@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * UIResourceLoaderManagerLoggerName = "APP";
-#define UIResourceLoaderManager_LOG_DEBUG(message)     LOG_DEBUG("UIResourceLoaderManager",message,UIResourceLoaderManagerLoggerName)
-#define UIResourceLoaderManager_LOG_INFO(message)      LOG_INFO("UIResourceLoaderManager",message,UIResourceLoaderManagerLoggerName)
-#define UIResourceLoaderManager_LOG_WARN(message)      LOG_WARN("UIResourceLoaderManager",message,UIResourceLoaderManagerLoggerName)
-#define UIResourceLoaderManager_LOG_ERROR(message)     LOG_ERROR("UIResourceLoaderManager",message,UIResourceLoaderManagerLoggerName)
-#define UIResourceLoaderManager_LOG_FATAL(message)     LOG_FATAL("UIResourceLoaderManager",message,UIResourceLoaderManagerLoggerName)
+static inline const char* UIResourceLoaderManagerLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UIResourceLoaderManagerLoggerTag = "UIResourceLoaderManager";
+
+#define UIResourceLoaderManager_LOG_DEBUG(message)     UCF_LOG_DEBUG(UIResourceLoaderManagerLoggerTag, message, UIResourceLoaderManagerLoggerName)
+#define UIResourceLoaderManager_LOG_INFO(message)      UCF_LOG_INFO(UIResourceLoaderManagerLoggerTag, message, UIResourceLoaderManagerLoggerName)
+#define UIResourceLoaderManager_LOG_WARN(message)      UCF_LOG_WARN(UIResourceLoaderManagerLoggerTag, message, UIResourceLoaderManagerLoggerName)
+#define UIResourceLoaderManager_LOG_ERROR(message)     UCF_LOG_ERROR(UIResourceLoaderManagerLoggerTag, message, UIResourceLoaderManagerLoggerName)
+#define UIResourceLoaderManager_LOG_FATAL(message)     UCF_LOG_FATAL(UIResourceLoaderManagerLoggerTag, message, UIResourceLoaderManagerLoggerName)

@@ -28,7 +28,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
     UUIDUtils
     OSUtils
-    MasterLog
+    LoggerUtils
     ThreadPool
     opencv
 )

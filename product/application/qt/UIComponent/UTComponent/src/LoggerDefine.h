@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * UIComponentLoggerName = "APP";
-#define UICOM_LOG_DEBUG(message)     LOG_DEBUG("UIComponent",message,UIComponentLoggerName)
-#define UICOM_LOG_INFO(message)      LOG_INFO("UIComponent",message,UIComponentLoggerName)
-#define UICOM_LOG_WARN(message)      LOG_WARN("UIComponent",message,UIComponentLoggerName)
-#define UICOM_LOG_ERROR(message)     LOG_ERROR("UIComponent",message,UIComponentLoggerName)
-#define UICOM_LOG_FATAL(message)     LOG_FATAL("UIComponent",message,UIComponentLoggerName)
+static inline const char* UIComponentLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UIComponentLoggerTag = "UIComponent";
+
+#define UICOM_LOG_DEBUG(message)     UCF_LOG_DEBUG(UIComponentLoggerTag, message, UIComponentLoggerName)
+#define UICOM_LOG_INFO(message)      UCF_LOG_INFO(UIComponentLoggerTag, message, UIComponentLoggerName)
+#define UICOM_LOG_WARN(message)      UCF_LOG_WARN(UIComponentLoggerTag, message, UIComponentLoggerName)
+#define UICOM_LOG_ERROR(message)     UCF_LOG_ERROR(UIComponentLoggerTag, message, UIComponentLoggerName)
+#define UICOM_LOG_FATAL(message)     UCF_LOG_FATAL(UIComponentLoggerTag, message, UIComponentLoggerName)

@@ -34,7 +34,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
     DatabaseWrapper
     CoreFramework
-    MasterLog
+    LoggerUtils
     ThreadPool
 )
 

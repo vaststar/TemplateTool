@@ -21,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
-    MasterLog
+    LoggerUtils
     ThreadPool
 )
 

@@ -2,8 +2,6 @@
 #include <algorithm>
 #include <mutex>
 
-#include <MasterLog/LogExport.h>
-
 #include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -69,7 +67,7 @@ void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& a
 }
 void ApplicationRunner::DataPrivate::initLogger()
 {
-	auto fileLogger = std::make_shared<LogLogSpace::LoggerFileConfigure>(
+	auto fileLogger = std::make_shared<ucf::utilities::FileLoggerConfig>(
                         mApplicationConfig.appLogConfig.logLevel, 
                         mApplicationConfig.appLogConfig.logDirPath, 
                         mApplicationConfig.appLogConfig.logBaseFileName, 
@@ -78,10 +76,10 @@ void ApplicationRunner::DataPrivate::initLogger()
                         mApplicationConfig.appLogConfig.loggerName
                     );
 #if defined(_DEBUG)
-    auto consoleLogger = std::make_shared<LogLogSpace::LoggerConsoleConfigure>(mApplicationConfig.appLogConfig.logLevel, mApplicationConfig.appLogConfig.loggerName);
-	MasterLogUtil::InitLogger({fileLogger, consoleLogger});
+    auto consoleLogger = std::make_shared<ucf::utilities::ConsoleLoggerConfig>(mApplicationConfig.appLogConfig.logLevel, mApplicationConfig.appLogConfig.loggerName);
+	UCF_LOG_INIT({fileLogger, consoleLogger});
 #else
-	MasterLogUtil::InitLogger({fileLogger});
+	UCF_LOG_INIT({fileLogger});
 #endif
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
@@ -168,7 +166,7 @@ void ApplicationRunner::DataPrivate::createApplicationConfig()
     AppLogConfig logConfig{
         logDirPath.string(),
         "AppLog",
-        MasterLogUtil::ALL_LOG_LEVEL,
+        ucf::utilities::kAllLogLevels,
         180,
         50 * 1024 * 1024
     };

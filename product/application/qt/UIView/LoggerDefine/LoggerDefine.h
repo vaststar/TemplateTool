@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * UIViewLoggerName = "APP";
-#define UIVIEW_LOG_DEBUG(message)     LOG_DEBUG("UIView",message,UIViewLoggerName)
-#define UIVIEW_LOG_INFO(message)      LOG_INFO("UIView",message,UIViewLoggerName)
-#define UIVIEW_LOG_WARN(message)      LOG_WARN("UIView",message,UIViewLoggerName)
-#define UIVIEW_LOG_ERROR(message)     LOG_ERROR("UIView",message,UIViewLoggerName)
-#define UIVIEW_LOG_FATAL(message)     LOG_FATAL("UIView",message,UIViewLoggerName)
+static inline const char* UIViewLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UIViewLoggerTag = "UIView";
+
+#define UIVIEW_LOG_DEBUG(message)     UCF_LOG_DEBUG(UIViewLoggerTag, message, UIViewLoggerName)
+#define UIVIEW_LOG_INFO(message)      UCF_LOG_INFO(UIViewLoggerTag, message, UIViewLoggerName)
+#define UIVIEW_LOG_WARN(message)      UCF_LOG_WARN(UIViewLoggerTag, message, UIViewLoggerName)
+#define UIVIEW_LOG_ERROR(message)     UCF_LOG_ERROR(UIViewLoggerTag, message, UIViewLoggerName)
+#define UIVIEW_LOG_FATAL(message)     UCF_LOG_FATAL(UIViewLoggerTag, message, UIViewLoggerName)

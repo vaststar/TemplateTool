@@ -9,7 +9,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/commonHead/CommonHeadCommonFile/CommonHeadLogger.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC 
-    MasterLog
+    LoggerUtils
 )
 set(MODULE_INSTALL_INTERFACE_DIR include)
 

@@ -26,7 +26,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     Qt6::Gui
     Qt6::Quick
-    MasterLog
+    LoggerUtils
     QRCodeUtils
 )
 

@@ -32,7 +32,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
     DatabaseWrapper
     CoreFramework
-    MasterLog
+    LoggerUtils
     ThreadPool
     nlohmann_json::nlohmann_json
 )

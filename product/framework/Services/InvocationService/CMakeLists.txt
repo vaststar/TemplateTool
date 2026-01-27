@@ -27,7 +27,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     OSUtils
     StringUtils
     UUIDUtils
-    MasterLog
+    LoggerUtils
     ThreadPool
 )
 

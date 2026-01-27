@@ -87,7 +87,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ResourceLoader
     ResourceStringLoader
-    MasterLog
+    LoggerUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${RESOURCE_OUT_PUT_DIR})

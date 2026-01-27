@@ -31,7 +31,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     StringUtils
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    MasterLog
+    LoggerUtils
     openssl
     curl
 )

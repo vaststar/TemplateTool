@@ -26,7 +26,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseService
     InvocationService
     CoreFramework
-    MasterLog
+    LoggerUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)

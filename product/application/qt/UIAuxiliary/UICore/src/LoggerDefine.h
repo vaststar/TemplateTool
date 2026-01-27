@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * UICoreLoggerName = "APP";
-#define UICore_LOG_DEBUG(message)     LOG_DEBUG("UICore",message,UICoreLoggerName)
-#define UICore_LOG_INFO(message)      LOG_INFO("UICore",message,UICoreLoggerName)
-#define UICore_LOG_WARN(message)      LOG_WARN("UICore",message,UICoreLoggerName)
-#define UICore_LOG_ERROR(message)     LOG_ERROR("UICore",message,UICoreLoggerName)
-#define UICore_LOG_FATAL(message)     LOG_FATAL("UICore",message,UICoreLoggerName)
+static inline const char* UICoreLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UICoreLoggerTag = "UICore";
+
+#define UICore_LOG_DEBUG(message)     UCF_LOG_DEBUG(UICoreLoggerTag, message, UICoreLoggerName)
+#define UICore_LOG_INFO(message)      UCF_LOG_INFO(UICoreLoggerTag, message, UICoreLoggerName)
+#define UICore_LOG_WARN(message)      UCF_LOG_WARN(UICoreLoggerTag, message, UICoreLoggerName)
+#define UICore_LOG_ERROR(message)     UCF_LOG_ERROR(UICoreLoggerTag, message, UICoreLoggerName)
+#define UICore_LOG_FATAL(message)     UCF_LOG_FATAL(UICoreLoggerTag, message, UICoreLoggerName)

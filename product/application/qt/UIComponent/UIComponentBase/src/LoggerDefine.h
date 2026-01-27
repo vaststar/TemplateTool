@@ -1,10 +1,12 @@
 #pragma once
 
-#include <MasterLog/LogExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
-static inline const char * UIComponentBaseLoggerName = "APP";
-#define UICOMBASE_LOG_DEBUG(message)     LOG_DEBUG("UIComponentBase",message,UIComponentBaseLoggerName)
-#define UICOMBASE_LOG_INFO(message)      LOG_INFO("UIComponentBase",message,UIComponentBaseLoggerName)
-#define UICOMBASE_LOG_WARN(message)      LOG_WARN("UIComponentBase",message,UIComponentBaseLoggerName)
-#define UICOMBASE_LOG_ERROR(message)     LOG_ERROR("UIComponentBase",message,UIComponentBaseLoggerName)
-#define UICOMBASE_LOG_FATAL(message)     LOG_FATAL("UIComponentBase",message,UIComponentBaseLoggerName)
+static inline const char* UIComponentBaseLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UIComponentBaseLoggerTag = "UIComponentBase";
+
+#define UICOMBASE_LOG_DEBUG(message)     UCF_LOG_DEBUG(UIComponentBaseLoggerTag, message, UIComponentBaseLoggerName)
+#define UICOMBASE_LOG_INFO(message)      UCF_LOG_INFO(UIComponentBaseLoggerTag, message, UIComponentBaseLoggerName)
+#define UICOMBASE_LOG_WARN(message)      UCF_LOG_WARN(UIComponentBaseLoggerTag, message, UIComponentBaseLoggerName)
+#define UICOMBASE_LOG_ERROR(message)     UCF_LOG_ERROR(UIComponentBaseLoggerTag, message, UIComponentBaseLoggerName)
+#define UICOMBASE_LOG_FATAL(message)     UCF_LOG_FATAL(UIComponentBaseLoggerTag, message, UIComponentBaseLoggerName)

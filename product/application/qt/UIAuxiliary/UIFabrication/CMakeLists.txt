@@ -32,7 +32,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UICore
     CommonHeadFramework
     ViewModels
-    MasterLog
+    LoggerUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
