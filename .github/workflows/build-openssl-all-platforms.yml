@@ -341,9 +341,20 @@ jobs:
           # Copy headers from device build
           cp -r downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include/openssl artifact/ios/include/
           
+          # Debug: check library architectures and platform info
+          echo "=== Device arm64 library info ==="
+          lipo -info downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a
+          xcrun vtool -show-build downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a 2>/dev/null | head -20 || true
+          
+          echo "=== Simulator arm64 library info ==="
+          lipo -info downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libssl.a
+          xcrun vtool -show-build downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libssl.a 2>/dev/null | head -20 || true
+          
+          echo "=== Simulator x86_64 library info ==="
+          lipo -info downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libssl.a
+          xcrun vtool -show-build downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libssl.a 2>/dev/null | head -20 || true
+          
           # Create fat libraries for simulator (combine arm64 and x86_64)
-          # xcodebuild -create-xcframework requires one library per platform
-          # Simulator arm64 and x86_64 must be combined with lipo first
           lipo -create \
             downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libssl.a \
             downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libssl.a \
@@ -354,26 +365,51 @@ jobs:
             downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libcrypto.a \
             -output simulator_fat/lib/libcrypto.a
           
+          echo "=== Fat library info ==="
+          lipo -info simulator_fat/lib/libssl.a
+          lipo -detailed_info simulator_fat/lib/libssl.a
+          
           # Copy headers for simulator fat lib
           cp -r downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/include simulator_fat/
           
           # Create XCFrameworks with device and simulator (fat) libraries
+          # Use -allow-internal-distribution to be more permissive with platform detection
           xcodebuild -create-xcframework \
             -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a \
             -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -library simulator_fat/lib/libssl.a \
             -headers simulator_fat/include \
-            -output artifact/ios/libssl.xcframework
+            -output artifact/ios/libssl.xcframework \
+            -allow-internal-distribution || {
+              echo "Failed with fat library, trying without x86_64..."
+              # Fallback: just use simulator arm64 (modern Apple Silicon Macs don't need x86_64)
+              xcodebuild -create-xcframework \
+                -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a \
+                -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+                -library downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libssl.a \
+                -headers downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/include \
+                -output artifact/ios/libssl.xcframework
+            }
           
           xcodebuild -create-xcframework \
             -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcrypto.a \
             -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -library simulator_fat/lib/libcrypto.a \
             -headers simulator_fat/include \
-            -output artifact/ios/libcrypto.xcframework
+            -output artifact/ios/libcrypto.xcframework \
+            -allow-internal-distribution || {
+              echo "Failed with fat library, trying without x86_64..."
+              xcodebuild -create-xcframework \
+                -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcrypto.a \
+                -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+                -library downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libcrypto.a \
+                -headers downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/include \
+                -output artifact/ios/libcrypto.xcframework
+            }
           
           echo "=== XCFramework structure ==="
           find artifact -type d
+          find artifact -name "Info.plist" -exec echo "--- {} ---" \; -exec cat {} \;
       
       - name: Upload XCFramework
         uses: actions/upload-artifact@v4
