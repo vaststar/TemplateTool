@@ -450,7 +450,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build
+          sudo apt-get install -y cmake ninja-build patchelf
       
       - name: Download OpenCV source
         run: |
@@ -503,6 +503,33 @@ jobs:
           # Copy native libraries (.so files)
           find opencv_install -name "*.so" -exec cp {} artifact/android/libs/$ABI/ \;
           
+          # Fix NEEDED entries - remove absolute paths from dependencies
+          cd artifact/android/libs/$ABI
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "Checking NEEDED entries for $f"
+              patchelf --print-needed "$f" 2>/dev/null | while read needed; do
+                case "$needed" in
+                  /*)
+                    needed_basename=$(basename "$needed")
+                    echo "  Fixing: $needed -> $needed_basename"
+                    patchelf --replace-needed "$needed" "$needed_basename" "$f" 2>/dev/null || true
+                    ;;
+                esac
+              done
+              patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true
+            fi
+          done
+          
+          echo "=== Verifying NEEDED entries ==="
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "--- $f ---"
+              patchelf --print-needed "$f" 2>/dev/null || true
+            fi
+          done
+          cd ../../../..
+          
           # Copy Java libraries if exist
           find opencv_install -name "*.jar" -exec cp {} artifact/android/libs/ \; 2>/dev/null || true
           find opencv_install -name "*.aar" -exec cp {} artifact/android/libs/ \; 2>/dev/null || true
@@ -532,7 +559,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            cmake ninja-build \
+            cmake ninja-build patchelf \
             libgtk-3-dev \
             libavcodec-dev libavformat-dev libswscale-dev \
             libjpeg-dev libpng-dev libtiff-dev \
@@ -580,6 +607,25 @@ jobs:
           
           # Copy libraries
           cp opencv_install/lib/*.so* artifact/linux/x64/lib/
+          
+          # Fix RPATH to use $ORIGIN for portable deployment
+          cd artifact/linux/x64/lib
+          for f in *.so*; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "Fixing RPATH for $f"
+              patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true
+            fi
+          done
+          
+          # Verify RPATH fixes
+          echo "=== Verifying RPATH ==="
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "--- $f ---"
+              patchelf --print-rpath "$f" 2>/dev/null || true
+            fi
+          done
+          cd ../../..
           
           # Copy cmake config
           mkdir -p artifact/linux/x64/lib/cmake/opencv4

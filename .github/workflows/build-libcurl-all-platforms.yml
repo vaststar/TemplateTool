@@ -386,7 +386,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build
+          sudo apt-get install -y cmake ninja-build patchelf
       
       - name: Download curl source
         run: |
@@ -441,8 +441,34 @@ jobs:
           cp curl_install/lib/*.so artifact/android/$ABI/lib/ 2>/dev/null || true
           cp curl_install/lib/*.a artifact/android/$ABI/lib/ 2>/dev/null || true
           
+          # Fix NEEDED entries - remove absolute paths from dependencies
+          cd artifact/android/$ABI/lib
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "Checking NEEDED entries for $f"
+              patchelf --print-needed "$f" 2>/dev/null | while read needed; do
+                case "$needed" in
+                  /*)
+                    needed_basename=$(basename "$needed")
+                    echo "  Fixing: $needed -> $needed_basename"
+                    patchelf --replace-needed "$needed" "$needed_basename" "$f" 2>/dev/null || true
+                    ;;
+                esac
+              done
+              patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true
+            fi
+          done
+          
+          echo "=== Verifying NEEDED entries ==="
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "--- $f ---"
+              patchelf --print-needed "$f" 2>/dev/null || true
+            fi
+          done
+          
           echo "=== Built files ==="
-          find artifact -type f
+          find ../../../ -type f
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -465,7 +491,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build libssl-dev
+          sudo apt-get install -y cmake ninja-build libssl-dev patchelf
       
       - name: Download curl source
         run: |
@@ -513,6 +539,31 @@ jobs:
           
           # Copy binary
           cp curl_install/bin/curl artifact/linux/x64/bin/
+          
+          # Fix RPATH to use $ORIGIN for portable deployment
+          cd artifact/linux/x64/lib
+          for f in *.so*; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "Fixing RPATH for $f"
+              patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true
+            fi
+          done
+          
+          # Fix binary RPATH
+          cd ../bin
+          if [ -f "curl" ]; then
+            patchelf --set-rpath '$ORIGIN/../lib' "curl" 2>/dev/null || true
+          fi
+          
+          # Verify RPATH fixes
+          echo "=== Verifying RPATH ==="
+          cd ../lib
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "--- $f ---"
+              patchelf --print-rpath "$f" 2>/dev/null || true
+            fi
+          done
           
           echo "=== Built files ==="
           find artifact -type f
