@@ -382,6 +382,8 @@ jobs:
             -output artifact/ios/libssl.xcframework \
             -allow-internal-distribution || {
               echo "Failed with fat library, trying without x86_64..."
+              # Remove partially created xcframework before retry
+              rm -rf artifact/ios/libssl.xcframework
               # Fallback: just use simulator arm64 (modern Apple Silicon Macs don't need x86_64)
               xcodebuild -create-xcframework \
                 -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a \
@@ -399,6 +401,8 @@ jobs:
             -output artifact/ios/libcrypto.xcframework \
             -allow-internal-distribution || {
               echo "Failed with fat library, trying without x86_64..."
+              # Remove partially created xcframework before retry
+              rm -rf artifact/ios/libcrypto.xcframework
               xcodebuild -create-xcframework \
                 -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcrypto.a \
                 -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
