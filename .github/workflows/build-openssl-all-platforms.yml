@@ -340,30 +340,25 @@ jobs:
           # Copy headers from device build
           cp -r downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include/openssl artifact/ios/include/
           
-          # Create fat library for simulator
-          mkdir -p sim_fat
-          lipo -create \
-            downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libssl.a \
-            downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libssl.a \
-            -output sim_fat/libssl.a
-          lipo -create \
-            downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libcrypto.a \
-            downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libcrypto.a \
-            -output sim_fat/libcrypto.a
-          
-          # Create XCFrameworks
+          # Create XCFrameworks with separate library slices for each architecture
+          # Note: xcodebuild -create-xcframework does NOT support fat/universal libraries
+          # Each architecture must be provided as a separate -library argument
           xcodebuild -create-xcframework \
             -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a \
             -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
-            -library sim_fat/libssl.a \
-            -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+            -library downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libssl.a \
+            -headers downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/include \
+            -library downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libssl.a \
+            -headers downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/include \
             -output artifact/ios/libssl.xcframework
           
           xcodebuild -create-xcframework \
             -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcrypto.a \
             -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
-            -library sim_fat/libcrypto.a \
-            -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+            -library downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libcrypto.a \
+            -headers downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/include \
+            -library downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libcrypto.a \
+            -headers downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/include \
             -output artifact/ios/libcrypto.xcframework
           
           echo "=== XCFramework structure ==="
