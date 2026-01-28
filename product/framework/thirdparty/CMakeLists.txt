@@ -1,4 +1,5 @@
 #thirdparty lib
+add_subdirectory(compression)
 add_subdirectory(openssl)
 add_subdirectory(json)
 add_subdirectory(Catch2)
