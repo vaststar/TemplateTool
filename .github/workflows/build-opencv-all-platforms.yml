@@ -33,9 +33,10 @@ jobs:
           - arch: x86
             cmake_arch: Win32
             msvc_arch: amd64_x86
-          - arch: arm64
-            cmake_arch: ARM64
-            msvc_arch: amd64_arm64
+          # ARM64 cross-compilation is complex, skip for now
+          # - arch: arm64
+          #   cmake_arch: ARM64
+          #   msvc_arch: amd64_arm64
     
     runs-on: windows-latest
     
@@ -141,10 +142,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-13
+          # macos-13 is retired, use macos-15 with cross-compilation for Intel
+          - os: macos-15
             arch: x86_64
             platform_name: intel
-          - os: macos-14
+          - os: macos-15
             arch: arm64
             platform_name: arm
     
@@ -253,6 +255,7 @@ jobs:
           cmake ../opencv_src \
             -GXcode \
             -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
             -DCMAKE_INSTALL_PREFIX=../install_ios_device \
@@ -264,11 +267,19 @@ jobs:
             -DBUILD_DOCS=OFF \
             -DBUILD_opencv_python3=OFF \
             -DBUILD_opencv_java=OFF \
+            -DBUILD_opencv_apps=OFF \
             -DWITH_FFMPEG=OFF \
             -DWITH_CUDA=OFF \
+            -DWITH_OPENCL=OFF \
+            -DWITH_IPP=OFF \
+            -DWITH_ITT=OFF \
+            -DWITH_PROTOBUF=OFF \
+            -DWITH_QUIRC=OFF \
             -DENABLE_BITCODE=OFF \
-            -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO
-          cmake --build . --config Release --parallel $(sysctl -n hw.ncpu)
+            -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO \
+            -DCPU_BASELINE=NEON \
+            -DCPU_DISPATCH=NEON
+          cmake --build . --config Release -- -quiet
           cmake --install . --config Release
       
       - name: Build iOS Simulator (arm64)
@@ -290,9 +301,15 @@ jobs:
             -DBUILD_DOCS=OFF \
             -DBUILD_opencv_python3=OFF \
             -DBUILD_opencv_java=OFF \
+            -DBUILD_opencv_apps=OFF \
             -DWITH_FFMPEG=OFF \
-            -DWITH_CUDA=OFF
-          cmake --build . --config Release --parallel $(sysctl -n hw.ncpu)
+            -DWITH_CUDA=OFF \
+            -DWITH_OPENCL=OFF \
+            -DWITH_IPP=OFF \
+            -DWITH_ITT=OFF \
+            -DWITH_PROTOBUF=OFF \
+            -DWITH_QUIRC=OFF
+          cmake --build . --config Release -- -quiet
           cmake --install . --config Release
       
       - name: Build iOS Simulator (x86_64)
@@ -314,9 +331,15 @@ jobs:
             -DBUILD_DOCS=OFF \
             -DBUILD_opencv_python3=OFF \
             -DBUILD_opencv_java=OFF \
+            -DBUILD_opencv_apps=OFF \
             -DWITH_FFMPEG=OFF \
-            -DWITH_CUDA=OFF
-          cmake --build . --config Release --parallel $(sysctl -n hw.ncpu)
+            -DWITH_CUDA=OFF \
+            -DWITH_OPENCL=OFF \
+            -DWITH_IPP=OFF \
+            -DWITH_ITT=OFF \
+            -DWITH_PROTOBUF=OFF \
+            -DWITH_QUIRC=OFF
+          cmake --build . --config Release -- -quiet
           cmake --install . --config Release
       
       - name: Create XCFramework
