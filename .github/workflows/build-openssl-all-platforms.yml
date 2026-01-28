@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       openssl_version:
-        description: 'OpenSSL version to build (e.g., 3.2.1, 3.3.0)'
+        description: 'OpenSSL version to build (e.g., 3.6.1, 3.5.0)'
         required: true
-        default: '3.2.1'
+        default: '3.6.1'
         type: string
       platforms:
         description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'

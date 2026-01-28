@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       curl_version:
-        description: 'libcurl version to build (e.g., 8.5.0, 8.6.0)'
+        description: 'libcurl version to build (e.g., 8.18.0, 8.17.0)'
         required: true
-        default: '8.5.0'
+        default: '8.18.0'
         type: string
       platforms:
         description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'

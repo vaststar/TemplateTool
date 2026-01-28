@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       opencv_version:
-        description: 'OpenCV version to build'
+        description: 'OpenCV version to build (e.g., 4.13.0, 4.12.0)'
         required: true
-        default: '4.12.0'
+        default: '4.13.0'
         type: string
       platforms:
         description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'
         required: true
-        default: 'windows,macos,ios,android'
+        default: 'windows,macos,ios,android,linux'
         type: string
 
 env:
