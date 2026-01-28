@@ -312,7 +312,9 @@ jobs:
           # Create XCFramework
           xcodebuild -create-xcframework \
             -library downloads/libcurl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcurl.a \
+            -headers downloads/libcurl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -library sim_fat/libcurl.a \
+            -headers downloads/libcurl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -output artifact/ios/libcurl.xcframework
           
           echo "=== XCFramework structure ==="

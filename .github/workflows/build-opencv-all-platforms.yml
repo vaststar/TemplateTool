@@ -371,7 +371,15 @@ jobs:
           fi
           
           # Create xcframework
-          if [ -n "$DEVICE_LIB" ] && [ -n "$SIM_FAT_LIB" ]; then
+          HEADER_INCLUDE_DIR=$(find install_ios_device -type d -name "include" | head -1)
+          if [ -n "$DEVICE_LIB" ] && [ -n "$SIM_FAT_LIB" ] && [ -n "$HEADER_INCLUDE_DIR" ]; then
+            xcodebuild -create-xcframework \
+              -library "$DEVICE_LIB" \
+              -headers "$HEADER_INCLUDE_DIR" \
+              -library "$SIM_FAT_LIB" \
+              -headers "$HEADER_INCLUDE_DIR" \
+              -output artifact/ios/opencv2.xcframework
+          elif [ -n "$DEVICE_LIB" ] && [ -n "$SIM_FAT_LIB" ]; then
             xcodebuild -create-xcframework \
               -library "$DEVICE_LIB" \
               -library "$SIM_FAT_LIB" \

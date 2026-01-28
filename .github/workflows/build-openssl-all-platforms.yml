@@ -354,12 +354,16 @@ jobs:
           # Create XCFrameworks
           xcodebuild -create-xcframework \
             -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libssl.a \
+            -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -library sim_fat/libssl.a \
+            -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -output artifact/ios/libssl.xcframework
           
           xcodebuild -create-xcframework \
             -library downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcrypto.a \
+            -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -library sim_fat/libcrypto.a \
+            -headers downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
             -output artifact/ios/libcrypto.xcframework
           
           echo "=== XCFramework structure ==="
