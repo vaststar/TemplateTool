@@ -1,0 +1,577 @@
+name: Build libcurl All Platforms
+
+on:
+  workflow_dispatch:
+    inputs:
+      curl_version:
+        description: 'libcurl version to build (e.g., 8.5.0, 8.6.0)'
+        required: true
+        default: '8.5.0'
+        type: string
+      platforms:
+        description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'
+        required: true
+        default: 'windows,macos,ios,android'
+        type: string
+
+env:
+  CURL_VERSION: ${{ github.event.inputs.curl_version }}
+
+jobs:
+  # ============================================================================
+  # Windows Builds (x64, x86, arm64) - Using Schannel (system SSL)
+  # ============================================================================
+  build-windows:
+    if: contains(github.event.inputs.platforms, 'windows')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            cmake_arch: x64
+            msvc_arch: amd64
+          - arch: x86
+            cmake_arch: Win32
+            msvc_arch: amd64_x86
+          - arch: arm64
+            cmake_arch: ARM64
+            msvc_arch: amd64_arm64
+    
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+      
+      - name: Download curl source
+        shell: pwsh
+        run: |
+          $version = "${{ env.CURL_VERSION }}"
+          Invoke-WebRequest -Uri "https://curl.se/download/curl-${version}.tar.gz" -OutFile curl.tar.gz
+          tar -xzf curl.tar.gz
+          Rename-Item -Path "curl-${version}" -NewName "curl_src"
+      
+      - name: Configure curl
+        shell: cmd
+        run: |
+          mkdir curl_build
+          cd curl_build
+          cmake ../curl_src ^
+            -G "Visual Studio 17 2022" ^
+            -A ${{ matrix.cmake_arch }} ^
+            -DCMAKE_INSTALL_PREFIX=../curl_install ^
+            -DBUILD_SHARED_LIBS=ON ^
+            -DBUILD_STATIC_LIBS=ON ^
+            -DCURL_USE_SCHANNEL=ON ^
+            -DCURL_USE_OPENSSL=OFF ^
+            -DCURL_USE_LIBSSH2=OFF ^
+            -DCURL_ZLIB=OFF ^
+            -DBUILD_CURL_EXE=ON ^
+            -DBUILD_TESTING=OFF ^
+            -DENABLE_UNICODE=ON ^
+            -DCURL_STATIC_CRT=OFF
+      
+      - name: Build curl (Release)
+        run: cmake --build curl_build --config Release --parallel
+      
+      - name: Install curl (Release)
+        run: cmake --install curl_build --config Release
+      
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}"
+          
+          # Create directory structure
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/lib"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/bin"
+          
+          # Copy headers
+          Copy-Item -Recurse -Force "curl_install/include/curl" "artifact/windows/$arch/include/"
+          
+          # Copy libraries
+          Get-ChildItem -Path curl_install -Recurse -Include "*.lib" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
+          }
+          
+          # Copy DLLs and executables
+          Get-ChildItem -Path curl_install -Recurse -Include "*.dll","*.exe" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
+          }
+          
+          Write-Host "=== Built files ==="
+          Get-ChildItem -Recurse artifact -File | Select-Object FullName
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-windows-${{ matrix.arch }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # macOS Builds (Intel x86_64, Apple Silicon arm64) - Using SecureTransport
+  # ============================================================================
+  build-macos:
+    if: contains(github.event.inputs.platforms, 'macos')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-13
+            arch: x86_64
+            platform_name: intel
+          - os: macos-14
+            arch: arm64
+            platform_name: arm
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: brew install cmake ninja
+      
+      - name: Download curl source
+        run: |
+          curl -L -o curl.tar.gz https://curl.se/download/curl-${{ env.CURL_VERSION }}.tar.gz
+          tar -xzf curl.tar.gz
+          mv curl-${{ env.CURL_VERSION }} curl_src
+      
+      - name: Configure and Build curl
+        run: |
+          mkdir curl_build
+          cd curl_build
+          cmake ../curl_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_INSTALL_PREFIX=../curl_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DBUILD_STATIC_LIBS=ON \
+            -DCURL_USE_SECTRANSP=ON \
+            -DCURL_USE_OPENSSL=OFF \
+            -DCURL_USE_LIBSSH2=OFF \
+            -DCURL_ZLIB=OFF \
+            -DBUILD_CURL_EXE=ON \
+            -DBUILD_TESTING=OFF
+          
+          cmake --build . --parallel $(sysctl -n hw.ncpu)
+          cmake --install .
+      
+      - name: Prepare artifact
+        run: |
+          PLATFORM="${{ matrix.platform_name }}"
+          mkdir -p artifact/macosx/$PLATFORM/include
+          mkdir -p artifact/macosx/$PLATFORM/lib
+          mkdir -p artifact/macosx/$PLATFORM/bin
+          
+          # Copy headers
+          cp -r curl_install/include/curl artifact/macosx/$PLATFORM/include/
+          
+          # Copy libraries
+          cp curl_install/lib/*.dylib artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
+          cp curl_install/lib/*.a artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
+          
+          # Copy binary
+          cp curl_install/bin/curl artifact/macosx/$PLATFORM/bin/ 2>/dev/null || true
+          
+          # Fix dylib install names
+          cd artifact/macosx/$PLATFORM/lib
+          for f in *.dylib; do
+            if [ -f "$f" ]; then
+              install_name_tool -id "@rpath/$f" "$f" 2>/dev/null || true
+            fi
+          done
+          
+          echo "=== Built files ==="
+          find ../../../ -type f
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-macos-${{ matrix.platform_name }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # iOS Build (arm64 device, arm64+x86_64 simulator) - Using SecureTransport
+  # ============================================================================
+  build-ios:
+    if: contains(github.event.inputs.platforms, 'ios')
+    runs-on: macos-14
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: iphoneos
+            arch: arm64
+            sdk: iphoneos
+          - platform: iphonesimulator
+            arch: arm64
+            sdk: iphonesimulator
+          - platform: iphonesimulator
+            arch: x86_64
+            sdk: iphonesimulator
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Download curl source
+        run: |
+          curl -L -o curl.tar.gz https://curl.se/download/curl-${{ env.CURL_VERSION }}.tar.gz
+          tar -xzf curl.tar.gz
+          mv curl-${{ env.CURL_VERSION }} curl_src
+      
+      - name: Configure and Build curl
+        run: |
+          SDK_PATH=$(xcrun --sdk ${{ matrix.sdk }} --show-sdk-path)
+          
+          mkdir curl_build
+          cd curl_build
+          cmake ../curl_src \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=${{ matrix.sdk }} \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_INSTALL_PREFIX=../curl_install \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DBUILD_STATIC_LIBS=ON \
+            -DCURL_USE_SECTRANSP=ON \
+            -DCURL_USE_OPENSSL=OFF \
+            -DCURL_USE_LIBSSH2=OFF \
+            -DCURL_ZLIB=OFF \
+            -DBUILD_CURL_EXE=OFF \
+            -DBUILD_TESTING=OFF \
+            -DENABLE_UNIX_SOCKETS=OFF
+          
+          cmake --build . --parallel $(sysctl -n hw.ncpu)
+          cmake --install .
+      
+      - name: Prepare artifact
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          ARCH="${{ matrix.arch }}"
+          mkdir -p artifact/ios/$PLATFORM-$ARCH/include
+          mkdir -p artifact/ios/$PLATFORM-$ARCH/lib
+          
+          # Copy headers
+          cp -r curl_install/include/curl artifact/ios/$PLATFORM-$ARCH/include/
+          
+          # Copy static libraries
+          cp curl_install/lib/*.a artifact/ios/$PLATFORM-$ARCH/lib/
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-ios-${{ matrix.platform }}-${{ matrix.arch }}
+          path: artifact/
+          retention-days: 30
+
+  # Create iOS XCFramework
+  build-ios-xcframework:
+    needs: build-ios
+    if: contains(github.event.inputs.platforms, 'ios')
+    runs-on: macos-14
+    
+    steps:
+      - name: Download iOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: libcurl-ios-*
+          path: downloads/
+      
+      - name: Create XCFramework
+        run: |
+          mkdir -p artifact/ios/include
+          
+          # Copy headers from device build
+          cp -r downloads/libcurl-ios-iphoneos-arm64/ios/iphoneos-arm64/include/curl artifact/ios/include/
+          
+          # Create fat library for simulator
+          mkdir -p sim_fat
+          lipo -create \
+            downloads/libcurl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libcurl.a \
+            downloads/libcurl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libcurl.a \
+            -output sim_fat/libcurl.a
+          
+          # Create XCFramework
+          xcodebuild -create-xcframework \
+            -library downloads/libcurl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libcurl.a \
+            -library sim_fat/libcurl.a \
+            -output artifact/ios/libcurl.xcframework
+          
+          echo "=== XCFramework structure ==="
+          find artifact -type d
+      
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-ios-xcframework
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Android Build (arm64-v8a, armeabi-v7a, x86_64, x86) - Static with system SSL
+  # ============================================================================
+  build-android:
+    if: contains(github.event.inputs.platforms, 'android')
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: [arm64-v8a, armeabi-v7a, x86_64, x86]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Android NDK
+        uses: android-actions/setup-android@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+      
+      - name: Download curl source
+        run: |
+          curl -L -o curl.tar.gz https://curl.se/download/curl-${{ env.CURL_VERSION }}.tar.gz
+          tar -xzf curl.tar.gz
+          mv curl-${{ env.CURL_VERSION }} curl_src
+      
+      - name: Configure and Build curl
+        run: |
+          mkdir curl_build
+          cd curl_build
+          
+          cmake ../curl_src \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=android-24 \
+            -DANDROID_STL=c++_shared \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=../curl_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DBUILD_STATIC_LIBS=ON \
+            -DCURL_USE_OPENSSL=OFF \
+            -DCURL_USE_MBEDTLS=OFF \
+            -DCURL_USE_LIBSSH2=OFF \
+            -DCURL_ZLIB=OFF \
+            -DBUILD_CURL_EXE=OFF \
+            -DBUILD_TESTING=OFF \
+            -DENABLE_UNIX_SOCKETS=OFF \
+            -DCURL_DISABLE_LDAP=ON \
+            -DCURL_DISABLE_LDAPS=ON
+          
+          cmake --build . --parallel $(nproc)
+          cmake --install .
+      
+      - name: Prepare artifact
+        run: |
+          ABI="${{ matrix.abi }}"
+          mkdir -p artifact/android/$ABI/include
+          mkdir -p artifact/android/$ABI/lib
+          
+          # Copy headers
+          cp -r curl_install/include/curl artifact/android/$ABI/include/
+          
+          # Copy libraries
+          cp curl_install/lib/*.so artifact/android/$ABI/lib/ 2>/dev/null || true
+          cp curl_install/lib/*.a artifact/android/$ABI/lib/ 2>/dev/null || true
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-android-${{ matrix.abi }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Linux Build (x64) - Using system OpenSSL
+  # ============================================================================
+  build-linux:
+    if: contains(github.event.inputs.platforms, 'linux')
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build libssl-dev
+      
+      - name: Download curl source
+        run: |
+          curl -L -o curl.tar.gz https://curl.se/download/curl-${{ env.CURL_VERSION }}.tar.gz
+          tar -xzf curl.tar.gz
+          mv curl-${{ env.CURL_VERSION }} curl_src
+      
+      - name: Configure and Build curl
+        run: |
+          mkdir curl_build
+          cd curl_build
+          
+          cmake ../curl_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=../curl_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DBUILD_STATIC_LIBS=ON \
+            -DCURL_USE_OPENSSL=ON \
+            -DCURL_USE_LIBSSH2=OFF \
+            -DCURL_ZLIB=OFF \
+            -DBUILD_CURL_EXE=ON \
+            -DBUILD_TESTING=OFF
+          
+          cmake --build . --parallel $(nproc)
+          cmake --install .
+      
+      - name: Prepare artifact
+        run: |
+          mkdir -p artifact/linux/x64/include
+          mkdir -p artifact/linux/x64/lib
+          mkdir -p artifact/linux/x64/bin
+          
+          # Copy headers
+          cp -r curl_install/include/curl artifact/linux/x64/include/
+          
+          # Copy libraries
+          cp curl_install/lib/*.so* artifact/linux/x64/lib/ 2>/dev/null || true
+          cp curl_install/lib/*.a artifact/linux/x64/lib/ 2>/dev/null || true
+          
+          # Copy binary
+          cp curl_install/bin/curl artifact/linux/x64/bin/
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-linux-x64
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Merge All Artifacts
+  # ============================================================================
+  merge-artifacts:
+    needs: [build-windows, build-macos, build-ios-xcframework, build-android, build-linux]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download all final artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloads/
+      
+      - name: Merge artifacts
+        run: |
+          mkdir -p merged
+          
+          echo "=== Downloaded artifacts ==="
+          ls -la downloads/
+          
+          # --- Merge Windows ---
+          for arch in x64 x86 arm64; do
+            if [ -d "downloads/libcurl-windows-$arch" ]; then
+              echo "Processing Windows $arch..."
+              mkdir -p merged/windows
+              cp -r downloads/libcurl-windows-$arch/windows/$arch merged/windows/
+            fi
+          done
+          
+          # --- Merge macOS ---
+          for platform in intel arm; do
+            if [ -d "downloads/libcurl-macos-$platform" ]; then
+              echo "Processing macOS $platform..."
+              mkdir -p merged/macosx
+              cp -r downloads/libcurl-macos-$platform/macosx/$platform merged/macosx/
+            fi
+          done
+          
+          # --- Copy iOS XCFramework ---
+          if [ -d "downloads/libcurl-ios-xcframework" ]; then
+            echo "Processing iOS XCFramework..."
+            cp -r downloads/libcurl-ios-xcframework/ios merged/
+          fi
+          
+          # --- Merge Android ---
+          for abi in arm64-v8a armeabi-v7a x86_64 x86; do
+            if [ -d "downloads/libcurl-android-$abi" ]; then
+              echo "Processing Android $abi..."
+              mkdir -p merged/android
+              cp -r downloads/libcurl-android-$abi/android/$abi merged/android/
+            fi
+          done
+          
+          # --- Copy Linux ---
+          if [ -d "downloads/libcurl-linux-x64" ]; then
+            echo "Processing Linux..."
+            cp -r downloads/libcurl-linux-x64/linux merged/
+          fi
+          
+          echo ""
+          echo "=== Final structure ==="
+          find merged -type d | sort
+          echo ""
+          echo "=== File count per platform ==="
+          for dir in merged/*/; do
+            if [ -d "$dir" ]; then
+              platform_name=$(basename "$dir")
+              file_count=$(find "$dir" -type f | wc -l)
+              echo "$platform_name: $file_count files"
+            fi
+          done
+      
+      - name: Create archives
+        run: |
+          VERSION="${{ github.event.inputs.curl_version }}"
+          
+          cd merged
+          
+          # Create per-platform archives
+          for platform in */; do
+            if [ -d "$platform" ]; then
+              platform_name=${platform%/}
+              echo "Creating archive for $platform_name..."
+              zip -rq "../libcurl-${VERSION}-${platform_name}.zip" "$platform_name/"
+            fi
+          done
+          
+          # Create combined archive
+          cd ..
+          zip -rq "libcurl-${VERSION}-all-platforms.zip" merged/
+          
+          echo "=== Created archives ==="
+          ls -lh libcurl-*.zip
+      
+      - name: Upload combined artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcurl-all-platforms
+          path: libcurl-*.zip
+          retention-days: 90
