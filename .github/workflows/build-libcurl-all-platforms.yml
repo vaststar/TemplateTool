@@ -71,10 +71,13 @@ jobs:
             -DCURL_USE_OPENSSL=OFF ^
             -DCURL_USE_LIBSSH2=OFF ^
             -DCURL_ZLIB=OFF ^
+            -DCURL_BROTLI=OFF ^
+            -DCURL_ZSTD=OFF ^
             -DBUILD_CURL_EXE=ON ^
             -DBUILD_TESTING=OFF ^
             -DENABLE_UNICODE=ON ^
-            -DCURL_STATIC_CRT=OFF
+            -DCURL_STATIC_CRT=OFF ^
+            -DUSE_NGHTTP2=OFF
       
       - name: Build curl (Release)
         run: cmake --build curl_build --config Release --parallel
@@ -158,12 +161,15 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../curl_install \
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_STATIC_LIBS=ON \
-            -DCURL_USE_SECTRANSP=ON \
+            -DCURL_ENABLE_SSL=ON \
             -DCURL_USE_OPENSSL=OFF \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_ZLIB=OFF \
+            -DCURL_BROTLI=OFF \
+            -DCURL_ZSTD=OFF \
             -DBUILD_CURL_EXE=ON \
-            -DBUILD_TESTING=OFF
+            -DBUILD_TESTING=OFF \
+            -DUSE_NGHTTP2=OFF
           
           cmake --build . --parallel $(sysctl -n hw.ncpu)
           cmake --install .
@@ -248,13 +254,16 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../curl_install \
             -DBUILD_SHARED_LIBS=OFF \
             -DBUILD_STATIC_LIBS=ON \
-            -DCURL_USE_SECTRANSP=ON \
+            -DCURL_ENABLE_SSL=ON \
             -DCURL_USE_OPENSSL=OFF \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_ZLIB=OFF \
+            -DCURL_BROTLI=OFF \
+            -DCURL_ZSTD=OFF \
             -DBUILD_CURL_EXE=OFF \
             -DBUILD_TESTING=OFF \
-            -DENABLE_UNIX_SOCKETS=OFF
+            -DENABLE_UNIX_SOCKETS=OFF \
+            -DUSE_NGHTTP2=OFF
           
           cmake --build . --parallel $(sysctl -n hw.ncpu)
           cmake --install .
@@ -372,15 +381,19 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../curl_install \
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_STATIC_LIBS=ON \
+            -DCURL_ENABLE_SSL=OFF \
             -DCURL_USE_OPENSSL=OFF \
             -DCURL_USE_MBEDTLS=OFF \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_ZLIB=OFF \
+            -DCURL_BROTLI=OFF \
+            -DCURL_ZSTD=OFF \
             -DBUILD_CURL_EXE=OFF \
             -DBUILD_TESTING=OFF \
             -DENABLE_UNIX_SOCKETS=OFF \
             -DCURL_DISABLE_LDAP=ON \
-            -DCURL_DISABLE_LDAPS=ON
+            -DCURL_DISABLE_LDAPS=ON \
+            -DUSE_NGHTTP2=OFF
           
           cmake --build . --parallel $(nproc)
           cmake --install .
@@ -444,8 +457,11 @@ jobs:
             -DCURL_USE_OPENSSL=ON \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_ZLIB=OFF \
+            -DCURL_BROTLI=OFF \
+            -DCURL_ZSTD=OFF \
             -DBUILD_CURL_EXE=ON \
-            -DBUILD_TESTING=OFF
+            -DBUILD_TESTING=OFF \
+            -DUSE_NGHTTP2=OFF
           
           cmake --build . --parallel $(nproc)
           cmake --install .
