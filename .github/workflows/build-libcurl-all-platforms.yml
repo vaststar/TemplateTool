@@ -196,11 +196,32 @@ jobs:
           # Copy binary
           cp curl_install/bin/curl artifact/macosx/$PLATFORM/bin/ 2>/dev/null || true
           
-          # Fix dylib install names
+          # Fix dylib install names and dependencies
           cd artifact/macosx/$PLATFORM/lib
           for f in *.dylib; do
             if [ -f "$f" ]; then
+              # Fix the library's own install name
               install_name_tool -id "@rpath/$f" "$f" 2>/dev/null || true
+              
+              # Fix dependencies that reference absolute CI runner paths
+              otool -L "$f" 2>/dev/null | grep -E "^\s+/" | awk '{print $1}' | while read dep; do
+                dep_basename=$(basename "$dep")
+                case "$dep" in
+                  /Users/runner/*|/home/runner/*)
+                    echo "Fixing dependency in $f: $dep -> @rpath/$dep_basename"
+                    install_name_tool -change "$dep" "@rpath/$dep_basename" "$f" 2>/dev/null || true
+                    ;;
+                esac
+              done
+            fi
+          done
+          
+          # Verify fixes were applied
+          echo "=== Verifying dylib dependencies ==="
+          for f in *.dylib; do
+            if [ -f "$f" ]; then
+              echo "--- $f ---"
+              otool -L "$f" 2>/dev/null | head -10
             fi
           done
           

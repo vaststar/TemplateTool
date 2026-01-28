@@ -224,16 +224,32 @@ jobs:
           # Copy binaries
           cp openssl_install_shared/bin/openssl artifact/macosx/$PLATFORM/bin/ 2>/dev/null || true
           
-          # Fix dylib install names
+          # Fix dylib install names and dependencies
           cd artifact/macosx/$PLATFORM/lib
           for f in *.dylib; do
             if [ -f "$f" ]; then
+              # Fix the library's own install name
               install_name_tool -id "@rpath/$f" "$f" 2>/dev/null || true
+              
+              # Fix dependencies to other OpenSSL libraries (libssl depends on libcrypto)
+              for dep in libcrypto.3.dylib libcrypto.dylib libssl.3.dylib libssl.dylib; do
+                # Get current dependency paths and fix any absolute paths
+                otool -L "$f" 2>/dev/null | grep "$dep" | awk '{print $1}' | while read oldpath; do
+                  if [ -n "$oldpath" ] && [[ "$oldpath" != @rpath/* ]]; then
+                    install_name_tool -change "$oldpath" "@rpath/$dep" "$f" 2>/dev/null || true
+                  fi
+                done
+              done
             fi
           done
           
-          echo "=== Built files ==="
-          find ../../../ -type f
+          echo "=== Verifying dylib dependencies ==="
+          for f in *.dylib; do
+            if [ -f "$f" ]; then
+              echo "--- $f ---"
+              otool -L "$f" | head -5
+            fi
+          done
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
