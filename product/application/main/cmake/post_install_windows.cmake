@@ -1,104 +1,33 @@
 # ==========================================
 # Windows Post-Install Script
 # ==========================================
-# This script handles DLL deployment for Windows builds
-# - Copies third-party DLLs
+# This script handles Qt deployment for Windows builds
+# - Third-party DLLs are installed by CMake install(FILES) rules
 # - Runs windeployqt for Qt dependencies
 # - Verifies deployment results
 
 set(INSTALL_PREFIX "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
 set(DEPLOY_DIR "${INSTALL_PREFIX}/bin")
-set(THIRDPARTY_DIR "${TEMPLATE_TOOL_SOURCE_DIR}/product/framework/thirdparty")
 
 message(STATUS "")
 message(STATUS "========================================")
-message(STATUS " Windows DLL Deployment")
+message(STATUS " Windows Qt Deployment")
 message(STATUS "========================================")
 message(STATUS "Install Prefix  : ${INSTALL_PREFIX}")
 message(STATUS "Deploy Dir      : ${DEPLOY_DIR}")
-message(STATUS "Source Dir      : ${TEMPLATE_TOOL_SOURCE_DIR}")
-message(STATUS "ThirdParty Dir  : ${THIRDPARTY_DIR}")
+message(STATUS "Config          : ${BUILD_CONFIG_NAME}")
 message(STATUS "========================================")
 message(STATUS "")
 
 # ==========================================
-# Step 1: Copy Third-Party DLLs
+# Step 1: Finding Qt installation
 # ==========================================
-message(STATUS "[1/5] Copying third-party DLLs...")
-
-
-set(THIRDPARTY_DLLS
-    "${THIRDPARTY_DIR}/openssl/windows/x64/bin/libcrypto-1_1-x64.dll"
-    "${THIRDPARTY_DIR}/openssl/windows/x64/bin/libssl-1_1-x64.dll"
-    "${THIRDPARTY_DIR}/opencv/windows/x64/vc16/bin/opencv_world4120.dll"
-    "${THIRDPARTY_DIR}/curl/curl/windows/x64/release/bin/libcurl.dll"
-)
-
-set(COPIED_COUNT 0)
-set(SKIPPED_COUNT 0)
-set(FAILED_COUNT 0)
-
-foreach(dll ${THIRDPARTY_DLLS})
-    if(NOT EXISTS "${dll}")
-        get_filename_component(dll_name "${dll}" NAME)
-        message(STATUS "  ⊘ Skipped: ${dll_name} (not found)")
-        math(EXPR SKIPPED_COUNT "${SKIPPED_COUNT} + 1")
-        continue()
-    endif()
-    
-    get_filename_component(dll_name "${dll}" NAME)
-    
-    # Skip system DLLs
-    if(dll_name MATCHES "^(msvcp|vcruntime|ucrtbase|concrt)")
-        message(STATUS "  ⊘ Skipped: ${dll_name} (system DLL)")
-        math(EXPR SKIPPED_COUNT "${SKIPPED_COUNT} + 1")
-        continue()
-    endif()
-    
-    set(dest "${DEPLOY_DIR}/${dll_name}")
-    
-    # Remove existing file
-    if(EXISTS "${dest}")
-        file(REMOVE "${dest}")
-    endif()
-    
-    # Copy DLL
-    file(COPY "${dll}" DESTINATION "${DEPLOY_DIR}")
-    
-    if(EXISTS "${dest}")
-        message(STATUS "  ✓ Copied: ${dll_name}")
-        math(EXPR COPIED_COUNT "${COPIED_COUNT} + 1")
-    else()
-        message(STATUS "  ✗ Failed: ${dll_name}")
-        math(EXPR FAILED_COUNT "${FAILED_COUNT} + 1")
-    endif()
-endforeach()
-
-message(STATUS "")
-message(STATUS "Third-party DLLs Summary:")
-message(STATUS "  Copied  : ${COPIED_COUNT}")
-message(STATUS "  Skipped : ${SKIPPED_COUNT}")
-message(STATUS "  Failed  : ${FAILED_COUNT}")
-message(STATUS "")
-
-# ==========================================
-# Step 2: Project DLLs are already in bin/
-# ==========================================
-message(STATUS "[2/5] Project DLLs are already in bin/")
-
-file(GLOB PROJECT_DLLS "${DEPLOY_DIR}/*.dll")
-list(LENGTH PROJECT_DLLS PROJECT_DLL_COUNT)
-message(STATUS "  ✓ Found ${PROJECT_DLL_COUNT} project DLLs in bin/")
-
-# ==========================================
-# Step 3: Finding Qt installation
-# ==========================================
-message(STATUS "[3/5] Finding Qt installation...")
+message(STATUS "[1/3] Finding Qt installation...")
 
 set(QT_DIR "$ENV{Qt6_DIR}")
 
 if(NOT QT_DIR)
-    set(CACHE_FILE "${CMAKE_BINARY_DIR}/CMakeCache.txt")
+    set(CACHE_FILE "${TEMPLATE_TOOL_BINARY_DIR}/CMakeCache.txt")
     if(EXISTS "${CACHE_FILE}")
         file(STRINGS "${CACHE_FILE}" QT6_DIR_LINE REGEX "Qt6_DIR:PATH=")
         if(QT6_DIR_LINE)
@@ -109,7 +38,7 @@ if(NOT QT_DIR)
 endif()
 
 if(NOT QT_DIR)
-    message(WARNING "Qt6_DIR not found, skipping windeployqt")
+    message(WARNING "  Qt6_DIR not found, skipping windeployqt")
     return()
 endif()
 
@@ -122,17 +51,19 @@ set(WINDEPLOYQT "${QT_ROOT}/bin/windeployqt.exe")
 file(TO_NATIVE_PATH "${WINDEPLOYQT}" WINDEPLOYQT)
 
 if(NOT EXISTS "${WINDEPLOYQT}")
-    message(WARNING "windeployqt.exe not found at: ${WINDEPLOYQT}")
+    message(WARNING "  windeployqt.exe not found at: ${WINDEPLOYQT}")
     return()
 endif()
 
 message(STATUS "  ✓ Found Qt at: ${QT_ROOT}")
 message(STATUS "  ✓ Found windeployqt: ${WINDEPLOYQT}")
 
+message(STATUS "")
+
 # ==========================================
-# Step 4: Running windeployqt
+# Step 2: Running windeployqt
 # ==========================================
-message(STATUS "[4/5] Running windeployqt...")
+message(STATUS "[2/3] Running windeployqt...")
 
 # Find QML source directory
 set(QML_SOURCE_DIR "${TEMPLATE_TOOL_SOURCE_DIR}/product/application/qt")
@@ -191,10 +122,12 @@ foreach(UI_DLL ${UI_DLLS})
     endif()
 endforeach()
 
+message(STATUS "")
+
 # ==========================================
-# Step 5: Checking deployment results
+# Step 3: Checking deployment results
 # ==========================================
-message(STATUS "[5/5] Checking deployment results...")
+message(STATUS "[3/3] Checking deployment results...")
 
 file(GLOB ALL_DLLS "${DEPLOY_DIR}/*.dll")
 list(LENGTH ALL_DLLS TOTAL_DLL_COUNT)

@@ -77,9 +77,11 @@ void ApplicationRunner::DataPrivate::initLogger()
                     );
 #if defined(_DEBUG)
     auto consoleLogger = std::make_shared<ucf::utilities::ConsoleLoggerConfig>(mApplicationConfig.appLogConfig.logLevel, mApplicationConfig.appLogConfig.loggerName);
-	UCF_LOG_INIT({fileLogger, consoleLogger});
+    std::vector<std::shared_ptr<ucf::utilities::LoggerConfig>> logConfigs = {fileLogger, consoleLogger};
+    UCF_LOG_INIT(logConfigs);
 #else
-	UCF_LOG_INIT({fileLogger});
+    std::vector<std::shared_ptr<ucf::utilities::LoggerConfig>> logConfigs = {fileLogger};
+    UCF_LOG_INIT(logConfigs);
 #endif
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");

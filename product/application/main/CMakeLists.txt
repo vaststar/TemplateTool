@@ -74,7 +74,11 @@ if(APPLE)
         EXPORT ${MAIN_ENTRY}Targets
         BUNDLE DESTINATION bin
     )
-    install(CODE "set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")")
+    install(CODE "
+        set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
+        set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
+        set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
+    ")
     install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_macosx.cmake")
     message(STATUS "  Install: bin/${MAIN_ENTRY}.app + post_install_macosx.cmake")
 
@@ -83,7 +87,11 @@ elseif(WIN32)
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
-    install(CODE "set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")")
+    install(CODE "
+        set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
+        set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
+        set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
+    ")
     install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_windows.cmake")
     message(STATUS "  Install: bin/ + post_install_windows.cmake")
 

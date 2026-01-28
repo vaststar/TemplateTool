@@ -1,26 +1,31 @@
-# iOS curl library
-# curl version: 8.5.0
-# SSL backend: Secure Transport (iOS native)
-# Device: arm64
-# Simulator: arm64 + x86_64 (Universal Binary)
+# =============================================================================
+# libcurl - iOS Platform
+# =============================================================================
 
-add_library(libcurl STATIC IMPORTED GLOBAL)
+set(CURL_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Determine which library to use based on SDK
-if(CMAKE_OSX_SYSROOT MATCHES ".*iPhoneSimulator.*" OR CMAKE_OSX_SYSROOT MATCHES ".*iphonesimulator.*")
-    set(CURL_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/simulator/lib/libcurl.a")
-else()
-    set(CURL_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/device/lib/libcurl.a")
+# iOS uses XCFramework
+set(CURL_XCFRAMEWORK "${CURL_ROOT}/libcurl.xcframework")
+
+if(NOT EXISTS "${CURL_XCFRAMEWORK}")
+    message(FATAL_ERROR "[libcurl] XCFramework not found: ${CURL_XCFRAMEWORK}")
 endif()
 
-set_target_properties(libcurl PROPERTIES
-    IMPORTED_LOCATION "${CURL_LIB_PATH}"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include"
-)
+# Find include directory
+set(CURL_INCLUDE "${CURL_ROOT}/include")
+if(NOT EXISTS "${CURL_INCLUDE}/curl/curl.h")
+    message(FATAL_ERROR "[libcurl] Headers not found in ${CURL_INCLUDE}")
+endif()
 
-# Link required iOS frameworks for Secure Transport SSL
-target_link_libraries(libcurl INTERFACE
-    "-framework Security"
-    "-framework CoreFoundation"
-    "-framework SystemConfiguration"
-)
+message(STATUS "[libcurl] iOS")
+message(STATUS "[libcurl] XCFramework: ${CURL_XCFRAMEWORK}")
+message(STATUS "[libcurl] Include: ${CURL_INCLUDE}")
+
+# Create interface library for iOS
+# XCFramework is handled by Xcode automatically
+add_library(curl INTERFACE)
+target_include_directories(curl INTERFACE "${CURL_INCLUDE}")
+
+# Link the xcframework
+# For CMake to properly link xcframework, we need to use the framework path
+target_link_libraries(curl INTERFACE "${CURL_XCFRAMEWORK}")
