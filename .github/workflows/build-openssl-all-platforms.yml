@@ -263,7 +263,7 @@ jobs:
             min_version: "13.0"
           - platform: iphonesimulator
             arch: x86_64
-            openssl_target: iossimulator-xcrun
+            openssl_target: iossimulator-x86_64-xcrun
             min_version: "13.0"
     
     steps:
