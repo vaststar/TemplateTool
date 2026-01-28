@@ -11,7 +11,7 @@ on:
       platforms:
         description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'
         required: true
-        default: 'windows,macos,ios,android'
+        default: 'windows,macos,ios,android,linux'
         type: string
 
 env:
@@ -142,14 +142,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-13
+          - os: macos-15
             arch: x86_64
             openssl_target: darwin64-x86_64-cc
             platform_name: intel
-          - os: macos-14
+            cross_compile: true
+          - os: macos-15
             arch: arm64
             openssl_target: darwin64-arm64-cc
             platform_name: arm
+            cross_compile: false
     
     runs-on: ${{ matrix.os }}
     
@@ -166,6 +168,13 @@ jobs:
       - name: Build static library
         run: |
           cd openssl_src
+          
+          # For x86_64 cross-compilation on arm64 macOS
+          if [ "${{ matrix.cross_compile }}" = "true" ]; then
+            export CFLAGS="-arch x86_64"
+            export LDFLAGS="-arch x86_64"
+          fi
+          
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install_static \
             --openssldir=$PWD/../openssl_install_static/ssl \
@@ -179,6 +188,13 @@ jobs:
         run: |
           cd openssl_src
           make clean
+          
+          # For x86_64 cross-compilation on arm64 macOS
+          if [ "${{ matrix.cross_compile }}" = "true" ]; then
+            export CFLAGS="-arch x86_64"
+            export LDFLAGS="-arch x86_64"
+          fi
+          
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install_shared \
             --openssldir=$PWD/../openssl_install_shared/ssl \
