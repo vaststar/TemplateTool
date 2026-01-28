@@ -169,6 +169,12 @@ jobs:
         run: |
           mkdir -p opencv_build
           cd opencv_build
+          # Disable kleidicv for x86_64 (it's ARM NEON only)
+          EXTRA_FLAGS=""
+          if [ "${{ matrix.arch }}" = "x86_64" ]; then
+            EXTRA_FLAGS="-DWITH_KLEIDICV=OFF"
+          fi
+          
           cmake ../opencv_src \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
@@ -187,7 +193,8 @@ jobs:
             -DWITH_FFMPEG=ON \
             -DWITH_CUDA=OFF \
             -DWITH_OPENCL=ON \
-            -DOPENCV_ENABLE_NONFREE=OFF
+            -DOPENCV_ENABLE_NONFREE=OFF \
+            $EXTRA_FLAGS
       
       - name: Build OpenCV
         run: cmake --build opencv_build --parallel $(sysctl -n hw.ncpu)
