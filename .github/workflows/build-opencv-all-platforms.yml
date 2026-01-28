@@ -501,7 +501,7 @@ jobs:
   # ============================================================================
   build-linux:
     if: contains(github.event.inputs.platforms, 'linux')
-    runs-on: ubuntu-20.04  # Use older Ubuntu for better glibc compatibility
+    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 for better runner availability
     
     steps:
       - name: Checkout repository
