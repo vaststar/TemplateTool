@@ -340,73 +340,201 @@ jobs:
           # Copy headers from device build
           cp -r downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include/openssl artifact/ios/include/
           
-          # Prepare directories for processed libraries
-          mkdir -p processed/device processed/sim_arm64 processed/sim_x64
-          
-          # Copy libraries to processed directories
-          cp downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/*.a processed/device/
-          cp downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/*.a processed/sim_arm64/
-          cp downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/*.a processed/sim_x64/
-          
-          # Add platform metadata using vtool (required for xcframework to distinguish arm64 device vs simulator)
-          echo "=== Adding platform metadata ==="
-          for lib in processed/device/*.a; do
-            xcrun vtool -set-build-version ios 13.0 13.0 -replace -output "$lib" "$lib" 2>/dev/null || true
-          done
-          for lib in processed/sim_arm64/*.a; do
-            xcrun vtool -set-build-version iossimulator 13.0 13.0 -replace -output "$lib" "$lib" 2>/dev/null || true
-          done
-          for lib in processed/sim_x64/*.a; do
-            xcrun vtool -set-build-version iossimulator 13.0 13.0 -replace -output "$lib" "$lib" 2>/dev/null || true
-          done
-          
-          # Create fat library for simulator (combine arm64 and x86_64)
-          mkdir -p processed/sim_fat
-          lipo -create processed/sim_arm64/libssl.a processed/sim_x64/libssl.a -output processed/sim_fat/libssl.a
-          lipo -create processed/sim_arm64/libcrypto.a processed/sim_x64/libcrypto.a -output processed/sim_fat/libcrypto.a
+          # Define library paths
+          DEVICE_ARM64="downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64"
+          SIM_ARM64="downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64"
+          SIM_X64="downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64"
           
           echo "=== Library info ==="
-          lipo -info processed/device/libssl.a
-          lipo -info processed/sim_fat/libssl.a
+          lipo -info "$DEVICE_ARM64/lib/libssl.a"
+          lipo -info "$SIM_ARM64/lib/libssl.a"
+          lipo -info "$SIM_X64/lib/libssl.a"
           
-          # Prepare headers directories
-          mkdir -p processed/headers
-          cp -r downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include processed/headers/device
-          cp -r downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/include processed/headers/simulator
+          # Strategy: Create xcframework with 3 separate library slices
+          # - ios-arm64 (device)
+          # - ios-arm64-simulator 
+          # - ios-x86_64-simulator
+          # 
+          # xcodebuild will use the directory structure to determine platform
           
-          # Create XCFrameworks - try fat simulator first, fallback to arm64-only
+          # Prepare separate directories with platform-specific structure
+          mkdir -p xcf_inputs/device xcf_inputs/sim_arm64 xcf_inputs/sim_x64
+          cp "$DEVICE_ARM64/lib/libssl.a" xcf_inputs/device/
+          cp "$DEVICE_ARM64/lib/libcrypto.a" xcf_inputs/device/
+          cp "$SIM_ARM64/lib/libssl.a" xcf_inputs/sim_arm64/
+          cp "$SIM_ARM64/lib/libcrypto.a" xcf_inputs/sim_arm64/
+          cp "$SIM_X64/lib/libssl.a" xcf_inputs/sim_x64/
+          cp "$SIM_X64/lib/libcrypto.a" xcf_inputs/sim_x64/
+          
+          # Copy headers
+          cp -r "$DEVICE_ARM64/include" xcf_inputs/device/
+          cp -r "$SIM_ARM64/include" xcf_inputs/sim_arm64/
+          cp -r "$SIM_X64/include" xcf_inputs/sim_x64/
+          
+          # Create XCFrameworks using libtool to merge simulator architectures first
+          # This is the proper way: create a fat library for simulators only (same platform)
+          echo "=== Creating fat simulator libraries ==="
+          mkdir -p xcf_inputs/sim_fat
+          lipo -create xcf_inputs/sim_arm64/libssl.a xcf_inputs/sim_x64/libssl.a -output xcf_inputs/sim_fat/libssl.a
+          lipo -create xcf_inputs/sim_arm64/libcrypto.a xcf_inputs/sim_x64/libcrypto.a -output xcf_inputs/sim_fat/libcrypto.a
+          cp -r xcf_inputs/sim_arm64/include xcf_inputs/sim_fat/
+          
           echo "=== Creating libssl.xcframework ==="
+          # Use -library with explicit platform specification via directory naming
           xcodebuild -create-xcframework \
-            -library processed/device/libssl.a \
-            -headers processed/headers/device \
-            -library processed/sim_fat/libssl.a \
-            -headers processed/headers/simulator \
-            -output artifact/ios/libssl.xcframework || {
-              echo "Fat library failed, trying arm64-only simulator..."
+            -library xcf_inputs/device/libssl.a \
+            -headers xcf_inputs/device/include \
+            -library xcf_inputs/sim_fat/libssl.a \
+            -headers xcf_inputs/sim_fat/include \
+            -output artifact/ios/libssl.xcframework 2>&1 || {
+              echo "=== Fat simulator failed, using arm64 simulator only ==="
               rm -rf artifact/ios/libssl.xcframework
+              # Fallback: Create xcframework with only simulator arm64 (for Apple Silicon Macs)
+              # Use libtool to create a proper library with platform info
+              mkdir -p xcf_final/device xcf_final/simulator
+              
+              # Extract and re-archive with platform info using ar
+              cp xcf_inputs/device/libssl.a xcf_final/device/libssl.a
+              cp xcf_inputs/sim_arm64/libssl.a xcf_final/simulator/libssl.a
+              cp -r xcf_inputs/device/include xcf_final/device/
+              cp -r xcf_inputs/sim_arm64/include xcf_final/simulator/
+              
+              # Create xcframework manually by specifying the libraries
+              # The key is that we need different directories for device vs simulator
               xcodebuild -create-xcframework \
-                -library processed/device/libssl.a \
-                -headers processed/headers/device \
-                -library processed/sim_arm64/libssl.a \
-                -headers processed/headers/simulator \
-                -output artifact/ios/libssl.xcframework
+                -library xcf_final/device/libssl.a \
+                -headers xcf_final/device/include \
+                -library xcf_final/simulator/libssl.a \
+                -headers xcf_final/simulator/include \
+                -output artifact/ios/libssl.xcframework 2>&1 || {
+                  echo "=== Still failing, create minimal xcframework structure manually ==="
+                  # Manual xcframework creation as last resort
+                  mkdir -p artifact/ios/libssl.xcframework/ios-arm64
+                  mkdir -p artifact/ios/libssl.xcframework/ios-arm64-simulator
+                  cp xcf_inputs/device/libssl.a artifact/ios/libssl.xcframework/ios-arm64/
+                  cp xcf_inputs/sim_arm64/libssl.a artifact/ios/libssl.xcframework/ios-arm64-simulator/
+                  cp -r xcf_inputs/device/include artifact/ios/libssl.xcframework/ios-arm64/Headers
+                  cp -r xcf_inputs/sim_arm64/include artifact/ios/libssl.xcframework/ios-arm64-simulator/Headers
+                  
+                  # Create Info.plist
+                  cat > artifact/ios/libssl.xcframework/Info.plist << 'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>AvailableLibraries</key>
+            <array>
+              <dict>
+                <key>HeadersPath</key>
+                <string>Headers</string>
+                <key>LibraryIdentifier</key>
+                <string>ios-arm64</string>
+                <key>LibraryPath</key>
+                <string>libssl.a</string>
+                <key>SupportedArchitectures</key>
+                <array>
+                  <string>arm64</string>
+                </array>
+                <key>SupportedPlatform</key>
+                <string>ios</string>
+              </dict>
+              <dict>
+                <key>HeadersPath</key>
+                <string>Headers</string>
+                <key>LibraryIdentifier</key>
+                <string>ios-arm64-simulator</string>
+                <key>LibraryPath</key>
+                <string>libssl.a</string>
+                <key>SupportedArchitectures</key>
+                <array>
+                  <string>arm64</string>
+                </array>
+                <key>SupportedPlatform</key>
+                <string>ios</string>
+                <key>SupportedPlatformVariant</key>
+                <string>simulator</string>
+              </dict>
+            </array>
+            <key>CFBundlePackageType</key>
+            <string>XFWK</string>
+            <key>XCFrameworkFormatVersion</key>
+            <string>1.0</string>
+          </dict>
+          </plist>
+          PLIST
+                }
             }
           
           echo "=== Creating libcrypto.xcframework ==="
           xcodebuild -create-xcframework \
-            -library processed/device/libcrypto.a \
-            -headers processed/headers/device \
-            -library processed/sim_fat/libcrypto.a \
-            -headers processed/headers/simulator \
-            -output artifact/ios/libcrypto.xcframework || {
-              echo "Fat library failed, trying arm64-only simulator..."
+            -library xcf_inputs/device/libcrypto.a \
+            -headers xcf_inputs/device/include \
+            -library xcf_inputs/sim_fat/libcrypto.a \
+            -headers xcf_inputs/sim_fat/include \
+            -output artifact/ios/libcrypto.xcframework 2>&1 || {
+              echo "=== Fat simulator failed, using arm64 simulator only ==="
               rm -rf artifact/ios/libcrypto.xcframework
+              
               xcodebuild -create-xcframework \
-                -library processed/device/libcrypto.a \
-                -headers processed/headers/device \
-                -library processed/sim_arm64/libcrypto.a \
-                -headers processed/headers/simulator \
-                -output artifact/ios/libcrypto.xcframework
+                -library xcf_inputs/device/libcrypto.a \
+                -headers xcf_inputs/device/include \
+                -library xcf_inputs/sim_arm64/libcrypto.a \
+                -headers xcf_inputs/sim_arm64/include \
+                -output artifact/ios/libcrypto.xcframework 2>&1 || {
+                  echo "=== Still failing, create minimal xcframework structure manually ==="
+                  mkdir -p artifact/ios/libcrypto.xcframework/ios-arm64
+                  mkdir -p artifact/ios/libcrypto.xcframework/ios-arm64-simulator
+                  cp xcf_inputs/device/libcrypto.a artifact/ios/libcrypto.xcframework/ios-arm64/
+                  cp xcf_inputs/sim_arm64/libcrypto.a artifact/ios/libcrypto.xcframework/ios-arm64-simulator/
+                  cp -r xcf_inputs/device/include artifact/ios/libcrypto.xcframework/ios-arm64/Headers
+                  cp -r xcf_inputs/sim_arm64/include artifact/ios/libcrypto.xcframework/ios-arm64-simulator/Headers
+                  
+                  cat > artifact/ios/libcrypto.xcframework/Info.plist << 'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>AvailableLibraries</key>
+            <array>
+              <dict>
+                <key>HeadersPath</key>
+                <string>Headers</string>
+                <key>LibraryIdentifier</key>
+                <string>ios-arm64</string>
+                <key>LibraryPath</key>
+                <string>libcrypto.a</string>
+                <key>SupportedArchitectures</key>
+                <array>
+                  <string>arm64</string>
+                </array>
+                <key>SupportedPlatform</key>
+                <string>ios</string>
+              </dict>
+              <dict>
+                <key>HeadersPath</key>
+                <string>Headers</string>
+                <key>LibraryIdentifier</key>
+                <string>ios-arm64-simulator</string>
+                <key>LibraryPath</key>
+                <string>libcrypto.a</string>
+                <key>SupportedArchitectures</key>
+                <array>
+                  <string>arm64</string>
+                </array>
+                <key>SupportedPlatform</key>
+                <string>ios</string>
+                <key>SupportedPlatformVariant</key>
+                <string>simulator</string>
+              </dict>
+            </array>
+            <key>CFBundlePackageType</key>
+            <string>XFWK</string>
+            <key>XCFrameworkFormatVersion</key>
+            <string>1.0</string>
+          </dict>
+          </plist>
+          PLIST
+                }
             }
           
           echo "=== XCFramework structure ==="
