@@ -217,37 +217,13 @@ jobs:
           mkdir -p artifact/macosx/${{ matrix.platform_name }}/lib/cmake/opencv4
           cp -r opencv_install/lib/cmake/opencv4/* artifact/macosx/${{ matrix.platform_name }}/lib/cmake/opencv4/
           
-          # Fix install names and dependencies to use @rpath
-          cd artifact/macosx/${{ matrix.platform_name }}/lib
-          for f in *.dylib; do
-            if [ -f "$f" ]; then
-              # Fix the library's own install name
-              install_name_tool -id "@rpath/$f" "$f" 2>/dev/null || true
-              
-              # Fix dependencies that reference absolute CI runner paths
-              otool -L "$f" 2>/dev/null | grep -E "^\s+/" | awk '{print $1}' | while read dep; do
-                dep_basename=$(basename "$dep")
-                case "$dep" in
-                  /Users/runner/*|/home/runner/*)
-                    echo "Fixing dependency in $f: $dep -> @rpath/$dep_basename"
-                    install_name_tool -change "$dep" "@rpath/$dep_basename" "$f" 2>/dev/null || true
-                    ;;
-                esac
-              done
-            fi
-          done
-          
-          # Verify fixes were applied
-          echo "=== Verifying dylib dependencies ==="
-          for f in *.dylib; do
-            if [ -f "$f" ]; then
-              echo "--- $f ---"
-              otool -L "$f" 2>/dev/null | head -10
-            fi
-          done
-          
           echo "=== Built files ==="
-          find ../../../ -type f
+          find artifact -type f
+      
+      - name: Fix macOS RPATH
+        uses: ./.github/actions/fix-macos-rpath
+        with:
+          lib-path: artifact/macosx/${{ matrix.platform_name }}/lib
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -503,39 +479,17 @@ jobs:
           # Copy native libraries (.so files)
           find opencv_install -name "*.so" -exec cp {} artifact/android/libs/$ABI/ \;
           
-          # Fix NEEDED entries - remove absolute paths from dependencies
-          cd artifact/android/libs/$ABI
-          for f in *.so; do
-            if [ -f "$f" ] && [ ! -L "$f" ]; then
-              echo "Checking NEEDED entries for $f"
-              patchelf --print-needed "$f" 2>/dev/null | while read needed; do
-                case "$needed" in
-                  /*)
-                    needed_basename=$(basename "$needed")
-                    echo "  Fixing: $needed -> $needed_basename"
-                    patchelf --replace-needed "$needed" "$needed_basename" "$f" 2>/dev/null || true
-                    ;;
-                esac
-              done
-              patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true
-            fi
-          done
-          
-          echo "=== Verifying NEEDED entries ==="
-          for f in *.so; do
-            if [ -f "$f" ] && [ ! -L "$f" ]; then
-              echo "--- $f ---"
-              patchelf --print-needed "$f" 2>/dev/null || true
-            fi
-          done
-          cd ../../../..
-          
           # Copy Java libraries if exist
           find opencv_install -name "*.jar" -exec cp {} artifact/android/libs/ \; 2>/dev/null || true
           find opencv_install -name "*.aar" -exec cp {} artifact/android/libs/ \; 2>/dev/null || true
           
           echo "=== Built files ==="
           find artifact -type f
+      
+      - name: Fix Android RPATH
+        uses: ./.github/actions/fix-android-rpath
+        with:
+          lib-path: artifact/android/libs/${{ matrix.abi }}
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -608,32 +562,27 @@ jobs:
           # Copy libraries
           cp opencv_install/lib/*.so* artifact/linux/x64/lib/
           
-          # Fix RPATH to use $ORIGIN for portable deployment
-          cd artifact/linux/x64/lib
-          for f in *.so*; do
-            if [ -f "$f" ] && [ ! -L "$f" ]; then
-              echo "Fixing RPATH for $f"
-              patchelf --set-rpath '$ORIGIN' "$f" 2>/dev/null || true
-            fi
-          done
-          
-          # Verify RPATH fixes
-          echo "=== Verifying RPATH ==="
-          for f in *.so; do
-            if [ -f "$f" ] && [ ! -L "$f" ]; then
-              echo "--- $f ---"
-              patchelf --print-rpath "$f" 2>/dev/null || true
-            fi
-          done
-          cd ../../..
-          
-          # Copy cmake config
+          # Copy cmake config (check multiple possible locations)
           mkdir -p artifact/linux/x64/lib/cmake/opencv4
-          cp -r opencv_install/lib/cmake/opencv4/* artifact/linux/x64/lib/cmake/opencv4/
+          if [ -d "opencv_install/lib/cmake/opencv4" ]; then
+            cp -r opencv_install/lib/cmake/opencv4/* artifact/linux/x64/lib/cmake/opencv4/
+          elif [ -d "opencv_install/lib64/cmake/opencv4" ]; then
+            cp -r opencv_install/lib64/cmake/opencv4/* artifact/linux/x64/lib/cmake/opencv4/
+          elif [ -d "opencv_install/share/opencv4" ]; then
+            cp -r opencv_install/share/opencv4/* artifact/linux/x64/lib/cmake/opencv4/
+          else
+            echo "Warning: Could not find OpenCV cmake config, listing install directories:"
+            find opencv_install -name "*.cmake" 2>/dev/null | head -10 || true
+          fi
           
           echo "=== Built files ==="
           find artifact -type f
       
+      - name: Fix Linux RPATH
+        uses: ./.github/actions/fix-linux-rpath
+        with:
+          lib-path: artifact/linux/x64/lib
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -650,109 +599,16 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Merge all platform artifacts
+        uses: ./.github/actions/merge-artifacts
         with:
-          path: downloads/
-      
-      - name: Merge artifacts
-        run: |
-          mkdir -p merged
-          
-          echo "=== Downloaded artifacts ==="
-          ls -la downloads/
-          
-          # --- Merge Windows ---
-          for arch in x64 x86 arm64; do
-            if [ -d "downloads/opencv-windows-$arch" ]; then
-              echo "Processing Windows $arch..."
-              if [ ! -d "merged/windows/include" ]; then
-                # First arch: copy everything including headers
-                cp -r downloads/opencv-windows-$arch/windows/* merged/windows/ 2>/dev/null || \
-                mkdir -p merged/windows && cp -r downloads/opencv-windows-$arch/windows/* merged/windows/
-              else
-                # Subsequent archs: only copy arch-specific folder
-                cp -r downloads/opencv-windows-$arch/windows/$arch merged/windows/
-              fi
-            fi
-          done
-          
-          # --- Merge macOS ---
-          for platform in intel arm; do
-            if [ -d "downloads/opencv-macos-$platform" ]; then
-              echo "Processing macOS $platform..."
-              if [ ! -d "merged/macosx/include" ]; then
-                cp -r downloads/opencv-macos-$platform/macosx/* merged/macosx/ 2>/dev/null || \
-                mkdir -p merged/macosx && cp -r downloads/opencv-macos-$platform/macosx/* merged/macosx/
-              else
-                cp -r downloads/opencv-macos-$platform/macosx/$platform merged/macosx/
-              fi
-            fi
-          done
-          
-          # --- Copy iOS ---
-          if [ -d "downloads/opencv-ios" ]; then
-            echo "Processing iOS..."
-            cp -r downloads/opencv-ios/ios merged/
-          fi
-          
-          # --- Merge Android ---
-          for abi in arm64-v8a armeabi-v7a x86_64 x86; do
-            if [ -d "downloads/opencv-android-$abi" ]; then
-              echo "Processing Android $abi..."
-              if [ ! -d "merged/android/include" ]; then
-                cp -r downloads/opencv-android-$abi/android/* merged/android/ 2>/dev/null || \
-                mkdir -p merged/android && cp -r downloads/opencv-android-$abi/android/* merged/android/
-              else
-                cp -r downloads/opencv-android-$abi/android/libs/$abi merged/android/libs/
-              fi
-            fi
-          done
-          
-          # --- Copy Linux ---
-          if [ -d "downloads/opencv-linux-x64" ]; then
-            echo "Processing Linux..."
-            cp -r downloads/opencv-linux-x64/linux merged/
-          fi
-          
-          echo ""
-          echo "=== Final structure ==="
-          find merged -type d | sort
-          echo ""
-          echo "=== File count per platform ==="
-          for dir in merged/*/; do
-            if [ -d "$dir" ]; then
-              platform_name=$(basename "$dir")
-              file_count=$(find "$dir" -type f | wc -l)
-              echo "$platform_name: $file_count files"
-            fi
-          done
-      
-      - name: Create archives
-        run: |
-          VERSION="${{ github.event.inputs.opencv_version }}"
-          
-          cd merged
-          
-          # Create per-platform archives
-          for platform in */; do
-            if [ -d "$platform" ]; then
-              platform_name=${platform%/}
-              echo "Creating archive for $platform_name..."
-              zip -rq "../opencv-${VERSION}-${platform_name}.zip" "$platform_name/"
-            fi
-          done
-          
-          # Create combined archive
-          cd ..
-          zip -rq "opencv-${VERSION}-all-platforms.zip" merged/
-          
-          echo "=== Created archives ==="
-          ls -lh opencv-*.zip
-      
-      - name: Upload combined artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: opencv-all-platforms
-          path: opencv-*.zip
-          retention-days: 90
+          library-name: opencv
+          version: ${{ github.event.inputs.opencv_version }}
+          windows-archs: 'x64,x86,arm64'
+          macos-platforms: 'intel,arm'
+          android-abis: 'arm64-v8a,armeabi-v7a,x86_64,x86'
+          has-ios: 'true'
+          has-linux: 'true'

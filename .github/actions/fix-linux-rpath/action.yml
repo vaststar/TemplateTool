@@ -1,0 +1,110 @@
+name: 'Fix Linux RPATH'
+description: 'Fix shared library RPATH to use $ORIGIN for portable deployment'
+
+inputs:
+  lib-path:
+    description: 'Path to directory containing .so files'
+    required: true
+  bin-path:
+    description: 'Path to directory containing executable files (optional)'
+    required: false
+    default: ''
+  lib-rpath:
+    description: 'RPATH value for libraries'
+    required: false
+    default: '$ORIGIN'
+  bin-rpath:
+    description: 'RPATH value for binaries'
+    required: false
+    default: '$ORIGIN/../lib'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Fix library RPATH
+      shell: bash
+      run: |
+        LIB_PATH="${{ inputs.lib-path }}"
+        LIB_RPATH="${{ inputs.lib-rpath }}"
+        
+        echo "::group::Fixing RPATH in $LIB_PATH"
+        
+        if [ ! -d "$LIB_PATH" ]; then
+          echo "::warning::Library path does not exist: $LIB_PATH"
+          exit 0
+        fi
+        
+        cd "$LIB_PATH"
+        
+        FIXED_COUNT=0
+        ERROR_COUNT=0
+        
+        for f in *.so *.so.*; do
+          if [ -f "$f" ] && [ ! -L "$f" ]; then
+            echo "Fixing RPATH for $f"
+            if patchelf --set-rpath "$LIB_RPATH" "$f" 2>&1; then
+              FIXED_COUNT=$((FIXED_COUNT + 1))
+            else
+              echo "::warning::Failed to fix RPATH for $f"
+              ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+          fi
+        done
+        
+        echo "✅ Fixed: $FIXED_COUNT files, ⚠️ Errors: $ERROR_COUNT"
+        echo "::endgroup::"
+
+    - name: Fix binary RPATH
+      shell: bash
+      run: |
+        BIN_PATH="${{ inputs.bin-path }}"
+        BIN_RPATH="${{ inputs.bin-rpath }}"
+        
+        if [ -n "$BIN_PATH" ] && [ -d "$BIN_PATH" ]; then
+          echo "::group::Fixing binary RPATH in $BIN_PATH"
+          cd "$BIN_PATH"
+          
+          for f in *; do
+            if [ -f "$f" ] && [ -x "$f" ] && [ ! -L "$f" ]; then
+              echo "Fixing RPATH for binary: $f"
+              if patchelf --set-rpath "$BIN_RPATH" "$f" 2>&1; then
+                echo "  Set RPATH to: $BIN_RPATH"
+              else
+                echo "::warning::Failed to set RPATH for binary $f"
+              fi
+            fi
+          done
+          
+          echo "::endgroup::"
+        fi
+
+    - name: Verify fixes
+      shell: bash
+      run: |
+        LIB_PATH="${{ inputs.lib-path }}"
+        
+        echo "::group::Verifying RPATH"
+        
+        if [ -d "$LIB_PATH" ]; then
+          cd "$LIB_PATH"
+          
+          ALL_GOOD=true
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              RPATH=$(patchelf --print-rpath "$f" 2>/dev/null || true)
+              echo "$f: RPATH=$RPATH"
+              
+              # Verify RPATH is set correctly
+              if [ -z "$RPATH" ]; then
+                echo "::warning::$f has empty RPATH"
+                ALL_GOOD=false
+              fi
+            fi
+          done
+          
+          if [ "$ALL_GOOD" = "true" ]; then
+            echo "✅ All libraries have RPATH set"
+          fi
+        fi
+        
+        echo "::endgroup::"

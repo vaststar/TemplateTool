@@ -1,0 +1,92 @@
+name: 'Fix Android RPATH'
+description: 'Fix Android shared library NEEDED entries and RPATH for portable deployment'
+
+inputs:
+  lib-path:
+    description: 'Path to directory containing .so files'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Fix NEEDED entries and RPATH
+      shell: bash
+      run: |
+        LIB_PATH="${{ inputs.lib-path }}"
+        
+        echo "::group::Fixing Android .so files in $LIB_PATH"
+        
+        if [ ! -d "$LIB_PATH" ]; then
+          echo "::warning::Library path does not exist: $LIB_PATH"
+          exit 0
+        fi
+        
+        cd "$LIB_PATH"
+        
+        FIXED_COUNT=0
+        ERROR_COUNT=0
+        
+        for f in *.so *.so.*; do
+          if [ -f "$f" ] && [ ! -L "$f" ]; then
+            echo "Processing: $f"
+            
+            # Fix NEEDED entries - remove absolute paths from dependencies
+            patchelf --print-needed "$f" 2>/dev/null | while read needed; do
+              case "$needed" in
+                /*)
+                  # Has absolute path, replace with basename only
+                  needed_basename=$(basename "$needed")
+                  echo "  Fixing NEEDED: $needed -> $needed_basename"
+                  patchelf --replace-needed "$needed" "$needed_basename" "$f" 2>&1 || \
+                    echo "::warning::Failed to fix NEEDED $needed in $f"
+                  ;;
+              esac
+            done
+            
+            # Set RPATH for Android API 24+ (supports $ORIGIN)
+            if patchelf --set-rpath '$ORIGIN' "$f" 2>&1; then
+              FIXED_COUNT=$((FIXED_COUNT + 1))
+            else
+              echo "::warning::Failed to set RPATH for $f"
+              ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+          fi
+        done
+        
+        echo "✅ Fixed: $FIXED_COUNT files, ⚠️ Errors: $ERROR_COUNT"
+        echo "::endgroup::"
+
+    - name: Verify fixes
+      shell: bash
+      run: |
+        LIB_PATH="${{ inputs.lib-path }}"
+        
+        echo "::group::Verifying NEEDED entries and RPATH"
+        
+        if [ -d "$LIB_PATH" ]; then
+          cd "$LIB_PATH"
+          
+          # Check for any remaining absolute paths in NEEDED
+          HAS_ABS_PATH=false
+          for f in *.so; do
+            if [ -f "$f" ] && [ ! -L "$f" ]; then
+              echo "--- $f ---"
+              NEEDED=$(patchelf --print-needed "$f" 2>/dev/null || true)
+              RPATH=$(patchelf --print-rpath "$f" 2>/dev/null || true)
+              echo "NEEDED: $NEEDED"
+              echo "RPATH: $RPATH"
+              
+              # Warn if any NEEDED still has absolute path
+              if echo "$NEEDED" | grep -q "^/"; then
+                echo "::warning::$f still has absolute path in NEEDED entries"
+                HAS_ABS_PATH=true
+              fi
+            fi
+          done
+          
+          if [ "$HAS_ABS_PATH" = "false" ]; then
+            echo "✅ All NEEDED entries are relative"
+          fi
+        fi
+        
+        echo "::endgroup::"

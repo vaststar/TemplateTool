@@ -1,0 +1,188 @@
+name: 'Merge Platform Artifacts'
+description: 'Download and merge artifacts from all platforms into a single package'
+
+inputs:
+  library-name:
+    description: 'Name of the library (e.g., openssl, libcurl, opencv)'
+    required: true
+  version:
+    description: 'Version of the library'
+    required: true
+  windows-archs:
+    description: 'Windows architectures (comma-separated, e.g., x64,x86,arm64)'
+    required: false
+    default: 'x64,x86,arm64'
+  macos-platforms:
+    description: 'macOS platforms (comma-separated, e.g., intel,arm)'
+    required: false
+    default: 'intel,arm'
+  android-abis:
+    description: 'Android ABIs (comma-separated)'
+    required: false
+    default: 'arm64-v8a,armeabi-v7a,x86_64,x86'
+  has-ios:
+    description: 'Whether iOS XCFramework is included'
+    required: false
+    default: 'true'
+  has-linux:
+    description: 'Whether Linux build is included'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: downloads/
+
+    - name: Merge artifacts
+      shell: bash
+      run: |
+        LIBRARY="${{ inputs.library-name }}"
+        VERSION="${{ inputs.version }}"
+        
+        mkdir -p merged
+        
+        echo "::group::Downloaded artifacts"
+        ls -la downloads/
+        echo "::endgroup::"
+        
+        # --- Merge Windows ---
+        echo "::group::Merging Windows artifacts"
+        WIN_COUNT=0
+        IFS=',' read -ra WIN_ARCHS <<< "${{ inputs.windows-archs }}"
+        for arch in "${WIN_ARCHS[@]}"; do
+          arch=$(echo "$arch" | xargs)  # trim whitespace
+          if [ -d "downloads/${LIBRARY}-windows-$arch" ]; then
+            echo "✓ Processing Windows $arch..."
+            mkdir -p merged/windows
+            cp -r downloads/${LIBRARY}-windows-$arch/windows/$arch merged/windows/ 2>/dev/null || \
+            cp -r downloads/${LIBRARY}-windows-$arch/windows/* merged/windows/ 2>/dev/null || true
+            WIN_COUNT=$((WIN_COUNT + 1))
+          else
+            echo "::notice::Windows $arch artifact not found (may have been skipped)"
+          fi
+        done
+        echo "Windows: $WIN_COUNT architectures merged"
+        echo "::endgroup::"
+        
+        # --- Merge macOS ---
+        echo "::group::Merging macOS artifacts"
+        MAC_COUNT=0
+        IFS=',' read -ra MAC_PLATFORMS <<< "${{ inputs.macos-platforms }}"
+        for platform in "${MAC_PLATFORMS[@]}"; do
+          platform=$(echo "$platform" | xargs)
+          if [ -d "downloads/${LIBRARY}-macos-$platform" ]; then
+            echo "✓ Processing macOS $platform..."
+            mkdir -p merged/macosx
+            cp -r downloads/${LIBRARY}-macos-$platform/macosx/$platform merged/macosx/ 2>/dev/null || true
+            MAC_COUNT=$((MAC_COUNT + 1))
+          else
+            echo "::notice::macOS $platform artifact not found (may have been skipped)"
+          fi
+        done
+        echo "macOS: $MAC_COUNT platforms merged"
+        echo "::endgroup::"
+        
+        # --- Copy iOS XCFramework ---
+        if [ "${{ inputs.has-ios }}" = "true" ]; then
+          echo "::group::Merging iOS artifacts"
+          if [ -d "downloads/${LIBRARY}-ios-xcframework" ]; then
+            echo "✓ Processing iOS XCFramework..."
+            cp -r downloads/${LIBRARY}-ios-xcframework/ios merged/ 2>/dev/null || true
+          else
+            echo "::warning::iOS XCFramework artifact not found"
+          fi
+          echo "::endgroup::"
+        fi
+        
+        # --- Merge Android ---
+        echo "::group::Merging Android artifacts"
+        ANDROID_COUNT=0
+        IFS=',' read -ra ANDROID_ABIS <<< "${{ inputs.android-abis }}"
+        for abi in "${ANDROID_ABIS[@]}"; do
+          abi=$(echo "$abi" | xargs)
+          if [ -d "downloads/${LIBRARY}-android-$abi" ]; then
+            echo "✓ Processing Android $abi..."
+            mkdir -p merged/android
+            cp -r downloads/${LIBRARY}-android-$abi/android/$abi merged/android/ 2>/dev/null || \
+            cp -r downloads/${LIBRARY}-android-$abi/android/* merged/android/ 2>/dev/null || true
+            ANDROID_COUNT=$((ANDROID_COUNT + 1))
+          else
+            echo "::notice::Android $abi artifact not found (may have been skipped)"
+          fi
+        done
+        echo "Android: $ANDROID_COUNT ABIs merged"
+        echo "::endgroup::"
+        
+        # --- Copy Linux ---
+        if [ "${{ inputs.has-linux }}" = "true" ]; then
+          echo "::group::Merging Linux artifacts"
+          if [ -d "downloads/${LIBRARY}-linux-x64" ]; then
+            echo "✓ Processing Linux x64..."
+            cp -r downloads/${LIBRARY}-linux-x64/linux merged/ 2>/dev/null || true
+          else
+            echo "::warning::Linux x64 artifact not found"
+          fi
+          echo "::endgroup::"
+        fi
+        
+        echo ""
+        echo "::group::Final structure"
+        find merged -type d | sort
+        echo ""
+        echo "=== Merge Summary ==="
+        TOTAL_PLATFORMS=0
+        for dir in merged/*/; do
+          if [ -d "$dir" ]; then
+            platform_name=$(basename "$dir")
+            file_count=$(find "$dir" -type f | wc -l)
+            echo "✓ $platform_name: $file_count files"
+            TOTAL_PLATFORMS=$((TOTAL_PLATFORMS + 1))
+          fi
+        done
+        echo ""
+        echo "📦 Total platforms: $TOTAL_PLATFORMS"
+        
+        if [ $TOTAL_PLATFORMS -eq 0 ]; then
+          echo "::error::No platforms were merged! Check if builds succeeded."
+          exit 1
+        fi
+        echo "::endgroup::"
+
+    - name: Create archives
+      shell: bash
+      run: |
+        LIBRARY="${{ inputs.library-name }}"
+        VERSION="${{ inputs.version }}"
+        
+        cd merged
+        
+        echo "::group::Creating archives"
+        
+        # Create per-platform archives
+        for platform in */; do
+          if [ -d "$platform" ]; then
+            platform_name=${platform%/}
+            echo "Creating archive for $platform_name..."
+            zip -rq "../${LIBRARY}-${VERSION}-${platform_name}.zip" "$platform_name/"
+          fi
+        done
+        
+        # Create combined archive
+        cd ..
+        zip -rq "${LIBRARY}-${VERSION}-all-platforms.zip" merged/
+        
+        echo "=== Created archives ==="
+        ls -lh ${LIBRARY}-*.zip
+        
+        echo "::endgroup::"
+
+    - name: Upload combined artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.library-name }}-all-platforms
+        path: ${{ inputs.library-name }}-*.zip
+        retention-days: 90
