@@ -425,7 +425,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: opencv-ios
+          name: opencv-ios-xcframework
           path: artifact/
           retention-days: 30
 
