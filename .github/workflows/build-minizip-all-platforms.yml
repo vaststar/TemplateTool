@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       minizip_version:
-        description: 'minizip-ng version (e.g., 4.0.7)'
+        description: 'minizip-ng version (e.g., 4.0.10)'
         required: true
-        default: '4.0.7'
+        default: '4.0.10'
         type: string
       zlib_version:
-        description: 'zlib-ng version for static linking (e.g., 2.2.4)'
+        description: 'zlib-ng version for static linking (e.g., 2.3.2)'
         required: true
-        default: '2.2.4'
+        default: '2.3.2'
         type: string
       platforms:
         description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'
@@ -477,10 +477,10 @@ jobs:
         run: |
           echo "=== Finding library files ==="
           
-          # Find the actual paths dynamically
-          DEVICE_LIB=$(find downloads -path "*iphoneos*arm64*" -name "libminizip.a" 2>/dev/null | head -1)
-          SIM_ARM64_LIB=$(find downloads -path "*iphonesimulator*arm64*" -name "libminizip.a" 2>/dev/null | head -1)
-          SIM_X86_64_LIB=$(find downloads -path "*iphonesimulator*x86_64*" -name "libminizip.a" 2>/dev/null | head -1)
+          # Find the actual paths dynamically using wildcard (libminizip*.a matches both libminizip.a and libminizip-ng.a)
+          DEVICE_LIB=$(find downloads -path "*iphoneos*arm64*" -name "libminizip*.a" 2>/dev/null | head -1)
+          SIM_ARM64_LIB=$(find downloads -path "*iphonesimulator*arm64*" -name "libminizip*.a" 2>/dev/null | head -1)
+          SIM_X86_64_LIB=$(find downloads -path "*iphonesimulator*x86_64*" -name "libminizip*.a" 2>/dev/null | head -1)
           
           echo "Device lib: $DEVICE_LIB"
           echo "Sim ARM64 lib: $SIM_ARM64_LIB"
