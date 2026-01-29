@@ -94,6 +94,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../minizip_install ^
             -DCMAKE_PREFIX_PATH=../zlib_install ^
             -DZLIB_ROOT=../zlib_install ^
+            -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON ^
             -DBUILD_SHARED_LIBS=ON ^
             -DMZ_COMPAT=OFF ^
             -DMZ_ZLIB=ON ^
@@ -151,6 +152,10 @@ jobs:
         shell: pwsh
         run: |
           $arch = "${{ matrix.arch }}"
+          
+          # Debug: List build directory contents
+          Write-Host "=== minizip_build contents ==="
+          Get-ChildItem -Path minizip_build -Recurse -Include "*.lib","*.dll" | Select-Object FullName
           
           # Create directory structure
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
