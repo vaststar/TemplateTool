@@ -25,9 +25,9 @@ runs:
       shell: bash
       run: |
         LIB_PATH="${{ inputs.lib-path }}"
-        LIB_RPATH="${{ inputs.lib-rpath }}"
+        LIB_RPATH='${{ inputs.lib-rpath }}'
         
-        echo "::group::Fixing RPATH in $LIB_PATH"
+        echo "::group::Fixing RPATH in $LIB_PATH (setting to: $LIB_RPATH)"
         
         if [ ! -d "$LIB_PATH" ]; then
           echo "::warning::Library path does not exist: $LIB_PATH"
@@ -58,10 +58,10 @@ runs:
       shell: bash
       run: |
         BIN_PATH="${{ inputs.bin-path }}"
-        BIN_RPATH="${{ inputs.bin-rpath }}"
+        BIN_RPATH='${{ inputs.bin-rpath }}'
         
         if [ -n "$BIN_PATH" ] && [ -d "$BIN_PATH" ]; then
-          echo "::group::Fixing binary RPATH in $BIN_PATH"
+          echo "::group::Fixing binary RPATH in $BIN_PATH (setting to: $BIN_RPATH)"
           cd "$BIN_PATH"
           
           for f in *; do
@@ -89,7 +89,7 @@ runs:
           cd "$LIB_PATH"
           
           ALL_GOOD=true
-          for f in *.so; do
+          for f in *.so *.so.*; do
             if [ -f "$f" ] && [ ! -L "$f" ]; then
               RPATH=$(patchelf --print-rpath "$f" 2>/dev/null || true)
               echo "$f: RPATH=$RPATH"
