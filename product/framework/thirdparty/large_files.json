@@ -1,0 +1,29 @@
+{
+  "description": "Large binary files that are stored as .zip to fit GitHub's 100MB limit",
+  "files": [
+    {
+      "path": "opencv/opencv/android/arm64-v8a/libs/libopencv_world.so",
+      "platform": "android"
+    },
+    {
+      "path": "opencv/opencv/android/armeabi-v7a/libs/libopencv_world.so",
+      "platform": "android"
+    },
+    {
+      "path": "opencv/opencv/android/x86/libs/libopencv_world.so",
+      "platform": "android"
+    },
+    {
+      "path": "opencv/opencv/android/x86_64/libs/libopencv_world.so",
+      "platform": "android"
+    },
+    {
+      "path": "opencv/opencv/windows/x64/vc17/bin/opencv_world4130d.dll",
+      "platform": "windows"
+    },
+    {
+      "path": "opencv/opencv/windows/x86/vc17/bin/opencv_world4130d.dll",
+      "platform": "windows"
+    }
+  ]
+}
