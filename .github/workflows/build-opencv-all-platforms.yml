@@ -129,7 +129,7 @@ jobs:
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
-          artifact-path: artifact/windows/${{ matrix.arch }}
+          artifact-path: artifact/windows
           platform: windows
           library-name: opencv
           expect-shared-libs: '1'    # opencv_world.dll (or multiple modules)
