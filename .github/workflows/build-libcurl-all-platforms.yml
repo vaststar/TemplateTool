@@ -329,6 +329,9 @@ jobs:
     runs-on: macos-14
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download iOS artifacts
         uses: actions/download-artifact@v4
         with:
