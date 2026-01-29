@@ -59,3 +59,8 @@ target_link_libraries(curl INTERFACE "${CURL_LIB}")
 if(TARGET copy_curl)
     add_dependencies(curl copy_curl)
 endif()
+
+# Install shared libraries to installation directory
+if(CURL_SHARED_LIBS)
+    install(FILES ${CURL_SHARED_LIBS} DESTINATION bin)
+endif()

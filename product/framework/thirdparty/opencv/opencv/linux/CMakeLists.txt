@@ -60,3 +60,8 @@ target_link_libraries(opencv INTERFACE "${CV_LIB}")
 if(TARGET copy_opencv)
     add_dependencies(opencv copy_opencv)
 endif()
+
+# Install shared libraries to installation directory
+if(CV_SHARED_LIBS)
+    install(FILES ${CV_SHARED_LIBS} DESTINATION bin)
+endif()

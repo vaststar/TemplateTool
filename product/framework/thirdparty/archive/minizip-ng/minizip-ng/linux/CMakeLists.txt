@@ -23,13 +23,34 @@ if(NOT MZ_LIBRARY)
     message(FATAL_ERROR "[minizip] Dynamic library not found in ${MZ_ROOT}/lib")
 endif()
 
+# Find all .so files for copying
+file(GLOB MZ_SOLIBS "${MZ_ROOT}/lib/*.so*")
+
 message(STATUS "[minizip] Linux x64")
 message(STATUS "[minizip] Dynamic Library: ${MZ_LIBRARY}")
+message(STATUS "[minizip] Shared Objects: ${MZ_SOLIBS}")
+
+# Create copy target for .so files
+if(MZ_SOLIBS)
+    add_custom_target(copy_minizip)
+    set_target_properties(copy_minizip PROPERTIES FOLDER framework/thirdparty/archive)
+
+    add_custom_command(TARGET copy_minizip POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MZ_SOLIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+        COMMAND_EXPAND_LISTS
+        COMMENT "[minizip] Copying shared objects to output directory"
+    )
+endif()
 
 # Create interface library
 add_library(minizip INTERFACE)
 target_include_directories(minizip INTERFACE "${MZ_ROOT}/include/minizip-ng")
 target_link_libraries(minizip INTERFACE "${MZ_LIBRARY}")
+
+if(TARGET copy_minizip)
+    add_dependencies(minizip copy_minizip)
+endif()
 
 # Set RPATH for runtime
 set_target_properties(minizip PROPERTIES
@@ -38,3 +59,8 @@ set_target_properties(minizip PROPERTIES
 
 # Alias for unified access
 add_library(archive::zip ALIAS minizip)
+
+# Install shared objects to installation directory
+if(MZ_SOLIBS)
+    install(FILES ${MZ_SOLIBS} DESTINATION bin)
+endif()

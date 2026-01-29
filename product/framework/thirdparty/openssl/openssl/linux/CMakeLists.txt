@@ -66,3 +66,8 @@ target_link_libraries(openssl INTERFACE "${SSL_CRYPTO_LIB}" "${SSL_SSL_LIB}")
 if(TARGET copy_ssl)
     add_dependencies(openssl copy_ssl)
 endif()
+
+# Install shared libraries to installation directory
+if(SSL_SHARED_LIBS)
+    install(FILES ${SSL_SHARED_LIBS} DESTINATION bin)
+endif()
