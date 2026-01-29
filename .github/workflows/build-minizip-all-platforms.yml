@@ -162,7 +162,8 @@ jobs:
           Copy-Item -Recurse -Force "minizip_install/include/*" "artifact/windows/$arch/include/"
           
           # Copy import libraries (from build directory, not installed by CMake)
-          Get-ChildItem -Path minizip_build/Release -Include "*.lib" | ForEach-Object {
+          # Note: -Include requires -Recurse to work, or use -Filter for single directory
+          Get-ChildItem -Path minizip_build/Release -Filter "*.lib" | ForEach-Object {
             Copy-Item $_.FullName "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
           }
           
