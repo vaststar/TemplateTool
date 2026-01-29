@@ -1,0 +1,247 @@
+# ==============================================================================
+# Verify Build Artifact Action
+# ==============================================================================
+# 
+# 用途：验证构建产物的完整性和正确性
+# 
+# 功能：
+#   1. 统计动态库、静态库、头文件数量
+#   2. 验证数量是否符合预期
+#   3. 检查关键文件是否存在
+#   4. 输出详细的验证报告
+#
+# 支持平台：
+#   - windows: .dll / .lib
+#   - macos:   .dylib / .a
+#   - ios:     .a / .xcframework
+#   - android: .so / .a
+#   - linux:   .so / .a
+#
+# ==============================================================================
+
+name: 'Verify Build Artifact'
+description: 'Verify that build artifacts are complete and correctly structured'
+
+inputs:
+  artifact-path:
+    description: 'Root path to the artifact directory'
+    required: true
+  platform:
+    description: 'Target platform (windows/macos/ios/android/linux)'
+    required: true
+  library-name:
+    description: 'Name of the library being built'
+    required: true
+  expect-shared-libs:
+    description: 'Expected minimum number of shared libraries (.dll/.dylib/.so)'
+    required: false
+    default: '0'
+  expect-static-libs:
+    description: 'Expected minimum number of static libraries (.lib/.a)'
+    required: false
+    default: '0'
+  expect-headers:
+    description: 'Whether to expect header files (true/false)'
+    required: false
+    default: 'true'
+
+# 输出变量，可供后续步骤使用
+outputs:
+  shared-lib-count:
+    description: 'Number of shared libraries found'
+    value: ${{ steps.verify.outputs.shared_count }}
+  static-lib-count:
+    description: 'Number of static libraries found'
+    value: ${{ steps.verify.outputs.static_count }}
+  header-count:
+    description: 'Number of header files found'
+    value: ${{ steps.verify.outputs.header_count }}
+  has-warnings:
+    description: 'Whether any warnings were raised (true/false)'
+    value: ${{ steps.verify.outputs.has_warnings }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Verify artifact structure
+      id: verify
+      shell: bash
+      run: |
+        # ==================================================================
+        # 初始化参数
+        # ==================================================================
+        ARTIFACT_PATH="${{ inputs.artifact-path }}"
+        PLATFORM="${{ inputs.platform }}"
+        LIBRARY="${{ inputs.library-name }}"
+        EXPECT_SHARED="${{ inputs.expect-shared-libs }}"
+        EXPECT_STATIC="${{ inputs.expect-static-libs }}"
+        EXPECT_HEADERS="${{ inputs.expect-headers }}"
+        
+        echo "::group::📦 Verifying $LIBRARY artifact for $PLATFORM"
+        
+        HAS_WARNINGS=false
+        
+        # ==================================================================
+        # 检查 artifact 目录是否存在
+        # ==================================================================
+        if [ ! -d "$ARTIFACT_PATH" ]; then
+          echo "::error::Artifact path does not exist: $ARTIFACT_PATH"
+          echo "has_warnings=true" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        cd "$ARTIFACT_PATH"
+        
+        # ==================================================================
+        # 根据平台统计不同类型的文件数量
+        # ==================================================================
+        SHARED_COUNT=0
+        STATIC_COUNT=0
+        HEADER_COUNT=0
+        XCFRAMEWORK_COUNT=0
+        
+        case "$PLATFORM" in
+          windows)
+            # Windows: .dll (动态库), .lib (导入库/静态库)
+            SHARED_COUNT=$(find . -name "*.dll" -type f 2>/dev/null | wc -l)
+            STATIC_COUNT=$(find . -name "*.lib" -type f 2>/dev/null | wc -l)
+            SHARED_EXT="dll"
+            STATIC_EXT="lib"
+            ;;
+          macos)
+            # macOS: .dylib (动态库), .a (静态库)
+            # 注意：使用 ! -type l 排除符号链接，避免重复计数
+            SHARED_COUNT=$(find . -name "*.dylib" -type f ! -type l 2>/dev/null | wc -l)
+            STATIC_COUNT=$(find . -name "*.a" -type f 2>/dev/null | wc -l)
+            SHARED_EXT="dylib"
+            STATIC_EXT="a"
+            ;;
+          ios)
+            # iOS: 只使用静态库，打包在 XCFramework 中
+            SHARED_COUNT=0
+            STATIC_COUNT=$(find . -name "*.a" -type f 2>/dev/null | wc -l)
+            XCFRAMEWORK_COUNT=$(find . -name "*.xcframework" -type d 2>/dev/null | wc -l)
+            SHARED_EXT="(none)"
+            STATIC_EXT="a"
+            ;;
+          android)
+            # Android: .so (动态库), .a (静态库)
+            SHARED_COUNT=$(find . -name "*.so" -type f ! -type l 2>/dev/null | wc -l)
+            STATIC_COUNT=$(find . -name "*.a" -type f 2>/dev/null | wc -l)
+            SHARED_EXT="so"
+            STATIC_EXT="a"
+            ;;
+          linux)
+            # Linux: .so 和 .so.* (动态库), .a (静态库)
+            # 需要匹配版本号后缀，如 libssl.so.3
+            SHARED_COUNT=$(find . \( -name "*.so" -o -name "*.so.*" \) -type f ! -type l 2>/dev/null | wc -l)
+            STATIC_COUNT=$(find . -name "*.a" -type f 2>/dev/null | wc -l)
+            SHARED_EXT="so"
+            STATIC_EXT="a"
+            ;;
+          *)
+            echo "::warning::Unknown platform: $PLATFORM"
+            ;;
+        esac
+        
+        # 统计头文件数量 (.h 和 .hpp)
+        HEADER_COUNT=$(find . \( -name "*.h" -o -name "*.hpp" \) -type f 2>/dev/null | wc -l)
+        
+        # ==================================================================
+        # 输出文件清单
+        # ==================================================================
+        echo ""
+        echo "=== 📊 File Inventory ==="
+        echo "  📚 Shared libraries (.$SHARED_EXT): $SHARED_COUNT"
+        echo "  📦 Static libraries (.$STATIC_EXT): $STATIC_COUNT"
+        echo "  📄 Header files (.h/.hpp): $HEADER_COUNT"
+        
+        if [ "$PLATFORM" = "ios" ]; then
+          echo "  📱 XCFrameworks: $XCFRAMEWORK_COUNT"
+        fi
+        
+        # ==================================================================
+        # 验证检查
+        # ==================================================================
+        echo ""
+        echo "=== ✔️ Validation Checks ==="
+        
+        # --- 检查动态库数量 ---
+        if [ "$EXPECT_SHARED" -gt 0 ] && [ "$SHARED_COUNT" -lt "$EXPECT_SHARED" ]; then
+          echo "::warning::Expected at least $EXPECT_SHARED shared libraries, found $SHARED_COUNT"
+          HAS_WARNINGS=true
+        elif [ "$SHARED_COUNT" -gt 0 ]; then
+          echo "  ✅ Shared libraries: $SHARED_COUNT (expected >= $EXPECT_SHARED)"
+        elif [ "$EXPECT_SHARED" -eq 0 ]; then
+          echo "  ℹ️ Shared libraries: $SHARED_COUNT (not required)"
+        fi
+        
+        # --- 检查静态库数量 ---
+        if [ "$EXPECT_STATIC" -gt 0 ] && [ "$STATIC_COUNT" -lt "$EXPECT_STATIC" ]; then
+          echo "::warning::Expected at least $EXPECT_STATIC static libraries, found $STATIC_COUNT"
+          HAS_WARNINGS=true
+        elif [ "$STATIC_COUNT" -gt 0 ]; then
+          echo "  ✅ Static libraries: $STATIC_COUNT (expected >= $EXPECT_STATIC)"
+        elif [ "$EXPECT_STATIC" -eq 0 ]; then
+          echo "  ℹ️ Static libraries: $STATIC_COUNT (not required)"
+        fi
+        
+        # --- 检查头文件 ---
+        if [ "$EXPECT_HEADERS" = "true" ] && [ "$HEADER_COUNT" -eq 0 ]; then
+          echo "::warning::No header files found in artifact"
+          HAS_WARNINGS=true
+        elif [ "$HEADER_COUNT" -gt 0 ]; then
+          echo "  ✅ Header files: $HEADER_COUNT"
+        fi
+        
+        # --- iOS XCFramework 检查 ---
+        if [ "$PLATFORM" = "ios" ] && [ "$XCFRAMEWORK_COUNT" -eq 0 ]; then
+          echo "::warning::No XCFramework found for iOS build"
+          HAS_WARNINGS=true
+        elif [ "$PLATFORM" = "ios" ]; then
+          echo "  ✅ XCFramework: found"
+        fi
+        
+        # --- 关键检查：没有任何库文件 ---
+        if [ "$SHARED_COUNT" -eq 0 ] && [ "$STATIC_COUNT" -eq 0 ]; then
+          echo "::warning::No library files found! Build may have failed silently."
+          HAS_WARNINGS=true
+        fi
+        
+        # ==================================================================
+        # 列出库文件（最多显示 20 个）
+        # ==================================================================
+        echo ""
+        echo "=== 📁 Library Files ==="
+        find . -type f \( -name "*.dll" -o -name "*.lib" -o -name "*.dylib" -o -name "*.so" -o -name "*.so.*" -o -name "*.a" \) 2>/dev/null | sort | head -20
+        
+        LIB_TOTAL=$(find . -type f \( -name "*.dll" -o -name "*.lib" -o -name "*.dylib" -o -name "*.so" -o -name "*.so.*" -o -name "*.a" \) 2>/dev/null | wc -l)
+        if [ "$LIB_TOTAL" -gt 20 ]; then
+          echo "  ... and $((LIB_TOTAL - 20)) more"
+        fi
+        
+        # ==================================================================
+        # 总计
+        # ==================================================================
+        TOTAL_FILES=$(find . -type f | wc -l)
+        echo ""
+        echo "=== 📈 Summary ==="
+        echo "  Total files: $TOTAL_FILES"
+        
+        if [ "$HAS_WARNINGS" = "true" ]; then
+          echo ""
+          echo "  ⚠️ Verification completed with warnings"
+        else
+          echo ""
+          echo "  ✅ Verification passed - all checks OK"
+        fi
+        
+        echo "::endgroup::"
+        
+        # ==================================================================
+        # 设置输出变量供后续步骤使用
+        # ==================================================================
+        echo "shared_count=$SHARED_COUNT" >> $GITHUB_OUTPUT
+        echo "static_count=$STATIC_COUNT" >> $GITHUB_OUTPUT
+        echo "header_count=$HEADER_COUNT" >> $GITHUB_OUTPUT
+        echo "has_warnings=$HAS_WARNINGS" >> $GITHUB_OUTPUT

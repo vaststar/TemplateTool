@@ -126,6 +126,15 @@ jobs:
           Write-Host "=== Built files ==="
           Get-ChildItem -Recurse artifact -File | Select-Object FullName
       
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/windows/${{ matrix.arch }}
+          platform: windows
+          library-name: openssl
+          expect-shared-libs: '2'    # libssl.dll, libcrypto.dll
+          expect-static-libs: '2'    # libssl.lib, libcrypto.lib
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -229,6 +238,15 @@ jobs:
         with:
           lib-path: artifact/macosx/${{ matrix.platform_name }}/lib
           bin-path: artifact/macosx/${{ matrix.platform_name }}/bin
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/macosx/${{ matrix.platform_name }}
+          platform: macos
+          library-name: openssl
+          expect-shared-libs: '2'    # libssl.dylib, libcrypto.dylib
+          expect-static-libs: '2'    # libssl.a, libcrypto.a
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -308,6 +326,14 @@ jobs:
           echo "=== Built files ==="
           find artifact -type f
       
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/ios/${{ matrix.platform }}-${{ matrix.arch }}
+          platform: ios
+          library-name: openssl
+          expect-static-libs: '2'    # libssl.a, libcrypto.a
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -536,6 +562,14 @@ jobs:
           find artifact -type d
           find artifact -name "Info.plist" -exec echo "--- {} ---" \; -exec cat {} \;
       
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/ios
+          platform: ios
+          library-name: openssl
+          expect-static-libs: '2'    # libssl.a, libcrypto.a in XCFramework
+
       - name: Upload XCFramework
         uses: actions/upload-artifact@v4
         with:
@@ -645,6 +679,15 @@ jobs:
         uses: ./.github/actions/fix-android-rpath
         with:
           lib-path: artifact/android/${{ matrix.abi }}/lib
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/android/${{ matrix.abi }}
+          platform: android
+          library-name: openssl
+          expect-shared-libs: '2'    # libssl.so, libcrypto.so
+          expect-static-libs: '2'    # libssl.a, libcrypto.a
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -733,6 +776,15 @@ jobs:
         with:
           lib-path: artifact/linux/x64/lib
           bin-path: artifact/linux/x64/bin
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/linux/x64
+          platform: linux
+          library-name: openssl
+          expect-shared-libs: '2'    # libssl.so, libcrypto.so
+          expect-static-libs: '2'    # libssl.a, libcrypto.a
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
