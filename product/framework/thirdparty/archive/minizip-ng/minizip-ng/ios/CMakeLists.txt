@@ -1,8 +1,8 @@
 # =============================================================================
 # minizip-ng - iOS Platform (Prebuilt XCFramework)
 # =============================================================================
-# Prebuilt with DEFLATE compression (zlib statically linked)
-# Static library only for iOS
+# Prebuilt with DEFLATE compression (zlib statically linked into .a)
+# Uses static library (XCFramework) for iOS - dynamic libs not supported
 # =============================================================================
 
 set(MZ_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")

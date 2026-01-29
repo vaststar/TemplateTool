@@ -1,7 +1,8 @@
 # =============================================================================
 # minizip-ng - Android Platform (Prebuilt)
 # =============================================================================
-# Prebuilt with DEFLATE compression (zlib statically linked)
+# Prebuilt with DEFLATE compression (zlib statically linked into .so)
+# Uses dynamic library (.so) for linking
 # =============================================================================
 
 # Get Android ABI
@@ -16,7 +17,7 @@ if(NOT EXISTS "${MZ_ROOT}/include/minizip-ng/mz.h")
     message(FATAL_ERROR "[minizip] Prebuilt not found at ${MZ_ROOT}. Run GitHub Action 'build-minizip-all-platforms.yml' first.")
 endif()
 
-# Find shared library (named minizip-ng)
+# Find dynamic library (.so)
 find_library(MZ_LIBRARY
     NAMES minizip-ng
     PATHS "${MZ_ROOT}/lib"
@@ -24,11 +25,11 @@ find_library(MZ_LIBRARY
 )
 
 if(NOT MZ_LIBRARY)
-    message(FATAL_ERROR "[minizip] Library not found in ${MZ_ROOT}/lib")
+    message(FATAL_ERROR "[minizip] Dynamic library not found in ${MZ_ROOT}/lib")
 endif()
 
 message(STATUS "[minizip] Android ${ANDROID_ABI}")
-message(STATUS "[minizip] Library: ${MZ_LIBRARY}")
+message(STATUS "[minizip] Dynamic Library: ${MZ_LIBRARY}")
 
 # Create interface library
 add_library(minizip INTERFACE)

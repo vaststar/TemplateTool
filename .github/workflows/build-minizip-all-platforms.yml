@@ -152,6 +152,7 @@ jobs:
         run: |
           $arch = "${{ matrix.arch }}"
           
+          # Create directory structure
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/lib"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/bin"
@@ -160,12 +161,20 @@ jobs:
           # Copy headers
           Copy-Item -Recurse -Force "minizip_install/include/*" "artifact/windows/$arch/include/"
           
-          # Copy shared libraries
-          Copy-Item "minizip_install/lib/*.lib" "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
-          Copy-Item "minizip_install/bin/*.dll" "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
+          # Copy import libraries (from shared build)
+          Get-ChildItem -Path minizip_install -Recurse -Include "*.lib" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
+          }
+          
+          # Copy DLLs
+          Get-ChildItem -Path minizip_install -Recurse -Include "*.dll" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
+          }
           
           # Copy static libraries
-          Copy-Item "minizip_install_static/lib/*.lib" "artifact/windows/$arch/static/" -ErrorAction SilentlyContinue
+          Get-ChildItem -Path minizip_install_static -Recurse -Include "*.lib" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/static/" -ErrorAction SilentlyContinue
+          }
           
           Write-Host "=== Built files ==="
           Get-ChildItem -Recurse artifact -File | Select-Object FullName

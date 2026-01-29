@@ -1,7 +1,8 @@
 # =============================================================================
 # minizip-ng - Windows Platform (Prebuilt)
 # =============================================================================
-# Prebuilt with DEFLATE compression (zlib statically linked)
+# Prebuilt with DEFLATE compression (zlib statically linked into DLL)
+# Uses DLL + import library for linking
 # =============================================================================
 
 include(DetectPlatform)
@@ -24,35 +25,38 @@ if(NOT EXISTS "${MZ_ROOT}/include/minizip-ng/mz.h")
     message(FATAL_ERROR "[minizip] Prebuilt not found at ${MZ_ROOT}. Run GitHub Action 'build-minizip-all-platforms.yml' first.")
 endif()
 
-# Find static library (in static/ directory, named minizip-ng)
+# Find import library for DLL (in lib/ directory)
 find_library(MZ_LIBRARY
     NAMES minizip-ng
-    PATHS "${MZ_ROOT}/static"
+    PATHS "${MZ_ROOT}/lib"
     NO_DEFAULT_PATH
 )
 
 if(NOT MZ_LIBRARY)
-    message(FATAL_ERROR "[minizip] Library not found in ${MZ_ROOT}/static")
+    message(FATAL_ERROR "[minizip] Import library not found in ${MZ_ROOT}/lib. Make sure to download the full artifact including lib/ directory.")
 endif()
 
 # Find DLLs
 file(GLOB MZ_DLLS "${MZ_ROOT}/bin/*.dll")
 
+if(NOT MZ_DLLS)
+    message(FATAL_ERROR "[minizip] DLL not found in ${MZ_ROOT}/bin")
+endif()
+
 message(STATUS "[minizip] Windows ${MZ_ARCH_DIR}")
-message(STATUS "[minizip] Library: ${MZ_LIBRARY}")
+message(STATUS "[minizip] Import Library: ${MZ_LIBRARY}")
+message(STATUS "[minizip] DLLs: ${MZ_DLLS}")
 
 # Copy DLL target
 add_custom_target(copy_minizip)
 set_target_properties(copy_minizip PROPERTIES FOLDER framework/thirdparty/archive)
 
-if(MZ_DLLS)
-    add_custom_command(TARGET copy_minizip POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MZ_DLLS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
-        COMMAND_EXPAND_LISTS
-        COMMENT "[minizip] Copying DLLs to output directory"
-    )
-endif()
+add_custom_command(TARGET copy_minizip POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MZ_DLLS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+    COMMAND_EXPAND_LISTS
+    COMMENT "[minizip] Copying DLLs to output directory"
+)
 
 # Create interface library
 add_library(minizip INTERFACE)
@@ -64,6 +68,4 @@ add_dependencies(minizip copy_minizip)
 add_library(archive::zip ALIAS minizip)
 
 # Install DLLs
-if(MZ_DLLS)
-    install(FILES ${MZ_DLLS} DESTINATION bin)
-endif()
+install(FILES ${MZ_DLLS} DESTINATION bin)
