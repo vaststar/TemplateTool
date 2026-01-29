@@ -30,8 +30,8 @@ endif()
 # Find dylibs for copying
 file(GLOB CV_DYLIBS "${CV_ROOT}/lib/*.dylib")
 
-# Find include directory (shared at parent level)
-set(CV_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+# Find include directory (per-architecture)
+set(CV_INCLUDE "${CV_ROOT}/include")
 if(NOT EXISTS "${CV_INCLUDE}/opencv2/opencv.hpp")
     message(FATAL_ERROR "[OpenCV] Headers not found in ${CV_INCLUDE}")
 endif()

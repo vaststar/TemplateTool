@@ -9,5 +9,5 @@ venv/
 CMakeUserPresets.json
 
 # Large binary files (>100MB) - download separately or build from source
-product/framework/thirdparty/opencv/opencv/android/libs/
+product/framework/thirdparty/opencv/opencv/android/*/libs/*.so
 product/framework/thirdparty/opencv/opencv/windows/*/vc17/bin/opencv_world4130d.dll
