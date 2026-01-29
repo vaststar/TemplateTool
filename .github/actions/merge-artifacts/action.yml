@@ -57,9 +57,16 @@ runs:
           arch=$(echo "$arch" | xargs)  # trim whitespace
           if [ -d "downloads/${LIBRARY}-windows-$arch" ]; then
             echo "✓ Processing Windows $arch..."
-            mkdir -p merged/windows
-            cp -r downloads/${LIBRARY}-windows-$arch/windows/$arch merged/windows/ 2>/dev/null || \
-            cp -r downloads/${LIBRARY}-windows-$arch/windows/* merged/windows/ 2>/dev/null || true
+            mkdir -p merged/windows/$arch
+            # Copy arch-specific directory (includes headers if using independent structure)
+            if [ -d "downloads/${LIBRARY}-windows-$arch/windows/$arch" ]; then
+              cp -r downloads/${LIBRARY}-windows-$arch/windows/$arch/* merged/windows/$arch/ 2>/dev/null || true
+            fi
+            # Also copy shared include if exists (for backward compatibility)
+            if [ -d "downloads/${LIBRARY}-windows-$arch/windows/include" ]; then
+              mkdir -p merged/windows/include
+              cp -r downloads/${LIBRARY}-windows-$arch/windows/include/* merged/windows/include/ 2>/dev/null || true
+            fi
             WIN_COUNT=$((WIN_COUNT + 1))
           else
             echo "::notice::Windows $arch artifact not found (may have been skipped)"
@@ -76,8 +83,16 @@ runs:
           platform=$(echo "$platform" | xargs)
           if [ -d "downloads/${LIBRARY}-macos-$platform" ]; then
             echo "✓ Processing macOS $platform..."
-            mkdir -p merged/macosx
-            cp -r downloads/${LIBRARY}-macos-$platform/macosx/$platform merged/macosx/ 2>/dev/null || true
+            mkdir -p merged/macosx/$platform
+            # Copy platform-specific directory (includes headers if using independent structure)
+            if [ -d "downloads/${LIBRARY}-macos-$platform/macosx/$platform" ]; then
+              cp -r downloads/${LIBRARY}-macos-$platform/macosx/$platform/* merged/macosx/$platform/ 2>/dev/null || true
+            fi
+            # Also copy shared include if exists (for backward compatibility)
+            if [ -d "downloads/${LIBRARY}-macos-$platform/macosx/include" ]; then
+              mkdir -p merged/macosx/include
+              cp -r downloads/${LIBRARY}-macos-$platform/macosx/include/* merged/macosx/include/ 2>/dev/null || true
+            fi
             MAC_COUNT=$((MAC_COUNT + 1))
           else
             echo "::notice::macOS $platform artifact not found (may have been skipped)"
@@ -106,9 +121,23 @@ runs:
           abi=$(echo "$abi" | xargs)
           if [ -d "downloads/${LIBRARY}-android-$abi" ]; then
             echo "✓ Processing Android $abi..."
-            mkdir -p merged/android
-            cp -r downloads/${LIBRARY}-android-$abi/android/$abi merged/android/ 2>/dev/null || \
-            cp -r downloads/${LIBRARY}-android-$abi/android/* merged/android/ 2>/dev/null || true
+            mkdir -p merged/android/$abi
+            # Copy ABI-specific directory (includes headers if using independent structure)
+            if [ -d "downloads/${LIBRARY}-android-$abi/android/$abi" ]; then
+              cp -r downloads/${LIBRARY}-android-$abi/android/$abi/* merged/android/$abi/ 2>/dev/null || true
+            fi
+            # Also copy shared include if exists (for backward compatibility)
+            if [ -d "downloads/${LIBRARY}-android-$abi/android/include" ]; then
+              mkdir -p merged/android/include
+              cp -r downloads/${LIBRARY}-android-$abi/android/include/* merged/android/include/ 2>/dev/null || true
+            fi
+            # Copy shared libs folder (like libs/$abi) if exists
+            if [ -d "downloads/${LIBRARY}-android-$abi/android/libs/$abi" ]; then
+              mkdir -p merged/android/libs/$abi
+              cp -r downloads/${LIBRARY}-android-$abi/android/libs/$abi/* merged/android/libs/$abi/ 2>/dev/null || true
+            fi
+            # Copy shared Java libs (jar, aar) at android level
+            find downloads/${LIBRARY}-android-$abi/android/ -maxdepth 1 \( -name "*.jar" -o -name "*.aar" \) -exec cp {} merged/android/ \; 2>/dev/null || true
             ANDROID_COUNT=$((ANDROID_COUNT + 1))
           else
             echo "::notice::Android $abi artifact not found (may have been skipped)"

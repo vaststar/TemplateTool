@@ -95,15 +95,15 @@ jobs:
         run: |
           $arch = "${{ matrix.arch }}"
           
-          # Create directory structure
-          New-Item -ItemType Directory -Force -Path "artifact/windows/include"
+          # Create directory structure with independent headers per architecture
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/vc17/bin"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/vc17/lib"
           
-          # Find and copy headers
+          # Find and copy headers to architecture-specific directory
           $includeDir = Get-ChildItem -Path opencv_install -Recurse -Directory -Filter "opencv2" | Select-Object -First 1
           if ($includeDir) {
-            Copy-Item -Recurse -Force $includeDir.FullName artifact/windows/include/
+            Copy-Item -Recurse -Force $includeDir.FullName artifact/windows/$arch/include/
           }
           
           # Copy binaries (DLL, PDB)
@@ -129,7 +129,7 @@ jobs:
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
-          artifact-path: artifact/windows
+          artifact-path: artifact/windows/${{ matrix.arch }}
           platform: windows
           library-name: opencv
           expect-shared-libs: '1'    # opencv_world.dll (or multiple modules)
@@ -213,11 +213,12 @@ jobs:
       
       - name: Prepare artifact
         run: |
-          mkdir -p artifact/macosx/include
+          # Create directory structure with independent headers per platform
+          mkdir -p artifact/macosx/${{ matrix.platform_name }}/include
           mkdir -p artifact/macosx/${{ matrix.platform_name }}/lib
           
-          # Copy headers
-          cp -r opencv_install/include/opencv4/opencv2 artifact/macosx/include/
+          # Copy headers to platform-specific directory
+          cp -r opencv_install/include/opencv4/opencv2 artifact/macosx/${{ matrix.platform_name }}/include/
           
           # Copy libraries
           cp opencv_install/lib/*.dylib artifact/macosx/${{ matrix.platform_name }}/lib/
@@ -237,7 +238,7 @@ jobs:
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
-          artifact-path: artifact/macosx
+          artifact-path: artifact/macosx/${{ matrix.platform_name }}
           platform: macos
           library-name: opencv
           expect-shared-libs: '1'    # libopencv_*.dylib
@@ -492,21 +493,22 @@ jobs:
       - name: Prepare artifact
         run: |
           ABI=${{ matrix.abi }}
-          mkdir -p artifact/android/include
-          mkdir -p artifact/android/libs/$ABI
+          # Create directory structure with independent headers per ABI
+          mkdir -p artifact/android/$ABI/include
+          mkdir -p artifact/android/$ABI/libs
           
-          # Copy headers
+          # Copy headers to ABI-specific directory
           HEADER_DIR=$(find opencv_install -type d -name "opencv2" | head -1)
           if [ -n "$HEADER_DIR" ]; then
-            cp -r "$HEADER_DIR" artifact/android/include/
+            cp -r "$HEADER_DIR" artifact/android/$ABI/include/
           fi
           
           # Copy native libraries (.so files)
-          find opencv_install -name "*.so" -exec cp {} artifact/android/libs/$ABI/ \;
+          find opencv_install -name "*.so" -exec cp {} artifact/android/$ABI/libs/ \;
           
-          # Copy Java libraries if exist
-          find opencv_install -name "*.jar" -exec cp {} artifact/android/libs/ \; 2>/dev/null || true
-          find opencv_install -name "*.aar" -exec cp {} artifact/android/libs/ \; 2>/dev/null || true
+          # Copy Java libraries if exist (keep at android/ level for shared access)
+          find opencv_install -name "*.jar" -exec cp {} artifact/android/ \; 2>/dev/null || true
+          find opencv_install -name "*.aar" -exec cp {} artifact/android/ \; 2>/dev/null || true
           
           echo "=== Built files ==="
           find artifact -type f
@@ -514,12 +516,12 @@ jobs:
       - name: Fix Android RPATH
         uses: ./.github/actions/fix-android-rpath
         with:
-          lib-path: artifact/android/libs/${{ matrix.abi }}
+          lib-path: artifact/android/${{ matrix.abi }}/libs
 
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
-          artifact-path: artifact/android
+          artifact-path: artifact/android/${{ matrix.abi }}
           platform: android
           library-name: opencv
           expect-shared-libs: '1'    # libopencv_java4.so
