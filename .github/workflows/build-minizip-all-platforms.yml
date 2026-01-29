@@ -1,0 +1,810 @@
+name: Build minizip-ng All Platforms
+
+on:
+  workflow_dispatch:
+    inputs:
+      minizip_version:
+        description: 'minizip-ng version (e.g., 4.0.7)'
+        required: true
+        default: '4.0.7'
+        type: string
+      zlib_version:
+        description: 'zlib-ng version for static linking (e.g., 2.2.4)'
+        required: true
+        default: '2.2.4'
+        type: string
+      platforms:
+        description: 'Platforms to build (comma-separated: windows,macos,ios,android,linux)'
+        required: true
+        default: 'windows,macos,ios,android,linux'
+        type: string
+
+env:
+  MINIZIP_VERSION: ${{ github.event.inputs.minizip_version }}
+  ZLIB_VERSION: ${{ github.event.inputs.zlib_version }}
+
+jobs:
+  # ============================================================================
+  # Windows Builds (x64, x86, arm64)
+  # ============================================================================
+  build-windows:
+    if: contains(github.event.inputs.platforms, 'windows')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            cmake_arch: x64
+            msvc_arch: amd64
+          - arch: x86
+            cmake_arch: Win32
+            msvc_arch: amd64_x86
+          - arch: arm64
+            cmake_arch: ARM64
+            msvc_arch: amd64_arm64
+    
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+      
+      - name: Download zlib-ng source
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.zip" -OutFile zlib.zip
+          Expand-Archive zlib.zip -DestinationPath .
+          Rename-Item "zlib-ng-${{ env.ZLIB_VERSION }}" zlib_src
+      
+      - name: Build zlib-ng (static)
+        shell: cmd
+        run: |
+          mkdir zlib_build
+          cd zlib_build
+          cmake ../zlib_src ^
+            -G "Visual Studio 17 2022" ^
+            -A ${{ matrix.cmake_arch }} ^
+            -DCMAKE_INSTALL_PREFIX=../zlib_install ^
+            -DZLIB_COMPAT=ON ^
+            -DZLIB_ENABLE_TESTS=OFF ^
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build . --config Release --parallel
+          cmake --install . --config Release
+      
+      - name: Download minizip-ng source
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/zlib-ng/minizip-ng/archive/refs/tags/${{ env.MINIZIP_VERSION }}.zip" -OutFile minizip.zip
+          Expand-Archive minizip.zip -DestinationPath .
+          Rename-Item "minizip-ng-${{ env.MINIZIP_VERSION }}" minizip_src
+      
+      - name: Build minizip-ng (shared, with static zlib)
+        shell: cmd
+        run: |
+          mkdir minizip_build
+          cd minizip_build
+          cmake ../minizip_src ^
+            -G "Visual Studio 17 2022" ^
+            -A ${{ matrix.cmake_arch }} ^
+            -DCMAKE_INSTALL_PREFIX=../minizip_install ^
+            -DCMAKE_PREFIX_PATH=../zlib_install ^
+            -DZLIB_ROOT=../zlib_install ^
+            -DBUILD_SHARED_LIBS=ON ^
+            -DMZ_COMPAT=OFF ^
+            -DMZ_ZLIB=ON ^
+            -DMZ_BZIP2=OFF ^
+            -DMZ_LZMA=OFF ^
+            -DMZ_ZSTD=OFF ^
+            -DMZ_LIBCOMP=OFF ^
+            -DMZ_PKCRYPT=OFF ^
+            -DMZ_WZAES=OFF ^
+            -DMZ_OPENSSL=OFF ^
+            -DMZ_BCRYPT=OFF ^
+            -DMZ_ICONV=OFF ^
+            -DMZ_LIBBSD=OFF ^
+            -DMZ_FETCH_LIBS=OFF ^
+            -DMZ_FORCE_FETCH_LIBS=OFF ^
+            -DMZ_BUILD_TESTS=OFF ^
+            -DMZ_BUILD_UNIT_TESTS=OFF ^
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build . --config Release --parallel
+          cmake --install . --config Release
+      
+      - name: Build minizip-ng (static, with static zlib)
+        shell: cmd
+        run: |
+          mkdir minizip_build_static
+          cd minizip_build_static
+          cmake ../minizip_src ^
+            -G "Visual Studio 17 2022" ^
+            -A ${{ matrix.cmake_arch }} ^
+            -DCMAKE_INSTALL_PREFIX=../minizip_install_static ^
+            -DCMAKE_PREFIX_PATH=../zlib_install ^
+            -DZLIB_ROOT=../zlib_install ^
+            -DBUILD_SHARED_LIBS=OFF ^
+            -DMZ_COMPAT=OFF ^
+            -DMZ_ZLIB=ON ^
+            -DMZ_BZIP2=OFF ^
+            -DMZ_LZMA=OFF ^
+            -DMZ_ZSTD=OFF ^
+            -DMZ_LIBCOMP=OFF ^
+            -DMZ_PKCRYPT=OFF ^
+            -DMZ_WZAES=OFF ^
+            -DMZ_OPENSSL=OFF ^
+            -DMZ_BCRYPT=OFF ^
+            -DMZ_ICONV=OFF ^
+            -DMZ_LIBBSD=OFF ^
+            -DMZ_FETCH_LIBS=OFF ^
+            -DMZ_FORCE_FETCH_LIBS=OFF ^
+            -DMZ_BUILD_TESTS=OFF ^
+            -DMZ_BUILD_UNIT_TESTS=OFF ^
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build . --config Release --parallel
+          cmake --install . --config Release
+      
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}"
+          
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/lib"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/bin"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/static"
+          
+          # Copy headers
+          Copy-Item -Recurse -Force "minizip_install/include/*" "artifact/windows/$arch/include/"
+          
+          # Copy shared libraries
+          Copy-Item "minizip_install/lib/*.lib" "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
+          Copy-Item "minizip_install/bin/*.dll" "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
+          
+          # Copy static libraries
+          Copy-Item "minizip_install_static/lib/*.lib" "artifact/windows/$arch/static/" -ErrorAction SilentlyContinue
+          
+          Write-Host "=== Built files ==="
+          Get-ChildItem -Recurse artifact -File | Select-Object FullName
+      
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/windows/${{ matrix.arch }}
+          platform: windows
+          library-name: minizip
+          expect-shared-libs: '1'
+          expect-static-libs: '1'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minizip-windows-${{ matrix.arch }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # macOS Builds (Intel x86_64, Apple Silicon arm64)
+  # ============================================================================
+  build-macos:
+    if: contains(github.event.inputs.platforms, 'macos')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            arch: x86_64
+            platform_name: intel
+            cross_compile: true
+          - os: macos-15
+            arch: arm64
+            platform_name: arm
+            cross_compile: false
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: brew install cmake ninja
+      
+      - name: Download zlib-ng source
+        run: |
+          curl -L -o zlib.tar.gz https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.tar.gz
+          tar -xzf zlib.tar.gz
+          mv zlib-ng-${{ env.ZLIB_VERSION }} zlib_src
+      
+      - name: Build zlib-ng (static)
+        run: |
+          cmake -B zlib_build -S zlib_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
+            -DZLIB_COMPAT=ON \
+            -DZLIB_ENABLE_TESTS=OFF \
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build zlib_build --parallel $(sysctl -n hw.ncpu)
+          cmake --install zlib_build
+      
+      - name: Download minizip-ng source
+        run: |
+          curl -L -o minizip.tar.gz https://github.com/zlib-ng/minizip-ng/archive/refs/tags/${{ env.MINIZIP_VERSION }}.tar.gz
+          tar -xzf minizip.tar.gz
+          mv minizip-ng-${{ env.MINIZIP_VERSION }} minizip_src
+      
+      - name: Build minizip-ng (shared)
+        run: |
+          cmake -B minizip_build -S minizip_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build --parallel $(sysctl -n hw.ncpu)
+          cmake --install minizip_build
+      
+      - name: Build minizip-ng (static)
+        run: |
+          cmake -B minizip_build_static -S minizip_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install_static \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build_static --parallel $(sysctl -n hw.ncpu)
+          cmake --install minizip_build_static
+      
+      - name: Prepare artifact
+        run: |
+          PLATFORM="${{ matrix.platform_name }}"
+          mkdir -p artifact/macosx/$PLATFORM/include
+          mkdir -p artifact/macosx/$PLATFORM/lib
+          mkdir -p artifact/macosx/$PLATFORM/static
+          
+          # Copy headers
+          cp -r minizip_install/include/* artifact/macosx/$PLATFORM/include/
+          
+          # Copy shared libraries
+          cp minizip_install/lib/*.dylib artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
+          
+          # Copy static libraries
+          cp minizip_install_static/lib/*.a artifact/macosx/$PLATFORM/static/ 2>/dev/null || true
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Fix macOS RPATH
+        uses: ./.github/actions/fix-macos-rpath
+        with:
+          lib-path: artifact/macosx/${{ matrix.platform_name }}/lib
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/macosx/${{ matrix.platform_name }}
+          platform: macos
+          library-name: minizip
+          expect-shared-libs: '1'
+          expect-static-libs: '1'
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minizip-macos-${{ matrix.platform_name }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # iOS Build (arm64 device, arm64+x86_64 simulator) - Static only
+  # ============================================================================
+  build-ios:
+    if: contains(github.event.inputs.platforms, 'ios')
+    runs-on: macos-14
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: iphoneos
+            arch: arm64
+            sdk: iphoneos
+          - platform: iphonesimulator
+            arch: arm64
+            sdk: iphonesimulator
+          - platform: iphonesimulator
+            arch: x86_64
+            sdk: iphonesimulator
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Download zlib-ng source
+        run: |
+          curl -L -o zlib.tar.gz https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.tar.gz
+          tar -xzf zlib.tar.gz
+          mv zlib-ng-${{ env.ZLIB_VERSION }} zlib_src
+      
+      - name: Build zlib-ng (static)
+        run: |
+          cmake -B zlib_build -S zlib_src \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=${{ matrix.sdk }} \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
+            -DZLIB_COMPAT=ON \
+            -DZLIB_ENABLE_TESTS=OFF \
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build zlib_build --parallel $(sysctl -n hw.ncpu)
+          cmake --install zlib_build
+      
+      - name: Download minizip-ng source
+        run: |
+          curl -L -o minizip.tar.gz https://github.com/zlib-ng/minizip-ng/archive/refs/tags/${{ env.MINIZIP_VERSION }}.tar.gz
+          tar -xzf minizip.tar.gz
+          mv minizip-ng-${{ env.MINIZIP_VERSION }} minizip_src
+      
+      - name: Build minizip-ng (static)
+        run: |
+          cmake -B minizip_build -S minizip_src \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=${{ matrix.sdk }} \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build --parallel $(sysctl -n hw.ncpu)
+          cmake --install minizip_build
+      
+      - name: Prepare artifact
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          ARCH="${{ matrix.arch }}"
+          mkdir -p artifact/ios/$PLATFORM-$ARCH/include
+          mkdir -p artifact/ios/$PLATFORM-$ARCH/lib
+          
+          cp -r minizip_install/include/* artifact/ios/$PLATFORM-$ARCH/include/
+          cp minizip_install/lib/*.a artifact/ios/$PLATFORM-$ARCH/lib/
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/ios/${{ matrix.platform }}-${{ matrix.arch }}
+          platform: ios
+          library-name: minizip
+          expect-static-libs: '1'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minizip-ios-${{ matrix.platform }}-${{ matrix.arch }}
+          path: artifact/
+          retention-days: 30
+
+  # Create iOS XCFramework
+  build-ios-xcframework:
+    needs: build-ios
+    if: contains(github.event.inputs.platforms, 'ios')
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download iOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: minizip-ios-*
+          path: downloads/
+      
+      - name: Create XCFramework
+        run: |
+          mkdir -p artifact/ios/include
+          
+          # Copy headers from device build
+          cp -r downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/include/* artifact/ios/include/
+          
+          # Create fat library for simulator
+          mkdir -p sim_fat
+          lipo -create \
+            downloads/minizip-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libminizip.a \
+            downloads/minizip-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libminizip.a \
+            -output sim_fat/libminizip.a
+          
+          # Create XCFramework
+          xcodebuild -create-xcframework \
+            -library downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libminizip.a \
+            -headers downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+            -library sim_fat/libminizip.a \
+            -headers downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+            -output artifact/ios/libminizip.xcframework
+          
+          echo "=== XCFramework structure ==="
+          find artifact -type d
+      
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/ios
+          platform: ios
+          library-name: minizip
+          expect-static-libs: '1'
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: minizip-ios-xcframework
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Android Build (arm64-v8a, armeabi-v7a, x86_64, x86)
+  # ============================================================================
+  build-android:
+    if: contains(github.event.inputs.platforms, 'android')
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: [arm64-v8a, armeabi-v7a, x86_64, x86]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Android NDK
+        uses: android-actions/setup-android@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build patchelf
+      
+      - name: Download zlib-ng source
+        run: |
+          curl -L -o zlib.tar.gz https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.tar.gz
+          tar -xzf zlib.tar.gz
+          mv zlib-ng-${{ env.ZLIB_VERSION }} zlib_src
+      
+      - name: Build zlib-ng (static)
+        run: |
+          cmake -B zlib_build -S zlib_src \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=android-24 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
+            -DZLIB_COMPAT=ON \
+            -DZLIB_ENABLE_TESTS=OFF \
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build zlib_build --parallel $(nproc)
+          cmake --install zlib_build
+      
+      - name: Download minizip-ng source
+        run: |
+          curl -L -o minizip.tar.gz https://github.com/zlib-ng/minizip-ng/archive/refs/tags/${{ env.MINIZIP_VERSION }}.tar.gz
+          tar -xzf minizip.tar.gz
+          mv minizip-ng-${{ env.MINIZIP_VERSION }} minizip_src
+      
+      - name: Build minizip-ng (shared)
+        run: |
+          cmake -B minizip_build -S minizip_src \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=android-24 \
+            -DANDROID_STL=c++_shared \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build --parallel $(nproc)
+          cmake --install minizip_build
+      
+      - name: Build minizip-ng (static)
+        run: |
+          cmake -B minizip_build_static -S minizip_src \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=android-24 \
+            -DANDROID_STL=c++_shared \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install_static \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build_static --parallel $(nproc)
+          cmake --install minizip_build_static
+      
+      - name: Prepare artifact
+        run: |
+          ABI="${{ matrix.abi }}"
+          mkdir -p artifact/android/$ABI/include
+          mkdir -p artifact/android/$ABI/lib
+          mkdir -p artifact/android/$ABI/static
+          
+          cp -r minizip_install/include/* artifact/android/$ABI/include/
+          cp minizip_install/lib/*.so artifact/android/$ABI/lib/ 2>/dev/null || true
+          cp minizip_install_static/lib/*.a artifact/android/$ABI/static/ 2>/dev/null || true
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Fix Android RPATH
+        uses: ./.github/actions/fix-android-rpath
+        with:
+          lib-path: artifact/android/${{ matrix.abi }}/lib
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/android/${{ matrix.abi }}
+          platform: android
+          library-name: minizip
+          expect-shared-libs: '1'
+          expect-static-libs: '1'
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minizip-android-${{ matrix.abi }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Linux Build (x64)
+  # ============================================================================
+  build-linux:
+    if: contains(github.event.inputs.platforms, 'linux')
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build patchelf
+      
+      - name: Download zlib-ng source
+        run: |
+          curl -L -o zlib.tar.gz https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.tar.gz
+          tar -xzf zlib.tar.gz
+          mv zlib-ng-${{ env.ZLIB_VERSION }} zlib_src
+      
+      - name: Build zlib-ng (static)
+        run: |
+          cmake -B zlib_build -S zlib_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
+            -DZLIB_COMPAT=ON \
+            -DZLIB_ENABLE_TESTS=OFF \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+          cmake --build zlib_build --parallel $(nproc)
+          cmake --install zlib_build
+      
+      - name: Download minizip-ng source
+        run: |
+          curl -L -o minizip.tar.gz https://github.com/zlib-ng/minizip-ng/archive/refs/tags/${{ env.MINIZIP_VERSION }}.tar.gz
+          tar -xzf minizip.tar.gz
+          mv minizip-ng-${{ env.MINIZIP_VERSION }} minizip_src
+      
+      - name: Build minizip-ng (shared)
+        run: |
+          cmake -B minizip_build -S minizip_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build --parallel $(nproc)
+          cmake --install minizip_build
+      
+      - name: Build minizip-ng (static)
+        run: |
+          cmake -B minizip_build_static -S minizip_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/minizip_install_static \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+            -DMZ_COMPAT=OFF \
+            -DMZ_ZLIB=ON \
+            -DMZ_BZIP2=OFF \
+            -DMZ_LZMA=OFF \
+            -DMZ_ZSTD=OFF \
+            -DMZ_LIBCOMP=OFF \
+            -DMZ_PKCRYPT=OFF \
+            -DMZ_WZAES=OFF \
+            -DMZ_OPENSSL=OFF \
+            -DMZ_ICONV=OFF \
+            -DMZ_LIBBSD=OFF \
+            -DMZ_FETCH_LIBS=OFF \
+            -DMZ_FORCE_FETCH_LIBS=OFF \
+            -DMZ_BUILD_TESTS=OFF \
+            -DMZ_BUILD_UNIT_TESTS=OFF \
+            -DMZ_BUILD_FUZZ_TESTS=OFF
+          cmake --build minizip_build_static --parallel $(nproc)
+          cmake --install minizip_build_static
+      
+      - name: Prepare artifact
+        run: |
+          mkdir -p artifact/linux/x64/include
+          mkdir -p artifact/linux/x64/lib
+          mkdir -p artifact/linux/x64/static
+          
+          cp -r minizip_install/include/* artifact/linux/x64/include/
+          cp minizip_install/lib/*.so* artifact/linux/x64/lib/ 2>/dev/null || true
+          cp minizip_install_static/lib/*.a artifact/linux/x64/static/ 2>/dev/null || true
+          
+          echo "=== Built files ==="
+          find artifact -type f
+      
+      - name: Fix Linux RPATH
+        uses: ./.github/actions/fix-linux-rpath
+        with:
+          lib-path: artifact/linux/x64/lib
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/linux/x64
+          platform: linux
+          library-name: minizip
+          expect-shared-libs: '1'
+          expect-static-libs: '1'
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minizip-linux-x64
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Merge All Artifacts
+  # ============================================================================
+  merge-artifacts:
+    needs: [build-windows, build-macos, build-ios-xcframework, build-android, build-linux]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Merge all platform artifacts
+        uses: ./.github/actions/merge-artifacts
+        with:
+          library-name: minizip
+          version: ${{ github.event.inputs.minizip_version }}
+          windows-archs: 'x64,x86,arm64'
+          macos-platforms: 'intel,arm'
+          android-abis: 'arm64-v8a,armeabi-v7a,x86_64,x86'
+          has-ios: 'true'
+          has-linux: 'true'
