@@ -237,7 +237,7 @@ jobs:
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
-          artifact-path: artifact/macosx/${{ matrix.platform_name }}
+          artifact-path: artifact/macosx
           platform: macos
           library-name: opencv
           expect-shared-libs: '1'    # libopencv_*.dylib
@@ -519,7 +519,7 @@ jobs:
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
-          artifact-path: artifact/android/libs/${{ matrix.abi }}
+          artifact-path: artifact/android
           platform: android
           library-name: opencv
           expect-shared-libs: '1'    # libopencv_java4.so
