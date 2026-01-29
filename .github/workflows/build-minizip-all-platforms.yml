@@ -161,12 +161,12 @@ jobs:
           # Copy headers
           Copy-Item -Recurse -Force "minizip_install/include/*" "artifact/windows/$arch/include/"
           
-          # Copy import libraries (from shared build)
-          Get-ChildItem -Path minizip_install -Recurse -Include "*.lib" | ForEach-Object {
+          # Copy import libraries (from build directory, not installed by CMake)
+          Get-ChildItem -Path minizip_build/Release -Include "*.lib" | ForEach-Object {
             Copy-Item $_.FullName "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
           }
           
-          # Copy DLLs
+          # Copy DLLs (from install directory)
           Get-ChildItem -Path minizip_install -Recurse -Include "*.dll" | ForEach-Object {
             Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
           }
