@@ -464,26 +464,58 @@ jobs:
           pattern: minizip-ios-*
           path: downloads/
       
+      - name: Debug - Show downloaded structure
+        run: |
+          echo "=== Downloaded artifacts structure ==="
+          echo "All .a files:"
+          find downloads -type f -name "*.a" 2>/dev/null || echo "No .a files found"
+          echo ""
+          echo "All directories:"
+          find downloads -type d 2>/dev/null | head -50
+      
       - name: Create XCFramework
         run: |
+          echo "=== Finding library files ==="
+          
+          # Find the actual paths dynamically
+          DEVICE_LIB=$(find downloads -path "*iphoneos*arm64*" -name "libminizip.a" 2>/dev/null | head -1)
+          SIM_ARM64_LIB=$(find downloads -path "*iphonesimulator*arm64*" -name "libminizip.a" 2>/dev/null | head -1)
+          SIM_X86_64_LIB=$(find downloads -path "*iphonesimulator*x86_64*" -name "libminizip.a" 2>/dev/null | head -1)
+          
+          echo "Device lib: $DEVICE_LIB"
+          echo "Sim ARM64 lib: $SIM_ARM64_LIB"
+          echo "Sim x86_64 lib: $SIM_X86_64_LIB"
+          
+          # Validate all libraries exist
+          if [ -z "$DEVICE_LIB" ] || [ -z "$SIM_ARM64_LIB" ] || [ -z "$SIM_X86_64_LIB" ]; then
+            echo "ERROR: Missing required library files"
+            echo "Available files:"
+            find downloads -type f 2>/dev/null
+            exit 1
+          fi
+          
+          # Get header directory from device build
+          DEVICE_DIR=$(dirname "$(dirname "$DEVICE_LIB")")
+          HEADER_DIR="$DEVICE_DIR/include"
+          
+          echo "Device dir: $DEVICE_DIR"
+          echo "Header dir: $HEADER_DIR"
+          
           mkdir -p artifact/ios/include
           
           # Copy headers from device build
-          cp -r downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/include/* artifact/ios/include/
+          cp -r "$HEADER_DIR/"* artifact/ios/include/
           
           # Create fat library for simulator
           mkdir -p sim_fat
-          lipo -create \
-            downloads/minizip-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64/lib/libminizip.a \
-            downloads/minizip-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64/lib/libminizip.a \
-            -output sim_fat/libminizip.a
+          lipo -create "$SIM_ARM64_LIB" "$SIM_X86_64_LIB" -output sim_fat/libminizip.a
           
           # Create XCFramework
           xcodebuild -create-xcframework \
-            -library downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/lib/libminizip.a \
-            -headers downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+            -library "$DEVICE_LIB" \
+            -headers "$HEADER_DIR" \
             -library sim_fat/libminizip.a \
-            -headers downloads/minizip-ios-iphoneos-arm64/ios/iphoneos-arm64/include \
+            -headers "$HEADER_DIR" \
             -output artifact/ios/libminizip.xcframework
           
           echo "=== XCFramework structure ==="
