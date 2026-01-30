@@ -3,20 +3,47 @@
 
 #include <zstd.h>
 #include <zstd_errors.h>
+#include <zlib.h>
 
 namespace ucf::utilities {
+
+//============================================
+// Helper functions
+//============================================
+namespace {
+
+int levelToZlibLevel(CompressionLevel level)
+{
+    switch (level) {
+        case CompressionLevel::Fastest: return 1;
+        case CompressionLevel::Fast:    return 3;
+        case CompressionLevel::Default: return 6;
+        case CompressionLevel::Better:  return 8;
+        case CompressionLevel::Best:    return 9;
+        default:                        return Z_DEFAULT_COMPRESSION;
+    }
+}
+
+} // anonymous namespace
 
 //============================================
 // Impl - PIMPL implementation
 //============================================
 class CompressionWrapper::Impl {
 public:
-    explicit Impl(CompressionLevel level)
-        : mLevel(level)
-        , mCCtx(ZSTD_createCCtx())
-        , mDCtx(ZSTD_createDCtx())
+    explicit Impl(CompressionFormat format, CompressionLevel level)
+        : mFormat(format)
+        , mLevel(level)
+        , mCCtx(nullptr)
+        , mDCtx(nullptr)
     {
-        COMPRESSION_LOG_DEBUG("CompressionWrapper created, level=" << static_cast<int>(level));
+        if (format == CompressionFormat::Zstd) {
+            mCCtx = ZSTD_createCCtx();
+            mDCtx = ZSTD_createDCtx();
+        }
+        COMPRESSION_LOG_DEBUG("CompressionWrapper created, format=" 
+                              << (format == CompressionFormat::Zstd ? "zstd" : "gzip")
+                              << ", level=" << static_cast<int>(level));
     }
 
     ~Impl()
@@ -28,10 +55,86 @@ public:
 
     void setLevel(CompressionLevel level) { mLevel = level; }
     CompressionLevel getLevel() const { return mLevel; }
+    CompressionFormat getFormat() const { return mFormat; }
 
     CompressionResult compress(const uint8_t* input, size_t inputSize) const
     {
+        if (mFormat == CompressionFormat::Zstd) {
+            return compressZstd(input, inputSize);
+        } else {
+            return compressGzip(input, inputSize);
+        }
+    }
+
+    CompressionError compressTo(const uint8_t* input, size_t inputSize,
+                                 uint8_t* output, size_t outputCapacity,
+                                 size_t& compressedSize) const
+    {
+        if (mFormat == CompressionFormat::Zstd) {
+            return compressToZstd(input, inputSize, output, outputCapacity, compressedSize);
+        } else {
+            return compressToGzip(input, inputSize, output, outputCapacity, compressedSize);
+        }
+    }
+
+    DecompressionResult decompress(const uint8_t* input, size_t inputSize,
+                                    size_t originalSize) const
+    {
+        if (mFormat == CompressionFormat::Zstd) {
+            return decompressZstd(input, inputSize, originalSize);
+        } else {
+            return decompressGzip(input, inputSize, originalSize);
+        }
+    }
+
+    CompressionError decompressTo(const uint8_t* input, size_t inputSize,
+                                   uint8_t* output, size_t outputCapacity,
+                                   size_t& decompressedSize) const
+    {
+        if (mFormat == CompressionFormat::Zstd) {
+            return decompressToZstd(input, inputSize, output, outputCapacity, decompressedSize);
+        } else {
+            return decompressToGzip(input, inputSize, output, outputCapacity, decompressedSize);
+        }
+    }
+
+    size_t getCompressBound(size_t inputSize) const
+    {
+        if (mFormat == CompressionFormat::Zstd) {
+            return ZSTD_compressBound(inputSize);
+        } else {
+            // gzip: deflate bound + 18 bytes for gzip header/trailer
+            return compressBound(static_cast<uLong>(inputSize)) + 18;
+        }
+    }
+
+    size_t getDecompressedSize(const uint8_t* compressedData, size_t compressedSize) const
+    {
+        if (mFormat == CompressionFormat::Zstd) {
+            unsigned long long frameSize = ZSTD_getFrameContentSize(compressedData, compressedSize);
+            if (frameSize == ZSTD_CONTENTSIZE_ERROR || frameSize == ZSTD_CONTENTSIZE_UNKNOWN) {
+                return 0;
+            }
+            return static_cast<size_t>(frameSize);
+        } else {
+            // Gzip stores uncompressed size in last 4 bytes (mod 2^32)
+            // This is unreliable for files > 4GB
+            if (compressedSize < 4) return 0;
+            const uint8_t* footer = compressedData + compressedSize - 4;
+            return static_cast<size_t>(footer[0]) |
+                   (static_cast<size_t>(footer[1]) << 8) |
+                   (static_cast<size_t>(footer[2]) << 16) |
+                   (static_cast<size_t>(footer[3]) << 24);
+        }
+    }
+
+private:
+    //========== Zstd Implementation ==========
+    
+    CompressionResult compressZstd(const uint8_t* input, size_t inputSize) const
+    {
         CompressionResult result;
+        result.format = CompressionFormat::Zstd;
         
         if (input == nullptr || inputSize == 0) {
             result.error = CompressionError::InvalidInput;
@@ -49,7 +152,7 @@ public:
         );
 
         if (ZSTD_isError(compressedSize)) {
-            COMPRESSION_LOG_ERROR("Compression failed: " << ZSTD_getErrorName(compressedSize));
+            COMPRESSION_LOG_ERROR("Zstd compression failed: " << ZSTD_getErrorName(compressedSize));
             result.error = CompressionError::CompressionFailed;
             result.data.clear();
             return result;
@@ -61,15 +164,15 @@ public:
         result.ratio = static_cast<double>(compressedSize) / static_cast<double>(inputSize);
         result.error = CompressionError::Success;
 
-        COMPRESSION_LOG_DEBUG("Compressed: " << inputSize << " -> " << compressedSize 
+        COMPRESSION_LOG_DEBUG("Zstd compressed: " << inputSize << " -> " << compressedSize 
                               << " (ratio=" << result.ratio << ")");
 
         return result;
     }
 
-    CompressionError compressTo(const uint8_t* input, size_t inputSize,
-                                 uint8_t* output, size_t outputCapacity,
-                                 size_t& compressedSize) const
+    CompressionError compressToZstd(const uint8_t* input, size_t inputSize,
+                                     uint8_t* output, size_t outputCapacity,
+                                     size_t& compressedSize) const
     {
         if (input == nullptr || inputSize == 0) {
             return CompressionError::InvalidInput;
@@ -86,7 +189,7 @@ public:
             if (ZSTD_getErrorCode(result) == ZSTD_error_dstSize_tooSmall) {
                 return CompressionError::OutputBufferTooSmall;
             }
-            COMPRESSION_LOG_ERROR("Compression failed: " << ZSTD_getErrorName(result));
+            COMPRESSION_LOG_ERROR("Zstd compression failed: " << ZSTD_getErrorName(result));
             return CompressionError::CompressionFailed;
         }
 
@@ -94,10 +197,11 @@ public:
         return CompressionError::Success;
     }
 
-    DecompressionResult decompress(const uint8_t* input, size_t inputSize,
-                                    size_t originalSize) const
+    DecompressionResult decompressZstd(const uint8_t* input, size_t inputSize,
+                                        size_t originalSize) const
     {
         DecompressionResult result;
+        result.format = CompressionFormat::Zstd;
         
         if (input == nullptr || inputSize == 0) {
             result.error = CompressionError::InvalidInput;
@@ -130,7 +234,7 @@ public:
         );
 
         if (ZSTD_isError(actualSize)) {
-            COMPRESSION_LOG_ERROR("Decompression failed: " << ZSTD_getErrorName(actualSize));
+            COMPRESSION_LOG_ERROR("Zstd decompression failed: " << ZSTD_getErrorName(actualSize));
             result.error = CompressionError::DecompressionFailed;
             result.data.clear();
             return result;
@@ -141,14 +245,14 @@ public:
         result.decompressedSize = actualSize;
         result.error = CompressionError::Success;
 
-        COMPRESSION_LOG_DEBUG("Decompressed: " << inputSize << " -> " << actualSize);
+        COMPRESSION_LOG_DEBUG("Zstd decompressed: " << inputSize << " -> " << actualSize);
 
         return result;
     }
 
-    CompressionError decompressTo(const uint8_t* input, size_t inputSize,
-                                   uint8_t* output, size_t outputCapacity,
-                                   size_t& decompressedSize) const
+    CompressionError decompressToZstd(const uint8_t* input, size_t inputSize,
+                                       uint8_t* output, size_t outputCapacity,
+                                       size_t& decompressedSize) const
     {
         if (input == nullptr || inputSize == 0) {
             return CompressionError::InvalidInput;
@@ -164,7 +268,7 @@ public:
             if (ZSTD_getErrorCode(result) == ZSTD_error_dstSize_tooSmall) {
                 return CompressionError::OutputBufferTooSmall;
             }
-            COMPRESSION_LOG_ERROR("Decompression failed: " << ZSTD_getErrorName(result));
+            COMPRESSION_LOG_ERROR("Zstd decompression failed: " << ZSTD_getErrorName(result));
             return CompressionError::DecompressionFailed;
         }
 
@@ -172,7 +276,208 @@ public:
         return CompressionError::Success;
     }
 
+    //========== Gzip Implementation ==========
+    
+    CompressionResult compressGzip(const uint8_t* input, size_t inputSize) const
+    {
+        CompressionResult result;
+        result.format = CompressionFormat::Gzip;
+        
+        if (input == nullptr || inputSize == 0) {
+            result.error = CompressionError::InvalidInput;
+            return result;
+        }
+
+        // Estimate output size
+        uLong bound = compressBound(static_cast<uLong>(inputSize)) + 18; // +18 for gzip header/trailer
+        result.data.resize(bound);
+
+        z_stream strm{};
+        strm.next_in = const_cast<Bytef*>(input);
+        strm.avail_in = static_cast<uInt>(inputSize);
+        strm.next_out = result.data.data();
+        strm.avail_out = static_cast<uInt>(result.data.size());
+
+        // windowBits = 15 + 16 = 31 for gzip format
+        int ret = deflateInit2(&strm, levelToZlibLevel(mLevel), Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
+        if (ret != Z_OK) {
+            COMPRESSION_LOG_ERROR("Gzip deflateInit2 failed: " << ret);
+            result.error = CompressionError::CompressionFailed;
+            return result;
+        }
+
+        ret = deflate(&strm, Z_FINISH);
+        if (ret != Z_STREAM_END) {
+            deflateEnd(&strm);
+            COMPRESSION_LOG_ERROR("Gzip deflate failed: " << ret);
+            result.error = CompressionError::CompressionFailed;
+            result.data.clear();
+            return result;
+        }
+
+        size_t compressedSize = strm.total_out;
+        deflateEnd(&strm);
+
+        result.data.resize(compressedSize);
+        result.originalSize = inputSize;
+        result.compressedSize = compressedSize;
+        result.ratio = static_cast<double>(compressedSize) / static_cast<double>(inputSize);
+        result.error = CompressionError::Success;
+
+        COMPRESSION_LOG_DEBUG("Gzip compressed: " << inputSize << " -> " << compressedSize 
+                              << " (ratio=" << result.ratio << ")");
+
+        return result;
+    }
+
+    CompressionError compressToGzip(const uint8_t* input, size_t inputSize,
+                                     uint8_t* output, size_t outputCapacity,
+                                     size_t& compressedSize) const
+    {
+        if (input == nullptr || inputSize == 0) {
+            return CompressionError::InvalidInput;
+        }
+
+        z_stream strm{};
+        strm.next_in = const_cast<Bytef*>(input);
+        strm.avail_in = static_cast<uInt>(inputSize);
+        strm.next_out = output;
+        strm.avail_out = static_cast<uInt>(outputCapacity);
+
+        int ret = deflateInit2(&strm, levelToZlibLevel(mLevel), Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
+        if (ret != Z_OK) {
+            return CompressionError::CompressionFailed;
+        }
+
+        ret = deflate(&strm, Z_FINISH);
+        if (ret != Z_STREAM_END) {
+            deflateEnd(&strm);
+            if (ret == Z_BUF_ERROR) {
+                return CompressionError::OutputBufferTooSmall;
+            }
+            return CompressionError::CompressionFailed;
+        }
+
+        compressedSize = strm.total_out;
+        deflateEnd(&strm);
+        return CompressionError::Success;
+    }
+
+    DecompressionResult decompressGzip(const uint8_t* input, size_t inputSize,
+                                        size_t originalSize) const
+    {
+        DecompressionResult result;
+        result.format = CompressionFormat::Gzip;
+        
+        if (input == nullptr || inputSize == 0) {
+            result.error = CompressionError::InvalidInput;
+            return result;
+        }
+
+        // Estimate decompressed size
+        size_t decompressedSize = originalSize;
+        if (decompressedSize == 0) {
+            // Try to get from gzip footer (last 4 bytes)
+            if (inputSize >= 4) {
+                const uint8_t* footer = input + inputSize - 4;
+                decompressedSize = static_cast<size_t>(footer[0]) |
+                                   (static_cast<size_t>(footer[1]) << 8) |
+                                   (static_cast<size_t>(footer[2]) << 16) |
+                                   (static_cast<size_t>(footer[3]) << 24);
+            }
+            if (decompressedSize == 0) {
+                // Fallback: assume 10x compression ratio
+                decompressedSize = inputSize * 10;
+            }
+        }
+
+        result.data.resize(decompressedSize);
+
+        z_stream strm{};
+        strm.next_in = const_cast<Bytef*>(input);
+        strm.avail_in = static_cast<uInt>(inputSize);
+        strm.next_out = result.data.data();
+        strm.avail_out = static_cast<uInt>(result.data.size());
+
+        // windowBits = 15 + 16 = 31 for gzip auto-detect
+        int ret = inflateInit2(&strm, 15 + 16);
+        if (ret != Z_OK) {
+            COMPRESSION_LOG_ERROR("Gzip inflateInit2 failed: " << ret);
+            result.error = CompressionError::DecompressionFailed;
+            return result;
+        }
+
+        ret = inflate(&strm, Z_FINISH);
+        
+        // Handle case where output buffer was too small
+        while (ret == Z_BUF_ERROR || (ret == Z_OK && strm.avail_out == 0)) {
+            size_t currentSize = result.data.size();
+            result.data.resize(currentSize * 2);
+            strm.next_out = result.data.data() + currentSize;
+            strm.avail_out = static_cast<uInt>(currentSize);
+            ret = inflate(&strm, Z_FINISH);
+        }
+
+        if (ret != Z_STREAM_END) {
+            inflateEnd(&strm);
+            COMPRESSION_LOG_ERROR("Gzip inflate failed: " << ret);
+            result.error = (ret == Z_DATA_ERROR) ? CompressionError::CorruptedData 
+                                                  : CompressionError::DecompressionFailed;
+            result.data.clear();
+            return result;
+        }
+
+        size_t actualSize = strm.total_out;
+        inflateEnd(&strm);
+
+        result.data.resize(actualSize);
+        result.compressedSize = inputSize;
+        result.decompressedSize = actualSize;
+        result.error = CompressionError::Success;
+
+        COMPRESSION_LOG_DEBUG("Gzip decompressed: " << inputSize << " -> " << actualSize);
+
+        return result;
+    }
+
+    CompressionError decompressToGzip(const uint8_t* input, size_t inputSize,
+                                       uint8_t* output, size_t outputCapacity,
+                                       size_t& decompressedSize) const
+    {
+        if (input == nullptr || inputSize == 0) {
+            return CompressionError::InvalidInput;
+        }
+
+        z_stream strm{};
+        strm.next_in = const_cast<Bytef*>(input);
+        strm.avail_in = static_cast<uInt>(inputSize);
+        strm.next_out = output;
+        strm.avail_out = static_cast<uInt>(outputCapacity);
+
+        int ret = inflateInit2(&strm, 15 + 16);
+        if (ret != Z_OK) {
+            return CompressionError::DecompressionFailed;
+        }
+
+        ret = inflate(&strm, Z_FINISH);
+        if (ret != Z_STREAM_END) {
+            inflateEnd(&strm);
+            if (ret == Z_BUF_ERROR) {
+                return CompressionError::OutputBufferTooSmall;
+            }
+            if (ret == Z_DATA_ERROR) {
+                return CompressionError::CorruptedData;
+            }
+            return CompressionError::DecompressionFailed;
+        }
+
+        decompressedSize = strm.total_out;
+        inflateEnd(&strm);
+        return CompressionError::Success;
+    }
+
 private:
+    CompressionFormat mFormat;
     CompressionLevel mLevel;
     ZSTD_CCtx* mCCtx;
     ZSTD_DCtx* mDCtx;
@@ -181,8 +486,8 @@ private:
 //============================================
 // CompressionWrapper - Public interface
 //============================================
-CompressionWrapper::CompressionWrapper(CompressionLevel level)
-    : mImpl(std::make_unique<Impl>(level))
+CompressionWrapper::CompressionWrapper(CompressionFormat format, CompressionLevel level)
+    : mImpl(std::make_unique<Impl>(format, level))
 {
 }
 
@@ -199,6 +504,11 @@ void CompressionWrapper::setLevel(CompressionLevel level)
 CompressionLevel CompressionWrapper::getLevel() const
 {
     return mImpl->getLevel();
+}
+
+CompressionFormat CompressionWrapper::getFormat() const
+{
+    return mImpl->getFormat();
 }
 
 CompressionResult CompressionWrapper::compress(const uint8_t* input, size_t inputSize) const
@@ -252,31 +562,35 @@ CompressionError CompressionWrapper::decompressTo(const uint8_t* input, size_t i
     return mImpl->decompressTo(input, inputSize, output, outputCapacity, decompressedSize);
 }
 
-size_t CompressionWrapper::getCompressBound(size_t inputSize)
+size_t CompressionWrapper::getCompressBound(size_t inputSize) const
 {
-    return ZSTD_compressBound(inputSize);
+    return mImpl->getCompressBound(inputSize);
 }
 
-size_t CompressionWrapper::getDecompressedSize(const uint8_t* compressedData, size_t compressedSize)
+size_t CompressionWrapper::getDecompressedSize(const uint8_t* compressedData, size_t compressedSize) const
 {
-    unsigned long long frameSize = ZSTD_getFrameContentSize(compressedData, compressedSize);
-    if (frameSize == ZSTD_CONTENTSIZE_ERROR || frameSize == ZSTD_CONTENTSIZE_UNKNOWN) {
-        return 0;
+    return mImpl->getDecompressedSize(compressedData, compressedSize);
+}
+
+std::string CompressionWrapper::getBackendName() const
+{
+    if (mImpl->getFormat() == CompressionFormat::Zstd) {
+        return "zstd";
+    } else {
+        return "zlib-ng";
     }
-    return static_cast<size_t>(frameSize);
 }
 
-std::string CompressionWrapper::getBackendName()
+std::string CompressionWrapper::getBackendVersion() const
 {
-    return "zstd";
+    if (mImpl->getFormat() == CompressionFormat::Zstd) {
+        return ZSTD_versionString();
+    } else {
+        return zlibVersion();
+    }
 }
 
-std::string CompressionWrapper::getBackendVersion()
-{
-    return ZSTD_versionString();
-}
-
-const char* CompressionWrapper::errorToString(CompressionError error)
+const char* CompressionWrapper::errorToString(CompressionError error) const
 {
     switch (error) {
         case CompressionError::Success:              return "Success";
@@ -285,24 +599,69 @@ const char* CompressionWrapper::errorToString(CompressionError error)
         case CompressionError::CompressionFailed:    return "Compression failed";
         case CompressionError::DecompressionFailed:  return "Decompression failed";
         case CompressionError::CorruptedData:        return "Corrupted data";
+        case CompressionError::UnsupportedFormat:    return "Unsupported format";
         case CompressionError::UnknownError:         return "Unknown error";
         default:                                     return "Invalid error code";
+    }
+}
+
+const char* CompressionWrapper::formatToString(CompressionFormat format) const
+{
+    switch (format) {
+        case CompressionFormat::Zstd: return "zstd";
+        case CompressionFormat::Gzip: return "gzip";
+        default:                      return "unknown";
     }
 }
 
 //============================================
 // Convenience functions
 //============================================
-CompressionResult compressData(const uint8_t* input, size_t inputSize, CompressionLevel level)
+CompressionResult compressData(const uint8_t* input, size_t inputSize,
+                               CompressionFormat format, CompressionLevel level)
 {
-    CompressionWrapper compressor(level);
+    CompressionWrapper compressor(format, level);
     return compressor.compress(input, inputSize);
 }
 
-DecompressionResult decompressData(const uint8_t* input, size_t inputSize, size_t originalSize)
+DecompressionResult decompressData(const uint8_t* input, size_t inputSize,
+                                   CompressionFormat format, size_t originalSize)
 {
-    CompressionWrapper compressor;
+    CompressionWrapper compressor(format);
     return compressor.decompress(input, inputSize, originalSize);
+}
+
+DecompressionResult decompressDataAuto(const uint8_t* input, size_t inputSize,
+                                       size_t originalSize)
+{
+    auto format = detectCompressionFormat(input, inputSize);
+    if (!format.has_value()) {
+        DecompressionResult result;
+        result.error = CompressionError::UnsupportedFormat;
+        return result;
+    }
+    
+    CompressionWrapper compressor(format.value());
+    return compressor.decompress(input, inputSize, originalSize);
+}
+
+std::optional<CompressionFormat> detectCompressionFormat(const uint8_t* data, size_t size)
+{
+    if (size < 4) {
+        return std::nullopt;
+    }
+    
+    // Check gzip magic (0x1F 0x8B)
+    if (data[0] == 0x1F && data[1] == 0x8B) {
+        return CompressionFormat::Gzip;
+    }
+    
+    // Check zstd magic (0x28 0xB5 0x2F 0xFD)
+    if (data[0] == 0x28 && data[1] == 0xB5 && data[2] == 0x2F && data[3] == 0xFD) {
+        return CompressionFormat::Zstd;
+    }
+    
+    return std::nullopt;
 }
 
 } // namespace ucf::utilities

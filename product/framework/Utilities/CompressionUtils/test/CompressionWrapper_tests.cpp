@@ -91,7 +91,7 @@ TEST_CASE("CompressionWrapper - Compress to pre-allocated buffer", "[Compression
     CompressionWrapper compressor;
     
     std::string data = "Test data for compression";
-    size_t bound = CompressionWrapper::getCompressBound(data.size());
+    size_t bound = compressor.getCompressBound(data.size());
     
     std::vector<uint8_t> output(bound);
     size_t compressedSize = 0;
@@ -346,7 +346,7 @@ TEST_CASE("CompressionWrapper - Different compression levels", "[CompressionUtil
     std::vector<size_t> compressedSizes;
     
     for (auto level : levels) {
-        CompressionWrapper compressor(level);
+        CompressionWrapper compressor(CompressionFormat::Zstd, level);
         auto result = compressor.compress(data);
         REQUIRE(result.isSuccess());
         compressedSizes.push_back(result.compressedSize);
@@ -358,7 +358,7 @@ TEST_CASE("CompressionWrapper - Different compression levels", "[CompressionUtil
 }
 
 TEST_CASE("CompressionWrapper - Set and get level", "[CompressionUtils][Level]") {
-    CompressionWrapper compressor(CompressionLevel::Fast);
+    CompressionWrapper compressor(CompressionFormat::Zstd, CompressionLevel::Fast);
     
     REQUIRE(compressor.getLevel() == CompressionLevel::Fast);
     
@@ -369,8 +369,8 @@ TEST_CASE("CompressionWrapper - Set and get level", "[CompressionUtils][Level]")
 TEST_CASE("CompressionWrapper - Level affects compression ratio", "[CompressionUtils][Level]") {
     auto data = generateCompressibleData(100000);
     
-    CompressionWrapper fastCompressor(CompressionLevel::Fastest);
-    CompressionWrapper bestCompressor(CompressionLevel::Best);
+    CompressionWrapper fastCompressor(CompressionFormat::Zstd, CompressionLevel::Fastest);
+    CompressionWrapper bestCompressor(CompressionFormat::Zstd, CompressionLevel::Best);
     
     auto fastResult = fastCompressor.compress(data);
     auto bestResult = bestCompressor.compress(data);
@@ -386,14 +386,14 @@ TEST_CASE("CompressionWrapper - Level affects compression ratio", "[CompressionU
 // Utility Method Tests
 //============================================
 TEST_CASE("CompressionWrapper - Get compress bound", "[CompressionUtils][Utility]") {
+    CompressionWrapper compressor;
     size_t inputSize = 1000;
-    size_t bound = CompressionWrapper::getCompressBound(inputSize);
+    size_t bound = compressor.getCompressBound(inputSize);
     
     // Bound should be at least input size
     REQUIRE(bound >= inputSize);
     
     // Verify bound is sufficient
-    CompressionWrapper compressor;
     auto data = generateRandomData(inputSize);
     auto result = compressor.compress(data);
     
@@ -407,7 +407,7 @@ TEST_CASE("CompressionWrapper - Get decompressed size", "[CompressionUtils][Util
     auto compressed = compressor.compress(original);
     REQUIRE(compressed.isSuccess());
     
-    size_t size = CompressionWrapper::getDecompressedSize(
+    size_t size = compressor.getDecompressedSize(
         compressed.data.data(),
         compressed.data.size()
     );
@@ -416,25 +416,28 @@ TEST_CASE("CompressionWrapper - Get decompressed size", "[CompressionUtils][Util
 }
 
 TEST_CASE("CompressionWrapper - Get backend name", "[CompressionUtils][Utility]") {
-    std::string name = CompressionWrapper::getBackendName();
+    CompressionWrapper compressor;
+    std::string name = compressor.getBackendName();
     
     REQUIRE_FALSE(name.empty());
     REQUIRE(name == "zstd");
 }
 
 TEST_CASE("CompressionWrapper - Get backend version", "[CompressionUtils][Utility]") {
-    std::string version = CompressionWrapper::getBackendVersion();
+    CompressionWrapper compressor;
+    std::string version = compressor.getBackendVersion();
     
     REQUIRE_FALSE(version.empty());
 }
 
 TEST_CASE("CompressionWrapper - Error to string", "[CompressionUtils][Utility]") {
-    REQUIRE(std::string(CompressionWrapper::errorToString(CompressionError::Success)) == "Success");
-    REQUIRE(std::string(CompressionWrapper::errorToString(CompressionError::InvalidInput)) == "Invalid input");
-    REQUIRE(std::string(CompressionWrapper::errorToString(CompressionError::CompressionFailed)) == "Compression failed");
-    REQUIRE(std::string(CompressionWrapper::errorToString(CompressionError::DecompressionFailed)) == "Decompression failed");
-    REQUIRE(std::string(CompressionWrapper::errorToString(CompressionError::CorruptedData)) == "Corrupted data");
-    REQUIRE(std::string(CompressionWrapper::errorToString(CompressionError::OutputBufferTooSmall)) == "Output buffer too small");
+    CompressionWrapper compressor;
+    REQUIRE(std::string(compressor.errorToString(CompressionError::Success)) == "Success");
+    REQUIRE(std::string(compressor.errorToString(CompressionError::InvalidInput)) == "Invalid input");
+    REQUIRE(std::string(compressor.errorToString(CompressionError::CompressionFailed)) == "Compression failed");
+    REQUIRE(std::string(compressor.errorToString(CompressionError::DecompressionFailed)) == "Decompression failed");
+    REQUIRE(std::string(compressor.errorToString(CompressionError::CorruptedData)) == "Corrupted data");
+    REQUIRE(std::string(compressor.errorToString(CompressionError::OutputBufferTooSmall)) == "Output buffer too small");
 }
 
 //============================================
@@ -458,6 +461,7 @@ TEST_CASE("Convenience function - compressData with level", "[CompressionUtils][
     auto result = compressData(
         reinterpret_cast<const uint8_t*>(data.data()),
         data.size(),
+        CompressionFormat::Zstd,
         CompressionLevel::Best
     );
     
@@ -562,7 +566,7 @@ TEST_CASE("DecompressionResult - Boolean conversion", "[CompressionUtils][Result
 // Move Semantics Tests
 //============================================
 TEST_CASE("CompressionWrapper - Move constructor", "[CompressionUtils][Move]") {
-    CompressionWrapper original(CompressionLevel::Best);
+    CompressionWrapper original(CompressionFormat::Zstd, CompressionLevel::Best);
     
     CompressionWrapper moved(std::move(original));
     
@@ -575,8 +579,8 @@ TEST_CASE("CompressionWrapper - Move constructor", "[CompressionUtils][Move]") {
 }
 
 TEST_CASE("CompressionWrapper - Move assignment", "[CompressionUtils][Move]") {
-    CompressionWrapper original(CompressionLevel::Best);
-    CompressionWrapper target(CompressionLevel::Fastest);
+    CompressionWrapper original(CompressionFormat::Zstd, CompressionLevel::Best);
+    CompressionWrapper target(CompressionFormat::Zstd, CompressionLevel::Fastest);
     
     target = std::move(original);
     
@@ -618,3 +622,191 @@ TEST_CASE("CompressionWrapper - Compress same data multiple times", "[Compressio
         REQUIRE(size == sizes[0]);
     }
 }
+
+//============================================
+// Gzip Tests
+//============================================
+TEST_CASE("CompressionWrapper - Gzip basic compression", "[CompressionUtils][Gzip]") {
+    CompressionWrapper compressor(CompressionFormat::Gzip);
+    
+    std::string data = "Hello World! This is a test string for gzip compression.";
+    auto result = compressor.compress(data);
+    
+    REQUIRE(result.isSuccess());
+    REQUIRE(result.format == CompressionFormat::Gzip);
+    REQUIRE(result.originalSize == data.size());
+    REQUIRE(result.compressedSize > 0);
+    
+    // Verify gzip magic bytes (0x1F 0x8B)
+    REQUIRE(result.data.size() >= 2);
+    REQUIRE(result.data[0] == 0x1F);
+    REQUIRE(result.data[1] == 0x8B);
+}
+
+TEST_CASE("CompressionWrapper - Gzip compression and decompression", "[CompressionUtils][Gzip]") {
+    CompressionWrapper compressor(CompressionFormat::Gzip);
+    
+    std::string original = "This is test data for gzip compression and decompression.";
+    auto compressed = compressor.compress(original);
+    REQUIRE(compressed.isSuccess());
+    
+    auto decompressed = compressor.decompress(compressed.data);
+    REQUIRE(decompressed.isSuccess());
+    REQUIRE(decompressed.format == CompressionFormat::Gzip);
+    
+    std::string result(decompressed.data.begin(), decompressed.data.end());
+    REQUIRE(result == original);
+}
+
+TEST_CASE("CompressionWrapper - Gzip large data", "[CompressionUtils][Gzip]") {
+    CompressionWrapper compressor(CompressionFormat::Gzip);
+    
+    auto data = generateCompressibleData(100000);
+    auto compressed = compressor.compress(data);
+    REQUIRE(compressed.isSuccess());
+    REQUIRE(compressed.ratio < 1.0);
+    
+    auto decompressed = compressor.decompress(compressed.data);
+    REQUIRE(decompressed.isSuccess());
+    REQUIRE(decompressed.data == data);
+}
+
+TEST_CASE("CompressionWrapper - Gzip getBackendName", "[CompressionUtils][Gzip]") {
+    CompressionWrapper gzip(CompressionFormat::Gzip);
+    CompressionWrapper zstd(CompressionFormat::Zstd);
+    
+    REQUIRE(gzip.getBackendName() == "zlib-ng");
+    REQUIRE(zstd.getBackendName() == "zstd");
+}
+
+TEST_CASE("CompressionWrapper - Gzip formatToString", "[CompressionUtils][Gzip]") {
+    CompressionWrapper compressor;
+    
+    REQUIRE(std::string(compressor.formatToString(CompressionFormat::Gzip)) == "gzip");
+    REQUIRE(std::string(compressor.formatToString(CompressionFormat::Zstd)) == "zstd");
+}
+
+TEST_CASE("CompressionWrapper - Gzip compression levels", "[CompressionUtils][Gzip]") {
+    std::string data = "This is test data for testing different gzip compression levels.";
+    
+    std::vector<CompressionLevel> levels = {
+        CompressionLevel::Fastest,
+        CompressionLevel::Fast,
+        CompressionLevel::Default,
+        CompressionLevel::Better,
+        CompressionLevel::Best
+    };
+    
+    for (auto level : levels) {
+        CompressionWrapper compressor(CompressionFormat::Gzip, level);
+        auto result = compressor.compress(data);
+        REQUIRE(result.isSuccess());
+        // Higher levels should generally produce smaller or equal output
+        // (not strictly guaranteed for small data)
+    }
+}
+
+//============================================
+// Format Detection Tests
+//============================================
+TEST_CASE("CompressionWrapper - detectCompressionFormat Zstd", "[CompressionUtils][Detection]") {
+    CompressionWrapper compressor(CompressionFormat::Zstd);
+    
+    std::string data = "Test data for format detection";
+    auto compressed = compressor.compress(data);
+    REQUIRE(compressed.isSuccess());
+    
+    auto format = detectCompressionFormat(compressed.data.data(), compressed.data.size());
+    REQUIRE(format.has_value());
+    REQUIRE(format.value() == CompressionFormat::Zstd);
+}
+
+TEST_CASE("CompressionWrapper - detectCompressionFormat Gzip", "[CompressionUtils][Detection]") {
+    CompressionWrapper compressor(CompressionFormat::Gzip);
+    
+    std::string data = "Test data for format detection";
+    auto compressed = compressor.compress(data);
+    REQUIRE(compressed.isSuccess());
+    
+    auto format = detectCompressionFormat(compressed.data.data(), compressed.data.size());
+    REQUIRE(format.has_value());
+    REQUIRE(format.value() == CompressionFormat::Gzip);
+}
+
+TEST_CASE("CompressionWrapper - detectCompressionFormat unknown", "[CompressionUtils][Detection]") {
+    std::vector<uint8_t> unknownData = {0x00, 0x01, 0x02, 0x03};
+    
+    auto format = detectCompressionFormat(unknownData.data(), unknownData.size());
+    REQUIRE_FALSE(format.has_value());
+}
+
+TEST_CASE("CompressionWrapper - decompressDataAuto Zstd", "[CompressionUtils][Detection]") {
+    std::string original = "Test data for auto decompression with Zstd";
+    auto compressed = compressData(
+        reinterpret_cast<const uint8_t*>(original.data()),
+        original.size(),
+        CompressionFormat::Zstd
+    );
+    REQUIRE(compressed.isSuccess());
+    
+    auto decompressed = decompressDataAuto(compressed.data.data(), compressed.data.size());
+    REQUIRE(decompressed.isSuccess());
+    REQUIRE(decompressed.format == CompressionFormat::Zstd);
+    
+    std::string result(decompressed.data.begin(), decompressed.data.end());
+    REQUIRE(result == original);
+}
+
+TEST_CASE("CompressionWrapper - decompressDataAuto Gzip", "[CompressionUtils][Detection]") {
+    std::string original = "Test data for auto decompression with Gzip";
+    auto compressed = compressData(
+        reinterpret_cast<const uint8_t*>(original.data()),
+        original.size(),
+        CompressionFormat::Gzip
+    );
+    REQUIRE(compressed.isSuccess());
+    
+    auto decompressed = decompressDataAuto(compressed.data.data(), compressed.data.size());
+    REQUIRE(decompressed.isSuccess());
+    REQUIRE(decompressed.format == CompressionFormat::Gzip);
+    
+    std::string result(decompressed.data.begin(), decompressed.data.end());
+    REQUIRE(result == original);
+}
+
+//============================================
+// Convenience Functions Tests (Updated)
+//============================================
+TEST_CASE("CompressionWrapper - compressData with format", "[CompressionUtils][Convenience]") {
+    std::string data = "Test data for convenience function";
+    
+    auto zstdResult = compressData(
+        reinterpret_cast<const uint8_t*>(data.data()),
+        data.size(),
+        CompressionFormat::Zstd
+    );
+    REQUIRE(zstdResult.isSuccess());
+    REQUIRE(zstdResult.format == CompressionFormat::Zstd);
+    
+    auto gzipResult = compressData(
+        reinterpret_cast<const uint8_t*>(data.data()),
+        data.size(),
+        CompressionFormat::Gzip
+    );
+    REQUIRE(gzipResult.isSuccess());
+    REQUIRE(gzipResult.format == CompressionFormat::Gzip);
+}
+
+TEST_CASE("CompressionWrapper - Result contains format", "[CompressionUtils][Result]") {
+    CompressionWrapper zstd(CompressionFormat::Zstd);
+    CompressionWrapper gzip(CompressionFormat::Gzip);
+    
+    std::string data = "Test data";
+    
+    auto zstdResult = zstd.compress(data);
+    REQUIRE(zstdResult.format == CompressionFormat::Zstd);
+    
+    auto gzipResult = gzip.compress(data);
+    REQUIRE(gzipResult.format == CompressionFormat::Gzip);
+}
+

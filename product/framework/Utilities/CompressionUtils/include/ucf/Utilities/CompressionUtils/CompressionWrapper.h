@@ -10,6 +10,12 @@
 
 namespace ucf::utilities {
 
+/// Compression format enumeration
+enum class CompressionFormat {
+    Zstd,   ///< Zstandard - high compression ratio, suitable for internal storage
+    Gzip    ///< gzip (RFC 1952) - HTTP standard, suitable for external interaction
+};
+
 /// Compression level enumeration
 enum class CompressionLevel : int32_t {
     Fastest = 1,      ///< Fastest speed, lowest compression ratio
@@ -27,6 +33,7 @@ enum class CompressionError {
     CompressionFailed,      ///< Compression operation failed
     DecompressionFailed,    ///< Decompression operation failed
     CorruptedData,          ///< Input data is corrupted or invalid format
+    UnsupportedFormat,      ///< Unsupported compression format
     UnknownError
 };
 
@@ -36,6 +43,7 @@ struct CompressionResult {
     size_t originalSize{0};         ///< Original uncompressed size
     size_t compressedSize{0};       ///< Compressed size
     double ratio{0.0};              ///< Compression ratio = compressedSize / originalSize
+    CompressionFormat format{CompressionFormat::Zstd};  ///< Compression format used
     CompressionError error{CompressionError::Success};
     
     /// Check if compression succeeded
@@ -50,6 +58,7 @@ struct DecompressionResult {
     std::vector<uint8_t> data;      ///< Decompressed data
     size_t compressedSize{0};       ///< Original compressed size
     size_t decompressedSize{0};     ///< Decompressed size
+    CompressionFormat format{CompressionFormat::Zstd};  ///< Compression format detected
     CompressionError error{CompressionError::Success};
     
     /// Check if decompression succeeded
@@ -62,32 +71,33 @@ struct DecompressionResult {
 /// CompressionWrapper - Compression library wrapper class
 /// 
 /// Provides a unified compression/decompression interface that hides
-/// the underlying implementation (zstd/zlib/lz4).
+/// the underlying implementation (zstd/zlib-ng).
 /// 
 /// Features:
 /// - PIMPL pattern to hide implementation details
-/// - No zstd headers exposed in public interface
+/// - Multiple format support (Zstd, Gzip)
+/// - No backend headers exposed in public interface
 /// - Thread-safe for different instances
 /// 
 /// Usage example:
 /// @code
-/// CompressionWrapper compressor;
+/// // Zstd compression (default, for internal storage)
+/// CompressionWrapper zstd;
+/// auto result = zstd.compress(data.data(), data.size());
 /// 
-/// // Compress
-/// auto result = compressor.compress(data.data(), data.size());
-/// if (result.isSuccess()) {
-///     // Use result.data
-/// }
-/// 
-/// // Decompress
-/// auto decompressed = compressor.decompress(compressed.data(), compressed.size());
+/// // Gzip compression (for HTTP interaction)
+/// CompressionWrapper gzip(CompressionFormat::Gzip);
+/// auto result = gzip.compress(jsonBody.data(), jsonBody.size());
+/// // Set Content-Encoding: gzip header
 /// @endcode
 ///
 class Utilities_EXPORT CompressionWrapper final {
 public:
-    /// Create a compressor with specified compression level
+    /// Create a compressor with specified format and level
+    /// @param format Compression format (default: Zstd)
     /// @param level Compression level (default: Default)
-    explicit CompressionWrapper(CompressionLevel level = CompressionLevel::Default);
+    explicit CompressionWrapper(CompressionFormat format = CompressionFormat::Zstd,
+                                 CompressionLevel level = CompressionLevel::Default);
     
     ~CompressionWrapper();
     
@@ -106,6 +116,10 @@ public:
     /// Get current compression level
     /// @return Current compression level
     CompressionLevel getLevel() const;
+    
+    /// Get current compression format
+    /// @return Current compression format
+    CompressionFormat getFormat() const;
 
     // ========== Compression API ==========
     
@@ -177,26 +191,32 @@ public:
     /// Get the maximum compressed size for given input size
     /// @param inputSize Input data size
     /// @return Maximum possible compressed size
-    static size_t getCompressBound(size_t inputSize);
+    size_t getCompressBound(size_t inputSize) const;
     
     /// Get the original size from compressed data (if available)
     /// @param compressedData Compressed data pointer
     /// @param compressedSize Compressed data size
     /// @return Original size, or 0 if unknown
-    static size_t getDecompressedSize(const uint8_t* compressedData, size_t compressedSize);
+    /// @note Gzip format may not be able to get original size
+    size_t getDecompressedSize(const uint8_t* compressedData, size_t compressedSize) const;
     
     /// Get the compression backend name
-    /// @return Backend name (e.g., "zstd")
-    static std::string getBackendName();
+    /// @return Backend name (e.g., "zstd", "zlib-ng")
+    std::string getBackendName() const;
     
     /// Get the compression backend version
     /// @return Backend version string
-    static std::string getBackendVersion();
+    std::string getBackendVersion() const;
     
     /// Convert error code to human-readable string
     /// @param error Error code
     /// @return Error description
-    static const char* errorToString(CompressionError error);
+    const char* errorToString(CompressionError error) const;
+    
+    /// Convert format to human-readable string
+    /// @param format Compression format
+    /// @return Format name (e.g., "zstd", "gzip")
+    const char* formatToString(CompressionFormat format) const;
 
 private:
     class Impl;
@@ -208,19 +228,40 @@ private:
 /// Quick compress data with default settings
 /// @param input Input data pointer
 /// @param inputSize Input data size
+/// @param format Compression format (default: Zstd)
 /// @param level Compression level (default: Default)
 /// @return CompressionResult
 Utilities_EXPORT CompressionResult 
 compressData(const uint8_t* input, size_t inputSize,
+             CompressionFormat format = CompressionFormat::Zstd,
              CompressionLevel level = CompressionLevel::Default);
 
 /// Quick decompress data
 /// @param input Compressed data pointer
 /// @param inputSize Compressed data size
+/// @param format Compression format (must match compression format)
 /// @param originalSize Original size hint (0 = auto-detect)
 /// @return DecompressionResult
 Utilities_EXPORT DecompressionResult 
 decompressData(const uint8_t* input, size_t inputSize,
+               CompressionFormat format = CompressionFormat::Zstd,
                size_t originalSize = 0);
+
+/// Auto-detect format and decompress data
+/// @param input Compressed data pointer
+/// @param inputSize Compressed data size
+/// @param originalSize Original size hint (0 = auto-detect)
+/// @return DecompressionResult with detected format
+/// @note Detects via magic bytes: zstd (0x28 0xB5), gzip (0x1F 0x8B)
+Utilities_EXPORT DecompressionResult 
+decompressDataAuto(const uint8_t* input, size_t inputSize,
+                   size_t originalSize = 0);
+
+/// Detect compression format from data
+/// @param data Data pointer
+/// @param size Data size
+/// @return Detected format, or nullopt if unknown
+Utilities_EXPORT std::optional<CompressionFormat>
+detectCompressionFormat(const uint8_t* data, size_t size);
 
 } // namespace ucf::utilities
