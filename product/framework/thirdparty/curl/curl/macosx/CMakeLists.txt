@@ -47,8 +47,8 @@ if(CURL_DYLIBS)
     set_target_properties(copy_curl PROPERTIES FOLDER framework/thirdparty/curl)
     
     add_custom_command(TARGET copy_curl POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CURL_DYLIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CURL_DYLIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND_EXPAND_LISTS
         COMMENT "[libcurl] Copying dylibs to output directory"
     )

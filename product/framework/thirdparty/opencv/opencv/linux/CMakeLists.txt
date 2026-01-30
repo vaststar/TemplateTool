@@ -45,8 +45,8 @@ if(CV_SHARED_LIBS)
     set_target_properties(copy_opencv PROPERTIES FOLDER framework/thirdparty/opencv)
 
     add_custom_command(TARGET copy_opencv POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CV_SHARED_LIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CV_SHARED_LIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND_EXPAND_LISTS
         COMMENT "[OpenCV] Copying shared libraries to output directory"
     )

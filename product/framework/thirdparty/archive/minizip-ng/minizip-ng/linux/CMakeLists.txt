@@ -36,8 +36,8 @@ if(MZ_SOLIBS)
     set_target_properties(copy_minizip PROPERTIES FOLDER framework/thirdparty/archive)
 
     add_custom_command(TARGET copy_minizip POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MZ_SOLIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MZ_SOLIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND_EXPAND_LISTS
         COMMENT "[minizip] Copying shared objects to output directory"
     )

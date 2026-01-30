@@ -51,8 +51,8 @@ if(SSL_SHARED_LIBS)
     set_target_properties(copy_ssl PROPERTIES FOLDER framework/thirdparty/openssl)
 
     add_custom_command(TARGET copy_ssl POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SSL_SHARED_LIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SSL_SHARED_LIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
         COMMAND_EXPAND_LISTS
         COMMENT "[OpenSSL] Copying shared libraries to output directory"
     )
