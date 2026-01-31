@@ -49,6 +49,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     InvocationService
     DataWarehouseService
     DataWarehouseSchema
+    ViewModelUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

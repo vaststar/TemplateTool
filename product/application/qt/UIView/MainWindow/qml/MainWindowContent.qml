@@ -101,6 +101,19 @@ Item{
             controller.testFunc()
         }
     }
+    UTButton {
+        id: packLogsBtn
+        text: qsTr("Pack Logs")
+        anchors{
+            top: parent.top
+            topMargin: 400
+            left: parent.left
+            leftMargin: 50
+        }
+        onClicked:{
+            controller.packLogs()
+        }
+    }
     UTDialog{
         id: dialog
     }

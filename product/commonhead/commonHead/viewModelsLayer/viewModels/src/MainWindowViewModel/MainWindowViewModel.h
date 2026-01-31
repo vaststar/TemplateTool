@@ -25,6 +25,8 @@ public:
 
     virtual void onCommandMessageReceived(const std::string& message) override;
 
+    virtual void packApplicationLogs() override;
+
 protected:
     virtual void init();
 };

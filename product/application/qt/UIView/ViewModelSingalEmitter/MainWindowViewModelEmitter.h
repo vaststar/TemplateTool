@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 
 namespace UIVMSignalEmitter{
@@ -18,7 +19,13 @@ public:
     {
         emit signals_onActivateMainWindow();
     };
+
+    virtual void onLogsPackComplete(bool success, const std::string& archivePath) override
+    {
+        emit signals_onLogsPackComplete(success, QString::fromStdString(archivePath));
+    };
 signals:
     void signals_onActivateMainWindow();
+    void signals_onLogsPackComplete(bool success, const QString& archivePath);
 };
 }

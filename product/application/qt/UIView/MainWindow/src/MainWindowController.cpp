@@ -40,6 +40,8 @@ void MainWindowController::init()
     mMainViewModel->registerCallback(mMainViewModelEmitter);
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow, 
                 this, &MainWindowController::activateMainWindow);
+    connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onLogsPackComplete,
+                this, &MainWindowController::onLogsPackComplete);
     mMainViewModel->initViewModel();
 }
 
@@ -87,6 +89,24 @@ void MainWindowController::testFunc()
 void MainWindowController::activateMainWindow()
 {
     emit activateWindow();
+}
+
+void MainWindowController::packLogs()
+{
+    UIVIEW_LOG_DEBUG("packLogs called");
+    if (mMainViewModel)
+    {
+        mMainViewModel->packApplicationLogs();
+    }
+}
+
+void MainWindowController::onLogsPackComplete(bool success, const QString& archivePath)
+{
+    UIVIEW_LOG_DEBUG("onLogsPackComplete called, success: " << success << ", path: " << archivePath.toStdString());
+    if (success && !archivePath.isEmpty())
+    {
+        UIUtilities::UIPlatformUtils::revealFileInFinder(archivePath.toStdString());
+    }
 }
 
 void MainWindowController::initController(UIViewController* controller)

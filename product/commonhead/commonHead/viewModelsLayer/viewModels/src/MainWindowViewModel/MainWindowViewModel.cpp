@@ -3,6 +3,7 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
+#include <commonHead/ViewModelUtils/LogOperationUtils.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
 
 namespace commonHead::viewModels{
@@ -41,5 +42,15 @@ void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
     {
         fireNotification(&IMainWindowViewModelCallback::onActivateMainWindow);
     }
+}
+
+void MainWindowViewModel::packApplicationLogs()
+{
+    COMMONHEAD_LOG_DEBUG("packApplicationLogs called");
+    
+    // Use LogOperationUtils to pack logs - it handles framework/service access internally
+    auto result = commonHead::utilities::LogOperationUtils::packLogs(getCommonHeadFramework());
+    
+    fireNotification(&IMainWindowViewModelCallback::onLogsPackComplete, result.success, result.archivePath);
 }
 }
