@@ -1,5 +1,5 @@
 #include "CrashHandlerManager.h"
-#include "CrashHandlerServiceLogger.h"
+#include "StabilityServiceLogger.h"
 #include "platform/IPlatformCrashHandler.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>

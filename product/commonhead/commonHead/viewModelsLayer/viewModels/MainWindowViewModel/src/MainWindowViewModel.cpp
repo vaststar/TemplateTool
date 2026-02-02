@@ -5,7 +5,7 @@
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/ViewModelUtils/LogOperationUtils.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
-#include <ucf/Services/CrashHandlerService/ICrashHandlerService.h>
+#include <ucf/Services/StabilityService/IStabilityService.h>
 
 namespace commonHead::viewModels{
 std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
@@ -48,7 +48,7 @@ void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
 void MainWindowViewModel::packApplicationLogs()
 {
     COMMONHEAD_LOG_DEBUG("packApplicationLogs called");
-    // testCrash();
+    testCrash();
     
     // Use LogOperationUtils to pack logs - it handles framework/service access internally
     auto result = commonHead::utilities::LogOperationUtils::packLogs(getCommonHeadFramework());
@@ -64,9 +64,9 @@ void MainWindowViewModel::testCrash()
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
-            if (auto crashHandler = serviceLocator->getCrashHandlerService().lock())
+            if (auto stabilityService = serviceLocator->getStabilityService().lock())
             {
-                crashHandler->forceCrashForTesting();
+                stabilityService->forceCrashForTesting();
             }
         }
     }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ucf/Services/ServiceDeclaration/IService.h>
-#include <ucf/Services/CrashHandlerService/CrashInfo.h>
+#include <ucf/Services/StabilityService/CrashInfo.h>
 
 #include <memory>
 #include <functional>
@@ -15,10 +15,10 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class SERVICE_EXPORT ICrashHandlerService : public IService
+class SERVICE_EXPORT IStabilityService : public IService
 {
 public:
-    ~ICrashHandlerService() override = default;
+    ~IStabilityService() override = default;
 
     // ==========================================
     // Status Query
@@ -57,11 +57,11 @@ public:
     // Factory Method
     // ==========================================
     
-    [[nodiscard]] static std::shared_ptr<ICrashHandlerService> 
+    [[nodiscard]] static std::shared_ptr<IStabilityService> 
         createInstance(ucf::framework::ICoreFrameworkPtr coreFramework);
 };
 
-using ICrashHandlerServicePtr = std::shared_ptr<ICrashHandlerService>;
-using ICrashHandlerServiceWPtr = std::weak_ptr<ICrashHandlerService>;
+using IStabilityServicePtr = std::shared_ptr<IStabilityService>;
+using IStabilityServiceWPtr = std::weak_ptr<IStabilityService>;
 
 } // namespace ucf::service

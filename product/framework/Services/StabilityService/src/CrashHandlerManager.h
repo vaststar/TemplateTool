@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/CrashHandlerService/CrashInfo.h>
+#include <ucf/Services/StabilityService/CrashInfo.h>
 
 #include <filesystem>
 #include <string>

@@ -1,7 +1,7 @@
 #if defined(__APPLE__) || defined(__linux__)
 
 #include "PosixCrashHandler.h"
-#include "../CrashHandlerServiceLogger.h"
+#include "../StabilityServiceLogger.h"
 
 #include <signal.h>
 #include <unistd.h>

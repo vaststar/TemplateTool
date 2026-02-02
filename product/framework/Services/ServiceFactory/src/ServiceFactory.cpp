@@ -8,7 +8,7 @@
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ImageService/IImageService.h>
 #include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/CrashHandlerService/ICrashHandlerService.h>
+#include <ucf/Services/StabilityService/IStabilityService.h>
 #include "ServiceFactoryLogger.h"
 
 namespace ucf::service{
@@ -63,8 +63,8 @@ std::shared_ptr<ucf::service::IMediaService> ServiceFactory::createMediaService(
     return ucf::service::IMediaService::createInstance(mCoreFrameworkWPtr.lock());
 }
 
-std::shared_ptr<ucf::service::ICrashHandlerService> ServiceFactory::createCrashHandlerService()
+std::shared_ptr<ucf::service::IStabilityService> ServiceFactory::createStabilityService()
 {
-    return ucf::service::ICrashHandlerService::createInstance(mCoreFrameworkWPtr.lock());
+    return ucf::service::IStabilityService::createInstance(mCoreFrameworkWPtr.lock());
 }
 }

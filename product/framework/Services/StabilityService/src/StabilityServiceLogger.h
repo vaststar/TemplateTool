@@ -3,7 +3,7 @@
 #include <ucf/Utilities/LoggerUtils/LoggerExport.h>
 
 static inline constexpr auto LOGGER_NAME = ucf::utilities::kAppLoggerName;
-static inline constexpr auto LOGGER_TAG = "CrashHandlerService";
+static inline constexpr auto LOGGER_TAG = "StabilityService";
 
 #define CRASHHANDLER_LOG_DEBUG(message)     UCF_LOG_DEBUG(LOGGER_TAG, message, LOGGER_NAME)
 #define CRASHHANDLER_LOG_INFO(message)      UCF_LOG_INFO(LOGGER_TAG, message, LOGGER_NAME)

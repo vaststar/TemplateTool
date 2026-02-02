@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/CrashHandlerService/ICrashHandlerService.h>
+#include <ucf/Services/StabilityService/IStabilityService.h>
 #include <memory>
 
 namespace ucf::framework {
@@ -11,26 +11,26 @@ namespace ucf::service {
 
 class CrashHandlerManager;
 
-class CrashHandlerService : public ICrashHandlerService
+class StabilityService : public IStabilityService
 {
 public:
-    explicit CrashHandlerService(std::shared_ptr<ucf::framework::ICoreFramework> coreFramework);
-    ~CrashHandlerService() override;
+    explicit StabilityService(std::shared_ptr<ucf::framework::ICoreFramework> coreFramework);
+    ~StabilityService() override;
 
     // IService
-    [[nodiscard]] std::string getServiceName() const override { return "CrashHandlerService"; }
+    [[nodiscard]] std::string getServiceName() const override { return "StabilityService"; }
 
-    // ICrashHandlerService - Status
+    // IStabilityService - Status
     [[nodiscard]] bool isInstalled() const override;
 
-    // ICrashHandlerService - Crash Report
+    // IStabilityService - Crash Report
     [[nodiscard]] bool hasPendingCrashReport() const override;
     [[nodiscard]] std::optional<CrashInfo> getLastCrashInfo() const override;
     [[nodiscard]] std::vector<std::filesystem::path> getCrashReportFiles() const override;
     void clearPendingCrashReport() override;
     void clearAllCrashReports() override;
 
-    // ICrashHandlerService - Testing
+    // IStabilityService - Testing
     void forceCrashForTesting() override;
 
 protected:

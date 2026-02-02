@@ -26,7 +26,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IContactService> createContactService() override;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IImageService> createImageService() override;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IMediaService> createMediaService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::ICrashHandlerService> createCrashHandlerService() override;
+    [[nodiscard]] virtual std::shared_ptr<ucf::service::IStabilityService> createStabilityService() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

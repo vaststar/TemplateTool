@@ -15,7 +15,7 @@ namespace ucf::service{
     class IContactService;
     class IImageService;
     class IMediaService;
-    class ICrashHandlerService;
+    class IStabilityService;
 }
 
 namespace ucf::service{
@@ -36,7 +36,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IContactService> createContactService() = 0;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IImageService> createImageService() = 0;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IMediaService> createMediaService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::ICrashHandlerService> createCrashHandlerService() = 0;
+    [[nodiscard]] virtual std::shared_ptr<ucf::service::IStabilityService> createStabilityService() = 0;
 public:
     static std::shared_ptr<IServiceFactory> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

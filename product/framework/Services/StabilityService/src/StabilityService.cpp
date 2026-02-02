@@ -1,6 +1,6 @@
-#include "CrashHandlerService.h"
+#include "StabilityService.h"
 #include "CrashHandlerManager.h"
-#include "CrashHandlerServiceLogger.h"
+#include "StabilityServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
@@ -12,7 +12,7 @@ namespace ucf::service {
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-class CrashHandlerService::DataPrivate
+class StabilityService::DataPrivate
 {
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -26,23 +26,23 @@ private:
     std::unique_ptr<CrashHandlerManager> mManager;
 };
 
-CrashHandlerService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
+StabilityService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
     , mManager(std::make_unique<CrashHandlerManager>(coreFramework))
 {
 }
 
-ucf::framework::ICoreFrameworkWPtr CrashHandlerService::DataPrivate::getCoreFramework() const
+ucf::framework::ICoreFrameworkWPtr StabilityService::DataPrivate::getCoreFramework() const
 {
     return mCoreFramework;
 }
 
-CrashHandlerManager& CrashHandlerService::DataPrivate::getManager()
+CrashHandlerManager& StabilityService::DataPrivate::getManager()
 {
     return *mManager;
 }
 
-const CrashHandlerManager& CrashHandlerService::DataPrivate::getManager() const
+const CrashHandlerManager& StabilityService::DataPrivate::getManager() const
 {
     return *mManager;
 }
@@ -55,72 +55,72 @@ const CrashHandlerManager& CrashHandlerService::DataPrivate::getManager() const
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start CrashHandlerService Logic//////////////////////////////////
+////////////////////Start StabilityService Logic/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-std::shared_ptr<ICrashHandlerService> ICrashHandlerService::createInstance(
+std::shared_ptr<IStabilityService> IStabilityService::createInstance(
     ucf::framework::ICoreFrameworkPtr coreFramework)
 {
-    return std::make_shared<CrashHandlerService>(coreFramework);
+    return std::make_shared<StabilityService>(coreFramework);
 }
 
-CrashHandlerService::CrashHandlerService(
+StabilityService::StabilityService(
     std::shared_ptr<ucf::framework::ICoreFramework> coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    CRASHHANDLER_LOG_DEBUG("CrashHandlerService created");
+    CRASHHANDLER_LOG_DEBUG("StabilityService created");
 }
 
-CrashHandlerService::~CrashHandlerService()
+StabilityService::~StabilityService()
 {
-    CRASHHANDLER_LOG_DEBUG("CrashHandlerService destroyed");
+    CRASHHANDLER_LOG_DEBUG("StabilityService destroyed");
 }
 
-void CrashHandlerService::initService()
+void StabilityService::initService()
 {
-    CRASHHANDLER_LOG_INFO("CrashHandlerService::initService() called");
+    CRASHHANDLER_LOG_INFO("StabilityService::initService() called");
     mDataPrivate->getManager().initialize();
 }
 
-bool CrashHandlerService::isInstalled() const
+bool StabilityService::isInstalled() const
 {
     return mDataPrivate->getManager().isInstalled();
 }
 
-bool CrashHandlerService::hasPendingCrashReport() const
+bool StabilityService::hasPendingCrashReport() const
 {
     return mDataPrivate->getManager().hasPendingCrashReport();
 }
 
-std::optional<CrashInfo> CrashHandlerService::getLastCrashInfo() const
+std::optional<CrashInfo> StabilityService::getLastCrashInfo() const
 {
     return mDataPrivate->getManager().getLastCrashInfo();
 }
 
-std::vector<std::filesystem::path> CrashHandlerService::getCrashReportFiles() const
+std::vector<std::filesystem::path> StabilityService::getCrashReportFiles() const
 {
     return mDataPrivate->getManager().getCrashReportFiles();
 }
 
-void CrashHandlerService::clearPendingCrashReport()
+void StabilityService::clearPendingCrashReport()
 {
     mDataPrivate->getManager().clearPendingCrashReport();
 }
 
-void CrashHandlerService::clearAllCrashReports()
+void StabilityService::clearAllCrashReports()
 {
     mDataPrivate->getManager().clearAllCrashReports();
 }
 
-void CrashHandlerService::forceCrashForTesting()
+void StabilityService::forceCrashForTesting()
 {
     mDataPrivate->getManager().forceCrashForTesting();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Finish CrashHandlerService Logic/////////////////////////////////
+////////////////////Finish StabilityService Logic////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 

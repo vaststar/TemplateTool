@@ -1,21 +1,21 @@
 include(BuildModule)
 
-set(MODULE_MODULE_NAME CrashHandlerService)
+set(MODULE_MODULE_NAME StabilityService)
 set(MODULE_IDE_FOLDER framework/services)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/CrashHandlerService/ICrashHandlerService.h
-    include/ucf/Services/CrashHandlerService/CrashInfo.h
+    include/ucf/Services/StabilityService/IStabilityService.h
+    include/ucf/Services/StabilityService/CrashInfo.h
 )
 
 set(MODULE_SOURCE_PRIVATE
-    src/CrashHandlerService.h
-    src/CrashHandlerService.cpp
+    src/StabilityService.h
+    src/StabilityService.cpp
     src/CrashHandlerManager.h
     src/CrashHandlerManager.cpp
-    src/CrashHandlerServiceLogger.h
+    src/StabilityServiceLogger.h
     src/platform/IPlatformCrashHandler.h
     src/platform/IPlatformCrashHandler.cpp
 )

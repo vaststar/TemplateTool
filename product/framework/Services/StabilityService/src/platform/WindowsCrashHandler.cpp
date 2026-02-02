@@ -1,7 +1,7 @@
 #ifdef _WIN32
 
 #include "WindowsCrashHandler.h"
-#include "../CrashHandlerServiceLogger.h"
+#include "../StabilityServiceLogger.h"
 
 #include <DbgHelp.h>
 #include <sstream>
@@ -91,7 +91,16 @@ const char* WindowsCrashHandler::exceptionName(DWORD code)
 
 void WindowsCrashHandler::writeMinidump(EXCEPTION_POINTERS* exceptionInfo, const std::filesystem::path& crashDir)
 {
-    auto path = crashDir / "crash.dmp";
+    // Generate timestamped filename
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    
+    wchar_t filename[64];
+    swprintf_s(filename, L"crash_%04d%02d%02d_%02d%02d%02d.dmp",
+        st.wYear, st.wMonth, st.wDay,
+        st.wHour, st.wMinute, st.wSecond);
+    
+    auto path = crashDir / filename;
     
     HANDLE hFile = CreateFileW(
         path.wstring().c_str(),
@@ -141,13 +150,73 @@ std::string WindowsCrashHandler::captureStackTrace(int skipFrames) const
     symbol->MaxNameLen = 255;
     symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
     
+    // For line number info
+    IMAGEHLP_LINE64 line;
+    line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+    DWORD displacement = 0;
+    
     for (WORD i = 0; i < frames; i++)
     {
-        SymFromAddr(process, (DWORD64)stack[i], 0, symbol);
-        oss << "#" << i << "  " << symbol->Name << " - 0x" << std::hex << symbol->Address << "\n";
+        DWORD64 address = (DWORD64)stack[i];
+        
+        oss << "#" << std::dec << i << "  ";
+        
+        // Try to get symbol name
+        if (SymFromAddr(process, address, 0, symbol) && symbol->Name[0] != '\0')
+        {
+            oss << symbol->Name;
+            
+            // Try to get line number (requires PDB)
+            if (SymGetLineFromAddr64(process, address, &displacement, &line))
+            {
+                oss << " at " << line.FileName << ":" << line.LineNumber;
+            }
+        }
+        else
+        {
+            // No symbol available, output module + offset instead
+            HMODULE hModule = NULL;
+            GetModuleHandleExW(
+                GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                (LPCWSTR)address,
+                &hModule
+            );
+            
+            if (hModule)
+            {
+                wchar_t modulePath[MAX_PATH];
+                if (GetModuleFileNameW(hModule, modulePath, MAX_PATH))
+                {
+                    // Extract just the filename
+                    const wchar_t* moduleName = wcsrchr(modulePath, L'\\');
+                    moduleName = moduleName ? moduleName + 1 : modulePath;
+                    
+                    // Calculate offset from module base
+                    DWORD64 moduleBase = (DWORD64)hModule;
+                    DWORD64 offset = address - moduleBase;
+                    
+                    // Convert wide string to narrow for output
+                    char narrowName[MAX_PATH];
+                    WideCharToMultiByte(CP_UTF8, 0, moduleName, -1, narrowName, MAX_PATH, NULL, NULL);
+                    
+                    oss << narrowName << "+0x" << std::hex << offset;
+                }
+                else
+                {
+                    oss << "0x" << std::hex << address;
+                }
+            }
+            else
+            {
+                oss << "0x" << std::hex << address;
+            }
+        }
+        
+        oss << "\n";
     }
     
     free(symbol);
+    SymCleanup(process);
     
     return oss.str();
 }
