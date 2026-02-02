@@ -3,36 +3,46 @@ include(BuildModule)
 set(MODULE_MODULE_NAME ViewModels)
 set(MODULE_IDE_FOLDER commonhead)
 
-set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# 文件集的基础目录 (用于 target_sources FILE_SET BASE_DIRS)
+set(MODULE_HEADER_BASE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppUIViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/ClientInfoViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/ContactListViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/InvocationViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/IViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/MediaCameraViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared
+)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/commonHead/viewModels/IViewModel/IViewModel.h
-    include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
-    include/commonHead/viewModels/ContactListViewModel/IContactListModel.h
-    include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
-    include/commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h
-    include/commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h
-    include/commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h
-    include/commonHead/viewModels/ViewModelDataDefine/Image.h
-    include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
-    include/commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h
+    AppUIViewModel/include/commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h
+    ClientInfoViewModel/include/commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h
+    ClientInfoViewModel/include/commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h
+    ContactListViewModel/include/commonHead/viewModels/ContactListViewModel/IContactListModel.h
+    ContactListViewModel/include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
+    InvocationViewModel/include/commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h
+    IViewModel/include/commonHead/viewModels/IViewModel/IViewModel.h
+    MainWindowViewModel/include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
+    MediaCameraViewModel/include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
+    shared/commonHead/viewModels/ViewModelDataDefine/Image.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/IViewModel/IViewModel.cpp
-    src/ContactListViewModel/ContactListViewModel.h
-    src/ContactListViewModel/ContactListViewModel.cpp
-    src/ContactListViewModel/ContactListModel.cpp
-    src/ContactListViewModel/ContactListModel.h
-    src/MainWindowViewModel/MainWindowViewModel.h
-    src/MainWindowViewModel/MainWindowViewModel.cpp
-    src/ClientInfoViewModel/ClientInfoViewModel.h
-    src/ClientInfoViewModel/ClientInfoViewModel.cpp
-    src/AppUIViewModel/AppUIViewModel.h
-    src/AppUIViewModel/AppUIViewModel.cpp
-    src/MediaCameraViewModel/MediaCameraViewModel.h
-    src/MediaCameraViewModel/MediaCameraViewModel.cpp
-    src/InvocationViewModel/InvocationViewModel.h
-    src/InvocationViewModel/InvocationViewModel.cpp
+    AppUIViewModel/src/AppUIViewModel.h
+    AppUIViewModel/src/AppUIViewModel.cpp
+    ClientInfoViewModel/src/ClientInfoViewModel.h
+    ClientInfoViewModel/src/ClientInfoViewModel.cpp
+    ContactListViewModel/src/ContactListModel.h
+    ContactListViewModel/src/ContactListModel.cpp
+    ContactListViewModel/src/ContactListViewModel.h
+    ContactListViewModel/src/ContactListViewModel.cpp
+    InvocationViewModel/src/InvocationViewModel.h
+    InvocationViewModel/src/InvocationViewModel.cpp
+    IViewModel/src/IViewModel.cpp
+    MainWindowViewModel/src/MainWindowViewModel.h
+    MainWindowViewModel/src/MainWindowViewModel.cpp
+    MediaCameraViewModel/src/MediaCameraViewModel.h
+    MediaCameraViewModel/src/MediaCameraViewModel.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
@@ -54,7 +64,15 @@ set(MODULE_DEPENDENCIES_PRIVATE
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src)
+set(MODULE_BUILD_PRIVATE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/AppUIViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/ClientInfoViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/ContactListViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/InvocationViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/IViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/MediaCameraViewModel/src
+)
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
