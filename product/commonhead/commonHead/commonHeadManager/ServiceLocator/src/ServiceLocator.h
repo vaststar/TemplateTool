@@ -14,6 +14,7 @@ public:
     virtual std::weak_ptr<ucf::service::IContactService> getContactService() const override;
     virtual std::weak_ptr<ucf::service::IImageService> getImageService() const override;
     virtual std::weak_ptr<ucf::service::IMediaService> getMediaService() const override;
+    virtual std::weak_ptr<ucf::service::ICrashHandlerService> getCrashHandlerService() const override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

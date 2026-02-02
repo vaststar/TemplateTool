@@ -45,6 +45,7 @@ public:
 
     [[nodiscard]] virtual std::string getAppDataStoragePath() const = 0;
     [[nodiscard]] virtual std::string getAppLogStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppCrashStoragePath() const = 0;
     static std::shared_ptr<IClientInfoService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

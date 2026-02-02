@@ -13,6 +13,7 @@
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ImageService/IImageService.h>
 #include <ucf/Services/MediaService/IMediaService.h>
+#include <ucf/Services/CrashHandlerService/ICrashHandlerService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -205,6 +206,9 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(mServiceFactory->createContactService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(mServiceFactory->createImageService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(mServiceFactory->createMediaService());
+        
+        // CrashHandler - 注册服务，会在initServices时自动安装
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::ICrashHandlerService>(mServiceFactory->createCrashHandlerService());
         
         mFrameworkDependencies.coreFramework->initServices();
     }

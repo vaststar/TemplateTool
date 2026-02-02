@@ -18,6 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
+    CrashHandlerService
     MediaService
     ImageService
     ContactService

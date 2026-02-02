@@ -17,6 +17,7 @@ namespace ucf::service{
     class IContactService;
     class IImageService;
     class IMediaService;
+    class ICrashHandlerService;
 }
 
 namespace commonHead{
@@ -31,6 +32,7 @@ public:
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IContactService> getContactService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IImageService> getImageService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IMediaService> getMediaService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::ICrashHandlerService> getCrashHandlerService() const = 0;
 public:
     static std::shared_ptr<IServiceLocator> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

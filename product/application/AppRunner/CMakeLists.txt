@@ -31,6 +31,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
     ClientInfoService
     InvocationService
+    CrashHandlerService
     CoreFramework
     FilePathUtils
     LoggerUtils

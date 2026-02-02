@@ -18,6 +18,7 @@ static constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
 static constexpr const char* APP_INTERNAL_NAME_DEBUG = "TemplateToolAppDebug";
 static constexpr const char* APP_DATA_FOLDER_NAME = "app_data";
 static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
+static constexpr const char* APP_CRASH_FOLDER_NAME = "app_crash";
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +181,24 @@ std::string ClientInfoManager::getLogStoragePath() const
         ucf::utilities::FilePathUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_LOG_FOLDER_NAME
+    ).string();
+#endif
+    return {};
+}
+
+std::string ClientInfoManager::getCrashStoragePath() const
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME_DEBUG,
+        APP_CRASH_FOLDER_NAME
+    ).string();
+#else
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME,
+        APP_CRASH_FOLDER_NAME
     ).string();
 #endif
     return {};

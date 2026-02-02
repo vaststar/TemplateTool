@@ -26,6 +26,9 @@ public:
     virtual void onCommandMessageReceived(const std::string& message) override;
 
     virtual void packApplicationLogs() override;
+    
+    // Test crash handler - for development/testing only
+    void testCrash();
 
 protected:
     virtual void init();

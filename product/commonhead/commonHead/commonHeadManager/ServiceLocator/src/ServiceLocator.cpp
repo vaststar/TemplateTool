@@ -8,6 +8,7 @@
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ImageService/IImageService.h>
 #include <ucf/Services/MediaService/IMediaService.h>
+#include <ucf/Services/CrashHandlerService/ICrashHandlerService.h>
 
 namespace commonHead{
 std::shared_ptr<IServiceLocator> IServiceLocator::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
@@ -79,6 +80,15 @@ std::weak_ptr<ucf::service::IMediaService> ServiceLocator::getMediaService() con
     if (auto coreFramework = mCoreFrameworkWPtr.lock())
     {
         return coreFramework->getService<ucf::service::IMediaService>();
+    }
+    return {};
+}
+
+std::weak_ptr<ucf::service::ICrashHandlerService> ServiceLocator::getCrashHandlerService() const
+{
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        return coreFramework->getService<ucf::service::ICrashHandlerService>();
     }
     return {};
 }
