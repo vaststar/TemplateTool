@@ -196,8 +196,11 @@ void CrashHandlerManager::forceCrashForTesting()
 {
     CRASHHANDLER_LOG_WARN("Forcing crash for testing...");
     
-    // Use abort() to trigger SIGABRT, the most reliable way
-    std::abort();
+    // Use null pointer dereference to trigger access violation
+    // This will be caught by SetUnhandledExceptionFilter on Windows
+    // and by signal handlers on POSIX systems
+    volatile int* p = nullptr;
+    *p = 42;  // NOLINT - intentional crash for testing
 }
 
 void CrashHandlerManager::onCrash(int signalCode, const char* signalName)
@@ -219,7 +222,8 @@ void CrashHandlerManager::writeCrashLog(int signalCode, const char* signalName,
     auto logPath = generateCrashLogPath();
     
     // Use C API for file writing (closer to async-signal-safe)
-    FILE* fp = fopen(logPath.c_str(), "w");
+    // Use path.string() for cross-platform compatibility (path::c_str() returns wchar_t* on Windows)
+    FILE* fp = fopen(logPath.string().c_str(), "w");
     if (!fp)
     {
         return;

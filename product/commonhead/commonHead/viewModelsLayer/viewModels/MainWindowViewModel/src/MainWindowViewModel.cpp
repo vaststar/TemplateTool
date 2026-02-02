@@ -48,7 +48,7 @@ void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
 void MainWindowViewModel::packApplicationLogs()
 {
     COMMONHEAD_LOG_DEBUG("packApplicationLogs called");
-    testCrash();
+    // testCrash();
     
     // Use LogOperationUtils to pack logs - it handles framework/service access internally
     auto result = commonHead::utilities::LogOperationUtils::packLogs(getCommonHeadFramework());

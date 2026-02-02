@@ -16,6 +16,11 @@
         <source>IopenCamera</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../../UIView/MainWindow/qml/MainWindowContent.qml" line="106"/>
+        <source>Pack Logs</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindowFootBar</name>
@@ -39,7 +44,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="48"/>
+        <location filename="../../../../UIView/MainWindow/src/MainWindowController.cpp" line="50"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
