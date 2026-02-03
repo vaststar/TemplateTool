@@ -9,7 +9,7 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class StabilityService : public IStabilityService
+class SERVICE_EXPORT StabilityService : public IStabilityService
 {
 public:
     explicit StabilityService(std::shared_ptr<ucf::framework::ICoreFramework> coreFramework);
