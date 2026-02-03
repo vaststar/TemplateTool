@@ -1,8 +1,8 @@
 #include "PerformanceManager.h"
 #include "PerformanceServiceLogger.h"
 #include "TimingTracker.h"
-#include "platform/IMemoryMonitor.h"
-#include "platform/ICPUMonitor.h"
+#include "IMemoryMonitor.h"
+#include "ICPUMonitor.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 

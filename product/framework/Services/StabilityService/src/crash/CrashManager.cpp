@@ -1,6 +1,6 @@
 #include "CrashManager.h"
 #include "../StabilityServiceLogger.h"
-#include "platform/IPlatformCrashHandler.h"
+#include "IPlatformCrashHandler.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>

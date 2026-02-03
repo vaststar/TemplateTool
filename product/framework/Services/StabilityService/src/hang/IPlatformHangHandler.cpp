@@ -1,11 +1,11 @@
 #include "IPlatformHangHandler.h"
 
 #if defined(__APPLE__)
-#include "MacOSHangHandler.h"
+#include "platform/MacOSHangHandler.h"
 #elif defined(__linux__)
-#include "LinuxHangHandler.h"
+#include "platform/LinuxHangHandler.h"
 #elif defined(_WIN32)
-#include "WindowsHangHandler.h"
+#include "platform/WindowsHangHandler.h"
 #endif
 
 namespace ucf::service {

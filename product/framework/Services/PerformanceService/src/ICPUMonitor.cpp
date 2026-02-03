@@ -1,11 +1,11 @@
 #include "ICPUMonitor.h"
 
 #if defined(__APPLE__)
-#include "MacOSCPUMonitor.h"
+#include "platform/MacOSCPUMonitor.h"
 #elif defined(__linux__)
-#include "LinuxCPUMonitor.h"
+#include "platform/LinuxCPUMonitor.h"
 #elif defined(_WIN32)
-#include "WindowsCPUMonitor.h"
+#include "platform/WindowsCPUMonitor.h"
 #endif
 
 namespace ucf::service {

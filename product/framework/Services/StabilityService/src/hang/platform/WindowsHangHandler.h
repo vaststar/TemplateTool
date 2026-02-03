@@ -2,7 +2,7 @@
 
 #if defined(_WIN32)
 
-#include "IPlatformHangHandler.h"
+#include "../IPlatformHangHandler.h"
 
 namespace ucf::service {
 

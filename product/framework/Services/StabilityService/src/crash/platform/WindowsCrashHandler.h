@@ -2,7 +2,7 @@
 
 #ifdef _WIN32
 
-#include "IPlatformCrashHandler.h"
+#include "../IPlatformCrashHandler.h"
 
 #include <Windows.h>
 

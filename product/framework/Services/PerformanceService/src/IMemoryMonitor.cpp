@@ -1,11 +1,11 @@
 #include "IMemoryMonitor.h"
 
 #if defined(__APPLE__)
-#include "MacOSMemoryMonitor.h"
+#include "platform/MacOSMemoryMonitor.h"
 #elif defined(__linux__)
-#include "LinuxMemoryMonitor.h"
+#include "platform/LinuxMemoryMonitor.h"
 #elif defined(_WIN32)
-#include "WindowsMemoryMonitor.h"
+#include "platform/WindowsMemoryMonitor.h"
 #endif
 
 namespace ucf::service {

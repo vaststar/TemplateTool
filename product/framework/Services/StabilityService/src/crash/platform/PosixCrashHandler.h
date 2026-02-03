@@ -2,7 +2,7 @@
 
 #if defined(__APPLE__) || defined(__linux__)
 
-#include "IPlatformCrashHandler.h"
+#include "../IPlatformCrashHandler.h"
 
 #include <signal.h>
 

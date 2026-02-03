@@ -19,10 +19,10 @@ set(MODULE_SOURCE_COMMON
     src/PerformanceManager.cpp
     src/TimingTracker.h
     src/TimingTracker.cpp
-    src/platform/IMemoryMonitor.h
-    src/platform/IMemoryMonitor.cpp
-    src/platform/ICPUMonitor.h
-    src/platform/ICPUMonitor.cpp
+    src/IMemoryMonitor.h
+    src/IMemoryMonitor.cpp
+    src/ICPUMonitor.h
+    src/ICPUMonitor.cpp
 )
 
 if(APPLE)

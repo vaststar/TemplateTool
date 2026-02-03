@@ -1,9 +1,9 @@
 #include "IPlatformCrashHandler.h"
 
 #if defined(__APPLE__) || defined(__linux__)
-#include "PosixCrashHandler.h"
+#include "platform/PosixCrashHandler.h"
 #elif defined(_WIN32)
-#include "WindowsCrashHandler.h"
+#include "platform/WindowsCrashHandler.h"
 #endif
 
 namespace ucf::service {

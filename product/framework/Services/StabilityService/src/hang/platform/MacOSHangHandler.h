@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IPlatformHangHandler.h"
+#include "../IPlatformHangHandler.h"
 
 #if defined(__APPLE__)
 

@@ -1,5 +1,5 @@
 #include "HangManager.h"
-#include "platform/IPlatformHangHandler.h"
+#include "IPlatformHangHandler.h"
 #include "../StabilityServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>

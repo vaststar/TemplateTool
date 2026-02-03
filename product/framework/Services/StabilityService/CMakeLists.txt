@@ -18,13 +18,13 @@ set(MODULE_SOURCE_PRIVATE
     # Crash module
     src/crash/CrashManager.h
     src/crash/CrashManager.cpp
-    src/crash/platform/IPlatformCrashHandler.h
-    src/crash/platform/IPlatformCrashHandler.cpp
+    src/crash/IPlatformCrashHandler.h
+    src/crash/IPlatformCrashHandler.cpp
     # Hang module
     src/hang/HangManager.h
     src/hang/HangManager.cpp
-    src/hang/platform/IPlatformHangHandler.h
-    src/hang/platform/IPlatformHangHandler.cpp
+    src/hang/IPlatformHangHandler.h
+    src/hang/IPlatformHangHandler.cpp
 )
 
 # Platform-specific crash files

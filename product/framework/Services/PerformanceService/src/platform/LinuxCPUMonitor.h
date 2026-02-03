@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ICPUMonitor.h"
+#include "../ICPUMonitor.h"
 #include <atomic>
 #include <thread>
 #include <chrono>

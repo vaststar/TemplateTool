@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IMemoryMonitor.h"
+#include "../IMemoryMonitor.h"
 
 #if defined(_WIN32)
 
