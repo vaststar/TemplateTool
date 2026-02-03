@@ -119,10 +119,10 @@ void MainWindowViewModel::testPerformance()
                 auto jsonReport = performanceService->exportReportAsJson();
                 COMMONHEAD_LOG_DEBUG("Performance Report exported");
                 
-                // Export to file
-                std::filesystem::path outputPath = "/tmp/performance_report.json";
+                // Export to file (use system temp directory for cross-platform compatibility)
+                std::filesystem::path outputPath = std::filesystem::temp_directory_path() / "performance_report.json";
                 performanceService->exportReportToFile(outputPath);
-                COMMONHEAD_LOG_DEBUG("Performance report exported to: /tmp/performance_report.json");
+                COMMONHEAD_LOG_DEBUG("Performance report exported to: " + outputPath.string());
             }
         }
     }
