@@ -5,8 +5,8 @@
 #include "ICPUMonitor.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Utilities/JsonUtils/JsonBuilder.h>
 
-#include <nlohmann/json.hpp>
 #include <fstream>
 #include <ctime>
 
@@ -146,35 +146,35 @@ std::string PerformanceManager::exportReportAsJson() const
     char timeBuf[32];
     std::strftime(timeBuf, sizeof(timeBuf), "%Y-%m-%dT%H:%M:%SZ", &tm_buf);
     
-    nlohmann::json j;
-    j["timestamp"] = timeBuf;
-    
     // Memory
-    j["memory"] = {
-        {"physicalMB", snapshot.memory.physicalBytes / 1024 / 1024},
-        {"virtualMB", snapshot.memory.virtualBytes / 1024 / 1024},
-        {"peakPhysicalMB", snapshot.memory.peakPhysicalBytes / 1024 / 1024},
-        {"availableSystemMB", snapshot.memory.availableSystemBytes / 1024 / 1024}
-    };
-    
-    // CPU
-    j["cpuUsagePercent"] = snapshot.cpuUsagePercent;
+    utilities::JsonBuilder memory;
+    memory.add("physicalMB", snapshot.memory.physicalBytes / 1024 / 1024)
+          .add("virtualMB", snapshot.memory.virtualBytes / 1024 / 1024)
+          .add("peakPhysicalMB", snapshot.memory.peakPhysicalBytes / 1024 / 1024)
+          .add("availableSystemMB", snapshot.memory.availableSystemBytes / 1024 / 1024);
     
     // Timing stats
-    j["timingStats"] = nlohmann::json::array();
+    std::vector<utilities::JsonBuilder> timingArray;
     for (const auto& stats : snapshot.timingStats)
     {
-        j["timingStats"].push_back({
-            {"operation", stats.operationName},
-            {"callCount", stats.callCount},
-            {"totalMs", stats.totalTime.count()},
-            {"avgMs", stats.avgTime().count()},
-            {"minMs", stats.minTime == std::chrono::milliseconds::max() ? 0 : stats.minTime.count()},
-            {"maxMs", stats.maxTime.count()}
-        });
+        utilities::JsonBuilder timing;
+        timing.add("operation", stats.operationName)
+              .add("callCount", static_cast<uint64_t>(stats.callCount))
+              .add("totalMs", static_cast<int64_t>(stats.totalTime.count()))
+              .add("avgMs", static_cast<int64_t>(stats.avgTime().count()))
+              .add("minMs", static_cast<int64_t>(stats.minTime == std::chrono::milliseconds::max() ? 0 : stats.minTime.count()))
+              .add("maxMs", static_cast<int64_t>(stats.maxTime.count()));
+        timingArray.push_back(std::move(timing));
     }
     
-    return j.dump(2);
+    // Build report
+    utilities::JsonBuilder report;
+    report.add("timestamp", timeBuf)
+          .addObject("memory", memory)
+          .add("cpuUsagePercent", snapshot.cpuUsagePercent)
+          .addArray("timingStats", timingArray);
+    
+    return report.buildPretty(2);
 }
 
 void PerformanceManager::exportReportToFile(const std::filesystem::path& path) const

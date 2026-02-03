@@ -34,7 +34,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
     LoggerUtils
     ThreadPool
-    nlohmann_json::nlohmann_json
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
