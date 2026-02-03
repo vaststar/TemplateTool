@@ -28,7 +28,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     StringUtils
     UUIDUtils
     LoggerUtils
-    ThreadPool
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)

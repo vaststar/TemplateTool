@@ -29,7 +29,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UUIDUtils
     OSUtils
     LoggerUtils
-    ThreadPool
     opencv
 )
 
