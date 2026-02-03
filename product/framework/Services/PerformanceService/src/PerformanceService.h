@@ -12,7 +12,7 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class PerformanceService : public virtual IPerformanceService,
+class SERVICE_EXPORT PerformanceService : public virtual IPerformanceService,
                            public virtual ucf::utilities::NotificationHelper<IPerformanceServiceCallback>,
                            public std::enable_shared_from_this<PerformanceService>
 {

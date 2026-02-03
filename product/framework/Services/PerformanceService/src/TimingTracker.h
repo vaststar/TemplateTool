@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/Services/PerformanceService/PerformanceInfo.h>
 
 #include <atomic>
@@ -11,7 +12,7 @@
 namespace ucf::service {
 
 /// Thread-safe timing tracker for performance measurement
-class TimingTracker
+class SERVICE_EXPORT TimingTracker
 {
 public:
     TimingTracker() = default;
