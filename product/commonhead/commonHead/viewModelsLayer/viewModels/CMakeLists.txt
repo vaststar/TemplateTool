@@ -65,6 +65,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseSchema
     ViewModelUtils
     StabilityService
+    PerformanceService
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

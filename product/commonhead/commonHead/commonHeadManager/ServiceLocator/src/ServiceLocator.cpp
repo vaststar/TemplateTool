@@ -9,6 +9,7 @@
 #include <ucf/Services/ImageService/IImageService.h>
 #include <ucf/Services/MediaService/IMediaService.h>
 #include <ucf/Services/StabilityService/IStabilityService.h>
+#include <ucf/Services/PerformanceService/IPerformanceService.h>
 
 namespace commonHead{
 std::shared_ptr<IServiceLocator> IServiceLocator::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
@@ -89,6 +90,15 @@ std::weak_ptr<ucf::service::IStabilityService> ServiceLocator::getStabilityServi
     if (auto coreFramework = mCoreFrameworkWPtr.lock())
     {
         return coreFramework->getService<ucf::service::IStabilityService>();
+    }
+    return {};
+}
+
+std::weak_ptr<ucf::service::IPerformanceService> ServiceLocator::getPerformanceService() const
+{
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        return coreFramework->getService<ucf::service::IPerformanceService>();
     }
     return {};
 }

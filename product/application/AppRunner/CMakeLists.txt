@@ -32,6 +32,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoService
     InvocationService
     StabilityService
+    PerformanceService
     CoreFramework
     FilePathUtils
     LoggerUtils

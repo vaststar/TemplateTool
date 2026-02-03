@@ -6,6 +6,10 @@
 #include <commonHead/ViewModelUtils/LogOperationUtils.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
 #include <ucf/Services/StabilityService/IStabilityService.h>
+#include <ucf/Services/PerformanceService/IPerformanceService.h>
+
+#include <filesystem>
+#include <thread>
 
 namespace commonHead::viewModels{
 std::shared_ptr<IMainWindowViewModel> IMainWindowViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
@@ -49,7 +53,8 @@ void MainWindowViewModel::packApplicationLogs()
 {
     COMMONHEAD_LOG_DEBUG("packApplicationLogs called");
     // testCrash();
-    testHang();
+    // testHang();
+    testPerformance();
     
     // Use LogOperationUtils to pack logs - it handles framework/service access internally
     auto result = commonHead::utilities::LogOperationUtils::packLogs(getCommonHeadFramework());
@@ -84,6 +89,40 @@ void MainWindowViewModel::testHang()
             if (auto stabilityService = serviceLocator->getStabilityService().lock())
             {
                 stabilityService->forceHangForTesting();
+            }
+        }
+    }
+}
+
+void MainWindowViewModel::testPerformance()
+{
+    COMMONHEAD_LOG_DEBUG("testPerformance called");
+    
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto performanceService = serviceLocator->getPerformanceService().lock())
+            {
+                // Test timing tracking with RAII helper
+                {
+                    ucf::service::ScopedTiming scopedTiming(serviceLocator->getPerformanceService(), "TestOperation");
+                    // Simulate some work
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+                
+                // Take a snapshot
+                auto snapshot = performanceService->takeSnapshot();
+                COMMONHEAD_LOG_DEBUG("Snapshot taken - CPU: " + std::to_string(snapshot.cpuUsagePercent) + "%");
+                
+                // Export report to JSON
+                auto jsonReport = performanceService->exportReportAsJson();
+                COMMONHEAD_LOG_DEBUG("Performance Report exported");
+                
+                // Export to file
+                std::filesystem::path outputPath = "/tmp/performance_report.json";
+                performanceService->exportReportToFile(outputPath);
+                COMMONHEAD_LOG_DEBUG("Performance report exported to: /tmp/performance_report.json");
             }
         }
     }

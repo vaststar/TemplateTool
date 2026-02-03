@@ -14,6 +14,7 @@
 #include <ucf/Services/ImageService/IImageService.h>
 #include <ucf/Services/MediaService/IMediaService.h>
 #include <ucf/Services/StabilityService/IStabilityService.h>
+#include <ucf/Services/PerformanceService/IPerformanceService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -209,6 +210,9 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         
         // StabilityService - register service, will auto-install during initServices
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IStabilityService>(mServiceFactory->createStabilityService());
+        
+        // PerformanceService - CPU/Memory monitoring and timing
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IPerformanceService>(mServiceFactory->createPerformanceService());
         
         mFrameworkDependencies.coreFramework->initServices();
     }

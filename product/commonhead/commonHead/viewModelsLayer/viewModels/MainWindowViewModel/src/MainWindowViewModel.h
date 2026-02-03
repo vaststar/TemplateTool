@@ -32,6 +32,9 @@ public:
     
     // Test hang detection - for development/testing only
     void testHang();
+    
+    // Test performance service export - for development/testing only
+    void testPerformance();
 
 protected:
     virtual void init();
