@@ -332,6 +332,17 @@ void HangManager::clearAllHangReports()
     CRASHHANDLER_LOG_INFO("Cleared all hang reports, count: " << files.size());
 }
 
+void HangManager::forceHangForTesting()
+{
+    CRASHHANDLER_LOG_WARN("forceHangForTesting: Intentionally blocking main thread for hang detection test");
+    
+    // Sleep for longer than the hang threshold to trigger hang detection
+    // Default threshold is 5 seconds, so sleep for 10 seconds
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    
+    CRASHHANDLER_LOG_INFO("forceHangForTesting: Main thread resumed after intentional hang");
+}
+
 void HangManager::onHangDetected(std::chrono::milliseconds hangDuration, const std::string& stackTrace)
 {
     CRASHHANDLER_LOG_WARN("Hang detected! Duration: " << hangDuration.count() << "ms");

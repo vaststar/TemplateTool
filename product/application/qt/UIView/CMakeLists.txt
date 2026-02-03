@@ -27,6 +27,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/InvocationViewModelEmitter.h
     ViewModelSingalEmitter/AppUiViewModelEmitter.h
     ViewModelSingalEmitter/MainWindowViewModelEmitter.h
+    ViewModelSingalEmitter/StabilityViewModelEmitter.h
 
     ContactList/include/ContactListItemModel.h
     ContactList/include/ContactListViewController.h
@@ -57,6 +58,10 @@ set(MODULE_SOURCE_PRIVATE
     AppUIManager/src/AppUIManager.cpp
     AppUIManager/src/AppUIController.h
     AppUIManager/src/AppUIController.cpp
+    AppUIManager/src/UIIPCServerHelper.h
+    AppUIManager/src/UIIPCServerHelper.cpp
+    AppUIManager/src/UIStabilityMonitor.h
+    AppUIManager/src/UIStabilityMonitor.cpp
     
 )
 set(MODULE_DEPENDENCIES_PUBLIC

@@ -78,6 +78,9 @@ public:
     
     /// Force a crash for testing purposes only
     virtual void forceCrashForTesting() = 0;
+    
+    /// Force a hang for testing purposes only (blocks main thread)
+    virtual void forceHangForTesting() = 0;
 
     // ==========================================
     // Factory Method

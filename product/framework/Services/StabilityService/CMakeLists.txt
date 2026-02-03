@@ -28,12 +28,19 @@ set(MODULE_SOURCE_PRIVATE
 )
 
 # Platform-specific crash files
-if(APPLE OR UNIX)
+if(APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/crash/platform/PosixCrashHandler.h
         src/crash/platform/PosixCrashHandler.cpp
-        src/hang/platform/PosixHangHandler.h
-        src/hang/platform/PosixHangHandler.cpp
+        src/hang/platform/MacOSHangHandler.h
+        src/hang/platform/MacOSHangHandler.cpp
+    )
+elseif(UNIX)
+    list(APPEND MODULE_SOURCE_PRIVATE
+        src/crash/platform/PosixCrashHandler.h
+        src/crash/platform/PosixCrashHandler.cpp
+        src/hang/platform/LinuxHangHandler.h
+        src/hang/platform/LinuxHangHandler.cpp
     )
 elseif(WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE

@@ -53,6 +53,9 @@ public:
     [[nodiscard]] std::vector<std::filesystem::path> getHangReportFiles() const;
     void clearPendingHangReport();
     void clearAllHangReports();
+    
+    // Testing
+    void forceHangForTesting();
 
     // Configuration
     void setHangThreshold(std::chrono::milliseconds threshold);

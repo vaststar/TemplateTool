@@ -2,25 +2,29 @@
 
 #include "IPlatformHangHandler.h"
 
-#if defined(__APPLE__) || defined(__linux__)
+#if defined(__APPLE__)
+
+#include <pthread.h>
 
 namespace ucf::service {
 
-class PosixHangHandler : public IPlatformHangHandler
+class MacOSHangHandler : public IPlatformHangHandler
 {
 public:
-    PosixHangHandler();
-    ~PosixHangHandler() override = default;
+    MacOSHangHandler();
+    ~MacOSHangHandler() override = default;
     
     std::string captureMainThreadStack(std::thread::id mainThreadId) const override;
     std::string captureCurrentThreadStack(int skipFrames = 0) const override;
     [[nodiscard]] bool isMainThreadCaptureSupported() const override;
 
 private:
-    // Helper to demangle C++ symbol names
+    std::string captureMachThreadStack(pthread_t targetThread) const;
     std::string demangleSymbol(const char* symbol) const;
+    
+    pthread_t mMainThreadPthread{0};
 };
 
 } // namespace ucf::service
 
-#endif // defined(__APPLE__) || defined(__linux__)
+#endif // defined(__APPLE__)

@@ -48,7 +48,8 @@ void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
 void MainWindowViewModel::packApplicationLogs()
 {
     COMMONHEAD_LOG_DEBUG("packApplicationLogs called");
-    testCrash();
+    // testCrash();
+    testHang();
     
     // Use LogOperationUtils to pack logs - it handles framework/service access internally
     auto result = commonHead::utilities::LogOperationUtils::packLogs(getCommonHeadFramework());
@@ -67,6 +68,22 @@ void MainWindowViewModel::testCrash()
             if (auto stabilityService = serviceLocator->getStabilityService().lock())
             {
                 stabilityService->forceCrashForTesting();
+            }
+        }
+    }
+}
+
+void MainWindowViewModel::testHang()
+{
+    COMMONHEAD_LOG_DEBUG("testHang called");
+    
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto stabilityService = serviceLocator->getStabilityService().lock())
+            {
+                stabilityService->forceHangForTesting();
             }
         }
     }

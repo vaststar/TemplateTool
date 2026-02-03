@@ -4,27 +4,24 @@
 #include <QObject>
 #include <QPointer>
 
-namespace commonHead{
-    namespace viewModels{
-        class IAppUIViewModel;
-        class IInvocationViewModel;
-    }
+namespace commonHead::viewModels{
+    class IAppUIViewModel;
 }
 
 class AppContext;
+class UIIPCServerHelper;
+class UIStabilityMonitor;
+
 namespace UIVMSignalEmitter{
     class AppUIViewModelEmitter;
-    class InvocationViewModelEmitter;
 }
 
-namespace UIUtilities{
-    class UIIPCServer;
-}
 class AppUIController : public QObject
 {
     Q_OBJECT
 public:
     AppUIController(AppContext* appContext, QObject* parent = nullptr);
+    ~AppUIController();
 
     void startApp();
 private slots:
@@ -32,12 +29,10 @@ private slots:
     void onDatabaseInitialized();
 private:
     void initializeController();
-    void startIPCServer();
 private:
     const QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mAppUIViewModel;
     std::shared_ptr<UIVMSignalEmitter::AppUIViewModelEmitter> mAppUIViewModelEmitter;
-    std::shared_ptr<UIUtilities::UIIPCServer> mIPCServer;
-    std::shared_ptr<commonHead::viewModels::IInvocationViewModel> mIPCViewModel;
-    std::shared_ptr<UIVMSignalEmitter::InvocationViewModelEmitter> mInvocationViewModelEmitter;
+    std::unique_ptr<UIIPCServerHelper> mIPCServerHelper;
+    std::unique_ptr<UIStabilityMonitor> mStabilityMonitor;
 };

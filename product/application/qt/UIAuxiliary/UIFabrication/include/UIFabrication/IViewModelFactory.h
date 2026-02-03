@@ -17,6 +17,7 @@ namespace commonHead::viewModels{
     class IMainWindowViewModel;
     class IMediaCameraViewModel;
     class IInvocationViewModel;
+    class IStabilityViewModel;
 }
 
 namespace UIFabrication{
@@ -31,6 +32,7 @@ public:
     virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const = 0;
     virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const = 0;
     virtual std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const = 0;
+    virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;
 public:
     static std::unique_ptr<IViewModelFactory> createInstance(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);
 };

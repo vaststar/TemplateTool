@@ -39,6 +39,7 @@ public:
 
     // IStabilityService - Testing
     void forceCrashForTesting() override;
+    void forceHangForTesting() override;
 
 protected:
     void initService() override;

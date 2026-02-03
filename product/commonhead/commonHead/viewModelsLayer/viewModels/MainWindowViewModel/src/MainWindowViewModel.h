@@ -29,6 +29,9 @@ public:
     
     // Test crash handler - for development/testing only
     void testCrash();
+    
+    // Test hang detection - for development/testing only
+    void testHang();
 
 protected:
     virtual void init();

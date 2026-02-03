@@ -144,6 +144,11 @@ void StabilityService::forceCrashForTesting()
     mDataPrivate->getCrashManager().forceCrashForTesting();
 }
 
+void StabilityService::forceHangForTesting()
+{
+    mDataPrivate->getHangManager().forceHangForTesting();
+}
+
 // ==========================================
 // Hang Detection Implementation
 // ==========================================

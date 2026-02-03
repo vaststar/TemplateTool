@@ -29,6 +29,7 @@ public:
     virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const override;
     virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const override;
     virtual std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const override;
+    virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const override;
 private:
     template <typename T, typename... Args>
     std::shared_ptr<T> createViewModelInstance(const Args&... args) const
