@@ -1,7 +1,7 @@
 #ifdef _WIN32
 
 #include "WindowsCrashHandler.h"
-#include "../StabilityServiceLogger.h"
+#include "../../StabilityServiceLogger.h"
 
 #include <DbgHelp.h>
 #include <sstream>

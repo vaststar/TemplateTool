@@ -9,8 +9,6 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class CrashHandlerManager;
-
 class StabilityService : public IStabilityService
 {
 public:
@@ -21,7 +19,7 @@ public:
     [[nodiscard]] std::string getServiceName() const override { return "StabilityService"; }
 
     // IStabilityService - Status
-    [[nodiscard]] bool isInstalled() const override;
+    [[nodiscard]] bool isCrashHandlerInstalled() const override;
 
     // IStabilityService - Crash Report
     [[nodiscard]] bool hasPendingCrashReport() const override;
@@ -29,6 +27,15 @@ public:
     [[nodiscard]] std::vector<std::filesystem::path> getCrashReportFiles() const override;
     void clearPendingCrashReport() override;
     void clearAllCrashReports() override;
+
+    // IStabilityService - Hang Detection
+    void reportHeartbeat() override;
+    [[nodiscard]] bool isHangDetectionEnabled() const override;
+    [[nodiscard]] bool hasPendingHangReport() const override;
+    [[nodiscard]] std::optional<HangInfo> getLastHangInfo() const override;
+    [[nodiscard]] std::vector<std::filesystem::path> getHangReportFiles() const override;
+    void clearPendingHangReport() override;
+    void clearAllHangReports() override;
 
     // IStabilityService - Testing
     void forceCrashForTesting() override;

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-# add_subdirectory(fakes)
+add_subdirectory(fakes)
 include(BuildUnitTestModule)
 
 set(TARGET_SOURCE_FILES_PRIVATE

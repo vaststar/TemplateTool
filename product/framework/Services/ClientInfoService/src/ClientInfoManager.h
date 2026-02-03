@@ -45,6 +45,7 @@ public:
     std::string getDataStoragePath() const;
     std::string getLogStoragePath() const;
     std::string getCrashStoragePath() const;
+    std::string getHangStoragePath() const;
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::atomic<model::LanguageType> mLanguageType;

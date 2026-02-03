@@ -53,6 +53,7 @@ public:
     virtual std::string getAppDataStoragePath() const override;
     virtual std::string getAppLogStoragePath() const override;
     virtual std::string getAppCrashStoragePath() const override;
+    virtual std::string getAppHangStoragePath() const override;
 protected:
     //IService
     virtual void initService() override;

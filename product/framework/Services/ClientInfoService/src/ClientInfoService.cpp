@@ -223,6 +223,11 @@ std::string ClientInfoService::getAppCrashStoragePath() const
     return mDataPrivate->getClientInfoManager().getCrashStoragePath();
 }
 
+std::string ClientInfoService::getAppHangStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager().getHangStoragePath();
+}
+
 void ClientInfoService::OnDatabaseInitialized(const std::string& dbId)
 {
     mDataPrivate->getClientInfoManager().databaseInitialized(dbId);

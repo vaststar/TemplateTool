@@ -1,5 +1,6 @@
 #include "StabilityService.h"
-#include "CrashHandlerManager.h"
+#include "crash/CrashManager.h"
+#include "hang/HangManager.h"
 #include "StabilityServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -18,17 +19,23 @@ public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-    CrashHandlerManager& getManager();
-    const CrashHandlerManager& getManager() const;
+    
+    CrashManager& getCrashManager();
+    const CrashManager& getCrashManager() const;
+    
+    HangManager& getHangManager();
+    const HangManager& getHangManager() const;
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
-    std::unique_ptr<CrashHandlerManager> mManager;
+    std::unique_ptr<CrashManager> mCrashManager;
+    std::unique_ptr<HangManager> mHangManager;
 };
 
 StabilityService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
-    , mManager(std::make_unique<CrashHandlerManager>(coreFramework))
+    , mCrashManager(std::make_unique<CrashManager>(coreFramework))
+    , mHangManager(std::make_unique<HangManager>(coreFramework))
 {
 }
 
@@ -37,14 +44,24 @@ ucf::framework::ICoreFrameworkWPtr StabilityService::DataPrivate::getCoreFramewo
     return mCoreFramework;
 }
 
-CrashHandlerManager& StabilityService::DataPrivate::getManager()
+CrashManager& StabilityService::DataPrivate::getCrashManager()
 {
-    return *mManager;
+    return *mCrashManager;
 }
 
-const CrashHandlerManager& StabilityService::DataPrivate::getManager() const
+const CrashManager& StabilityService::DataPrivate::getCrashManager() const
 {
-    return *mManager;
+    return *mCrashManager;
+}
+
+HangManager& StabilityService::DataPrivate::getHangManager()
+{
+    return *mHangManager;
+}
+
+const HangManager& StabilityService::DataPrivate::getHangManager() const
+{
+    return *mHangManager;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -80,42 +97,90 @@ StabilityService::~StabilityService()
 void StabilityService::initService()
 {
     CRASHHANDLER_LOG_INFO("StabilityService::initService() called");
-    mDataPrivate->getManager().initialize();
+    
+    // Initialize crash manager
+    mDataPrivate->getCrashManager().initialize();
+    
+    // Initialize hang detection
+    mDataPrivate->getHangManager().initialize();
 }
 
-bool StabilityService::isInstalled() const
+// ==========================================
+// Crash Report Implementation
+// ==========================================
+
+bool StabilityService::isCrashHandlerInstalled() const
 {
-    return mDataPrivate->getManager().isInstalled();
+    return mDataPrivate->getCrashManager().isInstalled();
 }
 
 bool StabilityService::hasPendingCrashReport() const
 {
-    return mDataPrivate->getManager().hasPendingCrashReport();
+    return mDataPrivate->getCrashManager().hasPendingCrashReport();
 }
 
 std::optional<CrashInfo> StabilityService::getLastCrashInfo() const
 {
-    return mDataPrivate->getManager().getLastCrashInfo();
+    return mDataPrivate->getCrashManager().getLastCrashInfo();
 }
 
 std::vector<std::filesystem::path> StabilityService::getCrashReportFiles() const
 {
-    return mDataPrivate->getManager().getCrashReportFiles();
+    return mDataPrivate->getCrashManager().getCrashReportFiles();
 }
 
 void StabilityService::clearPendingCrashReport()
 {
-    mDataPrivate->getManager().clearPendingCrashReport();
+    mDataPrivate->getCrashManager().clearPendingCrashReport();
 }
 
 void StabilityService::clearAllCrashReports()
 {
-    mDataPrivate->getManager().clearAllCrashReports();
+    mDataPrivate->getCrashManager().clearAllCrashReports();
 }
 
 void StabilityService::forceCrashForTesting()
 {
-    mDataPrivate->getManager().forceCrashForTesting();
+    mDataPrivate->getCrashManager().forceCrashForTesting();
+}
+
+// ==========================================
+// Hang Detection Implementation
+// ==========================================
+
+void StabilityService::reportHeartbeat()
+{
+    mDataPrivate->getHangManager().reportHeartbeat();
+}
+
+bool StabilityService::isHangDetectionEnabled() const
+{
+    return mDataPrivate->getHangManager().isEnabled();
+}
+
+bool StabilityService::hasPendingHangReport() const
+{
+    return mDataPrivate->getHangManager().hasPendingHangReport();
+}
+
+std::optional<HangInfo> StabilityService::getLastHangInfo() const
+{
+    return mDataPrivate->getHangManager().getLastHangInfo();
+}
+
+std::vector<std::filesystem::path> StabilityService::getHangReportFiles() const
+{
+    return mDataPrivate->getHangManager().getHangReportFiles();
+}
+
+void StabilityService::clearPendingHangReport()
+{
+    mDataPrivate->getHangManager().clearPendingHangReport();
+}
+
+void StabilityService::clearAllHangReports()
+{
+    mDataPrivate->getHangManager().clearAllHangReports();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

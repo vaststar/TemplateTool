@@ -19,16 +19,16 @@ namespace ucf::service {
 // Forward declaration
 class IPlatformCrashHandler;
 
-class CrashHandlerManager final
+class CrashManager final
 {
 public:
-    explicit CrashHandlerManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
-    ~CrashHandlerManager();
+    explicit CrashManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    ~CrashManager();
     
-    CrashHandlerManager(const CrashHandlerManager&) = delete;
-    CrashHandlerManager(CrashHandlerManager&&) = delete;
-    CrashHandlerManager& operator=(const CrashHandlerManager&) = delete;
-    CrashHandlerManager& operator=(CrashHandlerManager&&) = delete;
+    CrashManager(const CrashManager&) = delete;
+    CrashManager(CrashManager&&) = delete;
+    CrashManager& operator=(const CrashManager&) = delete;
+    CrashManager& operator=(CrashManager&&) = delete;
 
 public:
     // Initialize (get path from ClientInfoService and install)

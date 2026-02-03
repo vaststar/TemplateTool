@@ -1,5 +1,5 @@
-#include "CrashHandlerManager.h"
-#include "StabilityServiceLogger.h"
+#include "CrashManager.h"
+#include "../StabilityServiceLogger.h"
 #include "platform/IPlatformCrashHandler.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -13,21 +13,21 @@
 
 namespace ucf::service {
 
-CrashHandlerManager::CrashHandlerManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
+CrashManager::CrashManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
 {
-    CRASHHANDLER_LOG_DEBUG("CrashHandlerManager created");
+    CRASHHANDLER_LOG_DEBUG("CrashManager created");
 }
 
-CrashHandlerManager::~CrashHandlerManager()
+CrashManager::~CrashManager()
 {
     cleanup();
-    CRASHHANDLER_LOG_DEBUG("CrashHandlerManager destroyed");
+    CRASHHANDLER_LOG_DEBUG("CrashManager destroyed");
 }
 
-void CrashHandlerManager::initialize()
+void CrashManager::initialize()
 {
-    CRASHHANDLER_LOG_INFO("CrashHandlerManager::initialize() starting...");
+    CRASHHANDLER_LOG_INFO("CrashManager::initialize() starting...");
     
     // Get configuration from ClientInfoService
     if (auto coreFramework = mCoreFramework.lock())
@@ -60,12 +60,12 @@ void CrashHandlerManager::initialize()
     }
 }
 
-void CrashHandlerManager::cleanup()
+void CrashManager::cleanup()
 {
     uninstall();
 }
 
-void CrashHandlerManager::setCrashDirectory(const std::filesystem::path& dir)
+void CrashManager::setCrashDirectory(const std::filesystem::path& dir)
 {
     mCrashDirectory = dir;
     
@@ -76,7 +76,7 @@ void CrashHandlerManager::setCrashDirectory(const std::filesystem::path& dir)
     }
 }
 
-void CrashHandlerManager::install()
+void CrashManager::install()
 {
     if (mInstalled)
     {
@@ -108,7 +108,7 @@ void CrashHandlerManager::install()
     CRASHHANDLER_LOG_INFO("CrashHandler installed, crash directory: " << mCrashDirectory);
 }
 
-void CrashHandlerManager::uninstall()
+void CrashManager::uninstall()
 {
     if (!mInstalled)
     {
@@ -122,13 +122,13 @@ void CrashHandlerManager::uninstall()
     CRASHHANDLER_LOG_INFO("CrashHandler uninstalled");
 }
 
-bool CrashHandlerManager::hasPendingCrashReport() const
+bool CrashManager::hasPendingCrashReport() const
 {
     auto files = getCrashReportFiles();
     return !files.empty();
 }
 
-std::optional<CrashInfo> CrashHandlerManager::getLastCrashInfo() const
+std::optional<CrashInfo> CrashManager::getLastCrashInfo() const
 {
     auto files = getCrashReportFiles();
     if (files.empty())
@@ -144,7 +144,7 @@ std::optional<CrashInfo> CrashHandlerManager::getLastCrashInfo() const
     return parseCrashLog(*newest);
 }
 
-std::vector<std::filesystem::path> CrashHandlerManager::getCrashReportFiles() const
+std::vector<std::filesystem::path> CrashManager::getCrashReportFiles() const
 {
     std::vector<std::filesystem::path> result;
     
@@ -165,7 +165,7 @@ std::vector<std::filesystem::path> CrashHandlerManager::getCrashReportFiles() co
     return result;
 }
 
-void CrashHandlerManager::clearPendingCrashReport()
+void CrashManager::clearPendingCrashReport()
 {
     auto files = getCrashReportFiles();
     if (files.empty())
@@ -182,7 +182,7 @@ void CrashHandlerManager::clearPendingCrashReport()
     std::filesystem::remove(*newest, ec);
 }
 
-void CrashHandlerManager::clearAllCrashReports()
+void CrashManager::clearAllCrashReports()
 {
     auto files = getCrashReportFiles();
     std::error_code ec;
@@ -192,7 +192,7 @@ void CrashHandlerManager::clearAllCrashReports()
     }
 }
 
-void CrashHandlerManager::forceCrashForTesting()
+void CrashManager::forceCrashForTesting()
 {
     CRASHHANDLER_LOG_WARN("Forcing crash for testing...");
     
@@ -203,7 +203,7 @@ void CrashHandlerManager::forceCrashForTesting()
     *p = 42;  // NOLINT - intentional crash for testing
 }
 
-void CrashHandlerManager::onCrash(int signalCode, const char* signalName)
+void CrashManager::onCrash(int signalCode, const char* signalName)
 {
     // WARNING: This function is called from signal handler, only use async-signal-safe functions
     
@@ -216,7 +216,7 @@ void CrashHandlerManager::onCrash(int signalCode, const char* signalName)
     writeCrashLog(signalCode, signalName, stackTrace);
 }
 
-void CrashHandlerManager::writeCrashLog(int signalCode, const char* signalName, 
+void CrashManager::writeCrashLog(int signalCode, const char* signalName, 
                                          const std::string& stackTrace)
 {
     auto logPath = generateCrashLogPath();
@@ -247,7 +247,7 @@ void CrashHandlerManager::writeCrashLog(int signalCode, const char* signalName,
     fclose(fp);
 }
 
-std::string CrashHandlerManager::formatTimestamp(std::chrono::system_clock::time_point tp) const
+std::string CrashManager::formatTimestamp(std::chrono::system_clock::time_point tp) const
 {
     auto time = std::chrono::system_clock::to_time_t(tp);
     std::tm tm{};
@@ -262,7 +262,7 @@ std::string CrashHandlerManager::formatTimestamp(std::chrono::system_clock::time
     return buffer;
 }
 
-std::filesystem::path CrashHandlerManager::generateCrashLogPath() const
+std::filesystem::path CrashManager::generateCrashLogPath() const
 {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
@@ -279,7 +279,7 @@ std::filesystem::path CrashHandlerManager::generateCrashLogPath() const
     return mCrashDirectory / buffer;
 }
 
-std::optional<CrashInfo> CrashHandlerManager::parseCrashLog(const std::filesystem::path& path) const
+std::optional<CrashInfo> CrashManager::parseCrashLog(const std::filesystem::path& path) const
 {
     std::ifstream file(path);
     if (!file)

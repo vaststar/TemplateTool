@@ -8,28 +8,39 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES
     include/ucf/Services/StabilityService/IStabilityService.h
     include/ucf/Services/StabilityService/CrashInfo.h
+    include/ucf/Services/StabilityService/HangInfo.h
 )
 
 set(MODULE_SOURCE_PRIVATE
     src/StabilityService.h
     src/StabilityService.cpp
-    src/CrashHandlerManager.h
-    src/CrashHandlerManager.cpp
     src/StabilityServiceLogger.h
-    src/platform/IPlatformCrashHandler.h
-    src/platform/IPlatformCrashHandler.cpp
+    # Crash module
+    src/crash/CrashManager.h
+    src/crash/CrashManager.cpp
+    src/crash/platform/IPlatformCrashHandler.h
+    src/crash/platform/IPlatformCrashHandler.cpp
+    # Hang module
+    src/hang/HangManager.h
+    src/hang/HangManager.cpp
+    src/hang/platform/IPlatformHangHandler.h
+    src/hang/platform/IPlatformHangHandler.cpp
 )
 
-# 平台相关源文件
+# Platform-specific crash files
 if(APPLE OR UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
-        src/platform/PosixCrashHandler.h
-        src/platform/PosixCrashHandler.cpp
+        src/crash/platform/PosixCrashHandler.h
+        src/crash/platform/PosixCrashHandler.cpp
+        src/hang/platform/PosixHangHandler.h
+        src/hang/platform/PosixHangHandler.cpp
     )
 elseif(WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE
-        src/platform/WindowsCrashHandler.h
-        src/platform/WindowsCrashHandler.cpp
+        src/crash/platform/WindowsCrashHandler.h
+        src/crash/platform/WindowsCrashHandler.cpp
+        src/hang/platform/WindowsHangHandler.h
+        src/hang/platform/WindowsHangHandler.cpp
     )
 endif()
 
@@ -61,3 +72,5 @@ BuildModule(
     TARGET_DEFINITIONS ${ADD_SERVICE_DEFINITIONS}
     IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
+
+add_subdirectory(test)
