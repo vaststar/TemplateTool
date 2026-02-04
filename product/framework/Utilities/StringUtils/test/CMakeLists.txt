@@ -4,6 +4,7 @@ include(BuildUnitTestModule)
 
 set(TARGET_SOURCE_FILES_PRIVATE
     StringUtils_tests.cpp
+    UnicodeString_tests.cpp
 )
 
 BuildUnitTestModule(

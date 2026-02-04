@@ -7,10 +7,21 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/Utilities/StringUtils/StringUtils.h
+    include/ucf/Utilities/StringUtils/UnicodeString.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/StringUtils.cpp
+    src/UnicodeString.cpp
+    src/UnicodeStringEncoding.cpp
 )
+
+# 平台相关源文件
+if(WIN32)
+    list(APPEND MODULE_SOURCE_PRIVATE src/UnicodeStringEncoding_Win.cpp)
+else()
+    list(APPEND MODULE_SOURCE_PRIVATE src/UnicodeStringEncoding_Unix.cpp)
+endif()
+
 set(MODULE_DEPENDENCIES_PUBLIC
     UtilitiesCommonFile
 )
