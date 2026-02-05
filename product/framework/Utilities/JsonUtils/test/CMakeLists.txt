@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 include(BuildUnitTestModule)
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    JsonUtils_tests.cpp
+    JsonValue_tests.cpp
 )
 
 BuildUnitTestModule(

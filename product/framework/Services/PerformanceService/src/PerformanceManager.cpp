@@ -5,7 +5,7 @@
 #include "ICPUMonitor.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Utilities/JsonUtils/JsonBuilder.h>
+#include <ucf/Utilities/JsonUtils/JsonValue.h>
 
 #include <fstream>
 #include <ctime>
@@ -147,34 +147,34 @@ std::string PerformanceManager::exportReportAsJson() const
     std::strftime(timeBuf, sizeof(timeBuf), "%Y-%m-%dT%H:%M:%SZ", &tm_buf);
     
     // Memory
-    utilities::JsonBuilder memory;
-    memory.add("physicalMB", snapshot.memory.physicalBytes / 1024 / 1024)
-          .add("virtualMB", snapshot.memory.virtualBytes / 1024 / 1024)
-          .add("peakPhysicalMB", snapshot.memory.peakPhysicalBytes / 1024 / 1024)
-          .add("availableSystemMB", snapshot.memory.availableSystemBytes / 1024 / 1024);
+    utilities::JsonValue memory = utilities::JsonValue::object();
+    memory.set("physicalMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.physicalBytes / 1024 / 1024)));
+    memory.set("virtualMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.virtualBytes / 1024 / 1024)));
+    memory.set("peakPhysicalMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.peakPhysicalBytes / 1024 / 1024)));
+    memory.set("availableSystemMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.availableSystemBytes / 1024 / 1024)));
     
     // Timing stats
-    std::vector<utilities::JsonBuilder> timingArray;
+    utilities::JsonValue timingArray = utilities::JsonValue::array();
     for (const auto& stats : snapshot.timingStats)
     {
-        utilities::JsonBuilder timing;
-        timing.add("operation", stats.operationName)
-              .add("callCount", static_cast<uint64_t>(stats.callCount))
-              .add("totalMs", static_cast<int64_t>(stats.totalTime.count()))
-              .add("avgMs", static_cast<int64_t>(stats.avgTime().count()))
-              .add("minMs", static_cast<int64_t>(stats.minTime == std::chrono::milliseconds::max() ? 0 : stats.minTime.count()))
-              .add("maxMs", static_cast<int64_t>(stats.maxTime.count()));
+        utilities::JsonValue timing = utilities::JsonValue::object();
+        timing.set("operation", utilities::JsonValue(stats.operationName));
+        timing.set("callCount", utilities::JsonValue(static_cast<uint64_t>(stats.callCount)));
+        timing.set("totalMs", utilities::JsonValue(static_cast<int64_t>(stats.totalTime.count())));
+        timing.set("avgMs", utilities::JsonValue(static_cast<int64_t>(stats.avgTime().count())));
+        timing.set("minMs", utilities::JsonValue(static_cast<int64_t>(stats.minTime == std::chrono::milliseconds::max() ? 0 : stats.minTime.count())));
+        timing.set("maxMs", utilities::JsonValue(static_cast<int64_t>(stats.maxTime.count())));
         timingArray.push_back(std::move(timing));
     }
     
     // Build report
-    utilities::JsonBuilder report;
-    report.add("timestamp", timeBuf)
-          .addObject("memory", memory)
-          .add("cpuUsagePercent", snapshot.cpuUsagePercent)
-          .addArray("timingStats", timingArray);
+    utilities::JsonValue report = utilities::JsonValue::object();
+    report.set("timestamp", utilities::JsonValue(timeBuf));
+    report.set("memory", std::move(memory));
+    report.set("cpuUsagePercent", utilities::JsonValue(snapshot.cpuUsagePercent));
+    report.set("timingStats", std::move(timingArray));
     
-    return report.buildPretty(2);
+    return report.dumpPretty(2);
 }
 
 void PerformanceManager::exportReportToFile(const std::filesystem::path& path) const

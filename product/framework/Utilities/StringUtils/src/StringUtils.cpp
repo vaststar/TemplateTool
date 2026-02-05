@@ -12,7 +12,7 @@
 namespace ucf::utilities {
 
 // ==========================================
-// 空白处理 - std::string
+// Whitespace Handling - std::string
 // ==========================================
 
 std::string StringUtils::trim(const std::string& str)
@@ -39,7 +39,7 @@ std::string StringUtils::rtrim(const std::string& str)
 }
 
 // ==========================================
-// 空白处理 - UnicodeString
+// Whitespace Handling - UnicodeString
 // ==========================================
 
 UnicodeString StringUtils::trim(const UnicodeString& str)
@@ -58,7 +58,7 @@ UnicodeString StringUtils::rtrim(const UnicodeString& str)
 }
 
 // ==========================================
-// 大小写转换
+// Case Conversion
 // ==========================================
 
 std::string StringUtils::toUpper(const std::string& str)
@@ -80,7 +80,7 @@ std::string StringUtils::toLower(const std::string& str)
 }
 
 // ==========================================
-// 分割和连接 - std::string
+// Split and Join - std::string
 // ==========================================
 
 std::vector<std::string> StringUtils::split(const std::string& str, char delimiter)
@@ -130,7 +130,7 @@ std::string StringUtils::join(const std::vector<std::string>& parts, const std::
 }
 
 // ==========================================
-// 分割和连接 - UnicodeString
+// Split and Join - UnicodeString
 // ==========================================
 
 std::vector<UnicodeString> StringUtils::split(const UnicodeString& str, char delimiter)
@@ -172,7 +172,7 @@ UnicodeString StringUtils::join(const std::vector<UnicodeString>& parts, const U
 }
 
 // ==========================================
-// 检查 - std::string
+// Checks - std::string
 // ==========================================
 
 bool StringUtils::startsWith(const std::string& str, const std::string& prefix)
@@ -193,7 +193,7 @@ bool StringUtils::contains(const std::string& str, const std::string& substr)
 }
 
 // ==========================================
-// 检查 - UnicodeString
+// Checks - UnicodeString
 // ==========================================
 
 bool StringUtils::startsWith(const UnicodeString& str, const UnicodeString& prefix)
@@ -212,7 +212,7 @@ bool StringUtils::contains(const UnicodeString& str, const UnicodeString& substr
 }
 
 // ==========================================
-// 替换 - std::string
+// Replace - std::string
 // ==========================================
 
 std::string StringUtils::replace(const std::string& str, const std::string& from, const std::string& to)
@@ -245,7 +245,7 @@ std::string StringUtils::replaceAll(const std::string& str, const std::string& f
 }
 
 // ==========================================
-// 替换 - UnicodeString
+// Replace - UnicodeString
 // ==========================================
 
 UnicodeString StringUtils::replace(const UnicodeString& str, const UnicodeString& from, const UnicodeString& to)
@@ -259,7 +259,7 @@ UnicodeString StringUtils::replaceAll(const UnicodeString& str, const UnicodeStr
 }
 
 // ==========================================
-// 数值转换
+// Numeric Conversion
 // ==========================================
 
 std::optional<int> StringUtils::toInt(const std::string& str)
@@ -299,13 +299,13 @@ std::optional<double> StringUtils::toDouble(const std::string& str)
             return value;
         }
     } catch (...) {
-        // 转换失败
+        // Conversion failed
     }
     return std::nullopt;
 }
 
 // ==========================================
-// 其他工具
+// Other Utilities
 // ==========================================
 
 std::string StringUtils::repeat(const std::string& str, size_t times)

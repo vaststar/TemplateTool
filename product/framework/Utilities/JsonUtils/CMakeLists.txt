@@ -6,13 +6,11 @@ set(MODULE_IDE_FOLDER framework/Utilities)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/JsonUtils/JsonBuilder.h
-    include/ucf/Utilities/JsonUtils/JsonParser.h
+    include/ucf/Utilities/JsonUtils/JsonValue.h
 )
 
 set(MODULE_SOURCE_PRIVATE
-    src/JsonBuilder.cpp
-    src/JsonParser.cpp
+    src/JsonValue.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC

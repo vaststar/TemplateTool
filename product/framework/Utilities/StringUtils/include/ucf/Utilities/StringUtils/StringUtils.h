@@ -9,32 +9,32 @@
 
 namespace ucf::utilities {
 
-// 前向声明
+// Forward declaration
 class UnicodeString;
 
 /**
- * @brief 字符串工具类
+ * @brief String utility class
  * 
- * 提供各种字符串操作的静态方法，支持 std::string 和 UnicodeString。
+ * Provides static methods for various string operations, supporting both std::string and UnicodeString.
  */
 class Utilities_EXPORT StringUtils final
 {
 public:
     // ==========================================
-    // 空白处理 - std::string
+    // Whitespace Handling - std::string
     // ==========================================
     
-    /// 去除两端空白
+    /// Trim leading and trailing whitespace
     static std::string trim(const std::string& str);
     
-    /// 去除左侧空白
+    /// Trim leading whitespace
     static std::string ltrim(const std::string& str);
     
-    /// 去除右侧空白
+    /// Trim trailing whitespace
     static std::string rtrim(const std::string& str);
     
     // ==========================================
-    // 空白处理 - UnicodeString
+    // Whitespace Handling - UnicodeString
     // ==========================================
     
     static UnicodeString trim(const UnicodeString& str);
@@ -42,30 +42,30 @@ public:
     static UnicodeString rtrim(const UnicodeString& str);
 
     // ==========================================
-    // 大小写转换 - std::string (ASCII only)
+    // Case Conversion - std::string (ASCII only)
     // ==========================================
     
-    /// 转换为大写 (仅处理 ASCII 字符)
+    /// Convert to uppercase (ASCII characters only)
     static std::string toUpper(const std::string& str);
     
-    /// 转换为小写 (仅处理 ASCII 字符)
+    /// Convert to lowercase (ASCII characters only)
     static std::string toLower(const std::string& str);
 
     // ==========================================
-    // 分割和连接 - std::string
+    // Split and Join - std::string
     // ==========================================
     
-    /// 按单个字符分割
+    /// Split by single character
     static std::vector<std::string> split(const std::string& str, char delimiter);
     
-    /// 按字符串分割
+    /// Split by string
     static std::vector<std::string> split(const std::string& str, const std::string& delimiter);
     
-    /// 连接字符串数组
+    /// Join string array
     static std::string join(const std::vector<std::string>& parts, const std::string& delimiter);
 
     // ==========================================
-    // 分割和连接 - UnicodeString
+    // Split and Join - UnicodeString
     // ==========================================
     
     static std::vector<UnicodeString> split(const UnicodeString& str, char delimiter);
@@ -73,20 +73,20 @@ public:
     static UnicodeString join(const std::vector<UnicodeString>& parts, const UnicodeString& delimiter);
 
     // ==========================================
-    // 检查 - std::string
+    // Checks - std::string
     // ==========================================
     
-    /// 检查是否以指定前缀开头
+    /// Check if starts with prefix
     static bool startsWith(const std::string& str, const std::string& prefix);
     
-    /// 检查是否以指定后缀结尾
+    /// Check if ends with suffix
     static bool endsWith(const std::string& str, const std::string& suffix);
     
-    /// 检查是否包含子串
+    /// Check if contains substring
     static bool contains(const std::string& str, const std::string& substr);
     
     // ==========================================
-    // 检查 - UnicodeString
+    // Checks - UnicodeString
     // ==========================================
     
     static bool startsWith(const UnicodeString& str, const UnicodeString& prefix);
@@ -94,50 +94,50 @@ public:
     static bool contains(const UnicodeString& str, const UnicodeString& substr);
 
     // ==========================================
-    // 替换 - std::string
+    // Replace - std::string
     // ==========================================
     
-    /// 替换第一个匹配
+    /// Replace first match
     static std::string replace(const std::string& str, const std::string& from, const std::string& to);
     
-    /// 替换所有匹配
+    /// Replace all matches
     static std::string replaceAll(const std::string& str, const std::string& from, const std::string& to);
     
     // ==========================================
-    // 替换 - UnicodeString
+    // Replace - UnicodeString
     // ==========================================
     
     static UnicodeString replace(const UnicodeString& str, const UnicodeString& from, const UnicodeString& to);
     static UnicodeString replaceAll(const UnicodeString& str, const UnicodeString& from, const UnicodeString& to);
 
     // ==========================================
-    // 数值转换
+    // Numeric Conversion
     // ==========================================
     
-    /// 字符串转整数
+    /// Convert string to integer
     static std::optional<int> toInt(const std::string& str);
     
-    /// 字符串转 64 位整数
+    /// Convert string to 64-bit integer
     static std::optional<int64_t> toInt64(const std::string& str);
     
-    /// 字符串转浮点数
+    /// Convert string to double
     static std::optional<double> toDouble(const std::string& str);
 
     // ==========================================
-    // 其他工具
+    // Other Utilities
     // ==========================================
     
-    /// 重复字符串
+    /// Repeat string
     static std::string repeat(const std::string& str, size_t times);
     
-    /// 左侧填充
+    /// Pad left
     static std::string padLeft(const std::string& str, size_t width, char padChar = ' ');
     
-    /// 右侧填充
+    /// Pad right
     static std::string padRight(const std::string& str, size_t width, char padChar = ' ');
 
 private:
-    StringUtils() = delete;  // 禁止实例化
+    StringUtils() = delete;  // Prevent instantiation
 };
 
 } // namespace ucf::utilities

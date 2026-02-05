@@ -6,48 +6,48 @@
 namespace ucf::utilities::detail {
 
 // ==========================================
-// UTF-8 编解码
+// UTF-8 Encoding/Decoding
 // ==========================================
 
-/// 从 UTF-8 序列解码一个码点，更新指针位置
-/// @return 解码的码点，失败返回 0xFFFD (replacement character)
+/// Decode one code point from UTF-8 sequence, updates pointer position
+/// @return The decoded code point, or 0xFFFD (replacement character) on failure
 char32_t decodeUtf8(const char*& ptr, const char* end);
 
-/// 将码点编码为 UTF-8 追加到字符串
+/// Encode code point as UTF-8 and append to string
 void encodeUtf8(char32_t codepoint, std::string& out);
 
-/// 计算 UTF-8 字符串的码点数量
+/// Count the number of code points in a UTF-8 string
 size_t countCodepoints(const std::string& utf8);
 
-/// 获取指向第 n 个码点的指针
+/// Get pointer to the n-th code point
 const char* codepointPointer(const std::string& utf8, size_t index);
 
 // ==========================================
-// 编码验证
+// Encoding Validation
 // ==========================================
 
-/// 验证 UTF-8 字符串
+/// Validate UTF-8 string
 bool validateUtf8(const char* data, size_t length);
 
-/// 检查是否全是 ASCII
+/// Check if all characters are ASCII
 bool checkAscii(const char* data, size_t length);
 
 // ==========================================
-// 编码转换（平台相关实现）
+// Encoding Conversion (platform-specific implementation)
 // ==========================================
 
-/// UTF-8 -> 宽字符 (wchar_t)
+/// UTF-8 -> wide string (wchar_t)
 std::wstring utf8ToWide(const std::string& utf8);
 
-/// 宽字符 -> UTF-8
+/// Wide string -> UTF-8
 std::string wideToUtf8(const std::wstring& wide);
 std::string wideToUtf8(const wchar_t* wide, size_t length);
 
-/// 本地编码 -> UTF-8
+/// Local encoding -> UTF-8
 std::string localToUtf8(const std::string& local);
 std::string localToUtf8(const char* local, size_t length);
 
-/// UTF-8 -> 本地编码
+/// UTF-8 -> local encoding
 std::string utf8ToLocal(const std::string& utf8);
 
 /// UTF-16 -> UTF-8
