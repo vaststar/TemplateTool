@@ -4,8 +4,8 @@
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 
-#include <UIDataStruct/UILanguage.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <UIManager/UILanguage.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <UIManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>

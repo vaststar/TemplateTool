@@ -4,8 +4,8 @@
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
-#include <UIDataStruct/UIDataUtils.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <UIManager/UILanguage.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>
@@ -64,7 +64,7 @@ void AppUIController::onDatabaseInitialized()
     UIVIEW_LOG_DEBUG("1, load translation after database initialized");
     auto clientInfoVM = mAppContext->getViewModelFactory()->createClientInfoViewModelInstance();
     UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UIDataUtils::convertViewModelLanguageToUILanguage(clientInfoVM->getApplicationLanguage()));
+    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(clientInfoVM->getApplicationLanguage()));
 
     UIVIEW_LOG_DEBUG("2, load theme after database initialized");
     UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));

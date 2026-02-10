@@ -3,8 +3,8 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 
-#include <UIDataStruct/UILanguage.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <UIManager/UILanguage.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <UIManager/ITranslatorManager.h>

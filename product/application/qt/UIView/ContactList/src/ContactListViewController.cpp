@@ -4,7 +4,7 @@
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 
 #include <AppContext/AppContext.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 
 ContactListViewController::ContactListViewController(QObject *parent)

@@ -2,7 +2,7 @@
 
 #include <QTimer>
 #include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
 #include "LoggerDefine/LoggerDefine.h"

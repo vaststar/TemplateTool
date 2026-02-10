@@ -1,0 +1,2 @@
+add_subdirectory(UIResourceLoaderManager)
+add_subdirectory(UIResourceTranslation)

@@ -1,8 +1,0 @@
-add_subdirectory(UIResourceColorLoader)
-add_subdirectory(UIResourceStringLoader)
-add_subdirectory(UIResourceFontLoader)
-add_subdirectory(UIResourceAssetLoader)
-add_subdirectory(UIResourceLoader)
-add_subdirectory(UIResourceLoaderManager)
-add_subdirectory(UIResourceTranslation)
-add_subdirectory(UIResourceAssetRCC)

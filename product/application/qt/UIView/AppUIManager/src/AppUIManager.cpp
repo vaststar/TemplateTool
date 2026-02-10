@@ -8,7 +8,7 @@
 #include <UICore/CoreQmlEngine.h>
 #include <AppContext/AppContext.h>
 
-#include <UIDataStruct/UIDataUtils.h>
+#include <UIManager/UILanguage.h>
 #include <UTComponent/UTComponent.h>
 
 #include "LoggerDefine/LoggerDefine.h"
@@ -54,7 +54,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
 void AppUIManager::Impl::registerQmlTypes()
 {
     UIVIEW_LOG_DEBUG("");
-    UIDataUtils::registerMetaObject();   
+    UILanguage::registerMetaObject();   
     UTComponent::registerUTComponent();
     UIViewModelTypeRegistry::registerTypes();
     // mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());

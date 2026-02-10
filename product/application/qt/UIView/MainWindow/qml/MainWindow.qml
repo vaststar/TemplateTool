@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
-import UIElementData 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
 

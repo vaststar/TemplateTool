@@ -3,7 +3,7 @@
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
 #include <AppContext/AppContext.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 
 #include "ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
 

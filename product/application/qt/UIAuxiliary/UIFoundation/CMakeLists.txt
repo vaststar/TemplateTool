@@ -1,0 +1,3 @@
+add_subdirectory(UICore)
+add_subdirectory(UIResourceLoader)
+add_subdirectory(UIUtilities)

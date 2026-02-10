@@ -1,7 +1,7 @@
 #include "UIIPCServerHelper.h"
 
 #include <commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h>
-#include <UIFabrication/IViewModelFactory.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIIPCChannel/UIIPCServer.h>
 #include <AppContext/AppContext.h>
 
