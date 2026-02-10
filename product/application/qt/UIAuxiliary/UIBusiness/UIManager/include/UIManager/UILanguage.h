@@ -9,7 +9,7 @@ namespace commonHead::viewModels::model {
 
 namespace UILanguage{
 Q_NAMESPACE_EXPORT(UIManager_EXPORT)
-void registerMetaObject();
+void UIManager_EXPORT registerMetaObject();
 
 enum class LanguageType {
     LanguageType_ENGLISH,

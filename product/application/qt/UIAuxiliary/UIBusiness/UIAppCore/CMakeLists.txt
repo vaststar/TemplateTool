@@ -1,33 +1,31 @@
 include(BuildQtModule)
 
 if (WIN32)
-    set(ADD_DEFINITIONS AppContext_DLL) #AppContext_DLL AppContext_LIB
+    set(ADD_DEFINITIONS UIAppCore_DLL) #UIAppCore_DLL UIAppCore_LIB
 else()
     set(ADD_DEFINITIONS)
 endif()
 
-set(MODULE_MODULE_NAME AppContext)
+set(MODULE_MODULE_NAME UIAppCore)
 set(MODULE_IDE_FOLDER UI)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/AppContext/AppContextExport.h
-    include/AppContext/AppContext.h
+    include/UIAppCore/UIAppCoreExport.h
+    include/UIAppCore/UIApplication.h
+    include/UIAppCore/UIQmlEngine.h
+    include/UIAppCore/UIController.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
-    src/AppContext.cpp
+    src/UIApplication.cpp
+    src/UIQmlEngine.cpp
+    src/UIController.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
-    UIAppCore
-    UIFabrication
-    UIManager
-    ViewModelFactory
+    UICore
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    Qt6::Quick
-    LoggerUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

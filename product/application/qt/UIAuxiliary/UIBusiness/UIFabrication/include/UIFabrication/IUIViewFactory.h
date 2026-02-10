@@ -8,10 +8,10 @@
 
 #include <UIFabrication/UIFabricationExport.h>
 
-namespace UICore{
-class CoreQmlEngine;
-class CoreController;
-using ControllerCallback = std::function<void(CoreController*)>;
+namespace UIAppCore{
+class UIQmlEngine;
+class UIController;
+using ControllerCallback = std::function<void(UIController*)>;
 }
 
 namespace UIFabrication{
@@ -44,7 +44,7 @@ public:
      * * @param controller controller object, such as MainWindowController
      * * @note please ensure the qml code is window type
      */
-    virtual void loadQmlWindow(const QString& qmlResource, UICore::CoreController* controller) = 0;
+    virtual void loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller) = 0;
 
     /**
      * * @brief load qml window with qml resource path and controller object name
@@ -52,8 +52,8 @@ public:
      * * @param controllerCallback callback function to get controller object
      * * @note please ensure the qml code is window type
      */
-    virtual void loadQmlWindow(const QString& qmlResource, const UICore::ControllerCallback& controllerCallback) = 0;
+    virtual void loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback) = 0;
 
-    static std::unique_ptr<IUIViewFactory> createInstance(QPointer<UICore::CoreQmlEngine> qmlEngine);
+    static std::unique_ptr<IUIViewFactory> createInstance(QPointer<UIAppCore::UIQmlEngine> qmlEngine);
 };
 }

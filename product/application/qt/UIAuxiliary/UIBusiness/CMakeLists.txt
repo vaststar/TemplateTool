@@ -1,4 +1,4 @@
-add_subdirectory(UIResource)
+add_subdirectory(UIAppCore)
 add_subdirectory(UIFabrication)
 add_subdirectory(UIManager)
 add_subdirectory(AppContext)

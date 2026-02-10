@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QtQml>
 
-#include <UICore/CoreController.h>
+#include <UIAppCore/UIController.h>
 
 class AppContext;
 class UIViewController;

@@ -5,7 +5,7 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 UIViewController::UIViewController(QObject* parent)
-    : UICore::CoreController(parent)
+    : UIAppCore::UIController(parent)
 {
 }
 

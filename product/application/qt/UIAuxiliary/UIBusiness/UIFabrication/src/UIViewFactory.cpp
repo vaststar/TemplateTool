@@ -1,6 +1,6 @@
 #include "UIViewFactory.h"
-#include <UICore/CoreQmlEngine.h>
-#include <UICore/CoreController.h>
+#include <UIAppCore/UIQmlEngine.h>
+#include <UIAppCore/UIController.h>
 
 #include <QFileInfo>
 #include <QApplication>
@@ -10,12 +10,12 @@
 
 
 namespace UIFabrication{
-std::unique_ptr<IUIViewFactory> IUIViewFactory::createInstance(QPointer<UICore::CoreQmlEngine> qmlEngine)
+std::unique_ptr<IUIViewFactory> IUIViewFactory::createInstance(QPointer<UIAppCore::UIQmlEngine> qmlEngine)
 {
     return std::make_unique<UIViewFactory>(qmlEngine);
 }
 
-UIViewFactory::UIViewFactory(QPointer<UICore::CoreQmlEngine> qmlEngine)
+UIViewFactory::UIViewFactory(QPointer<UIAppCore::UIQmlEngine> qmlEngine)
     : mQmlEngine(qmlEngine)
 {
     if (mQmlEngine)
@@ -124,7 +124,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
     }
 }
 
-void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::ControllerCallback& controllerCallback)
+void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback)
 {
     if (!mQmlEngine)
     {
@@ -165,7 +165,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::Cont
             {
                 if (QVariant controllerVar = object->property("controller"); controllerVar.isValid())
                 {
-                    if (auto controller = qobject_cast<UICore::CoreController*>(controllerVar.value<QObject*>())) 
+                    if (auto controller = qobject_cast<UIAppCore::UIController*>(controllerVar.value<QObject*>())) 
                     {
                         UIFabrication_LOG_DEBUG("controller found, do callback, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
                         controllerCallback(controller);
@@ -193,7 +193,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UICore::Cont
     }
 }  
 
-void UIViewFactory::loadQmlWindow(const QString& qmlResource, UICore::CoreController* controller)
+void UIViewFactory::loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller)
 {
     if (!mQmlEngine)
     {

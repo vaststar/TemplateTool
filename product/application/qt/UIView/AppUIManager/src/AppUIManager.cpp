@@ -4,8 +4,8 @@
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
-#include <UICore/CoreApplication.h>
-#include <UICore/CoreQmlEngine.h>
+#include <UIAppCore/UIApplication.h>
+#include <UIAppCore/UIQmlEngine.h>
 #include <AppContext/AppContext.h>
 
 #include <UIManager/UILanguage.h>
@@ -31,15 +31,15 @@ public:
 private:
     void registerQmlTypes();
 private:
-    std::unique_ptr<UICore::CoreApplication> mainApp;
-    std::unique_ptr<UICore::CoreQmlEngine> mQmlEngine;
+    std::unique_ptr<UIAppCore::UIApplication> mainApp;
+    std::unique_ptr<UIAppCore::UIQmlEngine> mQmlEngine;
     std::unique_ptr<AppContext> mAppContext;
     // std::unique_ptr<UIViewControllerInitializer> mControllerInitializer;
 };
 
 AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
-    : mainApp(std::make_unique<UICore::CoreApplication>( config.argc, config.argv ))
-    , mQmlEngine(std::make_unique<UICore::CoreQmlEngine>())
+    : mainApp(std::make_unique<UIAppCore::UIApplication>( config.argc, config.argv ))
+    , mQmlEngine(std::make_unique<UIAppCore::UIQmlEngine>())
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
     // , mControllerInitializer(std::make_unique<UIViewControllerInitializer>(mAppContext.get()))
 {

@@ -6,9 +6,9 @@
 
 #include <AppContext/AppContextExport.h>
 
-namespace UICore{
-    class CoreApplication;
-    class CoreQmlEngine;
+namespace UIAppCore{
+    class UIApplication;
+    class UIQmlEngine;
 }
 
 namespace UIFabrication{
@@ -32,7 +32,7 @@ class AppContext_EXPORT AppContext final: public QObject
 {
 Q_OBJECT
 public:
-    explicit AppContext(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    explicit AppContext(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~AppContext();
     
     AppContext(const AppContext&) = delete;
@@ -43,8 +43,8 @@ public:
     QPointer<UIFabrication::IUIViewFactory> getViewFactory() const;
     std::shared_ptr<commonHead::viewModels::IViewModelFactory> getViewModelFactory() const;
     QPointer<UIManager::IUIManagerProvider> getManagerProvider() const;
-    QPointer<UICore::CoreApplication> getApplication() const;
-    QPointer<UICore::CoreQmlEngine> getQmlEngine() const;
+    QPointer<UIAppCore::UIApplication> getApplication() const;
+    QPointer<UIAppCore::UIQmlEngine> getQmlEngine() const;
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;

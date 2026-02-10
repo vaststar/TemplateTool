@@ -6,6 +6,9 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Gui Widgets LinguistTools Multim
 
 qt_standard_project_setup(REQUIRES 6.5)
 
+set(QT_TRANSLATION_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource/translations)
+set(QT_TRANSLATION_CODE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(UIAuxiliary)
 add_subdirectory(UIComponent)
 add_subdirectory(UIView)

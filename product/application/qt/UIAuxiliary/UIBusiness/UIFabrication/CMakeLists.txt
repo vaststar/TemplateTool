@@ -26,7 +26,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Widgets
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    UICore
+    UIAppCore
     CommonHeadFramework
     ViewModels
     ViewModelFactory

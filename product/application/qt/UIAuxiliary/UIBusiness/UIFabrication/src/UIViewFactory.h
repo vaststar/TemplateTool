@@ -7,7 +7,7 @@ class UIViewFactory final: public IUIViewFactory
 {
 Q_OBJECT
 public:
-    explicit UIViewFactory(QPointer<UICore::CoreQmlEngine> qmlEngine);
+    explicit UIViewFactory(QPointer<UIAppCore::UIQmlEngine> qmlEngine);
     UIViewFactory(const UIViewFactory&) = delete;
     UIViewFactory(UIViewFactory&&) = delete;
     UIViewFactory& operator=(const UIViewFactory&) = delete;
@@ -17,12 +17,12 @@ public:
     virtual QPointer<QQuickView> createQmlView(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) override;
 
     virtual void loadQmlWindow(const QString& qmlResource) override;
-    virtual void loadQmlWindow(const QString& qmlResource, UICore::CoreController* controller) override;
-    virtual void loadQmlWindow(const QString& qmlResource, const UICore::ControllerCallback& controllerCallback) override;
+    virtual void loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller) override;
+    virtual void loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback) override;
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;
 private:
-    const QPointer<UICore::CoreQmlEngine> mQmlEngine;
+    const QPointer<UIAppCore::UIQmlEngine> mQmlEngine;
 };
 }

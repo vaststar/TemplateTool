@@ -3,10 +3,10 @@
 #include <QObject>
 #include <QPointer>
 
-#include <UICore/CoreController.h>
+#include <UIAppCore/UIController.h>
 
 class AppContext;
-class UIViewController : public UICore::CoreController
+class UIViewController : public UIAppCore::UIController
 {
     Q_OBJECT
 public:

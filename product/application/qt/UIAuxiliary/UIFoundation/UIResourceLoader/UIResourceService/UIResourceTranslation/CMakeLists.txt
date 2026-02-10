@@ -1,9 +1,22 @@
+if(QT_TRANSLATION_CODE_DIR)
+    set(TRANSLATION_CODE_DIR ${QT_TRANSLATION_CODE_DIR})
+    message(STATUS "[I18N] Using external code dir: ${TRANSLATION_CODE_DIR}")
+else()
+    set(TRANSLATION_CODE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
+    message(STATUS "[I18N] Using default code dir: ${TRANSLATION_CODE_DIR}")
+endif()
 
-file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../../../*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/../../../../*.qml")
+file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "${TRANSLATION_CODE_DIR}/*.cpp" "${TRANSLATION_CODE_DIR}/*.qml")
 set(GENERATED_CPP_FILES ${GLOBAL_RESOURCE_STRING_CPP_OUTPUT_PATH})
 list(APPEND ALL_TRANSLATION_SOURCE_FILES ${GENERATED_CPP_FILES})
 
-set(Translation_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
+if(QT_TRANSLATION_DIR)
+    set(Translation_DIR ${QT_TRANSLATION_DIR})
+    message(STATUS "[I18N] Using external translation dir: ${Translation_DIR}")
+else()
+    set(Translation_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
+    message(STATUS "[I18N] Using default translation dir: ${Translation_DIR}")
+endif()
 set(Translation_LIB UIResourcecTranslation)
 set(Translation_TS_FILES        
     ${Translation_DIR}/app_translations_en.ts
