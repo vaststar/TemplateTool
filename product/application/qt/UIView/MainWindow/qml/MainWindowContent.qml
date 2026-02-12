@@ -26,16 +26,16 @@ Item{
     }
 
     UTQRCode {
-    text: "这是测试这是测试这是测试，我靠"
-    displaySize: 200
-    errorLevel: QRCodeGenerator.High
-    darkColor: "#FF5722"
-    lightColor: "#FFF3E0"
-    anchors{
+        text: "这是测试这是测试这是测试，我靠"
+        displaySize: 200
+        errorLevel: UTQRCodeLevel.High
+        darkColor: "#FF5722"
+        lightColor: "#FFF3E0"
+        anchors {
             bottom: parent.bottom
             right: parent.right
         }
-}
+    }
     
     Component.onCompleted:{
         if (!controller){

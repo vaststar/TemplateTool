@@ -12,7 +12,7 @@ MenuBar {
 
     Connections {
         target: controller
-        onControllerInitialized: createMenuItems()
+        function onControllerInitialized() { createMenuItems() }
     }
     
     function createMenuItems(){

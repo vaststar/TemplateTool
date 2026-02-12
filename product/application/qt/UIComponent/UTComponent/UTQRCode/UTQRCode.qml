@@ -5,7 +5,7 @@ BaseQRCode {
     
     // Default styling for UT components
     displaySize: 200
-    errorLevel: QRCodeGenerator.Medium
+    errorLevel: UTQRCodeLevel.Medium
     border: 4
     darkColor: "#000000"
     lightColor: "#FFFFFF"

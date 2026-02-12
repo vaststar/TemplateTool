@@ -29,7 +29,7 @@ Item {
         mipmap: false
         source: generator.valid ? "data:image/svg+xml;utf8," + generator.svgData : ""
         visible: generator.valid
-        sourceSize: Qt.Size(displaySize*4, displaySize*4)
+        sourceSize: Qt.size(displaySize*4, displaySize*4)
 
         Behavior on opacity {
             NumberAnimation {

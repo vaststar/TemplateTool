@@ -15,11 +15,13 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UTComponent/UTComponentExport.h
     include/UTComponent/UTComponent.h
     UTMenu/MenuItemModel.h
+    UTQRCode/UTQRCodeLevel.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
     src/UTComponent.cpp
     UTMenu/MenuItemModel.cpp
+    UTQRCode/UTQRCodeLevel.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -54,6 +56,7 @@ set(MODULE_QML_TARGET_FILES
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/UTMenu
+    ${CMAKE_CURRENT_SOURCE_DIR}/UTQRCode
 )
 
 BuildQtModule(
