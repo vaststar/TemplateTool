@@ -9,9 +9,9 @@ namespace commonHead{
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
-namespace UICore{
-    class CoreApplication;
-    class CoreQmlEngine;
+namespace UIAppCore{
+    class UIApplication;
+    class UIQmlEngine;
 }
 
 namespace UIResource{
@@ -35,6 +35,6 @@ public:
     //UIResourceLoaderManager is unique for application and use UIResource namesapace
     virtual QPointer<UIResource::IUIResourceLoaderManager> getUIResourceLoaderManager() const = 0;
 
-    static std::unique_ptr<IUIManagerProvider> createInstance(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    static std::unique_ptr<IUIManagerProvider> createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 };
 }

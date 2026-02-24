@@ -2,8 +2,8 @@
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
-#include <UICore/CoreApplication.h>
-#include <UICore/CoreQmlEngine.h>
+#include <UIAppCore/UIApplication.h>
+#include <UIAppCore/UIQmlEngine.h>
 
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
@@ -11,12 +11,12 @@
 #include "TranslatorManager/TranslatorManager.h"
 
 namespace UIManager{
-std::unique_ptr<IUIManagerProvider> IUIManagerProvider::createInstance(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
+std::unique_ptr<IUIManagerProvider> IUIManagerProvider::createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
     return std::make_unique<UIManagerProvider>(application, qmlEngine, commonheadFramework);
 }
 
-UIManagerProvider::UIManagerProvider(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
+UIManagerProvider::UIManagerProvider(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mTranslatorManager(std::make_unique<TranslatorManager>(application, qmlEngine))
     , mUIResourceLoaderManager(UIResource::IUIResourceLoaderManager::createInstance(application, qmlEngine, commonheadFramework))
 {

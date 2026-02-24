@@ -9,9 +9,9 @@ namespace commonHead{
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
-namespace UICore{
-    class CoreApplication;
-    class CoreQmlEngine;
+namespace UIAppCore{
+    class UIApplication;
+    class UIQmlEngine;
 }
 
 namespace UIManager{
@@ -19,7 +19,7 @@ class UIManagerProvider final: public IUIManagerProvider
 {
 Q_OBJECT
 public:
-    explicit UIManagerProvider(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
+    explicit UIManagerProvider(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~UIManagerProvider();
     UIManagerProvider(const UIManagerProvider&) = delete;
     UIManagerProvider(UIManagerProvider&&) = delete;

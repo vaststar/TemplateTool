@@ -6,7 +6,7 @@
 #include "LoggerDefine/LoggerDefine.h"
 
 namespace UIManager{
-TranslatorManager::TranslatorManager(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine)
+TranslatorManager::TranslatorManager(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
     , mTranslator(std::make_unique<QTranslator>())

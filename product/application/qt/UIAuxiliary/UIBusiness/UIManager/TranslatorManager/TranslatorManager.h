@@ -6,8 +6,8 @@
 #include <QTranslator>
 
 #include <UIManager/UILanguage.h>
-#include <UICore/CoreApplication.h>
-#include <UICore/CoreQmlEngine.h>
+#include <UIAppCore/UIApplication.h>
+#include <UIAppCore/UIQmlEngine.h>
 
 #include <UIManager/ITranslatorManager.h>
 
@@ -16,7 +16,7 @@ class TranslatorManager final: public ITranslatorManager
 {
 Q_OBJECT
 public:
-    explicit TranslatorManager(QPointer<UICore::CoreApplication> application, QPointer<UICore::CoreQmlEngine> qmlEngine);
+    explicit TranslatorManager(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine);
     ~TranslatorManager();
     TranslatorManager(const TranslatorManager&) = delete;
     TranslatorManager(TranslatorManager&&) = delete;
@@ -31,8 +31,8 @@ private:
     std::string getLanguageString(UILanguage::LanguageType languageType) const;
     std::map<UILanguage::LanguageType, std::string> getLanguageMap() const;
 private:
-    const QPointer<UICore::CoreApplication> mApplication;
-    const QPointer<UICore::CoreQmlEngine> mQmlEngine;
+    const QPointer<UIAppCore::UIApplication> mApplication;
+    const QPointer<UIAppCore::UIQmlEngine> mQmlEngine;
     const std::unique_ptr<QTranslator> mTranslator;
 
     QString mCurrentLanguage;
