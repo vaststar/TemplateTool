@@ -27,7 +27,7 @@ set(MODULE_HEADER_FILES #for include and install header
     MainWindowViewModel/include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
     MediaCameraViewModel/include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
     StabilityViewModel/include/commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h
-    shared/commonHead/viewModels/ViewModelDataDefine/Image.h
+    shared/commonHead/viewModels/ViewModelDataDefine/VideoFrame.h
 )
 set(MODULE_SOURCE_PRIVATE
     AppUIViewModel/src/AppUIViewModel.h

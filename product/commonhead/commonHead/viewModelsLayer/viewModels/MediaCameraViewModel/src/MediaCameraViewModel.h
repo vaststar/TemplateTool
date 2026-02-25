@@ -6,7 +6,7 @@
 #include <atomic>
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
-#include <ucf/Services/ImageService/ImageTypes.h>
+#include <ucf/Services/MediaService/MediaTypes.h>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
 namespace commonHead::viewModels{
@@ -31,7 +31,7 @@ public:
 protected:
     virtual void init() override;
 private:
-    model::Image convertServiceImageToViewModelImage(const ucf::service::model::Image& image) const;
+    model::VideoFrame convertServiceFrameToViewModelFrame(const ucf::service::media::VideoFrame& frame) const;
 private:
     commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
     std::string mCameraId;

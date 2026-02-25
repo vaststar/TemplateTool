@@ -8,6 +8,7 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/Services/MediaService/IMediaService.h
     include/ucf/Services/MediaService/IMediaServiceCallback.h
+    include/ucf/Services/MediaService/MediaTypes.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/MediaServiceLogger.h
@@ -24,7 +25,6 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ImageService
     CoreFramework
     UUIDUtils
     OSUtils

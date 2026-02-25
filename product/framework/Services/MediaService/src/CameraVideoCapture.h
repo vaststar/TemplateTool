@@ -8,7 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
-#include <ucf/Services/ImageService/ImageTypes.h>
+#include <ucf/Services/MediaService/MediaTypes.h>
 
 namespace ucf::service{
 class CameraVideoCapture
@@ -24,13 +24,13 @@ public:
     bool isOpened() const;
     std::string getCameraId() const;
     int getCameraNum() const;
-    std::optional<model::Image> readImageData();
+    std::optional<media::VideoFrame> readImageData();
     void addUseCount();
     void decreaseUseCount();
     int getUseCount() const;
 private:
     void processFrame(cv::Mat& frame) const;
-    model::Image convertFrameToImage(const cv::Mat& frame) const;
+    media::VideoFrame convertFrameToVideoFrame(const cv::Mat& frame) const;
     bool openCamera();
 private:
     const int mCameraNum;

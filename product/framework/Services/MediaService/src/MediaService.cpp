@@ -73,47 +73,6 @@ void MediaService::initService()
 
 }
 
-void openImage()
-{
-    auto frame = cv::imread("C:\\Users\\tianzheng\\Desktop\\test.jpg", 0);
-    cv::imshow("my image", frame);
-    cv::waitKey(0);
-    cv::destroyAllWindows();
-}
-
-void openCameraFunc()
-{
-    cv::Mat frame;
-    #if(WIN32)
-    cv::VideoCapture cap(0, cv::VideoCaptureAPIs::CAP_DSHOW);
-    #else
-    cv::VideoCapture cap(0, cv::VideoCaptureAPIs::CAP_ANY);
-    #endif
-    if (!cap.isOpened())
-    {
-        SERVICE_LOG_DEBUG("camera not opened");
-        return;
-    }
-    static int i = 1;
-    i++;
-    cv::namedWindow("Video" + std::to_string(i));
-    for (;;)
-    {
-        //std::this_thread::sleep_for(std::chrono::duration(std::chrono::seconds(2)));
-        cap.read(frame);
-        if (frame.empty())
-        {
-            SERVICE_LOG_DEBUG("camera not opened");
-            if (cv::waitKey(30) >= 0) break;
-            continue;
-        }
-        imshow("Video" + std::to_string(i), frame);
-        if (cv::waitKey(30) >= 0) break;
-    }
-    cap.release();
-    cv::destroyAllWindows();
-}
-
 std::string MediaService::openCamera(int cameraNum)
 {
     return mDataPrivate->getCameraManager()->openCamera(cameraNum);
@@ -129,7 +88,7 @@ std::vector<std::string> MediaService::getOpenedCameras() const
     return mDataPrivate->getCameraManager()->getOpenedCameras();
 }
 
-std::optional<model::Image> MediaService::readImageData(const std::string& cameraId)
+std::optional<media::VideoFrame> MediaService::readImageData(const std::string& cameraId)
 {
     return mDataPrivate->getCameraManager()->readImageData(cameraId);
 }

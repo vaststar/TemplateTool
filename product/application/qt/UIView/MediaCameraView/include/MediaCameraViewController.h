@@ -6,7 +6,7 @@
 #include <QImage>
 #include <QVideoFrame>
 #include <QVideosink>
-#include <commonHead/viewModels/ViewModelDataDefine/Image.h>
+#include <commonHead/viewModels/ViewModelDataDefine/VideoFrame.h>
 
 #include "UIViewBase/include/UIViewController.h"
 
@@ -15,7 +15,7 @@ namespace commonHead{
         class IMediaCameraViewModel;
     }
     namespace model {
-        struct Image;
+        struct VideoFrame;
     }
 }
 
@@ -40,7 +40,7 @@ public:
     
     bool isVisible() const;
 private slots:
-    virtual void onCameraImageReceived(const commonHead::viewModels::model::Image& image);
+    virtual void onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame);
 signals:
     void showCameraImage(const QImage& image);
     void videoSinkChanged(QVideoSink* videoSink);

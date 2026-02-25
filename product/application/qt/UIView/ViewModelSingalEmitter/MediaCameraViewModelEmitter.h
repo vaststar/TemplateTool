@@ -14,11 +14,11 @@ public:
     {
     }
 
-    virtual void onCameraImageReceived(const commonHead::viewModels::model::Image& image) override {
-        emit signals_onCameraImageReceived(image);
+    virtual void onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame) override {
+        emit signals_onCameraFrameReceived(frame);
     };
 
 signals:
-    void signals_onCameraImageReceived(const commonHead::viewModels::model::Image& image);
+    void signals_onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame);
 };
 }

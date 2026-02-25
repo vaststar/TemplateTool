@@ -5,13 +5,7 @@
 #include <mutex>
 #include <optional>
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <ucf/Services/ImageService/ImageTypes.h>
-
-namespace ucf::service::model{
-    struct Image;
-}
+#include <ucf/Services/MediaService/MediaTypes.h>
 
 namespace ucf::service{
 
@@ -29,7 +23,7 @@ public:
     std::string openCamera(int cameraNum);
     void releaseCamera(const std::string& cameraId);
     std::vector<std::string> getOpenedCameras() const;
-    std::optional<model::Image> readImageData(const std::string& cameraId);
+    std::optional<media::VideoFrame> readImageData(const std::string& cameraId);
 private:
     mutable std::mutex mCamerasMutex;
     std::vector<std::unique_ptr<CameraVideoCapture>> mCamerasList;

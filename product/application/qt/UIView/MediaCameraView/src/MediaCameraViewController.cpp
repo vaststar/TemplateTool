@@ -42,7 +42,7 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 void MediaCameraViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIVMSignalEmitter::MediaCameraViewModelEmitter::signals_onCameraImageReceived, this, &MediaCameraViewController::onCameraImageReceived);
+    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIVMSignalEmitter::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived);
     mMediaCameraViewModel = getAppContext()->getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
     mMediaCameraViewModel->openCamera();
@@ -54,9 +54,9 @@ bool MediaCameraViewController::isVisible() const
     return getAppContext() != nullptr;
 }
 
-void MediaCameraViewController::onCameraImageReceived(const commonHead::viewModels::model::Image& image)
+void MediaCameraViewController::onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame)
 {
-    QImage img(&image.buffer[0], image.width, image.height, static_cast<int>(image.steps), QImage::Format::Format_RGB888);
+    QImage img(&frame.data[0], frame.width, frame.height, frame.bytesPerLine, QImage::Format::Format_RGB888);
     
     if(mVideoSink)
     {

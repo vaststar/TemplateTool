@@ -2,7 +2,6 @@
 
 #include <opencv2/opencv.hpp>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
-#include <ucf/Services/ImageService/ImageTypes.h>
 
 #include "MediaServiceLogger.h"
 #include "CameraVideoCapture.h"
@@ -105,22 +104,26 @@ std::vector<std::string> CameraManager::getOpenedCameras() const
     return results;
 }
 
-std::optional<model::Image> CameraManager::readImageData(const std::string& cameraId)
+std::optional<media::VideoFrame> CameraManager::readImageData(const std::string& cameraId)
 {
-    std::scoped_lock loc(mCamerasMutex);
-    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
-        return camera->isOpened() && camera->getCameraId() == cameraId;
-    });
-
-    if (iter != mCamerasList.end())
+    CameraVideoCapture* camera = nullptr;
     {
+        std::scoped_lock loc(mCamerasMutex);
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
+            return camera->isOpened() && camera->getCameraId() == cameraId;
+        });
+        if (iter != mCamerasList.end())
+        {
+            camera = iter->get();
+        }
+    }
 
-        return (*iter)->readImageData();
-    }
-    else
+    if (camera)
     {
-        SERVICE_LOG_WARN("camera not opened:" << cameraId);
+        return camera->readImageData();
     }
+
+    SERVICE_LOG_WARN("camera not opened:" << cameraId);
     return std::nullopt;
 }
 }

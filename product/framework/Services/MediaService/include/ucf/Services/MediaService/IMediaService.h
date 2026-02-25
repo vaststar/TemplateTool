@@ -3,15 +3,11 @@
 #include <optional>
 #include <vector>
 #include <ucf/Services/ServiceDeclaration/IService.h>
-//#include <ucf/Services/ImageService/ImageTypes.h>
+#include <ucf/Services/MediaService/MediaTypes.h>
 
 namespace ucf::framework{
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
-}
-
-namespace ucf::service::model{
-struct Image;
 }
 
 namespace ucf::service{
@@ -42,6 +38,6 @@ public:
     virtual void releaseCamera(const std::string& cameraId) = 0;
     
     virtual std::vector<std::string> getOpenedCameras() const = 0;
-    virtual std::optional<model::Image> readImageData(const std::string& cameraId) = 0;
+    virtual std::optional<media::VideoFrame> readImageData(const std::string& cameraId) = 0;
 };
 }

@@ -105,7 +105,7 @@ void CameraVideoCapture::decreaseUseCount()
     if (mRefCount > 0)
     {
         mRefCount--;
-        SERVICE_LOG_DEBUG("camera use count increased, index: " << mCameraNum << ", id: " << mCameraId << ", count: " << mRefCount);
+        SERVICE_LOG_DEBUG("camera use count decreased, index: " << mCameraNum << ", id: " << mCameraId << ", count: " << mRefCount);
     }
     else
     {
@@ -130,7 +130,7 @@ int CameraVideoCapture::getUseCount() const
     return mRefCount.load();
 }
 
-std::optional<model::Image> CameraVideoCapture::readImageData()
+std::optional<media::VideoFrame> CameraVideoCapture::readImageData()
 {
     if (!isOpened())
     {
@@ -141,7 +141,7 @@ std::optional<model::Image> CameraVideoCapture::readImageData()
     if (cv::Mat frame; mVideoCap.read(frame) && !frame.empty())
     {
         processFrame(frame);
-        return convertFrameToImage(frame);
+        return convertFrameToVideoFrame(frame);
     }
     else
     {
@@ -175,10 +175,12 @@ void CameraVideoCapture::processFrame(cv::Mat& frame) const
 // cv::addWeighted(frame, 1.5, blurred, -0.5, 0, sharpened);
 }
 
-model::Image CameraVideoCapture::convertFrameToImage(const cv::Mat& frame) const
+media::VideoFrame CameraVideoCapture::convertFrameToVideoFrame(const cv::Mat& frame) const
 {
-    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
-    std::vector<uchar> vec(frame.datastart, frame.dataend);
-    return model::Image(std::move(vec), frame.cols, frame.rows, frame.step);
+    cv::Mat rgbFrame;
+    cv::cvtColor(frame, rgbFrame, cv::COLOR_BGR2RGB);
+    std::vector<uchar> vec(rgbFrame.datastart, rgbFrame.dataend);
+    return media::VideoFrame(std::move(vec), rgbFrame.cols, rgbFrame.rows, 
+                             static_cast<int>(rgbFrame.step), media::PixelFormat::RGB888);
 }
 }

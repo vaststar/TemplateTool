@@ -5,7 +5,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
-#include <commonHead/viewModels/ViewModelDataDefine/Image.h>
+#include <commonHead/viewModels/ViewModelDataDefine/VideoFrame.h>
 #include <commonHead/viewModels/IViewModel/IViewModel.h>
 
 namespace commonHead{
@@ -24,7 +24,7 @@ public:
     IMediaCameraViewModelCallback& operator=(IMediaCameraViewModelCallback&&) = delete;
     virtual ~IMediaCameraViewModelCallback() = default;
 public:
-    virtual void onCameraImageReceived(const model::Image& image) {};
+    virtual void onCameraFrameReceived(const model::VideoFrame& frame) {};
 };
 
 class COMMONHEAD_EXPORT IMediaCameraViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IMediaCameraViewModelCallback>

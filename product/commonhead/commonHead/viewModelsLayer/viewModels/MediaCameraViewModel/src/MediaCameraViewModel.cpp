@@ -75,13 +75,21 @@ void MediaCameraViewModel::startCaptureCameraVideo()
             {
                 if (auto mediaService = serviceLocator->getMediaService().lock())
                 {
+                    constexpr auto targetFrameTime = std::chrono::milliseconds(33);  // ~30fps
                     while(!mVideoCaptureStop)
                     {
+                        auto frameStart = std::chrono::steady_clock::now();
+                        
                         if (auto image = mediaService->readImageData(mCameraId))
                         {
-                            fireNotification(&IMediaCameraViewModelCallback::onCameraImageReceived, convertServiceImageToViewModelImage(image.value()));
+                            fireNotification(&IMediaCameraViewModelCallback::onCameraFrameReceived, convertServiceFrameToViewModelFrame(image.value()));
                         }
-                        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+                        
+                        auto elapsed = std::chrono::steady_clock::now() - frameStart;
+                        if (elapsed < targetFrameTime)
+                        {
+                            std::this_thread::sleep_for(targetFrameTime - elapsed);
+                        }
                     }
                 }
             }
@@ -94,8 +102,9 @@ void MediaCameraViewModel::stopCaptureCameraVideo()
     mVideoCaptureStop = true;
 }
 
-model::Image MediaCameraViewModel::convertServiceImageToViewModelImage(const ucf::service::model::Image& image) const
+model::VideoFrame MediaCameraViewModel::convertServiceFrameToViewModelFrame(const ucf::service::media::VideoFrame& frame) const
 {
-    return model::Image{image.buffer, image.width, image.height, image.steps};
+    return model::VideoFrame{frame.data, frame.width, frame.height, frame.bytesPerLine, 
+                             static_cast<model::PixelFormat>(frame.format)};
 }
 }
