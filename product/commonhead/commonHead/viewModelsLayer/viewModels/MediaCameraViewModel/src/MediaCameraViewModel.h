@@ -31,7 +31,7 @@ public:
 protected:
     virtual void init() override;
 private:
-    model::VideoFrame convertServiceFrameToViewModelFrame(const ucf::service::media::VideoFrame& frame) const;
+    model::VideoFrame convertServiceFrameToViewModelFrame(const ucf::service::media::IVideoFramePtr& frame) const;
 private:
     commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
     std::string mCameraId;

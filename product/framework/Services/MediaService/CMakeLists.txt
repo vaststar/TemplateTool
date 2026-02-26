@@ -18,6 +18,8 @@ set(MODULE_SOURCE_PRIVATE
     src/CameraManager.cpp
     src/CameraVideoCapture.h
     src/CameraVideoCapture.cpp
+    src/VideoFrame.h
+    src/VideoFrame.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceExportMacro

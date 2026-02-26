@@ -104,7 +104,7 @@ std::vector<std::string> CameraManager::getOpenedCameras() const
     return results;
 }
 
-std::optional<media::VideoFrame> CameraManager::readImageData(const std::string& cameraId)
+media::IVideoFramePtr CameraManager::readImageData(const std::string& cameraId)
 {
     CameraVideoCapture* camera = nullptr;
     {
@@ -124,6 +124,6 @@ std::optional<media::VideoFrame> CameraManager::readImageData(const std::string&
     }
 
     SERVICE_LOG_WARN("camera not opened:" << cameraId);
-    return std::nullopt;
+    return nullptr;
 }
 }

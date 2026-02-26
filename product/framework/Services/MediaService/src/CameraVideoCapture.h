@@ -24,13 +24,13 @@ public:
     bool isOpened() const;
     std::string getCameraId() const;
     int getCameraNum() const;
-    std::optional<media::VideoFrame> readImageData();
+    media::IVideoFramePtr readImageData();
     void addUseCount();
     void decreaseUseCount();
     int getUseCount() const;
 private:
     void processFrame(cv::Mat& frame) const;
-    media::VideoFrame convertFrameToVideoFrame(const cv::Mat& frame) const;
+    media::IVideoFramePtr convertFrameToVideoFrame(const cv::Mat& frame) const;
     bool openCamera();
 private:
     const int mCameraNum;

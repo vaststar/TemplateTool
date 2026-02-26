@@ -1,4 +1,5 @@
 #include "CameraVideoCapture.h"
+#include "VideoFrame.h"
 
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 #include <ucf/Utilities/OSUtils/OSUtils.h>
@@ -130,12 +131,12 @@ int CameraVideoCapture::getUseCount() const
     return mRefCount.load();
 }
 
-std::optional<media::VideoFrame> CameraVideoCapture::readImageData()
+media::IVideoFramePtr CameraVideoCapture::readImageData()
 {
     if (!isOpened())
     {
         SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
-        return std::nullopt;
+        return nullptr;
     }
 
     if (cv::Mat frame; mVideoCap.read(frame) && !frame.empty())
@@ -146,9 +147,8 @@ std::optional<media::VideoFrame> CameraVideoCapture::readImageData()
     else
     {
         SERVICE_LOG_WARN("read empty frame:" << mCameraId);
-        return std::nullopt;
+        return nullptr;
     }
-    return std::nullopt;
 }
 
 void CameraVideoCapture::processFrame(cv::Mat& frame) const
@@ -175,12 +175,13 @@ void CameraVideoCapture::processFrame(cv::Mat& frame) const
 // cv::addWeighted(frame, 1.5, blurred, -0.5, 0, sharpened);
 }
 
-media::VideoFrame CameraVideoCapture::convertFrameToVideoFrame(const cv::Mat& frame) const
+media::IVideoFramePtr CameraVideoCapture::convertFrameToVideoFrame(const cv::Mat& frame) const
 {
     cv::Mat rgbFrame;
     cv::cvtColor(frame, rgbFrame, cv::COLOR_BGR2RGB);
     std::vector<uchar> vec(rgbFrame.datastart, rgbFrame.dataend);
-    return media::VideoFrame(std::move(vec), rgbFrame.cols, rgbFrame.rows, 
-                             static_cast<int>(rgbFrame.step), media::PixelFormat::RGB888);
+    return std::make_shared<media::VideoFrame>(
+        std::move(vec), rgbFrame.cols, rgbFrame.rows,
+        static_cast<int>(rgbFrame.step), media::PixelFormat::RGB888);
 }
 }

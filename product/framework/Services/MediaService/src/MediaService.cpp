@@ -88,7 +88,7 @@ std::vector<std::string> MediaService::getOpenedCameras() const
     return mDataPrivate->getCameraManager()->getOpenedCameras();
 }
 
-std::optional<media::VideoFrame> MediaService::readImageData(const std::string& cameraId)
+media::IVideoFramePtr MediaService::readImageData(const std::string& cameraId)
 {
     return mDataPrivate->getCameraManager()->readImageData(cameraId);
 }

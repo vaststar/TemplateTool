@@ -38,6 +38,6 @@ public:
     virtual void releaseCamera(const std::string& cameraId) = 0;
     
     virtual std::vector<std::string> getOpenedCameras() const = 0;
-    virtual std::optional<media::VideoFrame> readImageData(const std::string& cameraId) = 0;
+    virtual media::IVideoFramePtr readImageData(const std::string& cameraId) = 0;
 };
 }

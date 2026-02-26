@@ -23,7 +23,7 @@ public:
     std::string openCamera(int cameraNum);
     void releaseCamera(const std::string& cameraId);
     std::vector<std::string> getOpenedCameras() const;
-    std::optional<media::VideoFrame> readImageData(const std::string& cameraId);
+    media::IVideoFramePtr readImageData(const std::string& cameraId);
 private:
     mutable std::mutex mCamerasMutex;
     std::vector<std::unique_ptr<CameraVideoCapture>> mCamerasList;

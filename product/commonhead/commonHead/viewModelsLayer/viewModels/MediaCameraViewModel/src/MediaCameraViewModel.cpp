@@ -82,7 +82,7 @@ void MediaCameraViewModel::startCaptureCameraVideo()
                         
                         if (auto image = mediaService->readImageData(mCameraId))
                         {
-                            fireNotification(&IMediaCameraViewModelCallback::onCameraFrameReceived, convertServiceFrameToViewModelFrame(image.value()));
+                            fireNotification(&IMediaCameraViewModelCallback::onCameraFrameReceived, convertServiceFrameToViewModelFrame(image));
                         }
                         
                         auto elapsed = std::chrono::steady_clock::now() - frameStart;
@@ -102,9 +102,14 @@ void MediaCameraViewModel::stopCaptureCameraVideo()
     mVideoCaptureStop = true;
 }
 
-model::VideoFrame MediaCameraViewModel::convertServiceFrameToViewModelFrame(const ucf::service::media::VideoFrame& frame) const
+model::VideoFrame MediaCameraViewModel::convertServiceFrameToViewModelFrame(const ucf::service::media::IVideoFramePtr& frame) const
 {
-    return model::VideoFrame{frame.data, frame.width, frame.height, frame.bytesPerLine, 
-                             static_cast<model::PixelFormat>(frame.format)};
+    return model::VideoFrame{
+        std::vector<uint8_t>(frame->getData(), frame->getData() + frame->getDataSize()),
+        frame->getWidth(),
+        frame->getHeight(),
+        frame->getBytesPerLine(), 
+        static_cast<model::PixelFormat>(frame->getFormat())
+    };
 }
 }
