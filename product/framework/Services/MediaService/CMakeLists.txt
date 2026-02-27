@@ -14,6 +14,8 @@ set(MODULE_SOURCE_PRIVATE
     src/MediaServiceLogger.h
     src/MediaService.h
     src/MediaService.cpp
+    src/CameraDevice.h
+    src/CameraDevice.cpp
     src/CameraManager.h
     src/CameraManager.cpp
     src/CameraVideoCapture.h

@@ -1,74 +1,38 @@
 #include "CameraVideoCapture.h"
+#include "CameraDevice.h"
 #include "VideoFrame.h"
 
+#include <opencv2/opencv.hpp>
+
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
-#include <ucf/Utilities/OSUtils/OSUtils.h>
 
 #include "MediaServiceLogger.h"
 
-namespace ucf::service{
+namespace ucf::service {
 CameraVideoCapture::CameraVideoCapture(int cameraNum)
-    : mCameraNum(cameraNum)
+    : mDevice(std::make_unique<CameraDevice>(cameraNum))
 {
-    //mVideoCap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
-    //mVideoCap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
-    if (openCamera() && isOpened())
+    if (mDevice->open())
     {
-        mRefCount = 1;
+        mDeviceRefCount = 1;
         mCameraId = ucf::utilities::UUIDUtils::generateUUID();
-        
-        //mVideoCap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
-        //mVideoCap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
-        double width = mVideoCap.get(cv::CAP_PROP_FRAME_WIDTH);
-        double height = mVideoCap.get(cv::CAP_PROP_FRAME_HEIGHT);
-
-        // mVideoCap.set(cv::CAP_PROP_AUTO_WB, 0);
-        // mVideoCap.set(cv::CAP_PROP_WB_TEMPERATURE, 5000);  // 5000K色温
-        // // 自动曝光补偿
-        // mVideoCap.set(cv::CAP_PROP_AUTO_EXPOSURE, 0.25);  // 手动曝光模式
-        // mVideoCap.set(cv::CAP_PROP_EXPOSURE, -4);         // 根据环境调整
-        SERVICE_LOG_DEBUG("camera opened, index: " << cameraNum << ", id: " << mCameraId << ", width: " << width << ", height: " << height);
+        SERVICE_LOG_DEBUG("CameraVideoCapture created, cameraNum: " << cameraNum 
+            << ", cameraId: " << mCameraId);
     }
     else
     {
-        SERVICE_LOG_WARN("camera not opened, index: " << cameraNum);
+        SERVICE_LOG_WARN("CameraVideoCapture created but device not opened, cameraNum: " << cameraNum);
     }
 }
 
 CameraVideoCapture::~CameraVideoCapture()
 {
-    if (mVideoCap.isOpened())
-    {
-        mVideoCap.release();
-        SERVICE_LOG_DEBUG("camera released, index: " << mCameraNum << ", id: " << mCameraId);
-    }
-    else
-    {
-        SERVICE_LOG_WARN("camera not opened, won't release, index: " << mCameraNum << ", id: " << mCameraId);
-    }
-}
-
-bool CameraVideoCapture::openCamera()
-{
-    switch (ucf::utilities::OSUtils::getOSType())
-    {
-    case ucf::utilities::OSType::WINDOWS:
-        return mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_DSHOW);
-    case ucf::utilities::OSType::LINUX:
-        return mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_V4L2);
-    default:
-        return mVideoCap.open(mCameraNum);
-    }
-}
-
-int CameraVideoCapture::getCameraNum() const
-{
-    return mCameraNum;
+    SERVICE_LOG_DEBUG("CameraVideoCapture destroyed, cameraId: " << mCameraId);
 }
 
 bool CameraVideoCapture::isOpened() const
 {
-    return mVideoCap.isOpened();
+    return mDevice && mDevice->isOpened();
 }
 
 std::string CameraVideoCapture::getCameraId() const
@@ -76,103 +40,70 @@ std::string CameraVideoCapture::getCameraId() const
     return mCameraId;
 }
 
-void CameraVideoCapture::addUseCount()
+int CameraVideoCapture::getCameraNum() const
 {
-    if (!isOpened())
-    {
-        SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
-        return;
-    }
-
-    if (mRefCount > 0)
-    {
-        mRefCount++;
-        SERVICE_LOG_DEBUG("camera use count increased, index: " << mCameraNum << ", id: " << mCameraId << ", count: " << mRefCount);
-    }
-    else
-    {
-        SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
-    }
+    return mDevice ? mDevice->getCameraNum() : -1;
 }
 
-void CameraVideoCapture::decreaseUseCount()
+void CameraVideoCapture::addDeviceRef()
 {
     if (!isOpened())
     {
-        SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
+        SERVICE_LOG_WARN("cannot add ref, device not opened, cameraId: " << mCameraId);
         return;
     }
     
-    if (mRefCount > 0)
-    {
-        mRefCount--;
-        SERVICE_LOG_DEBUG("camera use count decreased, index: " << mCameraNum << ", id: " << mCameraId << ", count: " << mRefCount);
-    }
-    else
-    {
-        SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
-    }
+    mDeviceRefCount++;
+    SERVICE_LOG_DEBUG("device ref added, cameraId: " << mCameraId 
+        << ", refCount: " << mDeviceRefCount);
+}
 
-    if (mRefCount <= 0)
+void CameraVideoCapture::releaseDeviceRef()
+{
+    if (mDeviceRefCount <= 0)
     {
-        mVideoCap.release();
-        SERVICE_LOG_DEBUG("camera released, index: " << mCameraNum << ", id: " << mCameraId);
+        SERVICE_LOG_WARN("cannot release ref, refCount already 0, cameraId: " << mCameraId);
+        return;
+    }
+    
+    mDeviceRefCount--;
+    SERVICE_LOG_DEBUG("device ref released, cameraId: " << mCameraId 
+        << ", refCount: " << mDeviceRefCount);
+    
+    if (mDeviceRefCount <= 0 && mDevice)
+    {
+        mDevice->close();
+        SERVICE_LOG_DEBUG("device closed due to refCount 0, cameraId: " << mCameraId);
     }
 }
 
-int CameraVideoCapture::getUseCount() const
+int CameraVideoCapture::getDeviceRefCount() const
 {
-    if (!isOpened())
-    {
-        SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
-        return 0;
-    }
-
-    return mRefCount.load();
+    return mDeviceRefCount.load();
 }
 
 media::IVideoFramePtr CameraVideoCapture::readImageData()
 {
     if (!isOpened())
     {
-        SERVICE_LOG_WARN("camera not opened, index: " << mCameraNum << ", id: " << mCameraId);
+        SERVICE_LOG_WARN("cannot read, device not opened, cameraId: " << mCameraId);
         return nullptr;
     }
-
-    if (cv::Mat frame; mVideoCap.read(frame) && !frame.empty())
+    
+    cv::Mat frame = mDevice->readFrame();
+    if (frame.empty())
     {
-        processFrame(frame);
-        return convertFrameToVideoFrame(frame);
-    }
-    else
-    {
-        SERVICE_LOG_WARN("read empty frame:" << mCameraId);
+        SERVICE_LOG_WARN("read empty frame, cameraId: " << mCameraId);
         return nullptr;
     }
+    
+    processFrame(frame);
+    return convertFrameToVideoFrame(frame);
 }
 
 void CameraVideoCapture::processFrame(cv::Mat& frame) const
 {
-    // cv::Mat blurred, detail;
-    // cv::GaussianBlur(frame, blurred, cv::Size(0,0), 5);
-    // cv::subtract(frame, blurred, detail);
-    // cv::addWeighted(frame, 1.2, detail, 0.5, 0, frame);
-
-
-    // cv::Mat labImg, claheImg;
-    // cv::cvtColor(frame, labImg, cv::COLOR_BGR2Lab);
-    // std::vector<cv::Mat> channels;
-    // cv::split(labImg, channels);
-    
-    // cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(2.0, cv::Size(8,8));
-    // clahe->apply(channels[0], claheImg);
-    // channels[0] = claheImg;
-    // cv::merge(channels, labImg);
-    // cv::cvtColor(labImg, frame, cv::COLOR_Lab2BGR);
-
-//     cv::Mat blurred, sharpened;
-// cv::GaussianBlur(frame, blurred, cv::Size(0,0), 3);
-// cv::addWeighted(frame, 1.5, blurred, -0.5, 0, sharpened);
+    // 预留帧处理逻辑（如锐化、色彩校正等）
 }
 
 media::IVideoFramePtr CameraVideoCapture::convertFrameToVideoFrame(const cv::Mat& frame) const

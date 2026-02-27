@@ -32,7 +32,7 @@ std::string CameraManager::openCamera(int cameraNum)
         if ((*iter)->isOpened())
         {
             SERVICE_LOG_DEBUG("camera already opened, cameraNum:" << cameraNum);
-            (*iter)->addUseCount();
+            (*iter)->addDeviceRef();
             return (*iter)->getCameraId();
         }
         else
@@ -71,14 +71,14 @@ void CameraManager::releaseCamera(const std::string& cameraId)
         }
         else
         {
-            if ((*iter)->decreaseUseCount(); (*iter)->getUseCount() <= 0)
+            if ((*iter)->releaseDeviceRef(); (*iter)->getDeviceRefCount() <= 0)
             {
                 SERVICE_LOG_DEBUG("camera use count is 0, remove this camera, cameraId:" << cameraId);
                 mCamerasList.erase(iter);
             }
             else
             {
-                SERVICE_LOG_DEBUG("camera use count decreased, cameraId:" << cameraId << ", count:" << (*iter)->getUseCount());
+                SERVICE_LOG_DEBUG("camera use count decreased, cameraId:" << cameraId << ", count:" << (*iter)->getDeviceRefCount());
             }
         }
     }
