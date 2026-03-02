@@ -3,13 +3,16 @@
 #include <memory>
 #include <string>
 #include <ucf/Services/MediaService/IMediaService.h>
+#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
-namespace ucf::framework{
+namespace ucf::framework {
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
-namespace ucf::service{
-class SERVICE_EXPORT MediaService final: public IMediaService
+
+namespace ucf::service {
+class SERVICE_EXPORT MediaService final : public IMediaService,
+                                          public virtual ucf::utilities::NotificationHelper<IMediaServiceCallback>
 {
 public:
     MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -18,6 +21,7 @@ public:
     MediaService& operator=(const MediaService&) = delete;
     MediaService& operator=(MediaService&&) = delete;
     ~MediaService();
+
 public:
     //IService
     virtual std::string getServiceName() const override;
@@ -27,9 +31,17 @@ public:
     virtual void releaseCamera(const std::string& cameraId) override;
     virtual std::vector<std::string> getOpenedCameras() const override;
     virtual media::IVideoFramePtr readImageData(const std::string& cameraId) override;
+    virtual std::string startVideoCapture(
+        const std::string& cameraId,
+        VideoFrameCallback callback) override;
+    virtual void stopVideoCapture(
+        const std::string& cameraId,
+        const std::string& subscriptionId) override;
+
 protected:
     //IService
     virtual void initService() override;
+
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

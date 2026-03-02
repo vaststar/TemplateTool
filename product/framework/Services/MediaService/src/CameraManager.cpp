@@ -126,4 +126,53 @@ media::IVideoFramePtr CameraManager::readImageData(const std::string& cameraId)
     SERVICE_LOG_WARN("camera not opened:" << cameraId);
     return nullptr;
 }
+
+std::string CameraManager::startVideoCapture(const std::string& cameraId, VideoFrameCallback callback)
+{
+    CameraVideoCapture* camera = nullptr;
+    {
+        std::scoped_lock loc(mCamerasMutex);
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), 
+            [&cameraId](const auto& cam) {
+                return cam->isOpened() && cam->getCameraId() == cameraId;
+            });
+        if (iter != mCamerasList.end())
+        {
+            camera = iter->get();
+        }
+    }
+    
+    if (camera)
+    {
+        return camera->addSubscription(std::move(callback));
+    }
+    
+    SERVICE_LOG_WARN("camera not found for startVideoCapture, id: " << cameraId);
+    return {};
+}
+
+void CameraManager::stopVideoCapture(const std::string& cameraId, const std::string& subscriptionId)
+{
+    CameraVideoCapture* camera = nullptr;
+    {
+        std::scoped_lock loc(mCamerasMutex);
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), 
+            [&cameraId](const auto& cam) {
+                return cam->isOpened() && cam->getCameraId() == cameraId;
+            });
+        if (iter != mCamerasList.end())
+        {
+            camera = iter->get();
+        }
+    }
+    
+    if (camera)
+    {
+        camera->removeSubscription(subscriptionId);
+    }
+    else
+    {
+        SERVICE_LOG_WARN("camera not found for stopVideoCapture, id: " << cameraId);
+    }
+}
 }

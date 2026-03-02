@@ -1,26 +1,27 @@
 #include "MediaCameraViewModel.h"
 
-
 #include <ucf/Services/MediaService/IMediaService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 
-namespace commonHead::viewModels{
-std::shared_ptr<IMediaCameraViewModel> IMediaCameraViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+namespace commonHead::viewModels {
+std::shared_ptr<IMediaCameraViewModel> IMediaCameraViewModel::createInstance(
+    commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
     return std::make_shared<MediaCameraViewModel>(commonHeadFramework);
+}
+
+MediaCameraViewModel::MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+    : IMediaCameraViewModel(commonHeadFramework)
+{
+    COMMONHEAD_LOG_DEBUG("create MediaCameraViewModel");
 }
 
 MediaCameraViewModel::~MediaCameraViewModel()
 {
     COMMONHEAD_LOG_DEBUG("");
-    if (mCaptureThread && mCaptureThread->joinable())
-    {
-        stopCaptureCameraVideo();
-        mCaptureThread->join();
-    }
     
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
@@ -28,18 +29,14 @@ MediaCameraViewModel::~MediaCameraViewModel()
         {
             if (auto mediaService = serviceLocator->getMediaService().lock())
             {
+                if (!mSubscriptionId.empty())
+                {
+                    mediaService->stopVideoCapture(mCameraId, mSubscriptionId);
+                }
                 mediaService->releaseCamera(mCameraId);
             }
         }
     }
-}
-
-MediaCameraViewModel::MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
-    : IMediaCameraViewModel(commonHeadFramework)
-    , mVideoCaptureStop(false)
-    , mCaptureThread(nullptr)
-{
-    COMMONHEAD_LOG_DEBUG("create MediaCameraViewModel");
 }
 
 std::string MediaCameraViewModel::getViewModelName() const
@@ -49,7 +46,6 @@ std::string MediaCameraViewModel::getViewModelName() const
 
 void MediaCameraViewModel::init()
 {
-
 }
 
 void MediaCameraViewModel::openCamera()
@@ -68,41 +64,43 @@ void MediaCameraViewModel::openCamera()
 
 void MediaCameraViewModel::startCaptureCameraVideo()
 {
-    mCaptureThread = std::make_shared<std::thread>([this](){
-        if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
-            if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+            if (auto mediaService = serviceLocator->getMediaService().lock())
             {
-                if (auto mediaService = serviceLocator->getMediaService().lock())
-                {
-                    constexpr auto targetFrameTime = std::chrono::milliseconds(33);  // ~30fps
-                    while(!mVideoCaptureStop)
+                mSubscriptionId = mediaService->startVideoCapture(mCameraId,
+                    [this](const ucf::service::media::IVideoFramePtr& frame)
                     {
-                        auto frameStart = std::chrono::steady_clock::now();
-                        
-                        if (auto image = mediaService->readImageData(mCameraId))
-                        {
-                            fireNotification(&IMediaCameraViewModelCallback::onCameraFrameReceived, convertServiceFrameToViewModelFrame(image));
-                        }
-                        
-                        auto elapsed = std::chrono::steady_clock::now() - frameStart;
-                        if (elapsed < targetFrameTime)
-                        {
-                            std::this_thread::sleep_for(targetFrameTime - elapsed);
-                        }
-                    }
-                }
+                        fireNotification(&IMediaCameraViewModelCallback::onCameraFrameReceived,
+                                        convertServiceFrameToViewModelFrame(frame));
+                    });
             }
         }
-    });
+    }
 }
 
 void MediaCameraViewModel::stopCaptureCameraVideo()
 {
-    mVideoCaptureStop = true;
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto mediaService = serviceLocator->getMediaService().lock())
+            {
+                if (!mSubscriptionId.empty())
+                {
+                    mediaService->stopVideoCapture(mCameraId, mSubscriptionId);
+                    mSubscriptionId.clear();
+                }
+            }
+        }
+    }
 }
 
-model::VideoFrame MediaCameraViewModel::convertServiceFrameToViewModelFrame(const ucf::service::media::IVideoFramePtr& frame) const
+model::VideoFrame MediaCameraViewModel::convertServiceFrameToViewModelFrame(
+    const ucf::service::media::IVideoFramePtr& frame) const
 {
     return model::VideoFrame{
         std::vector<uint8_t>(frame->getData(), frame->getData() + frame->getDataSize()),

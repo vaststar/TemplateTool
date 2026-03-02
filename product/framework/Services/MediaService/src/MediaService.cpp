@@ -4,7 +4,6 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
-
 #include "MediaServiceLogger.h"
 
 #include "CameraManager.h"
@@ -91,5 +90,19 @@ std::vector<std::string> MediaService::getOpenedCameras() const
 media::IVideoFramePtr MediaService::readImageData(const std::string& cameraId)
 {
     return mDataPrivate->getCameraManager()->readImageData(cameraId);
+}
+
+std::string MediaService::startVideoCapture(
+    const std::string& cameraId,
+    VideoFrameCallback callback)
+{
+    return mDataPrivate->getCameraManager()->startVideoCapture(cameraId, std::move(callback));
+}
+
+void MediaService::stopVideoCapture(
+    const std::string& cameraId,
+    const std::string& subscriptionId)
+{
+    mDataPrivate->getCameraManager()->stopVideoCapture(cameraId, subscriptionId);
 }
 }

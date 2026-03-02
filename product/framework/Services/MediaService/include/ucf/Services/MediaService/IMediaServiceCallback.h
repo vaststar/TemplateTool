@@ -1,8 +1,9 @@
 #pragma once
 
-#include <vector>
+#include <string>
+#include <ucf/Services/MediaService/MediaTypes.h>
 
-namespace ucf::service{
+namespace ucf::service {
 class IMediaServiceCallback
 {
 public:
@@ -11,6 +12,9 @@ public:
     IMediaServiceCallback(IMediaServiceCallback&&) = delete;
     IMediaServiceCallback& operator=(const IMediaServiceCallback&) = delete;
     IMediaServiceCallback& operator=(IMediaServiceCallback&&) = delete;
-    virtual ~ IMediaServiceCallback() = default;
+    virtual ~IMediaServiceCallback() = default;
+    
+    // 视频帧回调
+    virtual void onFrameReceived(const std::string& cameraId, const media::IVideoFramePtr& frame) {}
 };
 }

@@ -2,6 +2,7 @@
 #include "CameraDevice.h"
 #include "VideoFrame.h"
 
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
@@ -27,6 +28,16 @@ CameraVideoCapture::CameraVideoCapture(int cameraNum)
 
 CameraVideoCapture::~CameraVideoCapture()
 {
+    // 停止捕获线程
+    {
+        std::scoped_lock lock(mSubscriptionMutex);
+        mCapturing = false;
+    }
+    if (mCaptureThread.joinable())
+    {
+        mCaptureThread.join();
+    }
+    
     SERVICE_LOG_DEBUG("CameraVideoCapture destroyed, cameraId: " << mCameraId);
 }
 
@@ -114,5 +125,104 @@ media::IVideoFramePtr CameraVideoCapture::convertFrameToVideoFrame(const cv::Mat
     return std::make_shared<media::VideoFrame>(
         std::move(vec), rgbFrame.cols, rgbFrame.rows,
         static_cast<int>(rgbFrame.step), media::PixelFormat::RGB888);
+}
+
+std::string CameraVideoCapture::addSubscription(VideoFrameCallback callback)
+{
+    if (!isOpened() || mDeviceRefCount <= 0)
+    {
+        SERVICE_LOG_WARN("cannot add subscription, device not available, cameraId: " << mCameraId);
+        return {};
+    }
+    
+    std::string subscriptionId = ucf::utilities::UUIDUtils::generateUUID();
+    bool shouldStart = false;
+    
+    {
+        std::scoped_lock lock(mSubscriptionMutex);
+        shouldStart = mSubscriptions.empty();
+        mSubscriptions.push_back({subscriptionId, std::move(callback)});
+    }
+    
+    if (shouldStart)
+    {
+        mCapturing = true;
+        mCaptureThread = std::thread(&CameraVideoCapture::captureLoop, this);
+        SERVICE_LOG_DEBUG("capture started, cameraId: " << mCameraId);
+    }
+    
+    SERVICE_LOG_DEBUG("subscription added, cameraId: " << mCameraId 
+        << ", subscriptionId: " << subscriptionId);
+    return subscriptionId;
+}
+
+void CameraVideoCapture::removeSubscription(const std::string& subscriptionId)
+{
+    bool shouldStop = false;
+    
+    {
+        std::scoped_lock lock(mSubscriptionMutex);
+        auto it = std::find_if(mSubscriptions.begin(), mSubscriptions.end(),
+            [&subscriptionId](const Subscription& sub) { return sub.id == subscriptionId; });
+        
+        if (it != mSubscriptions.end())
+        {
+            mSubscriptions.erase(it);
+            SERVICE_LOG_DEBUG("subscription removed, cameraId: " << mCameraId 
+                << ", subscriptionId: " << subscriptionId);
+        }
+        else
+        {
+            SERVICE_LOG_WARN("subscription not found, cameraId: " << mCameraId 
+                << ", subscriptionId: " << subscriptionId);
+            return;
+        }
+        
+        if (mSubscriptions.empty())
+        {
+            mCapturing = false;
+            shouldStop = true;
+        }
+    }
+    
+    if (shouldStop)
+    {
+        if (mCaptureThread.joinable())
+        {
+            mCaptureThread.join();
+        }
+        SERVICE_LOG_DEBUG("capture stopped, cameraId: " << mCameraId);
+    }
+}
+
+void CameraVideoCapture::captureLoop()
+{
+    SERVICE_LOG_DEBUG("capture loop started, cameraId: " << mCameraId);
+    constexpr auto targetFrameTime = std::chrono::milliseconds(33);  // ~30fps
+    
+    while (mCapturing && isOpened() && mDeviceRefCount > 0)
+    {
+        auto frameStart = std::chrono::steady_clock::now();
+        
+        if (auto frame = readImageData())
+        {
+            std::scoped_lock lock(mSubscriptionMutex);
+            for (const auto& subscription : mSubscriptions)
+            {
+                if (subscription.callback)
+                {
+                    subscription.callback(frame);
+                }
+            }
+        }
+        
+        auto elapsed = std::chrono::steady_clock::now() - frameStart;
+        if (elapsed < targetFrameTime)
+        {
+            std::this_thread::sleep_for(targetFrameTime - elapsed);
+        }
+    }
+    
+    SERVICE_LOG_DEBUG("capture loop stopped, cameraId: " << mCameraId);
 }
 }
