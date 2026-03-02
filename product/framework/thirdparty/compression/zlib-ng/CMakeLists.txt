@@ -22,6 +22,16 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 # Add official zlib-ng CMake
 add_subdirectory(zlib-ng zlib-ng_build)
 
+# Set IDE folder for zlib-ng targets (only real targets, not ALIAS)
+foreach(_target zlib-ng zlib-ng-static)
+    if(TARGET "${_target}")
+        get_target_property(_aliased "${_target}" ALIASED_TARGET)
+        if(NOT _aliased)
+            set_target_properties("${_target}" PROPERTIES FOLDER "thirdparty/compression/zlib-ng")
+        endif()
+    endif()
+endforeach()
+
 # Create interface library to wrap zlib-ng
 # Cannot create ALIAS of ALIAS, so we use INTERFACE library
 add_library(compression_gzip_impl INTERFACE)

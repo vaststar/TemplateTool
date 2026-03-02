@@ -1,7 +1,7 @@
 include(BuildModule)
 
 set(MODULE_MODULE_NAME StabilityService)
-set(MODULE_IDE_FOLDER framework/services)
+set(MODULE_IDE_FOLDER framework/Services)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
