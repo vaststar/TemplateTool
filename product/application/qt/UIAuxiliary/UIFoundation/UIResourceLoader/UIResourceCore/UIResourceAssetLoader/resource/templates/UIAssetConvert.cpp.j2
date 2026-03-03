@@ -22,6 +22,20 @@ commonHead::model::AssetImageToken UIResourceAssetLoader::convertUIAssetImageTok
     }
 }
 
+UIAssetImageToken::AssetImageToken UIResourceAssetLoader::convertVMAssetImageTokenToUIAssetImageToken(commonHead::model::AssetImageToken vmAssetImageItem)
+{
+    switch (vmAssetImageItem)
+    {
+    {% for token in data.tokens.images %}
+    case commonHead::model::AssetImageToken::{{ token | str_to_enum }}:
+        return UIAssetImageToken::AssetImageToken::{{ token | str_to_enum }};
+    {% endfor %}    
+    default:
+        UIResourceAssetLoader_LOG_WARN("unsupported VM token: " << static_cast<int>(vmAssetImageItem));
+        return UIAssetImageToken::AssetImageToken::None;
+    }
+}
+
 commonHead::model::AssetVideoToken UIResourceAssetLoader::convertUIAssetVideoTokenToVMAssetVideoToken(UIAssetVideoToken::AssetVideoToken  uiAssetVideoItem)
 {
     switch (uiAssetVideoItem)
@@ -33,6 +47,20 @@ commonHead::model::AssetVideoToken UIResourceAssetLoader::convertUIAssetVideoTok
     default:
         UIResourceAssetLoader_LOG_WARN("unsupported token: " << static_cast<int>(uiAssetVideoItem));
         return commonHead::model::AssetVideoToken::None;
+    }
+}
+
+UIAssetVideoToken::AssetVideoToken UIResourceAssetLoader::convertVMAssetVideoTokenToUIAssetVideoToken(commonHead::model::AssetVideoToken vmAssetVideoItem)
+{
+    switch (vmAssetVideoItem)
+    {
+    {% for token in data.tokens.videos %}
+    case commonHead::model::AssetVideoToken::{{ token | str_to_enum }}:
+        return UIAssetVideoToken::AssetVideoToken::{{ token | str_to_enum }};
+    {% endfor %}    
+    default:
+        UIResourceAssetLoader_LOG_WARN("unsupported VM token: " << static_cast<int>(vmAssetVideoItem));
+        return UIAssetVideoToken::AssetVideoToken::None;
     }
 }
 }

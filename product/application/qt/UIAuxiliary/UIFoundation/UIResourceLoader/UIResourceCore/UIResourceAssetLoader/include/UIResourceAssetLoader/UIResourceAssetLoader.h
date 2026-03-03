@@ -27,6 +27,8 @@ public:
 public:
     static void registerUIResourceAssetLoader();
     static commonHead::model::AssetImageToken convertUIAssetImageTokenToVMAssetImageToken(UIAssetImageToken::AssetImageToken  uiAssetImageItem);
+    static UIAssetImageToken::AssetImageToken convertVMAssetImageTokenToUIAssetImageToken(commonHead::model::AssetImageToken vmAssetImageItem);
     static commonHead::model::AssetVideoToken convertUIAssetVideoTokenToVMAssetVideoToken(UIAssetVideoToken::AssetVideoToken  uiAssetVideoItem);
+    static UIAssetVideoToken::AssetVideoToken convertVMAssetVideoTokenToUIAssetVideoToken(commonHead::model::AssetVideoToken vmAssetVideoItem);
 };
 }

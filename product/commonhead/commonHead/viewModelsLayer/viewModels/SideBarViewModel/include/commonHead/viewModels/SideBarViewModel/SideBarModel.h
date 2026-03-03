@@ -2,6 +2,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 
+#include <AssetToken.h>
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -47,8 +48,8 @@ struct COMMONHEAD_EXPORT NavItemData {
     PageId pageId = PageId::Unknown;
     std::string id;                     // Unique identifier
     std::string title;                  // Display title
-    std::string icon;                   // Normal state icon resource path
-    std::string iconSelected;           // Selected state icon resource path
+    commonHead::model::AssetImageToken icon = commonHead::model::AssetImageToken::None;           // Normal state icon token
+    commonHead::model::AssetImageToken iconSelected = commonHead::model::AssetImageToken::None;   // Selected state icon token
     int32_t badge = 0;                  // Badge number (0 means hidden)
     NavItemState state = NavItemState::Normal;
     NavItemPosition position = NavItemPosition::Top;

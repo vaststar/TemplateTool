@@ -56,10 +56,10 @@ set(MODULE_SOURCE_PRIVATE
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
     VMNotificationHelper
+    ResourceLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
-    ResourceLoader
     ServiceLocator
     ContactService
     MediaService
