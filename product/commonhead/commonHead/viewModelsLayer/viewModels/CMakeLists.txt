@@ -12,6 +12,7 @@ set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/IViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MediaCameraViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
 )
@@ -26,6 +27,8 @@ set(MODULE_HEADER_FILES #for include and install header
     IViewModel/include/commonHead/viewModels/IViewModel/IViewModel.h
     MainWindowViewModel/include/commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h
     MediaCameraViewModel/include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
+    SideBarViewModel/include/commonHead/viewModels/SideBarViewModel/SideBarModel.h
+    SideBarViewModel/include/commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h
     StabilityViewModel/include/commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h
     shared/commonHead/viewModels/ViewModelDataDefine/VideoFrame.h
 )
@@ -45,6 +48,8 @@ set(MODULE_SOURCE_PRIVATE
     MainWindowViewModel/src/MainWindowViewModel.cpp
     MediaCameraViewModel/src/MediaCameraViewModel.h
     MediaCameraViewModel/src/MediaCameraViewModel.cpp
+    SideBarViewModel/src/SideBarViewModel.h
+    SideBarViewModel/src/SideBarViewModel.cpp
     StabilityViewModel/src/StabilityViewModel.h
     StabilityViewModel/src/StabilityViewModel.cpp
 )
@@ -78,6 +83,7 @@ set(MODULE_BUILD_PRIVATE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/IViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/MediaCameraViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/src
 )
 

@@ -13,6 +13,90 @@
         "path": "assets/images/profile.png",
         "format": "png",
         "animated": false
+      },
+      {
+        "token": "nav_home",
+        "path": "assets/images/nav_icons/nav_home.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_home_selected",
+        "path": "assets/images/nav_icons/nav_home_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_contacts",
+        "path": "assets/images/nav_icons/nav_contacts.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_contacts_selected",
+        "path": "assets/images/nav_icons/nav_contacts_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_tasks",
+        "path": "assets/images/nav_icons/nav_tasks.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_tasks_selected",
+        "path": "assets/images/nav_icons/nav_tasks_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_credentials",
+        "path": "assets/images/nav_icons/nav_credentials.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_credentials_selected",
+        "path": "assets/images/nav_icons/nav_credentials_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_toolbox",
+        "path": "assets/images/nav_icons/nav_toolbox.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_toolbox_selected",
+        "path": "assets/images/nav_icons/nav_toolbox_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_help",
+        "path": "assets/images/nav_icons/nav_help.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_help_selected",
+        "path": "assets/images/nav_icons/nav_help_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_settings",
+        "path": "assets/images/nav_icons/nav_settings.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_settings_selected",
+        "path": "assets/images/nav_icons/nav_settings_selected.svg",
+        "format": "svg",
+        "animated": false
       }
     ],
     "videos": [
