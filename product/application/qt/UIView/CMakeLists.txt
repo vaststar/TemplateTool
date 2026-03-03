@@ -22,12 +22,12 @@ set(MODULE_SOURCE_PRIVATE
     UIViewBase/include/UIViewControllerInitializer.h
     UIViewBase/src/UIViewControllerInitializer.cpp
 
-    ViewModelSingalEmitter/ViewModelTypeRegistry.h
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
     ViewModelSingalEmitter/InvocationViewModelEmitter.h
     ViewModelSingalEmitter/AppUiViewModelEmitter.h
     ViewModelSingalEmitter/MainWindowViewModelEmitter.h
     ViewModelSingalEmitter/StabilityViewModelEmitter.h
+    ViewModelSingalEmitter/SideBarViewModelEmitter.h
 
     ContactList/include/ContactListItemModel.h
     ContactList/include/ContactListViewController.h
@@ -44,7 +44,9 @@ set(MODULE_SOURCE_PRIVATE
     MainWindowMenuBar/src/MainWindowMenuBarController.cpp
 
     MainWindowSideBar/include/MainWindowSideBarController.h
+    MainWindowSideBar/include/NavItemModel.h
     MainWindowSideBar/src/MainWindowSideBarController.cpp
+    MainWindowSideBar/src/NavItemModel.cpp
 
     AppSystemTray/include/AppSystemTrayController.h
     AppSystemTray/src/AppSystemTrayController.cpp

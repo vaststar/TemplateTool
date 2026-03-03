@@ -9,6 +9,7 @@
 #include <commonHead/viewModels/ViewModelDataDefine/VideoFrame.h>
 
 #include "UIViewBase/include/UIViewController.h"
+#include "ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
 
 namespace commonHead{
     namespace viewModels{
@@ -20,9 +21,6 @@ namespace commonHead{
 }
 
 class AppContext;
-namespace UIVMSignalEmitter{
-class MediaCameraViewModelEmitter;
-}
 class MediaCameraViewController: public UIViewController
 {
     Q_OBJECT
