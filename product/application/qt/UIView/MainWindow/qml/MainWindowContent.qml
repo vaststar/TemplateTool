@@ -9,6 +9,12 @@ Item{
     id: mainWindowContent
     required property MainWindowController controller
 
+    // Content area background (slightly lighter than sidebar/titlebar)
+    Rectangle {
+        anchors.fill: parent
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Background, UIColorState.Normal)
+    }
+
     // Sidebar with collapsible width
     MainWindowSideBar{
         id: navigationBar

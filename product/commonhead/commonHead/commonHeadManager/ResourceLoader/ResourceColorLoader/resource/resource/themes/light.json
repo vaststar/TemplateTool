@@ -4,7 +4,7 @@
     {
       "token": "main-window-background",
       "color": {
-        "normal": "gray-800"
+        "normal": "neutral-900"
       }
     },
     {
@@ -93,6 +93,30 @@
       "token": "sidebar-badge-text",
       "color": {
         "normal": "neutral-50"
+      }
+    },
+    {
+      "token": "titlebar-background",
+      "color": {
+        "normal": "neutral-900"
+      }
+    },
+    {
+      "token": "footbar-background",
+      "color": {
+        "normal": "neutral-900"
+      }
+    },
+    {
+      "token": "footbar-text",
+      "color": {
+        "normal": "neutral-400"
+      }
+    },
+    {
+      "token": "content-background",
+      "color": {
+        "normal": "neutral-800"
       }
     }
   ]

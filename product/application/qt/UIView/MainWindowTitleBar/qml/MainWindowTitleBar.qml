@@ -11,7 +11,7 @@ Rectangle {
     id: root
         property MainWindowTitleBarController controller: MainWindowTitleBarController{}
         
-        color: controller.color//"#3c5bcaff"  // 设置标题栏颜色
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Titlebar_Background, UIColorState.Normal)
         visible: controller.visible
         required property ApplicationWindow appWindow
         

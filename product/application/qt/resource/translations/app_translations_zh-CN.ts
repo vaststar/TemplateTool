@@ -12,12 +12,12 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="82"/>
+        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="88"/>
         <source>IopenCamera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="108"/>
+        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="114"/>
         <source>Pack Logs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -25,12 +25,12 @@
 <context>
     <name>MainWindowFootBar</name>
     <message>
-        <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="12"/>
+        <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="19"/>
         <source>‹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="23"/>
+        <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="32"/>
         <source>⋮</source>
         <translation type="unfinished"></translation>
     </message>

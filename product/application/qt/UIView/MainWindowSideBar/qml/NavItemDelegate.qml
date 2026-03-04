@@ -129,7 +129,7 @@ Rectangle {
     // Focus ring (pill / fully rounded)
     UTFocusItem {
         target: navItem
-        focusRadius: navItem.height / 2
+        focusRadius: 8
     }
 
     // Tooltip when collapsed

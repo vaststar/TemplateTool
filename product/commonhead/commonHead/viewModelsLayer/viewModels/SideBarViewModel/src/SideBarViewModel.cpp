@@ -107,22 +107,22 @@ void SideBarViewModel::initDefaultNavItems()
         
         // ========== Bottom navigation items ==========
         {
-            model::PageId::Help,
-            "help",
-            "帮助",
-            commonHead::model::AssetImageToken::Nav_Help,
-            commonHead::model::AssetImageToken::Nav_Help_Selected,
+            model::PageId::Settings,
+            "settings",
+            "设置",
+            commonHead::model::AssetImageToken::Nav_Settings,
+            commonHead::model::AssetImageToken::Nav_Settings_Selected,
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Bottom,
             0
         },
         {
-            model::PageId::Settings,
-            "settings",
-            "设置",
-            commonHead::model::AssetImageToken::Nav_Settings,
-            commonHead::model::AssetImageToken::Nav_Settings_Selected,
+            model::PageId::Help,
+            "help",
+            "帮助",
+            commonHead::model::AssetImageToken::Nav_Help,
+            commonHead::model::AssetImageToken::Nav_Help_Selected,
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Bottom,
