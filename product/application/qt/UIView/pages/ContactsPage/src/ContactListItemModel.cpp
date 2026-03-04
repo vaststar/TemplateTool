@@ -1,4 +1,4 @@
-#include "ContactList/include/ContactListItemModel.h"
+#include "ContactListItemModel.h"
 
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 

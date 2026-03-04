@@ -6,45 +6,55 @@ import UIResourceLoader 1.0
 
 Item{
     id: root
-    
-    property ContactListViewController controller:  ContactListViewController{}
 
-    Image {
-        height:200
-        width:200
-        // source: "qrc:/qt/qml/UIView/picture/112.png"
-        source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Logo)//"qrc:/images/logo"
+    required property ContactsPageController controller
+
+    // Panel background – slightly different from content area
+    Rectangle {
+        anchors.fill: parent
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
     }
 
-    UTButton {
-        focus: true
-        id: bbb
-        text: "contactListButton"
-        anchors{
-            top: parent.top
-            topMargin: 100
+    // Header
+    Rectangle {
+        id: header
+        anchors {
             left: parent.left
-            leftMargin: 100
+            right: parent.right
+            top: parent.top
         }
-        onClicked:{
-            console.log("test")
-            controller.buttonClicked()
+        height: 40
+        color: "transparent"
+
+        Text {
+            anchors {
+                left: parent.left
+                leftMargin: 12
+                verticalCenter: parent.verticalCenter
+            }
+            text: "联系人列表"
+            font.pixelSize: 14
+            font.bold: true
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
         }
     }
 
-    TreeView {
-        id: treeView
-        anchors{
-            left:parent.left
-            leftMargin: 300
-            top: parent.top
-            topMargin: 10
-
+    Item {
+        id: treeContainer
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: header.bottom
+            bottom: parent.bottom
         }
-        width:treeView.contentWidth
-        height:300
-        clip: false
-        activeFocusOnTab: true
+        clip: true
+
+        TreeView {
+            id: treeView
+            anchors.fill: parent
+            anchors.margins: 4
+            clip: false
+            activeFocusOnTab: true
 
         // The model needs to be a QAbstractItemModel
         model: controller.orgTreeModel
@@ -72,10 +82,11 @@ Item{
 
         delegate: Item {
             implicitWidth: padding + label.x + label.implicitWidth + padding
-            implicitHeight: label.implicitHeight * 1.5
+            implicitHeight: label.implicitHeight * 1.8
+            z: (current && treeView.activeFocus) ? 1 : 0
 
             readonly property real indentation: 20
-            readonly property real padding: 5
+            readonly property real padding: 8
 
             // Assigned to by TreeView:
             required property TreeView treeView
@@ -99,13 +110,17 @@ Item{
             TableView.onReused: if (current) indicatorAnimation.start()
             onExpandedChanged: indicator.rotation = expanded ? 90 : 0
 
+            HoverHandler { id: hoverHandler }
+
             Rectangle {
                 id: background
                 anchors.fill: parent
-                color: row === treeView.currentRow ? palette.highlight : "white"
-                opacity: (treeView.alternatingRows && row % 2 !== 0) ? 0.8 : 0.5
+                color: row === treeView.currentRow
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
+                    : hoverHandler.hovered
+                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+                        : "transparent"
             }
-
 
             Label {
                 id: indicator
@@ -113,6 +128,7 @@ Item{
                 anchors.verticalCenter: parent.verticalCenter
                 visible: isTreeNode && hasChildren
                 text: "▶"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
 
                 TapHandler {
                     onSingleTapped: {
@@ -129,12 +145,14 @@ Item{
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - padding - x
                 text: model.displayName
-                
+                color: row === treeView.currentRow
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Selected)
+                    : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
             }
             UTFocusItem{
                 externallyShown: current && treeView.activeFocus
             }
         }
     }
+    } // treeContainer
 }
-

@@ -18,7 +18,9 @@
 #include "MediaCameraView/include/MediaCameraViewController.h"
 #include "ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
 
-#include "ContactList/include/ContactListViewController.h"
+#include "pages/ContactsPage/include/ContactsPageController.h"
+#include "pages/HomePage/include/HomePageController.h"
+#include "pages/SettingsPage/include/SettingsPageController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
@@ -134,10 +136,17 @@ void MainWindowController::initController(UIViewController* controller)
 
 void MainWindowController::connectSignals(UIViewController* controller)
 {
-    if (auto contactListController = dynamic_cast<ContactListViewController*>(controller))
+    if (auto pageController = dynamic_cast<ContactsPageController*>(controller))
     {
-        UIVIEW_LOG_DEBUG("connectSignals for ContactListViewController");
-        // contactListController->buttonClicked();
+        UIVIEW_LOG_DEBUG("connectSignals for ContactsPageController");
+    }
+    else if (auto pageController = dynamic_cast<HomePageController*>(controller))
+    {
+        UIVIEW_LOG_DEBUG("connectSignals for HomePageController");
+    }
+    else if (auto pageController = dynamic_cast<SettingsPageController*>(controller))
+    {
+        UIVIEW_LOG_DEBUG("connectSignals for SettingsPageController");
     }
 }
 

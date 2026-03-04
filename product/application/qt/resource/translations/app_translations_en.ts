@@ -10,19 +10,6 @@
     </message>
 </context>
 <context>
-    <name>MainWindowContent</name>
-    <message>
-        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="88"/>
-        <source>IopenCamera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="114"/>
-        <source>Pack Logs</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MainWindowFootBar</name>
     <message>
         <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="19"/>
@@ -43,7 +30,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="50"/>
+        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="52"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>

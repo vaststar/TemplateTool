@@ -1,42 +1,37 @@
-#include "ContactList/include/ContactListViewController.h"
+#include "pages/ContactsPage/include/ContactsPageController.h"
 #include "LoggerDefine/LoggerDefine.h"
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
-
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 
-ContactListViewController::ContactListViewController(QObject *parent)
+ContactsPageController::ContactsPageController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create ContactListViewController");
+    UIVIEW_LOG_DEBUG("create ContactsPageController");
 }
 
-void ContactListViewController::init()
+void ContactsPageController::init()
 {
-    UIVIEW_LOG_DEBUG("");
+    UIVIEW_LOG_DEBUG("ContactsPageController::init");
     mContactListViewModel = getAppContext()->getViewModelFactory()->createContactListViewModelInstance();
     mContactListViewModel->initViewModel();
     buildContactTreeModel();
-    UIVIEW_LOG_DEBUG("done");
+    UIVIEW_LOG_DEBUG("ContactsPageController::init done");
 }
 
-void ContactListViewController::buttonClicked()
+void ContactsPageController::buttonClicked()
 {
-    // mContactListViewModel->getContactList();
-    // mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTDialog.qml"));
     getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
-    // mAppContext->getViewFactory()->createQmlWindow(QStringLiteral("UTComponent/UTWindow/UTTest.qml"))->show();
-    
 }
 
-QAbstractItemModel* ContactListViewController::getOrgTreeModel() const
+QAbstractItemModel* ContactsPageController::getOrgTreeModel() const
 {
     return mOrgTreeModel;
 }
 
-void ContactListViewController::buildContactTreeModel()
+void ContactsPageController::buildContactTreeModel()
 {
     if (!mContactListViewModel)
     {
@@ -52,7 +47,5 @@ void ContactListViewController::buildContactTreeModel()
 
     mOrgTreeModel = new ContactListItemModel(this);
     mOrgTreeModel->setUpViewModel(mContactListViewModel);
-    // mOrgTreeModel->setupModelData(mContactListViewModel->getContactList()->getAllContacts());
-
     emit orgTreeModelChanged();
 }

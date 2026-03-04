@@ -30,10 +30,14 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/StabilityViewModelEmitter.h
     ViewModelSingalEmitter/SideBarViewModelEmitter.h
 
-    ContactList/include/ContactListItemModel.h
-    ContactList/include/ContactListViewController.h
-    ContactList/src/ContactListViewController.cpp
-    ContactList/src/ContactListItemModel.cpp
+    pages/ContactsPage/include/ContactListItemModel.h
+    pages/ContactsPage/include/ContactsPageController.h
+    pages/ContactsPage/src/ContactListItemModel.cpp
+    pages/ContactsPage/src/ContactsPageController.cpp
+    pages/HomePage/include/HomePageController.h
+    pages/HomePage/src/HomePageController.cpp
+    pages/SettingsPage/include/SettingsPageController.h
+    pages/SettingsPage/src/SettingsPageController.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
@@ -91,7 +95,12 @@ set(MODULE_QML_TARGET_URI
     ${MODULE_MODULE_NAME}
 )
 set(MODULE_QML_TARGET_FILES
-    ContactList/qml/ContactList.qml
+    pages/HomePage/qml/HomePage.qml
+    pages/ContactsPage/qml/ContactsPage.qml
+    pages/ContactsPage/qml/ContactListPanel.qml
+    pages/ContactsPage/qml/ContactDetailPanel.qml
+    pages/SettingsPage/qml/SettingsPage.qml
+    pages/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowTitleBar/qml/WindowAnimator.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
@@ -105,7 +114,9 @@ set(MODULE_QML_TARGET_FILES
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/UIViewBase/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/ContactList/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/pages/ContactsPage/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/pages/HomePage/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/pages/SettingsPage/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowMenuBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowFootBar/include

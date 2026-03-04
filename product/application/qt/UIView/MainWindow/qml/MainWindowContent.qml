@@ -5,124 +5,54 @@ import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
-Item{
+Item {
     id: mainWindowContent
     required property MainWindowController controller
 
-    // Content area background (slightly lighter than sidebar/titlebar)
+    // Content area background
     Rectangle {
         anchors.fill: parent
         color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Background, UIColorState.Normal)
     }
 
-    // Sidebar with collapsible width
-    MainWindowSideBar{
+    // Sidebar
+    MainWindowSideBar {
         id: navigationBar
         width: implicitWidth
         height: parent.height
+        z: 10
     }
 
-    ContactList{
-        id: frame
-        width : 400
-        height: 200
-        anchors{
-            top: parent.top
-            left: navigationBar.right
-            leftMargin: 4
-        }
-    }
-
-    UTQRCode {
-        text: "这是测试这是测试这是测试，我靠"
-        displaySize: 200
-        errorLevel: UTQRCodeLevel.High
-        darkColor: "#FF5722"
-        lightColor: "#FFF3E0"
+    // Page content — StackLayout driven by sidebar currentPageId
+    // PageId: Home=1, Contacts=2, Tasks=3, Credentials=4, Toolbox=5, Settings=6, Help=7, About=8
+    StackLayout {
+        id: contentStack
         anchors {
+            top: parent.top
             bottom: parent.bottom
+            left: navigationBar.right
             right: parent.right
         }
+        currentIndex: navigationBar.controller.currentPageId - 1
+
+        HomePage { id: homePage }                             // index 0 → Home(1)
+        ContactsPage { id: contactsPage }                    // index 1 → Contacts(2)
+        PlaceholderPage { pageTitle: "计划" }                 // index 2 → Tasks(3)
+        PlaceholderPage { pageTitle: "证件" }                 // index 3 → Credentials(4)
+        PlaceholderPage { pageTitle: "工具" }                 // index 4 → Toolbox(5)
+        SettingsPage { id: settingsPage }                     // index 5 → Settings(6)
+        PlaceholderPage { pageTitle: "帮助" }                 // index 6 → Help(7)
+        PlaceholderPage { pageTitle: "关于" }                 // index 7 → About(8)
     }
-    
-    Component.onCompleted:{
-        if (!controller){
+
+    Component.onCompleted: {
+        if (!controller) {
             console.log("MainWindowContent controller is null")
             return
         }
         controller.initController(navigationBar.controller)
-        controller.initController(frame.controller)
-    }
-
-    Text {
-        text: controller.mControllerName + "test"
-        font.family: "Helvetica"
-        font.pointSize: 12
-        color: "red"
-        anchors{
-            top: parent.top
-            topMargin: 200
-            left: parent.left
-            leftMargin: 200
-        }
-    }
-
-    
-    UTButton {
-        id: bbb
-        focus: true
-        text: "testDialogShowButton"
-        anchors{
-            top: parent.top
-            topMargin: 300
-            left: parent.left
-            leftMargin: 50
-        }
-        onClicked:{
-            dialog.open()
-        }
-    }
-
-    UTButton {
-        id: butn1
-        text: qsTr("IopenCamera")
-        anchors{
-            top: parent.top
-            topMargin: 350
-            left: parent.left
-            leftMargin: 50
-        }
-        onClicked:{
-            controller.openCamera();
-        }
-    }
-    UTButton {
-        id: butn2
-        text:  qsTr(UTComponentUtil.getLocalizedString(UILocalizedStringToken.OKLabel)) //qsTr("button2")
-        anchors{
-            top: parent.top
-            topMargin: 300
-            left: parent.left
-            leftMargin: 400
-        }
-        onClicked:{
-            controller.testFunc()
-        }
-    }
-    UTButton {
-        id: packLogsBtn
-        text: qsTr("Pack Logs")
-        anchors{
-            top: parent.top
-            topMargin: 400
-            left: parent.left
-            leftMargin: 50
-        }
-        onClicked:{
-            controller.packLogs()
-        }
-    }
-    UTDialog{
-        id: dialog
+        controller.initController(homePage.controller)
+        controller.initController(contactsPage.controller)
+        controller.initController(settingsPage.controller)
     }
 }
