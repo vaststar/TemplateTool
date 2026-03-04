@@ -2,6 +2,7 @@
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
 #include <UIManager/UILanguage.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
@@ -153,4 +154,21 @@ void MainWindowController::connectSignals(UIViewController* controller)
 void MainWindowController::componentCompleted()
 {
     emit visibleChanged();
+}
+
+int MainWindowController::pageIdToIndex(int pageId) const
+{
+    using PageId = commonHead::viewModels::model::PageId;
+    switch (static_cast<PageId>(pageId))
+    {
+        case PageId::Home:        return 0;
+        case PageId::Contacts:    return 1;
+        case PageId::Tasks:       return 2;
+        case PageId::Credentials: return 3;
+        case PageId::Toolbox:     return 4;
+        case PageId::Settings:    return 5;
+        case PageId::Help:        return 6;
+        case PageId::About:       return 7;
+        default:                  return 0;
+    }
 }

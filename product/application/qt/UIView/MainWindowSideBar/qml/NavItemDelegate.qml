@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl
 import QtQuick.Layouts
 import UTComponent 1.0
 import UIResourceLoader 1.0
@@ -31,6 +32,18 @@ Rectangle {
     property bool showText: false
     property int animationDuration: 200
     signal clicked()
+
+    onIsSelectedChanged: {
+        if (isSelected) {
+            forceActiveFocus()
+        }
+    }
+
+    Component.onCompleted: {
+        if (isSelected) {
+            forceActiveFocus()
+        }
+    }
 
     Keys.onReturnPressed: navItem.clicked()
     Keys.onEnterPressed: navItem.clicked()

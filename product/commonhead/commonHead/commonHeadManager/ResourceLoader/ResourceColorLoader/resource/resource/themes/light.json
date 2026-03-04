@@ -46,13 +46,13 @@
     {
       "token": "sidebar-background",
       "color": {
-        "normal": "neutral-950"
+        "normal": "neutral-900"
       }
     },
     {
       "token": "sidebar-item-background",
       "color": {
-        "normal": "neutral-950",
+        "normal": "neutral-900",
         "hovered": "neutral-800",
         "pressed": "neutral-700",
         "selected": "neutral-800"

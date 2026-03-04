@@ -43,6 +43,7 @@ public:
 
     Q_INVOKABLE void initController(UIViewController* controller);
     Q_INVOKABLE void componentCompleted();
+    Q_INVOKABLE int pageIdToIndex(int pageId) const;
 signals:
     void titleChanged();
     void windowSizeChanged();

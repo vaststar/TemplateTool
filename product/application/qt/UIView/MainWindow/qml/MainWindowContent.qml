@@ -24,7 +24,6 @@ Item {
     }
 
     // Page content — StackLayout driven by sidebar currentPageId
-    // PageId: Home=1, Contacts=2, Tasks=3, Credentials=4, Toolbox=5, Settings=6, Help=7, About=8
     StackLayout {
         id: contentStack
         anchors {
@@ -33,16 +32,16 @@ Item {
             left: navigationBar.right
             right: parent.right
         }
-        currentIndex: navigationBar.controller.currentPageId - 1
+        currentIndex: controller.pageIdToIndex(navigationBar.controller.currentPageId)
 
-        HomePage { id: homePage }                             // index 0 → Home(1)
-        ContactsPage { id: contactsPage }                    // index 1 → Contacts(2)
-        PlaceholderPage { pageTitle: "计划" }                 // index 2 → Tasks(3)
-        PlaceholderPage { pageTitle: "证件" }                 // index 3 → Credentials(4)
-        PlaceholderPage { pageTitle: "工具" }                 // index 4 → Toolbox(5)
-        SettingsPage { id: settingsPage }                     // index 5 → Settings(6)
-        PlaceholderPage { pageTitle: "帮助" }                 // index 6 → Help(7)
-        PlaceholderPage { pageTitle: "关于" }                 // index 7 → About(8)
+        HomePage { id: homePage }                             // index 0
+        ContactsPage { id: contactsPage }                    // index 1
+        PlaceholderPage { pageTitle: "计划" }                 // index 2
+        PlaceholderPage { pageTitle: "证件" }                 // index 3
+        PlaceholderPage { pageTitle: "工具" }                 // index 4
+        SettingsPage { id: settingsPage }                     // index 5
+        PlaceholderPage { pageTitle: "帮助" }                 // index 6
+        PlaceholderPage { pageTitle: "关于" }                 // index 7
     }
 
     Component.onCompleted: {
