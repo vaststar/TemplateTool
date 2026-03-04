@@ -63,16 +63,35 @@ Rectangle {
         }
 
         Button {
+            id: minimizeBtn
+            flat: true
             text: "—"
             enabled: appWindow !== null
             onClicked: appWindow && appWindow.showMinimized()
             Layout.preferredWidth: 40
             Layout.fillHeight: true
             padding: 0
+
+            HoverHandler { id: minHover }
+
+            background: Rectangle {
+                color: minHover.hovered
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+                    : "transparent"
+            }
+            contentItem: Text {
+                text: minimizeBtn.text
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 14
+            }
         }
 
 
         Button {
+            id: maximizeBtn
+            flat: true
             text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "🗗" : "🗖"
             enabled: appWindow !== null
             onClicked: {
@@ -85,9 +104,26 @@ Rectangle {
             Layout.preferredWidth: 40
             Layout.fillHeight: true
             padding: 0
+
+            HoverHandler { id: maxHover }
+
+            background: Rectangle {
+                color: maxHover.hovered
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+                    : "transparent"
+            }
+            contentItem: Text {
+                text: maximizeBtn.text
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 14
+            }
         }
 
         Button {
+            id: closeBtn
+            flat: true
             text: "✕"
             onClicked: {
                 if (appWindow)
@@ -98,6 +134,21 @@ Rectangle {
             Layout.preferredWidth: 40
             Layout.fillHeight: true
             padding: 0
+
+            HoverHandler { id: closeHover }
+
+            background: Rectangle {
+                color: closeHover.hovered ? "#c42b1c" : "transparent"
+            }
+            contentItem: Text {
+                text: closeBtn.text
+                color: closeHover.hovered
+                    ? "#ffffff"
+                    : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 14
+            }
         }
         }
 
