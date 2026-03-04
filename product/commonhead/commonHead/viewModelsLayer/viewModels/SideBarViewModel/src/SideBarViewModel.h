@@ -20,7 +20,6 @@ public:
     std::string getViewModelName() const override;
     
     // ISideBarViewModel - Data access
-    std::vector<model::NavItemData> getAllNavItems() const override;
     std::vector<model::NavItemData> getTopNavItems() const override;
     std::vector<model::NavItemData> getBottomNavItems() const override;
     model::PageId getCurrentPageId() const override;

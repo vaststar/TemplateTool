@@ -9,26 +9,90 @@ Item {
     id: root
     property MainWindowSideBarController controller: MainWindowSideBarController{}
 
-    signal pageSelected(int pageId)
+    // Sidebar expand/collapse state
+    property bool expanded: false
+    readonly property int collapsedWidth: 50
+    readonly property int expandedWidth: 120
+    readonly property int animationDuration: 200
+
+    implicitWidth: expanded ? expandedWidth : collapsedWidth
+
+    Behavior on implicitWidth {
+        NumberAnimation { duration: root.animationDuration; easing.type: Easing.InOutQuad }
+    }
 
     // Background
     Rectangle {
         anchors.fill: parent
-        color: "#FAFAFA"
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Background, UIColorState.Normal)
     }
-    
-    // Right border
+
+    // Right edge zone: border line + hover detection + expand/collapse arrow
     Rectangle {
+        id: edgeZone
         anchors.right: parent.right
-        width: 1
+        width: 16
         height: parent.height
-        color: "#E0E0E0"
+        color: "transparent"
+        z: 5
+
+        readonly property bool edgeHovered: edgeHoverHandler.hovered || arrowMouseArea.containsMouse || arrowHoverTimer.running
+
+        // Visible 1px border line (synced with arrow visibility)
+        Rectangle {
+            anchors.right: parent.right
+            width: 1
+            height: parent.height
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Border, UIColorState.Normal)
+            opacity: edgeZone.edgeHovered ? 1.0 : 0.0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+        }
+
+        HoverHandler {
+            id: edgeHoverHandler
+            onHoveredChanged: if (hovered) arrowHoverTimer.restart()
+        }
+
+        Timer { id: arrowHoverTimer; interval: 800 }
+
+        // Circular arrow button (centered on the right edge)
+        Rectangle {
+            id: edgeHandle
+            width: 24; height: 24; radius: 12
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.right
+            color: "transparent"
+            border { color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Arrow_Border, UIColorState.Normal); width: 1 }
+            opacity: edgeZone.edgeHovered ? 1.0 : 0.0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
+            z: 10
+
+            Text {
+                anchors.centerIn: parent
+                text: root.expanded ? "\u276E" : "\u276F"
+                font.pixelSize: 12
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Arrow_Icon, UIColorState.Normal)
+            }
+
+            MouseArea {
+                id: arrowMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.expanded = !root.expanded
+            }
+        }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 6
+        anchors.topMargin: 8
+        anchors.bottomMargin: 8
+        anchors.leftMargin: 4
+        anchors.rightMargin: 4
+        spacing: 2
 
         // Top navigation items
         ListView {
@@ -37,16 +101,15 @@ Item {
             Layout.preferredHeight: contentHeight
             model: controller.topNavItems
             spacing: 4
-            clip: true
+            clip: false
             interactive: false
 
             delegate: NavItemDelegate {
                 width: ListView.view.width
-                isSelected: model.pageId === controller.currentPageId
-                onClicked: {
-                    controller.navigateTo(model.pageId)
-                    root.pageSelected(model.pageId)
-                }
+                isSelected: pageId === controller.currentPageId
+                showText: root.expanded
+                animationDuration: root.animationDuration
+                onClicked: controller.navigateTo(pageId)
             }
         }
 
@@ -60,101 +123,17 @@ Item {
             Layout.preferredHeight: contentHeight
             model: controller.bottomNavItems
             spacing: 4
-            clip: true
+            clip: false
             interactive: false
 
             delegate: NavItemDelegate {
                 width: ListView.view.width
-                isSelected: model.pageId === controller.currentPageId
-                onClicked: {
-                    controller.navigateTo(model.pageId)
-                    root.pageSelected(model.pageId)
-                }
+                isSelected: pageId === controller.currentPageId
+                showText: root.expanded
+                animationDuration: root.animationDuration
+                onClicked: controller.navigateTo(pageId)
             }
         }
     }
 
-    // Nav item delegate component
-    component NavItemDelegate: Rectangle {
-        id: navItem
-        height: 52
-        radius: 8
-        color: isSelected ? "#E3F2FD" : (mouseArea.containsMouse ? "#F5F5F5" : "transparent")
-
-        required property int index
-        required property int pageId
-        required property string itemId
-        required property string title
-        required property var icon
-        required property var iconSelected
-        required property int badge
-        required property int state
-
-        property bool isSelected: false
-        signal clicked()
-
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 16
-            anchors.rightMargin: 16
-            spacing: 14
-
-            // Icon
-            Image {
-                id: navIcon
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
-                source: UTComponentUtil.getImageResourcePath(
-                    navItem.isSelected ? navItem.iconSelected : navItem.icon
-                )
-                sourceSize: Qt.size(24, 24)
-                fillMode: Image.PreserveAspectFit
-            }
-
-            // Label
-            Text {
-                Layout.fillWidth: true
-                text: navItem.title
-                font.pixelSize: 15
-                font.weight: navItem.isSelected ? Font.Medium : Font.Normal
-                color: navItem.isSelected ? "#1976D2" : "#424242"
-                elide: Text.ElideRight
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            // Badge
-            Rectangle {
-                visible: navItem.badge > 0
-                Layout.preferredWidth: Math.max(20, badgeText.implicitWidth + 8)
-                Layout.preferredHeight: 20
-                radius: 10
-                color: "#F44336"
-
-                Text {
-                    id: badgeText
-                    anchors.centerIn: parent
-                    text: navItem.badge > 99 ? "99+" : navItem.badge.toString()
-                    font.pixelSize: 12
-                    font.weight: Font.Medium
-                    color: "white"
-                }
-            }
-        }
-
-        // Disabled overlay
-        Rectangle {
-            anchors.fill: parent
-            radius: parent.radius
-            color: "#80FFFFFF"
-            visible: navItem.state === 1  // NavItemState::Disabled
-        }
-
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            hoverEnabled: true
-            enabled: navItem.state !== 1  // Not disabled
-            onClicked: navItem.clicked()
-        }
-    }
 }

@@ -17,7 +17,9 @@ public:
         BadgeRole,
         StateRole,
         PositionRole,
-        SortOrderRole
+        SortOrderRole,
+        IsEnabledRole,
+        IsVisibleRole
     };
 
     explicit NavItemModel(QObject* parent = nullptr);

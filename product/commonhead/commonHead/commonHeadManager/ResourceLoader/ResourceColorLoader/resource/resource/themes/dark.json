@@ -42,6 +42,58 @@
         "focused": "gray-400",
         "selected": "gray-400"
       }
+    },
+    {
+      "token": "sidebar-background",
+      "color": {
+        "normal": "neutral-950"
+      }
+    },
+    {
+      "token": "sidebar-item-background",
+      "color": {
+        "normal": "neutral-950",
+        "hovered": "neutral-800",
+        "pressed": "neutral-700",
+        "selected": "neutral-800"
+      }
+    },
+    {
+      "token": "sidebar-item-text",
+      "color": {
+        "normal": "neutral-400",
+        "selected": "neutral-50"
+      }
+    },
+    {
+      "token": "sidebar-border",
+      "color": {
+        "normal": "neutral-700"
+      }
+    },
+    {
+      "token": "sidebar-arrow-border",
+      "color": {
+        "normal": "neutral-600"
+      }
+    },
+    {
+      "token": "sidebar-arrow-icon",
+      "color": {
+        "normal": "neutral-400"
+      }
+    },
+    {
+      "token": "sidebar-badge-background",
+      "color": {
+        "normal": "red-500"
+      }
+    },
+    {
+      "token": "sidebar-badge-text",
+      "color": {
+        "normal": "neutral-50"
+      }
     }
   ]
 }

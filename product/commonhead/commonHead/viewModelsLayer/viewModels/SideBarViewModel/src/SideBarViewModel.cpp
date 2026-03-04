@@ -150,12 +150,6 @@ std::optional<model::NavItemData> SideBarViewModel::findNavItem(model::PageId pa
 
 // ==================== Data access ====================
 
-std::vector<model::NavItemData> SideBarViewModel::getAllNavItems() const
-{
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_navItems;
-}
-
 std::vector<model::NavItemData> SideBarViewModel::getTopNavItems() const
 {
     std::vector<model::NavItemData> result;
@@ -221,32 +215,32 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
         return false;
     }
     
-    // Check if target page exists and is available (lock released after check)
-    auto item = findNavItem(pageId);
-    if (!item.has_value())
-    {
-        COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " not found");
-        return false;
-    }
-    
-    if (!item->isEnabled())
-    {
-        COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is disabled");
-        return false;
-    }
-    
-    if (!item->isVisible())
-    {
-        COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is hidden");
-        return false;
-    }
-    
     model::PageChangeEvent event;
     
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         
-        // Already on target page
+        const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
+            [pageId](const auto& item) { return item.pageId == pageId; });
+        
+        if (it == m_navItems.end())
+        {
+            COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " not found");
+            return false;
+        }
+        
+        if (!it->isEnabled())
+        {
+            COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is disabled");
+            return false;
+        }
+        
+        if (!it->isVisible())
+        {
+            COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is hidden");
+            return false;
+        }
+        
         if (m_currentPageId == pageId)
         {
             return true;
@@ -255,7 +249,6 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
         event.fromPageId = m_currentPageId;
         event.toPageId = pageId;
         event.isUserAction = isUserAction;
-        
         m_currentPageId = pageId;
     }
     

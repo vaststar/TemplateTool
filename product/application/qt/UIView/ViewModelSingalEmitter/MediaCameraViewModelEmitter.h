@@ -1,11 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QMetaType>
-#include <mutex>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
-
-Q_DECLARE_METATYPE(commonHead::viewModels::model::VideoFrame)
+#include "RegisterViewModelMetaTypes.h"
 
 namespace UIVMSignalEmitter{
 class MediaCameraViewModelEmitter: public QObject,
@@ -16,10 +13,6 @@ public:
     MediaCameraViewModelEmitter(QObject* parent = nullptr)
         :QObject(parent)
     {
-        static std::once_flag s_registeredFlag;
-        std::call_once(s_registeredFlag, []() {
-            qRegisterMetaType<commonHead::viewModels::model::VideoFrame>();
-        });
     }
 
     virtual void onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame) override {

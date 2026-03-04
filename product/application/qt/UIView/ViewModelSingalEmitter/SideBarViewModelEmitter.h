@@ -1,13 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QMetaType>
-#include <mutex>
 #include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
-
-Q_DECLARE_METATYPE(commonHead::viewModels::model::NavItemData)
-Q_DECLARE_METATYPE(commonHead::viewModels::model::PageChangeEvent)
-Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::NavItemData>)
+#include "RegisterViewModelMetaTypes.h"
 
 namespace UIVMSignalEmitter {
 
@@ -19,12 +14,6 @@ public:
     explicit SideBarViewModelEmitter(QObject* parent = nullptr)
         : QObject(parent)
     {
-        static std::once_flag s_registeredFlag;
-        std::call_once(s_registeredFlag, []() {
-            qRegisterMetaType<commonHead::viewModels::model::NavItemData>();
-            qRegisterMetaType<commonHead::viewModels::model::PageChangeEvent>();
-            qRegisterMetaType<std::vector<commonHead::viewModels::model::NavItemData>>();
-        });
     }
 
     void onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items) override

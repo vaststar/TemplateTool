@@ -90,8 +90,12 @@ void MainWindowSideBarController::refreshNavItems()
 
     m_topNavItems->setItems(m_sideBarViewModel->getTopNavItems());
     m_bottomNavItems->setItems(m_sideBarViewModel->getBottomNavItems());
-    m_currentPageId = static_cast<int>(m_sideBarViewModel->getCurrentPageId());
-    emit currentPageIdChanged(m_currentPageId);
+
+    if (const int newPageId = static_cast<int>(m_sideBarViewModel->getCurrentPageId()); m_currentPageId != newPageId)
+    {
+        m_currentPageId = newPageId;
+        emit currentPageIdChanged(m_currentPageId);
+    }
 }
 
 void MainWindowSideBarController::onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items)

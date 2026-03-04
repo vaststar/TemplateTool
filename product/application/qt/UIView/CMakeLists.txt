@@ -22,6 +22,7 @@ set(MODULE_SOURCE_PRIVATE
     UIViewBase/include/UIViewControllerInitializer.h
     UIViewBase/src/UIViewControllerInitializer.cpp
 
+    ViewModelSingalEmitter/RegisterViewModelMetaTypes.h
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
     ViewModelSingalEmitter/InvocationViewModelEmitter.h
     ViewModelSingalEmitter/AppUiViewModelEmitter.h
@@ -96,6 +97,7 @@ set(MODULE_QML_TARGET_FILES
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
     MainWindowFootBar/qml/MainWindowFootBar.qml
     MainWindowSideBar/qml/MainWindowSideBar.qml
+    MainWindowSideBar/qml/NavItemDelegate.qml
     MediaCameraView/qml/MediaCameraView.qml
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml

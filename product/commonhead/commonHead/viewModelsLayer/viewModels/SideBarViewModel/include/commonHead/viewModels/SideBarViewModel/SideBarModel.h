@@ -12,7 +12,8 @@ namespace commonHead::viewModels::model {
 /**
  * @brief Page ID enumeration
  */
-enum class COMMONHEAD_EXPORT PageId : uint8_t {
+enum class COMMONHEAD_EXPORT PageId : uint8_t
+{
     Unknown = 0,
     Home,           // Home page
     Contacts,       // Contacts
@@ -27,7 +28,8 @@ enum class COMMONHEAD_EXPORT PageId : uint8_t {
 /**
  * @brief Navigation item state
  */
-enum class COMMONHEAD_EXPORT NavItemState : uint8_t {
+enum class COMMONHEAD_EXPORT NavItemState : uint8_t
+{
     Normal = 0,
     Disabled,
     Hidden
@@ -36,7 +38,8 @@ enum class COMMONHEAD_EXPORT NavItemState : uint8_t {
 /**
  * @brief Navigation item position
  */
-enum class COMMONHEAD_EXPORT NavItemPosition : uint8_t {
+enum class COMMONHEAD_EXPORT NavItemPosition : uint8_t
+{
     Top = 0,        // Top area (main navigation)
     Bottom          // Bottom area (settings, help, etc.)
 };
@@ -44,7 +47,8 @@ enum class COMMONHEAD_EXPORT NavItemPosition : uint8_t {
 /**
  * @brief Navigation item data structure
  */
-struct COMMONHEAD_EXPORT NavItemData {
+struct COMMONHEAD_EXPORT NavItemData
+{
     PageId pageId = PageId::Unknown;
     std::string id;                     // Unique identifier
     std::string title;                  // Display title
@@ -55,23 +59,28 @@ struct COMMONHEAD_EXPORT NavItemData {
     NavItemPosition position = NavItemPosition::Top;
     int32_t sortOrder = 0;              // Sort weight (within same position)
     
-    bool operator==(const NavItemData& other) const {
+    bool operator==(const NavItemData& other) const
+    {
         return pageId == other.pageId;
     }
     
-    bool isEnabled() const {
+    bool isEnabled() const
+    {
         return state == NavItemState::Normal;
     }
     
-    bool isVisible() const {
+    bool isVisible() const
+    {
         return state != NavItemState::Hidden;
     }
     
-    bool isTopItem() const {
+    bool isTopItem() const
+    {
         return position == NavItemPosition::Top;
     }
     
-    bool isBottomItem() const {
+    bool isBottomItem() const
+    {
         return position == NavItemPosition::Bottom;
     }
 };
@@ -79,7 +88,8 @@ struct COMMONHEAD_EXPORT NavItemData {
 /**
  * @brief Page change event data
  */
-struct COMMONHEAD_EXPORT PageChangeEvent {
+struct COMMONHEAD_EXPORT PageChangeEvent
+{
     PageId fromPageId = PageId::Unknown;
     PageId toPageId = PageId::Unknown;
     bool isUserAction = false;

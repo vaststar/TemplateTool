@@ -12,12 +12,12 @@
 <context>
     <name>MainWindowContent</name>
     <message>
-        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="80"/>
+        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="82"/>
         <source>IopenCamera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="106"/>
+        <location filename="../../UIView/MainWindow/qml/MainWindowContent.qml" line="108"/>
         <source>Pack Logs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -39,7 +39,6 @@
     <name>QObject</name>
     <message>
         <location filename="../../UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="15"/>
-        <location filename="../../UIView/MainWindowSideBar/src/MainWindowSideBarController.cpp" line="20"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>

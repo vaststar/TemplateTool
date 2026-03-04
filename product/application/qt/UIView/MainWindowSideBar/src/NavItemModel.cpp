@@ -49,6 +49,10 @@ QVariant NavItemModel::data(const QModelIndex& index, int role) const
             return static_cast<int>(item.position);
         case SortOrderRole:
             return item.sortOrder;
+        case IsEnabledRole:
+            return item.isEnabled();
+        case IsVisibleRole:
+            return item.isVisible();
         default:
             return {};
     }
@@ -65,7 +69,9 @@ QHash<int, QByteArray> NavItemModel::roleNames() const
         {BadgeRole, "badge"},
         {StateRole, "state"},
         {PositionRole, "position"},
-        {SortOrderRole, "sortOrder"}
+        {SortOrderRole, "sortOrder"},
+        {IsEnabledRole, "isEnabled"},
+        {IsVisibleRole, "isVisible"}
     };
 }
 

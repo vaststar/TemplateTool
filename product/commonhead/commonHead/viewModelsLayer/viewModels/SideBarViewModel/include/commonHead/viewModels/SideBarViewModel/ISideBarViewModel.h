@@ -19,7 +19,8 @@ namespace commonHead::viewModels {
 /**
  * @brief SideBar ViewModel callback interface
  */
-class COMMONHEAD_EXPORT ISideBarViewModelCallback {
+class COMMONHEAD_EXPORT ISideBarViewModelCallback
+{
 public:
     ISideBarViewModelCallback() = default;
     ISideBarViewModelCallback(const ISideBarViewModelCallback&) = delete;
@@ -67,11 +68,6 @@ public:
     // ========== Data Access ==========
     
     virtual std::string getViewModelName() const override = 0;
-    
-    /**
-     * @brief Get all navigation items
-     */
-    virtual std::vector<model::NavItemData> getAllNavItems() const = 0;
     
     /**
      * @brief Get top navigation items (sorted)

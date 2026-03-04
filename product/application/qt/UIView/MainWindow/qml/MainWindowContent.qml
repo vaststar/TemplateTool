@@ -9,47 +9,11 @@ Item{
     id: mainWindowContent
     required property MainWindowController controller
 
-    // Sidebar with resizable width
+    // Sidebar with collapsible width
     MainWindowSideBar{
         id: navigationBar
-        width: 168
+        width: implicitWidth
         height: parent.height
-        
-        property int minWidth: 140
-        property int maxWidth: 280
-    }
-    
-    // Resize handle for sidebar
-    Rectangle {
-        id: resizeHandle
-        width: 4
-        height: parent.height
-        x: navigationBar.width - 2
-        color: resizeArea.containsMouse || resizeArea.pressed ? "#1976D2" : "transparent"
-        
-        MouseArea {
-            id: resizeArea
-            anchors.fill: parent
-            anchors.margins: -4
-            hoverEnabled: true
-            cursorShape: Qt.SplitHCursor
-            
-            property int startX: 0
-            property int startWidth: 0
-            
-            onPressed: (mouse) => {
-                startX = mouse.x + resizeHandle.x
-                startWidth = navigationBar.width
-            }
-            
-            onPositionChanged: (mouse) => {
-                if (pressed) {
-                    let newWidth = startWidth + (mouse.x + resizeHandle.x - startX)
-                    navigationBar.width = Math.max(navigationBar.minWidth, 
-                        Math.min(navigationBar.maxWidth, newWidth))
-                }
-            }
-        }
     }
 
     ContactList{
