@@ -16,8 +16,7 @@ function(BuildQtModule)
                        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
                        TARGET_DEFINITIONS
                        QML_TARGET_FILES QML_TARGET_SOURCES 
-                       QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES 
-                       QML_PUBLIC_BUILD_INTERFACE_FOLDER
+                       QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES
     )
     cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -80,7 +79,6 @@ function(BuildQtModule)
             message(STATUS "[BuildQtModule]   QML Sources  : ${MODULE_QML_TARGET_SOURCES}")
             message(STATUS "[BuildQtModule]   QML Res Dir  : ${MODULE_QML_TARGET_RESOURCES_DIR}")
             message(STATUS "[BuildQtModule]   QML Resources: ${MODULE_QML_TARGET_RESOURCES}")
-            message(STATUS "[BuildQtModule]   QML Pub Intf : ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER}")
         endif()
     endif()
 
@@ -193,18 +191,38 @@ function(BuildQtModule)
                 ${MODULE_QML_TARGET_SOURCES}
         )
 
-        # Add public build interface for QML plugin
-        if(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER)
-            foreach(interface_dir ${MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER})
-                target_include_directories(${MODULE_MODULE_NAME}plugin PUBLIC 
-                    $<BUILD_INTERFACE:${interface_dir}>
-                )
-                target_include_directories(${MODULE_MODULE_NAME} PUBLIC 
-                    $<BUILD_INTERFACE:${interface_dir}>
+        # Auto-resolve include directories for QML type registration code.
+        # Qt6 generates uiview_qmltyperegistrations.cpp with short-path includes
+        # (e.g. #include "AppSystemTrayController.h") which is compiled in the
+        # main target (SHARED) or plugin target (STATIC). Both need these paths.
+        set(_qml_header_include_dirs "")
+        foreach(_src ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_SOURCES})
+            if(_src MATCHES "\\.(h|hpp)$")
+                get_filename_component(_dir "${CMAKE_CURRENT_SOURCE_DIR}/${_src}" DIRECTORY)
+                list(APPEND _qml_header_include_dirs "${_dir}")
+            endif()
+        endforeach()
+        list(REMOVE_DUPLICATES _qml_header_include_dirs)
+
+        # Add to main target (for SHARED lib type registration compilation)
+        foreach(_dir ${_qml_header_include_dirs})
+            target_include_directories(${MODULE_MODULE_NAME} PRIVATE
+                $<BUILD_INTERFACE:${_dir}>
+            )
+        endforeach()
+
+        # Add to plugin target (for STATIC lib + plugin's own compilation)
+        if(TARGET ${MODULE_MODULE_NAME}plugin)
+            target_include_directories(${MODULE_MODULE_NAME}plugin PRIVATE
+                $<TARGET_PROPERTY:${MODULE_MODULE_NAME},INCLUDE_DIRECTORIES>
+            )
+            foreach(_dir ${_qml_header_include_dirs})
+                target_include_directories(${MODULE_MODULE_NAME}plugin PRIVATE
+                    $<BUILD_INTERFACE:${_dir}>
                 )
             endforeach()
         endif()
-        
+
         # Set IDE folder for QML internal targets
         SetIDEFolder(
             TARGET_NAMES
