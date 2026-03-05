@@ -53,16 +53,6 @@ QString MainWindowController::getTitle() const
     return QObject::tr("my test window aa");
 }
 
-int MainWindowController::getHeight() const
-{
-    return 576;
-}
-
-int MainWindowController::getWidth() const
-{
-    return 758;
-}
-
 bool MainWindowController::isVisible() const
 {
     return getAppContext() != nullptr;

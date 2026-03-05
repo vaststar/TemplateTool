@@ -1,51 +1,30 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-// import QtGraphicalEffects  // 提供模糊
 import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
-// import "."  // 导入当前目录的所有 QML 组件
 
 Rectangle {
     id: root
-        property MainWindowTitleBarController controller: MainWindowTitleBarController{}
+    property MainWindowTitleBarController controller: MainWindowTitleBarController{}
+    
+    color: UTComponentUtil.getPlainUIColor(UIColorToken.Titlebar_Background, UIColorState.Normal)
+    visible: controller.visible
+    required property ApplicationWindow appWindow
         
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Titlebar_Background, UIColorState.Normal)
-        visible: controller.visible
-        required property ApplicationWindow appWindow
-        
-    //     WindowAnimator {
-    //     id: windowAnimator
-    //     appWindow: appWindow
-    //     parentWindow: appWindow.contentItem
-    // }
-
-        RowLayout {
-            anchors.fill: parent
-            spacing: 10
+    RowLayout {
+        anchors.fill: parent
+        spacing: 5
         UTImageButton {
-    // source: "qrc:/qt/qml/UIView/picture/profile.png"
-    // sourceHovered: "qrc:/qt/qml/UIView/picture/profile.png"
-    // sourcePressed: "qrc:/qt/qml/UIView/picture/profile.png"
-    source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
-    sourceHovered: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
-    sourcePressed: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
             Layout.preferredWidth: parent.height - 10
             Layout.fillHeight: true
             Layout.margins: 5
-    onClicked: {
-        console.log("Image button clicked!")
-    }
-}
-
-        // UTButton {
-        //     text: "1"
-        //     onClicked: console.log("功能1")
-        //     Layout.preferredWidth: parent.height
-        //     Layout.fillHeight: true
-        //     padding: 0
-        // }
+            source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
+            onClicked: {
+                console.log("Image button clicked!")
+            }
+        }
 
         Item {
             Layout.fillWidth: true
@@ -62,94 +41,65 @@ Rectangle {
             }
         }
 
-        Button {
-            id: minimizeBtn
-            flat: true
-            text: "—"
-            enabled: appWindow !== null
-            onClicked: appWindow && appWindow.showMinimized()
-            Layout.preferredWidth: 40
+        RowLayout {
+            spacing: 0
             Layout.fillHeight: true
-            padding: 0
 
-            HoverHandler { id: minHover }
-
-            background: Rectangle {
-                color: minHover.hovered
-                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                    : "transparent"
+            UTButton {
+                id: minimizeBtn
+                text: "—"
+                enabled: appWindow !== null
+                onClicked: appWindow && appWindow.showMinimized()
+                Layout.preferredWidth: 40
+                Layout.fillHeight: true
+                padding: 0
+                focusPolicy: Qt.NoFocus
+                backgroundColorEnum: UIColorToken.Titlebar_Button_Background
+                borderWidth: 0
+                radius: 0
+                fontColorEnum: UIColorToken.Titlebar_Button_Text
             }
-            contentItem: Text {
-                text: minimizeBtn.text
-                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 14
+
+            UTButton {
+                id: maximizeBtn
+                text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "🗗" : "🗖"
+                enabled: appWindow !== null
+                onClicked: {
+                    if (!appWindow) return
+                    if (appWindow.visibility === ApplicationWindow.Maximized)
+                        appWindow.showNormal()
+                    else
+                        appWindow.showMaximized()
+                }
+                Layout.preferredWidth: 40
+                Layout.fillHeight: true
+                padding: 0
+                focusPolicy: Qt.NoFocus
+                backgroundColorEnum: UIColorToken.Titlebar_Button_Background
+                borderWidth: 0
+                radius: 0
+                fontColorEnum: UIColorToken.Titlebar_Button_Text
             }
-        }
 
-
-        Button {
-            id: maximizeBtn
-            flat: true
-            text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "🗗" : "🗖"
-            enabled: appWindow !== null
-            onClicked: {
-                if (!appWindow) return
-                if (appWindow.visibility === ApplicationWindow.Maximized)
-                    appWindow.showNormal()
-                else
-                    appWindow.showMaximized()
-            }
-            Layout.preferredWidth: 40
-            Layout.fillHeight: true
-            padding: 0
-
-            HoverHandler { id: maxHover }
-
-            background: Rectangle {
-                color: maxHover.hovered
-                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                    : "transparent"
-            }
-            contentItem: Text {
-                text: maximizeBtn.text
-                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 14
-            }
-        }
-
-        Button {
-            id: closeBtn
-            flat: true
-            text: "✕"
-            onClicked: {
-                if (appWindow)
-                    appWindow.close()
-                else
-                    Qt.quit()
-            }
-            Layout.preferredWidth: 40
-            Layout.fillHeight: true
-            padding: 0
-
-            HoverHandler { id: closeHover }
-
-            background: Rectangle {
-                color: closeHover.hovered ? "#c42b1c" : "transparent"
-            }
-            contentItem: Text {
-                text: closeBtn.text
-                color: closeHover.hovered
-                    ? "#ffffff"
-                    : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 14
+            UTButton {
+                id: closeBtn
+                text: "✕"
+                onClicked: {
+                    if (appWindow)
+                        appWindow.close()
+                    else
+                        Qt.quit()
+                }
+                Layout.preferredWidth: 40
+                Layout.fillHeight: true
+                padding: 0
+                focusPolicy: Qt.NoFocus
+                backgroundColorEnum: UIColorToken.Titlebar_Close_Background
+                borderWidth: 0
+                radius: 0
+                fontColorEnum: UIColorToken.Titlebar_Close_Text
             }
         }
-        }
+    }
 
 }

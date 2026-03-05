@@ -11,12 +11,21 @@ ApplicationWindow
     property MainWindowController controller: MainWindowController{}
 
     visible: root.controller.visible
-    width: root.controller ? root.controller.width : 100
-    height: root.controller ? root.controller.height : 100
-    flags: Qt.FramelessWindowHint|Qt.Window
+    width: 1024
+    height: 768
+    flags: Qt.FramelessWindowHint | Qt.Window
 
     title: qsTr(root.controller.title)
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
+
+    Rectangle {
+        parent: Overlay.overlay
+        anchors.fill: parent
+        z: 9999
+        color: "transparent"
+        border.width: 1
+        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Window_Border, UIColorState.Normal)
+    }
 
     menuBar: MainWindowMenuBar {
         id: menuBar
@@ -36,6 +45,7 @@ ApplicationWindow
     Loader{
         id: mainWindowContentLoader
         anchors.fill: parent
+        anchors.margins: 1
         focus: true
     }
     

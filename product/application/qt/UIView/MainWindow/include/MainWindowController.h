@@ -26,8 +26,6 @@ class MainWindowController : public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
-    Q_PROPERTY(int height READ getHeight NOTIFY windowSizeChanged)
-    Q_PROPERTY(int width READ getWidth NOTIFY windowSizeChanged)
     Q_PROPERTY(bool visible READ isVisible NOTIFY visibleChanged)
     QML_ELEMENT
 public:
@@ -35,10 +33,6 @@ public:
     ~MainWindowController();
 
     QString getTitle() const;
-    int getHeight() const;
-    int getWidth() const;
-
-
     bool isVisible() const;
 
     Q_INVOKABLE void initController(UIViewController* controller);
@@ -46,7 +40,6 @@ public:
     Q_INVOKABLE int pageIdToIndex(int pageId) const;
 signals:
     void titleChanged();
-    void windowSizeChanged();
     void visibleChanged();
     void activateWindow();
 public slots:

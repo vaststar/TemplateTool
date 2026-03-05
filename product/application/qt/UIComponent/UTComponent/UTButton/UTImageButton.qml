@@ -5,9 +5,9 @@ Item {
     width: image.width
     height: image.height
 
-    property url source: ""                // 默认图片
-    property url sourcePressed: ""         // 按下时的图片
-    property url sourceHovered: ""         // hover 时图片
+    required property url source                 // 默认图片（必填）
+    property url sourcePressed: ""                // 按下时的图片，未设置则回退 source
+    property url sourceHovered: ""                // hover 时图片，未设置则回退 source
     signal clicked()
 
     property bool pressed: false
@@ -16,8 +16,8 @@ Item {
     Image {
         id: image
         anchors.fill: parent
-        source: root.pressed && root.sourcePressed ? root.sourcePressed :
-                root.hovered && root.sourceHovered ? root.sourceHovered :
+        source: root.pressed && root.sourcePressed.toString() !== "" ? root.sourcePressed :
+                root.hovered && root.sourceHovered.toString() !== "" ? root.sourceHovered :
                 root.source
     }
 

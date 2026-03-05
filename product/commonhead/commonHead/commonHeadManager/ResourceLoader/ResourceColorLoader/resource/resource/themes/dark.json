@@ -102,6 +102,38 @@
       }
     },
     {
+      "token": "titlebar-button-background",
+      "color": {
+        "normal": "neutral-900",
+        "hovered": "neutral-700",
+        "pressed": "neutral-600"
+      }
+    },
+    {
+      "token": "titlebar-button-text",
+      "color": {
+        "normal": "neutral-400",
+        "hovered": "neutral-200",
+        "pressed": "neutral-100"
+      }
+    },
+    {
+      "token": "titlebar-close-background",
+      "color": {
+        "normal": "neutral-900",
+        "hovered": "red-600",
+        "pressed": "red-700"
+      }
+    },
+    {
+      "token": "titlebar-close-text",
+      "color": {
+        "normal": "neutral-400",
+        "hovered": "neutral-50",
+        "pressed": "neutral-50"
+      }
+    },
+    {
       "token": "footbar-background",
       "color": {
         "normal": "neutral-900"
@@ -117,6 +149,12 @@
       "token": "content-background",
       "color": {
         "normal": "neutral-800"
+      }
+    },
+    {
+      "token": "window-border",
+      "color": {
+        "normal": "neutral-700"
       }
     }
   ]
