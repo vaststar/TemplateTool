@@ -53,6 +53,7 @@ set(MODULE_QML_TARGET_FILES
     UTFocusItem/UTFocusItem.qml
     UTComponentUtil/UTComponentUtil.js
     UTQRCode/UTQRCode.qml
+    UTImage/UTIconImage.qml
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/UTMenu

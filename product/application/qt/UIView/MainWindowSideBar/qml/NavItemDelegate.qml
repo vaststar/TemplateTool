@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.impl
 import QtQuick.Layouts
 import UTComponent 1.0
 import UIResourceLoader 1.0
@@ -56,18 +55,13 @@ Rectangle {
         spacing: 8
 
         // Icon (tinted to match sidebar theme)
-        IconImage {
+        UTIconImage {
             id: navIcon
-            Layout.preferredWidth: 24
-            Layout.preferredHeight: 24
-            source: UTComponentUtil.getImageResourcePath(
-                navItem.isSelected ? navItem.iconSelected : navItem.icon
-            )
-            sourceSize: Qt.size(24, 24)
-            fillMode: Image.PreserveAspectFit
-            color: navItem.isSelected
-                ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Selected)
-                : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+            Layout.preferredWidth: iconSize
+            Layout.preferredHeight: iconSize
+            imageSourceEnum: navItem.isSelected ? navItem.iconSelected : navItem.icon
+            colorEnum: UIColorToken.Sidebar_Item_Text
+            colorState: navItem.isSelected ? UIColorState.Selected : UIColorState.Normal
         }
 
         // Label (only visible when expanded)

@@ -41,6 +41,7 @@ set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
     BaseFocusItem/BaseFocusItem.qml
     BaseQRCode/BaseQRCode.qml
+    BaseImage/BaseIconImage.qml
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/BaseQRCode

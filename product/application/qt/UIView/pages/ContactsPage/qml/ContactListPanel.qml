@@ -4,7 +4,7 @@ import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
-Item{
+Item {
     id: root
 
     required property ContactsPageController controller
@@ -39,6 +39,7 @@ Item{
         }
     }
 
+    // Tree container with clip boundary for focus ring
     Item {
         id: treeContainer
         anchors {
@@ -56,103 +57,107 @@ Item{
             clip: false
             activeFocusOnTab: true
 
-        // The model needs to be a QAbstractItemModel
-        model: controller.orgTreeModel
-        selectionModel: ItemSelectionModel {}
+            model: controller.orgTreeModel
+            selectionModel: ItemSelectionModel {}
 
+            Keys.onTabPressed: function(e) {
+                e.accepted = true;
+                const next = treeView.nextItemInFocusChain(true);
+                if (next && next !== treeView) next.forceActiveFocus(Qt.TabFocusReason);
+            }
 
-        Keys.onTabPressed: function(e) {
-            e.accepted = true; 
-            const next = treeView.nextItemInFocusChain(true);
-            if (next && next !== treeView) next.forceActiveFocus(Qt.TabFocusReason);
-        }
-        Keys.onBacktabPressed: function(e) {
-            e.accepted = true;
-            const prev = treeView.nextItemInFocusChain(false);
-            if (prev && prev !== treeView) prev.forceActiveFocus(Qt.BacktabFocusReason);
-        }
-        onActiveFocusChanged: {
-            if (activeFocus) Qt.callLater(function() {
-                if (treeView.currentRow < 0 && treeView.model && treeView.model.rowCount(treeView.rootIndex) > 0) {
-                    const idx = treeView.index(0, 0);
-                    treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Rows);
+            Keys.onBacktabPressed: function(e) {
+                e.accepted = true;
+                const prev = treeView.nextItemInFocusChain(false);
+                if (prev && prev !== treeView) prev.forceActiveFocus(Qt.BacktabFocusReason);
+            }
+
+            onActiveFocusChanged: {
+                if (activeFocus) Qt.callLater(function() {
+                    if (treeView.currentRow < 0 && treeView.model
+                            && treeView.model.rowCount(treeView.rootIndex) > 0) {
+                        const idx = treeView.index(0, 0);
+                        treeView.selectionModel.setCurrentIndex(
+                            idx, ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Rows);
+                    }
+                });
+            }
+
+            delegate: Item {
+                implicitWidth: padding + label.x + label.implicitWidth + padding
+                implicitHeight: label.implicitHeight * 1.8
+                z: (current && treeView.activeFocus) ? 1 : 0
+
+                readonly property real indentation: 8
+                readonly property real padding: 8
+
+                // Assigned to by TreeView:
+                required property TreeView treeView
+                required property bool isTreeNode
+                required property bool expanded
+                required property bool hasChildren
+                required property int depth
+                required property int row
+                required property int column
+                required property bool current
+
+                property Animation indicatorAnimation: NumberAnimation {
+                    target: indicator
+                    property: "rotation"
+                    from: expanded ? 0 : 90
+                    to: expanded ? 90 : 0
+                    duration: 100
+                    easing.type: Easing.OutQuart
                 }
-            });
-        }
 
-        delegate: Item {
-            implicitWidth: padding + label.x + label.implicitWidth + padding
-            implicitHeight: label.implicitHeight * 1.8
-            z: (current && treeView.activeFocus) ? 1 : 0
+                TableView.onPooled: indicatorAnimation.complete()
+                TableView.onReused: if (current) indicatorAnimation.start()
+                onExpandedChanged: indicator.rotation = expanded ? 90 : 0
 
-            readonly property real indentation: 20
-            readonly property real padding: 8
+                HoverHandler { id: hoverHandler }
 
-            // Assigned to by TreeView:
-            required property TreeView treeView
-            required property bool isTreeNode
-            required property bool expanded
-            required property bool hasChildren
-            required property int depth
-            required property int row
-            required property int column
-            required property bool current
+                Rectangle {
+                    id: background
+                    anchors.fill: parent
+                    color: row === treeView.currentRow
+                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
+                        : hoverHandler.hovered
+                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+                            : "transparent"
+                }
 
-            property Animation indicatorAnimation: NumberAnimation {
-                target: indicator
-                property: "rotation"
-                from: expanded ? 0 : 90
-                to: expanded ? 90 : 0
-                duration: 100
-                easing.type: Easing.OutQuart
-            }
-            TableView.onPooled: indicatorAnimation.complete()
-            TableView.onReused: if (current) indicatorAnimation.start()
-            onExpandedChanged: indicator.rotation = expanded ? 90 : 0
+                Label {
+                    id: indicator
+                    x: padding + (depth * indentation)
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: isTreeNode && hasChildren
+                    text: "▶"
+                    color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
 
-            HoverHandler { id: hoverHandler }
-
-            Rectangle {
-                id: background
-                anchors.fill: parent
-                color: row === treeView.currentRow
-                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-                    : hoverHandler.hovered
-                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                        : "transparent"
-            }
-
-            Label {
-                id: indicator
-                x: padding + (depth * indentation)
-                anchors.verticalCenter: parent.verticalCenter
-                visible: isTreeNode && hasChildren
-                text: "▶"
-                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
-
-                TapHandler {
-                    onSingleTapped: {
-                        const idx = treeView.index(row, column);
-                        treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
-                        treeView.toggleExpanded(row)
+                    TapHandler {
+                        onSingleTapped: {
+                            const idx = treeView.index(row, column);
+                            treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
+                            treeView.toggleExpanded(row);
+                        }
                     }
                 }
-            }
 
-            Label {
-                id: label
-                x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - padding - x
-                text: model.displayName
-                color: row === treeView.currentRow
-                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Selected)
-                    : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
-            }
-            UTFocusItem{
-                externallyShown: current && treeView.activeFocus
+                Label {
+                    id: label
+                    x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - padding - x
+                    text: model.displayName
+                    color: row === treeView.currentRow
+                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Selected)
+                        : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+                }
+
+                UTFocusItem {
+                    externallyShown: current && treeView.activeFocus
+                }
             }
         }
     }
-    } // treeContainer
 }
