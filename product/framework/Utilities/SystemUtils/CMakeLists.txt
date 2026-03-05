@@ -21,6 +21,10 @@ elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/SystemUtils_Mac.h
         src/SystemUtils_Mac.cpp)
+elseif (UNIX)
+    list(APPEND MODULE_SOURCE_PRIVATE
+        src/SystemUtils_Linux.h
+        src/SystemUtils_Linux.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
