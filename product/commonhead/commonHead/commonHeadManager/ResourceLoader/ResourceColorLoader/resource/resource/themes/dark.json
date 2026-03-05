@@ -156,6 +156,31 @@
       "color": {
         "normal": "neutral-700"
       }
+    },
+    {
+      "token": "link-text",
+      "color": {
+        "normal": "blue-400",
+        "hovered": "blue-300"
+      }
+    },
+    {
+      "token": "tooltip-background",
+      "color": {
+        "normal": "neutral-800"
+      }
+    },
+    {
+      "token": "tooltip-text",
+      "color": {
+        "normal": "neutral-50"
+      }
+    },
+    {
+      "token": "tooltip-border",
+      "color": {
+        "normal": "neutral-600"
+      }
     }
   ]
 }

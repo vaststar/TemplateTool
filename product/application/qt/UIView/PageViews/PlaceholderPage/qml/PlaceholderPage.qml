@@ -6,10 +6,10 @@ Item {
     id: placeholderPage
     property string pageTitle: "未实现"
 
-    Text {
+    UTText {
         anchors.centerIn: parent
         text: pageTitle
-        font.pixelSize: 20
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+        fontEnum: UIFontToken.Subtitle_Text
+        colorEnum: UIColorToken.Sidebar_Item_Text
     }
 }

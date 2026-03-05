@@ -40,8 +40,11 @@ set(MODULE_QML_TARGET_URI
 set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
     BaseFocusItem/BaseFocusItem.qml
+    BaseLabel/BaseLabel.qml
     BaseQRCode/BaseQRCode.qml
     BaseImage/BaseIconImage.qml
+    BaseText/BaseText.qml
+    BaseToolTip/BaseToolTip.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

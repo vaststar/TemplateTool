@@ -45,6 +45,69 @@
         "fontWeight": "Normal",
         "italic": false
       }
+    },
+    {
+      "token": "badge-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Micro",
+        "fontWeight": "Medium",
+        "italic": false
+      }
+    },
+    {
+      "token": "section-label",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Mini",
+        "fontWeight": "Bold",
+        "italic": false
+      }
+    },
+    {
+      "token": "caption-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "ExtraSmall",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "body-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Body",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "body-text-medium",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Small",
+        "fontWeight": "Medium",
+        "italic": false
+      }
+    },
+    {
+      "token": "heading-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Heading",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "subtitle-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Medium",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     }
   ]
 }

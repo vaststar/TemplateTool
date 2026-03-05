@@ -8,10 +8,10 @@ Item {
 
     required property ContactsPageController controller
 
-    Text {
+    UTText {
         anchors.centerIn: parent
         text: "选择联系人查看详情"
-        font.pixelSize: 16
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+        fontEnum: UIFontToken.Window_Body_Primary
+        colorEnum: UIColorToken.Sidebar_Item_Text
     }
 }

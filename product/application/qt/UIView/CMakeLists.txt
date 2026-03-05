@@ -37,7 +37,9 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/HomePage/include/HomePageController.h
     PageViews/HomePage/src/HomePageController.cpp
     PageViews/SettingsPage/include/SettingsPageController.h
+    PageViews/SettingsPage/include/SettingsNavModel.h
     PageViews/SettingsPage/src/SettingsPageController.cpp
+    PageViews/SettingsPage/src/SettingsNavModel.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
@@ -100,6 +102,9 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ContactsPage/qml/ContactListPanel.qml
     PageViews/ContactsPage/qml/ContactDetailPanel.qml
     PageViews/SettingsPage/qml/SettingsPage.qml
+    PageViews/SettingsPage/qml/SettingsNavPanel.qml
+    PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml
+    PageViews/SettingsPage/qml/LanguageSettingsPanel.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowTitleBar/qml/WindowAnimator.qml

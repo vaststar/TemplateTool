@@ -69,10 +69,15 @@
     "Black": 900
   },
   "FontSize": {
+    "Micro": 8,
+    "Tiny": 9,
+    "Mini": 11,
     "ExtraSmall": 12,
+    "Body": 13,
     "Small": 14,
     "MediumSmall": 16,
     "Medium": 20,
+    "Heading": 24,
     "Large": 26,
     "ExtraLarge": 40
   }

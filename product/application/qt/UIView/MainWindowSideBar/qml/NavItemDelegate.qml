@@ -65,16 +65,13 @@ Rectangle {
         }
 
         // Label (only visible when expanded)
-        Text {
+        UTText {
             Layout.fillWidth: true
             text: navItem.title
-            font.pixelSize: 14
+            fontEnum: UIFontToken.Body_Text_Medium
+            colorEnum: UIColorToken.Sidebar_Item_Text
+            colorState: navItem.isSelected ? UIColorState.Selected : UIColorState.Normal
             font.weight: navItem.isSelected ? Font.Medium : Font.Normal
-            color: navItem.isSelected
-                   ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Selected)
-                   : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
-            elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
             visible: opacity > 0
             opacity: navItem.showText ? 1.0 : 0.0
 
@@ -104,13 +101,13 @@ Rectangle {
         x: navItem.showText ? (navItem.width - width - 8) : (9 + 24 - 6)
         y: navItem.showText ? (navItem.height - height) / 2 : (((navItem.height - 24) / 2) - 4)
 
-        Text {
+        UTText {
             id: badgeText
             anchors.centerIn: parent
             text: navItem.badge > 99 ? "99+" : navItem.badge.toString()
+            fontEnum: UIFontToken.Badge_Text
+            colorEnum: UIColorToken.Sidebar_Badge_Text
             font.pixelSize: navItem.showText ? 9 : 8
-            font.weight: Font.Medium
-            color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Badge_Text, UIColorState.Normal)
         }
     }
 
@@ -140,9 +137,10 @@ Rectangle {
     }
 
     // Tooltip when collapsed
-    ToolTip {
+    UTToolTip {
         visible: !navItem.showText && delegateMouseArea.containsMouse && navItem.isVisible
         text: navItem.title
-        delay: 500
+        cursorX: delegateMouseArea.mouseX
+        cursorY: delegateMouseArea.mouseY
     }
 }

@@ -26,16 +26,16 @@ Item {
         height: 40
         color: "transparent"
 
-        Text {
+        UTText {
             anchors {
                 left: parent.left
                 leftMargin: 12
                 verticalCenter: parent.verticalCenter
             }
             text: "联系人列表"
-            font.pixelSize: 14
+            fontEnum: UIFontToken.Body_Text_Medium
+            colorEnum: UIColorToken.Sidebar_Item_Text
             font.bold: true
-            color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
         }
     }
 
@@ -126,13 +126,14 @@ Item {
                             : "transparent"
                 }
 
-                Label {
+                UTLabel {
                     id: indicator
                     x: padding + (depth * indentation)
                     anchors.verticalCenter: parent.verticalCenter
                     visible: isTreeNode && hasChildren
                     text: "▶"
-                    color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+                    fontEnum: UIFontToken.Caption_Text
+                    colorEnum: UIColorToken.Sidebar_Item_Text
 
                     TapHandler {
                         onSingleTapped: {
@@ -143,15 +144,15 @@ Item {
                     }
                 }
 
-                Label {
+                UTLabel {
                     id: label
                     x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - padding - x
                     text: model.displayName
-                    color: row === treeView.currentRow
-                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Selected)
-                        : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+                    fontEnum: UIFontToken.Body_Text
+                    colorEnum: UIColorToken.Sidebar_Item_Text
+                    colorState: row === treeView.currentRow ? UIColorState.Selected : UIColorState.Normal
                 }
 
                 UTFocusItem {

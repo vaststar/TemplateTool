@@ -20,12 +20,11 @@ ToolBar {
             contentItem: Text { text: parent.text; color: UTComponentUtil.getPlainUIColor(UIColorToken.Footbar_Text, UIColorState.Normal); horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             onClicked: stack.pop()
         }
-        Label {
+        UTLabel {
             text: qsTr(root.controller.footerName)
-            color: UTComponentUtil.getPlainUIColor(UIColorToken.Footbar_Text, UIColorState.Normal)
-            elide: Label.ElideRight
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Footbar_Text
             horizontalAlignment: Qt.AlignHCenter
-            verticalAlignment: Qt.AlignVCenter
             Layout.fillWidth: true
         }
         ToolButton {

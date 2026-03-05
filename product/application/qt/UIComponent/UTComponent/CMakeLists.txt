@@ -54,6 +54,9 @@ set(MODULE_QML_TARGET_FILES
     UTComponentUtil/UTComponentUtil.js
     UTQRCode/UTQRCode.qml
     UTImage/UTIconImage.qml
+    UTLabel/UTLabel.qml
+    UTText/UTText.qml
+    UTToolTip/UTToolTip.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

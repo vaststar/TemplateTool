@@ -29,6 +29,15 @@ Rectangle {
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
+
+            UTText {
+                anchors.centerIn: parent
+                text: qsTr(controller.title)
+                fontEnum: UIFontToken.Body_Text
+                colorEnum: UIColorToken.Titlebar_Button_Text
+                maximumLineCount: 1
+            }
+
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.ArrowCursor

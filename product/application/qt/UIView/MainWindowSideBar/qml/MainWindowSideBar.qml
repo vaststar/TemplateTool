@@ -69,11 +69,11 @@ Item {
             Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
             z: 10
 
-            Text {
+            UTText {
                 anchors.centerIn: parent
                 text: root.expanded ? "\u276E" : "\u276F"
-                font.pixelSize: 12
-                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Arrow_Icon, UIColorState.Normal)
+                fontEnum: UIFontToken.Caption_Text
+                colorEnum: UIColorToken.Sidebar_Arrow_Icon
             }
 
             MouseArea {

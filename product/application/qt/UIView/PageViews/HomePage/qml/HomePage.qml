@@ -7,10 +7,24 @@ Item {
     id: homePage
     property HomePageController controller: HomePageController {}
 
-    Text {
+    Column {
         anchors.centerIn: parent
-        text: "首页"
-        font.pixelSize: 24
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal)
+        spacing: 16
+
+        UTText {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "首页"
+            fontEnum: UIFontToken.Heading_Text
+            colorEnum: UIColorToken.Sidebar_Item_Text
+        }
+
+        UTLabel {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: '点击访问 <a href="https://www.qt.io">Qt 官网</a> 了解更多'
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Sidebar_Item_Text
+            linkColorEnum: UIColorToken.Link_Text
+            onLinkActivated: (link) => Qt.openUrlExternally(link)
+        }
     }
 }
