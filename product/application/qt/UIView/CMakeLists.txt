@@ -30,14 +30,14 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/StabilityViewModelEmitter.h
     ViewModelSingalEmitter/SideBarViewModelEmitter.h
 
-    pages/ContactsPage/include/ContactListItemModel.h
-    pages/ContactsPage/include/ContactsPageController.h
-    pages/ContactsPage/src/ContactListItemModel.cpp
-    pages/ContactsPage/src/ContactsPageController.cpp
-    pages/HomePage/include/HomePageController.h
-    pages/HomePage/src/HomePageController.cpp
-    pages/SettingsPage/include/SettingsPageController.h
-    pages/SettingsPage/src/SettingsPageController.cpp
+    PageViews/ContactsPage/include/ContactListItemModel.h
+    PageViews/ContactsPage/include/ContactsPageController.h
+    PageViews/ContactsPage/src/ContactListItemModel.cpp
+    PageViews/ContactsPage/src/ContactsPageController.cpp
+    PageViews/HomePage/include/HomePageController.h
+    PageViews/HomePage/src/HomePageController.cpp
+    PageViews/SettingsPage/include/SettingsPageController.h
+    PageViews/SettingsPage/src/SettingsPageController.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
@@ -95,12 +95,12 @@ set(MODULE_QML_TARGET_URI
     ${MODULE_MODULE_NAME}
 )
 set(MODULE_QML_TARGET_FILES
-    pages/HomePage/qml/HomePage.qml
-    pages/ContactsPage/qml/ContactsPage.qml
-    pages/ContactsPage/qml/ContactListPanel.qml
-    pages/ContactsPage/qml/ContactDetailPanel.qml
-    pages/SettingsPage/qml/SettingsPage.qml
-    pages/PlaceholderPage/qml/PlaceholderPage.qml
+    PageViews/HomePage/qml/HomePage.qml
+    PageViews/ContactsPage/qml/ContactsPage.qml
+    PageViews/ContactsPage/qml/ContactListPanel.qml
+    PageViews/ContactsPage/qml/ContactDetailPanel.qml
+    PageViews/SettingsPage/qml/SettingsPage.qml
+    PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowTitleBar/qml/WindowAnimator.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
@@ -114,9 +114,9 @@ set(MODULE_QML_TARGET_FILES
 )
 set(MODULE_QML_PUBLIC_BUILD_INTERFACE_FOLDER
     ${CMAKE_CURRENT_SOURCE_DIR}/UIViewBase/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/pages/ContactsPage/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/pages/HomePage/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/pages/SettingsPage/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/PageViews/ContactsPage/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/PageViews/HomePage/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/PageViews/SettingsPage/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowTitleBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowMenuBar/include
     ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowFootBar/include

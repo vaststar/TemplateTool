@@ -19,9 +19,9 @@
 #include "MediaCameraView/include/MediaCameraViewController.h"
 #include "ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
 
-#include "pages/ContactsPage/include/ContactsPageController.h"
-#include "pages/HomePage/include/HomePageController.h"
-#include "pages/SettingsPage/include/SettingsPageController.h"
+#include "PageViews/ContactsPage/include/ContactsPageController.h"
+#include "PageViews/HomePage/include/HomePageController.h"
+#include "PageViews/SettingsPage/include/SettingsPageController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)

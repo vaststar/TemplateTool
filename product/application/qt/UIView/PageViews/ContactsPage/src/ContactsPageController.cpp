@@ -1,4 +1,4 @@
-#include "pages/ContactsPage/include/ContactsPageController.h"
+#include "PageViews/ContactsPage/include/ContactsPageController.h"
 #include "LoggerDefine/LoggerDefine.h"
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>

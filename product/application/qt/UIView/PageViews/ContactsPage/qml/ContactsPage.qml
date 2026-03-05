@@ -14,7 +14,7 @@ Item {
             top: parent.top
             bottom: parent.bottom
         }
-        width: 300
+        width: 200
     }
 
     // Right panel: contact details (placeholder)

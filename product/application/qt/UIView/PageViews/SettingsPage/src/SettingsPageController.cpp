@@ -1,4 +1,4 @@
-#include "pages/SettingsPage/include/SettingsPageController.h"
+#include "PageViews/SettingsPage/include/SettingsPageController.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 SettingsPageController::SettingsPageController(QObject* parent)

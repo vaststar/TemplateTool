@@ -1,4 +1,4 @@
-#include "pages/HomePage/include/HomePageController.h"
+#include "PageViews/HomePage/include/HomePageController.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 HomePageController::HomePageController(QObject* parent)
