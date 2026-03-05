@@ -45,6 +45,8 @@ public:
 
     virtual Q_INVOKABLE QString getImageResourcePath(UIAssetImageToken::AssetImageToken imageToken) = 0;
     virtual Q_INVOKABLE QString getVideoResourcePath(UIAssetVideoToken::AssetVideoToken videoToken) = 0;
+
+    virtual void notifyThemeChanged() = 0;
 public:
     static std::unique_ptr<IUIResourceLoaderManager> createInstance(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 };

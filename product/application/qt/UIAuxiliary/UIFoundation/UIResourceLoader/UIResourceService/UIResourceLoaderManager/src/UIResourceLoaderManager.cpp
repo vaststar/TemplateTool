@@ -173,4 +173,10 @@ QString UIResourceLoaderManager::getVideoResourcePath(UIAssetVideoToken::AssetVi
     UIResourceLoaderManager_LOG_WARN("no resourceLoader");
     return {};
 }
+
+void UIResourceLoaderManager::notifyThemeChanged()
+{
+    ++mThemeRevision;
+    emit themeRevisionChanged();
+}
 }

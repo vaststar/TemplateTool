@@ -26,6 +26,7 @@ class UIResourceLoaderManager final: public IUIResourceLoaderManager
 Q_OBJECT
 QML_ELEMENT
 QML_UNCREATABLE("Cannot create a UIResourceLoaderManager instance. It should create by C++")
+    Q_PROPERTY(int themeRevision READ themeRevision NOTIFY themeRevisionChanged)
 public:
     explicit UIResourceLoaderManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~UIResourceLoaderManager();
@@ -43,10 +44,16 @@ public:
     
     virtual Q_INVOKABLE QString getImageResourcePath(UIAssetImageToken::AssetImageToken imageToken) override;
     virtual Q_INVOKABLE QString getVideoResourcePath(UIAssetVideoToken::AssetVideoToken videoToken) override;
+
+    int themeRevision() const { return mThemeRevision; }
+    void notifyThemeChanged() override;
+signals:
+    void themeRevisionChanged();
 private:
     void registerTypes();
 private:
     class Impl;
     std::unique_ptr<Impl> mImpl;
+    int mThemeRevision = 0;
 };
 }

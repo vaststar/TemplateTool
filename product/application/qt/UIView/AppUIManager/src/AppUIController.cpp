@@ -10,6 +10,10 @@
 #include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>
 #include <UIManager/ITranslatorManager.h>
+#include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
+
+#include <QGuiApplication>
+#include <QStyleHints>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -68,6 +72,16 @@ void AppUIController::onDatabaseInitialized()
 
     UIVIEW_LOG_DEBUG("2, load theme after database initialized");
     UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
+
+    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
+        auto clientInfoVM = mAppContext->getViewModelFactory()->createClientInfoViewModelInstance();
+        UIVIEW_LOG_DEBUG("system color scheme changed, CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
+        if (clientInfoVM->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
+        {
+            UIVIEW_LOG_DEBUG("system color scheme changed, notifying theme refresh");
+            mAppContext->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
+        }
+    });
 }
 
 void AppUIController::startApp()

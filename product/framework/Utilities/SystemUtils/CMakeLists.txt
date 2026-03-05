@@ -1,34 +1,38 @@
 include(BuildModule)
 
-set(MODULE_MODULE_NAME ResourceLoader)
-set(MODULE_IDE_FOLDER commonhead)
+set(MODULE_MODULE_NAME SystemUtils)
+set(MODULE_IDE_FOLDER framework/Utilities)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(MODULE_HEADER_FILES #for include and install header
-    include/commonHead/ResourceLoader/IResourceLoader.h
+set(MODULE_HEADER_FILES
+    include/ucf/Utilities/SystemUtils/SystemUtils.h
 )
 
 set(MODULE_SOURCE_PRIVATE
-    src/ResourceLoader.h
-    src/ResourceLoader.cpp
-)
-set(MODULE_DEPENDENCIES_PUBLIC
-    CommonHeadCommonFile
-    ResourceStringLoader
-    ResourceColorLoader
-    ResourceFontLoader
-    ResourceAssetLoader
-)
-set(MODULE_DEPENDENCIES_PRIVATE
-    ClientInfoService
-    CoreFramework
-    SystemUtils
+    src/SystemUtils.cpp
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} )
+if (WIN32)
+    list(APPEND MODULE_SOURCE_PRIVATE
+        src/SystemUtils_Win.h
+        src/SystemUtils_Win.cpp)
+elseif (APPLE)
+    list(APPEND MODULE_SOURCE_PRIVATE
+        src/SystemUtils_Mac.h
+        src/SystemUtils_Mac.cpp)
+endif()
+
+set(MODULE_DEPENDENCIES_PUBLIC
+    UtilitiesCommonFile
+)
+
+set(MODULE_DEPENDENCIES_PRIVATE
+)
+
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src )
+set(MODULE_BUILD_PRIVATE_DIR src)
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
@@ -40,7 +44,6 @@ TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
-TARGET_DEFINITIONS ${ADD_COMMONHEAD_DEFINITIONS}
+TARGET_DEFINITIONS ${ADD_UTILITIES_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
-

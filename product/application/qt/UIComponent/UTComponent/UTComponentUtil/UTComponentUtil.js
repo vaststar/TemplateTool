@@ -9,11 +9,13 @@ function computeColorState(widget) {
 }
 
 function getItemUIColor(widget, colorEnum) {
+    void(UIResourceLoaderManager ? UIResourceLoaderManager.themeRevision : 0);
     const colorState = computeColorState(widget);
     return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColor(colorEnum, colorState) : {};
 }
 
 function getPlainUIColor(colorEnum, colorState) {
+    void(UIResourceLoaderManager ? UIResourceLoaderManager.themeRevision : 0);
     return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColor(colorEnum, colorState) : {};
 }
 

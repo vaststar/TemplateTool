@@ -5,6 +5,7 @@
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+#include <ucf/Utilities/SystemUtils/SystemUtils.h>
 #include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 #include <commonHead/ResourceColorLoader/IResourceColorLoader.h>
 #include <commonHead/ResourceFontLoader/IResourceFontLoader.h>
@@ -66,6 +67,10 @@ model::ColorThemeType ResourceLoader::getCurrentColorThemeType() const
         return model::ColorThemeType::Light;
     case ucf::service::model::ThemeType::Dark:
         return model::ColorThemeType::Dark;
+    case ucf::service::model::ThemeType::SystemDefault:
+        return (ucf::utilities::SystemUtils::getSystemColorScheme() == ucf::utilities::SystemColorScheme::Dark)
+            ? model::ColorThemeType::Dark
+            : model::ColorThemeType::Light;
     default:
         return model::ColorThemeType::Light;
     }

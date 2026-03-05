@@ -12,8 +12,13 @@
 <context>
     <name>AppearanceSettingsPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="20"/>
-        <source>Theme</source>
+        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="22"/>
+        <source>Themes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="29"/>
+        <source>Choose how you want the app to look.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -104,38 +109,38 @@
 <context>
     <name>SettingsPageController</name>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="87"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="89"/>
         <source>Appearance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="87"/>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="88"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="89"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="90"/>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="88"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="90"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="134"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="136"/>
         <source>System Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="135"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="137"/>
         <source>Dark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="136"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="138"/>
         <source>Light</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="137"/>
+        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="139"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>

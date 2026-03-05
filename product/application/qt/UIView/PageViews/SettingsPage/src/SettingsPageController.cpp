@@ -8,6 +8,7 @@
 #include <UIManager/IUIManagerProvider.h>
 #include <UIManager/ITranslatorManager.h>
 #include <UIManager/UILanguage.h>
+#include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)
@@ -62,6 +63,7 @@ void SettingsPageController::setTheme(int index)
     UIVIEW_LOG_DEBUG("setTheme index:" << index << " themeType:" << mThemeValues[static_cast<size_t>(index)]);
 
     mClientInfoViewModel->setCurrentThemeType(themeType);
+    getAppContext()->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
     mCurrentThemeIndex = index;
     emit currentThemeIndexChanged();
 }

@@ -4,13 +4,13 @@
     {
       "token": "main-window-background",
       "color": {
-        "normal": "neutral-900"
+        "normal": "gray-50"
       }
     },
     {
       "token": "focus-outline",
       "color": {
-        "normal": "blue-700"
+        "normal": "blue-500"
       }
     },
     {
@@ -22,65 +22,65 @@
     {
       "token": "button-primary-background",
       "color": {
-        "normal": "gray-950",
-        "hovered": "gray-700",
-        "pressed": "gray-600",
-        "disabled": "gray-600",
-        "checked": "gray-950",
-        "focused": "gray-950",
-        "selected": "gray-950"
+        "normal": "blue-600",
+        "hovered": "blue-700",
+        "pressed": "blue-800",
+        "disabled": "gray-300",
+        "checked": "blue-600",
+        "focused": "blue-600",
+        "selected": "blue-600"
       }
     },
     {
       "token": "button-primary-border",
       "color": {
-        "normal": "gray-400",
-        "hovered": "gray-400",
-        "pressed": "gray-400",
-        "disabled": "gray-400",
-        "checked": "gray-400",
-        "focused": "gray-400",
-        "selected": "gray-400"
+        "normal": "blue-600",
+        "hovered": "blue-700",
+        "pressed": "blue-800",
+        "disabled": "gray-300",
+        "checked": "blue-600",
+        "focused": "blue-600",
+        "selected": "blue-600"
       }
     },
     {
       "token": "sidebar-background",
       "color": {
-        "normal": "neutral-900"
+        "normal": "gray-50"
       }
     },
     {
       "token": "sidebar-item-background",
       "color": {
-        "normal": "neutral-900",
-        "hovered": "neutral-800",
-        "pressed": "neutral-700",
-        "selected": "neutral-800"
+        "normal": "gray-50",
+        "hovered": "gray-100",
+        "pressed": "gray-200",
+        "selected": "blue-50"
       }
     },
     {
       "token": "sidebar-item-text",
       "color": {
-        "normal": "neutral-400",
-        "selected": "neutral-50"
+        "normal": "gray-500",
+        "selected": "gray-900"
       }
     },
     {
       "token": "sidebar-border",
       "color": {
-        "normal": "neutral-700"
+        "normal": "gray-200"
       }
     },
     {
       "token": "sidebar-arrow-border",
       "color": {
-        "normal": "neutral-600"
+        "normal": "gray-300"
       }
     },
     {
       "token": "sidebar-arrow-icon",
       "color": {
-        "normal": "neutral-400"
+        "normal": "gray-400"
       }
     },
     {
@@ -92,94 +92,94 @@
     {
       "token": "sidebar-badge-text",
       "color": {
-        "normal": "neutral-50"
+        "normal": "gray-50"
       }
     },
     {
       "token": "titlebar-background",
       "color": {
-        "normal": "neutral-900"
+        "normal": "gray-50"
       }
     },
     {
       "token": "titlebar-button-background",
       "color": {
-        "normal": "neutral-900",
-        "hovered": "neutral-700",
-        "pressed": "neutral-600"
+        "normal": "gray-50",
+        "hovered": "gray-200",
+        "pressed": "gray-300"
       }
     },
     {
       "token": "titlebar-button-text",
       "color": {
-        "normal": "neutral-400",
-        "hovered": "neutral-200",
-        "pressed": "neutral-100"
+        "normal": "gray-500",
+        "hovered": "gray-700",
+        "pressed": "gray-800"
       }
     },
     {
       "token": "titlebar-close-background",
       "color": {
-        "normal": "neutral-900",
-        "hovered": "red-600",
-        "pressed": "red-700"
+        "normal": "gray-50",
+        "hovered": "red-500",
+        "pressed": "red-600"
       }
     },
     {
       "token": "titlebar-close-text",
       "color": {
-        "normal": "neutral-400",
-        "hovered": "neutral-50",
-        "pressed": "neutral-50"
+        "normal": "gray-500",
+        "hovered": "gray-50",
+        "pressed": "gray-50"
       }
     },
     {
       "token": "footbar-background",
       "color": {
-        "normal": "neutral-900"
+        "normal": "gray-50"
       }
     },
     {
       "token": "footbar-text",
       "color": {
-        "normal": "neutral-400"
+        "normal": "gray-600"
       }
     },
     {
       "token": "content-background",
       "color": {
-        "normal": "neutral-800"
+        "normal": "gray-100"
       }
     },
     {
       "token": "window-border",
       "color": {
-        "normal": "neutral-700"
+        "normal": "gray-200"
       }
     },
     {
       "token": "link-text",
       "color": {
-        "normal": "blue-400",
-        "hovered": "blue-300"
+        "normal": "blue-600",
+        "hovered": "blue-700"
       }
     },
     {
       "token": "tooltip-background",
       "color": {
-        "normal": "neutral-800"
+        "normal": "gray-800"
       }
     },
     {
       "token": "tooltip-text",
       "color": {
-        "normal": "neutral-50"
+        "normal": "gray-50"
       }
     },
     {
       "token": "tooltip-border",
       "color": {
-        "normal": "neutral-600"
+        "normal": "gray-700"
       }
     }
   ]
