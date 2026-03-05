@@ -57,6 +57,10 @@ Item {
             clip: false
             activeFocusOnTab: true
 
+            onVisibleChanged: {
+                if (visible) forceActiveFocus()
+            }
+
             model: controller.orgTreeModel
             selectionModel: ItemSelectionModel {}
 

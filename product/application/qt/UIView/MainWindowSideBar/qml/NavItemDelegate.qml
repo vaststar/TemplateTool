@@ -33,7 +33,7 @@ Rectangle {
     signal clicked()
 
     onIsSelectedChanged: {
-        if (isSelected) {
+        if (isSelected && activeFocus) {
             forceActiveFocus()
         }
     }
