@@ -71,7 +71,7 @@ Rectangle {
 
             UTButton {
                 id: maximizeBtn
-                text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "🗗" : "🗖"
+                text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "❐" : "□"
                 enabled: appWindow !== null
                 onClicked: {
                     if (!appWindow) return

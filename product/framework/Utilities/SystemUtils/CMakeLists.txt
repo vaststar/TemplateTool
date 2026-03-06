@@ -20,7 +20,7 @@ if (WIN32)
 elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/SystemUtils_Mac.h
-        src/SystemUtils_Mac.cpp)
+        src/SystemUtils_Mac.mm)
 elseif (UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/SystemUtils_Linux.h
@@ -33,6 +33,10 @@ set(MODULE_DEPENDENCIES_PUBLIC
 
 set(MODULE_DEPENDENCIES_PRIVATE
 )
+
+if (APPLE)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE "-framework AppKit")
+endif()
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

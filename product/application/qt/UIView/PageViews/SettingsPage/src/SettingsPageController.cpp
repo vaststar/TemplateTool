@@ -62,10 +62,11 @@ void SettingsPageController::setTheme(int index)
     auto themeType = static_cast<commonHead::viewModels::model::ThemeType>(mThemeValues[static_cast<size_t>(index)]);
     UIVIEW_LOG_DEBUG("setTheme index:" << index << " themeType:" << mThemeValues[static_cast<size_t>(index)]);
 
-    mClientInfoViewModel->setCurrentThemeType(themeType);
-    getAppContext()->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
     mCurrentThemeIndex = index;
     emit currentThemeIndexChanged();
+
+    mClientInfoViewModel->setCurrentThemeType(themeType);
+    getAppContext()->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
 }
 
 void SettingsPageController::setLanguage(int index)
@@ -76,10 +77,11 @@ void SettingsPageController::setLanguage(int index)
     auto langType = static_cast<commonHead::viewModels::model::LanguageType>(mLanguageValues[static_cast<size_t>(index)]);
     UIVIEW_LOG_DEBUG("setLanguage index:" << index << " langType:" << mLanguageValues[static_cast<size_t>(index)]);
 
-    mClientInfoViewModel->setApplicationLanguage(langType);
-    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(langType));
     mCurrentLanguageIndex = index;
     emit currentLanguageIndexChanged();
+    
+    mClientInfoViewModel->setApplicationLanguage(langType);
+    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(langType));
 }
 
 void SettingsPageController::buildNavModel()
