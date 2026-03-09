@@ -4,11 +4,11 @@
 #include <QtQml>
 
 namespace commonHead::viewModels::model {
-    class ISettingsTree;
-    class ISettingsTreeNode;
+    class IToolsTree;
+    class IToolsTreeNode;
 }
 
-class SettingsTreeModel : public QAbstractItemModel
+class ToolsTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
     QML_ELEMENT
@@ -21,10 +21,10 @@ public:
         PanelTypeRole
     };
 
-    explicit SettingsTreeModel(QObject* parent = nullptr);
-    ~SettingsTreeModel() override;
+    explicit ToolsTreeModel(QObject* parent = nullptr);
+    ~ToolsTreeModel() override;
 
-    void setTree(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree);
+    void setTree(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree);
 
     // QAbstractItemModel interface
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -36,7 +36,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    commonHead::viewModels::model::ISettingsTreeNode* nodeFromIndex(const QModelIndex& index) const;
+    commonHead::viewModels::model::IToolsTreeNode* nodeFromIndex(const QModelIndex& index) const;
 
-    std::shared_ptr<commonHead::viewModels::model::ISettingsTree> m_tree;
+    std::shared_ptr<commonHead::viewModels::model::IToolsTree> m_tree;
 };

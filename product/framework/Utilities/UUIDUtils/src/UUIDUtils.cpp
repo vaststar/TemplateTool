@@ -60,7 +60,7 @@ bool UUIDUtils::isValidUUID(const std::string& str)
                 return false;
             }
         }
-        else if (std::isxdigit(str[i]))
+        else if (!std::isxdigit(str[i]))
         {
             return false;
         }

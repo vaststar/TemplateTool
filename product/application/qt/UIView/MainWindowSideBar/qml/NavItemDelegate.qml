@@ -38,12 +38,6 @@ Rectangle {
         }
     }
 
-    Component.onCompleted: {
-        if (isSelected) {
-            forceActiveFocus()
-        }
-    }
-
     Keys.onReturnPressed: navItem.clicked()
     Keys.onEnterPressed: navItem.clicked()
     Keys.onSpacePressed: navItem.clicked()

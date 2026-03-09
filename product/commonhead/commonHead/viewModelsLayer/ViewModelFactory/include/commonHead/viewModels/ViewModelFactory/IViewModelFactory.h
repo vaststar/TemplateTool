@@ -19,6 +19,7 @@ namespace commonHead::viewModels{
     class ISettingsViewModel;
     class ISideBarViewModel;
     class IStabilityViewModel;
+    class IToolsViewModel;
 }
 
 namespace commonHead::viewModels{
@@ -42,6 +43,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const = 0;
 
 public:
     static std::shared_ptr<IViewModelFactory> createInstance(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);

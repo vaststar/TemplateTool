@@ -38,7 +38,7 @@ Item {
         ContactsPage { id: contactsPage }                    // index 1
         PlaceholderPage { pageTitle: "计划" }                 // index 2
         PlaceholderPage { pageTitle: "证件" }                 // index 3
-        PlaceholderPage { pageTitle: "工具" }                 // index 4
+        ToolsPage { id: toolsPage }                          // index 4
         SettingsPage { id: settingsPage }                     // index 5
         PlaceholderPage { pageTitle: "帮助" }                 // index 6
         PlaceholderPage { pageTitle: "关于" }                 // index 7
@@ -52,6 +52,7 @@ Item {
         controller.setupController(navigationBar.controller)
         controller.setupController(homePage.controller)
         controller.setupController(contactsPage.controller)
+        controller.setupController(toolsPage.controller)
         controller.setupController(settingsPage.controller)
     }
 }

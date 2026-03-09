@@ -1,18 +1,17 @@
-#include "PageViews/SettingsPage/include/SettingsTreeModel.h"
+#include "PageViews/ToolsPage/include/ToolsTreeModel.h"
 
-#include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
-#include <UIResourceAssetLoader/UIResourceAssetLoader.h>
+#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
 
-SettingsTreeModel::SettingsTreeModel(QObject* parent)
+ToolsTreeModel::ToolsTreeModel(QObject* parent)
     : QAbstractItemModel(parent)
 {
 }
 
-SettingsTreeModel::~SettingsTreeModel()
+ToolsTreeModel::~ToolsTreeModel()
 {
 }
 
-void SettingsTreeModel::setTree(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree)
+void ToolsTreeModel::setTree(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree)
 {
     if (m_tree == tree) {
         return;
@@ -22,7 +21,7 @@ void SettingsTreeModel::setTree(const std::shared_ptr<commonHead::viewModels::mo
     endResetModel();
 }
 
-QVariant SettingsTreeModel::data(const QModelIndex& index, int role) const
+QVariant ToolsTreeModel::data(const QModelIndex& index, int role) const
 {
     if (!m_tree || !index.isValid()) {
         return {};
@@ -42,9 +41,7 @@ QVariant SettingsTreeModel::data(const QModelIndex& index, int role) const
     case NodeIdRole:
         return QString::fromStdString(nodeData.nodeId);
     case IconRole:
-        return QVariant::fromValue(
-            UIResource::UIResourceAssetLoader::convertVMAssetImageTokenToUIAssetImageToken(nodeData.icon)
-        );
+        return QString::fromStdString(nodeData.icon);
     case PanelTypeRole:
         return static_cast<int>(nodeData.panelType);
     default:
@@ -54,7 +51,7 @@ QVariant SettingsTreeModel::data(const QModelIndex& index, int role) const
     return {};
 }
 
-Qt::ItemFlags SettingsTreeModel::flags(const QModelIndex& index) const
+Qt::ItemFlags ToolsTreeModel::flags(const QModelIndex& index) const
 {
     if (!index.isValid()) {
         return Qt::NoItemFlags;
@@ -62,7 +59,7 @@ Qt::ItemFlags SettingsTreeModel::flags(const QModelIndex& index) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QModelIndex SettingsTreeModel::index(int row, int column, const QModelIndex& parent) const
+QModelIndex ToolsTreeModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!m_tree || row < 0 || column < 0 || column >= columnCount()) {
         return {};
@@ -85,7 +82,7 @@ QModelIndex SettingsTreeModel::index(int row, int column, const QModelIndex& par
     return createIndex(row, column, static_cast<void*>(child.get()));
 }
 
-QModelIndex SettingsTreeModel::parent(const QModelIndex& index) const
+QModelIndex ToolsTreeModel::parent(const QModelIndex& index) const
 {
     if (!m_tree || !index.isValid()) {
         return {};
@@ -128,7 +125,7 @@ QModelIndex SettingsTreeModel::parent(const QModelIndex& index) const
     return {};
 }
 
-int SettingsTreeModel::rowCount(const QModelIndex& parent) const
+int ToolsTreeModel::rowCount(const QModelIndex& parent) const
 {
     if (!m_tree || (parent.isValid() && parent.column() != 0)) {
         return 0;
@@ -142,12 +139,12 @@ int SettingsTreeModel::rowCount(const QModelIndex& parent) const
     return static_cast<int>(parentNode->getChildCount());
 }
 
-int SettingsTreeModel::columnCount(const QModelIndex&) const
+int ToolsTreeModel::columnCount(const QModelIndex&) const
 {
     return 1;
 }
 
-QHash<int, QByteArray> SettingsTreeModel::roleNames() const
+QHash<int, QByteArray> ToolsTreeModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[NodeIdRole]    = "nodeId";
@@ -157,8 +154,8 @@ QHash<int, QByteArray> SettingsTreeModel::roleNames() const
     return roles;
 }
 
-commonHead::viewModels::model::ISettingsTreeNode*
-SettingsTreeModel::nodeFromIndex(const QModelIndex& index) const
+commonHead::viewModels::model::IToolsTreeNode*
+ToolsTreeModel::nodeFromIndex(const QModelIndex& index) const
 {
     if (!m_tree) {
         return nullptr;
@@ -173,5 +170,5 @@ SettingsTreeModel::nodeFromIndex(const QModelIndex& index) const
         return root.get();
     }
 
-    return static_cast<commonHead::viewModels::model::ISettingsTreeNode*>(index.internalPointer());
+    return static_cast<commonHead::viewModels::model::IToolsTreeNode*>(index.internalPointer());
 }

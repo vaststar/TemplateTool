@@ -9,6 +9,7 @@
 #include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
 #include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
 #include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
+#include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 
 namespace commonHead::viewModels{
 
@@ -71,5 +72,10 @@ std::shared_ptr<commonHead::viewModels::ISettingsViewModel> ViewModelFactory::cr
 std::shared_ptr<commonHead::viewModels::IStabilityViewModel> ViewModelFactory::createStabilityViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IStabilityViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::createToolsViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IToolsViewModel>();
 }
 } // namespace commonHead::viewModels

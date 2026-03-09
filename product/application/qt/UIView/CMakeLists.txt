@@ -45,6 +45,19 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/SettingsPage/src/AppearanceSettingsController.cpp
     PageViews/SettingsPage/src/LanguageSettingsController.cpp
 
+    PageViews/ToolsPage/include/ToolsPageController.h
+    PageViews/ToolsPage/include/ToolsTreeModel.h
+    PageViews/ToolsPage/include/Base64ToolController.h
+    PageViews/ToolsPage/include/JsonToolController.h
+    PageViews/ToolsPage/include/TimestampToolController.h
+    PageViews/ToolsPage/include/UuidToolController.h
+    PageViews/ToolsPage/src/ToolsPageController.cpp
+    PageViews/ToolsPage/src/ToolsTreeModel.cpp
+    PageViews/ToolsPage/src/Base64ToolController.cpp
+    PageViews/ToolsPage/src/JsonToolController.cpp
+    PageViews/ToolsPage/src/TimestampToolController.cpp
+    PageViews/ToolsPage/src/UuidToolController.cpp
+
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
     
@@ -109,6 +122,12 @@ set(MODULE_QML_TARGET_FILES
     PageViews/SettingsPage/qml/SettingsNavPanel.qml
     PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml
     PageViews/SettingsPage/qml/LanguageSettingsPanel.qml
+    PageViews/ToolsPage/qml/ToolsPage.qml
+    PageViews/ToolsPage/qml/ToolsNavPanel.qml
+    PageViews/ToolsPage/qml/Base64Panel.qml
+    PageViews/ToolsPage/qml/JsonPanel.qml
+    PageViews/ToolsPage/qml/TimestampPanel.qml
+    PageViews/ToolsPage/qml/UuidPanel.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowTitleBar/qml/WindowAnimator.qml

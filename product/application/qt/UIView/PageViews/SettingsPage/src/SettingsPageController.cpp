@@ -20,7 +20,7 @@ void SettingsPageController::init()
     m_settingsViewModel->initViewModel();
 
     m_treeModel = new SettingsTreeModel(this);
-    m_treeModel->setViewModel(m_settingsViewModel);
+    m_treeModel->setTree(m_settingsViewModel->getSettingsTree());
     emit treeModelChanged();
 
     selectFirstNode();

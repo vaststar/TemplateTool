@@ -3,11 +3,8 @@
 #include <QAbstractItemModel>
 #include <QtQml>
 
-namespace commonHead::viewModels{
-    class IContactListViewModel;
-}
-
-namespace commonHead::viewModels::model{
+namespace commonHead::viewModels::model {
+    class IContactTree;
     class IContactTreeNode;
 }
 
@@ -28,7 +25,7 @@ public:
     int rowCount(const QModelIndex &parent = {}) const override;
     int columnCount(const QModelIndex &parent = {}) const override;
 
-    void setUpViewModel(const std::shared_ptr<commonHead::viewModels::IContactListViewModel>& viewModel);
+    void setTree(const std::shared_ptr<commonHead::viewModels::model::IContactTree>& tree);
 protected:
     // 为 QML 提供角色名
     QHash<int, QByteArray> roleNames() const override;
@@ -38,5 +35,5 @@ private:
     commonHead::viewModels::model::IContactTreeNode* nodeFromIndex(const QModelIndex& index) const;
 
 private:
-    std::shared_ptr<commonHead::viewModels::IContactListViewModel> mViewModel;
+    std::shared_ptr<commonHead::viewModels::model::IContactTree> m_tree;
 };

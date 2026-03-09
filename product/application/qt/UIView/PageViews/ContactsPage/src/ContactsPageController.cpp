@@ -81,6 +81,6 @@ void ContactsPageController::buildContactTreeModel()
     }
 
     mOrgTreeModel = new ContactListItemModel(this);
-    mOrgTreeModel->setUpViewModel(mContactListViewModel);
+    mOrgTreeModel->setTree(mContactListViewModel->getContactList());
     emit orgTreeModelChanged();
 }

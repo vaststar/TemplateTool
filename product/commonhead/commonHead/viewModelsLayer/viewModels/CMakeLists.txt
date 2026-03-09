@@ -15,6 +15,7 @@ set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/SettingsViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
 )
 
@@ -33,6 +34,8 @@ set(MODULE_HEADER_FILES #for include and install header
     SideBarViewModel/include/commonHead/viewModels/SideBarViewModel/SideBarModel.h
     SideBarViewModel/include/commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h
     StabilityViewModel/include/commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h
+    ToolsViewModel/include/commonHead/viewModels/ToolsViewModel/IToolsModel.h
+    ToolsViewModel/include/commonHead/viewModels/ToolsViewModel/IToolsViewModel.h
     shared/commonHead/viewModels/ViewModelDataDefine/VideoFrame.h
 )
 set(MODULE_SOURCE_PRIVATE
@@ -59,6 +62,10 @@ set(MODULE_SOURCE_PRIVATE
     SideBarViewModel/src/SideBarViewModel.cpp
     StabilityViewModel/src/StabilityViewModel.h
     StabilityViewModel/src/StabilityViewModel.cpp
+    ToolsViewModel/src/ToolsModel.h
+    ToolsViewModel/src/ToolsModel.cpp
+    ToolsViewModel/src/ToolsViewModel.h
+    ToolsViewModel/src/ToolsViewModel.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
@@ -78,6 +85,10 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ViewModelUtils
     StabilityService
     PerformanceService
+    Base64Utils
+    JsonUtils
+    TimeUtils
+    UUIDUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
@@ -93,6 +104,7 @@ set(MODULE_BUILD_PRIVATE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/SettingsViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModel/src
 )
 
 BuildModule(
