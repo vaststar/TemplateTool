@@ -7,6 +7,7 @@
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 #include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
+#include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
 #include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
 
 namespace commonHead::viewModels{
@@ -60,6 +61,11 @@ std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> ViewModelFactory:
 std::shared_ptr<commonHead::viewModels::ISideBarViewModel> ViewModelFactory::createSideBarViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::ISideBarViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::ISettingsViewModel> ViewModelFactory::createSettingsViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::ISettingsViewModel>();
 }
 
 std::shared_ptr<commonHead::viewModels::IStabilityViewModel> ViewModelFactory::createStabilityViewModelInstance() const

@@ -35,7 +35,6 @@ public:
     QString getTitle() const;
     bool isVisible() const;
 
-    Q_INVOKABLE void initController(UIViewController* controller);
     Q_INVOKABLE void componentCompleted();
     Q_INVOKABLE int pageIdToIndex(int pageId) const;
 signals:
@@ -49,7 +48,8 @@ public slots:
     void packLogs();
     void onLogsPackComplete(bool success, const QString& archivePath);
 protected:
-    virtual void init() override;
+    void init() override;
+    void onSetupController(UIViewController* controller) override;
 private:
     void connectSignals(UIViewController* controller);
 private:

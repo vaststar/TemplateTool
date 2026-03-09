@@ -8,9 +8,13 @@ Item {
 
     required property ContactsPageController controller
 
+    property var contactInfo: controller.selectedContactId 
+        ? controller.getContactInfo(controller.selectedContactId) 
+        : null
+
     UTText {
         anchors.centerIn: parent
-        text: "选择联系人查看详情"
+        text: contactInfo ? contactInfo.name : "选择联系人查看详情"
         fontEnum: UIFontToken.Window_Body_Primary
         colorEnum: UIColorToken.Sidebar_Item_Text
     }

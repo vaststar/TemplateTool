@@ -3,58 +3,44 @@
 #include <QObject>
 #include <QtQml>
 #include "UIViewBase/include/UIViewController.h"
-#include "SettingsNavModel.h"
+#include "SettingsTreeModel.h"
 
 namespace commonHead::viewModels {
-    class IClientInfoViewModel;
+    class ISettingsViewModel;
 }
 
 class SettingsPageController : public UIViewController
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(SettingsNavModel* navModel READ getNavModel NOTIFY navModelChanged)
-    Q_PROPERTY(QStringList supportedThemes READ getSupportedThemes NOTIFY supportedThemesChanged)
-    Q_PROPERTY(QStringList supportedLanguages READ getSupportedLanguages NOTIFY supportedLanguagesChanged)
-    Q_PROPERTY(int currentThemeIndex READ getCurrentThemeIndex NOTIFY currentThemeIndexChanged)
-    Q_PROPERTY(int currentLanguageIndex READ getCurrentLanguageIndex NOTIFY currentLanguageIndexChanged)
+
+    Q_PROPERTY(SettingsTreeModel* treeModel READ getTreeModel NOTIFY treeModelChanged)
+    Q_PROPERTY(QString currentPanelQml READ getCurrentPanelQml NOTIFY currentPanelQmlChanged)
+    Q_PROPERTY(QString currentNodeId READ getCurrentNodeId NOTIFY currentNodeIdChanged)
 
 public:
     explicit SettingsPageController(QObject* parent = nullptr);
 
-    SettingsNavModel* getNavModel() const;
-    QStringList getSupportedThemes() const;
-    QStringList getSupportedLanguages() const;
-    int getCurrentThemeIndex() const;
-    int getCurrentLanguageIndex() const;
+    SettingsTreeModel* getTreeModel() const;
+    QString getCurrentPanelQml() const;
+    QString getCurrentNodeId() const;
 
-    Q_INVOKABLE void setTheme(int index);
-    Q_INVOKABLE void setLanguage(int index);
+    Q_INVOKABLE void selectNode(const QString& nodeId);
 
 protected:
     void init() override;
 
 signals:
-    void navModelChanged();
-    void supportedThemesChanged();
-    void supportedLanguagesChanged();
-    void currentThemeIndexChanged();
-    void currentLanguageIndexChanged();
+    void treeModelChanged();
+    void currentPanelQmlChanged();
+    void currentNodeIdChanged();
 
 private:
-    void buildNavModel();
-    void buildThemeAndLanguageData();
-    QString themeTypeToDisplayString(int themeType) const;
-    QString languageTypeToDisplayString(int languageType) const;
+    QString mapPanelTypeToQml(int panelType) const;
+    void selectFirstNode();
 
-private:
-    std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> mClientInfoViewModel;
-    SettingsNavModel* mNavModel = nullptr;
-
-    QStringList mSupportedThemes;
-    QStringList mSupportedLanguages;
-    std::vector<int> mThemeValues;    // 存储实际 ThemeType 枚举值
-    std::vector<int> mLanguageValues; // 存储实际 LanguageType 枚举值
-    int mCurrentThemeIndex = 0;
-    int mCurrentLanguageIndex = 0;
+    std::shared_ptr<commonHead::viewModels::ISettingsViewModel> m_settingsViewModel;
+    SettingsTreeModel* m_treeModel = nullptr;
+    QString m_currentPanelQml;
+    QString m_currentNodeId;
 };

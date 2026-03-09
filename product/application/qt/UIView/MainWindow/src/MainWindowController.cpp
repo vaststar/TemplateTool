@@ -102,28 +102,10 @@ void MainWindowController::onLogsPackComplete(bool success, const QString& archi
     }
 }
 
-void MainWindowController::initController(UIViewController* controller)
+void MainWindowController::onSetupController(UIViewController* controller)
 {
-    if (controller)
-    {
-        if (auto appContext = getAppContext())
-        {
-            UIVIEW_LOG_DEBUG("start initialize controller from mainwindowController, controllerName:" << controller->getControllerName().toStdString());
-            connectSignals(controller);
-            controller->initializeController(appContext);
-            UIVIEW_LOG_DEBUG("finish initialze controller from mainwindowController, controllerName: " << controller->getControllerName().toStdString());
-        }
-        else
-        {
-            UIVIEW_LOG_DEBUG("initialize controller success");
-        }
-    }
-    else
-    {
-        UIVIEW_LOG_WARN("controller is null");
-    }
+    connectSignals(controller);
 }
-
 
 void MainWindowController::connectSignals(UIViewController* controller)
 {

@@ -1,14 +1,10 @@
 #include "PageViews/SettingsPage/include/SettingsPageController.h"
 #include "LoggerDefine/LoggerDefine.h"
 
-#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
-#include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
+#include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
+#include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
-#include <UIManager/IUIManagerProvider.h>
-#include <UIManager/ITranslatorManager.h>
-#include <UIManager/UILanguage.h>
-#include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)
@@ -20,144 +16,93 @@ void SettingsPageController::init()
 {
     UIVIEW_LOG_DEBUG("SettingsPageController::init");
 
-    mClientInfoViewModel = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
-    mClientInfoViewModel->initViewModel();
+    m_settingsViewModel = getAppContext()->getViewModelFactory()->createSettingsViewModelInstance();
+    m_settingsViewModel->initViewModel();
 
-    buildNavModel();
-    buildThemeAndLanguageData();
+    m_treeModel = new SettingsTreeModel(this);
+    m_treeModel->setViewModel(m_settingsViewModel);
+    emit treeModelChanged();
+
+    selectFirstNode();
 
     UIVIEW_LOG_DEBUG("SettingsPageController::init done");
 }
 
-SettingsNavModel* SettingsPageController::getNavModel() const
+SettingsTreeModel* SettingsPageController::getTreeModel() const
 {
-    return mNavModel;
+    return m_treeModel;
 }
 
-QStringList SettingsPageController::getSupportedThemes() const
+QString SettingsPageController::getCurrentPanelQml() const
 {
-    return mSupportedThemes;
+    return m_currentPanelQml;
 }
 
-QStringList SettingsPageController::getSupportedLanguages() const
+QString SettingsPageController::getCurrentNodeId() const
 {
-    return mSupportedLanguages;
+    return m_currentNodeId;
 }
 
-int SettingsPageController::getCurrentThemeIndex() const
+void SettingsPageController::selectNode(const QString& nodeId)
 {
-    return mCurrentThemeIndex;
-}
-
-int SettingsPageController::getCurrentLanguageIndex() const
-{
-    return mCurrentLanguageIndex;
-}
-
-void SettingsPageController::setTheme(int index)
-{
-    if (index < 0 || index >= static_cast<int>(mThemeValues.size()))
+    if (!m_settingsViewModel)
         return;
 
-    auto themeType = static_cast<commonHead::viewModels::model::ThemeType>(mThemeValues[static_cast<size_t>(index)]);
-    UIVIEW_LOG_DEBUG("setTheme index:" << index << " themeType:" << mThemeValues[static_cast<size_t>(index)]);
-
-    mCurrentThemeIndex = index;
-    emit currentThemeIndexChanged();
-
-    mClientInfoViewModel->setCurrentThemeType(themeType);
-    getAppContext()->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
-}
-
-void SettingsPageController::setLanguage(int index)
-{
-    if (index < 0 || index >= static_cast<int>(mLanguageValues.size()))
+    auto tree = m_settingsViewModel->getSettingsTree();
+    auto node = tree->findNodeById(nodeId.toStdString());
+    if (!node)
         return;
 
-    auto langType = static_cast<commonHead::viewModels::model::LanguageType>(mLanguageValues[static_cast<size_t>(index)]);
-    UIVIEW_LOG_DEBUG("setLanguage index:" << index << " langType:" << mLanguageValues[static_cast<size_t>(index)]);
+    auto nodeData = node->getNodeData();
 
-    mCurrentLanguageIndex = index;
-    emit currentLanguageIndexChanged();
-    
-    mClientInfoViewModel->setApplicationLanguage(langType);
-    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(langType));
-}
+    // Update current node id
+    m_currentNodeId = nodeId;
+    emit currentNodeIdChanged();
 
-void SettingsPageController::buildNavModel()
-{
-    mNavModel = new SettingsNavModel(this);
-    mNavModel->setItems({
-        { 0, tr("General"), tr("Appearance"), QString() },
-        { 1, tr("General"), tr("Language"), QString() }
-    });
-    emit navModelChanged();
-}
-
-void SettingsPageController::buildThemeAndLanguageData()
-{
-    if (!mClientInfoViewModel)
-        return;
-
-    // Themes
-    mSupportedThemes.clear();
-    mThemeValues.clear();
-    auto themes = mClientInfoViewModel->getSupportedThemeTypes();
-    auto currentTheme = mClientInfoViewModel->getCurrentThemeType();
-    for (size_t i = 0; i < themes.size(); ++i)
-    {
-        mThemeValues.push_back(static_cast<int>(themes[i]));
-        mSupportedThemes.append(themeTypeToDisplayString(static_cast<int>(themes[i])));
-        if (themes[i] == currentTheme)
-            mCurrentThemeIndex = static_cast<int>(i);
+    // Only switch panel if node has one
+    if (nodeData.panelType != commonHead::viewModels::model::SettingsPanelType::None) {
+        m_currentPanelQml = mapPanelTypeToQml(static_cast<int>(nodeData.panelType));
+        emit currentPanelQmlChanged();
     }
-    emit supportedThemesChanged();
-    emit currentThemeIndexChanged();
 
-    // Languages
-    mSupportedLanguages.clear();
-    mLanguageValues.clear();
-    auto languages = mClientInfoViewModel->getSupportedLanguages();
-    auto currentLang = mClientInfoViewModel->getApplicationLanguage();
-    for (size_t i = 0; i < languages.size(); ++i)
-    {
-        mLanguageValues.push_back(static_cast<int>(languages[i]));
-        mSupportedLanguages.append(languageTypeToDisplayString(static_cast<int>(languages[i])));
-        if (languages[i] == currentLang)
-            mCurrentLanguageIndex = static_cast<int>(i);
-    }
-    emit supportedLanguagesChanged();
-    emit currentLanguageIndexChanged();
+    UIVIEW_LOG_DEBUG("selectNode: " << nodeId.toStdString() << " -> " << m_currentPanelQml.toStdString());
 }
 
-QString SettingsPageController::themeTypeToDisplayString(int themeType) const
+QString SettingsPageController::mapPanelTypeToQml(int panelType) const
 {
-    using ThemeType = commonHead::viewModels::model::ThemeType;
-    switch (static_cast<ThemeType>(themeType))
-    {
-    case ThemeType::SystemDefault: return tr("System Default");
-    case ThemeType::Dark:          return tr("Dark");
-    case ThemeType::Light:         return tr("Light");
-    default:                       return tr("Unknown");
+    using PanelType = commonHead::viewModels::model::SettingsPanelType;
+
+    switch (static_cast<PanelType>(panelType)) {
+    case PanelType::Appearance:
+        return QStringLiteral("AppearanceSettingsPanel.qml");
+    case PanelType::Language:
+        return QStringLiteral("LanguageSettingsPanel.qml");
+    default:
+        return QString();
     }
 }
 
-QString SettingsPageController::languageTypeToDisplayString(int languageType) const
+void SettingsPageController::selectFirstNode()
 {
-    using LanguageType = commonHead::viewModels::model::LanguageType;
-    switch (static_cast<LanguageType>(languageType))
-    {
-    case LanguageType::ENGLISH:              return QStringLiteral("English");
-    case LanguageType::CHINESE_SIMPLIFIED:   return QStringLiteral("简体中文");
-    case LanguageType::CHINESE_TRADITIONAL:  return QStringLiteral("繁體中文");
-    case LanguageType::FRENCH:               return QStringLiteral("Français");
-    case LanguageType::GERMAN:               return QStringLiteral("Deutsch");
-    case LanguageType::ITALIAN:              return QStringLiteral("Italiano");
-    case LanguageType::SPANISH:              return QStringLiteral("Español");
-    case LanguageType::PORTUGUESE:           return QStringLiteral("Português");
-    case LanguageType::JAPANESE:             return QStringLiteral("日本語");
-    case LanguageType::KOREAN:               return QStringLiteral("한국어");
-    case LanguageType::RUSSIAN:              return QStringLiteral("Русский");
-    default:                                 return QStringLiteral("Unknown");
+    if (!m_settingsViewModel)
+        return;
+
+    auto tree = m_settingsViewModel->getSettingsTree();
+    auto root = tree->getRoot();
+    if (!root || root->getChildCount() == 0)
+        return;
+
+    // Select first top-level node (first child of virtual root, i.e., General)
+    auto firstNode = root->getChild(0);
+    if (firstNode) {
+        auto data = firstNode->getNodeData();
+        m_currentNodeId = QString::fromStdString(data.nodeId);
+        emit currentNodeIdChanged();
+
+        // If first node has a panel, load it
+        if (data.panelType != commonHead::viewModels::model::SettingsPanelType::None) {
+            m_currentPanelQml = mapPanelTypeToQml(static_cast<int>(data.panelType));
+            emit currentPanelQmlChanged();
+        }
     }
 }

@@ -37,9 +37,13 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/HomePage/include/HomePageController.h
     PageViews/HomePage/src/HomePageController.cpp
     PageViews/SettingsPage/include/SettingsPageController.h
-    PageViews/SettingsPage/include/SettingsNavModel.h
+    PageViews/SettingsPage/include/SettingsTreeModel.h
+    PageViews/SettingsPage/include/AppearanceSettingsController.h
+    PageViews/SettingsPage/include/LanguageSettingsController.h
     PageViews/SettingsPage/src/SettingsPageController.cpp
-    PageViews/SettingsPage/src/SettingsNavModel.cpp
+    PageViews/SettingsPage/src/SettingsTreeModel.cpp
+    PageViews/SettingsPage/src/AppearanceSettingsController.cpp
+    PageViews/SettingsPage/src/LanguageSettingsController.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp

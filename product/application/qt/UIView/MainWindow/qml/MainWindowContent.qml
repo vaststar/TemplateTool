@@ -49,9 +49,9 @@ Item {
             console.log("MainWindowContent controller is null")
             return
         }
-        controller.initController(navigationBar.controller)
-        controller.initController(homePage.controller)
-        controller.initController(contactsPage.controller)
-        controller.initController(settingsPage.controller)
+        controller.setupController(navigationBar.controller)
+        controller.setupController(homePage.controller)
+        controller.setupController(contactsPage.controller)
+        controller.setupController(settingsPage.controller)
     }
 }

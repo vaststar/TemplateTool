@@ -15,9 +15,16 @@ public:
 
     void initializeController(QPointer<AppContext> appContext);
     
+    // Setup another controller (inject appContext and call its initializeController)
+    Q_INVOKABLE void setupController(UIViewController* controller);
+    
     Q_INVOKABLE void logInfo(const QString& message);
 protected:
     virtual void init() = 0;
+    
+    // Override this to add custom logic before controller initialization
+    virtual void onSetupController(UIViewController* controller);
+    
     QPointer<AppContext> getAppContext() const;
 signals:
     void controllerInitialized();

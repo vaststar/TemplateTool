@@ -7,7 +7,8 @@ import UIResourceLoader 1.0
 
 Item {
     id: root
-    property SettingsPageController controller
+    // Panel creates its own controller, initialized by parent via setupController
+    property AppearanceSettingsController controller: AppearanceSettingsController {}
 
     ColumnLayout {
         anchors.fill: parent

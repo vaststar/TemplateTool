@@ -26,6 +26,7 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const override;
 

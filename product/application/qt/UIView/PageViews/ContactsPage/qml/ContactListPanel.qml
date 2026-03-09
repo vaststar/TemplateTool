@@ -64,35 +64,36 @@ Item {
             model: controller.orgTreeModel
             selectionModel: ItemSelectionModel {}
 
-            Keys.onTabPressed: function(e) {
-                e.accepted = true;
-                const next = treeView.nextItemInFocusChain(true);
-                if (next && next !== treeView) next.forceActiveFocus(Qt.TabFocusReason);
-            }
-
-            Keys.onBacktabPressed: function(e) {
-                e.accepted = true;
-                const prev = treeView.nextItemInFocusChain(false);
-                if (prev && prev !== treeView) prev.forceActiveFocus(Qt.BacktabFocusReason);
-            }
-
+            // No auto-select on focus; just ensure focus ring is visible
             onActiveFocusChanged: {
-                if (activeFocus) Qt.callLater(function() {
-                    if (treeView.currentRow < 0 && treeView.model
-                            && treeView.model.rowCount(treeView.rootIndex) > 0) {
-                        const idx = treeView.index(0, 0);
-                        treeView.selectionModel.setCurrentIndex(
-                            idx, ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Rows);
+                if (activeFocus && treeView.currentRow < 0 && treeView.model
+                        && treeView.model.rowCount(treeView.rootIndex) > 0) {
+                    // Move current (focus) to first row, but don't select
+                    treeView.selectionModel.setCurrentIndex(
+                        treeView.index(0, 0), ItemSelectionModel.NoUpdate);
+                }
+            }
+
+            Keys.onReturnPressed: selectCurrentItem()
+            Keys.onEnterPressed: selectCurrentItem()
+            Keys.onSpacePressed: selectCurrentItem()
+
+            function selectCurrentItem() {
+                if (treeView.currentRow >= 0) {
+                    const idx = treeView.index(treeView.currentRow, 0);
+                    const contactId = treeView.model.data(idx, Qt.UserRole + 1); // IdRole
+                    if (contactId) {
+                        controller.selectContact(contactId);
                     }
-                });
+                }
             }
 
             delegate: Item {
-                implicitWidth: padding + label.x + label.implicitWidth + padding
+                implicitWidth: treeView.width
                 implicitHeight: label.implicitHeight * 1.8
                 z: (current && treeView.activeFocus) ? 1 : 0
 
-                readonly property real indentation: 8
+                readonly property real indentation: 16
                 readonly property real padding: 8
 
                 // Assigned to by TreeView:
@@ -123,7 +124,7 @@ Item {
                 Rectangle {
                     id: background
                     anchors.fill: parent
-                    color: row === treeView.currentRow
+                    color: model.id === controller.selectedContactId
                         ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
                         : hoverHandler.hovered
                             ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
@@ -143,6 +144,7 @@ Item {
                         onSingleTapped: {
                             const idx = treeView.index(row, column);
                             treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
+                            controller.selectContact(model.id);
                             treeView.toggleExpanded(row);
                         }
                     }
@@ -156,7 +158,16 @@ Item {
                     text: model.displayName
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Sidebar_Item_Text
-                    colorState: row === treeView.currentRow ? UIColorState.Selected : UIColorState.Normal
+                    colorState: model.id === controller.selectedContactId ? UIColorState.Selected : UIColorState.Normal
+                }
+
+                // Click to select
+                TapHandler {
+                    onSingleTapped: {
+                        const idx = treeView.index(row, column);
+                        treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
+                        controller.selectContact(model.id);
+                    }
                 }
 
                 UTFocusItem {

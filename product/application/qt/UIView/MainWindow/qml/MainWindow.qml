@@ -71,10 +71,10 @@ ApplicationWindow
             return
         }
         root.controller.logInfo("MainWindowController onMainControllerInitialized")
-        root.controller.initController(menuBar.controller)
-        root.controller.initController(titleBar.controller)
-        root.controller.initController(footBar.controller)
-        root.controller.initController(systemTray.controller)
+        root.controller.setupController(menuBar.controller)
+        root.controller.setupController(titleBar.controller)
+        root.controller.setupController(footBar.controller)
+        root.controller.setupController(systemTray.controller)
         mainWindowContentLoader.setSource("MainWindowContent.qml",{"controller":root.controller});
         root.controller.componentCompleted()
     }

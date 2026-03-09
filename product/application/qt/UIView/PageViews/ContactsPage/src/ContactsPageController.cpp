@@ -5,6 +5,7 @@
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
+#include <QVariantMap>
 
 ContactsPageController::ContactsPageController(QObject* parent)
     : UIViewController(parent)
@@ -29,6 +30,40 @@ void ContactsPageController::buttonClicked()
 QAbstractItemModel* ContactsPageController::getOrgTreeModel() const
 {
     return mOrgTreeModel;
+}
+
+QString ContactsPageController::getSelectedContactId() const
+{
+    return m_selectedContactId;
+}
+
+void ContactsPageController::selectContact(const QString& contactId)
+{
+    if (m_selectedContactId == contactId)
+        return;
+    m_selectedContactId = contactId;
+    emit selectedContactChanged();
+    UIVIEW_LOG_DEBUG("selectContact: " << contactId.toStdString());
+}
+
+QVariantMap ContactsPageController::getContactInfo(const QString& contactId) const
+{
+    QVariantMap result;
+    if (contactId.isEmpty() || !mContactListViewModel)
+        return result;
+    
+    auto tree = mContactListViewModel->getContactList();
+    if (!tree)
+        return result;
+        
+    auto node = tree->findNodeById(contactId.toStdString());
+    if (node) {
+        auto data = node->getNodeData();
+        result["id"] = QString::fromStdString(data.id);
+        result["name"] = QString::fromStdString(data.displayName);
+        result["type"] = static_cast<int>(data.type);
+    }
+    return result;
 }
 
 void ContactsPageController::buildContactTreeModel()

@@ -35,6 +35,39 @@ QPointer<AppContext> UIViewController::getAppContext() const
     return mAppContext;
 }
 
+void UIViewController::setupController(UIViewController* controller)
+{
+    if (!controller)
+    {
+        UIVIEW_LOG_WARN("setupController: controller is null");
+        return;
+    }
+    
+    auto appContext = getAppContext();
+    if (!appContext)
+    {
+        UIVIEW_LOG_WARN("setupController: appContext is null");
+        return;
+    }
+    
+    UIVIEW_LOG_DEBUG("setupController start, from: " << getControllerName().toStdString()
+        << ", target: " << controller->getControllerName().toStdString());
+    
+    // Call subclass hook for custom logic
+    onSetupController(controller);
+    
+    // Common initialization
+    controller->initializeController(appContext);
+    
+    UIVIEW_LOG_DEBUG("setupController finish, target: " << controller->getControllerName().toStdString());
+}
+
+void UIViewController::onSetupController(UIViewController* controller)
+{
+    // Default empty implementation, subclasses override as needed
+    Q_UNUSED(controller);
+}
+
 void UIViewController::logInfo(const QString& message)
 {
     UIVIEW_LOG_INFO("[" << getControllerName().toStdString() << "] " << message.toStdString());
