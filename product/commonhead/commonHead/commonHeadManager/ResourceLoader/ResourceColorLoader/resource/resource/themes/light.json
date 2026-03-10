@@ -181,6 +181,34 @@
       "color": {
         "normal": "gray-700"
       }
+    },
+    {
+      "token": "combobox-background",
+      "color": {
+        "normal": "gray-100",
+        "hovered": "gray-200",
+        "pressed": "gray-300"
+      }
+    },
+    {
+      "token": "combobox-text",
+      "color": {
+        "normal": "gray-700"
+      }
+    },
+    {
+      "token": "combobox-border",
+      "color": {
+        "normal": "gray-300"
+      }
+    },
+    {
+      "token": "combobox-item-background",
+      "color": {
+        "normal": "gray-100",
+        "hovered": "gray-200",
+        "selected": "blue-50"
+      }
     }
   ]
 }

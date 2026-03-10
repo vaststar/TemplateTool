@@ -59,6 +59,10 @@ Item {
 
             width: 160
             height: 148
+            activeFocusOnTab: true
+
+            Keys.onReturnPressed: if (controller) controller.setTheme(index)
+            Keys.onSpacePressed: if (controller) controller.setTheme(index)
 
             // Preview card colors per theme index
             // 0=SystemDefault (split), 1=Dark, 2=Light
@@ -303,8 +307,13 @@ Item {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
+                    parent.forceActiveFocus()
                     if (controller) controller.setTheme(index)
                 }
+            }
+
+            UTFocusItem {
+                focusRadius: 8
             }
         }
     }

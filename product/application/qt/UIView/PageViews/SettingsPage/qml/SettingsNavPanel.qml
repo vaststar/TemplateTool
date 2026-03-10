@@ -92,6 +92,19 @@ Item {
             required property string title
             required property int panelType
 
+            property Animation indicatorAnimation: NumberAnimation {
+                target: indicator
+                property: "rotation"
+                from: expanded ? 0 : 90
+                to: expanded ? 90 : 0
+                duration: 100
+                easing.type: Easing.OutQuart
+            }
+
+            TableView.onPooled: indicatorAnimation.complete()
+            TableView.onReused: if (current) indicatorAnimation.start()
+            onExpandedChanged: indicator.rotation = expanded ? 90 : 0
+
             HoverHandler { id: hoverHandler }
 
             Rectangle {
@@ -111,26 +124,20 @@ Item {
                 spacing: 4
 
                 // Expand indicator
-                Item {
-                    width: 16
-                    height: 16
-                    anchors.verticalCenter: parent.verticalCenter
+                UTLabel {
+                    id: indicator
                     visible: navItem.hasChildren
-
-                    UTText {
-                        anchors.centerIn: parent
-                        text: navItem.expanded ? "▼" : "▶"
-                        fontEnum: UIFontToken.Caption_Text
-                        colorEnum: UIColorToken.Sidebar_Item_Text
-                        font.pixelSize: 8
-                    }
+                    text: "▶"
+                    fontEnum: UIFontToken.Caption_Text
+                    colorEnum: UIColorToken.Sidebar_Item_Text
+                    rotation: navItem.expanded ? 90 : 0
                 }
 
                 // Placeholder when no children
                 Item {
                     visible: !navItem.hasChildren
-                    width: 16
-                    height: 16
+                    width: 12
+                    height: 12
                 }
 
                 UTText {

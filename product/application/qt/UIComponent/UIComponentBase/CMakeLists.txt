@@ -39,6 +39,7 @@ set(MODULE_QML_TARGET_URI
 )
 set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
+    BaseComboBox/BaseComboBox.qml
     BaseFocusItem/BaseFocusItem.qml
     BaseLabel/BaseLabel.qml
     BaseQRCode/BaseQRCode.qml

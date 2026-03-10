@@ -108,6 +108,15 @@
         "fontWeight": "Normal",
         "italic": false
       }
+    },
+    {
+      "token": "combobox-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Small",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     }
   ]
 }
