@@ -10,14 +10,37 @@
     </message>
 </context>
 <context>
+    <name>AppearanceSettingsController</name>
+    <message>
+        <location filename="../../UIView/PageViews/SettingsPage/src/AppearanceSettingsController.cpp" line="79"/>
+        <source>System Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/SettingsPage/src/AppearanceSettingsController.cpp" line="80"/>
+        <source>Dark</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/SettingsPage/src/AppearanceSettingsController.cpp" line="81"/>
+        <source>Light</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/SettingsPage/src/AppearanceSettingsController.cpp" line="82"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AppearanceSettingsPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="22"/>
+        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="23"/>
         <source>Themes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="29"/>
+        <location filename="../../UIView/PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml" line="30"/>
         <source>Choose how you want the app to look.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -25,12 +48,12 @@
 <context>
     <name>LanguageSettingsPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/qml/LanguageSettingsPanel.qml" line="22"/>
+        <location filename="../../UIView/PageViews/SettingsPage/qml/LanguageSettingsPanel.qml" line="23"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/SettingsPage/qml/LanguageSettingsPanel.qml" line="29"/>
+        <location filename="../../UIView/PageViews/SettingsPage/qml/LanguageSettingsPanel.qml" line="30"/>
         <source>Choose the display language for the application.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -71,77 +94,38 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="16"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
         <translation>ok</translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="17"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="17"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="18"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="18"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="19"/>
-        <source>Window Title</source>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="19"/>
+        <source>macOS Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="20"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="20"/>
         <source>aab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="32"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="32"/>
         <source>{{0}} of {{1}} completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/windows-msvc-release/codegen/UIResourceString/ResourceStringMap.cpp" line="33"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="33"/>
         <source>test param {{0}}, only 1 param</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPageController</name>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="89"/>
-        <source>Appearance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="89"/>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="90"/>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="90"/>
-        <source>Language</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="136"/>
-        <source>System Default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="137"/>
-        <source>Dark</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="138"/>
-        <source>Light</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/SettingsPage/src/SettingsPageController.cpp" line="139"/>
-        <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

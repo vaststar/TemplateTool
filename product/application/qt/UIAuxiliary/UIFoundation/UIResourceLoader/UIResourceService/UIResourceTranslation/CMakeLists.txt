@@ -49,6 +49,20 @@ else()
     add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
 endif()
 
+# Normalize codegen paths in .ts files after lupdate
+# This prevents git diff when switching between macOS and Windows builds
+set(NORMALIZE_TS_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/normalize_ts_paths.py")
+if(EXISTS ${NORMALIZE_TS_SCRIPT} AND TARGET ${Translation_LIB}_lupdate)
+    add_custom_command(
+        TARGET ${Translation_LIB}_lupdate
+        POST_BUILD
+        COMMAND ${Python3_EXECUTABLE} ${NORMALIZE_TS_SCRIPT} ${Translation_TS_FILES}
+        COMMENT "[I18N] Normalizing codegen paths in .ts files..."
+        VERBATIM
+    )
+    message(STATUS "[I18N] Will normalize .ts paths after lupdate")
+endif()
+
 if (NOT TARGET ${Translation_LIB}_lupdate)
     message(WARNING "[I18N] ${Translation_LIB}_lupdate target could not be created.")
 endif()
