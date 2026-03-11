@@ -14,13 +14,13 @@ class ContactsPageController : public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(QAbstractItemModel* orgTreeModel READ getOrgTreeModel NOTIFY orgTreeModelChanged)
-    Q_PROPERTY(QString selectedContactId READ getSelectedContactId NOTIFY selectedContactChanged)
+    Q_PROPERTY(QString currentContactId READ getCurrentContactId NOTIFY currentContactIdChanged)
     QML_ELEMENT
 
 public:
     explicit ContactsPageController(QObject* parent = nullptr);
     QAbstractItemModel* getOrgTreeModel() const;
-    QString getSelectedContactId() const;
+    QString getCurrentContactId() const;
 
 public slots:
     void buttonClicked();
@@ -35,10 +35,10 @@ private:
 
 signals:
     void orgTreeModelChanged();
-    void selectedContactChanged();
+    void currentContactIdChanged();
 
 private:
     std::shared_ptr<commonHead::viewModels::IContactListViewModel> mContactListViewModel;
     ContactListItemModel* mOrgTreeModel = nullptr;
-    QString m_selectedContactId;
+    QString m_currentContactId;
 };

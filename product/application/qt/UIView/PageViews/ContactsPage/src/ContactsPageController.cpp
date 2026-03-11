@@ -32,17 +32,17 @@ QAbstractItemModel* ContactsPageController::getOrgTreeModel() const
     return mOrgTreeModel;
 }
 
-QString ContactsPageController::getSelectedContactId() const
+QString ContactsPageController::getCurrentContactId() const
 {
-    return m_selectedContactId;
+    return m_currentContactId;
 }
 
 void ContactsPageController::selectContact(const QString& contactId)
 {
-    if (m_selectedContactId == contactId)
+    if (m_currentContactId == contactId)
         return;
-    m_selectedContactId = contactId;
-    emit selectedContactChanged();
+    m_currentContactId = contactId;
+    emit currentContactIdChanged();
     UIVIEW_LOG_DEBUG("selectContact: " << contactId.toStdString());
 }
 

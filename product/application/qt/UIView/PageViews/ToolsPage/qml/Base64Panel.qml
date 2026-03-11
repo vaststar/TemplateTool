@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
@@ -8,6 +8,13 @@ import UIResourceLoader 1.0
 Item {
     id: base64Panel
     property Base64ToolController controller: Base64ToolController {}
+
+    // Shared style helpers
+    readonly property color _inputBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background, UIColorState.Normal)
+    readonly property color _inputText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text, UIColorState.Normal)
+    readonly property color _inputBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Normal)
+    readonly property color _inputPlaceholder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder, UIColorState.Normal)
+    readonly property font _inputFont: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,18 +25,20 @@ Item {
         UTText {
             text: "Base64 编解码"
             fontEnum: UIFontToken.Heading_Text
-            colorEnum: UIColorToken.Sidebar_Item_Text
+            colorEnum: UIColorToken.Content_Heading
         }
 
         // Options row
         RowLayout {
             spacing: 16
-            
+
             CheckBox {
                 id: urlSafeCheck
                 text: "URL 安全模式"
                 checked: controller.urlSafe
                 onCheckedChanged: controller.urlSafe = checked
+                font: base64Panel._inputFont
+                palette.windowText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
             }
         }
 
@@ -37,26 +46,31 @@ Item {
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 4
-            
+
             UTText {
                 text: "输入"
                 fontEnum: UIFontToken.Body_Text
-                colorEnum: UIColorToken.Sidebar_Item_Text
+                colorEnum: UIColorToken.Content_Secondary_Text
             }
-            
+
             ScrollView {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 120
-                
+
                 TextArea {
                     id: inputArea
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
                     placeholderText: "在此输入文本..."
+                    placeholderTextColor: base64Panel._inputPlaceholder
                     wrapMode: TextArea.Wrap
+                    color: base64Panel._inputText
+                    font: base64Panel._inputFont
                     background: Rectangle {
-                        color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Background, UIColorState.Normal)
-                        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Border, UIColorState.Normal)
+                        color: base64Panel._inputBg
+                        border.color: inputArea.activeFocus
+                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
+                            : base64Panel._inputBorder
                         border.width: 1
                         radius: 4
                     }
@@ -67,7 +81,7 @@ Item {
         // Action buttons
         RowLayout {
             spacing: 8
-            
+
             UTButton {
                 text: "编码"
                 onClicked: controller.encode()
@@ -90,8 +104,8 @@ Item {
         UTText {
             visible: controller.errorMessage.length > 0
             text: controller.errorMessage
-            colorEnum: UIColorToken.Sidebar_Item_Text
-            color: "red"
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Content_Error_Text
         }
 
         // Output area
@@ -99,12 +113,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 4
-            
+
             RowLayout {
                 UTText {
                     text: "输出"
                     fontEnum: UIFontToken.Body_Text
-                    colorEnum: UIColorToken.Sidebar_Item_Text
+                    colorEnum: UIColorToken.Content_Secondary_Text
                 }
                 Item { Layout.fillWidth: true }
                 UTButton {
@@ -112,18 +126,23 @@ Item {
                     onClicked: controller.copyOutput()
                 }
             }
-            
+
             ScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                
+
                 TextArea {
+                    id: outputArea
                     text: controller.outputText
                     readOnly: true
                     wrapMode: TextArea.Wrap
+                    color: base64Panel._inputText
+                    font: base64Panel._inputFont
                     background: Rectangle {
-                        color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Background, UIColorState.Normal)
-                        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Border, UIColorState.Normal)
+                        color: base64Panel._inputBg
+                        border.color: outputArea.activeFocus
+                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
+                            : base64Panel._inputBorder
                         border.width: 1
                         radius: 4
                     }

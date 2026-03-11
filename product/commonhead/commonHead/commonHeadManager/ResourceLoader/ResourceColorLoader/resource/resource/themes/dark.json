@@ -152,6 +152,74 @@
       }
     },
     {
+      "token": "content-heading",
+      "color": {
+        "normal": "neutral-50"
+      }
+    },
+    {
+      "token": "content-text",
+      "color": {
+        "normal": "neutral-200"
+      }
+    },
+    {
+      "token": "content-secondary-text",
+      "color": {
+        "normal": "neutral-400"
+      }
+    },
+    {
+      "token": "content-input-background",
+      "color": {
+        "normal": "neutral-900",
+        "focused": "neutral-950"
+      }
+    },
+    {
+      "token": "content-input-text",
+      "color": {
+        "normal": "neutral-100"
+      }
+    },
+    {
+      "token": "content-input-border",
+      "color": {
+        "normal": "neutral-600",
+        "focused": "blue-500"
+      }
+    },
+    {
+      "token": "content-input-placeholder",
+      "color": {
+        "normal": "neutral-500"
+      }
+    },
+    {
+      "token": "content-section-background",
+      "color": {
+        "normal": "neutral-900"
+      }
+    },
+    {
+      "token": "content-section-border",
+      "color": {
+        "normal": "neutral-700"
+      }
+    },
+    {
+      "token": "content-section-title",
+      "color": {
+        "normal": "neutral-300"
+      }
+    },
+    {
+      "token": "content-error-text",
+      "color": {
+        "normal": "red-400"
+      }
+    },
+    {
       "token": "window-border",
       "color": {
         "normal": "neutral-700"

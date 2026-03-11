@@ -39,8 +39,8 @@ Item {
         }
     }
 
-    // Tree container with clip boundary for focus ring
-    FocusScope {
+    // Tree container
+    UTTreeView {
         id: treeContainer
         anchors {
             left: parent.left
@@ -48,133 +48,97 @@ Item {
             top: header.bottom
             bottom: parent.bottom
         }
-        clip: true
-        activeFocusOnTab: true
+        model: controller.orgTreeModel
 
-        onVisibleChanged: {
-            if (visible) forceActiveFocus()
+        onItemActivated: function(idx) {
+            var contactId = treeView.model.data(idx, Qt.UserRole + 1);
+            if (contactId) controller.selectContact(contactId);
         }
 
-        TreeView {
-            id: treeView
-            anchors.fill: parent
-            anchors.margins: 4
-            clip: false
-            activeFocusOnTab: false
-            focus: true
+        delegate: Item {
+            implicitWidth: treeView.width
+            implicitHeight: label.implicitHeight * 1.8
+            z: (current && treeView.activeFocus) ? 1 : 0
 
-            model: controller.orgTreeModel
-            selectionModel: ItemSelectionModel {}
+            readonly property real indentation: 16
+            readonly property real padding: 8
 
-            // No auto-select on focus; just ensure focus ring is visible
-            onActiveFocusChanged: {
-                if (activeFocus && treeView.currentRow < 0 && treeView.model
-                        && treeView.model.rowCount(treeView.rootIndex) > 0) {
-                    // Move current (focus) to first row, but don't select
-                    treeView.selectionModel.setCurrentIndex(
-                        treeView.index(0, 0), ItemSelectionModel.NoUpdate);
-                }
+            // Assigned to by TreeView:
+            required property TreeView treeView
+            required property bool isTreeNode
+            required property bool expanded
+            required property bool hasChildren
+            required property int depth
+            required property int row
+            required property int column
+            required property bool current
+
+            property Animation indicatorAnimation: NumberAnimation {
+                target: indicator
+                property: "rotation"
+                from: expanded ? 0 : 90
+                to: expanded ? 90 : 0
+                duration: 100
+                easing.type: Easing.OutQuart
             }
 
-            Keys.onReturnPressed: selectCurrentItem()
-            Keys.onEnterPressed: selectCurrentItem()
-            Keys.onSpacePressed: selectCurrentItem()
+            TableView.onPooled: indicatorAnimation.complete()
+            TableView.onReused: if (current) indicatorAnimation.start()
+            onExpandedChanged: indicator.rotation = expanded ? 90 : 0
 
-            function selectCurrentItem() {
-                if (treeView.currentRow >= 0) {
-                    const idx = treeView.index(treeView.currentRow, 0);
-                    const contactId = treeView.model.data(idx, Qt.UserRole + 1); // IdRole
-                    if (contactId) {
-                        controller.selectContact(contactId);
-                    }
-                }
+            HoverHandler { id: hoverHandler }
+
+            Rectangle {
+                id: background
+                anchors.fill: parent
+                color: model.id === controller.currentContactId
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
+                    : hoverHandler.hovered
+                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+                        : "transparent"
             }
 
-            delegate: Item {
-                implicitWidth: treeView.width
-                implicitHeight: label.implicitHeight * 1.8
-                z: (current && treeView.activeFocus) ? 1 : 0
+            UTLabel {
+                id: indicator
+                x: padding + (depth * indentation)
+                anchors.verticalCenter: parent.verticalCenter
+                visible: isTreeNode && hasChildren
+                text: "▶"
+                fontEnum: UIFontToken.Caption_Text
+                colorEnum: UIColorToken.Sidebar_Item_Text
 
-                readonly property real indentation: 16
-                readonly property real padding: 8
-
-                // Assigned to by TreeView:
-                required property TreeView treeView
-                required property bool isTreeNode
-                required property bool expanded
-                required property bool hasChildren
-                required property int depth
-                required property int row
-                required property int column
-                required property bool current
-
-                property Animation indicatorAnimation: NumberAnimation {
-                    target: indicator
-                    property: "rotation"
-                    from: expanded ? 0 : 90
-                    to: expanded ? 90 : 0
-                    duration: 100
-                    easing.type: Easing.OutQuart
-                }
-
-                TableView.onPooled: indicatorAnimation.complete()
-                TableView.onReused: if (current) indicatorAnimation.start()
-                onExpandedChanged: indicator.rotation = expanded ? 90 : 0
-
-                HoverHandler { id: hoverHandler }
-
-                Rectangle {
-                    id: background
-                    anchors.fill: parent
-                    color: model.id === controller.selectedContactId
-                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-                        : hoverHandler.hovered
-                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                            : "transparent"
-                }
-
-                UTLabel {
-                    id: indicator
-                    x: padding + (depth * indentation)
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: isTreeNode && hasChildren
-                    text: "▶"
-                    fontEnum: UIFontToken.Caption_Text
-                    colorEnum: UIColorToken.Sidebar_Item_Text
-
-                    TapHandler {
-                        onSingleTapped: {
-                            const idx = treeView.index(row, column);
-                            treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
-                            controller.selectContact(model.id);
-                            treeView.toggleExpanded(row);
-                        }
-                    }
-                }
-
-                UTLabel {
-                    id: label
-                    x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - padding - x
-                    text: model.displayName
-                    fontEnum: UIFontToken.Body_Text
-                    colorEnum: UIColorToken.Sidebar_Item_Text
-                    colorState: model.id === controller.selectedContactId ? UIColorState.Selected : UIColorState.Normal
-                }
-
-                // Click to select
                 TapHandler {
                     onSingleTapped: {
                         const idx = treeView.index(row, column);
                         treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
                         controller.selectContact(model.id);
+                        treeView.toggleExpanded(row);
                     }
                 }
+            }
 
-                UTFocusItem {
-                    externallyShown: current && treeView.activeFocus
+            UTLabel {
+                id: label
+                x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
+                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width - padding - x
+                text: model.displayName
+                fontEnum: UIFontToken.Body_Text
+                colorEnum: UIColorToken.Sidebar_Item_Text
+                colorState: model.id === controller.currentContactId ? UIColorState.Selected : UIColorState.Normal
+            }
+
+            // Click to select
+            TapHandler {
+                onSingleTapped: {
+                    const idx = treeView.index(row, column);
+                    treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
+                    controller.selectContact(model.id);
                 }
+            }
+
+            UTFocusItem {
+                externallyShown: current && treeContainer.treeView.activeFocus
             }
         }
     }

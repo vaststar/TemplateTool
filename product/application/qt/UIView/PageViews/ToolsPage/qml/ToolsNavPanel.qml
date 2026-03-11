@@ -25,56 +25,17 @@ Item {
         color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Border, UIColorState.Normal)
     }
 
-    // Tree container with clip for focus ring
-    FocusScope {
+    // Tree container
+    UTTreeView {
         id: treeContainer
         anchors.fill: parent
-        clip: true
-        activeFocusOnTab: true
+        model: controller ? controller.treeModel : null
+        expandAll: true
 
-        onVisibleChanged: {
-            if (visible) forceActiveFocus()
+        onItemActivated: function(idx) {
+            var nodeId = treeView.model.data(idx, Qt.UserRole + 1);
+            if (nodeId) controller.selectNode(nodeId);
         }
-
-        TreeView {
-            id: treeView
-            anchors.fill: parent
-            anchors.margins: 4
-            model: controller ? controller.treeModel : null
-            clip: false
-            activeFocusOnTab: false
-            focus: true
-            selectionModel: ItemSelectionModel {}
-
-            // No auto-select on focus; just ensure focus ring is visible
-            onActiveFocusChanged: {
-                if (activeFocus && treeView.currentRow < 0 && treeView.model
-                        && treeView.model.rowCount(treeView.rootIndex) > 0) {
-                    // Move current (focus) to first row, but don't select
-                    treeView.selectionModel.setCurrentIndex(
-                        treeView.index(0, 0), ItemSelectionModel.NoUpdate);
-                }
-            }
-
-            Keys.onReturnPressed: function(e) {
-                e.accepted = true;
-                activateCurrentItem();
-            }
-
-            Keys.onSpacePressed: function(e) {
-                e.accepted = true;
-                activateCurrentItem();
-            }
-
-            function activateCurrentItem() {
-                if (treeView.currentRow >= 0) {
-                    const idx = treeView.index(treeView.currentRow, 0);
-                    const nodeId = treeView.model.data(idx, Qt.UserRole + 1); // NodeIdRole
-                    if (nodeId) {
-                        controller.selectNode(nodeId);
-                    }
-                }
-            }
 
             delegate: Item {
                 id: navItem
@@ -164,9 +125,8 @@ Item {
                 }
 
                 UTFocusItem {
-                    externallyShown: current && treeView.activeFocus
+                    externallyShown: current && treeContainer.treeView.activeFocus
                 }
             }
-        }
     }
 }

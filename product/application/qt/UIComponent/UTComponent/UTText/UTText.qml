@@ -6,8 +6,8 @@ import UIResourceLoader 1.0
 BaseText {
     id: control
 
-    required property var fontEnum
-    required property var colorEnum
+    property var fontEnum: UIFontToken.Body_Text
+    property var colorEnum: UIColorToken.Content_Text
     property var colorState: UIColorState.Normal
 
     font: UTComponentUtil.getUIFont(fontEnum)

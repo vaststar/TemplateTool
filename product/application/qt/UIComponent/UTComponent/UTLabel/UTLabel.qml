@@ -7,9 +7,8 @@ import UIResourceLoader 1.0
 BaseLabel {
     id: control
 
-    // ── Required tokens ──
-    required property var fontEnum
-    required property var colorEnum
+    property var fontEnum: UIFontToken.Body_Text
+    property var colorEnum: UIColorToken.Content_Text
     property var colorState: UIColorState.Normal
 
     // ── Optional: link color token (enables link mode when set) ──

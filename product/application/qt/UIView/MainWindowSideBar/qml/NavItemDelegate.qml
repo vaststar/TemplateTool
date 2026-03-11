@@ -62,7 +62,7 @@ Rectangle {
         UTText {
             Layout.fillWidth: true
             text: navItem.title
-            fontEnum: UIFontToken.Body_Text_Medium
+            fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
             colorState: navItem.isSelected ? UIColorState.Selected : UIColorState.Normal
             font.weight: navItem.isSelected ? Font.Medium : Font.Normal

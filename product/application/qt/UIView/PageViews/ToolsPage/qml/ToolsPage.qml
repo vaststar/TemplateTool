@@ -31,6 +31,7 @@ Item {
 
             onLoaded: {
                 // Initialize panel controller via setupController
+                console.log("Content loaded:", item, "with controller:", item ? item.controller : null);
                 if (item && "controller" in item && item.controller) {
                     toolsPage.controller.setupController(item.controller)
                 }

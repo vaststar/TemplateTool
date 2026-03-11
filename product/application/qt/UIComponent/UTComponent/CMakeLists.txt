@@ -58,6 +58,7 @@ set(MODULE_QML_TARGET_FILES
     UTLabel/UTLabel.qml
     UTText/UTText.qml
     UTToolTip/UTToolTip.qml
+    UTTreeView/UTTreeView.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

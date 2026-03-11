@@ -8,8 +8,8 @@ Item {
 
     required property ContactsPageController controller
 
-    property var contactInfo: controller.selectedContactId 
-        ? controller.getContactInfo(controller.selectedContactId) 
+    property var contactInfo: controller.currentContactId 
+        ? controller.getContactInfo(controller.currentContactId) 
         : null
 
     UTText {
