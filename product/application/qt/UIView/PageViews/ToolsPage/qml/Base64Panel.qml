@@ -23,7 +23,7 @@ Item {
 
         // Title
         UTText {
-            text: "Base64 编解码"
+            text: qsTr("Base64 Encode/Decode")
             fontEnum: UIFontToken.Heading_Text
             colorEnum: UIColorToken.Content_Heading
         }
@@ -34,7 +34,7 @@ Item {
 
             CheckBox {
                 id: urlSafeCheck
-                text: "URL 安全模式"
+                text: qsTr("URL Safe Mode")
                 checked: controller.urlSafe
                 onCheckedChanged: controller.urlSafe = checked
                 font: base64Panel._inputFont
@@ -48,7 +48,7 @@ Item {
             spacing: 4
 
             UTText {
-                text: "输入"
+                text: qsTr("Input")
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Content_Secondary_Text
             }
@@ -61,7 +61,7 @@ Item {
                     id: inputArea
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
-                    placeholderText: "在此输入文本..."
+                    placeholderText: qsTr("Enter text here...")
                     placeholderTextColor: base64Panel._inputPlaceholder
                     wrapMode: TextArea.Wrap
                     color: base64Panel._inputText
@@ -83,19 +83,19 @@ Item {
             spacing: 8
 
             UTButton {
-                text: "编码"
+                text: qsTr("Encode")
                 onClicked: controller.encode()
             }
             UTButton {
-                text: "解码"
+                text: qsTr("Decode")
                 onClicked: controller.decode()
             }
             UTButton {
-                text: "交换"
+                text: qsTr("Swap")
                 onClicked: controller.swapInputOutput()
             }
             UTButton {
-                text: "清空"
+                text: qsTr("Clear")
                 onClicked: controller.clearAll()
             }
         }
@@ -116,13 +116,13 @@ Item {
 
             RowLayout {
                 UTText {
-                    text: "输出"
+                    text: qsTr("Output")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Secondary_Text
                 }
                 Item { Layout.fillWidth: true }
                 UTButton {
-                    text: "复制"
+                    text: qsTr("Copy")
                     onClicked: controller.copyOutput()
                 }
             }

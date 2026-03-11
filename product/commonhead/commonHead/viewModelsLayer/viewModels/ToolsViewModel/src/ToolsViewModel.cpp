@@ -1,16 +1,22 @@
 #include "ToolsViewModel.h"
-#include "ToolsModel.h"
-
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
-#include <ucf/Utilities/Base64Utils/Base64Utils.h>
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+
+#include <ucf/Utilities/Base64Utils/Base64Utils.h>
+#include <ucf/Utilities/JsonUtils/JsonValue.h>
+#include <ucf/Utilities/TimeUtils/TimeUtils.h>
+#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+
+#include <ResourceString.h>
+
+#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+#include <commonHead/ResourceLoader/IResourceLoader.h>
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+
+#include "ToolsModel.h"
 
 namespace commonHead::viewModels {
 
@@ -131,7 +137,8 @@ JsonFormatResult ToolsViewModel::jsonValidate(const std::string& input)
     }
     else
     {
-        result.data = "JSON 格式有效";
+        auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+        result.data = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsJsonValid);
     }
     return result;
 }
@@ -151,7 +158,8 @@ TimestampResult ToolsViewModel::timestampToDateTime(int64_t timestamp, bool isMi
         if (!tm)
         {
             result.success = false;
-            result.errorMessage = "无效的时间戳";
+            auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+            result.errorMessage = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsInvalidTimestamp);
             return result;
         }
         
@@ -187,7 +195,8 @@ TimestampResult ToolsViewModel::dateTimeToTimestamp(const std::string& dateTimeS
         if (iss.fail())
         {
             result.success = false;
-            result.errorMessage = "日期时间格式解析失败";
+            auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+            result.errorMessage = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsDateTimeParseFailed);
             return result;
         }
         
@@ -195,7 +204,8 @@ TimestampResult ToolsViewModel::dateTimeToTimestamp(const std::string& dateTimeS
         if (seconds == -1)
         {
             result.success = false;
-            result.errorMessage = "无效的日期时间";
+            auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+            result.errorMessage = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsInvalidDateTime);
             return result;
         }
         
@@ -243,58 +253,61 @@ void ToolsViewModel::buildToolsTree()
 {
     auto tree = std::make_shared<model::ToolsTree>();
 
-    // 文本处理分类 (empty parentId means add to virtual root)
+
+    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+
+    // Text Processing category
     tree->addNode("", {
         "text",
-        "文本处理",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryText),
         "",
         model::ToolPanelType::None
     });
 
-    // 文本处理 > Base64 编解码
+    // Text Processing > Base64 Encode/Decode
     tree->addNode("text", {
         "text.base64",
-        "Base64 编解码",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsBase64),
         "",
         model::ToolPanelType::Base64
     });
 
-    // 文本处理 > JSON 格式化
+    // Text Processing > JSON Formatter
     tree->addNode("text", {
         "text.json",
-        "JSON 格式化",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsJson),
         "",
         model::ToolPanelType::Json
     });
 
-    // 时间日期分类
+    // Date & Time category
     tree->addNode("", {
         "time",
-        "时间日期",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryTime),
         "",
         model::ToolPanelType::None
     });
 
-    // 时间日期 > 时间戳转换
+    // Date & Time > Timestamp Converter
     tree->addNode("time", {
         "time.timestamp",
-        "时间戳转换",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsTimestamp),
         "",
         model::ToolPanelType::Timestamp
     });
 
-    // 生成器分类
+    // Generators category
     tree->addNode("", {
         "generator",
-        "生成器",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryGenerator),
         "",
         model::ToolPanelType::None
     });
 
-    // 生成器 > UUID 生成
+    // Generators > UUID Generator
     tree->addNode("generator", {
         "generator.uuid",
-        "UUID 生成",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsUuid),
         "",
         model::ToolPanelType::Uuid
     });

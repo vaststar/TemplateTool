@@ -27,7 +27,7 @@ Item {
 
         // Title
         UTText {
-            text: "UUID 生成"
+            text: qsTr("UUID Generator")
             fontEnum: UIFontToken.Heading_Text
             colorEnum: UIColorToken.Content_Heading
         }
@@ -35,7 +35,7 @@ Item {
         // Generate section
         GroupBox {
             Layout.fillWidth: true
-            title: "生成 UUID"
+            title: qsTr("Generate UUID")
             font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
             palette.windowText: uuidPanel._sectionTitle
             background: Rectangle {
@@ -56,12 +56,12 @@ Item {
                     spacing: 8
 
                     UTButton {
-                        text: "生成"
+                        text: qsTr("Generate")
                         onClicked: controller.generate()
                     }
 
                     UTButton {
-                        text: "批量生成 (5个)"
+                        text: qsTr("Batch Generate (5)")
                         onClicked: controller.generateMultiple(5)
                     }
                 }
@@ -87,7 +87,7 @@ Item {
                     }
 
                     UTButton {
-                        text: "复制"
+                        text: qsTr("Copy")
                         onClicked: controller.copyUuid()
                         enabled: controller.generatedUuid.length > 0
                     }
@@ -98,7 +98,7 @@ Item {
         // Validate section
         GroupBox {
             Layout.fillWidth: true
-            title: "校验 UUID"
+            title: qsTr("Validate UUID")
             font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
             palette.windowText: uuidPanel._sectionTitle
             background: Rectangle {
@@ -121,7 +121,7 @@ Item {
                     TextField {
                         id: validateInput
                         Layout.fillWidth: true
-                        placeholderText: "输入要校验的 UUID..."
+                        placeholderText: qsTr("Enter UUID to validate...")
                         placeholderTextColor: uuidPanel._inputPlaceholder
                         text: controller.validateInput
                         onTextChanged: controller.validateInput = text
@@ -138,7 +138,7 @@ Item {
                     }
 
                     UTButton {
-                        text: "校验"
+                        text: qsTr("Validate")
                         onClicked: controller.validate()
                     }
                 }
@@ -156,7 +156,7 @@ Item {
         GroupBox {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            title: "生成历史"
+            title: qsTr("Generation History")
             font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
             palette.windowText: uuidPanel._sectionTitle
             background: Rectangle {
@@ -176,12 +176,12 @@ Item {
 
                 RowLayout {
                     UTButton {
-                        text: "复制全部"
+                        text: qsTr("Copy All")
                         onClicked: controller.copyHistory()
                         enabled: controller.uuidHistory.length > 0
                     }
                     UTButton {
-                        text: "清空历史"
+                        text: qsTr("Clear History")
                         onClicked: controller.clearHistory()
                         enabled: controller.uuidHistory.length > 0
                     }

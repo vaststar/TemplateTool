@@ -94,7 +94,7 @@ void UuidToolController::validate()
         return;
 
     bool isValid = m_toolsViewModel->isValidUuid(m_validateInput.toStdString());
-    m_validateResult = isValid ? "✓ 有效的 UUID" : "✗ 无效的 UUID";
+    m_validateResult = isValid ? tr("✓ Valid UUID") : tr("✗ Invalid UUID");
     
     emit validateResultChanged();
 }

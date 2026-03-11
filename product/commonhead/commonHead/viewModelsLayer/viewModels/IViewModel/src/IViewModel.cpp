@@ -1,7 +1,6 @@
 #include <commonHead/viewModels/IViewModel/IViewModel.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 namespace commonHead::viewModels{
 

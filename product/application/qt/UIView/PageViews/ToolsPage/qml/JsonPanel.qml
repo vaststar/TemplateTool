@@ -23,7 +23,7 @@ Item {
 
         // Title
         UTText {
-            text: "JSON 格式化"
+            text: qsTr("JSON Formatter")
             fontEnum: UIFontToken.Heading_Text
             colorEnum: UIColorToken.Content_Heading
         }
@@ -33,7 +33,7 @@ Item {
             spacing: 16
 
             UTText {
-                text: "缩进空格数："
+                text: qsTr("Indent spaces:")
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Content_Text
             }
@@ -55,7 +55,7 @@ Item {
             spacing: 4
 
             UTText {
-                text: "输入 JSON"
+                text: qsTr("Input JSON")
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Content_Secondary_Text
             }
@@ -68,7 +68,7 @@ Item {
                     id: inputArea
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
-                    placeholderText: "在此输入 JSON..."
+                    placeholderText: qsTr("Enter JSON here...")
                     placeholderTextColor: jsonPanel._inputPlaceholder
                     wrapMode: TextArea.Wrap
                     font.family: "Consolas"
@@ -91,19 +91,19 @@ Item {
             spacing: 8
 
             UTButton {
-                text: "格式化"
+                text: qsTr("Format")
                 onClicked: controller.format()
             }
             UTButton {
-                text: "压缩"
+                text: qsTr("Minify")
                 onClicked: controller.minify()
             }
             UTButton {
-                text: "校验"
+                text: qsTr("Validate")
                 onClicked: controller.validate()
             }
             UTButton {
-                text: "清空"
+                text: qsTr("Clear")
                 onClicked: controller.clearAll()
             }
         }
@@ -124,13 +124,13 @@ Item {
 
             RowLayout {
                 UTText {
-                    text: "输出"
+                    text: qsTr("Output")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Secondary_Text
                 }
                 Item { Layout.fillWidth: true }
                 UTButton {
-                    text: "复制"
+                    text: qsTr("Copy")
                     onClicked: controller.copyOutput()
                 }
             }

@@ -29,6 +29,25 @@
       "value": "aab", 
       "conditions": []
     }
+    ,
+    { "token": "NavHome", "value": "Home", "conditions": [] },
+    { "token": "NavContacts", "value": "Contacts", "conditions": [] },
+    { "token": "NavTasks", "value": "Tasks", "conditions": [] },
+    { "token": "NavCredentials", "value": "Credentials", "conditions": [] },
+    { "token": "NavToolbox", "value": "Toolbox", "conditions": [] },
+    { "token": "NavSettings", "value": "Settings", "conditions": [] },
+    { "token": "NavHelp", "value": "Help", "conditions": [] },
+    { "token": "ToolsCategoryText", "value": "Text Processing", "conditions": [] },
+    { "token": "ToolsCategoryTime", "value": "Date & Time", "conditions": [] },
+    { "token": "ToolsCategoryGenerator", "value": "Generators", "conditions": [] },
+    { "token": "ToolsBase64", "value": "Base64 Encode/Decode", "conditions": [] },
+    { "token": "ToolsJson", "value": "JSON Formatter", "conditions": [] },
+    { "token": "ToolsTimestamp", "value": "Timestamp Converter", "conditions": [] },
+    { "token": "ToolsUuid", "value": "UUID Generator", "conditions": [] },
+    { "token": "ToolsJsonValid", "value": "JSON is valid", "conditions": [] },
+    { "token": "ToolsInvalidTimestamp", "value": "Invalid timestamp", "conditions": [] },
+    { "token": "ToolsDateTimeParseFailed", "value": "DateTime format parse failed", "conditions": [] },
+    { "token": "ToolsInvalidDateTime", "value": "Invalid datetime", "conditions": [] }
   ],
   "LocalizedStringWithParam": [
     {

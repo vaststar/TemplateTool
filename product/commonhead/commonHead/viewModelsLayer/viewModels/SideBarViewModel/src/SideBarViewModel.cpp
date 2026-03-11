@@ -2,7 +2,11 @@
 
 #include <algorithm>
 #include <AssetToken.h>
+#include <ResourceString.h>
+
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
+#include <commonHead/ResourceLoader/IResourceLoader.h>
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 namespace commonHead::viewModels {
 
@@ -46,13 +50,14 @@ void SideBarViewModel::initDefaultNavItems()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
     
+    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
     m_navItems =
     {
         // ========== Top navigation items ==========
         {
             model::PageId::Home,
             "home",
-            "首页",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavHome),
             commonHead::model::AssetImageToken::Nav_Home,
             commonHead::model::AssetImageToken::Nav_Home_Selected,
             0,
@@ -63,7 +68,7 @@ void SideBarViewModel::initDefaultNavItems()
         {
             model::PageId::Contacts,
             "contacts",
-            "联系人",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavContacts),
             commonHead::model::AssetImageToken::Nav_Contacts,
             commonHead::model::AssetImageToken::Nav_Contacts_Selected,
             0,
@@ -74,7 +79,7 @@ void SideBarViewModel::initDefaultNavItems()
         {
             model::PageId::Tasks,
             "tasks",
-            "计划",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavTasks),
             commonHead::model::AssetImageToken::Nav_Tasks,
             commonHead::model::AssetImageToken::Nav_Tasks_Selected,
             0,
@@ -85,7 +90,7 @@ void SideBarViewModel::initDefaultNavItems()
         {
             model::PageId::Credentials,
             "credentials",
-            "证件",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavCredentials),
             commonHead::model::AssetImageToken::Nav_Credentials,
             commonHead::model::AssetImageToken::Nav_Credentials_Selected,
             0,
@@ -96,7 +101,7 @@ void SideBarViewModel::initDefaultNavItems()
         {
             model::PageId::Toolbox,
             "toolbox",
-            "工具",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavToolbox),
             commonHead::model::AssetImageToken::Nav_Toolbox,
             commonHead::model::AssetImageToken::Nav_Toolbox_Selected,
             0,
@@ -109,7 +114,7 @@ void SideBarViewModel::initDefaultNavItems()
         {
             model::PageId::Settings,
             "settings",
-            "设置",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavSettings),
             commonHead::model::AssetImageToken::Nav_Settings,
             commonHead::model::AssetImageToken::Nav_Settings_Selected,
             0,
@@ -120,7 +125,7 @@ void SideBarViewModel::initDefaultNavItems()
         {
             model::PageId::Help,
             "help",
-            "帮助",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavHelp),
             commonHead::model::AssetImageToken::Nav_Help,
             commonHead::model::AssetImageToken::Nav_Help_Selected,
             0,
