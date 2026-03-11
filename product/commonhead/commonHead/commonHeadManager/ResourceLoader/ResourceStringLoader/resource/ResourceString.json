@@ -19,9 +19,9 @@
       "token": "TitleLabel",
       "value": "Title",
       "conditions": [
-        { "platform": "windows", "value": "Window Title" },
-        { "platform": "macos", "value": "macOS Title" },
-        { "platform": "linux", "value": "Linux Title" }
+        { "platform": "windows", "value": "App Title" },
+        { "platform": "macos", "value": "App Title" },
+        { "platform": "linux", "value": "App Title" }
       ]
     },
     {

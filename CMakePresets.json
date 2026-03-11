@@ -14,8 +14,7 @@
       "installDir": "${sourceDir}/install/${presetName}",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_VERBOSE_MAKEFILE": "ON",
-        "I18N_UPDATE_TS": "ON"
+        "CMAKE_VERBOSE_MAKEFILE": "ON"
       }
     },
     {

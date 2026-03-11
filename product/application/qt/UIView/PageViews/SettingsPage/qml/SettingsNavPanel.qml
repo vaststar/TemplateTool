@@ -44,6 +44,12 @@ Item {
             activeFocusOnTab: true
             selectionModel: ItemSelectionModel {}
 
+            Timer {
+                interval: 0
+                running: treeView.model !== null
+                onTriggered: treeView.expandRecursively()
+            }
+
             // No auto-select on focus; just ensure focus ring is visible
             onActiveFocusChanged: {
                 if (activeFocus && treeView.currentRow < 0 && treeView.model

@@ -52,7 +52,8 @@ endif()
 # Normalize codegen paths in .ts files after lupdate
 # This prevents git diff when switching between macOS and Windows builds
 set(NORMALIZE_TS_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/normalize_ts_paths.py")
-if(EXISTS ${NORMALIZE_TS_SCRIPT} AND TARGET ${Translation_LIB}_lupdate)
+find_package(Python3 QUIET COMPONENTS Interpreter)
+if(EXISTS ${NORMALIZE_TS_SCRIPT} AND TARGET ${Translation_LIB}_lupdate AND Python3_FOUND)
     add_custom_command(
         TARGET ${Translation_LIB}_lupdate
         POST_BUILD
@@ -60,7 +61,11 @@ if(EXISTS ${NORMALIZE_TS_SCRIPT} AND TARGET ${Translation_LIB}_lupdate)
         COMMENT "[I18N] Normalizing codegen paths in .ts files..."
         VERBATIM
     )
-    message(STATUS "[I18N] Will normalize .ts paths after lupdate")
+    message(STATUS "[I18N] Will normalize .ts paths after lupdate (Python3: ${Python3_EXECUTABLE})")
+else()
+    if(NOT Python3_FOUND)
+        message(WARNING "[I18N] Python3 not found, skipping .ts path normalization")
+    endif()
 endif()
 
 if (NOT TARGET ${Translation_LIB}_lupdate)
@@ -68,32 +73,26 @@ if (NOT TARGET ${Translation_LIB}_lupdate)
 endif()
 
 
-option(I18N_UPDATE_TS "Run lupdate during build (OFF = only when explicitly invoked)" OFF)
 set(UPDATE_Translation_ALL UPDATE_Translation_ALL_LIB)
-if(I18N_UPDATE_TS)
-    message(STATUS "I18N_UPDATE_TS is ON")
 
-    add_custom_target(${UPDATE_Translation_ALL})
-    add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_lupdate)
+add_custom_target(${UPDATE_Translation_ALL})
+add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_lupdate)
 
-    if (TARGET ${Translation_LIB}_lrelease)
-        add_dependencies(${Translation_LIB}_lrelease ${Translation_LIB}_lupdate)
-        add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_lrelease)
-    endif()
-
-    if (TARGET ${Translation_LIB}_${Translation_LIB}_translations)
-        add_dependencies(${Translation_LIB}_${Translation_LIB}_translations ${Translation_LIB}_lupdate)
-        add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_${Translation_LIB}_translations)
-    endif()
-
-    if (TARGET release_translations AND TARGET update_translations)
-        add_dependencies(release_translations update_translations)
-        add_dependencies(${UPDATE_Translation_ALL} release_translations)
-    endif()
-    add_dependencies(${Translation_LIB} ${UPDATE_Translation_ALL} )
-else()
-    message(STATUS "I18N_UPDATE_TS is OFF")
+if (TARGET ${Translation_LIB}_lrelease)
+    add_dependencies(${Translation_LIB}_lrelease ${Translation_LIB}_lupdate)
+    add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_lrelease)
 endif()
+
+if (TARGET ${Translation_LIB}_${Translation_LIB}_translations)
+    add_dependencies(${Translation_LIB}_${Translation_LIB}_translations ${Translation_LIB}_lupdate)
+    add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_${Translation_LIB}_translations)
+endif()
+
+if (TARGET release_translations AND TARGET update_translations)
+    add_dependencies(release_translations update_translations)
+    add_dependencies(${UPDATE_Translation_ALL} release_translations)
+endif()
+add_dependencies(${Translation_LIB} ${UPDATE_Translation_ALL} )
 
 if (TARGET release_translations)
     add_dependencies(${Translation_LIB} release_translations )

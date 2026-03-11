@@ -110,7 +110,7 @@
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="19"/>
-        <source>macOS Title</source>
+        <source>App Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
