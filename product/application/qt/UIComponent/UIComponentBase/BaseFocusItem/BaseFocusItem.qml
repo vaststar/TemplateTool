@@ -1,10 +1,11 @@
 import QtQuick 2.15
+import UIComponentBase
 
 Item {
     id: root
 
     property Item target: parent
-    property bool externallyShown: false
+    property bool delegateFocused: false  // for delegate items: set to true when container considers this the focused item
     property color focusColor: "blue"
     property int borderWidth: 2
     property real focusRadius: NaN
@@ -14,7 +15,8 @@ Item {
     readonly property int animationDuration: 50
     readonly property bool targetOk: !!target && target.visible && target.enabled
     readonly property bool targetFocused: !!target && target.activeFocus
-    readonly property bool effectiveVisible: targetOk && (targetFocused || externallyShown)
+    readonly property bool effectiveVisible: targetOk && KeyboardFocusTracker.keyboardNavigating
+                                              && (delegateFocused || targetFocused)
 
     anchors.fill: target
     anchors.margins: -effectiveMargin

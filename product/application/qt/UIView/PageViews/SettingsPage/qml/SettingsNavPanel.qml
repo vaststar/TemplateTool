@@ -125,7 +125,7 @@ Item {
             }
 
             UTFocusItem {
-                externallyShown: current && treeContainer.treeView.activeFocus
+                delegateFocused: current && treeContainer.treeView.activeFocus
             }
         }
     }

@@ -126,7 +126,7 @@ BaseComboBox {
 
         UTFocusItem {
             target: delegateItem.background
-            externallyShown: delegateItem.isHighlighted && control.popupIsOpen
+            delegateFocused: delegateItem.isHighlighted && control.popupIsOpen
             focusRadius: control.borderRadius - 2
         }
     }

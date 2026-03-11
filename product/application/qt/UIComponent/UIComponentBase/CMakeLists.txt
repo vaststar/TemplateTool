@@ -14,11 +14,13 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(MODULE_HEADER_FILES #for include and install header
     include/UIComponentBase/UIComponentBaseExport.h
     include/UIComponentBase/UIComponentBase.h
+    include/UIComponentBase/KeyboardFocusTracker.h
     BaseQRCode/QRCodeGenerator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
     src/UIComponentBase.cpp
+    src/KeyboardFocusTracker.cpp
     BaseQRCode/QRCodeGenerator.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
