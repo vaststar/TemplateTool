@@ -1,4 +1,4 @@
-#include <UIComponentBase/KeyboardFocusTracker.h>
+#include "KeyboardFocusTracker.h"
 
 #include <QEvent>
 #include <QKeyEvent>
