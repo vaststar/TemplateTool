@@ -8,12 +8,7 @@ Item {
     id: settingsPage
     property SettingsPageController controller: SettingsPageController {}
 
-    // Focus tree when page becomes visible
-    onVisibleChanged: {
-        if (visible) {
-            settingsNav.focusFirstNode()
-        }
-    }
+
 
     RowLayout {
         anchors.fill: parent

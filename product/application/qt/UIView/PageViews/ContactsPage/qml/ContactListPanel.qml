@@ -40,7 +40,7 @@ Item {
     }
 
     // Tree container with clip boundary for focus ring
-    Item {
+    FocusScope {
         id: treeContainer
         anchors {
             left: parent.left
@@ -49,17 +49,19 @@ Item {
             bottom: parent.bottom
         }
         clip: true
+        activeFocusOnTab: true
+
+        onVisibleChanged: {
+            if (visible) forceActiveFocus()
+        }
 
         TreeView {
             id: treeView
             anchors.fill: parent
             anchors.margins: 4
             clip: false
-            activeFocusOnTab: true
-
-            onVisibleChanged: {
-                if (visible) forceActiveFocus()
-            }
+            activeFocusOnTab: false
+            focus: true
 
             model: controller.orgTreeModel
             selectionModel: ItemSelectionModel {}

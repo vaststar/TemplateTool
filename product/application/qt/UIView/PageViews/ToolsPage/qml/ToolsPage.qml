@@ -8,12 +8,7 @@ Item {
     id: toolsPage
     property ToolsPageController controller: ToolsPageController {}
 
-    // Focus tree when page becomes visible
-    onVisibleChanged: {
-        if (visible) {
-            toolsNav.focusFirstNode()
-        }
-    }
+
 
     RowLayout {
         anchors.fill: parent

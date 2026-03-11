@@ -11,10 +11,6 @@ Item {
 
     width: 200
 
-    function focusFirstNode() {
-        treeView.forceActiveFocus()
-    }
-
     Rectangle {
         anchors.fill: parent
         color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
@@ -30,10 +26,15 @@ Item {
     }
 
     // Tree container with clip for focus ring
-    Item {
+    FocusScope {
         id: treeContainer
         anchors.fill: parent
         clip: true
+        activeFocusOnTab: true
+
+        onVisibleChanged: {
+            if (visible) forceActiveFocus()
+        }
 
         TreeView {
             id: treeView
@@ -41,7 +42,8 @@ Item {
             anchors.margins: 4
             model: controller ? controller.treeModel : null
             clip: false
-            activeFocusOnTab: true
+            activeFocusOnTab: false
+            focus: true
             selectionModel: ItemSelectionModel {}
 
             // No auto-select on focus; just ensure focus ring is visible
