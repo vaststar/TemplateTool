@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import UIComponentBase 1.0
 import UIResourceLoader 1.0
 import UTComponent 1.0
@@ -42,7 +42,7 @@ BaseComboBox {
     indicator: UTText {
         x: control.width - width - 12
         y: (control.height - height) / 2
-        text: "\u25BE"
+        text: control.popup.visible ? "\u25B4" : "\u25BE"
         fontEnum: UIFontToken.Combobox_Text
         color: control.textColor
     }

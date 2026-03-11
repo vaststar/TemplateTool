@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 
 ComboBox {
     id: control
@@ -35,7 +35,6 @@ ComboBox {
         if (popupIsOpen) {
             // Wrap to bottom when at top
             focusedItemIndex = focusedItemIndex <= 0 ? count - 1 : focusedItemIndex - 1
-            highlightedIndex = focusedItemIndex
         } else {
             var newIndex = currentIndex <= 0 ? count - 1 : currentIndex - 1
             currentIndex = newIndex
@@ -47,7 +46,6 @@ ComboBox {
         if (popupIsOpen) {
             // Wrap to top when at bottom
             focusedItemIndex = focusedItemIndex >= count - 1 ? 0 : focusedItemIndex + 1
-            highlightedIndex = focusedItemIndex
         } else {
             var newIndex = currentIndex >= count - 1 ? 0 : currentIndex + 1
             currentIndex = newIndex
@@ -73,7 +71,6 @@ ComboBox {
     popup.onOpened: {
         popupIsOpen = true
         focusedItemIndex = currentIndex
-        highlightedIndex = currentIndex
     }
     popup.onClosed: {
         popupIsOpen = false
