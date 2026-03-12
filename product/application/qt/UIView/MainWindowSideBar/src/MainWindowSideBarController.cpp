@@ -122,3 +122,11 @@ void MainWindowSideBarController::onNavItemUpdated(const commonHead::viewModels:
         m_bottomNavItems->updateItem(item);
     }
 }
+
+void MainWindowSideBarController::onLanguageChanged()
+{
+    UIVIEW_LOG_DEBUG("MainWindowSideBarController::onLanguageChanged");
+    if (m_sideBarViewModel) {
+        m_sideBarViewModel->reloadNavConfig();
+    }
+}

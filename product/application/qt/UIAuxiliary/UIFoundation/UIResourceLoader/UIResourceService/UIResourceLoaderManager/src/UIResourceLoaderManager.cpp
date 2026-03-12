@@ -177,6 +177,6 @@ QString UIResourceLoaderManager::getVideoResourcePath(UIAssetVideoToken::AssetVi
 void UIResourceLoaderManager::notifyThemeChanged()
 {
     ++mThemeRevision;
-    emit themeRevisionChanged();
+    emit themeChanged();
 }
 }

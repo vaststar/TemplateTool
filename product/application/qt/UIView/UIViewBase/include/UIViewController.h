@@ -22,12 +22,20 @@ public:
 protected:
     virtual void init() = 0;
     
+    // Called when application language changes. Override to refresh localized data.
+    virtual void onLanguageChanged();
+
+    // Called when application theme changes. Override to refresh theme-dependent data.
+    virtual void onThemeChanged();
+    
     // Override this to add custom logic before controller initialization
     virtual void onSetupController(UIViewController* controller);
     
     QPointer<AppContext> getAppContext() const;
 signals:
     void controllerInitialized();
+    void languageChanged();
+    void themeChanged();
 private:
     QPointer<AppContext> mAppContext;
 };

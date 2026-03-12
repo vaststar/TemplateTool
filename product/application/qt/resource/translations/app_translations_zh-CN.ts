@@ -315,12 +315,27 @@
         <translation>无效的日期时间</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
+        <source>General</source>
+        <translation>通用</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
+        <source>Appearance</source>
+        <translation>外观</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
+        <source>Language</source>
+        <translation>语言</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} / {{1}} 已完成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>测试参数 {{0}}，仅 1 个参数</translation>
     </message>

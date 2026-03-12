@@ -47,6 +47,12 @@ void ToolsViewModel::init()
 {
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::init");
     buildToolsTree();
+
+    // Select first tool node by default
+    std::string firstId = findFirstToolNodeId();
+    if (!firstId.empty()) {
+        selectNode(firstId);
+    }
 }
 
 // ==================== Public methods ====================
@@ -54,6 +60,57 @@ void ToolsViewModel::init()
 model::ToolsTreePtr ToolsViewModel::getToolsTree() const
 {
     return m_toolsTree;
+}
+
+std::string ToolsViewModel::getCurrentNodeId() const
+{
+    return m_currentNodeId;
+}
+
+model::ToolPanelType ToolsViewModel::getCurrentPanelType() const
+{
+    return m_currentPanelType;
+}
+
+void ToolsViewModel::selectNode(const std::string& nodeId)
+{
+    if (!m_toolsTree)
+        return;
+
+    auto node = m_toolsTree->findNodeById(nodeId);
+    if (!node)
+        return;
+
+    auto nodeData = node->getNodeData();
+
+    // Only update if the node has a panel (not a category)
+    if (nodeData.panelType != model::ToolPanelType::None) {
+        m_currentNodeId = nodeId;
+        m_currentPanelType = nodeData.panelType;
+        fireNotification(&IToolsViewModelCallback::onCurrentToolNodeChanged, m_currentNodeId, m_currentPanelType);
+    }
+}
+
+void ToolsViewModel::reloadTree()
+{
+    COMMONHEAD_LOG_DEBUG("ToolsViewModel::reloadTree");
+
+    // Save current selection
+    std::string savedNodeId = m_currentNodeId;
+
+    // Rebuild tree
+    buildToolsTree();
+    fireNotification(&IToolsViewModelCallback::onToolsTreeChanged, m_toolsTree);
+
+    // Restore selection if the node still exists, otherwise select first
+    if (!savedNodeId.empty() && m_toolsTree->findNodeById(savedNodeId)) {
+        selectNode(savedNodeId);
+    } else {
+        std::string firstId = findFirstToolNodeId();
+        if (!firstId.empty()) {
+            selectNode(firstId);
+        }
+    }
 }
 
 // ==================== Base64 工具 ====================
@@ -315,6 +372,38 @@ void ToolsViewModel::buildToolsTree()
     m_toolsTree = tree;
     
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::buildToolsTree completed");
+}
+
+std::string ToolsViewModel::findFirstToolNodeId() const
+{
+    if (!m_toolsTree)
+        return "";
+
+    auto root = m_toolsTree->getRoot();
+    if (!root)
+        return "";
+
+    // DFS to find first node with a panel (not a category)
+    std::function<std::string(const model::ToolsTreeNodePtr&)> findFirst;
+    findFirst = [&findFirst](const model::ToolsTreeNodePtr& node) -> std::string {
+        if (!node)
+            return "";
+
+        auto data = node->getNodeData();
+        if (data.panelType != model::ToolPanelType::None) {
+            return data.nodeId;
+        }
+
+        for (std::size_t i = 0; i < node->getChildCount(); ++i) {
+            auto child = node->getChild(i);
+            auto result = findFirst(child);
+            if (!result.empty())
+                return result;
+        }
+        return "";
+    };
+
+    return findFirst(root);
 }
 
 } // namespace commonHead::viewModels

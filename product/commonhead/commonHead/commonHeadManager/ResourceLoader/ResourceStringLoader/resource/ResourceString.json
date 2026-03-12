@@ -47,7 +47,10 @@
     { "token": "ToolsJsonValid", "value": "JSON is valid", "conditions": [] },
     { "token": "ToolsInvalidTimestamp", "value": "Invalid timestamp", "conditions": [] },
     { "token": "ToolsDateTimeParseFailed", "value": "DateTime format parse failed", "conditions": [] },
-    { "token": "ToolsInvalidDateTime", "value": "Invalid datetime", "conditions": [] }
+    { "token": "ToolsInvalidDateTime", "value": "Invalid datetime", "conditions": [] },
+    { "token": "SettingsCategoryGeneral", "value": "General", "conditions": [] },
+    { "token": "SettingsAppearance", "value": "Appearance", "conditions": [] },
+    { "token": "SettingsLanguage", "value": "Language", "conditions": [] }
   ],
   "LocalizedStringWithParam": [
     {

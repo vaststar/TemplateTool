@@ -4,10 +4,39 @@
 #include <string>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
+#include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
 #include <commonHead/viewModels/IViewModel/IViewModel.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
 
 namespace commonHead::viewModels {
+
+/**
+ * @brief Tools ViewModel callback interface
+ */
+class COMMONHEAD_EXPORT IToolsViewModelCallback
+{
+public:
+    IToolsViewModelCallback() = default;
+    IToolsViewModelCallback(const IToolsViewModelCallback&) = delete;
+    IToolsViewModelCallback(IToolsViewModelCallback&&) = delete;
+    IToolsViewModelCallback& operator=(const IToolsViewModelCallback&) = delete;
+    IToolsViewModelCallback& operator=(IToolsViewModelCallback&&) = delete;
+    virtual ~IToolsViewModelCallback() = default;
+
+public:
+    /**
+     * @brief Called when the tools tree is rebuilt (e.g. language change)
+     * @param tree New tools tree
+     */
+    virtual void onToolsTreeChanged(const model::ToolsTreePtr& tree) = 0;
+
+    /**
+     * @brief Called when the current selected node changed
+     * @param nodeId Node ID of the newly selected node
+     * @param panelType Panel type of the newly selected node
+     */
+    virtual void onCurrentToolNodeChanged(const std::string& nodeId, model::ToolPanelType panelType) = 0;
+};
 
 /**
  * @brief Base64 操作结果
@@ -41,7 +70,9 @@ struct COMMONHEAD_EXPORT TimestampResult {
 /**
  * @brief 工具 ViewModel 接口
  */
-class COMMONHEAD_EXPORT IToolsViewModel : public IViewModel
+class COMMONHEAD_EXPORT IToolsViewModel 
+    : public IViewModel
+    , public virtual commonHead::utilities::IVMNotificationHelper<IToolsViewModelCallback>
 {
 public:
     using IViewModel::IViewModel;
@@ -58,6 +89,27 @@ public:
     // 工具树导航
     //========================================
     virtual model::ToolsTreePtr getToolsTree() const = 0;
+
+    /**
+     * @brief Get current selected node ID
+     */
+    virtual std::string getCurrentNodeId() const = 0;
+
+    /**
+     * @brief Get current selected panel type
+     */
+    virtual model::ToolPanelType getCurrentPanelType() const = 0;
+
+    /**
+     * @brief Select a node by ID
+     * @param nodeId Node ID to select
+     */
+    virtual void selectNode(const std::string& nodeId) = 0;
+
+    /**
+     * @brief 重新构建工具树（语言切换后刷新本地化字符串）
+     */
+    virtual void reloadTree() = 0;
 
     //========================================
     // Base64 工具

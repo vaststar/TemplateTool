@@ -315,12 +315,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
+        <source>Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
+        <source>Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
         <source>{{0}} of {{1}} completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
         <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>

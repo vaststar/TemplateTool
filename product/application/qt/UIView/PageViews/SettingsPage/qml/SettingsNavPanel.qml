@@ -104,7 +104,7 @@ Item {
                 }
 
                 UTText {
-                    text: qsTr(navItem.title)
+                    text: navItem.title
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Sidebar_Item_Text
                     colorState: controller && controller.currentNodeId === navItem.nodeId

@@ -45,6 +45,7 @@ signals:
 
 protected:
     void init() override;
+    void onLanguageChanged() override;
 
 private slots:
     void onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items);

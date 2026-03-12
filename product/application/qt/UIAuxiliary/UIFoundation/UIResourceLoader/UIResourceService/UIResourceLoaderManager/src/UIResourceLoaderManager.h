@@ -26,7 +26,7 @@ class UIResourceLoaderManager final: public IUIResourceLoaderManager
 Q_OBJECT
 QML_ELEMENT
 QML_UNCREATABLE("Cannot create a UIResourceLoaderManager instance. It should create by C++")
-    Q_PROPERTY(int themeRevision READ themeRevision NOTIFY themeRevisionChanged)
+    Q_PROPERTY(int themeRevision READ themeRevision NOTIFY themeChanged)
 public:
     explicit UIResourceLoaderManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~UIResourceLoaderManager();
@@ -47,8 +47,6 @@ public:
 
     int themeRevision() const { return mThemeRevision; }
     void notifyThemeChanged() override;
-signals:
-    void themeRevisionChanged();
 private:
     void registerTypes();
 private:

@@ -6,8 +6,11 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
+#include "ViewModelSingalEmitter/SettingsViewModelEmitter.h"
+
 SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)
+    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::SettingsViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create SettingsPageController");
 }
@@ -16,14 +19,28 @@ void SettingsPageController::init()
 {
     UIVIEW_LOG_DEBUG("SettingsPageController::init");
 
+    // Connect signals from ViewModel emitter
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeChanged,
+            this, &SettingsPageController::onSettingsTreeChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onCurrentSettingsNodeChanged,
+            this, &SettingsPageController::onCurrentSettingsNodeChanged);
+
+    // Create ViewModel, init, and register callback
     m_settingsViewModel = getAppContext()->getViewModelFactory()->createSettingsViewModelInstance();
     m_settingsViewModel->initViewModel();
+    m_settingsViewModel->registerCallback(m_viewModelEmitter);
 
+    // Load initial data
     m_treeModel = new SettingsTreeModel(this);
     m_treeModel->setTree(m_settingsViewModel->getSettingsTree());
     emit treeModelChanged();
 
-    selectFirstNode();
+    // Sync initial selection from ViewModel
+    QString nodeId = QString::fromStdString(m_settingsViewModel->getCurrentNodeId());
+    int panelType = static_cast<int>(m_settingsViewModel->getCurrentPanelType());
+    if (!nodeId.isEmpty()) {
+        onCurrentSettingsNodeChanged(nodeId, panelType);
+    }
 
     UIVIEW_LOG_DEBUG("SettingsPageController::init done");
 }
@@ -45,27 +62,39 @@ QString SettingsPageController::getCurrentNodeId() const
 
 void SettingsPageController::selectNode(const QString& nodeId)
 {
-    if (!m_settingsViewModel)
-        return;
+    if (m_settingsViewModel) {
+        m_settingsViewModel->selectNode(nodeId.toStdString());
+    }
+}
 
-    auto tree = m_settingsViewModel->getSettingsTree();
-    auto node = tree->findNodeById(nodeId.toStdString());
-    if (!node)
-        return;
+void SettingsPageController::onLanguageChanged()
+{
+    UIVIEW_LOG_DEBUG("SettingsPageController::onLanguageChanged");
+    if (m_settingsViewModel) {
+        m_settingsViewModel->reloadTree();
+    }
+}
 
-    auto nodeData = node->getNodeData();
+void SettingsPageController::onSettingsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree)
+{
+    if (m_treeModel) {
+        m_treeModel->setTree(tree);
+        emit treeModelChanged();
+    }
+}
 
-    // Update current node id
+void SettingsPageController::onCurrentSettingsNodeChanged(const QString& nodeId, int panelType)
+{
     m_currentNodeId = nodeId;
     emit currentNodeIdChanged();
 
-    // Only switch panel if node has one
-    if (nodeData.panelType != commonHead::viewModels::model::SettingsPanelType::None) {
-        m_currentPanelQml = mapPanelTypeToQml(static_cast<int>(nodeData.panelType));
+    QString newPanelQml = mapPanelTypeToQml(panelType);
+    if (m_currentPanelQml != newPanelQml) {
+        m_currentPanelQml = newPanelQml;
         emit currentPanelQmlChanged();
     }
 
-    UIVIEW_LOG_DEBUG("selectNode: " << nodeId.toStdString() << " -> " << m_currentPanelQml.toStdString());
+    UIVIEW_LOG_DEBUG("onCurrentSettingsNodeChanged: " << nodeId.toStdString() << " -> " << m_currentPanelQml.toStdString());
 }
 
 QString SettingsPageController::mapPanelTypeToQml(int panelType) const
@@ -79,30 +108,5 @@ QString SettingsPageController::mapPanelTypeToQml(int panelType) const
         return QStringLiteral("LanguageSettingsPanel.qml");
     default:
         return QString();
-    }
-}
-
-void SettingsPageController::selectFirstNode()
-{
-    if (!m_settingsViewModel)
-        return;
-
-    auto tree = m_settingsViewModel->getSettingsTree();
-    auto root = tree->getRoot();
-    if (!root || root->getChildCount() == 0)
-        return;
-
-    // Select first top-level node (first child of virtual root, i.e., General)
-    auto firstNode = root->getChild(0);
-    if (firstNode) {
-        auto data = firstNode->getNodeData();
-        m_currentNodeId = QString::fromStdString(data.nodeId);
-        emit currentNodeIdChanged();
-
-        // If first node has a panel, load it
-        if (data.panelType != commonHead::viewModels::model::SettingsPanelType::None) {
-            m_currentPanelQml = mapPanelTypeToQml(static_cast<int>(data.panelType));
-            emit currentPanelQmlChanged();
-        }
     }
 }

@@ -4,6 +4,7 @@
 #include <QtQml>
 #include "UIViewBase/include/UIViewController.h"
 #include "SettingsTreeModel.h"
+#include "ViewModelSingalEmitter/SettingsViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class ISettingsViewModel;
@@ -29,17 +30,22 @@ public:
 
 protected:
     void init() override;
+    void onLanguageChanged() override;
 
 signals:
     void treeModelChanged();
     void currentPanelQmlChanged();
     void currentNodeIdChanged();
 
+private slots:
+    void onSettingsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree);
+    void onCurrentSettingsNodeChanged(const QString& nodeId, int panelType);
+
 private:
     QString mapPanelTypeToQml(int panelType) const;
-    void selectFirstNode();
 
     std::shared_ptr<commonHead::viewModels::ISettingsViewModel> m_settingsViewModel;
+    std::shared_ptr<UIVMSignalEmitter::SettingsViewModelEmitter> m_viewModelEmitter;
     SettingsTreeModel* m_treeModel = nullptr;
     QString m_currentPanelQml;
     QString m_currentNodeId;

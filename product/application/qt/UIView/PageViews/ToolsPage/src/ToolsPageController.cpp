@@ -7,8 +7,11 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
+#include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
+
 ToolsPageController::ToolsPageController(QObject* parent)
     : UIViewController(parent)
+    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::ToolsViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create ToolsPageController");
 }
@@ -17,14 +20,28 @@ void ToolsPageController::init()
 {
     UIVIEW_LOG_DEBUG("ToolsPageController::init");
 
+    // Connect signals from ViewModel emitter
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsTreeChanged,
+            this, &ToolsPageController::onToolsTreeChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onCurrentToolNodeChanged,
+            this, &ToolsPageController::onCurrentToolNodeChanged);
+
+    // Create ViewModel, init, and register callback
     m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->initViewModel();
+    m_toolsViewModel->registerCallback(m_viewModelEmitter);
 
+    // Load initial data
     m_treeModel = new ToolsTreeModel(this);
     m_treeModel->setTree(m_toolsViewModel->getToolsTree());
     emit treeModelChanged();
 
-    selectFirstNode();
+    // Sync initial selection from ViewModel
+    QString nodeId = QString::fromStdString(m_toolsViewModel->getCurrentNodeId());
+    int panelType = static_cast<int>(m_toolsViewModel->getCurrentPanelType());
+    if (!nodeId.isEmpty()) {
+        onCurrentToolNodeChanged(nodeId, panelType);
+    }
 
     UIVIEW_LOG_DEBUG("ToolsPageController::init done");
 }
@@ -46,27 +63,39 @@ QString ToolsPageController::getCurrentNodeId() const
 
 void ToolsPageController::selectNode(const QString& nodeId)
 {
-    if (!m_toolsViewModel)
-        return;
+    if (m_toolsViewModel) {
+        m_toolsViewModel->selectNode(nodeId.toStdString());
+    }
+}
 
-    auto tree = m_toolsViewModel->getToolsTree();
-    auto node = tree->findNodeById(nodeId.toStdString());
-    if (!node)
-        return;
+void ToolsPageController::onLanguageChanged()
+{
+    UIVIEW_LOG_DEBUG("ToolsPageController::onLanguageChanged");
+    if (m_toolsViewModel) {
+        m_toolsViewModel->reloadTree();
+    }
+}
 
-    auto nodeData = node->getNodeData();
+void ToolsPageController::onToolsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree)
+{
+    if (m_treeModel) {
+        m_treeModel->setTree(tree);
+        emit treeModelChanged();
+    }
+}
 
-    // Update current node id
+void ToolsPageController::onCurrentToolNodeChanged(const QString& nodeId, int panelType)
+{
     m_currentNodeId = nodeId;
     emit currentNodeIdChanged();
 
-    // Only switch panel if node has one (not a category)
-    if (nodeData.panelType != commonHead::viewModels::model::ToolPanelType::None) {
-        m_currentPanelQml = mapPanelTypeToQml(static_cast<int>(nodeData.panelType));
+    QString newPanelQml = mapPanelTypeToQml(panelType);
+    if (m_currentPanelQml != newPanelQml) {
+        m_currentPanelQml = newPanelQml;
         emit currentPanelQmlChanged();
     }
 
-    UIVIEW_LOG_DEBUG("selectNode: " << nodeId.toStdString() << " -> " << m_currentPanelQml.toStdString());
+    UIVIEW_LOG_DEBUG("onCurrentToolNodeChanged: " << nodeId.toStdString() << " -> " << m_currentPanelQml.toStdString());
 }
 
 QString ToolsPageController::mapPanelTypeToQml(int panelType) const
@@ -84,41 +113,5 @@ QString ToolsPageController::mapPanelTypeToQml(int panelType) const
         return QStringLiteral("UuidPanel.qml");
     default:
         return QString();
-    }
-}
-
-void ToolsPageController::selectFirstNode()
-{
-    if (!m_toolsViewModel)
-        return;
-
-    auto tree = m_toolsViewModel->getToolsTree();
-    auto root = tree->getRoot();
-    if (!root || root->getChildCount() == 0)
-        return;
-
-    // Find first tool node (not category) by DFS
-    std::function<std::string(const commonHead::viewModels::model::ToolsTreeNodePtr&)> findFirst;
-    findFirst = [&findFirst](const commonHead::viewModels::model::ToolsTreeNodePtr& node) -> std::string {
-        if (!node)
-            return "";
-        
-        auto data = node->getNodeData();
-        if (data.panelType != commonHead::viewModels::model::ToolPanelType::None) {
-            return data.nodeId;
-        }
-        
-        for (std::size_t i = 0; i < node->getChildCount(); ++i) {
-            auto child = node->getChild(i);
-            auto result = findFirst(child);
-            if (!result.empty())
-                return result;
-        }
-        return "";
-    };
-
-    std::string firstToolId = findFirst(root);
-    if (!firstToolId.empty()) {
-        selectNode(QString::fromStdString(firstToolId));
     }
 }

@@ -4,6 +4,7 @@
 #include <QtQml>
 #include "UIViewBase/include/UIViewController.h"
 #include "ToolsTreeModel.h"
+#include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class IToolsViewModel;
@@ -29,17 +30,22 @@ public:
 
 protected:
     void init() override;
+    void onLanguageChanged() override;
 
 signals:
     void treeModelChanged();
     void currentPanelQmlChanged();
     void currentNodeIdChanged();
 
+private slots:
+    void onToolsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree);
+    void onCurrentToolNodeChanged(const QString& nodeId, int panelType);
+
 private:
     QString mapPanelTypeToQml(int panelType) const;
-    void selectFirstNode();
 
     std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
+    std::shared_ptr<UIVMSignalEmitter::ToolsViewModelEmitter> m_viewModelEmitter;
     ToolsTreeModel* m_treeModel = nullptr;
     QString m_currentPanelQml;
     QString m_currentNodeId;

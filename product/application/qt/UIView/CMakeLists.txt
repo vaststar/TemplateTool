@@ -29,6 +29,8 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/MainWindowViewModelEmitter.h
     ViewModelSingalEmitter/StabilityViewModelEmitter.h
     ViewModelSingalEmitter/SideBarViewModelEmitter.h
+    ViewModelSingalEmitter/ToolsViewModelEmitter.h
+    ViewModelSingalEmitter/SettingsViewModelEmitter.h
 
     PageViews/ContactsPage/include/ContactListItemModel.h
     PageViews/ContactsPage/include/ContactsPageController.h

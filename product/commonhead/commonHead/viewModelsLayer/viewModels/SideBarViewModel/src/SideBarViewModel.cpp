@@ -344,11 +344,24 @@ void SideBarViewModel::reloadNavConfig()
 {
     COMMONHEAD_LOG_DEBUG("reloadNavConfig");
     
+    model::PageId savedPageId;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        savedPageId = m_currentPageId;
+    }
+    
     initDefaultNavItems();
     
     std::vector<model::NavItemData> items;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
+        // Restore saved page if it still exists, otherwise keep Home (set by initDefaultNavItems)
+        const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
+            [savedPageId](const auto& item) { return item.pageId == savedPageId; });
+        if (it != m_navItems.end())
+        {
+            m_currentPageId = savedPageId;
+        }
         items = m_navItems;
     }
     

@@ -61,7 +61,7 @@ Rectangle {
         // Label (only visible when expanded)
         UTText {
             Layout.fillWidth: true
-            text: qsTr(navItem.title)
+            text: navItem.title
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
             colorState: navItem.isSelected ? UIColorState.Selected : UIColorState.Normal

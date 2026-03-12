@@ -1,10 +1,12 @@
 #pragma once
 
+#include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 
 namespace commonHead::viewModels {
 
-class ToolsViewModel : public IToolsViewModel
+class ToolsViewModel : public virtual IToolsViewModel,
+                       public virtual commonHead::utilities::VMNotificationHelper<IToolsViewModelCallback>
 {
 public:
     explicit ToolsViewModel(commonHead::ICommonHeadFrameworkWptr framework);
@@ -16,6 +18,10 @@ public:
     // 工具树导航
     //========================================
     model::ToolsTreePtr getToolsTree() const override;
+    std::string getCurrentNodeId() const override;
+    model::ToolPanelType getCurrentPanelType() const override;
+    void selectNode(const std::string& nodeId) override;
+    void reloadTree() override;
 
     //========================================
     // Base64 工具
@@ -48,9 +54,12 @@ protected:
 
 private:
     void buildToolsTree();
+    std::string findFirstToolNodeId() const;
 
 private:
     model::ToolsTreePtr m_toolsTree;
+    std::string m_currentNodeId;
+    model::ToolPanelType m_currentPanelType = model::ToolPanelType::None;
 };
 
 } // namespace commonHead::viewModels
