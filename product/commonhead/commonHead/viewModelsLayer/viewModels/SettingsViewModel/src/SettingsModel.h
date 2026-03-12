@@ -16,12 +16,14 @@ public:
     explicit SettingsTreeNode(const SettingsNodeData& data);
 
     SettingsNodeData getNodeData() const override;
+    void setNodeData(const SettingsNodeData& data) override;
     std::weak_ptr<ISettingsTreeNode> getParent() const override;
     std::size_t getChildCount() const override;
     std::shared_ptr<ISettingsTreeNode> getChild(std::size_t index) const override;
 
     void setParent(const std::shared_ptr<SettingsTreeNode>& parent);
     void addChild(const std::shared_ptr<SettingsTreeNode>& child);
+    bool removeChild(const std::shared_ptr<SettingsTreeNode>& child);
 
 private:
     SettingsNodeData m_data;
@@ -36,6 +38,7 @@ public:
 
     SettingsTreeNodePtr getRoot() const override;
     SettingsTreeNodePtr findNodeById(const std::string& nodeId) const override;
+    bool removeNode(const std::string& nodeId) override;
 
     // Builder - add node under parent (empty parentId means add to virtual root)
     std::shared_ptr<SettingsTreeNode> addNode(

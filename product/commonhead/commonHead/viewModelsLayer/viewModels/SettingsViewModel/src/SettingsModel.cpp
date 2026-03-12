@@ -1,5 +1,7 @@
 #include "SettingsModel.h"
 
+#include <algorithm>
+
 namespace commonHead::viewModels::model {
 
 // ============== SettingsTreeNode ==============
@@ -12,6 +14,11 @@ SettingsTreeNode::SettingsTreeNode(const SettingsNodeData& data)
 SettingsNodeData SettingsTreeNode::getNodeData() const
 {
     return m_data;
+}
+
+void SettingsTreeNode::setNodeData(const SettingsNodeData& data)
+{
+    m_data = data;
 }
 
 std::weak_ptr<ISettingsTreeNode> SettingsTreeNode::getParent() const
@@ -50,6 +57,22 @@ void SettingsTreeNode::addChild(const std::shared_ptr<SettingsTreeNode>& child)
     }
     child->setParent(shared_from_this());
     m_children.push_back(child);
+}
+
+bool SettingsTreeNode::removeChild(const std::shared_ptr<SettingsTreeNode>& child)
+{
+    if (!child)
+    {
+        return false;
+    }
+    auto it = std::find(m_children.begin(), m_children.end(), child);
+    if (it == m_children.end())
+    {
+        return false;
+    }
+    (*it)->setParent(nullptr);
+    m_children.erase(it);
+    return true;
 }
 
 // ============== SettingsTree ==============
@@ -115,6 +138,43 @@ std::shared_ptr<SettingsTreeNode> SettingsTree::addNode(
     parent->addChild(node);
     m_index[data.nodeId] = node;
     return node;
+}
+
+bool SettingsTree::removeNode(const std::string& nodeId)
+{
+    auto it = m_index.find(nodeId);
+    if (it == m_index.end())
+    {
+        return false;
+    }
+
+    auto node = it->second.lock();
+    if (!node)
+    {
+        m_index.erase(it);
+        return false;
+    }
+
+    auto parent = node->getParent().lock();
+    if (!parent)
+    {
+        return false;
+    }
+
+    // Downcast parent to concrete type to call removeChild
+    auto parentConcrete = std::dynamic_pointer_cast<SettingsTreeNode>(parent);
+    if (!parentConcrete)
+    {
+        return false;
+    }
+
+    if (!parentConcrete->removeChild(node))
+    {
+        return false;
+    }
+
+    m_index.erase(it);
+    return true;
 }
 
 } // namespace commonHead::viewModels::model

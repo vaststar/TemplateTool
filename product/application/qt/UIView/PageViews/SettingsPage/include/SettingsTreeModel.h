@@ -2,10 +2,12 @@
 
 #include <QAbstractItemModel>
 #include <QtQml>
+#include <string>
 
 namespace commonHead::viewModels::model {
     class ISettingsTree;
     class ISettingsTreeNode;
+    struct SettingsTreeNodeChange;
 }
 
 class SettingsTreeModel : public QAbstractItemModel
@@ -24,7 +26,17 @@ public:
     explicit SettingsTreeModel(QObject* parent = nullptr);
     ~SettingsTreeModel() override;
 
+    /// L4: Replace entire tree
     void setTree(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree);
+
+    /// L3: Apply a single structural change (insert/remove)
+    void applyStructureChange(const commonHead::viewModels::model::SettingsTreeNodeChange& change);
+
+    /// L2: Notify that all item properties changed in-place
+    void notifyAllItemsChanged();
+
+    /// L1: Notify that a single item's properties changed in-place
+    void notifyItemChanged(const std::string& nodeId);
 
     // QAbstractItemModel interface
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -37,6 +49,7 @@ public:
 
 private:
     commonHead::viewModels::model::ISettingsTreeNode* nodeFromIndex(const QModelIndex& index) const;
+    QModelIndex indexForNodeId(const std::string& nodeId) const;
 
     std::shared_ptr<commonHead::viewModels::model::ISettingsTree> m_tree;
 };

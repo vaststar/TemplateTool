@@ -25,10 +25,27 @@ public:
 
 public:
     /**
-     * @brief Called when the tools tree is rebuilt (e.g. language change)
+     * @brief L4: Called when the entire tools tree is replaced (e.g. init, profile switch)
      * @param tree New tools tree
      */
     virtual void onToolsTreeChanged(const model::ToolsTreePtr& tree) = 0;
+
+    /**
+     * @brief L3: Called when a node is inserted or removed (same tree object)
+     * @param change Describes the structural change (insert/remove, parent, index)
+     */
+    virtual void onToolsTreeStructureChanged(const model::ToolsTreeNodeChange& change) = 0;
+
+    /**
+     * @brief L2: Called when all node properties are refreshed in-place (e.g. language change)
+     */
+    virtual void onToolsTreeItemsUpdated() = 0;
+
+    /**
+     * @brief L1: Called when a single node's properties changed in-place
+     * @param nodeId The node whose data was updated
+     */
+    virtual void onToolsTreeItemUpdated(const std::string& nodeId) = 0;
 
     /**
      * @brief Called when the current selected node changed

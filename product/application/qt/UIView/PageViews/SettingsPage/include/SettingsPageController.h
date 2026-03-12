@@ -9,6 +9,9 @@
 namespace commonHead::viewModels {
     class ISettingsViewModel;
 }
+namespace commonHead::viewModels::model {
+    struct SettingsTreeNodeChange;
+}
 
 class SettingsPageController : public UIViewController
 {
@@ -39,6 +42,9 @@ signals:
 
 private slots:
     void onSettingsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree);
+    void onSettingsTreeStructureChanged(const commonHead::viewModels::model::SettingsTreeNodeChange& change);
+    void onSettingsTreeItemsUpdated();
+    void onSettingsTreeItemUpdated(const QString& nodeId);
     void onCurrentSettingsNodeChanged(const QString& nodeId, int panelType);
 
 private:

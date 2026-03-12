@@ -23,6 +23,12 @@ void ToolsPageController::init()
     // Connect signals from ViewModel emitter
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsTreeChanged,
             this, &ToolsPageController::onToolsTreeChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsTreeStructureChanged,
+            this, &ToolsPageController::onToolsTreeStructureChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsTreeItemsUpdated,
+            this, &ToolsPageController::onToolsTreeItemsUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsTreeItemUpdated,
+            this, &ToolsPageController::onToolsTreeItemUpdated);
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onCurrentToolNodeChanged,
             this, &ToolsPageController::onCurrentToolNodeChanged);
 
@@ -81,6 +87,31 @@ void ToolsPageController::onToolsTreeChanged(const std::shared_ptr<commonHead::v
     if (m_treeModel) {
         m_treeModel->setTree(tree);
         emit treeModelChanged();
+    }
+}
+
+void ToolsPageController::onToolsTreeStructureChanged(
+    const commonHead::viewModels::model::ToolsTreeNodeChange& change)
+{
+    UIVIEW_LOG_DEBUG("ToolsPageController::onToolsTreeStructureChanged");
+    if (m_treeModel) {
+        m_treeModel->applyStructureChange(change);
+    }
+}
+
+void ToolsPageController::onToolsTreeItemsUpdated()
+{
+    UIVIEW_LOG_DEBUG("ToolsPageController::onToolsTreeItemsUpdated");
+    if (m_treeModel) {
+        m_treeModel->notifyAllItemsChanged();
+    }
+}
+
+void ToolsPageController::onToolsTreeItemUpdated(const QString& nodeId)
+{
+    UIVIEW_LOG_DEBUG("ToolsPageController::onToolsTreeItemUpdated: " << nodeId.toStdString());
+    if (m_treeModel) {
+        m_treeModel->notifyItemChanged(nodeId.toStdString());
     }
 }
 

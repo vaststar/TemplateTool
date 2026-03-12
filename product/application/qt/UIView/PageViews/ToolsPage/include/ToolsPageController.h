@@ -9,6 +9,9 @@
 namespace commonHead::viewModels {
     class IToolsViewModel;
 }
+namespace commonHead::viewModels::model {
+    struct ToolsTreeNodeChange;
+}
 
 class ToolsPageController : public UIViewController
 {
@@ -39,6 +42,9 @@ signals:
 
 private slots:
     void onToolsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree);
+    void onToolsTreeStructureChanged(const commonHead::viewModels::model::ToolsTreeNodeChange& change);
+    void onToolsTreeItemsUpdated();
+    void onToolsTreeItemUpdated(const QString& nodeId);
     void onCurrentToolNodeChanged(const QString& nodeId, int panelType);
 
 private:

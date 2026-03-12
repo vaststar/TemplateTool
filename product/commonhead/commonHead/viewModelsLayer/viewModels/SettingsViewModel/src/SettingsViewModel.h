@@ -25,6 +25,7 @@ protected:
 
 private:
     void buildSettingsTree();
+    void refreshTreeNodeData();
     std::string findFirstSettingsNodeId() const;
 
 private:

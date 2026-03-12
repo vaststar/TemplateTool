@@ -54,6 +54,7 @@ protected:
 
 private:
     void buildToolsTree();
+    void refreshTreeNodeData();
     std::string findFirstToolNodeId() const;
 
 private:

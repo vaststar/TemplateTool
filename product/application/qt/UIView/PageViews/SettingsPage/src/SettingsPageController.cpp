@@ -22,6 +22,12 @@ void SettingsPageController::init()
     // Connect signals from ViewModel emitter
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeChanged,
             this, &SettingsPageController::onSettingsTreeChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeStructureChanged,
+            this, &SettingsPageController::onSettingsTreeStructureChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeItemsUpdated,
+            this, &SettingsPageController::onSettingsTreeItemsUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeItemUpdated,
+            this, &SettingsPageController::onSettingsTreeItemUpdated);
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onCurrentSettingsNodeChanged,
             this, &SettingsPageController::onCurrentSettingsNodeChanged);
 
@@ -80,6 +86,31 @@ void SettingsPageController::onSettingsTreeChanged(const std::shared_ptr<commonH
     if (m_treeModel) {
         m_treeModel->setTree(tree);
         emit treeModelChanged();
+    }
+}
+
+void SettingsPageController::onSettingsTreeStructureChanged(
+    const commonHead::viewModels::model::SettingsTreeNodeChange& change)
+{
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeStructureChanged");
+    if (m_treeModel) {
+        m_treeModel->applyStructureChange(change);
+    }
+}
+
+void SettingsPageController::onSettingsTreeItemsUpdated()
+{
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeItemsUpdated");
+    if (m_treeModel) {
+        m_treeModel->notifyAllItemsChanged();
+    }
+}
+
+void SettingsPageController::onSettingsTreeItemUpdated(const QString& nodeId)
+{
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeItemUpdated: " << nodeId.toStdString());
+    if (m_treeModel) {
+        m_treeModel->notifyItemChanged(nodeId.toStdString());
     }
 }
 

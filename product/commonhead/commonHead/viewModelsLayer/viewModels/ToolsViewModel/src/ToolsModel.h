@@ -16,12 +16,14 @@ public:
     explicit ToolsTreeNode(const ToolNodeData& data);
 
     ToolNodeData getNodeData() const override;
+    void setNodeData(const ToolNodeData& data) override;
     std::weak_ptr<IToolsTreeNode> getParent() const override;
     std::size_t getChildCount() const override;
     std::shared_ptr<IToolsTreeNode> getChild(std::size_t index) const override;
 
     void setParent(const std::shared_ptr<ToolsTreeNode>& parent);
     void addChild(const std::shared_ptr<ToolsTreeNode>& child);
+    bool removeChild(const std::shared_ptr<ToolsTreeNode>& child);
 
 private:
     ToolNodeData m_data;
@@ -36,6 +38,7 @@ public:
 
     ToolsTreeNodePtr getRoot() const override;
     ToolsTreeNodePtr findNodeById(const std::string& nodeId) const override;
+    bool removeNode(const std::string& nodeId) override;
 
     // Builder - add node under parent (empty parentId means add to virtual root)
     std::shared_ptr<ToolsTreeNode> addNode(

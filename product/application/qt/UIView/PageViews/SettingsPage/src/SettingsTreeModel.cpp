@@ -175,3 +175,59 @@ SettingsTreeModel::nodeFromIndex(const QModelIndex& index) const
 
     return static_cast<commonHead::viewModels::model::ISettingsTreeNode*>(index.internalPointer());
 }
+
+QModelIndex SettingsTreeModel::indexForNodeId(const std::string& nodeId) const
+{
+    if (!m_tree) return {};
+
+    auto node = m_tree->findNodeById(nodeId);
+    if (!node) return {};
+
+    auto root = m_tree->getRoot();
+    if (node == root) return {};
+
+    auto parent = node->getParent().lock();
+    if (!parent) return {};
+
+    for (std::size_t i = 0; i < parent->getChildCount(); ++i) {
+        if (parent->getChild(i).get() == node.get()) {
+            return createIndex(static_cast<int>(i), 0,
+                               static_cast<void*>(node.get()));
+        }
+    }
+    return {};
+}
+
+void SettingsTreeModel::notifyItemChanged(const std::string& nodeId)
+{
+    QModelIndex idx = indexForNodeId(nodeId);
+    if (idx.isValid()) {
+        emit dataChanged(idx, idx);
+    }
+}
+
+void SettingsTreeModel::notifyAllItemsChanged()
+{
+    emit layoutAboutToBeChanged();
+    emit layoutChanged();
+}
+
+void SettingsTreeModel::applyStructureChange(
+    const commonHead::viewModels::model::SettingsTreeNodeChange& change)
+{
+    int row = static_cast<int>(change.index);
+    QModelIndex parentIdx = indexForNodeId(change.parentNodeId);
+
+    switch (change.type) {
+    case commonHead::viewModels::model::SettingsTreeNodeChange::Type::Inserted:
+        // Data already added to tree by ViewModel
+        beginInsertRows(parentIdx, row, row);
+        endInsertRows();
+        break;
+    case commonHead::viewModels::model::SettingsTreeNodeChange::Type::Removed:
+        // Data not yet removed — ViewModel removes after this returns
+        beginRemoveRows(parentIdx, row, row);
+        endRemoveRows();
+        break;
+    }
+}

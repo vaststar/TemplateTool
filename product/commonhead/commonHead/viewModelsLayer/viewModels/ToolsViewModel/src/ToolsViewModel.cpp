@@ -95,20 +95,42 @@ void ToolsViewModel::reloadTree()
 {
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::reloadTree");
 
-    // Save current selection
-    std::string savedNodeId = m_currentNodeId;
-
-    // Rebuild tree
-    buildToolsTree();
-    fireNotification(&IToolsViewModelCallback::onToolsTreeChanged, m_toolsTree);
-
-    // Restore selection if the node still exists, otherwise select first
-    if (!savedNodeId.empty() && m_toolsTree->findNodeById(savedNodeId)) {
-        selectNode(savedNodeId);
+    if (m_toolsTree) {
+        // L2: in-place refresh of all node titles/properties
+        refreshTreeNodeData();
+        fireNotification(&IToolsViewModelCallback::onToolsTreeItemsUpdated);
     } else {
+        // L4: first-time build
+        buildToolsTree();
+        fireNotification(&IToolsViewModelCallback::onToolsTreeChanged, m_toolsTree);
+
         std::string firstId = findFirstToolNodeId();
         if (!firstId.empty()) {
             selectNode(firstId);
+        }
+    }
+}
+
+void ToolsViewModel::refreshTreeNodeData()
+{
+    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+
+    static const std::vector<std::pair<std::string, commonHead::model::LocalizedString>> nodeTokenMap = {
+        { "text",               commonHead::model::LocalizedString::ToolsCategoryText },
+        { "text.base64",        commonHead::model::LocalizedString::ToolsBase64 },
+        { "text.json",          commonHead::model::LocalizedString::ToolsJson },
+        { "time",               commonHead::model::LocalizedString::ToolsCategoryTime },
+        { "time.timestamp",     commonHead::model::LocalizedString::ToolsTimestamp },
+        { "generator",          commonHead::model::LocalizedString::ToolsCategoryGenerator },
+        { "generator.uuid",     commonHead::model::LocalizedString::ToolsUuid },
+    };
+
+    for (const auto& [nodeId, token] : nodeTokenMap) {
+        auto node = m_toolsTree->findNodeById(nodeId);
+        if (node) {
+            auto data = node->getNodeData();
+            data.title = resourceLoader->getLocalizedString(token);
+            node->setNodeData(data);
         }
     }
 }

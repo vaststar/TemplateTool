@@ -86,20 +86,38 @@ void SettingsViewModel::reloadTree()
 {
     COMMONHEAD_LOG_DEBUG("SettingsViewModel::reloadTree");
 
-    // Save current selection
-    std::string savedNodeId = m_currentNodeId;
-
-    // Rebuild tree
-    buildSettingsTree();
-    fireNotification(&ISettingsViewModelCallback::onSettingsTreeChanged, m_settingsTree);
-
-    // Restore selection if the node still exists, otherwise select first
-    if (!savedNodeId.empty() && m_settingsTree->findNodeById(savedNodeId)) {
-        selectNode(savedNodeId);
+    if (m_settingsTree) {
+        // L2: in-place refresh of all node titles/properties
+        refreshTreeNodeData();
+        fireNotification(&ISettingsViewModelCallback::onSettingsTreeItemsUpdated);
     } else {
+        // L4: first-time build
+        buildSettingsTree();
+        fireNotification(&ISettingsViewModelCallback::onSettingsTreeChanged, m_settingsTree);
+
         std::string firstId = findFirstSettingsNodeId();
         if (!firstId.empty()) {
             selectNode(firstId);
+        }
+    }
+}
+
+void SettingsViewModel::refreshTreeNodeData()
+{
+    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+
+    static const std::vector<std::pair<std::string, commonHead::model::LocalizedString>> nodeTokenMap = {
+        { "general",              commonHead::model::LocalizedString::SettingsCategoryGeneral },
+        { "general.appearance",   commonHead::model::LocalizedString::SettingsAppearance },
+        { "general.language",     commonHead::model::LocalizedString::SettingsLanguage },
+    };
+
+    for (const auto& [nodeId, token] : nodeTokenMap) {
+        auto node = m_settingsTree->findNodeById(nodeId);
+        if (node) {
+            auto data = node->getNodeData();
+            data.title = resourceLoader->getLocalizedString(token);
+            node->setNodeData(data);
         }
     }
 }

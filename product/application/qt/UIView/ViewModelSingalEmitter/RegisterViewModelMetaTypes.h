@@ -13,6 +13,8 @@ Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::NavItemData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::VideoFrame)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreePtr)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsTreePtr)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsTreeNodeChange)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreeNodeChange)
 
 namespace UIVMSignalEmitter {
 
@@ -24,6 +26,8 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<commonHead::viewModels::model::VideoFrame>();
     qRegisterMetaType<commonHead::viewModels::model::ToolsTreePtr>();
     qRegisterMetaType<commonHead::viewModels::model::SettingsTreePtr>();
+    qRegisterMetaType<commonHead::viewModels::model::SettingsTreeNodeChange>();
+    qRegisterMetaType<commonHead::viewModels::model::ToolsTreeNodeChange>();
 }
 
 } // namespace UIVMSignalEmitter
