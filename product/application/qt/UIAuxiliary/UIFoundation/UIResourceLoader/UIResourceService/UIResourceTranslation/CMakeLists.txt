@@ -20,7 +20,8 @@ endif()
 set(Translation_LIB UIResourcecTranslation)
 set(Translation_TS_FILES        
     ${Translation_DIR}/app_translations_en.ts
-    ${Translation_DIR}/app_translations_zh-CN.ts
+    ${Translation_DIR}/app_translations_zh-Hans.ts
+    ${Translation_DIR}/app_translations_zh-Hant.ts
 )
 
 add_library(${Translation_LIB} OBJECT)

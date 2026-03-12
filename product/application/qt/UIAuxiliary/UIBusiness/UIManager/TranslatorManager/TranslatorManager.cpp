@@ -82,8 +82,8 @@ std::map<UILanguage::LanguageType, std::string> TranslatorManager::getLanguageMa
 {
     const std::map<UILanguage::LanguageType, std::string> languageMap = {
         {UILanguage::LanguageType::LanguageType_ENGLISH, "en"},
-        {UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED, "zh-CN"},
-        {UILanguage::LanguageType::LanguageType_CHINESE_TRADITIONAL, "zh-TW"},
+        {UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED, "zh-Hans"},
+        {UILanguage::LanguageType::LanguageType_CHINESE_TRADITIONAL, "zh-Hant"},
         {UILanguage::LanguageType::LanguageType_FRENCH, "fr"},
         {UILanguage::LanguageType::LanguageType_GERMAN, "de"},
         {UILanguage::LanguageType::LanguageType_ITALIAN, "it"},
