@@ -155,14 +155,14 @@
             "name": "Debug mainEntry (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-debug/bin/mainEntry.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-debug/bin/Debug/mainEntry.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-debug/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-debug/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -171,14 +171,14 @@
             "name": "Debug CoreFrameworkTests (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-debug/bin/CoreFrameworkTests.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-debug/bin/Debug/CoreFrameworkTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-debug/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-debug/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -187,14 +187,14 @@
             "name": "Debug StringUtilsTests (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-debug/bin/StringUtilsTests.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-debug/bin/Debug/StringUtilsTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-debug/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-debug/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -203,14 +203,14 @@
             "name": "Debug JsonUtilsTests (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-debug/bin/JsonUtilsTests.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-debug/bin/Debug/JsonUtilsTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-debug/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-debug/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -219,14 +219,14 @@
             "name": "Debug common_head_unit_test (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-debug/bin/common_head_unit_test.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-debug/bin/Debug/common_head_unit_test.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-debug/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-debug/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -235,14 +235,14 @@
             "name": "Debug testThreadPool_catch2 (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-debug/bin/testThreadPool_catch2.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-debug/bin/Debug/testThreadPool_catch2.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-debug/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-debug/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -252,14 +252,14 @@
             "name": "Release mainEntry (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-release/bin/mainEntry.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-release/bin/Release/mainEntry.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-release/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-release/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -268,14 +268,14 @@
             "name": "Release CoreFrameworkTests (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-release/bin/CoreFrameworkTests.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-release/bin/Release/CoreFrameworkTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-release/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-release/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -284,14 +284,14 @@
             "name": "Release StringUtilsTests (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-release/bin/StringUtilsTests.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-release/bin/Release/StringUtilsTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-release/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-release/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -300,14 +300,14 @@
             "name": "Release JsonUtilsTests (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-release/bin/JsonUtilsTests.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-release/bin/Release/JsonUtilsTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-release/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-release/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -316,14 +316,14 @@
             "name": "Release common_head_unit_test (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-release/bin/common_head_unit_test.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-release/bin/Release/common_head_unit_test.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-release/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-release/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"
@@ -332,14 +332,14 @@
             "name": "Release testThreadPool_catch2 (Windows)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/local-windows-release/bin/testThreadPool_catch2.exe",
+            "program": "${workspaceFolder}/build/windows-msvc-release/bin/Release/testThreadPool_catch2.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${workspaceFolder}/build/local-windows-release/bin;${env:PATH}"
+                    "value": "${workspaceFolder}/build/windows-msvc-release/bin;${env:PATH}"
                 }
             ],
             "console": "integratedTerminal"

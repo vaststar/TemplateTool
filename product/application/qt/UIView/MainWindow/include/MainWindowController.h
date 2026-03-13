@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QObject>
+#include <QWindow>
 #include <QtQml>
 
 #include "UIViewBase/include/UIViewController.h"
@@ -37,6 +38,7 @@ public:
 
     Q_INVOKABLE void componentCompleted();
     Q_INVOKABLE int pageIdToIndex(int pageId) const;
+    Q_INVOKABLE bool startSystemResize(QWindow *window, int edges);
 signals:
     void titleChanged();
     void visibleChanged();

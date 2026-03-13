@@ -41,7 +41,7 @@ void MainWindowController::init()
     mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
     mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
     mMainViewModel->registerCallback(mMainViewModelEmitter);
-    connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow, 
+    connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow,
                 this, &MainWindowController::activateMainWindow);
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onLogsPackComplete,
                 this, &MainWindowController::onLogsPackComplete);
@@ -143,4 +143,11 @@ int MainWindowController::pageIdToIndex(int pageId) const
         case PageId::About:       return 7;
         default:                  return 0;
     }
+}
+
+bool MainWindowController::startSystemResize(QWindow *window, int edges)
+{
+    if (window)
+        return window->startSystemResize(Qt::Edges(edges));
+    return false;
 }

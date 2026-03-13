@@ -45,6 +45,8 @@ ApplicationWindow
     }
 
     WindowResizeHandler {
+        parent: Overlay.overlay
+        z: 10000
         targetWindow: root
         borderWidth: 5
     }
@@ -55,18 +57,18 @@ ApplicationWindow
         anchors.margins: 1
         focus: true
     }
-    
+
     AppSystemTray{
         id: systemTray
     }
 
     Connections {
         target: root.controller
-        
+
         function onControllerInitialized() {
             onMainControllerInitialized()
         }
-        
+
         function onActivateWindow() {
             onShowActivateWindow()
         }
@@ -92,7 +94,7 @@ ApplicationWindow
         root.raise()
         root.requestActivate()
     }
-    
+
     Component.onCompleted:{
         root.controller.logInfo("MainWindow QML Component onCompleted")
     }

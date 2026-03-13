@@ -1,12 +1,13 @@
 import QtQuick
+import QtQuick.Window
 
 Item {
     id: resizeHandler
     anchors.fill: parent
-    
+
     property var targetWindow
     property int borderWidth: 5
-    
+
     // 左边缘
     MouseArea {
         width: borderWidth
@@ -16,23 +17,10 @@ Item {
         anchors.bottomMargin: borderWidth
         anchors.topMargin: borderWidth
         cursorShape: Qt.SizeHorCursor
-        
-        property real startX
-        property real startWidth
-        
-        onPressed: (mouse) => {
-            startX = targetWindow.x
-            startWidth = targetWindow.width
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var dx = mouse.x
-            var newWidth = startWidth - dx
-            targetWindow.x = startX + dx
-            targetWindow.width = newWidth
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.LeftEdge)
     }
-    
+
     // 右边缘
     MouseArea {
         width: borderWidth
@@ -42,21 +30,10 @@ Item {
         anchors.bottomMargin: borderWidth
         anchors.topMargin: borderWidth
         cursorShape: Qt.SizeHorCursor
-        
-        property real pressedX
-        property real startWidth
-        
-        onPressed: (mouse) => {
-            pressedX = mouse.x
-            startWidth = targetWindow.width
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var delta = mouse.x - pressedX
-            targetWindow.width = startWidth + delta
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.RightEdge)
     }
-    
+
     // 上边缘
     MouseArea {
         height: borderWidth
@@ -66,23 +43,10 @@ Item {
         anchors.leftMargin: borderWidth
         anchors.rightMargin: borderWidth
         cursorShape: Qt.SizeVerCursor
-        
-        property real startY
-        property real startHeight
-        
-        onPressed: (mouse) => {
-            startY = targetWindow.y
-            startHeight = targetWindow.height
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var dy = mouse.y
-            var newHeight = startHeight - dy
-            targetWindow.y = startY + dy
-            targetWindow.height = newHeight
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.TopEdge)
     }
-    
+
     // 下边缘
     MouseArea {
         height: borderWidth
@@ -92,21 +56,10 @@ Item {
         anchors.leftMargin: borderWidth
         anchors.rightMargin: borderWidth
         cursorShape: Qt.SizeVerCursor
-        
-        property real pressedY
-        property real startHeight
-        
-        onPressed: (mouse) => {
-            pressedY = mouse.y
-            startHeight = targetWindow.height
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var delta = mouse.y - pressedY
-            targetWindow.height = startHeight + delta
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.BottomEdge)
     }
-    
+
     // 左上角
     MouseArea {
         width: borderWidth
@@ -114,29 +67,10 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         cursorShape: Qt.SizeFDiagCursor
-        
-        property real startX
-        property real startY
-        property real startWidth
-        property real startHeight
-        
-        onPressed: (mouse) => {
-            startX = targetWindow.x
-            startY = targetWindow.y
-            startWidth = targetWindow.width
-            startHeight = targetWindow.height
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var dx = mouse.x
-            var dy = mouse.y
-            targetWindow.x = startX + dx
-            targetWindow.width = startWidth - dx
-            targetWindow.y = startY + dy
-            targetWindow.height = startHeight - dy
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.LeftEdge | Qt.TopEdge)
     }
-    
+
     // 右上角
     MouseArea {
         width: borderWidth
@@ -144,28 +78,10 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         cursorShape: Qt.SizeBDiagCursor
-        
-        property real pressedX
-        property real startY
-        property real startWidth
-        property real startHeight
-        
-        onPressed: (mouse) => {
-            pressedX = mouse.x
-            startY = targetWindow.y
-            startWidth = targetWindow.width
-            startHeight = targetWindow.height
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var deltaX = mouse.x - pressedX
-            targetWindow.width = startWidth + deltaX
-            var dy = mouse.y
-            targetWindow.y = startY + dy
-            targetWindow.height = startHeight - dy
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.RightEdge | Qt.TopEdge)
     }
-    
+
     // 左下角
     MouseArea {
         width: borderWidth
@@ -173,28 +89,10 @@ Item {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         cursorShape: Qt.SizeBDiagCursor
-        
-        property real startX
-        property real pressedY
-        property real startWidth
-        property real startHeight
-        
-        onPressed: (mouse) => {
-            startX = targetWindow.x
-            pressedY = mouse.y
-            startWidth = targetWindow.width
-            startHeight = targetWindow.height
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var dx = mouse.x
-            targetWindow.x = startX + dx
-            targetWindow.width = startWidth - dx
-            var deltaY = mouse.y - pressedY
-            targetWindow.height = startHeight + deltaY
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.LeftEdge | Qt.BottomEdge)
     }
-    
+
     // 右下角
     MouseArea {
         width: borderWidth
@@ -202,25 +100,8 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         cursorShape: Qt.SizeFDiagCursor
-        
-        property real pressedX
-        property real pressedY
-        property real startWidth
-        property real startHeight
-        
-        onPressed: (mouse) => {
-            pressedX = mouse.x
-            pressedY = mouse.y
-            startWidth = targetWindow.width
-            startHeight = targetWindow.height
-        }
-        onPositionChanged: (mouse) => {
-            if (!pressed) return
-            var deltaX = mouse.x - pressedX
-            var deltaY = mouse.y - pressedY
-            targetWindow.width = startWidth + deltaX
-            targetWindow.height = startHeight + deltaY
-        }
+        hoverEnabled: true
+        onPressed: targetWindow.controller.startSystemResize(targetWindow, Qt.RightEdge | Qt.BottomEdge)
     }
 }
 
