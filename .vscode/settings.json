@@ -1,0 +1,43 @@
+{
+    // 文件关联
+    "files.associations": {
+        "*.qml": "qml",
+        "*.h": "cpp",
+        "*.hpp": "cpp",
+        "map": "cpp",
+        "vector": "cpp",
+        "string": "cpp",
+        "iostream": "cpp"
+    },
+
+    // 搜索排除（提升性能）
+    "search.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/node_modules": true
+    },
+
+    // 文件监视排除
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/install/**": true
+    },
+
+    // C++ 格式化
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4 }",
+
+    // CMake
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitVendor}-${buildType}",
+
+    // 编辑器
+    "editor.formatOnSave": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+
+    // 文件
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.autoSave": "afterDelay"
+}

@@ -1,6 +1,5 @@
 /build
 /install
-.vscode/
 .DS_Store
 __pycache__/
 venv/
