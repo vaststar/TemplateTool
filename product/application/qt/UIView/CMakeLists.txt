@@ -132,7 +132,6 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ToolsPage/qml/UuidPanel.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
-    MainWindowTitleBar/qml/WindowAnimator.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml
     MainWindowFootBar/qml/MainWindowFootBar.qml
     MainWindowSideBar/qml/MainWindowSideBar.qml
@@ -140,6 +139,7 @@ set(MODULE_QML_TARGET_FILES
     MediaCameraView/qml/MediaCameraView.qml
     MainWindow/qml/MainWindowContent.qml
     MainWindow/qml/MainWindow.qml
+    MainWindow/qml/WindowResizeHandler.qml
     AppSystemTray/qml/AppSystemTray.qml
 )
 BuildQtModule(

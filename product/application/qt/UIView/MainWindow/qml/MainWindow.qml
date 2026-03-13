@@ -13,6 +13,8 @@ ApplicationWindow
     visible: root.controller.visible
     width: 1024
     height: 768
+    minimumWidth: 800
+    minimumHeight: 600
     flags: Qt.FramelessWindowHint | Qt.Window
 
     title: qsTr(root.controller.title)
@@ -40,6 +42,11 @@ ApplicationWindow
 
     footer: MainWindowFootBar {
         id: footBar
+    }
+
+    WindowResizeHandler {
+        targetWindow: root
+        borderWidth: 5
     }
 
     Loader{

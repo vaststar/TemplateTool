@@ -47,6 +47,14 @@ Rectangle {
                         appWindow.startSystemMove()
                     }
                 }
+                onDoubleClicked: (mouse) => {
+                    if (mouse.button === Qt.LeftButton && appWindow) {
+                        if (appWindow.visibility === ApplicationWindow.Maximized)
+                            appWindow.showNormal()
+                        else
+                            appWindow.showMaximized()
+                    }
+                }
             }
         }
 
