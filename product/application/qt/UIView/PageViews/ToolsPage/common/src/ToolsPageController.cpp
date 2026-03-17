@@ -1,5 +1,5 @@
-#include "PageViews/ToolsPage/include/ToolsPageController.h"
-#include "PageViews/ToolsPage/include/ToolsTreeModel.h"
+#include "PageViews/ToolsPage/common/include/ToolsPageController.h"
+#include "PageViews/ToolsPage/common/include/ToolsTreeModel.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>

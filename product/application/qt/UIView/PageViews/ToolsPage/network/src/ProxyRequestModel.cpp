@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/include/ProxyRequestModel.h"
+#include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
 
 #include <QJsonDocument>
 #include <QUrl>

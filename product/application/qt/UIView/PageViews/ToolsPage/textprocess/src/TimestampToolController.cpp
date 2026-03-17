@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/include/TimestampToolController.h"
+#include "PageViews/ToolsPage/textprocess/include/TimestampToolController.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
@@ -23,7 +23,7 @@ void TimestampToolController::init()
     UIVIEW_LOG_DEBUG("TimestampToolController::init");
     m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->initViewModel();
-    
+
     initTimezoneModel();
 
     connect(&m_clockTimer, &QTimer::timeout, this, &TimestampToolController::updateLiveClock);

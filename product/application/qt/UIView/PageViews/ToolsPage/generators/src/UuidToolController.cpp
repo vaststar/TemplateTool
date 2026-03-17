@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/include/UuidToolController.h"
+#include "PageViews/ToolsPage/generators/include/UuidToolController.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
@@ -55,12 +55,12 @@ void UuidToolController::generate()
 
     m_generatedUuid = QString::fromStdString(m_toolsViewModel->generateUuid());
     m_uuidHistory.prepend(m_generatedUuid);
-    
+
     // Limit history to 20 items
     while (m_uuidHistory.size() > 20) {
         m_uuidHistory.removeLast();
     }
-    
+
     emit generatedUuidChanged();
     emit uuidHistoryChanged();
 }
@@ -73,17 +73,17 @@ void UuidToolController::generateMultiple(int count)
     for (int i = 0; i < count; ++i) {
         QString uuid = QString::fromStdString(m_toolsViewModel->generateUuid());
         m_uuidHistory.prepend(uuid);
-        
+
         if (i == 0) {
             m_generatedUuid = uuid;
         }
     }
-    
+
     // Limit history to 20 items
     while (m_uuidHistory.size() > 20) {
         m_uuidHistory.removeLast();
     }
-    
+
     emit generatedUuidChanged();
     emit uuidHistoryChanged();
 }
@@ -95,7 +95,7 @@ void UuidToolController::validate()
 
     bool isValid = m_toolsViewModel->isValidUuid(m_validateInput.toStdString());
     m_validateResult = isValid ? tr("✓ Valid UUID") : tr("✗ Invalid UUID");
-    
+
     emit validateResultChanged();
 }
 

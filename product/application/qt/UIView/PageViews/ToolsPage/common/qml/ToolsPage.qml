@@ -12,7 +12,7 @@ Item {
     // Tracks which QML panels have been activated (visited at least once)
     property var _activatedPanels: ({})
 
-    // All possible panel QML files
+    // All possible panel QML names → Component mappings
     readonly property var _panelList: [
         "Base64Panel.qml",
         "JsonPanel.qml",
@@ -20,6 +20,20 @@ Item {
         "UuidPanel.qml",
         "NetworkProxyPanel.qml"
     ]
+    readonly property var _panelComponents: ({
+        "Base64Panel.qml":        compBase64,
+        "JsonPanel.qml":          compJson,
+        "TimestampPanel.qml":     compTimestamp,
+        "UuidPanel.qml":          compUuid,
+        "NetworkProxyPanel.qml":  compNetworkProxy
+    })
+
+    // Components for each panel type (registered via qt_add_qml_module, same URI)
+    Component { id: compBase64;       Base64Panel {} }
+    Component { id: compJson;         JsonPanel {} }
+    Component { id: compTimestamp;    TimestampPanel {} }
+    Component { id: compUuid;         UuidPanel {} }
+    Component { id: compNetworkProxy; NetworkProxyPanel {} }
 
     // When current panel changes, mark it as activated
     Connections {
@@ -70,7 +84,7 @@ Item {
                     active: !!toolsPage._activatedPanels[modelData]
                     // Only show the current panel
                     visible: controller.currentPanelQml === modelData
-                    source: modelData
+                    sourceComponent: toolsPage._panelComponents[modelData] || null
 
                     onLoaded: {
                         // Initialize panel controller via setupController (once)

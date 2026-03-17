@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/include/Base64ToolController.h"
+#include "PageViews/ToolsPage/textprocess/include/JsonToolController.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
@@ -7,25 +7,25 @@
 #include <QClipboard>
 #include <QGuiApplication>
 
-Base64ToolController::Base64ToolController(QObject* parent)
+JsonToolController::JsonToolController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create Base64ToolController");
+    UIVIEW_LOG_DEBUG("create JsonToolController");
 }
 
-void Base64ToolController::init()
+void JsonToolController::init()
 {
-    UIVIEW_LOG_DEBUG("Base64ToolController::init");
+    UIVIEW_LOG_DEBUG("JsonToolController::init");
     m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->initViewModel();
 }
 
-QString Base64ToolController::getInputText() const
+QString JsonToolController::getInputText() const
 {
     return m_inputText;
 }
 
-void Base64ToolController::setInputText(const QString& text)
+void JsonToolController::setInputText(const QString& text)
 {
     if (m_inputText != text) {
         m_inputText = text;
@@ -33,36 +33,36 @@ void Base64ToolController::setInputText(const QString& text)
     }
 }
 
-QString Base64ToolController::getOutputText() const
+QString JsonToolController::getOutputText() const
 {
     return m_outputText;
 }
 
-QString Base64ToolController::getErrorMessage() const
+QString JsonToolController::getErrorMessage() const
 {
     return m_errorMessage;
 }
 
-bool Base64ToolController::isUrlSafe() const
+int JsonToolController::getIndentSize() const
 {
-    return m_urlSafe;
+    return m_indentSize;
 }
 
-void Base64ToolController::setUrlSafe(bool urlSafe)
+void JsonToolController::setIndentSize(int indent)
 {
-    if (m_urlSafe != urlSafe) {
-        m_urlSafe = urlSafe;
-        emit urlSafeChanged();
+    if (m_indentSize != indent) {
+        m_indentSize = indent;
+        emit indentSizeChanged();
     }
 }
 
-void Base64ToolController::encode()
+void JsonToolController::format()
 {
     if (!m_toolsViewModel)
         return;
 
-    auto result = m_toolsViewModel->base64Encode(m_inputText.toStdString(), m_urlSafe);
-    
+    auto result = m_toolsViewModel->jsonFormat(m_inputText.toStdString(), m_indentSize);
+
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);
         m_errorMessage.clear();
@@ -70,18 +70,18 @@ void Base64ToolController::encode()
         m_outputText.clear();
         m_errorMessage = QString::fromStdString(result.errorMessage);
     }
-    
+
     emit outputTextChanged();
     emit errorMessageChanged();
 }
 
-void Base64ToolController::decode()
+void JsonToolController::minify()
 {
     if (!m_toolsViewModel)
         return;
 
-    auto result = m_toolsViewModel->base64Decode(m_inputText.toStdString());
-    
+    auto result = m_toolsViewModel->jsonMinify(m_inputText.toStdString());
+
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);
         m_errorMessage.clear();
@@ -89,22 +89,26 @@ void Base64ToolController::decode()
         m_outputText.clear();
         m_errorMessage = QString::fromStdString(result.errorMessage);
     }
-    
+
     emit outputTextChanged();
     emit errorMessageChanged();
 }
 
-void Base64ToolController::swapInputOutput()
+void JsonToolController::validate()
 {
-    QString temp = m_inputText;
-    m_inputText = m_outputText;
-    m_outputText = temp;
-    
-    emit inputTextChanged();
+    if (!m_toolsViewModel)
+        return;
+
+    auto result = m_toolsViewModel->jsonValidate(m_inputText.toStdString());
+
+    m_outputText = QString::fromStdString(result.data);
+    m_errorMessage = result.success ? QString() : QString::fromStdString(result.errorMessage);
+
     emit outputTextChanged();
+    emit errorMessageChanged();
 }
 
-void Base64ToolController::copyOutput()
+void JsonToolController::copyOutput()
 {
     QClipboard* clipboard = QGuiApplication::clipboard();
     if (clipboard) {
@@ -112,12 +116,12 @@ void Base64ToolController::copyOutput()
     }
 }
 
-void Base64ToolController::clearAll()
+void JsonToolController::clearAll()
 {
     m_inputText.clear();
     m_outputText.clear();
     m_errorMessage.clear();
-    
+
     emit inputTextChanged();
     emit outputTextChanged();
     emit errorMessageChanged();

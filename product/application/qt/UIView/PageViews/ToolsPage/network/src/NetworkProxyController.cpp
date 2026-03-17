@@ -1,5 +1,7 @@
-#include "PageViews/ToolsPage/include/NetworkProxyController.h"
-#include "PageViews/ToolsPage/include/ProxyRequestModel.h"
+#include "PageViews/ToolsPage/network/include/NetworkProxyController.h"
+#include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
+#include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
+#include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 #include <QCoreApplication>
@@ -12,7 +14,6 @@
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QStandardPaths>
-#include <QRegularExpression>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -20,9 +21,14 @@ NetworkProxyController::NetworkProxyController(QObject* parent)
     : UIViewController(parent)
 {
     UIVIEW_LOG_DEBUG("create NetworkProxyController, this=" << (void*)this);
-    // Create model in constructor so that the CONSTANT Q_PROPERTY is
-    // already valid when QML reads it (before init() is called).
     m_requestModel = new ProxyRequestModel(this);
+    m_rulesManager = new ProxyRulesManager(this);
+    m_certManager  = new ProxyCertManager(this);
+
+    // Wire cert manager status messages to our status
+    connect(m_certManager, &ProxyCertManager::statusMessage,
+            this, &NetworkProxyController::setStatusMessage);
+
     UIVIEW_LOG_DEBUG("[PROXY-DEBUG] requestModel created in ctor: " << (void*)m_requestModel);
 }
 
@@ -61,6 +67,11 @@ void NetworkProxyController::init()
     m_tcpServer = new QTcpServer(this);
     connect(m_tcpServer, &QTcpServer::newConnection,
             this, &NetworkProxyController::onNewTcpConnection);
+
+    // Wire rules manager to use our sendCommand
+    m_rulesManager->setSendCommandFn([this](const QJsonObject& cmd) {
+        sendCommand(cmd);
+    });
 }
 
 // ====================== Property getters ======================
@@ -80,9 +91,10 @@ int     NetworkProxyController::getDetailTab()       const { return m_detailTab;
 int     NetworkProxyController::getRequestTabIndex() const { return m_requestTabIndex; }
 int     NetworkProxyController::getResponseTabIndex() const { return m_responseTabIndex; }
 ProxyRequestModel* NetworkProxyController::getRequestModel() const { return m_requestModel; }
+ProxyRulesManager* NetworkProxyController::getRulesManager() const { return m_rulesManager; }
+ProxyCertManager*  NetworkProxyController::getCertManager()  const { return m_certManager; }
 QString NetworkProxyController::getStatusMessage()   const { return m_statusMessage; }
 int     NetworkProxyController::getRequestCount()    const { return m_requestModel ? m_requestModel->rowCount() : 0; }
-bool    NetworkProxyController::isCertInstalling()   const { return m_certInstalling; }
 
 // Helper: decode body text, handling base64 encoding flag
 static QString decodeBodyText(const QJsonObject& data, const QString& bodyKey, const QString& base64FlagKey)
@@ -605,109 +617,8 @@ void NetworkProxyController::exportRequests(const QString& filePath)
     }
 }
 
-// ====================== Mock Rules ======================
-
-void NetworkProxyController::addMockRule(const QString& urlPattern, int statusCode,
-                                          const QString& contentType, const QString& body,
-                                          const QString& headers)
-{
-    QJsonObject rule;
-    rule["url_pattern"] = urlPattern;
-    rule["status_code"] = statusCode;
-    rule["content_type"] = contentType;
-    rule["body"] = body;
-    if (!headers.trimmed().isEmpty())
-        rule["headers"] = headers.trimmed();
-    m_mockRules.append(rule);
-
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_mock_rules");
-    cmd["rules"] = m_mockRules;
-    sendCommand(cmd);
-}
-
-void NetworkProxyController::removeMockRule(int index)
-{
-    if (index >= 0 && index < m_mockRules.size()) {
-        m_mockRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_mock_rules");
-        cmd["rules"] = m_mockRules;
-        sendCommand(cmd);
-    }
-}
-
-void NetworkProxyController::clearMockRules()
-{
-    m_mockRules = QJsonArray();
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_mock_rules");
-    cmd["rules"] = m_mockRules;
-    sendCommand(cmd);
-}
-
-QVariantList NetworkProxyController::getMockRules() const
-{
-    return m_mockRules.toVariantList();
-}
-
-// ====================== URL Pattern Testing ======================
-
-QString NetworkProxyController::testUrlPattern(const QString& pattern, const QString& testUrl)
-{
-    if (pattern.isEmpty())
-        return tr("✗ Empty pattern");
-
-    QRegularExpression re(pattern);
-    if (!re.isValid())
-        return tr("✗ Invalid regex: %1").arg(re.errorString());
-
-    QRegularExpressionMatch match = re.match(testUrl);
-    if (match.hasMatch())
-        return tr("✓ Match! Captured: \"%1\"").arg(match.captured(0));
-    else
-        return tr("✗ No match");
-}
-
-// ====================== Breakpoint Rules ======================
-
-void NetworkProxyController::addBreakpointRule(const QString& urlPattern, const QString& method)
-{
-    QJsonObject rule;
-    rule["url_pattern"] = urlPattern;
-    rule["method"] = method;
-    m_breakpointRules.append(rule);
-
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_breakpoint_rules");
-    cmd["rules"] = m_breakpointRules;
-    sendCommand(cmd);
-}
-
-void NetworkProxyController::removeBreakpointRule(int index)
-{
-    if (index >= 0 && index < m_breakpointRules.size()) {
-        m_breakpointRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_breakpoint_rules");
-        cmd["rules"] = m_breakpointRules;
-        sendCommand(cmd);
-    }
-}
-
-void NetworkProxyController::clearBreakpointRules()
-{
-    m_breakpointRules = QJsonArray();
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_breakpoint_rules");
-    cmd["rules"] = m_breakpointRules;
-    sendCommand(cmd);
-}
-
-QVariantList NetworkProxyController::getBreakpointRules() const
-{
-    return m_breakpointRules.toVariantList();
-}
+// ====================== Mock/Breakpoint/Blacklist/MapLocal/MapRemote/Throttle/Pattern ======================
+// Delegated to ProxyRulesManager (m_rulesManager) — see ProxyRulesManager.cpp
 
 // ====================== Intercept actions ======================
 
@@ -737,109 +648,8 @@ void NetworkProxyController::dropRequest(const QString& flowId)
     m_requestModel->addOrUpdateRequest(patch);
 }
 
-// ====================== Blacklist ======================
-
-void NetworkProxyController::addBlacklistRule(const QString& urlPattern)
-{
-    QJsonObject rule;
-    rule["url_pattern"] = urlPattern;
-    m_blacklistRules.append(rule);
-
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_blacklist");
-    cmd["rules"] = m_blacklistRules;
-    sendCommand(cmd);
-}
-
-void NetworkProxyController::removeBlacklistRule(int index)
-{
-    if (index >= 0 && index < m_blacklistRules.size()) {
-        m_blacklistRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_blacklist");
-        cmd["rules"] = m_blacklistRules;
-        sendCommand(cmd);
-    }
-}
-
-QVariantList NetworkProxyController::getBlacklistRules() const
-{
-    return m_blacklistRules.toVariantList();
-}
-
-// ====================== Map Local ======================
-
-void NetworkProxyController::addMapLocalRule(const QString& urlPattern, const QString& localPath)
-{
-    QJsonObject rule;
-    rule["url_pattern"] = urlPattern;
-    rule["local_path"] = localPath;
-    m_mapLocalRules.append(rule);
-
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_map_local");
-    cmd["rules"] = m_mapLocalRules;
-    sendCommand(cmd);
-}
-
-void NetworkProxyController::removeMapLocalRule(int index)
-{
-    if (index >= 0 && index < m_mapLocalRules.size()) {
-        m_mapLocalRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_map_local");
-        cmd["rules"] = m_mapLocalRules;
-        sendCommand(cmd);
-    }
-}
-
-QVariantList NetworkProxyController::getMapLocalRules() const
-{
-    return m_mapLocalRules.toVariantList();
-}
-
-// ====================== Map Remote ======================
-
-void NetworkProxyController::addMapRemoteRule(const QString& srcPattern, const QString& destUrl)
-{
-    QJsonObject rule;
-    rule["src_pattern"] = srcPattern;
-    rule["dest_url"] = destUrl;
-    m_mapRemoteRules.append(rule);
-
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_map_remote");
-    cmd["rules"] = m_mapRemoteRules;
-    sendCommand(cmd);
-}
-
-void NetworkProxyController::removeMapRemoteRule(int index)
-{
-    if (index >= 0 && index < m_mapRemoteRules.size()) {
-        m_mapRemoteRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_map_remote");
-        cmd["rules"] = m_mapRemoteRules;
-        sendCommand(cmd);
-    }
-}
-
-QVariantList NetworkProxyController::getMapRemoteRules() const
-{
-    return m_mapRemoteRules.toVariantList();
-}
-
-// ====================== Throttle ======================
-
-void NetworkProxyController::setThrottle(bool enabled, int downloadKBps, int uploadKBps)
-{
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("set_throttle");
-    cmd["enabled"] = enabled;
-    cmd["download_kbps"] = downloadKBps;
-    cmd["upload_kbps"] = uploadKBps;
-    sendCommand(cmd);
-}
+// ====================== Blacklist/MapLocal/MapRemote/Throttle ======================
+// Delegated to ProxyRulesManager — see ProxyRulesManager.cpp
 
 // ====================== Copy helpers ======================
 
@@ -917,25 +727,8 @@ void NetworkProxyController::onNewTcpConnection()
         if (m_autoSystemProxy)
             enableSystemProxy();
 
-        // Send initial rules
-        if (!m_mockRules.isEmpty()) {
-            QJsonObject cmd;
-            cmd["type"] = QStringLiteral("update_mock_rules");
-            cmd["rules"] = m_mockRules;
-            sendCommand(cmd);
-        }
-        if (!m_breakpointRules.isEmpty()) {
-            QJsonObject cmd;
-            cmd["type"] = QStringLiteral("update_breakpoint_rules");
-            cmd["rules"] = m_breakpointRules;
-            sendCommand(cmd);
-        }
-        if (!m_blacklistRules.isEmpty()) {
-            QJsonObject cmd;
-            cmd["type"] = QStringLiteral("update_blacklist");
-            cmd["rules"] = m_blacklistRules;
-            sendCommand(cmd);
-        }
+        // Send initial rules via manager
+        m_rulesManager->sendAllRules();
     }
 }
 
@@ -1212,179 +1005,4 @@ QString NetworkProxyController::findAddonExecutable() const
 }
 
 // ====================== Certificate helpers ======================
-
-QString NetworkProxyController::getCACertPath() const
-{
-    // mitmproxy stores CA certs in multiple formats at ~/.mitmproxy/
-    QString home = QDir::homePath();
-#if defined(Q_OS_MACOS)
-    // Use PEM format on macOS — works reliably with security import + add-trusted-cert
-    return home + "/.mitmproxy/mitmproxy-ca-cert.pem";
-#elif defined(Q_OS_WIN)
-    return home + "/.mitmproxy/mitmproxy-ca-cert.p12";
-#else
-    return home + "/.mitmproxy/mitmproxy-ca-cert.pem";
-#endif
-}
-
-bool NetworkProxyController::isCACertInstalled() const
-{
-    // Check if mitmproxy CA cert exists AND is trusted by the system
-    QString certPath = getCACertPath();
-    if (!QFile::exists(certPath))
-        return false;
-
-#if defined(Q_OS_MACOS)
-    // 'security verify-cert' returns 0 only if the cert is both imported AND trusted
-    QProcess verifyProc;
-    verifyProc.start(QStringLiteral("security"),
-                     {"verify-cert", "-c", certPath});
-    verifyProc.waitForFinished(3000);
-    return (verifyProc.exitCode() == 0);
-#else
-    // On other platforms, just check file exists
-    return true;
-#endif
-}
-
-void NetworkProxyController::revealCACertInFolder()
-{
-    QString certPath = getCACertPath();
-    QString folder = QFileInfo(certPath).absolutePath();
-
-    if (!QDir(folder).exists()) {
-        setStatusMessage(tr("Certificate folder does not exist yet. Start the proxy first to generate the CA certificate."));
-        return;
-    }
-
-#if defined(Q_OS_MACOS)
-    if (QFile::exists(certPath)) {
-        // Reveal the cert file selected in Finder
-        QProcess::startDetached(QStringLiteral("open"), {"-R", certPath});
-    } else {
-        QProcess::startDetached(QStringLiteral("open"), {folder});
-    }
-#elif defined(Q_OS_WIN)
-    QProcess::startDetached(QStringLiteral("explorer"), {"/select,", QDir::toNativeSeparators(certPath)});
-#else
-    QProcess::startDetached(QStringLiteral("xdg-open"), {folder});
-#endif
-    setStatusMessage(tr("Certificate folder: %1").arg(folder));
-}
-
-void NetworkProxyController::installCACert()
-{
-    QString certPath = getCACertPath();
-
-    if (!QFile::exists(certPath)) {
-        // Check if proxy has been started at all
-        QString mitmDir = QDir::homePath() + "/.mitmproxy";
-        if (!QDir(mitmDir).exists()) {
-            setStatusMessage(tr("Please start the proxy first. The CA certificate is generated on first launch."));
-        } else {
-            setStatusMessage(tr("CA certificate not found at %1. Try restarting the proxy.").arg(certPath));
-        }
-        return;
-    }
-
-    if (m_certInstalling) return;
-
-    m_certInstalling = true;
-    emit certInstallingChanged();
-    setStatusMessage(tr("Installing certificate... A system password dialog will appear."));
-
-#if defined(Q_OS_MACOS)
-    // macOS two-step install:
-    //   Step 1: 'security import' into login keychain (no admin needed)
-    //   Step 2: 'security add-trusted-cert -r trustRoot' — this shows the native
-    //           macOS Trust Sheet dialog where user enters password, then the cert
-    //           is marked as trusted for ALL policies.
-    // IMPORTANT: Do NOT use osascript — it creates a non-GUI context where the
-    //            Trust Sheet cannot appear.
-
-    UIVIEW_LOG_DEBUG("[PROXY-CERT] Installing CA cert: " << certPath.toStdString());
-    QString loginKeychain = QDir::homePath() + "/Library/Keychains/login.keychain-db";
-
-    // Step 1: Import (synchronous, fast, no dialog)
-    {
-        QProcess importProc;
-        importProc.start(QStringLiteral("security"),
-                         {"import", certPath, "-k", loginKeychain, "-t", "cert"});
-        importProc.waitForFinished(5000);
-        int importRet = importProc.exitCode();
-        UIVIEW_LOG_DEBUG("[PROXY-CERT] import exit=" << importRet);
-        // exitCode != 0 is OK if cert already imported (duplicate error)
-    }
-
-    // Step 2: Trust (async — shows macOS native password dialog)
-    m_certProcess = new QProcess(this);
-
-    connect(m_certProcess,
-            QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, [this](int exitCode, QProcess::ExitStatus) {
-        m_certInstalling = false;
-        emit certInstallingChanged();
-
-        QString stdErr = QString::fromUtf8(m_certProcess->readAllStandardError()).trimmed();
-        QString stdOut = QString::fromUtf8(m_certProcess->readAllStandardOutput()).trimmed();
-        UIVIEW_LOG_DEBUG("[PROXY-CERT] add-trusted-cert exit=" << exitCode
-                         << " stderr=" << stdErr.toStdString()
-                         << " stdout=" << stdOut.toStdString());
-
-        // Verify trust was actually set
-        bool trusted = isCACertInstalled();
-        UIVIEW_LOG_DEBUG("[PROXY-CERT] verify-cert trusted=" << trusted);
-
-        if (trusted) {
-            setStatusMessage(tr("✅ CA Certificate installed and trusted successfully! HTTPS capture is ready."));
-            emit caCertInstalledChanged();
-        } else if (exitCode != 0) {
-            setStatusMessage(tr("Certificate trust was not set. You may have cancelled the dialog. Try again."));
-        } else {
-            // exitCode 0 but verify fails — edge case
-            setStatusMessage(tr("Certificate imported but trust verification failed. Try clicking Refresh Status."));
-            emit caCertInstalledChanged();
-        }
-
-        m_certProcess->deleteLater();
-        m_certProcess = nullptr;
-    });
-
-    // 'security add-trusted-cert -r trustRoot certFile' shows a native macOS
-    // password dialog (Trust Sheet), then sets trust for ALL policies.
-    m_certProcess->start(QStringLiteral("security"),
-                         {"add-trusted-cert", "-r", "trustRoot", certPath});
-
-#elif defined(Q_OS_WIN)
-    // Windows: use certutil with elevation
-    m_certProcess = new QProcess(this);
-    connect(m_certProcess,
-            QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, [this](int exitCode, QProcess::ExitStatus) {
-        m_certInstalling = false;
-        emit certInstallingChanged();
-        if (exitCode == 0) {
-            setStatusMessage(tr("✅ CA Certificate installed to Windows cert store!"));
-            emit caCertInstalledChanged();
-        } else {
-            setStatusMessage(tr("Certificate installation failed (run as administrator?)"));
-        }
-        m_certProcess->deleteLater();
-        m_certProcess = nullptr;
-    });
-    m_certProcess->start(QStringLiteral("certutil"), {"-addstore", "Root", certPath});
-
-#elif defined(Q_OS_LINUX)
-    QProcess::execute(QStringLiteral("sudo"),
-        {"cp", certPath, "/usr/local/share/ca-certificates/mitmproxy-ca-cert.crt"});
-    int ret = QProcess::execute(QStringLiteral("sudo"), {"update-ca-certificates"});
-    m_certInstalling = false;
-    emit certInstallingChanged();
-    if (ret == 0) {
-        setStatusMessage(tr("✅ CA Certificate installed!"));
-        emit caCertInstalledChanged();
-    } else {
-        setStatusMessage(tr("Certificate installation failed."));
-    }
-#endif
-}
+// Delegated to ProxyCertManager — see ProxyCertManager.cpp

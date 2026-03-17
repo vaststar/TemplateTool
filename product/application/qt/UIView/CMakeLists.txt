@@ -47,22 +47,26 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/SettingsPage/src/AppearanceSettingsController.cpp
     PageViews/SettingsPage/src/LanguageSettingsController.cpp
 
-    PageViews/ToolsPage/include/ToolsPageController.h
-    PageViews/ToolsPage/include/ToolsTreeModel.h
-    PageViews/ToolsPage/include/Base64ToolController.h
-    PageViews/ToolsPage/include/JsonToolController.h
-    PageViews/ToolsPage/include/TimestampToolController.h
-    PageViews/ToolsPage/include/UuidToolController.h
-    PageViews/ToolsPage/include/NetworkProxyController.h
-    PageViews/ToolsPage/include/ProxyRequestModel.h
-    PageViews/ToolsPage/src/ToolsPageController.cpp
-    PageViews/ToolsPage/src/ToolsTreeModel.cpp
-    PageViews/ToolsPage/src/Base64ToolController.cpp
-    PageViews/ToolsPage/src/JsonToolController.cpp
-    PageViews/ToolsPage/src/TimestampToolController.cpp
-    PageViews/ToolsPage/src/UuidToolController.cpp
-    PageViews/ToolsPage/src/NetworkProxyController.cpp
-    PageViews/ToolsPage/src/ProxyRequestModel.cpp
+    PageViews/ToolsPage/common/include/ToolsPageController.h
+    PageViews/ToolsPage/common/include/ToolsTreeModel.h
+    PageViews/ToolsPage/textprocess/include/Base64ToolController.h
+    PageViews/ToolsPage/textprocess/include/JsonToolController.h
+    PageViews/ToolsPage/textprocess/include/TimestampToolController.h
+    PageViews/ToolsPage/generators/include/UuidToolController.h
+    PageViews/ToolsPage/network/include/NetworkProxyController.h
+    PageViews/ToolsPage/network/include/ProxyRequestModel.h
+    PageViews/ToolsPage/network/include/ProxyRulesManager.h
+    PageViews/ToolsPage/network/include/ProxyCertManager.h
+    PageViews/ToolsPage/common/src/ToolsPageController.cpp
+    PageViews/ToolsPage/common/src/ToolsTreeModel.cpp
+    PageViews/ToolsPage/textprocess/src/Base64ToolController.cpp
+    PageViews/ToolsPage/textprocess/src/JsonToolController.cpp
+    PageViews/ToolsPage/textprocess/src/TimestampToolController.cpp
+    PageViews/ToolsPage/generators/src/UuidToolController.cpp
+    PageViews/ToolsPage/network/src/NetworkProxyController.cpp
+    PageViews/ToolsPage/network/src/ProxyRequestModel.cpp
+    PageViews/ToolsPage/network/src/ProxyRulesManager.cpp
+    PageViews/ToolsPage/network/src/ProxyCertManager.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
@@ -128,13 +132,18 @@ set(MODULE_QML_TARGET_FILES
     PageViews/SettingsPage/qml/SettingsNavPanel.qml
     PageViews/SettingsPage/qml/AppearanceSettingsPanel.qml
     PageViews/SettingsPage/qml/LanguageSettingsPanel.qml
-    PageViews/ToolsPage/qml/ToolsPage.qml
-    PageViews/ToolsPage/qml/ToolsNavPanel.qml
-    PageViews/ToolsPage/qml/Base64Panel.qml
-    PageViews/ToolsPage/qml/JsonPanel.qml
-    PageViews/ToolsPage/qml/TimestampPanel.qml
-    PageViews/ToolsPage/qml/UuidPanel.qml
-    PageViews/ToolsPage/qml/NetworkProxyPanel.qml
+    PageViews/ToolsPage/common/qml/ToolsPage.qml
+    PageViews/ToolsPage/common/qml/ToolsNavPanel.qml
+    PageViews/ToolsPage/textprocess/qml/Base64Panel.qml
+    PageViews/ToolsPage/textprocess/qml/JsonPanel.qml
+    PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml
+    PageViews/ToolsPage/generators/qml/UuidPanel.qml
+    PageViews/ToolsPage/network/qml/NetworkProxyPanel.qml
+    PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml
+    PageViews/ToolsPage/network/qml/NetworkRulesTab.qml
+    PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml
+    PageViews/ToolsPage/network/qml/PatternTestDialog.qml
+    PageViews/ToolsPage/network/qml/MockDetailDialog.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml

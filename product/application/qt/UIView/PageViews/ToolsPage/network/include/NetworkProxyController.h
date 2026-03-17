@@ -9,7 +9,9 @@
 #include <QJsonArray>
 #include <QTimer>
 #include "UIViewBase/include/UIViewController.h"
-#include "PageViews/ToolsPage/include/ProxyRequestModel.h"
+#include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
+#include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
+#include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
 
 /**
  * @brief Controller for the Network Proxy tool.
@@ -17,6 +19,9 @@
  * Manages the mitmproxy addon process, communicates via TCP socket,
  * collects captured HTTP(S) requests, and optionally configures
  * the system proxy on start/stop.
+ *
+ * Rule management is delegated to ProxyRulesManager.
+ * Certificate management is delegated to ProxyCertManager.
  */
 class NetworkProxyController : public UIViewController
 {
@@ -51,11 +56,13 @@ class NetworkProxyController : public UIViewController
     // --------------- Model ---------------
     Q_PROPERTY(ProxyRequestModel* requestModel READ getRequestModel CONSTANT)
 
+    // --------------- Delegated managers ---------------
+    Q_PROPERTY(ProxyRulesManager* rulesManager READ getRulesManager CONSTANT)
+    Q_PROPERTY(ProxyCertManager*  certManager  READ getCertManager  CONSTANT)
+
     // --------------- Status ---------------
     Q_PROPERTY(QString statusMessage READ getStatusMessage NOTIFY statusMessageChanged)
     Q_PROPERTY(int     requestCount  READ getRequestCount  NOTIFY requestCountChanged)
-    Q_PROPERTY(bool    caCertInstalled READ isCACertInstalled NOTIFY caCertInstalledChanged)
-    Q_PROPERTY(bool    certInstalling READ isCertInstalling NOTIFY certInstallingChanged)
 
 public:
     explicit NetworkProxyController(QObject* parent = nullptr);
@@ -80,9 +87,10 @@ public:
     QString getRequestDetailText() const;
     QString getResponseDetailText() const;
     ProxyRequestModel* getRequestModel() const;
+    ProxyRulesManager* getRulesManager() const;
+    ProxyCertManager*  getCertManager()  const;
     QString getStatusMessage() const;
     int     getRequestCount()  const;
-    bool    isCertInstalling() const;
 
     // Property setters
     void setProxyPort(int port);
@@ -104,54 +112,14 @@ public:
     Q_INVOKABLE void clearRequests();
     Q_INVOKABLE void exportRequests(const QString& filePath);
 
-    // Mock rules
-    Q_INVOKABLE void addMockRule(const QString& urlPattern, int statusCode,
-                                  const QString& contentType, const QString& body,
-                                  const QString& headers = QString());
-    Q_INVOKABLE void removeMockRule(int index);
-    Q_INVOKABLE void clearMockRules();
-    Q_INVOKABLE QVariantList getMockRules() const;
-
-    // Breakpoint rules
-    Q_INVOKABLE void addBreakpointRule(const QString& urlPattern, const QString& method);
-    Q_INVOKABLE void removeBreakpointRule(int index);
-    Q_INVOKABLE void clearBreakpointRules();
-    Q_INVOKABLE QVariantList getBreakpointRules() const;
-
     // Intercept actions (for breakpointed requests)
     Q_INVOKABLE void resumeRequest(const QString& flowId);
     Q_INVOKABLE void dropRequest(const QString& flowId);
-
-    // Blacklist
-    Q_INVOKABLE void addBlacklistRule(const QString& urlPattern);
-    Q_INVOKABLE void removeBlacklistRule(int index);
-    Q_INVOKABLE QVariantList getBlacklistRules() const;
-
-    // Map local / remote
-    Q_INVOKABLE void addMapLocalRule(const QString& urlPattern, const QString& localPath);
-    Q_INVOKABLE void removeMapLocalRule(int index);
-    Q_INVOKABLE QVariantList getMapLocalRules() const;
-
-    Q_INVOKABLE void addMapRemoteRule(const QString& srcPattern, const QString& destUrl);
-    Q_INVOKABLE void removeMapRemoteRule(int index);
-    Q_INVOKABLE QVariantList getMapRemoteRules() const;
-
-    // Throttle
-    Q_INVOKABLE void setThrottle(bool enabled, int downloadKBps, int uploadKBps);
-
-    // URL pattern testing
-    Q_INVOKABLE QString testUrlPattern(const QString& pattern, const QString& testUrl);
 
     // Copy helpers
     Q_INVOKABLE void copyRequestUrl();
     Q_INVOKABLE void copyRequestCurl();
     Q_INVOKABLE void copyResponseBody();
-
-    // Certificate helpers
-    Q_INVOKABLE void installCACert();
-    Q_INVOKABLE void revealCACertInFolder();
-    Q_INVOKABLE bool isCACertInstalled() const;
-    Q_INVOKABLE QString getCACertPath() const;
 
 protected:
     void init() override;
@@ -175,8 +143,6 @@ signals:
     void statusMessageChanged();
     void requestCountChanged();
     void interceptedRequest(const QString& flowId, const QJsonObject& detail);
-    void caCertInstalledChanged();
-    void certInstallingChanged();
 
 private slots:
     void onNewTcpConnection();
@@ -219,30 +185,23 @@ private:
 
     // Selection
     int m_selectedIndex    = -1;
-    int m_detailTab        = 0;  // 0=Overview, 1=Headers, 2=Body
-    int m_requestTabIndex  = 0;  // 0=Headers, 1=Body, 2=Query
-    int m_responseTabIndex = 0;  // 0=Headers, 1=Body, 2=Preview
+    int m_detailTab        = 0;
+    int m_requestTabIndex  = 0;
+    int m_responseTabIndex = 0;
 
     // Model
     ProxyRequestModel* m_requestModel = nullptr;
 
-    // Rules (stored here, sent to addon via TCP)
-    QJsonArray m_mockRules;
-    QJsonArray m_breakpointRules;
-    QJsonArray m_blacklistRules;
-    QJsonArray m_mapLocalRules;
-    QJsonArray m_mapRemoteRules;
+    // Delegated managers
+    ProxyRulesManager* m_rulesManager = nullptr;
+    ProxyCertManager*  m_certManager  = nullptr;
 
     // Status
     QString m_statusMessage;
-
-    // Certificate install
-    bool       m_certInstalling = false;
-    QProcess*  m_certProcess = nullptr;
 
     // Saved proxy state for restore
     QString m_savedProxyHost;
     QString m_savedProxyPort;
     bool    m_savedProxyEnabled = false;
-    QStringList m_proxyNetworkServices;  // macOS: network services where proxy was set
+    QStringList m_proxyNetworkServices;
 };
