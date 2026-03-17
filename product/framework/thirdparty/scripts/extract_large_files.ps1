@@ -8,10 +8,13 @@
 #   .\extract_large_files.ps1                  # Extract all platforms
 #   .\extract_large_files.ps1 -Platform android
 #   .\extract_large_files.ps1 -Platform windows
+#   .\extract_large_files.ps1 -Platform macos
+#   .\extract_large_files.ps1 -Platform linux
+#   .\extract_large_files.ps1 -Platform ios
 # =============================================================================
 
 param(
-    [ValidateSet("all", "android", "windows")]
+    [ValidateSet("all", "android", "windows", "macos", "linux", "ios")]
     [string]$Platform = "all"
 )
 
@@ -36,25 +39,25 @@ foreach ($file in $config.files) {
     if ($Platform -ne "all" -and $file.platform -ne $Platform) {
         continue
     }
-    
+
     $originalPath = Join-Path $baseDir $file.path
     $zipPath = "$originalPath.zip"
-    
+
     if (!(Test-Path $zipPath)) {
         Write-Host "[SKIP] Zip not found: $($file.path).zip" -ForegroundColor Yellow
         $skippedCount++
         continue
     }
-    
+
     if (Test-Path $originalPath) {
         Write-Host "[SKIP] Already exists: $($file.path)" -ForegroundColor Gray
         $skippedCount++
         continue
     }
-    
+
     Write-Host "[EXTRACT] $($file.path)" -ForegroundColor Green
     $destDir = Split-Path -Parent $originalPath
-    
+
     try {
         Expand-Archive -Path $zipPath -DestinationPath $destDir -Force
         $extractedCount++

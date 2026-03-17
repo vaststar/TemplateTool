@@ -8,11 +8,14 @@
 #   .\compress_large_files.ps1                  # Compress all
 #   .\compress_large_files.ps1 -Platform android
 #   .\compress_large_files.ps1 -Platform windows
+#   .\compress_large_files.ps1 -Platform macos
+#   .\compress_large_files.ps1 -Platform linux
+#   .\compress_large_files.ps1 -Platform ios
 #   .\compress_large_files.ps1 -Force           # Overwrite existing zips
 # =============================================================================
 
 param(
-    [ValidateSet("all", "android", "windows")]
+    [ValidateSet("all", "android", "windows", "macos", "linux", "ios")]
     [string]$Platform = "all",
     [switch]$Force
 )
@@ -41,36 +44,36 @@ foreach ($file in $config.files) {
     if ($Platform -ne "all" -and $file.platform -ne $Platform) {
         continue
     }
-    
+
     $originalPath = Join-Path $baseDir $file.path
     $zipPath = "$originalPath.zip"
-    
+
     if (!(Test-Path $originalPath)) {
         Write-Host "[SKIP] Original not found: $($file.path)" -ForegroundColor Yellow
         $skippedCount++
         continue
     }
-    
+
     if ((Test-Path $zipPath) -and !$Force) {
         Write-Host "[SKIP] Zip exists (use -Force to overwrite): $($file.path).zip" -ForegroundColor Gray
         $skippedCount++
         continue
     }
-    
+
     Write-Host "[COMPRESS] $($file.path)" -ForegroundColor Green
-    
+
     try {
         Compress-Archive -Path $originalPath -DestinationPath $zipPath -Force
-        
+
         $originalSize = (Get-Item $originalPath).Length
         $compressedSize = (Get-Item $zipPath).Length
         $ratio = [math]::Round((1 - $compressedSize / $originalSize) * 100, 1)
-        
+
         $originalMB = [math]::Round($originalSize / 1MB, 2)
         $compressedMB = [math]::Round($compressedSize / 1MB, 2)
-        
+
         Write-Host "  $originalMB MB -> $compressedMB MB (saved $ratio%)" -ForegroundColor DarkGray
-        
+
         $totalOriginal += $originalSize
         $totalCompressed += $compressedSize
         $compressedCount++

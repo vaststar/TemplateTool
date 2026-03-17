@@ -9,6 +9,9 @@
 #   ./extract_large_files.sh              # Extract all platforms
 #   ./extract_large_files.sh android      # Extract Android only
 #   ./extract_large_files.sh windows      # Extract Windows only
+#   ./extract_large_files.sh macos        # Extract macOS only
+#   ./extract_large_files.sh linux        # Extract Linux only
+#   ./extract_large_files.sh ios          # Extract iOS only
 # =============================================================================
 
 set -e
@@ -46,17 +49,17 @@ for file in config['files']:
 " | while IFS='|' read -r FILE_PATH FILE_PLATFORM; do
     ORIGINAL_PATH="$BASE_DIR/$FILE_PATH"
     ZIP_PATH="$ORIGINAL_PATH.zip"
-    
+
     if [ ! -f "$ZIP_PATH" ]; then
         echo "[SKIP] Zip not found: $FILE_PATH.zip"
         continue
     fi
-    
+
     if [ -f "$ORIGINAL_PATH" ]; then
         echo "[SKIP] Already exists: $FILE_PATH"
         continue
     fi
-    
+
     echo "[EXTRACT] $FILE_PATH"
     DEST_DIR=$(dirname "$ORIGINAL_PATH")
     unzip -o "$ZIP_PATH" -d "$DEST_DIR"

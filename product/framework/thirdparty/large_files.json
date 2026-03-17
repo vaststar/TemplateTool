@@ -24,6 +24,14 @@
     {
       "path": "opencv/opencv/windows/x86/vc17/bin/opencv_world4130d.dll",
       "platform": "windows"
+    },
+    {
+      "path": "ffmpeg/ffmpeg/windows/x64/ffmpeg.exe",
+      "platform": "windows"
+    },
+    {
+      "path": "ffmpeg/ffmpeg/windows/x64/ffprobe.exe",
+      "platform": "windows"
     }
   ]
 }
