@@ -53,16 +53,20 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/include/JsonToolController.h
     PageViews/ToolsPage/include/TimestampToolController.h
     PageViews/ToolsPage/include/UuidToolController.h
+    PageViews/ToolsPage/include/NetworkProxyController.h
+    PageViews/ToolsPage/include/ProxyRequestModel.h
     PageViews/ToolsPage/src/ToolsPageController.cpp
     PageViews/ToolsPage/src/ToolsTreeModel.cpp
     PageViews/ToolsPage/src/Base64ToolController.cpp
     PageViews/ToolsPage/src/JsonToolController.cpp
     PageViews/ToolsPage/src/TimestampToolController.cpp
     PageViews/ToolsPage/src/UuidToolController.cpp
+    PageViews/ToolsPage/src/NetworkProxyController.cpp
+    PageViews/ToolsPage/src/ProxyRequestModel.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
-    
+
     MainWindowFootBar/include/MainWindowFootBarController.h
     MainWindowFootBar/src/MainWindowFootBarController.cpp
 
@@ -82,7 +86,7 @@ set(MODULE_SOURCE_PRIVATE
 
     MainWindow/include/MainWindowController.h
     MainWindow/src/MainWindowController.cpp
-    
+
     AppUIManager/src/AppUIManager.cpp
     AppUIManager/src/AppUIController.h
     AppUIManager/src/AppUIController.cpp
@@ -90,7 +94,7 @@ set(MODULE_SOURCE_PRIVATE
     AppUIManager/src/UIIPCServerHelper.cpp
     AppUIManager/src/UIStabilityMonitor.h
     AppUIManager/src/UIStabilityMonitor.cpp
-    
+
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )
@@ -105,7 +109,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ViewModels
     CommonHeadFramework
     ResourceLoader
-    Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia
+    Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia Qt6::Network
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -130,6 +134,7 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ToolsPage/qml/JsonPanel.qml
     PageViews/ToolsPage/qml/TimestampPanel.qml
     PageViews/ToolsPage/qml/UuidPanel.qml
+    PageViews/ToolsPage/qml/NetworkProxyPanel.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml

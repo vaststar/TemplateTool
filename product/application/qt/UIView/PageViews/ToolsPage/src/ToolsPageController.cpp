@@ -142,6 +142,8 @@ QString ToolsPageController::mapPanelTypeToQml(int panelType) const
         return QStringLiteral("TimestampPanel.qml");
     case PanelType::Uuid:
         return QStringLiteral("UuidPanel.qml");
+    case PanelType::NetworkProxy:
+        return QStringLiteral("NetworkProxyPanel.qml");
     default:
         return QString();
     }

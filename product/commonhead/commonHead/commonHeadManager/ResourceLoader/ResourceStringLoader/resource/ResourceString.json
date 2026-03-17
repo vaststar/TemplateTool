@@ -6,7 +6,7 @@
       "conditions": []
     },
     {
-      "token": "CancelLabel", 
+      "token": "CancelLabel",
       "value": "Cancel",
       "conditions": []
     },
@@ -26,7 +26,7 @@
     },
     {
       "token": "todotest",
-      "value": "aab", 
+      "value": "aab",
       "conditions": []
     }
     ,
@@ -44,6 +44,8 @@
     { "token": "ToolsJson", "value": "JSON Formatter", "conditions": [] },
     { "token": "ToolsTimestamp", "value": "Timestamp Converter", "conditions": [] },
     { "token": "ToolsUuid", "value": "UUID Generator", "conditions": [] },
+    { "token": "ToolsCategoryNetwork", "value": "Network", "conditions": [] },
+    { "token": "ToolsNetworkProxy", "value": "Network Proxy", "conditions": [] },
     { "token": "ToolsJsonValid", "value": "JSON is valid", "conditions": [] },
     { "token": "ToolsInvalidTimestamp", "value": "Invalid timestamp", "conditions": [] },
     { "token": "ToolsDateTimeParseFailed", "value": "DateTime format parse failed", "conditions": [] },

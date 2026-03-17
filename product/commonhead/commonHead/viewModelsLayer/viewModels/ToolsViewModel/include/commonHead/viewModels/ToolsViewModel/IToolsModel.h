@@ -35,6 +35,7 @@ enum class COMMONHEAD_EXPORT ToolPanelType : uint8_t
     Json,               // JSON 格式化
     Timestamp,          // 时间戳转换
     Uuid,               // UUID 生成
+    NetworkProxy,       // 网络代理
 };
 
 /**
