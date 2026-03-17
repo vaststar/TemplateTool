@@ -1,4 +1,7 @@
-/build
+build/
+build_temp/
+build_venv/
+dst/
 /install
 .DS_Store
 __pycache__/
