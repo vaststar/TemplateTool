@@ -67,6 +67,10 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/network/src/ProxyRequestModel.cpp
     PageViews/ToolsPage/network/src/ProxyRulesManager.cpp
     PageViews/ToolsPage/network/src/ProxyCertManager.cpp
+    PageViews/ToolsPage/screencapture/include/ScreenCaptureController.h
+    PageViews/ToolsPage/screencapture/include/ScreenshotService.h
+    PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp
+    PageViews/ToolsPage/screencapture/src/ScreenshotService.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
@@ -144,6 +148,11 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml
     PageViews/ToolsPage/network/qml/PatternTestDialog.qml
     PageViews/ToolsPage/network/qml/MockDetailDialog.qml
+    PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml
+    PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml
+    PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml
+    PageViews/ToolsPage/screencapture/qml/RecordingTab.qml
+    PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml

@@ -36,6 +36,7 @@ enum class COMMONHEAD_EXPORT ToolPanelType : uint8_t
     Timestamp,          // 时间戳转换
     Uuid,               // UUID 生成
     NetworkProxy,       // 网络代理
+    ScreenCapture,      // 截图录屏
 };
 
 /**

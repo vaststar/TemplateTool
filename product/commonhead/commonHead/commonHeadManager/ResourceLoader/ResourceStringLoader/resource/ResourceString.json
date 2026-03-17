@@ -46,6 +46,8 @@
     { "token": "ToolsUuid", "value": "UUID Generator", "conditions": [] },
     { "token": "ToolsCategoryNetwork", "value": "Network", "conditions": [] },
     { "token": "ToolsNetworkProxy", "value": "Network Proxy", "conditions": [] },
+    { "token": "ToolsCategoryMedia", "value": "Media", "conditions": [] },
+    { "token": "ToolsScreenCapture", "value": "Screen Capture", "conditions": [] },
     { "token": "ToolsJsonValid", "value": "JSON is valid", "conditions": [] },
     { "token": "ToolsInvalidTimestamp", "value": "Invalid timestamp", "conditions": [] },
     { "token": "ToolsDateTimeParseFailed", "value": "DateTime format parse failed", "conditions": [] },

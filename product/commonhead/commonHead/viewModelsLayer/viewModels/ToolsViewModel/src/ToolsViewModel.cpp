@@ -409,6 +409,22 @@ void ToolsViewModel::buildToolsTree()
         model::ToolPanelType::NetworkProxy
     });
 
+    // Media category
+    tree->addNode("", {
+        "media",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryMedia),
+        "",
+        model::ToolPanelType::None
+    });
+
+    // Media > Screen Capture
+    tree->addNode("media", {
+        "media.screencapture",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsScreenCapture),
+        "",
+        model::ToolPanelType::ScreenCapture
+    });
+
     m_toolsTree = tree;
 
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::buildToolsTree completed");
