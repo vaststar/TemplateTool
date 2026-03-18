@@ -372,47 +372,47 @@ Proxy: 127.0.0.1:%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="542"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="558"/>
         <source>Starting proxy on port %1...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="582"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="598"/>
         <source>Proxy stopped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="616"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="632"/>
         <source>Exported %1 requests</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="724"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="740"/>
         <source>Addon connected, proxy running on port %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="778"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="794"/>
         <source>Addon disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="786"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="802"/>
         <source>Proxy process started, waiting for addon connection...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="800"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="828"/>
         <source>Proxy process exited (code %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="812"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="840"/>
         <source>Proxy process error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="856"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="884"/>
         <source>Addon error: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -996,62 +996,72 @@ Double-click a rule to view details.</source>
 <context>
     <name>ProxyCertManager</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="138"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="65"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="152"/>
         <source>Certificate folder: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="75"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="162"/>
         <source>Please start the proxy first. The CA certificate is generated on first launch.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="77"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="164"/>
         <source>CA certificate not found at %1. Try restarting the proxy.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="172"/>
         <source>Installing certificate... A system password dialog will appear.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="110"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="197"/>
         <source>✅ CA Certificate installed and trusted successfully! HTTPS capture is ready.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="200"/>
         <source>Certificate trust was not set. You may have cancelled the dialog. Try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="115"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="202"/>
         <source>Certificate imported but trust verification failed. Try clicking Refresh Status.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="134"/>
-        <source>✅ CA Certificate installed to Windows cert store!</source>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="219"/>
+        <source>Failed to read certificate file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="137"/>
-        <source>Certificate installation failed (run as administrator?)</source>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="231"/>
+        <source>Failed to parse certificate. The file may be corrupted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="151"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="256"/>
+        <source>✅ CA Certificate installed to Windows cert store! HTTPS capture is ready.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="260"/>
+        <source>Certificate installation failed (error code: %1). If you cancelled the security dialog, please try again and click Yes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="272"/>
         <source>✅ CA Certificate installed!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="154"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="275"/>
         <source>Certificate installation failed.</source>
         <translation type="unfinished"></translation>
     </message>

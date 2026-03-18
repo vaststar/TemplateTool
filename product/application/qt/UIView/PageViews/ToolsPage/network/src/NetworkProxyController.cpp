@@ -521,13 +521,29 @@ void NetworkProxyController::startProxy()
             this, &NetworkProxyController::onProcessFinished);
     connect(m_process, &QProcess::errorOccurred,
             this, &NetworkProxyController::onProcessError);
+    connect(m_process, &QProcess::readyReadStandardError, this, [this]() {
+        if (m_process) {
+            QByteArray errOutput = m_process->readAllStandardError();
+            UIVIEW_LOG_DEBUG("[PROXY-STDERR] " << errOutput.toStdString());
+        }
+    });
+    connect(m_process, &QProcess::readyReadStandardOutput, this, [this]() {
+        if (m_process) {
+            QByteArray stdOutput = m_process->readAllStandardOutput();
+            UIVIEW_LOG_DEBUG("[PROXY-STDOUT] " << stdOutput.toStdString());
+        }
+    });
 
     QStringList args;
 
-    // Development mode: if addon is a .py script, run via python3
+    // Development mode: if addon is a .py script, run via python
     QString program = addonPath;
     if (addonPath.endsWith(QStringLiteral(".py"))) {
+#ifdef Q_OS_WIN
+        program = QStringLiteral("python");
+#else
         program = QStringLiteral("python3");
+#endif
         args << addonPath;
     }
 
@@ -790,6 +806,18 @@ void NetworkProxyController::onProcessFinished(int exitCode, QProcess::ExitStatu
 {
     UIVIEW_LOG_DEBUG("Proxy addon process finished: " << exitCode << " status: " << static_cast<int>(exitStatus));
 
+    // Capture any remaining output before cleaning up
+    if (m_process) {
+        QByteArray remainingErr = m_process->readAllStandardError();
+        QByteArray remainingOut = m_process->readAllStandardOutput();
+        if (!remainingErr.isEmpty()) {
+            UIVIEW_LOG_DEBUG("[PROXY-STDERR] " << remainingErr.toStdString());
+        }
+        if (!remainingOut.isEmpty()) {
+            UIVIEW_LOG_DEBUG("[PROXY-STDOUT] " << remainingOut.toStdString());
+        }
+    }
+
     if (m_autoSystemProxy)
         disableSystemProxy();
 
@@ -983,7 +1011,11 @@ QString NetworkProxyController::findAddonExecutable() const
 #endif
 
     // Also check development path
+#if defined(Q_OS_WIN)
+    searchPaths << QDir::currentPath() + "/product/tools/proxy_addon/dist/proxy_addon/proxy_addon.exe";
+#else
     searchPaths << QDir::currentPath() + "/product/tools/proxy_addon/dist/proxy_addon/proxy_addon";
+#endif
 
     for (const QString& path : searchPaths) {
         UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Checking addon path: " << path.toStdString() << " exists=" << QFile::exists(path));

@@ -16,3 +16,5 @@ product/framework/thirdparty/opencv/opencv/android/*/libs/*.so
 !product/framework/thirdparty/opencv/opencv/android/*/libs/*.so.zip
 product/framework/thirdparty/opencv/opencv/windows/*/vc17/bin/opencv_world4130d.dll
 !product/framework/thirdparty/opencv/opencv/windows/*/vc17/bin/opencv_world4130d.dll.zip
+product/framework/thirdparty/ffmpeg/ffmpeg/windows/x64/ffmpeg.exe
+product/framework/thirdparty/ffmpeg/ffmpeg/windows/x64/ffprobe.exe

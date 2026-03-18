@@ -253,8 +253,18 @@ def identify_process(src_port: int) -> str:
                 timeout=2, stderr=subprocess.DEVNULL
             ).decode()
             for line in out.strip().split("\n"):
-                if f":{src_port}" in line and "ESTABLISHED" in line:
-                    parts = line.split()
+                if "ESTABLISHED" not in line:
+                    continue
+                parts = line.split()
+                # netstat format: Proto  LocalAddr  ForeignAddr  State  PID
+                # We need to match the LOCAL port (client's ephemeral port)
+                # which connects to the proxy (foreign addr should be 127.0.0.1:proxy_port)
+                if len(parts) < 5:
+                    continue
+                local_addr = parts[1]   # e.g. "127.0.0.1:54321"
+                # Extract the port from local address
+                local_port_str = local_addr.rsplit(":", 1)[-1]
+                if local_port_str == str(src_port):
                     pid = parts[-1]
                     try:
                         name_out = subprocess.check_output(
