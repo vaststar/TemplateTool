@@ -6,22 +6,59 @@
 
 namespace ucf::utilities::detail {
 
+/// Escape a single argument for Windows command line (MSVC CRT parsing rules).
+static std::string escapeArgument(const std::string& arg)
+{
+    if (!arg.empty() && arg.find_first_of(" \t\"\\" ) == std::string::npos)
+    {
+        return arg;
+    }
+
+    std::string result = "\"";
+    for (auto it = arg.begin(); ; ++it)
+    {
+        int numBackslashes = 0;
+        while (it != arg.end() && *it == '\\')
+        {
+            ++it;
+            ++numBackslashes;
+        }
+
+        if (it == arg.end())
+        {
+            // Trailing backslashes must be doubled (preceding closing quote)
+            result.append(static_cast<size_t>(numBackslashes * 2), '\\');
+            break;
+        }
+        else if (*it == '"')
+        {
+            // Backslashes before " are doubled, plus one escape backslash
+            result.append(static_cast<size_t>(numBackslashes * 2 + 1), '\\');
+            result.push_back('"');
+        }
+        else
+        {
+            result.append(static_cast<size_t>(numBackslashes), '\\');
+            result.push_back(*it);
+        }
+    }
+    result.push_back('"');
+    return result;
+}
+
 ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     const std::string& executable,
     const std::vector<std::string>& args,
-    const std::string& workingDir,
-    bool captureStdout,
-    bool captureStderr)
+    const std::string& workingDir)
 {
     ProcessHandle handle;
 
     // ── Build command line ──
-    // Quote the executable and each argument
     std::ostringstream cmdLine;
-    cmdLine << "\"" << executable << "\"";
+    cmdLine << escapeArgument(executable);
     for (const auto& arg : args)
     {
-        cmdLine << " \"" << arg << "\"";
+        cmdLine << " " << escapeArgument(arg);
     }
     std::string cmdStr = cmdLine.str();
 
@@ -49,42 +86,33 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     HANDLE hStdoutReadTmp = nullptr, hStdoutWrite = nullptr;
     HANDLE hStderrReadTmp = nullptr, hStderrWrite = nullptr;
 
-    if (captureStdout)
+    if (!CreatePipe(&hStdoutReadTmp, &hStdoutWrite, &sa, 0))
     {
-        if (!CreatePipe(&hStdoutReadTmp, &hStdoutWrite, &sa, 0))
-        {
-            handle.errorMessage = "Failed to create stdout pipe";
-            return handle;
-        }
-        // Ensure the read end is not inherited
-        SetHandleInformation(hStdoutReadTmp, HANDLE_FLAG_INHERIT, 0);
+        handle.errorMessage = "Failed to create stdout pipe";
+        return handle;
     }
+    // Ensure the read end is not inherited
+    SetHandleInformation(hStdoutReadTmp, HANDLE_FLAG_INHERIT, 0);
 
-    if (captureStderr)
+    if (!CreatePipe(&hStderrReadTmp, &hStderrWrite, &sa, 0))
     {
-        if (!CreatePipe(&hStderrReadTmp, &hStderrWrite, &sa, 0))
-        {
-            handle.errorMessage = "Failed to create stderr pipe";
-            if (hStdoutReadTmp)
-            {
-                CloseHandle(hStdoutReadTmp);
-                CloseHandle(hStdoutWrite);
-            }
-            return handle;
-        }
-        SetHandleInformation(hStderrReadTmp, HANDLE_FLAG_INHERIT, 0);
+        handle.errorMessage = "Failed to create stderr pipe";
+        CloseHandle(hStdoutReadTmp);
+        CloseHandle(hStdoutWrite);
+        return handle;
     }
+    SetHandleInformation(hStderrReadTmp, HANDLE_FLAG_INHERIT, 0);
 
     // ── Launch process ──
     STARTUPINFOW si{};
     si.cb = sizeof(STARTUPINFOW);
     si.dwFlags = STARTF_USESTDHANDLES;
     si.hStdInput  = GetStdHandle(STD_INPUT_HANDLE);
-    si.hStdOutput = hStdoutWrite ? hStdoutWrite : GetStdHandle(STD_OUTPUT_HANDLE);
-    si.hStdError  = hStderrWrite ? hStderrWrite : GetStdHandle(STD_ERROR_HANDLE);
+    si.hStdOutput = hStdoutWrite;
+    si.hStdError  = hStderrWrite;
 
     PROCESS_INFORMATION pi{};
-    DWORD creationFlags = CREATE_NO_WINDOW;
+    DWORD creationFlags = CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP;
 
     BOOL ok = CreateProcessW(
         nullptr,
@@ -98,27 +126,15 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
         &pi);
 
     // Close the write ends — child has inherited them
-    if (hStdoutWrite)
-    {
-        CloseHandle(hStdoutWrite);
-    }
-    if (hStderrWrite)
-    {
-        CloseHandle(hStderrWrite);
-    }
+    CloseHandle(hStdoutWrite);
+    CloseHandle(hStderrWrite);
 
     if (!ok)
     {
         DWORD err = GetLastError();
         handle.errorMessage = "CreateProcess failed, error code: " + std::to_string(err);
-        if (hStdoutReadTmp)
-        {
-            CloseHandle(hStdoutReadTmp);
-        }
-        if (hStderrReadTmp)
-        {
-            CloseHandle(hStderrReadTmp);
-        }
+        CloseHandle(hStdoutReadTmp);
+        CloseHandle(hStderrReadTmp);
         return handle;
     }
 
@@ -136,6 +152,12 @@ bool ProcessLauncher::terminate(const ProcessHandle& handle)
     if (!handle.valid || !handle.hProcess)
     {
         return false;
+    }
+    // Try graceful shutdown via console control event (works for console apps).
+    // Falls back to TerminateProcess if the signal cannot be delivered.
+    if (GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, static_cast<DWORD>(handle.pid)))
+    {
+        return true;
     }
     return TerminateProcess(handle.hProcess, 0) != 0;
 }
@@ -155,12 +177,9 @@ bool ProcessLauncher::isAlive(const ProcessHandle& handle)
     {
         return false;
     }
-    DWORD exitCode = 0;
-    if (!GetExitCodeProcess(handle.hProcess, &exitCode))
-    {
-        return false;
-    }
-    return exitCode == STILL_ACTIVE;
+    // Use WaitForSingleObject with 0 timeout instead of GetExitCodeProcess
+    // to avoid the STILL_ACTIVE (259) exit code false-positive.
+    return WaitForSingleObject(handle.hProcess, 0) == WAIT_TIMEOUT;
 }
 
 int ProcessLauncher::waitForExit(const ProcessHandle& handle, int timeoutMs)

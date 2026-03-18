@@ -10,12 +10,11 @@ namespace ucf::utilities {
 
 /// Current state of a managed child process.
 enum class ProcessState {
-    Idle,       ///< Not started yet
-    Starting,   ///< Launch initiated, process may not be alive yet
-    Running,    ///< Process confirmed alive
-    Stopping,   ///< Graceful shutdown in progress
-    Stopped,    ///< Process exited (check exit code)
-    Error       ///< Failed to start or crashed unexpectedly
+    Idle,        ///< Not started yet
+    Starting,    ///< Launch initiated, process may not be alive yet
+    Running,     ///< Process confirmed alive
+    Stopping,    ///< Graceful shutdown in progress
+    Terminated   ///< Process ended (check callback for exit details)
 };
 
 /// Configuration for launching a managed child process.
@@ -32,12 +31,6 @@ struct ProcessBridgeConfig {
 
     /// Maximum time (ms) to wait for graceful exit before force-killing.
     int stopTimeoutMs = 3000;
-
-    /// Whether to capture the child's stdout and deliver via callback.
-    bool captureStdout = true;
-
-    /// Whether to capture the child's stderr and deliver via callback.
-    bool captureStderr = true;
 };
 
 } // namespace ucf::utilities

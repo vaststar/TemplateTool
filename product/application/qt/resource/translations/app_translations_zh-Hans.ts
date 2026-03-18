@@ -373,47 +373,47 @@ Proxy: 127.0.0.1:%1</source>
         <translation>未找到代理插件可执行文件</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="542"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="558"/>
         <source>Starting proxy on port %1...</source>
         <translation>正在端口 %1 上启动代理...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="582"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="598"/>
         <source>Proxy stopped</source>
         <translation>代理已停止</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="616"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="632"/>
         <source>Exported %1 requests</source>
         <translation>已导出 %1 个请求</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="724"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="740"/>
         <source>Addon connected, proxy running on port %1</source>
         <translation>插件已连接，代理运行在端口 %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="778"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="794"/>
         <source>Addon disconnected</source>
         <translation>插件已断开连接</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="786"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="802"/>
         <source>Proxy process started, waiting for addon connection...</source>
         <translation>代理进程已启动，等待插件连接...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="800"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="828"/>
         <source>Proxy process exited (code %1)</source>
         <translation>代理进程已退出 (代码 %1)</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="812"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="840"/>
         <source>Proxy process error: %1</source>
         <translation>代理进程错误: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="856"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="884"/>
         <source>Addon error: %1</source>
         <translation>插件错误: %1</translation>
     </message>
@@ -998,62 +998,72 @@ Double-click a rule to view details.</source>
 <context>
     <name>ProxyCertManager</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="138"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation type="unfinished">证书目录尚不存在。请先启动代理以生成 CA 证书。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="65"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="152"/>
         <source>Certificate folder: %1</source>
         <translation type="unfinished">证书目录: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="75"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="162"/>
         <source>Please start the proxy first. The CA certificate is generated on first launch.</source>
         <translation type="unfinished">请先启动代理。CA 证书将在首次启动时生成。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="77"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="164"/>
         <source>CA certificate not found at %1. Try restarting the proxy.</source>
         <translation type="unfinished">未找到 CA 证书: %1。请尝试重启代理。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="172"/>
         <source>Installing certificate... A system password dialog will appear.</source>
         <translation type="unfinished">正在安装证书... 系统密码对话框即将出现。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="110"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="197"/>
         <source>✅ CA Certificate installed and trusted successfully! HTTPS capture is ready.</source>
         <translation type="unfinished">✅ CA 证书安装并信任成功！HTTPS 抓包已就绪。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="200"/>
         <source>Certificate trust was not set. You may have cancelled the dialog. Try again.</source>
         <translation type="unfinished">证书信任未设置。您可能取消了对话框，请重试。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="115"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="202"/>
         <source>Certificate imported but trust verification failed. Try clicking Refresh Status.</source>
         <translation type="unfinished">证书已导入但信任验证失败。请尝试点击刷新状态。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="134"/>
-        <source>✅ CA Certificate installed to Windows cert store!</source>
-        <translation type="unfinished">✅ CA 证书已安装到 Windows 证书存储！</translation>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="219"/>
+        <source>Failed to read certificate file: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="137"/>
-        <source>Certificate installation failed (run as administrator?)</source>
-        <translation type="unfinished">证书安装失败（是否需要以管理员身份运行？）</translation>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="231"/>
+        <source>Failed to parse certificate. The file may be corrupted.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="151"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="256"/>
+        <source>✅ CA Certificate installed to Windows cert store! HTTPS capture is ready.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="260"/>
+        <source>Certificate installation failed (error code: %1). If you cancelled the security dialog, please try again and click Yes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="272"/>
         <source>✅ CA Certificate installed!</source>
         <translation type="unfinished">✅ CA 证书安装成功！</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="154"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="275"/>
         <source>Certificate installation failed.</source>
         <translation type="unfinished">证书安装失败。</translation>
     </message>

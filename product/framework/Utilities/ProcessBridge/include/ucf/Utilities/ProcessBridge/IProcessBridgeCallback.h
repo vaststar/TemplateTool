@@ -27,11 +27,11 @@ public:
     /// @param errorMessage  Human-readable error description
     virtual void onProcessError(const std::string& errorMessage) = 0;
 
-    /// Child process wrote to stdout (only if captureStdout is enabled).
+    /// Child process wrote to stdout.
     /// @param data  Raw output bytes (may not be a complete line)
     virtual void onStdout(const std::string& data) {}
 
-    /// Child process wrote to stderr (only if captureStderr is enabled).
+    /// Child process wrote to stderr.
     /// @param data  Raw output bytes (may not be a complete line)
     virtual void onStderr(const std::string& data) {}
 };

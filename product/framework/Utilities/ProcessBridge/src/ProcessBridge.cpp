@@ -21,15 +21,19 @@ std::unique_ptr<IProcessBridge> IProcessBridge::create()
 ProcessBridge::~ProcessBridge()
 {
     stop();
+    // Ensure the monitor thread is joined even if the process exited
+    // naturally (monitorLoop returned on its own without stop() joining it).
+    if (mMonitorThread.joinable())
+    {
+        mMonitorThread.join();
+    }
 }
 
 bool ProcessBridge::start(const ProcessBridgeConfig& config)
 {
     // Only allow start from a terminal state
     auto expected = mState.load();
-    if (expected != ProcessState::Idle
-        && expected != ProcessState::Stopped
-        && expected != ProcessState::Error)
+    if (expected != ProcessState::Idle && expected != ProcessState::Terminated)
     {
         PB_LOG_WARN("start() rejected, state=" << static_cast<int>(expected));
         return false;
@@ -56,15 +60,13 @@ bool ProcessBridge::start(const ProcessBridgeConfig& config)
     auto handle = detail::ProcessLauncher::launch(
         config.executablePath,
         config.arguments,
-        config.workingDirectory,
-        config.captureStdout,
-        config.captureStderr);
+        config.workingDirectory);
 
     if (!handle.valid)
     {
         PB_LOG_ERROR("Failed to launch: " << handle.errorMessage);
         mPid = 0;
-        mState = ProcessState::Error;
+        mState = ProcessState::Terminated;
         fireNotification(&IProcessBridgeCallback::onProcessError, handle.errorMessage);
         return false;
     }
@@ -114,21 +116,16 @@ void ProcessBridge::stop()
         exitCode = detail::ProcessLauncher::waitForExit(mHandle, 2000);
     }
 
-    // If called from within a callback on the monitor thread, we cannot
-    // join ourselves. The monitorLoop exit path will do deferred cleanup.
-    if (std::this_thread::get_id() == mMonitorThread.get_id())
-    {
-        PB_LOG_INFO("stop() called from monitor thread, cleanup deferred to monitorLoop exit");
-        return;
-    }
-
     // Join monitor thread
     if (mMonitorThread.joinable())
     {
         mMonitorThread.join();
     }
 
-    cleanupProcess(exitCode, false);
+    if (mState.load() != ProcessState::Terminated)
+    {
+        cleanupProcess(exitCode, false);
+    }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -185,42 +182,27 @@ void ProcessBridge::monitorLoop()
     }
 
     PB_LOG_DEBUG("Monitor thread exiting (stop requested)");
-
-    // Deferred cleanup: if stop() was called from a callback on this thread,
-    // it set Stopping but could not join/cleanup. We do it here.
-    if (mState.load() == ProcessState::Stopping)
-    {
-        int exitCode = detail::ProcessLauncher::waitForExit(mHandle, 0);
-        cleanupProcess(exitCode, false);
-    }
 }
 
 void ProcessBridge::readAndFirePipes()
 {
-    if (mConfig.captureStdout)
+    if (auto stdoutData = detail::ProcessLauncher::readStdout(mHandle); !stdoutData.empty())
     {
-        auto data = detail::ProcessLauncher::readStdout(mHandle);
-        if (!data.empty())
-        {
-            fireNotification(&IProcessBridgeCallback::onStdout, data);
-        }
+        fireNotification(&IProcessBridgeCallback::onStdout, stdoutData);
     }
-    if (mConfig.captureStderr)
+
+    if (auto stderrData = detail::ProcessLauncher::readStderr(mHandle); !stderrData.empty())
     {
-        auto data = detail::ProcessLauncher::readStderr(mHandle);
-        if (!data.empty())
-        {
-            fireNotification(&IProcessBridgeCallback::onStderr, data);
-        }
+        fireNotification(&IProcessBridgeCallback::onStderr, stderrData);
     }
 }
 
 void ProcessBridge::cleanupProcess(int exitCode, bool crashed)
 {
+    mState = ProcessState::Terminated;
     readAndFirePipes();
     detail::ProcessLauncher::closeHandles(mHandle);
     mPid = 0;
-    mState = crashed ? ProcessState::Error : ProcessState::Stopped;
 
     PB_LOG_INFO("Process finalized, exitCode=" << exitCode << ", crashed=" << crashed);
     fireNotification(&IProcessBridgeCallback::onProcessStopped, exitCode, crashed);

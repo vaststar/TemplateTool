@@ -31,6 +31,8 @@ public:
         int childPid = -1;
         int stdoutFd = -1;
         int stderrFd = -1;
+        mutable int cachedExitCode = -1; ///< exit code set before exited flag
+        mutable bool exited = false;     ///< true once waitpid has reaped the child
 #endif
     };
 
@@ -38,15 +40,11 @@ public:
     /// @param executable    Path to the executable
     /// @param args          Command-line arguments
     /// @param workingDir    Working directory (empty = inherit)
-    /// @param captureStdout Whether to create a pipe for stdout
-    /// @param captureStderr Whether to create a pipe for stderr
     /// @return Handle with process info; check handle.valid
     static ProcessHandle launch(
         const std::string& executable,
         const std::vector<std::string>& args,
-        const std::string& workingDir,
-        bool captureStdout,
-        bool captureStderr);
+        const std::string& workingDir);
 
     /// Send terminate signal (SIGTERM / TerminateProcess).
     static bool terminate(const ProcessHandle& handle);

@@ -116,12 +116,18 @@ TEST_CASE("ProcessBridge error on invalid executable", "[ProcessBridge]")
 
     ProcessBridgeConfig config;
     config.executablePath = "/non/existent/path/no_such_executable_12345";
-    config.captureStdout = false;
-    config.captureStderr = false;
 
     bool result = bridge->start(config);
+#ifdef _WIN32
+    // Windows: CreateProcess fails immediately
     REQUIRE_FALSE(result);
-    REQUIRE(bridge->state() == ProcessState::Error);
+    REQUIRE(bridge->state() == ProcessState::Terminated);
+#else
+    // Unix: fork() succeeds but execvp fails — child exits with code 127
+    REQUIRE(result);
+    REQUIRE(callback->waitForStopped(5000));
+    REQUIRE(callback->stoppedExitCode == 127);
+#endif
 }
 
 #ifdef _WIN32
@@ -135,8 +141,6 @@ TEST_CASE("ProcessBridge launches and stops cmd.exe", "[ProcessBridge]")
     ProcessBridgeConfig config;
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo hello"};
-    config.captureStdout = true;
-    config.captureStderr = false;
 
     bool result = bridge->start(config);
     REQUIRE(result);
@@ -159,8 +163,6 @@ TEST_CASE("ProcessBridge captures stderr on cmd.exe", "[ProcessBridge]")
     ProcessBridgeConfig config;
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo errmsg 1>&2"};
-    config.captureStdout = false;
-    config.captureStderr = true;
 
     bool result = bridge->start(config);
     REQUIRE(result);
@@ -178,8 +180,6 @@ TEST_CASE("ProcessBridge stop kills long-running process", "[ProcessBridge]")
     ProcessBridgeConfig config;
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "ping -n 30 127.0.0.1 > nul"};
-    config.captureStdout = false;
-    config.captureStderr = false;
     config.stopTimeoutMs = 500;
 
     bool result = bridge->start(config);
@@ -189,7 +189,7 @@ TEST_CASE("ProcessBridge stop kills long-running process", "[ProcessBridge]")
 
     bridge->stop();
 
-    REQUIRE(bridge->state() == ProcessState::Stopped);
+    REQUIRE(bridge->state() == ProcessState::Terminated);
     REQUIRE_FALSE(bridge->isRunning());
 }
 
@@ -204,14 +204,29 @@ TEST_CASE("ProcessBridge launches and captures stdout on Unix", "[ProcessBridge]
     ProcessBridgeConfig config;
     config.executablePath = "/bin/echo";
     config.arguments = {"hello"};
-    config.captureStdout = true;
-    config.captureStderr = false;
 
     bool result = bridge->start(config);
     REQUIRE(result);
 
     REQUIRE(callback->waitForStopped(5000));
     REQUIRE(callback->stdoutData.find("hello") != std::string::npos);
+}
+
+TEST_CASE("ProcessBridge captures stderr on Unix", "[ProcessBridge]")
+{
+    auto bridge = IProcessBridge::create();
+    auto callback = std::make_shared<TestProcessCallback>();
+    bridge->registerCallback(callback);
+
+    ProcessBridgeConfig config;
+    config.executablePath = "/bin/sh";
+    config.arguments = {"-c", "echo errmsg >&2"};
+
+    bool result = bridge->start(config);
+    REQUIRE(result);
+
+    REQUIRE(callback->waitForStopped(5000));
+    REQUIRE(callback->stderrData.find("errmsg") != std::string::npos);
 }
 
 TEST_CASE("ProcessBridge stop kills long-running process on Unix", "[ProcessBridge]")
@@ -223,8 +238,6 @@ TEST_CASE("ProcessBridge stop kills long-running process on Unix", "[ProcessBrid
     ProcessBridgeConfig config;
     config.executablePath = "/bin/sleep";
     config.arguments = {"30"};
-    config.captureStdout = false;
-    config.captureStderr = false;
     config.stopTimeoutMs = 500;
 
     bool result = bridge->start(config);
@@ -233,8 +246,26 @@ TEST_CASE("ProcessBridge stop kills long-running process on Unix", "[ProcessBrid
 
     bridge->stop();
 
-    REQUIRE(bridge->state() == ProcessState::Stopped);
+    REQUIRE(bridge->state() == ProcessState::Terminated);
     REQUIRE_FALSE(bridge->isRunning());
+}
+
+TEST_CASE("ProcessBridge passes arguments with spaces on Unix", "[ProcessBridge]")
+{
+    auto bridge = IProcessBridge::create();
+    auto callback = std::make_shared<TestProcessCallback>();
+    bridge->registerCallback(callback);
+
+    ProcessBridgeConfig config;
+    config.executablePath = "/bin/echo";
+    config.arguments = {"hello world", "foo bar"};
+
+    bool result = bridge->start(config);
+    REQUIRE(result);
+
+    REQUIRE(callback->waitForStopped(5000));
+    REQUIRE(callback->stdoutData.find("hello world") != std::string::npos);
+    REQUIRE(callback->stdoutData.find("foo bar") != std::string::npos);
 }
 
 #endif
@@ -251,8 +282,6 @@ TEST_CASE("ProcessBridge double start returns false", "[ProcessBridge]")
     config.executablePath = "/bin/sleep";
     config.arguments = {"10"};
 #endif
-    config.captureStdout = false;
-    config.captureStderr = false;
 
     bool first = bridge->start(config);
     REQUIRE(first);
@@ -282,8 +311,6 @@ TEST_CASE("ProcessBridge callback weak_ptr safety", "[ProcessBridge]")
     config.executablePath = "/bin/echo";
     config.arguments = {"safe"};
 #endif
-    config.captureStdout = false;
-    config.captureStderr = false;
 
     bool result = bridge->start(config);
     REQUIRE(result);
@@ -292,4 +319,70 @@ TEST_CASE("ProcessBridge callback weak_ptr safety", "[ProcessBridge]")
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     bridge->stop();
     // No crash = pass
+}
+
+TEST_CASE("ProcessBridge restart after Terminated", "[ProcessBridge]")
+{
+    auto bridge = IProcessBridge::create();
+    auto callback = std::make_shared<TestProcessCallback>();
+    bridge->registerCallback(callback);
+
+    // First run
+    ProcessBridgeConfig config;
+#ifdef _WIN32
+    config.executablePath = "cmd.exe";
+    config.arguments = {"/C", "echo first"};
+#else
+    config.executablePath = "/bin/echo";
+    config.arguments = {"first"};
+#endif
+
+    REQUIRE(bridge->start(config));
+    REQUIRE(callback->waitForStopped(5000));
+    REQUIRE(bridge->state() == ProcessState::Terminated);
+
+    // Reset callback state
+    callback->started = false;
+    callback->stopped = false;
+    callback->stdoutData.clear();
+
+    // Second run — should succeed from Terminated state
+#ifdef _WIN32
+    config.arguments = {"/C", "echo second"};
+#else
+    config.arguments = {"second"};
+#endif
+
+    REQUIRE(bridge->start(config));
+    REQUIRE(callback->waitForStopped(5000));
+    REQUIRE(callback->stdoutData.find("second") != std::string::npos);
+}
+
+TEST_CASE("ProcessBridge reports non-zero exit code", "[ProcessBridge]")
+{
+    auto bridge = IProcessBridge::create();
+    auto callback = std::make_shared<TestProcessCallback>();
+    bridge->registerCallback(callback);
+
+    ProcessBridgeConfig config;
+#ifdef _WIN32
+    config.executablePath = "cmd.exe";
+    config.arguments = {"/C", "exit 42"};
+#else
+    config.executablePath = "/bin/sh";
+    config.arguments = {"-c", "exit 42"};
+#endif
+
+    REQUIRE(bridge->start(config));
+    REQUIRE(callback->waitForStopped(5000));
+    REQUIRE(callback->stoppedExitCode == 42);
+    REQUIRE(bridge->state() == ProcessState::Terminated);
+}
+
+TEST_CASE("ProcessBridge stop on idle is no-op", "[ProcessBridge]")
+{
+    auto bridge = IProcessBridge::create();
+    REQUIRE(bridge->state() == ProcessState::Idle);
+    bridge->stop();  // should not crash or change state
+    REQUIRE(bridge->state() == ProcessState::Idle);
 }

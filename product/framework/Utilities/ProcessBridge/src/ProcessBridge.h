@@ -52,7 +52,7 @@ private:
     /// Read available pipe data and fire callbacks.
     void readAndFirePipes();
 
-    /// Close handles, drain pipes, fire onProcessStopped, transition to terminal state.
+    /// Close handles, drain pipes, fire onProcessStopped, transition to Terminated.
     /// @param exitCode   Child process exit code
     /// @param crashed    true if force-killed or non-zero exit
     void cleanupProcess(int exitCode, bool crashed);
