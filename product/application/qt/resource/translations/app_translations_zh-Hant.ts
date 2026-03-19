@@ -363,59 +363,9 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="503"/>
-        <source>Failed to start control server on port %1</source>
-        <translation>無法在連接埠 %1 上啟動控制伺服器</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="511"/>
-        <source>Proxy addon executable not found</source>
-        <translation>找不到代理外掛程式可執行檔</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="558"/>
-        <source>Starting proxy on port %1...</source>
-        <translation>正在連接埠 %1 上啟動代理...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="598"/>
-        <source>Proxy stopped</source>
-        <translation>代理已停止</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="632"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="532"/>
         <source>Exported %1 requests</source>
         <translation>已匯出 %1 個請求</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="740"/>
-        <source>Addon connected, proxy running on port %1</source>
-        <translation>外掛程式已連接，代理執行在連接埠 %1</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="794"/>
-        <source>Addon disconnected</source>
-        <translation>外掛程式已中斷連接</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="802"/>
-        <source>Proxy process started, waiting for addon connection...</source>
-        <translation>代理程序已啟動，等待外掛程式連接...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="828"/>
-        <source>Proxy process exited (code %1)</source>
-        <translation>代理程序已結束 (代碼 %1)</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="840"/>
-        <source>Proxy process error: %1</source>
-        <translation>代理程序錯誤: %1</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="884"/>
-        <source>Addon error: %1</source>
-        <translation>外掛程式錯誤: %1</translation>
     </message>
 </context>
 <context>

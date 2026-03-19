@@ -4,6 +4,8 @@
 #include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
 #include "LoggerDefine/LoggerDefine.h"
 
+#include <AppContext/AppContext.h>
+#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
 #include <QClipboard>

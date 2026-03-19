@@ -31,6 +31,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/SideBarViewModelEmitter.h
     ViewModelSingalEmitter/ToolsViewModelEmitter.h
     ViewModelSingalEmitter/SettingsViewModelEmitter.h
+    ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h
 
     PageViews/ContactsPage/include/ContactListItemModel.h
     PageViews/ContactsPage/include/ContactsPageController.h

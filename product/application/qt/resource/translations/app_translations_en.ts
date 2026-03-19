@@ -362,58 +362,8 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="503"/>
-        <source>Failed to start control server on port %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="511"/>
-        <source>Proxy addon executable not found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="558"/>
-        <source>Starting proxy on port %1...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="598"/>
-        <source>Proxy stopped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="632"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="532"/>
         <source>Exported %1 requests</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="740"/>
-        <source>Addon connected, proxy running on port %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="794"/>
-        <source>Addon disconnected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="802"/>
-        <source>Proxy process started, waiting for addon connection...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="828"/>
-        <source>Proxy process exited (code %1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="840"/>
-        <source>Proxy process error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="884"/>
-        <source>Addon error: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

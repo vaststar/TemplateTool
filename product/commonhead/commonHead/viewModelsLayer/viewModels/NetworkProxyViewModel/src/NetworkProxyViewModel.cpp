@@ -2,8 +2,55 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
+#include <ucf/Utilities/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 
 namespace commonHead::viewModels {
+
+namespace {
+
+/// Convert low-level AgentState → ViewModel ProxyState
+model::ProxyState toProxyState(ucf::utilities::AgentState s)
+{
+    switch (s)
+    {
+    case ucf::utilities::AgentState::Idle:       return model::ProxyState::Idle;
+    case ucf::utilities::AgentState::Starting:   return model::ProxyState::Starting;
+    case ucf::utilities::AgentState::Running:    return model::ProxyState::Running;
+    case ucf::utilities::AgentState::Stopping:   return model::ProxyState::Stopping;
+    case ucf::utilities::AgentState::Terminated: return model::ProxyState::Terminated;
+    default:                                     return model::ProxyState::Idle;
+    }
+}
+
+/// Convert low-level CertTrustStatus → ViewModel CertStatus
+model::CertStatus toCertStatus(ucf::utilities::CertTrustStatus s)
+{
+    switch (s)
+    {
+    case ucf::utilities::CertTrustStatus::Unknown:      return model::CertStatus::Unknown;
+    case ucf::utilities::CertTrustStatus::FileNotFound:  return model::CertStatus::FileNotFound;
+    case ucf::utilities::CertTrustStatus::NotTrusted:    return model::CertStatus::NotTrusted;
+    case ucf::utilities::CertTrustStatus::Trusted:       return model::CertStatus::Trusted;
+    default:                                             return model::CertStatus::Unknown;
+    }
+}
+
+/// Convert low-level CertInstallResult → ViewModel CertInstallResult
+model::CertInstallResult toCertInstallResult(ucf::utilities::CertInstallResult r)
+{
+    switch (r)
+    {
+    case ucf::utilities::CertInstallResult::Success:       return model::CertInstallResult::Success;
+    case ucf::utilities::CertInstallResult::FileNotFound:  return model::CertInstallResult::FileNotFound;
+    case ucf::utilities::CertInstallResult::ParseError:    return model::CertInstallResult::ParseError;
+    case ucf::utilities::CertInstallResult::UserCancelled: return model::CertInstallResult::UserCancelled;
+    case ucf::utilities::CertInstallResult::Failed:        return model::CertInstallResult::Failed;
+    default:                                               return model::CertInstallResult::Failed;
+    }
+}
+
+} // anonymous namespace
 
 // ════════════════════════════════════════════════════════════
 //  Factory
@@ -73,7 +120,7 @@ model::ProxyState NetworkProxyViewModel::proxyState() const
     {
         return model::ProxyState::Idle;
     }
-    return model::toProxyState(mAgent->state());
+    return toProxyState(mAgent->state());
 }
 
 // ════════════════════════════════════════════════════════════
@@ -116,7 +163,7 @@ model::CertStatus NetworkProxyViewModel::certStatus() const
     {
         return model::CertStatus::Unknown;
     }
-    return mAgent->certTrustStatus();
+    return toCertStatus(mAgent->certTrustStatus());
 }
 
 std::string NetworkProxyViewModel::caCertPath() const
@@ -135,7 +182,7 @@ void NetworkProxyViewModel::installCACert()
         return;
     }
 
-    auto result = mAgent->installCACert();
+    auto result = toCertInstallResult(mAgent->installCACert());
 
     switch (result)
     {
@@ -171,7 +218,7 @@ void NetworkProxyViewModel::checkCertStatus()
         return;
     }
     mAgent->checkCertStatus();
-    auto status = mAgent->certTrustStatus();
+    auto status = toCertStatus(mAgent->certTrustStatus());
     fireNotification(&INetworkProxyViewModelCallback::onCertStatusChanged, status);
 }
 
@@ -181,7 +228,7 @@ void NetworkProxyViewModel::checkCertStatus()
 
 void NetworkProxyViewModel::onAgentStateChanged(ucf::utilities::AgentState state)
 {
-    auto proxyState = model::toProxyState(state);
+    auto proxyState = toProxyState(state);
     fireNotification(&INetworkProxyViewModelCallback::onProxyStateChanged, proxyState);
 }
 
