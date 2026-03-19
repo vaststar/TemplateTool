@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import UTComponent
+import UIResourceLoader 1.0
 
 /**
  * Screen Capture Settings Tab

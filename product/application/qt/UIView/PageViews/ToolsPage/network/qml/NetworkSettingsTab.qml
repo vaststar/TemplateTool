@@ -71,18 +71,6 @@ Item {
                         UTText { text: qsTr("(1024–65535)"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.6 }
                     }
 
-                    UTText { text: qsTr("Control Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                    RowLayout {
-                        spacing: 8
-                        ThemedInput {
-                            id: settingsCtlPort; implicitWidth: 80
-                            text: root.controller.controlPort.toString()
-                            validator: IntValidator { bottom: 1024; top: 65535 }
-                            onEditingFinished: root.controller.controlPort = parseInt(text)
-                        }
-                        UTText { text: qsTr("(addon TCP control port)"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.6 }
-                    }
-
                     UTText { text: qsTr("System Proxy:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     ThemedCheckBox {
                         text: qsTr("Automatically configure system proxy on start/stop")
@@ -113,24 +101,24 @@ Item {
                     // Status banner
                     Rectangle {
                         Layout.fillWidth: true; height: 52; radius: 6
-                        color: root.controller.certManager.caCertInstalled ? Qt.alpha("#4CAF50", 0.1) : Qt.alpha("#FF9800", 0.1)
-                        border.color: root.controller.certManager.caCertInstalled ? Qt.alpha("#4CAF50", 0.3) : Qt.alpha("#FF9800", 0.3)
+                        color: root.controller.caCertInstalled ? Qt.alpha("#4CAF50", 0.1) : Qt.alpha("#FF9800", 0.1)
+                        border.color: root.controller.caCertInstalled ? Qt.alpha("#4CAF50", 0.3) : Qt.alpha("#FF9800", 0.3)
                         border.width: 1
 
                         RowLayout {
                             anchors.fill: parent; anchors.margins: 12; spacing: 10
-                            Text { text: root.controller.certManager.caCertInstalled ? "✅" : "⚠️"; font.pixelSize: 22 }
+                            Text { text: root.controller.caCertInstalled ? "✅" : "⚠️"; font.pixelSize: 22 }
                             ColumnLayout {
                                 spacing: 2; Layout.fillWidth: true
                                 UTText {
-                                    text: root.controller.certManager.caCertInstalled
+                                    text: root.controller.caCertInstalled
                                         ? qsTr("Certificate installed and trusted")
                                         : qsTr("Certificate not trusted")
                                     fontEnum: UIFontToken.Body_Text_Medium
-                                    color: root.controller.certManager.caCertInstalled ? "#4CAF50" : "#FF9800"
+                                    color: root.controller.caCertInstalled ? "#4CAF50" : "#FF9800"
                                 }
                                 UTText {
-                                    text: root.controller.certManager.caCertInstalled
+                                    text: root.controller.caCertInstalled
                                         ? qsTr("HTTPS traffic capture is ready to use.")
                                         : qsTr("HTTPS capture will show certificate errors. Install the CA cert below.")
                                     fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.7
@@ -141,7 +129,7 @@ Item {
 
                     // One-click install section
                     ColumnLayout {
-                        visible: !root.controller.certManager.caCertInstalled
+                        visible: !root.controller.caCertInstalled
                         Layout.fillWidth: true; spacing: 0
 
                         Rectangle {
@@ -165,26 +153,26 @@ Item {
 
                                     Rectangle {
                                         width: installBtnRow.implicitWidth + 32; height: 40; radius: 8
-                                        color: root.controller.certManager.certInstalling ? "#9E9E9E" : "#2196F3"
-                                        opacity: installBtnMa.containsMouse && !root.controller.certManager.certInstalling ? 0.85 : 1.0
+                                        color: root.controller.certInstalling ? "#9E9E9E" : "#2196F3"
+                                        opacity: installBtnMa.containsMouse && !root.controller.certInstalling ? 0.85 : 1.0
 
                                         RowLayout {
                                             id: installBtnRow; anchors.centerIn: parent; spacing: 8
                                             Text {
-                                                visible: root.controller.certManager.certInstalling; text: "⏳"; font.pixelSize: 16
-                                                RotationAnimation on rotation { running: root.controller.certManager.certInstalling; from: 0; to: 360; duration: 1200; loops: Animation.Infinite }
+                                                visible: root.controller.certInstalling; text: "⏳"; font.pixelSize: 16
+                                                RotationAnimation on rotation { running: root.controller.certInstalling; from: 0; to: 360; duration: 1200; loops: Animation.Infinite }
                                             }
-                                            Text { visible: !root.controller.certManager.certInstalling; text: "🔐"; font.pixelSize: 16 }
+                                            Text { visible: !root.controller.certInstalling; text: "🔐"; font.pixelSize: 16 }
                                             Text {
-                                                text: root.controller.certManager.certInstalling ? qsTr("Installing...") : qsTr("One-Click Install CA Certificate")
+                                                text: root.controller.certInstalling ? qsTr("Installing...") : qsTr("One-Click Install CA Certificate")
                                                 color: "white"; font.pixelSize: 14; font.bold: true
                                             }
                                         }
 
                                         MouseArea {
                                             id: installBtnMa; anchors.fill: parent; hoverEnabled: true
-                                            cursorShape: root.controller.certManager.certInstalling ? Qt.WaitCursor : Qt.PointingHandCursor
-                                            onClicked: if (!root.controller.certManager.certInstalling) root.controller.certManager.installCACert()
+                                            cursorShape: root.controller.certInstalling ? Qt.WaitCursor : Qt.PointingHandCursor
+                                            onClicked: if (!root.controller.certInstalling) root.controller.installCACert()
                                         }
                                     }
                                 }
@@ -202,14 +190,14 @@ Item {
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
                         UTText { text: qsTr("Path:"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text }
-                        UTText { text: root.controller.certManager.getCACertPath(); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; font.family: "Consolas"; elide: Text.ElideMiddle; Layout.fillWidth: true }
+                        UTText { text: root.controller.caCertPath; fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; font.family: "Consolas"; elide: Text.ElideMiddle; Layout.fillWidth: true }
                     }
 
                     RowLayout {
                         spacing: 8
-                        UTButton { text: qsTr("Show in Finder"); onClicked: root.controller.certManager.revealCACertInFolder() }
-                        UTButton { text: qsTr("Refresh Status"); onClicked: root.controller.certManager.caCertInstalledChanged() }
-                        UTButton { text: qsTr("Re-install"); visible: root.controller.certManager.caCertInstalled; onClicked: root.controller.certManager.installCACert(); enabled: !root.controller.certManager.certInstalling }
+                        UTButton { text: qsTr("Show in Finder"); onClicked: root.controller.revealCACertInFolder() }
+                        UTButton { text: qsTr("Refresh Status"); onClicked: root.controller.checkCertStatus() }
+                        UTButton { text: qsTr("Re-install"); visible: root.controller.caCertInstalled; onClicked: root.controller.installCACert(); enabled: !root.controller.certInstalling }
                     }
                 }
             }

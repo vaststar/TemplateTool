@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
+import UIResourceLoader 1.0
 
 /**
  * Recording Tab - Screen recording and GIF creation
@@ -20,8 +21,8 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: statusRow.implicitHeight + 24
             color: controller.isFFmpegAvailable()
-                   ? UIColorToken.colorValue(UIColorToken.Status_Success_BG)
-                   : UIColorToken.colorValue(UIColorToken.Status_Error_BG)
+                   ? UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_BG, UIColorState.Normal)
+                   : UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_BG, UIColorState.Normal)
             radius: 8
 
             RowLayout {
@@ -132,7 +133,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
                     visible: controller.isRecording
-                    color: UIColorToken.colorValue(UIColorToken.Status_Error_BG)
+                    color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_BG, UIColorState.Normal)
                     radius: 8
 
                     RowLayout {

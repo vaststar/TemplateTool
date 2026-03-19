@@ -8,7 +8,6 @@
 #include "UIViewBase/include/UIViewController.h"
 #include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
 #include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
-#include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
 #include "ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h"
 
 namespace commonHead::viewModels {
@@ -60,7 +59,11 @@ class NetworkProxyController : public UIViewController
 
     // --------------- Delegated managers ---------------
     Q_PROPERTY(ProxyRulesManager* rulesManager READ getRulesManager CONSTANT)
-    Q_PROPERTY(ProxyCertManager*  certManager  READ getCertManager  CONSTANT)
+
+    // --------------- Certificate (delegated to ViewModel) ---------------
+    Q_PROPERTY(bool    caCertInstalled READ isCACertInstalled NOTIFY caCertInstalledChanged)
+    Q_PROPERTY(bool    certInstalling  READ isCertInstalling  NOTIFY certInstallingChanged)
+    Q_PROPERTY(QString caCertPath      READ getCACertPath     CONSTANT)
 
     // --------------- Status ---------------
     Q_PROPERTY(QString statusMessage READ getStatusMessage NOTIFY statusMessageChanged)
@@ -89,8 +92,10 @@ public:
     QString getResponseDetailText() const;
     ProxyRequestModel* getRequestModel() const;
     ProxyRulesManager* getRulesManager() const;
-    ProxyCertManager*  getCertManager()  const;
-    QString getStatusMessage() const;
+    bool    isCACertInstalled() const;
+    bool    isCertInstalling()  const;
+    QString getCACertPath()     const;
+    QString getStatusMessage()  const;
     int     getRequestCount()  const;
 
     // Property setters
@@ -121,6 +126,11 @@ public:
     Q_INVOKABLE void copyRequestCurl();
     Q_INVOKABLE void copyResponseBody();
 
+    // Certificate actions (delegate to ViewModel)
+    Q_INVOKABLE void installCACert();
+    Q_INVOKABLE void checkCertStatus();
+    Q_INVOKABLE void revealCACertInFolder();
+
 protected:
     void init() override;
 
@@ -141,6 +151,8 @@ signals:
     void detailTextChanged();
     void statusMessageChanged();
     void requestCountChanged();
+    void caCertInstalledChanged();
+    void certInstallingChanged();
     void interceptedRequest(const QString& flowId, const QJsonObject& detail);
 
 private slots:
@@ -186,7 +198,10 @@ private:
 
     // Delegated managers
     ProxyRulesManager* m_rulesManager = nullptr;
-    ProxyCertManager*  m_certManager  = nullptr;
+
+    // Certificate state
+    bool m_caCertInstalled = false;
+    bool m_certInstalling  = false;
 
     // Status
     QString m_statusMessage;

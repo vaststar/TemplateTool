@@ -1,7 +1,6 @@
 #include "PageViews/ToolsPage/network/include/NetworkProxyController.h"
 #include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
 #include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
-#include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 #include <AppContext/AppContext.h>
@@ -14,6 +13,9 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QProcess>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -24,11 +26,6 @@ NetworkProxyController::NetworkProxyController(QObject* parent)
     UIVIEW_LOG_DEBUG("create NetworkProxyController, this=" << (void*)this);
     m_requestModel = new ProxyRequestModel(this);
     m_rulesManager = new ProxyRulesManager(this);
-    m_certManager  = new ProxyCertManager(this);
-
-    // Wire cert manager status messages to our status
-    connect(m_certManager, &ProxyCertManager::statusMessage,
-            this, &NetworkProxyController::setStatusMessage);
 }
 
 NetworkProxyController::~NetworkProxyController()
@@ -73,6 +70,9 @@ void NetworkProxyController::init()
             m_viewModel->sendCommand(doc.toJson(QJsonDocument::Compact).toStdString());
         }
     });
+
+    // Query initial certificate trust status so QML shows the correct state
+    m_viewModel->checkCertStatus();
 }
 
 // ====================== Property getters ======================
@@ -92,7 +92,9 @@ int     NetworkProxyController::getRequestTabIndex() const { return m_requestTab
 int     NetworkProxyController::getResponseTabIndex() const { return m_responseTabIndex; }
 ProxyRequestModel* NetworkProxyController::getRequestModel() const { return m_requestModel; }
 ProxyRulesManager* NetworkProxyController::getRulesManager() const { return m_rulesManager; }
-ProxyCertManager*  NetworkProxyController::getCertManager()  const { return m_certManager; }
+bool    NetworkProxyController::isCACertInstalled() const { return m_caCertInstalled; }
+bool    NetworkProxyController::isCertInstalling()  const { return m_certInstalling; }
+QString NetworkProxyController::getCACertPath()     const { return m_viewModel ? QString::fromStdString(m_viewModel->caCertPath()) : QString(); }
 QString NetworkProxyController::getStatusMessage()   const { return m_statusMessage; }
 int     NetworkProxyController::getRequestCount()    const { return m_requestModel ? m_requestModel->rowCount() : 0; }
 
@@ -680,11 +682,14 @@ void NetworkProxyController::onStatusMessage(const QString& message)
     setStatusMessage(message);
 }
 
-void NetworkProxyController::onCertStatusChanged(int /*status*/)
+void NetworkProxyController::onCertStatusChanged(int status)
 {
-    // Re-emit so QML bindings re-evaluate
-    if (m_certManager)
-        emit m_certManager->caCertInstalledChanged();
+    using CertStatus = commonHead::viewModels::model::CertStatus;
+    bool installed = (static_cast<CertStatus>(status) == CertStatus::Trusted);
+    if (m_caCertInstalled != installed) {
+        m_caCertInstalled = installed;
+        emit caCertInstalledChanged();
+    }
 }
 
 void NetworkProxyController::onError(const QString& errorMessage)
@@ -706,4 +711,51 @@ void NetworkProxyController::setStatusMessage(const QString& msg)
         emit statusMessageChanged();
         UIVIEW_LOG_DEBUG("ProxyStatus: " << msg.toStdString());
     }
+}
+
+// ====================== Certificate actions ======================
+
+void NetworkProxyController::installCACert()
+{
+    if (!m_viewModel || m_certInstalling)
+        return;
+
+    m_certInstalling = true;
+    emit certInstallingChanged();
+
+    m_viewModel->installCACert();
+
+    m_certInstalling = false;
+    emit certInstallingChanged();
+}
+
+void NetworkProxyController::checkCertStatus()
+{
+    if (!m_viewModel)
+        return;
+
+    m_viewModel->checkCertStatus();
+}
+
+void NetworkProxyController::revealCACertInFolder()
+{
+    QString certPath = getCACertPath();
+    QString folder   = QFileInfo(certPath).absolutePath();
+
+    if (!QDir(folder).exists()) {
+        setStatusMessage(tr("Certificate folder does not exist yet. Start the proxy first to generate the CA certificate."));
+        return;
+    }
+
+#if defined(Q_OS_MACOS)
+    if (QFile::exists(certPath))
+        QProcess::startDetached(QStringLiteral("open"), {"-R", certPath});
+    else
+        QProcess::startDetached(QStringLiteral("open"), {folder});
+#elif defined(Q_OS_WIN)
+    QProcess::startDetached(QStringLiteral("explorer"), {"/select,", QDir::toNativeSeparators(certPath)});
+#else
+    QProcess::startDetached(QStringLiteral("xdg-open"), {folder});
+#endif
+    setStatusMessage(tr("Certificate folder: %1").arg(folder));
 }

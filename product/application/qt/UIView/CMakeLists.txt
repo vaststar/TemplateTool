@@ -57,7 +57,6 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/network/include/NetworkProxyController.h
     PageViews/ToolsPage/network/include/ProxyRequestModel.h
     PageViews/ToolsPage/network/include/ProxyRulesManager.h
-    PageViews/ToolsPage/network/include/ProxyCertManager.h
     PageViews/ToolsPage/common/src/ToolsPageController.cpp
     PageViews/ToolsPage/common/src/ToolsTreeModel.cpp
     PageViews/ToolsPage/textprocess/src/Base64ToolController.cpp
@@ -67,7 +66,6 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/network/src/NetworkProxyController.cpp
     PageViews/ToolsPage/network/src/ProxyRequestModel.cpp
     PageViews/ToolsPage/network/src/ProxyRulesManager.cpp
-    PageViews/ToolsPage/network/src/ProxyCertManager.cpp
     PageViews/ToolsPage/screencapture/include/ScreenCaptureController.h
     PageViews/ToolsPage/screencapture/include/ScreenshotService.h
     PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp

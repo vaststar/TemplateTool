@@ -5,6 +5,7 @@ import QtQuick.Dialogs
 import QtQuick.Window
 import Qt.labs.folderlistmodel
 import UTComponent
+import UIResourceLoader 1.0
 
 /**
  * Screenshot Tab - Browse screenshots folder and capture new screenshots
@@ -161,7 +162,7 @@ Item {
                     width: gridView.cellWidth - 8
                     height: gridView.cellHeight - 8
                     color: delegateMouseArea.containsMouse ?
-                           UIColorToken.colorValue(UIColorToken.Surface_Hover) :
+                           UTComponentUtil.getPlainUIColor(UIColorToken.Surface_Hover, UIColorState.Normal) :
                            "#2A2A2A"  // Dark background for better text visibility
                     radius: 8
 
@@ -279,7 +280,9 @@ Item {
         property string targetFilePath: ""
         title: qsTr("Delete Screenshot")
         modal: true
+        parent: Overlay.overlay
         anchors.centerIn: parent
+        width: Math.min(400, root.width * 0.8)
         standardButtons: Dialog.Yes | Dialog.No
 
         contentItem: UTText {

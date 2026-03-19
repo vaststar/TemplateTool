@@ -363,9 +363,19 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="532"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="534"/>
         <source>Exported %1 requests</source>
         <translation>已匯出 %1 個請求</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="746"/>
+        <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
+        <translation type="unfinished">憑證目錄尚不存在。請先啟動代理以產生 CA 憑證。</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="760"/>
+        <source>Certificate folder: %1</source>
+        <translation type="unfinished">憑證目錄: %1</translation>
     </message>
 </context>
 <context>
@@ -768,131 +778,121 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="74"/>
-        <source>Control Port:</source>
-        <translation type="unfinished">控制連接埠:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="83"/>
-        <source>(addon TCP control port)</source>
-        <translation type="unfinished">（外掛程式 TCP 控制連接埠）</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="86"/>
         <source>System Proxy:</source>
         <translation type="unfinished">系統代理:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="76"/>
         <source>Automatically configure system proxy on start/stop</source>
         <translation type="unfinished">啟動/停止時自動設定系統代理</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="93"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="81"/>
         <source>Intercept:</source>
         <translation type="unfinished">攔截:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="95"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="83"/>
         <source>Enable request interception (requires breakpoint rules)</source>
         <translation type="unfinished">啟用請求攔截（需要中斷點規則）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="105"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="93"/>
         <source>HTTPS Certificate</source>
         <translation type="unfinished">HTTPS 憑證</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="127"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="115"/>
         <source>Certificate installed and trusted</source>
         <translation type="unfinished">憑證已安裝並受信任</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="128"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="116"/>
         <source>Certificate not trusted</source>
         <translation type="unfinished">憑證未被信任</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="134"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="122"/>
         <source>HTTPS traffic capture is ready to use.</source>
         <translation type="unfinished">HTTPS 流量擷取已就緒。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="135"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="123"/>
         <source>HTTPS capture will show certificate errors. Install the CA cert below.</source>
         <translation type="unfinished">HTTPS 擷取將顯示憑證錯誤。請在下方安裝 CA 憑證。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="158"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="146"/>
         <source>Click the button below to install and trust the mitmproxy CA certificate. A system password dialog will appear — this is required to add the certificate to the trusted root store.</source>
         <translation type="unfinished">點選下方按鈕安裝並信任 mitmproxy CA 憑證。系統密碼對話框將會出現 — 這是將憑證新增到受信任根存放區所必需的。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="179"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="167"/>
         <source>Installing...</source>
         <translation type="unfinished">正在安裝...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="179"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="167"/>
         <source>One-Click Install CA Certificate</source>
         <translation type="unfinished">一鍵安裝 CA 憑證</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="193"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="181"/>
         <source>Steps: Enter macOS password → Import to System Keychain → Auto-trust for SSL</source>
         <translation type="unfinished">步驟: 輸入 macOS 密碼 → 匯入系統鑰匙圈 → 自動信任 SSL</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="204"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="192"/>
         <source>Path:</source>
         <translation type="unfinished">路徑:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="210"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="198"/>
         <source>Show in Finder</source>
         <translation type="unfinished">在 Finder 中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="211"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="199"/>
         <source>Refresh Status</source>
         <translation type="unfinished">重新整理狀態</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="212"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="200"/>
         <source>Re-install</source>
         <translation type="unfinished">重新安裝</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="220"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="208"/>
         <source>About</source>
         <translation type="unfinished">關於</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="227"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="215"/>
         <source>Engine:</source>
         <translation type="unfinished">引擎:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="228"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="216"/>
         <source>mitmproxy (PyInstaller bundle)</source>
         <translation type="unfinished">mitmproxy（PyInstaller 打包）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="229"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="217"/>
         <source>Communication:</source>
         <translation type="unfinished">通訊方式:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="230"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="218"/>
         <source>TCP socket, newline-delimited JSON</source>
         <translation type="unfinished">TCP 通訊端，以換行符分隔的 JSON</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="231"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="219"/>
         <source>Proxy Address:</source>
         <translation type="unfinished">代理位址:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="232"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml" line="220"/>
         <source>127.0.0.1:%1</source>
         <translation type="unfinished">127.0.0.1:%1</translation>
     </message>
@@ -943,79 +943,6 @@ Double-click a rule to view details.</source>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="84"/>
         <source>Tip: Pattern uses Python-style regex (re.search). It matches anywhere in the URL, not just from the start.</source>
         <translation type="unfinished">提示: 模式使用 Python 風格的正規表示式 (re.search)。它比對 URL 中的任意位置，而非僅從開頭比對。</translation>
-    </message>
-</context>
-<context>
-    <name>ProxyCertManager</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="138"/>
-        <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
-        <translation type="unfinished">憑證目錄尚不存在。請先啟動代理以產生 CA 憑證。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="152"/>
-        <source>Certificate folder: %1</source>
-        <translation type="unfinished">憑證目錄: %1</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="162"/>
-        <source>Please start the proxy first. The CA certificate is generated on first launch.</source>
-        <translation type="unfinished">請先啟動代理。CA 憑證將在首次啟動時產生。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="164"/>
-        <source>CA certificate not found at %1. Try restarting the proxy.</source>
-        <translation type="unfinished">找不到 CA 憑證: %1。請嘗試重新啟動代理。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="172"/>
-        <source>Installing certificate... A system password dialog will appear.</source>
-        <translation type="unfinished">正在安裝憑證... 系統密碼對話框即將出現。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="197"/>
-        <source>✅ CA Certificate installed and trusted successfully! HTTPS capture is ready.</source>
-        <translation type="unfinished">✅ CA 憑證安裝並信任成功！HTTPS 擷取已就緒。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="200"/>
-        <source>Certificate trust was not set. You may have cancelled the dialog. Try again.</source>
-        <translation type="unfinished">憑證信任未設定。您可能取消了對話框，請重試。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="202"/>
-        <source>Certificate imported but trust verification failed. Try clicking Refresh Status.</source>
-        <translation type="unfinished">憑證已匯入但信任驗證失敗。請嘗試點選重新整理狀態。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="219"/>
-        <source>Failed to read certificate file: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="231"/>
-        <source>Failed to parse certificate. The file may be corrupted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="256"/>
-        <source>✅ CA Certificate installed to Windows cert store! HTTPS capture is ready.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="260"/>
-        <source>Certificate installation failed (error code: %1). If you cancelled the security dialog, please try again and click Yes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="272"/>
-        <source>✅ CA Certificate installed!</source>
-        <translation type="unfinished">✅ CA 憑證安裝成功！</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyCertManager.cpp" line="275"/>
-        <source>Certificate installation failed.</source>
-        <translation type="unfinished">憑證安裝失敗。</translation>
     </message>
 </context>
 <context>
@@ -1257,97 +1184,97 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="46"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="47"/>
         <source>FFmpeg is available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="47"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="48"/>
         <source>FFmpeg not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="54"/>
         <source>Install FFmpeg to enable screen recording features</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="74"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="75"/>
         <source>Screen Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="87"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
         <source>Resume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="87"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="89"/>
         <source>Start Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="104"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="105"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="112"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="113"/>
         <source>Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="119"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="120"/>
         <source>Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="120"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="121"/>
         <source>Select Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="161"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="162"/>
         <source>Paused</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="161"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="162"/>
         <source>Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="180"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="181"/>
         <source>Convert to GIF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="188"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="189"/>
         <source>Convert a video file to animated GIF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="200"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="201"/>
         <source>Select video file...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="205"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="206"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="212"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="213"/>
         <source>Convert</source>
         <translation type="unfinished">轉換</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="228"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="229"/>
         <source>Tip: Use keyboard shortcuts for quick capture. Press Escape to cancel.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1467,112 +1394,112 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenCaptureSettingsTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="26"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="27"/>
         <source>Output Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="38"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="39"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="52"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="62"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="63"/>
         <source>Image format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="81"/>
         <source>PNG for quality, JPG for smaller size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="92"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="93"/>
         <source>Video format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="115"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="116"/>
         <source>Capture Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="127"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="128"/>
         <source>Default delay:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="135"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="136"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="136"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="137"/>
         <source>3 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="137"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="138"/>
         <source>5 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="138"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="139"/>
         <source>10 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="163"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="164"/>
         <source>Include timestamp:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="179"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="180"/>
         <source>Add date/time watermark to screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="190"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="191"/>
         <source>Recording Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="202"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="203"/>
         <source>Frame rate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="210"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="211"/>
         <source>15 fps (small size)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="211"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="212"/>
         <source>30 fps (standard)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="212"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="213"/>
         <source>60 fps (smooth)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="237"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="238"/>
         <source>FFmpeg:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="245"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="246"/>
         <source>Not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="264"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="265"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1639,107 +1566,107 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="365"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="368"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="39"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="40"/>
         <source>📷 Capture Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="55"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="56"/>
         <source>🖥 Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="60"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="61"/>
         <source>🪟 Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="67"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="68"/>
         <source>📂 Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="72"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="73"/>
         <source>🔄</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="74"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="75"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="89"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="103"/>
         <source>Change...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="129"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="130"/>
         <source>No screenshots yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="136"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="137"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="236"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="237"/>
         <source>%1 screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="251"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="252"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="256"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="257"/>
         <source>Copy to Clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="261"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="262"/>
         <source>Show in Finder</source>
         <translation type="unfinished">在 Finder 中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="268"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="269"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="280"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="281"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="286"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="289"/>
         <source>Are you sure you want to delete this screenshot?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="300"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="303"/>
         <source>Select Screenshots Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="323"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="326"/>
         <source>Select Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="341"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="344"/>
         <source>Unnamed Window</source>
         <translation type="unfinished"></translation>
     </message>
