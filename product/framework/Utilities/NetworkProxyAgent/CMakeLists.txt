@@ -103,18 +103,9 @@ add_custom_command(TARGET ${MODULE_MODULE_NAME} POST_BUILD
     VERBATIM
 )
 
-# Install/package the full PyInstaller output directory.
-# Windows/Linux place it next to the runtime binaries under bin/proxy_addon.
-# macOS packages it inside the app bundle Resources directory.
-if(APPLE)
-    set(ADDON_INSTALL_DESTINATION "bin/mainEntry.app/Contents/Resources/proxy_addon")
-else()
-    set(ADDON_INSTALL_DESTINATION "bin/proxy_addon")
-endif()
-
 install(
     DIRECTORY "${ADDON_DIST_DIR}/"
-    DESTINATION "${ADDON_INSTALL_DESTINATION}"
+    DESTINATION "bin/proxy_addon"
     USE_SOURCE_PERMISSIONS
     OPTIONAL
 )

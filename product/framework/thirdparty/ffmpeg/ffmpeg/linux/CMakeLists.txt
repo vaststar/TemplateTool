@@ -30,6 +30,9 @@ add_custom_target(copy_ffmpeg ALL
 )
 set_target_properties(copy_ffmpeg PROPERTIES FOLDER framework/thirdparty/ffmpeg)
 
+install(PROGRAMS "${FFMPEG_EXECUTABLE}" DESTINATION bin)
+install(PROGRAMS "${FFPROBE_EXECUTABLE}" DESTINATION bin)
+
 # Export paths for use by other targets
 set(FFMPEG_EXECUTABLE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffmpeg" CACHE INTERNAL "Path to ffmpeg executable")
 set(FFPROBE_EXECUTABLE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffprobe" CACHE INTERNAL "Path to ffprobe executable")

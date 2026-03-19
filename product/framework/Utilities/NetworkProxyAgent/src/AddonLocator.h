@@ -12,9 +12,9 @@ namespace ucf::utilities::detail {
 ///
 /// Expected layout at runtime:
 ///   <lib_dir>/NetworkProxyAgent.dll  (or .dylib / .so)
+///   <lib_dir>/../Resources/proxy_addon/proxy_addon   (macOS .app bundle)
 ///   <lib_dir>/proxy_addon/proxy_addon.exe      (Windows/Linux build + install)
 ///   <lib_dir>/../proxy_addon/proxy_addon.exe   (alternate sibling layout)
-///   <lib_dir>/../Resources/proxy_addon/proxy_addon   (macOS .app bundle)
 ///   ~/.mitmproxy/mitmproxy-ca-cert.cer  (Windows) / .pem (Unix)
 class AddonLocator
 {

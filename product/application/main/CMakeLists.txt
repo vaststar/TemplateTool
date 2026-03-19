@@ -8,7 +8,7 @@ message(STATUS "Building ${MAIN_ENTRY}...")
 if(APPLE)
     message(STATUS "  Platform: macOS")
     message(STATUS "  Bundle: ${MAIN_ENTRY}.app")
-    
+
     add_executable(${MAIN_ENTRY} MACOSX_BUNDLE main.cpp)
 
     BuildBundlePListModule(
@@ -18,7 +18,7 @@ if(APPLE)
 
     # Get Qt lib path for INSTALL_RPATH (Qt6_DIR is like .../lib/cmake/Qt6)
     get_filename_component(QT_LIB_DIR "${Qt6_DIR}/../.." ABSOLUTE)
-    
+
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "logo"
         INSTALL_RPATH "@executable_path/../Frameworks;${QT_LIB_DIR}"
@@ -33,7 +33,7 @@ if(APPLE)
 elseif(WIN32)
     message(STATUS "  Platform: Windows")
     message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID}")
-    
+
     add_executable(${MAIN_ENTRY} main.cpp logo.rc)
 
     BuildRCFileModule(
@@ -70,11 +70,14 @@ message(STATUS "  Dependencies: MainUI")
 # Platform-specific installation
 # ==========================================
 if(APPLE)
-    install(TARGETS ${MAIN_ENTRY} 
+    install(TARGETS ${MAIN_ENTRY}
         EXPORT ${MAIN_ENTRY}Targets
         BUNDLE DESTINATION bin
     )
     install(CODE "
+        set(APP_NAME \"${MAIN_ENTRY}\")
+        set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")
+        set(RESOURCE_FILE_PAYLOADS \"ffmpeg;ffprobe\")
         set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
         set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
         set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
@@ -83,11 +86,12 @@ if(APPLE)
     message(STATUS "  Install: bin/${MAIN_ENTRY}.app + post_install_macosx.cmake")
 
 elseif(WIN32)
-    install(TARGETS ${MAIN_ENTRY} 
+    install(TARGETS ${MAIN_ENTRY}
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
     install(CODE "
+        set(APP_NAME \"${MAIN_ENTRY}\")
         set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
         set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
         set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
@@ -96,7 +100,7 @@ elseif(WIN32)
     message(STATUS "  Install: bin/ + post_install_windows.cmake")
 
 else()
-    install(TARGETS ${MAIN_ENTRY} 
+    install(TARGETS ${MAIN_ENTRY}
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )

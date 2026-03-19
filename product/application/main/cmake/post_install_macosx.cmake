@@ -7,11 +7,15 @@
 # - Runs macdeployqt for Qt dependencies
 # - Verifies deployment results
 
+if(NOT DEFINED APP_NAME OR APP_NAME STREQUAL "")
+    message(FATAL_ERROR "APP_NAME must be provided before running post_install_macosx.cmake")
+endif()
+
 set(INSTALL_PREFIX "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
-set(APP_NAME "mainEntry")
 set(BIN_DIR "${INSTALL_PREFIX}/bin")
 set(APP_BUNDLE "${BIN_DIR}/${APP_NAME}.app")
 set(DEPLOY_DIR "${APP_BUNDLE}/Contents/Frameworks")
+set(RESOURCES_DIR "${APP_BUNDLE}/Contents/Resources")
 
 message(STATUS "")
 message(STATUS "========================================")
@@ -20,6 +24,7 @@ message(STATUS "========================================")
 message(STATUS "Install Prefix  : ${INSTALL_PREFIX}")
 message(STATUS "App Bundle      : ${APP_NAME}.app")
 message(STATUS "Frameworks Dir  : ${DEPLOY_DIR}")
+message(STATUS "Resources Dir   : ${RESOURCES_DIR}")
 message(STATUS "Config          : ${BUILD_CONFIG_NAME}")
 message(STATUS "========================================")
 message(STATUS "")
@@ -27,7 +32,7 @@ message(STATUS "")
 # ==========================================
 # Step 1: Move all dylibs to Frameworks
 # ==========================================
-message(STATUS "[1/4] Moving all dylibs to Frameworks...")
+message(STATUS "[1/5] Moving all dylibs to Frameworks...")
 
 # Create Frameworks directory if not exists
 if(NOT EXISTS "${DEPLOY_DIR}")
@@ -35,6 +40,13 @@ if(NOT EXISTS "${DEPLOY_DIR}")
     message(STATUS "  ✓ Created Frameworks directory")
 else()
     message(STATUS "  ✓ Frameworks directory exists")
+endif()
+
+if(NOT EXISTS "${RESOURCES_DIR}")
+    file(MAKE_DIRECTORY "${RESOURCES_DIR}")
+    message(STATUS "  ✓ Created Resources directory")
+else()
+    message(STATUS "  ✓ Resources directory exists")
 endif()
 
 # Find all .dylib files in bin directory
@@ -63,7 +75,7 @@ else()
 
         # Move dylib to Frameworks directory
         file(RENAME "${dylib_path}" "${dest_path}")
-        
+
         if(EXISTS "${dest_path}")
             message(STATUS "  ✓ Moved: ${dylib_name}")
             math(EXPR MOVED_COUNT "${MOVED_COUNT} + 1")
@@ -87,9 +99,44 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Step 2: Finding Qt installation
+# Step 2: Deploy runtime payloads
 # ==========================================
-message(STATUS "[2/4] Finding Qt installation...")
+message(STATUS "[2/5] Deploying runtime payloads...")
+
+foreach(payload_dir ${RESOURCE_DIR_PAYLOADS})
+    set(payload_src "${BIN_DIR}/${payload_dir}")
+    set(payload_dst "${RESOURCES_DIR}/${payload_dir}")
+    if(EXISTS "${payload_src}")
+        if(EXISTS "${payload_dst}")
+            file(REMOVE_RECURSE "${payload_dst}")
+        endif()
+        file(RENAME "${payload_src}" "${payload_dst}")
+        message(STATUS "  ✓ Deployed directory payload: ${payload_dir}")
+    else()
+        message(STATUS "  ⊘ Directory payload not found: ${payload_src}")
+    endif()
+endforeach()
+
+foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
+    set(payload_src "${BIN_DIR}/${payload_file}")
+    set(payload_dst "${RESOURCES_DIR}/${payload_file}")
+    if(EXISTS "${payload_src}")
+        if(EXISTS "${payload_dst}")
+            file(REMOVE "${payload_dst}")
+        endif()
+        file(RENAME "${payload_src}" "${payload_dst}")
+        message(STATUS "  ✓ Deployed file payload: ${payload_file}")
+    else()
+        message(STATUS "  ⊘ File payload not found: ${payload_src}")
+    endif()
+endforeach()
+
+message(STATUS "")
+
+# ==========================================
+# Step 3: Finding Qt installation
+# ==========================================
+message(STATUS "[3/5] Finding Qt installation...")
 
 set(QT_DIR "$ENV{Qt6_DIR}")
 
@@ -126,9 +173,9 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Step 3: Running macdeployqt
+# Step 4: Running macdeployqt
 # ==========================================
-message(STATUS "[3/4] Running macdeployqt...")
+message(STATUS "[4/5] Running macdeployqt...")
 
 if(SKIP_QT_DEPLOY)
     message(STATUS "  ⊘ Skipped (Qt not found)")
@@ -138,23 +185,23 @@ else()
     else()
         # Find QML source directory
         set(QML_SOURCE_DIR "${TEMPLATE_TOOL_SOURCE_DIR}/product/application/qt")
-        
+
         set(DEPLOY_CMD "${MACDEPLOYQT}" "${APP_BUNDLE}" "-verbose=1")
-        
+
         if(EXISTS "${QML_SOURCE_DIR}")
             list(APPEND DEPLOY_CMD "-qmldir=${QML_SOURCE_DIR}")
             message(STATUS "  Using QML directory: ${QML_SOURCE_DIR}")
         endif()
-        
+
         message(STATUS "  Running: macdeployqt ${APP_NAME}.app ...")
-        
+
         execute_process(
             COMMAND ${DEPLOY_CMD}
             RESULT_VARIABLE DEPLOY_RESULT
             OUTPUT_VARIABLE DEPLOY_OUTPUT
             ERROR_VARIABLE DEPLOY_ERROR
         )
-        
+
         if(DEPLOY_RESULT EQUAL 0)
             message(STATUS "  ✓ macdeployqt completed successfully")
         else()
@@ -169,9 +216,9 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Step 4: Checking deployment results
+# Step 5: Checking deployment results
 # ==========================================
-message(STATUS "[4/4] Checking deployment results...")
+message(STATUS "[5/5] Checking deployment results...")
 
 # Count frameworks
 file(GLOB FRAMEWORK_DIRS "${DEPLOY_DIR}/*.framework")
@@ -199,9 +246,22 @@ if(EXISTS "${QML_DEPLOY_DIR}")
     message(STATUS "  ✓ QML files deployed: ${QML_FILE_COUNT}")
 endif()
 
+foreach(payload_dir ${RESOURCE_DIR_PAYLOADS})
+    if(EXISTS "${RESOURCES_DIR}/${payload_dir}")
+        message(STATUS "  ✓ Resource directory deployed: ${payload_dir}")
+    endif()
+endforeach()
+
+foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
+    if(EXISTS "${RESOURCES_DIR}/${payload_file}")
+        message(STATUS "  ✓ Resource file deployed: ${payload_file}")
+    endif()
+endforeach()
+
 message(STATUS "")
 message(STATUS "========================================")
 message(STATUS " Post-install completed!")
 message(STATUS " App Bundle: ${APP_BUNDLE}")
 message(STATUS " Frameworks: ${DEPLOY_DIR}")
+message(STATUS " Resources : ${RESOURCES_DIR}")
 message(STATUS "========================================")
