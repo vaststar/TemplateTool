@@ -127,7 +127,7 @@ bool ProcessLauncher::kill(const ProcessHandle& handle)
     return ::kill(handle.childPid, SIGKILL) == 0;
 }
 
-bool ProcessLauncher::isAlive(const ProcessHandle& handle)
+bool ProcessLauncher::isAlive(ProcessHandle& handle)
 {
     if (!handle.valid || handle.childPid <= 0)
     {
@@ -156,7 +156,7 @@ bool ProcessLauncher::isAlive(const ProcessHandle& handle)
     return result == 0;
 }
 
-int ProcessLauncher::waitForExit(const ProcessHandle& handle, int timeoutMs)
+int ProcessLauncher::waitForExit(ProcessHandle& handle, int timeoutMs)
 {
     if (!handle.valid || handle.childPid <= 0)
     {
@@ -237,12 +237,12 @@ static std::string readFd(int fd)
     return result;
 }
 
-std::string ProcessLauncher::readStdout(const ProcessHandle& handle)
+std::string ProcessLauncher::readStdout(ProcessHandle& handle)
 {
     return readFd(handle.stdoutFd);
 }
 
-std::string ProcessLauncher::readStderr(const ProcessHandle& handle)
+std::string ProcessLauncher::readStderr(ProcessHandle& handle)
 {
     return readFd(handle.stderrFd);
 }

@@ -30,6 +30,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
+    magic_enum
 )
 
 # Link Winsock on Windows

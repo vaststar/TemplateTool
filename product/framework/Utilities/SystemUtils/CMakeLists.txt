@@ -7,24 +7,40 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
     include/ucf/Utilities/SystemUtils/SystemUtils.h
+    include/ucf/Utilities/SystemUtils/SystemProxyUtils.h
+    include/ucf/Utilities/SystemUtils/CertStoreUtils.h
 )
 
 set(MODULE_SOURCE_PRIVATE
     src/SystemUtils.cpp
+    src/SystemProxyUtils.cpp
+    src/CertStoreUtils.cpp
 )
 
 if (WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/SystemUtils_Win.h
-        src/SystemUtils_Win.cpp)
+        src/SystemUtils_Win.cpp
+        src/SystemProxyUtils_Win.h
+        src/SystemProxyUtils_Win.cpp
+        src/CertStoreUtils_Win.h
+        src/CertStoreUtils_Win.cpp)
 elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/SystemUtils_Mac.h
-        src/SystemUtils_Mac.mm)
+        src/SystemUtils_Mac.mm
+        src/SystemProxyUtils_Mac.h
+        src/SystemProxyUtils_Mac.cpp
+        src/CertStoreUtils_Mac.h
+        src/CertStoreUtils_Mac.cpp)
 elseif (UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
         src/SystemUtils_Linux.h
-        src/SystemUtils_Linux.cpp)
+        src/SystemUtils_Linux.cpp
+        src/SystemProxyUtils_Linux.h
+        src/SystemProxyUtils_Linux.cpp
+        src/CertStoreUtils_Linux.h
+        src/CertStoreUtils_Linux.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -34,7 +50,9 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
 )
 
-if (APPLE)
+if (WIN32)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE crypt32 wininet)
+elseif (APPLE)
     list(APPEND MODULE_DEPENDENCIES_PRIVATE "-framework AppKit")
 endif()
 

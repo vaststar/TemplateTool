@@ -171,7 +171,7 @@ bool ProcessLauncher::kill(const ProcessHandle& handle)
     return TerminateProcess(handle.hProcess, 1) != 0;
 }
 
-bool ProcessLauncher::isAlive(const ProcessHandle& handle)
+bool ProcessLauncher::isAlive(ProcessHandle& handle)
 {
     if (!handle.valid || !handle.hProcess)
     {
@@ -182,7 +182,7 @@ bool ProcessLauncher::isAlive(const ProcessHandle& handle)
     return WaitForSingleObject(handle.hProcess, 0) == WAIT_TIMEOUT;
 }
 
-int ProcessLauncher::waitForExit(const ProcessHandle& handle, int timeoutMs)
+int ProcessLauncher::waitForExit(ProcessHandle& handle, int timeoutMs)
 {
     if (!handle.valid || !handle.hProcess)
     {
@@ -227,12 +227,12 @@ static std::string readPipe(HANDLE hPipe)
     return buffer;
 }
 
-std::string ProcessLauncher::readStdout(const ProcessHandle& handle)
+std::string ProcessLauncher::readStdout(ProcessHandle& handle)
 {
     return readPipe(handle.hStdoutRead);
 }
 
-std::string ProcessLauncher::readStderr(const ProcessHandle& handle)
+std::string ProcessLauncher::readStderr(ProcessHandle& handle)
 {
     return readPipe(handle.hStderrRead);
 }

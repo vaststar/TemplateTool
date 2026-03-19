@@ -1,6 +1,8 @@
 #include "TcpChannel.h"
 #include "TcpChannelLogger.h"
 
+#include <magic_enum/magic_enum.hpp>
+
 #ifdef _WIN32
     #include <winsock2.h>
 #else
@@ -19,6 +21,87 @@ std::unique_ptr<ITcpChannel> ITcpChannel::create()
 }
 
 // ════════════════════════════════════════════════
+//  State machine
+// ════════════════════════════════════════════════
+
+bool TcpChannel::tryTransition(ChannelState to)
+{
+    switch (to)
+    {
+    case ChannelState::Starting:
+        if (casFrom({ChannelState::Idle, ChannelState::Terminated}, to))
+        {
+            return true;
+        }
+        break;
+
+    case ChannelState::Listening:
+        if (casFrom({ChannelState::Starting}, to))
+        {
+            return true;
+        }
+        break;
+
+    case ChannelState::Stopping:
+        if (casFrom({ChannelState::Starting, ChannelState::Listening}, to))
+        {
+            return true;
+        }
+        break;
+
+    case ChannelState::Terminated:
+        if (casFrom({ChannelState::Starting, ChannelState::Stopping}, to))
+        {
+            return true;
+        }
+        break;
+
+    case ChannelState::Idle:
+        break;  // Idle is the initial state, no transition back
+    }
+
+    TC_LOG_DEBUG("Transition to " << magic_enum::enum_name(to)
+                 << " rejected, current=" << magic_enum::enum_name(currentState()));
+    return false;
+}
+
+bool TcpChannel::casFrom(std::initializer_list<ChannelState> fromStates,
+                         ChannelState to)
+{
+    for (auto from : fromStates)
+    {
+        auto expected = from;
+        if (mChannelState.compare_exchange_strong(expected, to,
+                                                  std::memory_order_acq_rel,
+                                                  std::memory_order_acquire))
+        {
+            TC_LOG_DEBUG("State: " << magic_enum::enum_name(from)
+                         << " -> " << magic_enum::enum_name(to));
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TcpChannel::beginStop()
+{
+    if (!tryTransition(ChannelState::Stopping))
+    {
+        TC_LOG_DEBUG("Stop skipped, state=" << magic_enum::enum_name(currentState()));
+        return false;
+    }
+
+    TC_LOG_INFO("Stop begin, state=" << magic_enum::enum_name(currentState()));
+    return true;
+}
+
+void TcpChannel::failStart(const std::string& errorMessage)
+{
+    tryTransition(ChannelState::Terminated);
+    fireNotification(&ITcpChannelCallback::onError, errorMessage);
+}
+
+// ════════════════════════════════════════════════
 //  Lifecycle
 // ════════════════════════════════════════════════
 
@@ -30,16 +113,20 @@ TcpChannel::TcpChannel()
 TcpChannel::~TcpChannel()
 {
     stop();
+    // Ensure the I/O thread is joined even if it exited on its own
+    // (e.g. select() error → ioLoop returned without stop() joining it).
+    if (mIoThread.joinable())
+    {
+        mIoThread.join();
+    }
     detail::SocketHelper::cleanup();
 }
 
 bool TcpChannel::startListening(const TcpChannelConfig& config)
 {
-    // CAS Idle → Starting: only one caller can win
-    auto expected = ChannelState::Idle;
-    if (!mChannelState.compare_exchange_strong(expected, ChannelState::Starting))
+    if (!tryTransition(ChannelState::Starting))
     {
-        TC_LOG_WARN("startListening() rejected, state=" << static_cast<int>(expected));
+        TC_LOG_WARN("startListening() rejected, state=" << magic_enum::enum_name(currentState()));
         return false;
     }
 
@@ -50,57 +137,81 @@ bool TcpChannel::startListening(const TcpChannelConfig& config)
         mIoThread.join();
     }
 
-    mConfig = config;
-    mStopRequested = false;
-
-    // Create server socket
-    mServerSocket = detail::SocketHelper::createTcp();
-    if (mServerSocket == kInvalidSocket)
+    // Lock scope: protect shared data writes so that stop() cannot read
+    // mServerSocket/mIoThread in a partially-written state.
+    bool setupFailed = false;
+    std::string errorMsg;
     {
-        std::string err = "Failed to create socket: " + detail::SocketHelper::lastError();
-        TC_LOG_ERROR(err);
-        mChannelState = ChannelState::Idle;
-        fireNotification(&ITcpChannelCallback::onError, err);
+        std::lock_guard<std::mutex> lock(mLifecycleMutex);
+
+        mConfig = config;
+
+        // Create server socket
+        mServerSocket = detail::SocketHelper::createTcp();
+        if (mServerSocket == kInvalidSocket)
+        {
+            errorMsg = "Failed to create socket: " + detail::SocketHelper::lastError();
+            TC_LOG_ERROR(errorMsg);
+            setupFailed = true;
+        }
+        else
+        {
+            detail::SocketHelper::setReuseAddr(mServerSocket);
+
+            if (!detail::SocketHelper::bindAndListen(mServerSocket, config.listenAddress,
+                                                      config.listenPort, config.maxConnections))
+            {
+                errorMsg = "Failed to bind/listen on port " + std::to_string(config.listenPort)
+                           + ": " + detail::SocketHelper::lastError();
+                TC_LOG_ERROR(errorMsg);
+                detail::SocketHelper::closeSocket(mServerSocket);
+                setupFailed = true;
+            }
+            else
+            {
+                mPort = detail::SocketHelper::getLocalPort(mServerSocket);
+
+                TC_LOG_INFO("Listening on " << config.listenAddress << ":" << mPort.load());
+
+                // Start I/O thread BEFORE setting Listening —
+                // ensures the thread object is valid when stop() tries to join
+                mIoThread = std::thread(&TcpChannel::ioLoop, this);
+            }
+        }
+    }
+    // Lock released — stop() can now safely access mServerSocket/mIoThread
+
+    if (setupFailed)
+    {
+        failStart(errorMsg);
         return false;
     }
 
-    detail::SocketHelper::setReuseAddr(mServerSocket);
-
-    if (!detail::SocketHelper::bindAndListen(mServerSocket, config.listenAddress,
-                                              config.listenPort, config.maxConnections))
+    if (!tryTransition(ChannelState::Listening))
     {
-        std::string err = "Failed to bind/listen on port " + std::to_string(config.listenPort)
-                          + ": " + detail::SocketHelper::lastError();
-        TC_LOG_ERROR(err);
-        detail::SocketHelper::closeSocket(mServerSocket);
-        mChannelState = ChannelState::Idle;
-        fireNotification(&ITcpChannelCallback::onError, err);
+        // stop() intervened during setup
+        TC_LOG_WARN("startListening() interrupted by concurrent stop(), state="
+                    << magic_enum::enum_name(currentState()));
         return false;
     }
 
-    mPort = detail::SocketHelper::getLocalPort(mServerSocket);
-
-    TC_LOG_INFO("Listening on " << config.listenAddress << ":" << mPort.load());
-
-    // Start I/O thread BEFORE setting Listening —
-    // ensures the thread object is valid when stop() tries to join
-    mIoThread = std::thread(&TcpChannel::ioLoop, this);
-    mChannelState = ChannelState::Listening;
     return true;
 }
 
 void TcpChannel::stop()
 {
-    // CAS Listening → Stopping: only one caller can win
-    auto expected = ChannelState::Listening;
-    if (!mChannelState.compare_exchange_strong(expected, ChannelState::Stopping))
+    if (!beginStop())
     {
-        TC_LOG_DEBUG("stop() skipped, state=" << static_cast<int>(expected));
         return;
     }
 
     TC_LOG_INFO("Stopping TcpChannel");
-    mStopRequested = true;
+
+    // Sync barrier: wait for startListening() setup to complete (if it's still
+    // inside the locked region writing mServerSocket/mIoThread).
+    {
+        std::lock_guard<std::mutex> lock(mLifecycleMutex);
+    }
 
     // If called from within a callback on the I/O thread, we cannot
     // join ourselves. The ioLoop exit path will do deferred cleanup.
@@ -116,8 +227,11 @@ void TcpChannel::stop()
         mIoThread.join();
     }
 
-    cleanupSockets();
-    mChannelState = ChannelState::Idle;
+    // ioLoop deferred path may have already cleaned up and set Terminated
+    if (currentState() == ChannelState::Stopping)
+    {
+        finalizeStop();
+    }
     TC_LOG_INFO("TcpChannel stopped");
 }
 
@@ -145,9 +259,14 @@ bool TcpChannel::isConnected() const
     return mClientSocket != kInvalidSocket;
 }
 
+ChannelState TcpChannel::currentState() const
+{
+    return mChannelState.load(std::memory_order_acquire);
+}
+
 bool TcpChannel::isListening() const
 {
-    return mChannelState.load() == ChannelState::Listening;
+    return currentState() == ChannelState::Listening;
 }
 
 int TcpChannel::listeningPort() const
@@ -163,13 +282,21 @@ void TcpChannel::ioLoop()
 {
     TC_LOG_DEBUG("I/O thread started");
 
-    while (!mStopRequested.load())
+    while (true)
     {
+        auto st = currentState();
+        if (st == ChannelState::Stopping || st == ChannelState::Terminated)
+        {
+            break;
+        }
+
         fd_set readFds;
         FD_ZERO(&readFds);
-
-        SocketHandle maxFd = mServerSocket;
         FD_SET(mServerSocket, &readFds);
+
+#ifndef _WIN32
+        SocketHandle maxFd = mServerSocket;
+#endif
 
         SocketHandle clientSock;
         {
@@ -201,7 +328,7 @@ void TcpChannel::ioLoop()
         int ready = ::select(nfds, &readFds, nullptr, nullptr, &tv);
         if (ready < 0)
         {
-            if (!mStopRequested.load())
+            if (auto st = currentState(); st != ChannelState::Stopping && st != ChannelState::Terminated)
             {
                 TC_LOG_ERROR("select() failed: " << detail::SocketHelper::lastError());
             }
@@ -209,7 +336,7 @@ void TcpChannel::ioLoop()
         }
         if (ready == 0)
         {
-            continue;  // timeout — loop back to check mStopRequested
+            continue;  // timeout — loop back to check mChannelState
         }
 
         // New connection on server socket?
@@ -234,11 +361,15 @@ void TcpChannel::ioLoop()
 
     // Deferred cleanup: if stop() was called from a callback on this thread,
     // it set Stopping but could not join/cleanup. We do it here.
-    auto expected = ChannelState::Stopping;
-    if (mChannelState.compare_exchange_strong(expected, ChannelState::Idle))
+    // Also handles select() error exit when state is still Listening/Starting.
+    if (beginStop())
+    {
+        TC_LOG_INFO("ioLoop detected unclean exit, transitioning to Stopping");
+    }
+    if (currentState() == ChannelState::Stopping)
     {
         TC_LOG_INFO("Deferred cleanup in ioLoop exit");
-        cleanupSockets();
+        finalizeStop();
     }
 }
 
@@ -302,7 +433,7 @@ void TcpChannel::disconnectClient()
     detail::SocketHelper::closeSocket(mClientSocket);
 }
 
-void TcpChannel::cleanupSockets()
+void TcpChannel::finalizeStop()
 {
     {
         std::lock_guard<std::mutex> lock(mClientMutex);
@@ -310,6 +441,7 @@ void TcpChannel::cleanupSockets()
     }
     detail::SocketHelper::closeSocket(mServerSocket);
     mPort = 0;
+    tryTransition(ChannelState::Terminated);
 }
 
 } // namespace ucf::utilities

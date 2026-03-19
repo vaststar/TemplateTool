@@ -29,7 +29,10 @@ bool SocketHelper::bindAndListen(SocketHandle sock, const std::string& address, 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
     addr.sin_port = htons(static_cast<uint16_t>(port));
-    inet_pton(AF_INET, address.c_str(), &addr.sin_addr);
+    if (inet_pton(AF_INET, address.c_str(), &addr.sin_addr) != 1)
+    {
+        return false;
+    }
 
     if (::bind(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0)
     {

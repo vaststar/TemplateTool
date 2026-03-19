@@ -31,8 +31,8 @@ public:
         int childPid = -1;
         int stdoutFd = -1;
         int stderrFd = -1;
-        mutable int cachedExitCode = -1; ///< exit code set before exited flag
-        mutable bool exited = false;     ///< true once waitpid has reaped the child
+        int cachedExitCode = -1;  ///< exit code set once waitpid reaps the child
+        bool exited = false;     ///< true once waitpid has reaped the child
 #endif
     };
 
@@ -53,20 +53,20 @@ public:
     static bool kill(const ProcessHandle& handle);
 
     /// Check if the process is still alive.
-    static bool isAlive(const ProcessHandle& handle);
+    static bool isAlive(ProcessHandle& handle);
 
     /// Wait for the process to exit.
     /// @param timeoutMs  Maximum wait time (-1 = infinite)
     /// @return exit code, or -1 if timeout
-    static int waitForExit(const ProcessHandle& handle, int timeoutMs);
+    static int waitForExit(ProcessHandle& handle, int timeoutMs);
 
     /// Read available data from stdout pipe (non-blocking).
     /// @return data read, empty if nothing available
-    static std::string readStdout(const ProcessHandle& handle);
+    static std::string readStdout(ProcessHandle& handle);
 
     /// Read available data from stderr pipe (non-blocking).
     /// @return data read, empty if nothing available
-    static std::string readStderr(const ProcessHandle& handle);
+    static std::string readStderr(ProcessHandle& handle);
 
     /// Clean up all handles/file descriptors.
     static void closeHandles(ProcessHandle& handle);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <initializer_list>
 #include <mutex>
 #include <thread>
 
@@ -15,10 +16,11 @@ namespace ucf::utilities {
 /// Internal lifecycle state for TcpChannel.
 enum class ChannelState : int
 {
-    Idle,       ///< Not listening
-    Starting,   ///< startListening() in progress (socket setup)
-    Listening,  ///< I/O thread running, accepting connections
-    Stopping    ///< stop() in progress
+    Idle,        ///< Not listening, never started or re-usable after cleanup
+    Starting,    ///< startListening() in progress (socket setup)
+    Listening,   ///< I/O thread running, accepting connections
+    Stopping,    ///< stop() in progress
+    Terminated   ///< Stopped / I/O error exit. Can restart from here.
 };
 
 /// Concrete implementation of ITcpChannel.
@@ -32,9 +34,7 @@ enum class ChannelState : int
 ///   - stop() from within a callback (I/O thread) is safe — cleanup
 ///     is deferred to the ioLoop exit path.
 ///   - mClientSocket is protected by mClientMutex for send() / I/O thread.
-class TcpChannel final
-    : public virtual NotificationHelper<ITcpChannelCallback>
-    , public ITcpChannel
+class TcpChannel final : public virtual ITcpChannel, public virtual NotificationHelper<ITcpChannelCallback>
 {
 public:
     TcpChannel();
@@ -54,6 +54,26 @@ public:
     int  listeningPort() const override;
 
 private:
+    // ── State machine ──
+
+    /// Attempt to transition mChannelState to @p to.
+    /// Valid source states are defined internally per target state.
+    bool tryTransition(ChannelState to);
+
+    /// CAS helper: try transitioning from any of @p fromStates to @p to.
+    bool casFrom(std::initializer_list<ChannelState> fromStates, ChannelState to);
+
+    /// Attempt to acquire stop ownership by transitioning to Stopping.
+    bool beginStop();
+
+    /// Finalize a startup failure before Listening was reached.
+    void failStart(const std::string& errorMessage);
+
+    /// Read the current channel state (acquire semantics).
+    ChannelState currentState() const;
+
+    // ── I/O ──
+
     /// Background I/O loop using select().
     void ioLoop();
 
@@ -68,7 +88,7 @@ private:
 
     /// Close both server and client sockets, reset port.
     /// Called from stop() or ioLoop exit (deferred cleanup).
-    void cleanupSockets();
+    void finalizeStop();
 
     SocketHandle mServerSocket = kInvalidSocket;
     SocketHandle mClientSocket = kInvalidSocket;
@@ -76,8 +96,11 @@ private:
 
     std::thread mIoThread;
     std::atomic<ChannelState> mChannelState{ChannelState::Idle};
-    std::atomic<bool> mStopRequested{false};
     std::atomic<int>  mPort{0};
+
+    /// Guards mConfig/mServerSocket/mIoThread writes during startListening() setup.
+    /// stop() acquires briefly as a sync barrier to ensure setup is complete.
+    std::mutex mLifecycleMutex;
 
     TcpChannelConfig mConfig;
 

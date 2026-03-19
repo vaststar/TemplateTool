@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 namespace ucf::utilities{
 template <typename CallbackObject>
 class INotificationHelper

@@ -10,6 +10,7 @@
 #include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
 #include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
+#include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
 namespace commonHead::viewModels{
 
@@ -26,7 +27,7 @@ ViewModelFactory::ViewModelFactory(commonHead::ICommonHeadFrameworkWPtr commonHe
 
 ViewModelFactory::~ViewModelFactory()
 {
-    
+
 }
 
 std::shared_ptr<commonHead::viewModels::IInvocationViewModel> ViewModelFactory::createInvocationViewModelInstance() const
@@ -77,5 +78,10 @@ std::shared_ptr<commonHead::viewModels::IStabilityViewModel> ViewModelFactory::c
 std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::createToolsViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IToolsViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory::createNetworkProxyViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::INetworkProxyViewModel>();
 }
 } // namespace commonHead::viewModels

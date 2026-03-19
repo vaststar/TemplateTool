@@ -4,21 +4,20 @@
 #include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
 #include "LoggerDefine/LoggerDefine.h"
 
-#include <QCoreApplication>
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
+#include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
+
+#include <QClipboard>
+#include <QGuiApplication>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QClipboard>
-#include <QGuiApplication>
-#include <QStandardPaths>
+#include <QFile>
 #include <QUrl>
 #include <QUrlQuery>
 
 NetworkProxyController::NetworkProxyController(QObject* parent)
     : UIViewController(parent)
+    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::NetworkProxyViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create NetworkProxyController, this=" << (void*)this);
     m_requestModel = new ProxyRequestModel(this);
@@ -28,34 +27,12 @@ NetworkProxyController::NetworkProxyController(QObject* parent)
     // Wire cert manager status messages to our status
     connect(m_certManager, &ProxyCertManager::statusMessage,
             this, &NetworkProxyController::setStatusMessage);
-
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] requestModel created in ctor: " << (void*)m_requestModel);
 }
 
 NetworkProxyController::~NetworkProxyController()
 {
-    // Safe cleanup without emitting signals (object is being destroyed)
-    if (m_autoSystemProxy)
-        disableSystemProxy();
-
-    if (m_addonSocket) {
-        m_addonSocket->disconnect(this);
-        m_addonSocket->disconnectFromHost();
-        m_addonSocket = nullptr;
-    }
-
-    if (m_tcpServer) {
-        m_tcpServer->disconnect(this);
-        m_tcpServer->close();
-    }
-
-    if (m_process) {
-        m_process->disconnect(this);
-        m_process->terminate();
-        m_process->waitForFinished(2000);
-        if (m_process->state() != QProcess::NotRunning)
-            m_process->kill();
-    }
+    stopProxy();
+    UIVIEW_LOG_DEBUG("destroy NetworkProxyController");
 }
 
 // ====================== init ======================
@@ -64,13 +41,35 @@ void NetworkProxyController::init()
 {
     UIVIEW_LOG_DEBUG("NetworkProxyController::init");
 
-    m_tcpServer = new QTcpServer(this);
-    connect(m_tcpServer, &QTcpServer::newConnection,
-            this, &NetworkProxyController::onNewTcpConnection);
+    // Connect emitter signals to controller slots
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onProxyStateChanged,
+            this, &NetworkProxyController::onProxyStateChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onAddonConnectionChanged,
+            this, &NetworkProxyController::onAddonConnectionChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onRequestCaptured,
+            this, &NetworkProxyController::onRequestCaptured);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onResponseCaptured,
+            this, &NetworkProxyController::onResponseCaptured);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onRequestIntercepted,
+            this, &NetworkProxyController::onRequestIntercepted);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onStatusMessage,
+            this, &NetworkProxyController::onStatusMessage);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onCertStatusChanged,
+            this, &NetworkProxyController::onCertStatusChanged);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onError,
+            this, &NetworkProxyController::onError);
 
-    // Wire rules manager to use our sendCommand
+    // Create ViewModel via factory, init, and register emitter as callback
+    m_viewModel = getAppContext()->getViewModelFactory()->createNetworkProxyViewModelInstance();
+    m_viewModel->initViewModel();
+    m_viewModel->registerCallback(m_viewModelEmitter);
+
+    // Wire rules manager — serialize QJsonObject to string and send via ViewModel
     m_rulesManager->setSendCommandFn([this](const QJsonObject& cmd) {
-        sendCommand(cmd);
+        if (m_viewModel) {
+            QJsonDocument doc(cmd);
+            m_viewModel->sendCommand(doc.toJson(QJsonDocument::Compact).toStdString());
+        }
     });
 }
 
@@ -79,7 +78,6 @@ void NetworkProxyController::init()
 bool    NetworkProxyController::isProxyRunning()     const { return m_proxyRunning; }
 bool    NetworkProxyController::isAddonConnected()   const { return m_addonConnected; }
 int     NetworkProxyController::getProxyPort()       const { return m_proxyPort; }
-int     NetworkProxyController::getControlPort()     const { return m_controlPort; }
 bool    NetworkProxyController::getAutoSystemProxy() const { return m_autoSystemProxy; }
 bool    NetworkProxyController::isInterceptEnabled() const { return m_interceptEnabled; }
 QString NetworkProxyController::getFilterText()      const { return m_filterText; }
@@ -389,14 +387,6 @@ void NetworkProxyController::setProxyPort(int port)
     }
 }
 
-void NetworkProxyController::setControlPort(int port)
-{
-    if (m_controlPort != port) {
-        m_controlPort = port;
-        emit controlPortChanged();
-    }
-}
-
 void NetworkProxyController::setAutoSystemProxy(bool enabled)
 {
     if (m_autoSystemProxy != enabled) {
@@ -411,11 +401,8 @@ void NetworkProxyController::setInterceptEnabled(bool enabled)
         m_interceptEnabled = enabled;
         emit interceptEnabledChanged();
 
-        // Notify addon
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("set_intercept");
-        cmd["enabled"] = enabled;
-        sendCommand(cmd);
+        if (m_viewModel)
+            m_viewModel->setInterceptEnabled(enabled);
     }
 }
 
@@ -491,111 +478,22 @@ void NetworkProxyController::setResponseTabIndex(int tab)
 
 void NetworkProxyController::startProxy()
 {
-    if (m_proxyRunning)
+    if (m_proxyRunning || !m_viewModel)
         return;
 
-    // Re-connect TCP server signal (may have been disconnected by previous stopProxy)
-    connect(m_tcpServer, &QTcpServer::newConnection,
-            this, &NetworkProxyController::onNewTcpConnection, Qt::UniqueConnection);
+    commonHead::viewModels::model::ProxyConfig config;
+    config.proxyPort = m_proxyPort;
+    config.autoSystemProxy = m_autoSystemProxy;
 
-    // Start TCP server for addon communication
-    if (!m_tcpServer->listen(QHostAddress::LocalHost, static_cast<quint16>(m_controlPort))) {
-        setStatusMessage(tr("Failed to start control server on port %1").arg(m_controlPort));
-        UIVIEW_LOG_DEBUG("TCP server listen failed on port " << m_controlPort);
-        return;
-    }
-
-    // Find addon executable
-    QString addonPath = findAddonExecutable();
-    if (addonPath.isEmpty()) {
-        setStatusMessage(tr("Proxy addon executable not found"));
-        m_tcpServer->close();
-        return;
-    }
-
-    // Launch the addon process
-    m_process = new QProcess(this);
-    connect(m_process, &QProcess::started,
-            this, &NetworkProxyController::onProcessStarted);
-    connect(m_process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, &NetworkProxyController::onProcessFinished);
-    connect(m_process, &QProcess::errorOccurred,
-            this, &NetworkProxyController::onProcessError);
-    connect(m_process, &QProcess::readyReadStandardError, this, [this]() {
-        if (m_process) {
-            QByteArray errOutput = m_process->readAllStandardError();
-            UIVIEW_LOG_DEBUG("[PROXY-STDERR] " << errOutput.toStdString());
-        }
-    });
-    connect(m_process, &QProcess::readyReadStandardOutput, this, [this]() {
-        if (m_process) {
-            QByteArray stdOutput = m_process->readAllStandardOutput();
-            UIVIEW_LOG_DEBUG("[PROXY-STDOUT] " << stdOutput.toStdString());
-        }
-    });
-
-    QStringList args;
-
-    // Development mode: if addon is a .py script, run via python
-    QString program = addonPath;
-    if (addonPath.endsWith(QStringLiteral(".py"))) {
-#ifdef Q_OS_WIN
-        program = QStringLiteral("python");
-#else
-        program = QStringLiteral("python3");
-#endif
-        args << addonPath;
-    }
-
-    args << QStringLiteral("--proxy-port") << QString::number(m_proxyPort)
-         << QStringLiteral("--control-port") << QString::number(m_controlPort);
-
-    UIVIEW_LOG_DEBUG("Launching: " << program.toStdString() << " " << args.join(" ").toStdString());
-    m_process->start(program, args);
-
-    m_proxyRunning = true;
-    emit proxyRunningChanged();
-    setStatusMessage(tr("Starting proxy on port %1...").arg(m_proxyPort));
+    m_viewModel->startProxy(config);
 }
 
 void NetworkProxyController::stopProxy()
 {
-    if (!m_proxyRunning)
+    if (!m_viewModel)
         return;
 
-    // Disable system proxy first
-    if (m_autoSystemProxy)
-        disableSystemProxy();
-
-    // Close addon socket — disconnect signals first to prevent callbacks during cleanup
-    if (m_addonSocket) {
-        m_addonSocket->disconnect(this);
-        m_addonSocket->disconnectFromHost();
-        m_addonSocket->deleteLater();
-        m_addonSocket = nullptr;
-    }
-
-    // Close TCP server — disconnect signals to prevent onNewTcpConnection during waitForFinished
-    if (m_tcpServer) {
-        m_tcpServer->disconnect(this);
-        m_tcpServer->close();
-    }
-
-    // Terminate process — disconnect signals first to prevent reentrant callback
-    if (m_process) {
-        m_process->disconnect(this);
-        m_process->terminate();
-        if (!m_process->waitForFinished(3000))
-            m_process->kill();
-        m_process->deleteLater();
-        m_process = nullptr;
-    }
-
-    m_proxyRunning = false;
-    m_addonConnected = false;
-    emit proxyRunningChanged();
-    emit addonConnectedChanged();
-    setStatusMessage(tr("Proxy stopped"));
+    m_viewModel->stopProxy();
 }
 
 void NetworkProxyController::clearRequests()
@@ -640,11 +538,9 @@ void NetworkProxyController::exportRequests(const QString& filePath)
 
 void NetworkProxyController::resumeRequest(const QString& flowId)
 {
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("resume_flow");
-    cmd["flow_id"] = flowId;
-    sendCommand(cmd);
-    // Clear intercepted badge in model
+    if (m_viewModel)
+        m_viewModel->resumeRequest(flowId.toStdString());
+
     QJsonObject patch;
     patch["flow_id"] = flowId;
     patch["is_intercepted"] = false;
@@ -653,11 +549,9 @@ void NetworkProxyController::resumeRequest(const QString& flowId)
 
 void NetworkProxyController::dropRequest(const QString& flowId)
 {
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("drop_flow");
-    cmd["flow_id"] = flowId;
-    sendCommand(cmd);
-    // Clear intercepted badge in model
+    if (m_viewModel)
+        m_viewModel->dropRequest(flowId.toStdString());
+
     QJsonObject patch;
     patch["flow_id"] = flowId;
     patch["is_intercepted"] = false;
@@ -713,180 +607,90 @@ void NetworkProxyController::copyResponseBody()
         clipboard->setText(req["response_body"].toString());
 }
 
-// ====================== TCP callbacks ======================
+// ====================== ViewModel emitter slots ======================
 
-void NetworkProxyController::onNewTcpConnection()
+void NetworkProxyController::onProxyStateChanged(int state)
 {
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] onNewTcpConnection called, hasPending=" << m_tcpServer->hasPendingConnections());
-    while (m_tcpServer->hasPendingConnections()) {
-        QTcpSocket* socket = m_tcpServer->nextPendingConnection();
-        if (m_addonSocket) {
-            UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Already have addon socket, rejecting new connection");
-            // Only allow one addon connection
-            socket->disconnectFromHost();
-            socket->deleteLater();
-            continue;
-        }
-        m_addonSocket = socket;
-        m_tcpBuffer.clear();
-        connect(m_addonSocket, &QTcpSocket::readyRead,
-                this, &NetworkProxyController::onTcpDataReady);
-        connect(m_addonSocket, &QTcpSocket::disconnected,
-                this, &NetworkProxyController::onTcpDisconnected);
+    using PS = commonHead::viewModels::model::ProxyState;
+    auto proxyState = static_cast<PS>(state);
 
-        m_addonConnected = true;
-        emit addonConnectedChanged();
-        UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Addon socket connected from " << socket->peerAddress().toString().toStdString() << ":" << socket->peerPort());
-        setStatusMessage(tr("Addon connected, proxy running on port %1").arg(m_proxyPort));
-
-        // Enable system proxy after connection
-        if (m_autoSystemProxy)
-            enableSystemProxy();
-
-        // Send initial rules via manager
-        m_rulesManager->sendAllRules();
+    bool running = (proxyState == PS::Starting || proxyState == PS::Running);
+    if (m_proxyRunning != running) {
+        m_proxyRunning = running;
+        emit proxyRunningChanged();
     }
 }
 
-void NetworkProxyController::onTcpDataReady()
+void NetworkProxyController::onAddonConnectionChanged(bool connected)
 {
-    if (!m_addonSocket)
+    if (m_addonConnected != connected) {
+        m_addonConnected = connected;
+        emit addonConnectedChanged();
+    }
+
+    // Re-sync rules when addon reconnects
+    if (connected && m_rulesManager)
+        m_rulesManager->sendAllRules();
+}
+
+void NetworkProxyController::onRequestCaptured(const QString& /*flowId*/, const QString& rawJson)
+{
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(rawJson.toUtf8(), &err);
+    if (err.error != QJsonParseError::NoError)
         return;
 
-    QByteArray incoming = m_addonSocket->readAll();
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] onTcpDataReady: received " << incoming.size() << " bytes");
-    m_tcpBuffer.append(incoming);
-
-    // Parse newline-delimited JSON messages
-    int msgCount = 0;
-    while (true) {
-        int idx = m_tcpBuffer.indexOf('\n');
-        if (idx < 0)
-            break;
-
-        QByteArray line = m_tcpBuffer.left(idx);
-        m_tcpBuffer.remove(0, idx + 1);
-
-        if (line.isEmpty())
-            continue;
-
-        UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Parsing JSON line (" << line.size() << " bytes): " << line.left(200).toStdString());
-
-        QJsonParseError err;
-        QJsonDocument doc = QJsonDocument::fromJson(line, &err);
-        if (err.error != QJsonParseError::NoError) {
-            UIVIEW_LOG_DEBUG("[PROXY-DEBUG] JSON parse error: " << err.errorString().toStdString());
-            continue;
-        }
-
-        handleAddonMessage(doc.object());
-        ++msgCount;
-    }
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Processed " << msgCount << " messages, buffer remaining: " << m_tcpBuffer.size() << " bytes");
+    m_requestModel->addOrUpdateRequest(doc.object());
+    emit requestCountChanged();
+    if (m_selectedIndex >= 0)
+        emit detailTextChanged();
 }
 
-void NetworkProxyController::onTcpDisconnected()
+void NetworkProxyController::onResponseCaptured(const QString& /*flowId*/, const QString& rawJson)
 {
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] onTcpDisconnected called");
-    m_addonSocket = nullptr;
-    m_addonConnected = false;
-    emit addonConnectedChanged();
-    setStatusMessage(tr("Addon disconnected"));
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(rawJson.toUtf8(), &err);
+    if (err.error != QJsonParseError::NoError)
+        return;
+
+    m_requestModel->addOrUpdateRequest(doc.object());
+    emit requestCountChanged();
+    if (m_selectedIndex >= 0)
+        emit detailTextChanged();
 }
 
-// ====================== Process callbacks ======================
-
-void NetworkProxyController::onProcessStarted()
+void NetworkProxyController::onRequestIntercepted(const QString& flowId, const QString& detailJson)
 {
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Proxy addon process started, PID=" << (m_process ? m_process->processId() : 0));
-    setStatusMessage(tr("Proxy process started, waiting for addon connection..."));
+    QJsonObject patch;
+    patch["flow_id"] = flowId;
+    patch["is_intercepted"] = true;
+    m_requestModel->addOrUpdateRequest(patch);
+
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(detailJson.toUtf8(), &err);
+    QJsonObject detail = (err.error == QJsonParseError::NoError) ? doc.object() : QJsonObject();
+
+    emit interceptedRequest(flowId, detail);
 }
 
-void NetworkProxyController::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void NetworkProxyController::onStatusMessage(const QString& message)
 {
-    UIVIEW_LOG_DEBUG("Proxy addon process finished: " << exitCode << " status: " << static_cast<int>(exitStatus));
-
-    // Capture any remaining output before cleaning up
-    if (m_process) {
-        QByteArray remainingErr = m_process->readAllStandardError();
-        QByteArray remainingOut = m_process->readAllStandardOutput();
-        if (!remainingErr.isEmpty()) {
-            UIVIEW_LOG_DEBUG("[PROXY-STDERR] " << remainingErr.toStdString());
-        }
-        if (!remainingOut.isEmpty()) {
-            UIVIEW_LOG_DEBUG("[PROXY-STDOUT] " << remainingOut.toStdString());
-        }
-    }
-
-    if (m_autoSystemProxy)
-        disableSystemProxy();
-
-    m_proxyRunning = false;
-    m_addonConnected = false;
-    emit proxyRunningChanged();
-    emit addonConnectedChanged();
-    setStatusMessage(tr("Proxy process exited (code %1)").arg(exitCode));
-
-    if (m_process) {
-        m_process->deleteLater();
-        m_process = nullptr;
-    }
-    m_tcpServer->close();
+    setStatusMessage(message);
 }
 
-void NetworkProxyController::onProcessError(QProcess::ProcessError error)
+void NetworkProxyController::onCertStatusChanged(int /*status*/)
 {
-    UIVIEW_LOG_DEBUG("Proxy process error: " << static_cast<int>(error));
-    setStatusMessage(tr("Proxy process error: %1").arg(static_cast<int>(error)));
+    // Re-emit so QML bindings re-evaluate
+    if (m_certManager)
+        emit m_certManager->caCertInstalledChanged();
+}
+
+void NetworkProxyController::onError(const QString& errorMessage)
+{
+    setStatusMessage(errorMessage);
 }
 
 // ====================== Internal helpers ======================
-
-void NetworkProxyController::sendCommand(const QJsonObject& cmd)
-{
-    if (!m_addonSocket || !m_addonConnected)
-        return;
-
-    QJsonDocument doc(cmd);
-    QByteArray data = doc.toJson(QJsonDocument::Compact);
-    data.append('\n');
-    m_addonSocket->write(data);
-    m_addonSocket->flush();
-}
-
-void NetworkProxyController::handleAddonMessage(const QJsonObject& msg)
-{
-    QString type = msg["type"].toString();
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] handleAddonMessage: type=" << type.toStdString()
-                     << ", keys=" << QJsonDocument(msg).toJson(QJsonDocument::Compact).left(300).toStdString());
-
-    if (type == QLatin1String("request") || type == QLatin1String("response")) {
-        // Captured request/response data
-        UIVIEW_LOG_DEBUG("[PROXY-DEBUG] -> Adding to model. Model ptr=" << (void*)m_requestModel
-                         << ", current rowCount=" << (m_requestModel ? m_requestModel->rowCount() : -1));
-        m_requestModel->addOrUpdateRequest(msg);
-        UIVIEW_LOG_DEBUG("[PROXY-DEBUG] -> After add, rowCount=" << m_requestModel->rowCount());
-        emit requestCountChanged();
-        if (m_selectedIndex >= 0)
-            emit detailTextChanged();
-
-    } else if (type == QLatin1String("intercepted")) {
-        // A request has been intercepted (breakpoint hit)
-        QString flowId = msg["flow_id"].toString();
-        // Mark the row in the model so capture list can show a badge
-        QJsonObject patch;
-        patch["flow_id"] = flowId;
-        patch["is_intercepted"] = true;
-        m_requestModel->addOrUpdateRequest(patch);
-        emit interceptedRequest(flowId, msg);
-
-    } else if (type == QLatin1String("error")) {
-        setStatusMessage(tr("Addon error: %1").arg(msg["message"].toString()));
-
-    } else if (type == QLatin1String("status")) {
-        setStatusMessage(msg["message"].toString());
-    }
-}
 
 void NetworkProxyController::updateDetailText()
 {
@@ -901,140 +705,3 @@ void NetworkProxyController::setStatusMessage(const QString& msg)
         UIVIEW_LOG_DEBUG("ProxyStatus: " << msg.toStdString());
     }
 }
-
-// ====================== System proxy ======================
-
-void NetworkProxyController::enableSystemProxy()
-{
-#if defined(Q_OS_MACOS)
-    // Detect active network services (Wi-Fi, Ethernet, etc.)
-    QProcess proc;
-    proc.start(QStringLiteral("networksetup"), {"-listallnetworkservices"});
-    proc.waitForFinished(3000);
-    QString output = QString::fromUtf8(proc.readAllStandardOutput());
-    QStringList services;
-    for (const QString& line : output.split('\n')) {
-        QString trimmed = line.trimmed();
-        // Skip header line and disabled services (prefixed with *)
-        if (trimmed.isEmpty() || trimmed.startsWith('*') || trimmed.startsWith("An asterisk"))
-            continue;
-        services << trimmed;
-    }
-    if (services.isEmpty())
-        services << QStringLiteral("Wi-Fi");
-
-    m_proxyNetworkServices = services;
-    UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Setting system proxy on services: " << services.join(", ").toStdString());
-
-    for (const QString& svc : services) {
-        QProcess::execute(QStringLiteral("networksetup"),
-            {"-setwebproxy", svc, "127.0.0.1", QString::number(m_proxyPort)});
-        QProcess::execute(QStringLiteral("networksetup"),
-            {"-setsecurewebproxy", svc, "127.0.0.1", QString::number(m_proxyPort)});
-        QProcess::execute(QStringLiteral("networksetup"),
-            {"-setwebproxystate", svc, "on"});
-        QProcess::execute(QStringLiteral("networksetup"),
-            {"-setsecurewebproxystate", svc, "on"});
-    }
-    UIVIEW_LOG_DEBUG("System proxy enabled (macOS) on " << services.size() << " services");
-#elif defined(Q_OS_WIN)
-    // Windows: set proxy via registry
-    QString regPath = QStringLiteral("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
-    QProcess::execute(QStringLiteral("reg"),
-        {"add", regPath, "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "1", "/f"});
-    QProcess::execute(QStringLiteral("reg"),
-        {"add", regPath, "/v", "ProxyServer", "/t", "REG_SZ", "/d",
-         QStringLiteral("127.0.0.1:%1").arg(m_proxyPort), "/f"});
-    UIVIEW_LOG_DEBUG("System proxy enabled (Windows)");
-#elif defined(Q_OS_LINUX)
-    QString proxyUrl = QStringLiteral("http://127.0.0.1:%1").arg(m_proxyPort);
-    QProcess::execute(QStringLiteral("gsettings"),
-        {"set", "org.gnome.system.proxy", "mode", "manual"});
-    QProcess::execute(QStringLiteral("gsettings"),
-        {"set", "org.gnome.system.proxy.http", "host", "127.0.0.1"});
-    QProcess::execute(QStringLiteral("gsettings"),
-        {"set", "org.gnome.system.proxy.http", "port", QString::number(m_proxyPort)});
-    QProcess::execute(QStringLiteral("gsettings"),
-        {"set", "org.gnome.system.proxy.https", "host", "127.0.0.1"});
-    QProcess::execute(QStringLiteral("gsettings"),
-        {"set", "org.gnome.system.proxy.https", "port", QString::number(m_proxyPort)});
-    UIVIEW_LOG_DEBUG("System proxy enabled (Linux)");
-#endif
-}
-
-void NetworkProxyController::disableSystemProxy()
-{
-#if defined(Q_OS_MACOS)
-    // Restore all services that were configured
-    QStringList services = m_proxyNetworkServices;
-    if (services.isEmpty())
-        services << QStringLiteral("Wi-Fi");
-
-    for (const QString& svc : services) {
-        QProcess::execute(QStringLiteral("networksetup"),
-            {"-setwebproxystate", svc, "off"});
-        QProcess::execute(QStringLiteral("networksetup"),
-            {"-setsecurewebproxystate", svc, "off"});
-    }
-    m_proxyNetworkServices.clear();
-    UIVIEW_LOG_DEBUG("System proxy disabled (macOS)");
-#elif defined(Q_OS_WIN)
-    QString regPath = QStringLiteral("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
-    QProcess::execute(QStringLiteral("reg"),
-        {"add", regPath, "/v", "ProxyEnable", "/t", "REG_DWORD", "/d", "0", "/f"});
-    UIVIEW_LOG_DEBUG("System proxy disabled (Windows)");
-#elif defined(Q_OS_LINUX)
-    QProcess::execute(QStringLiteral("gsettings"),
-        {"set", "org.gnome.system.proxy", "mode", "none"});
-    UIVIEW_LOG_DEBUG("System proxy disabled (Linux)");
-#endif
-}
-
-QString NetworkProxyController::findAddonExecutable() const
-{
-    // Look for the addon in known locations relative to the app
-    QStringList searchPaths;
-
-    QString appDir = QCoreApplication::applicationDirPath();
-
-#if defined(Q_OS_MACOS)
-    // macOS: inside the .app bundle or alongside
-    searchPaths << appDir + "/../Resources/proxy_addon/proxy_addon"
-                << appDir + "/proxy_addon/proxy_addon"
-                << appDir + "/../../../proxy_addon/proxy_addon";
-#elif defined(Q_OS_WIN)
-    searchPaths << appDir + "/proxy_addon/proxy_addon.exe"
-                << appDir + "/../proxy_addon/proxy_addon.exe";
-#else
-    searchPaths << appDir + "/proxy_addon/proxy_addon"
-                << appDir + "/../proxy_addon/proxy_addon";
-#endif
-
-    // Also check development path
-#if defined(Q_OS_WIN)
-    searchPaths << QDir::currentPath() + "/product/tools/proxy_addon/dist/proxy_addon/proxy_addon.exe";
-#else
-    searchPaths << QDir::currentPath() + "/product/tools/proxy_addon/dist/proxy_addon/proxy_addon";
-#endif
-
-    for (const QString& path : searchPaths) {
-        UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Checking addon path: " << path.toStdString() << " exists=" << QFile::exists(path));
-        if (QFile::exists(path)) {
-            UIVIEW_LOG_DEBUG("[PROXY-DEBUG] Found addon at: " << path.toStdString());
-            return path;
-        }
-    }
-
-    // Fallback: try Python script directly (development mode)
-    QString pythonScript = QDir::currentPath() + "/product/tools/proxy_addon/proxy_addon.py";
-    if (QFile::exists(pythonScript)) {
-        UIVIEW_LOG_DEBUG("Using Python script directly: " << pythonScript.toStdString());
-        return pythonScript;
-    }
-
-    UIVIEW_LOG_DEBUG("Proxy addon not found");
-    return QString();
-}
-
-// ====================== Certificate helpers ======================
-// Delegated to ProxyCertManager — see ProxyCertManager.cpp

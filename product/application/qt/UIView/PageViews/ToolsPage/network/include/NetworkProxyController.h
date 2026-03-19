@@ -2,26 +2,29 @@
 
 #include <QObject>
 #include <QtQml>
-#include <QProcess>
-#include <QTcpServer>
-#include <QTcpSocket>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QTimer>
+#include <memory>
 #include "UIViewBase/include/UIViewController.h"
 #include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
 #include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
 #include "PageViews/ToolsPage/network/include/ProxyCertManager.h"
+#include "ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h"
+
+namespace commonHead::viewModels {
+    class INetworkProxyViewModel;
+}
 
 /**
  * @brief Controller for the Network Proxy tool.
  *
- * Manages the mitmproxy addon process, communicates via TCP socket,
- * collects captured HTTP(S) requests, and optionally configures
- * the system proxy on start/stop.
+ * Thin QML-facing bridge that delegates all proxy lifecycle, TCP,
+ * system proxy, and certificate operations to INetworkProxyViewModel.
+ * Receives ViewModel callbacks via NetworkProxyViewModelEmitter and
+ * translates them to Q_PROPERTY / Qt signal updates for QML.
  *
  * Rule management is delegated to ProxyRulesManager.
- * Certificate management is delegated to ProxyCertManager.
+ * Certificate status is queried from the ViewModel.
  */
 class NetworkProxyController : public UIViewController
 {
@@ -32,7 +35,6 @@ class NetworkProxyController : public UIViewController
     Q_PROPERTY(bool proxyRunning  READ isProxyRunning  NOTIFY proxyRunningChanged)
     Q_PROPERTY(bool addonConnected READ isAddonConnected NOTIFY addonConnectedChanged)
     Q_PROPERTY(int  proxyPort     READ getProxyPort     WRITE setProxyPort NOTIFY proxyPortChanged)
-    Q_PROPERTY(int  controlPort   READ getControlPort   WRITE setControlPort NOTIFY controlPortChanged)
     Q_PROPERTY(bool autoSystemProxy READ getAutoSystemProxy WRITE setAutoSystemProxy NOTIFY autoSystemProxyChanged)
 
     // --------------- Intercept / breakpoint ---------------
@@ -72,7 +74,6 @@ public:
     bool    isProxyRunning()   const;
     bool    isAddonConnected() const;
     int     getProxyPort()     const;
-    int     getControlPort()   const;
     bool    getAutoSystemProxy() const;
     bool    isInterceptEnabled() const;
     QString getFilterText()    const;
@@ -94,7 +95,6 @@ public:
 
     // Property setters
     void setProxyPort(int port);
-    void setControlPort(int port);
     void setAutoSystemProxy(bool enabled);
     void setInterceptEnabled(bool enabled);
     void setFilterText(const QString& text);
@@ -128,7 +128,6 @@ signals:
     void proxyRunningChanged();
     void addonConnectedChanged();
     void proxyPortChanged();
-    void controlPortChanged();
     void autoSystemProxyChanged();
     void interceptEnabledChanged();
     void filterTextChanged();
@@ -145,35 +144,28 @@ signals:
     void interceptedRequest(const QString& flowId, const QJsonObject& detail);
 
 private slots:
-    void onNewTcpConnection();
-    void onTcpDataReady();
-    void onTcpDisconnected();
-    void onProcessStarted();
-    void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void onProcessError(QProcess::ProcessError error);
+    // ── ViewModel emitter slots ──
+    void onProxyStateChanged(int state);
+    void onAddonConnectionChanged(bool connected);
+    void onRequestCaptured(const QString& flowId, const QString& rawJson);
+    void onResponseCaptured(const QString& flowId, const QString& rawJson);
+    void onRequestIntercepted(const QString& flowId, const QString& detailJson);
+    void onStatusMessage(const QString& message);
+    void onCertStatusChanged(int status);
+    void onError(const QString& errorMessage);
 
 private:
-    void sendCommand(const QJsonObject& cmd);
-    void handleAddonMessage(const QJsonObject& msg);
     void updateDetailText();
     void setStatusMessage(const QString& msg);
 
-    // System proxy helpers
-    void enableSystemProxy();
-    void disableSystemProxy();
-    QString findAddonExecutable() const;
+    // ViewModel
+    std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> m_viewModel;
+    std::shared_ptr<UIVMSignalEmitter::NetworkProxyViewModelEmitter> m_viewModelEmitter;
 
-    // Proxy process
-    QProcess*    m_process = nullptr;
-    QTcpServer*  m_tcpServer = nullptr;
-    QTcpSocket*  m_addonSocket = nullptr;
-    QByteArray   m_tcpBuffer;
-
-    // State
+    // State (shadow of ViewModel state for QML property bindings)
     bool    m_proxyRunning     = false;
     bool    m_addonConnected   = false;
     int     m_proxyPort        = 8080;
-    int     m_controlPort      = 9876;
     bool    m_autoSystemProxy  = true;
     bool    m_interceptEnabled = false;
 
@@ -198,10 +190,4 @@ private:
 
     // Status
     QString m_statusMessage;
-
-    // Saved proxy state for restore
-    QString m_savedProxyHost;
-    QString m_savedProxyPort;
-    bool    m_savedProxyEnabled = false;
-    QStringList m_proxyNetworkServices;
 };

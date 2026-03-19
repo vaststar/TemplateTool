@@ -31,6 +31,12 @@ struct ProcessBridgeConfig {
 
     /// Maximum time (ms) to wait for graceful exit before force-killing.
     int stopTimeoutMs = 3000;
+
+    /// Whether to capture the child's stdout and fire onStdout callbacks.
+    bool captureStdout = true;
+
+    /// Whether to capture the child's stderr and fire onStderr callbacks.
+    bool captureStderr = true;
 };
 
 } // namespace ucf::utilities
