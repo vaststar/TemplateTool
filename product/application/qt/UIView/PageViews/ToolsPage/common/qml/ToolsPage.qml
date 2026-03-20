@@ -19,7 +19,8 @@ Item {
         "TimestampPanel.qml",
         "UuidPanel.qml",
         "NetworkProxyPanel.qml",
-        "ScreenCapturePanel.qml"
+        "ScreenshotPanel.qml",
+        "RecordingPanel.qml"
     ]
     readonly property var _panelComponents: ({
         "Base64Panel.qml":        compBase64,
@@ -27,7 +28,8 @@ Item {
         "TimestampPanel.qml":     compTimestamp,
         "UuidPanel.qml":          compUuid,
         "NetworkProxyPanel.qml":  compNetworkProxy,
-        "ScreenCapturePanel.qml": compScreenCapture
+        "ScreenshotPanel.qml":    compScreenshot,
+        "RecordingPanel.qml":     compRecording
     })
 
     // Components for each panel type (registered via qt_add_qml_module, same URI)
@@ -36,7 +38,8 @@ Item {
     Component { id: compTimestamp;     TimestampPanel {} }
     Component { id: compUuid;          UuidPanel {} }
     Component { id: compNetworkProxy;  NetworkProxyPanel {} }
-    Component { id: compScreenCapture; ScreenCapturePanel { controller: ScreenCaptureController {} } }
+    Component { id: compScreenshot;    ScreenshotPanel { controller: ScreenshotController {} } }
+    Component { id: compRecording;     RecordingPanel { controller: RecordingController {} } }
 
     // When current panel changes, mark it as activated
     Connections {

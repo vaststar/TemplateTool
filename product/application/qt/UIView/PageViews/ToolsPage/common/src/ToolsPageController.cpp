@@ -144,8 +144,10 @@ QString ToolsPageController::mapPanelTypeToQml(int panelType) const
         return QStringLiteral("UuidPanel.qml");
     case PanelType::NetworkProxy:
         return QStringLiteral("NetworkProxyPanel.qml");
-    case PanelType::ScreenCapture:
-        return QStringLiteral("ScreenCapturePanel.qml");
+    case PanelType::Screenshot:
+        return QStringLiteral("ScreenshotPanel.qml");
+    case PanelType::ScreenRecording:
+        return QStringLiteral("RecordingPanel.qml");
     default:
         return QString();
     }

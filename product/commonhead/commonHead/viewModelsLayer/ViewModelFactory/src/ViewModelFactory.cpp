@@ -11,6 +11,7 @@
 #include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
+#include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
 
 namespace commonHead::viewModels{
 
@@ -83,5 +84,10 @@ std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::creat
 std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory::createNetworkProxyViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::INetworkProxyViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> ViewModelFactory::createScreenshotViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IScreenshotViewModel>();
 }
 } // namespace commonHead::viewModels

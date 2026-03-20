@@ -32,6 +32,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/ToolsViewModelEmitter.h
     ViewModelSingalEmitter/SettingsViewModelEmitter.h
     ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h
+    ViewModelSingalEmitter/ScreenshotViewModelEmitter.h
 
     PageViews/ContactsPage/include/ContactListItemModel.h
     PageViews/ContactsPage/include/ContactsPageController.h
@@ -66,10 +67,10 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/network/src/NetworkProxyController.cpp
     PageViews/ToolsPage/network/src/ProxyRequestModel.cpp
     PageViews/ToolsPage/network/src/ProxyRulesManager.cpp
-    PageViews/ToolsPage/screencapture/include/ScreenCaptureController.h
-    PageViews/ToolsPage/screencapture/include/ScreenshotService.h
-    PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp
-    PageViews/ToolsPage/screencapture/src/ScreenshotService.cpp
+    PageViews/ToolsPage/screenshot/include/ScreenshotController.h
+    PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp
+    PageViews/ToolsPage/recording/include/RecordingController.h
+    PageViews/ToolsPage/recording/src/RecordingController.cpp
 
     MainWindowTitleBar/include/MainWindowTitleBarController.h
     MainWindowTitleBar/src/MainWindowTitleBarController.cpp
@@ -151,11 +152,13 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ToolsPage/network/qml/NetworkSettingsTab.qml
     PageViews/ToolsPage/network/qml/PatternTestDialog.qml
     PageViews/ToolsPage/network/qml/MockDetailDialog.qml
-    PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml
-    PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml
-    PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml
-    PageViews/ToolsPage/screencapture/qml/RecordingTab.qml
-    PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml
+    PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml
+    PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml
+    PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml
+    PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml
+    PageViews/ToolsPage/recording/qml/RecordingPanel.qml
+    PageViews/ToolsPage/recording/qml/RecordingContent.qml
+    PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml

@@ -21,6 +21,7 @@ namespace commonHead::viewModels{
     class IStabilityViewModel;
     class IToolsViewModel;
     class INetworkProxyViewModel;
+    class IScreenshotViewModel;
 }
 
 namespace commonHead::viewModels{
@@ -46,6 +47,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> createNetworkProxyViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> createScreenshotViewModelInstance() const = 0;
 
 public:
     static std::shared_ptr<IViewModelFactory> createInstance(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);

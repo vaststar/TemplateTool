@@ -17,6 +17,7 @@ set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
 )
 
@@ -39,6 +40,8 @@ set(MODULE_HEADER_FILES #for include and install header
     ToolsViewModel/include/commonHead/viewModels/ToolsViewModel/IToolsViewModel.h
     NetworkProxyViewModel/include/commonHead/viewModels/NetworkProxyViewModel/NetworkProxyTypes.h
     NetworkProxyViewModel/include/commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h
+    ScreenshotViewModel/include/commonHead/viewModels/ScreenshotViewModel/IScreenshotModel.h
+    ScreenshotViewModel/include/commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h
     shared/commonHead/viewModels/ViewModelDataDefine/VideoFrame.h
 )
 set(MODULE_SOURCE_PRIVATE
@@ -71,6 +74,8 @@ set(MODULE_SOURCE_PRIVATE
     ToolsViewModel/src/ToolsViewModel.cpp
     NetworkProxyViewModel/src/NetworkProxyViewModel.h
     NetworkProxyViewModel/src/NetworkProxyViewModel.cpp
+    ScreenshotViewModel/src/ScreenshotViewModel.h
+    ScreenshotViewModel/src/ScreenshotViewModel.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
@@ -98,6 +103,8 @@ set(MODULE_DEPENDENCIES_PRIVATE
     TcpChannel
     SystemUtils
     NetworkProxyAgent
+    ScreenCaptureUtils
+    ImageProcessUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
@@ -115,6 +122,7 @@ set(MODULE_BUILD_PRIVATE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModel/src
 )
 
 BuildModule(

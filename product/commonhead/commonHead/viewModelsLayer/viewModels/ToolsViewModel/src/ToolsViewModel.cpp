@@ -125,6 +125,9 @@ void ToolsViewModel::refreshTreeNodeData()
         { "generator.uuid",     commonHead::model::LocalizedString::ToolsUuid },
         { "network",            commonHead::model::LocalizedString::ToolsCategoryNetwork },
         { "network.proxy",      commonHead::model::LocalizedString::ToolsNetworkProxy },
+        { "media",              commonHead::model::LocalizedString::ToolsCategoryMedia },
+        { "media.screenshot",   commonHead::model::LocalizedString::ToolsScreenshot },
+        { "media.recording",    commonHead::model::LocalizedString::ToolsScreenRecording },
     };
 
     for (const auto& [nodeId, token] : nodeTokenMap) {
@@ -417,12 +420,20 @@ void ToolsViewModel::buildToolsTree()
         model::ToolPanelType::None
     });
 
-    // Media > Screen Capture
+    // Media > Screenshot
     tree->addNode("media", {
-        "media.screencapture",
-        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsScreenCapture),
+        "media.screenshot",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsScreenshot),
         "",
-        model::ToolPanelType::ScreenCapture
+        model::ToolPanelType::Screenshot
+    });
+
+    // Media > Screen Recording
+    tree->addNode("media", {
+        "media.recording",
+        resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsScreenRecording),
+        "",
+        model::ToolPanelType::ScreenRecording
     });
 
     m_toolsTree = tree;
