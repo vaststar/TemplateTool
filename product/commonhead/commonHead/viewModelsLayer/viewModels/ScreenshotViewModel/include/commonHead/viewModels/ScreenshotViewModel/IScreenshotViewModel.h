@@ -74,7 +74,7 @@ public:
     [[nodiscard]] virtual std::vector<model::WindowInfoVM> getWindowList() const = 0;
 
     // === Region Selection & Save ===
-    virtual void selectRegionAndSave(int x, int y, int w, int h, int scaleFactor) = 0;
+    virtual void selectRegionAndSave(int x, int y, int w, int h, double scaleFactor) = 0;
     virtual void discardCapture() = 0;
 
     // === Annotation Editing ===

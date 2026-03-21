@@ -18,7 +18,13 @@ import UTComponent
 Window {
     id: overlayWindow
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
-    visibility: Window.FullScreen
+    // Do NOT use Window.FullScreen — that creates a macOS Space visible in Mission Control.
+    // Instead, manually cover the entire screen.
+    x: Screen.virtualX
+    y: Screen.virtualY
+    width: Screen.width
+    height: Screen.height
+    visible: true
     color: "transparent"
 
     required property var controller

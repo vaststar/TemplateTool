@@ -93,6 +93,11 @@ static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int 
     config.pixelFormat = kCVPixelFormatType_32BGRA;
     config.showsCursor = NO;
 
+    // Ensure highest-quality capture on Retina displays
+    if (@available(macOS 14.0, *)) {
+        config.captureResolution = SCCaptureResolutionBest;
+    }
+
     __block CGImageRef capturedImage = nullptr;
     dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
@@ -101,6 +106,8 @@ static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int 
                               completionHandler:^(CGImageRef image, NSError* err) {
         if (image && !err) {
             capturedImage = CGImageRetain(image);
+            NSLog(@"[ScreenCaptureUtils] captured CGImage: %zux%zu (requested %dx%d)",
+                  CGImageGetWidth(image), CGImageGetHeight(image), width, height);
         }
         if (err) {
             NSLog(@"[ScreenCaptureUtils] captureWithFilterSync error: %@", err);
@@ -133,6 +140,28 @@ static SCDisplay* findSCDisplay(NSArray<SCDisplay*>* displays, CGDirectDisplayID
     return nil;
 }
 
+/**
+ * @brief Get the real backing (physical) pixel dimensions for a display.
+ *
+ * CGDisplayPixelsWide/High returns LOGICAL pixels (point-based) on recent macOS,
+ * NOT the actual backing-store resolution. On Retina displays this is half the
+ * physical resolution.  We must use CGDisplayModeGetPixelWidth/Height instead.
+ */
+static void getBackingPixelSize(CGDirectDisplayID displayId,
+                                size_t& outPixelWidth, size_t& outPixelHeight)
+{
+    CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayId);
+    if (mode) {
+        outPixelWidth  = CGDisplayModeGetPixelWidth(mode);
+        outPixelHeight = CGDisplayModeGetPixelHeight(mode);
+        CGDisplayModeRelease(mode);
+    } else {
+        // Fallback (should never happen for active displays)
+        outPixelWidth  = CGDisplayPixelsWide(displayId);
+        outPixelHeight = CGDisplayPixelsHigh(displayId);
+    }
+}
+
 // ============================================================================
 // Display Enumeration (CoreGraphics APIs)
 // ============================================================================
@@ -159,8 +188,8 @@ std::vector<DisplayInfo> ScreenCaptureUtils_Mac::getDisplayList()
         info.width = static_cast<int>(bounds.size.width);
         info.height = static_cast<int>(bounds.size.height);
 
-        size_t pw = CGDisplayPixelsWide(displayIds[i]);
-        size_t ph = CGDisplayPixelsHigh(displayIds[i]);
+        size_t pw = 0, ph = 0;
+        getBackingPixelSize(displayIds[i], pw, ph);
         info.physicalWidth = static_cast<int>(pw);
         info.physicalHeight = static_cast<int>(ph);
 
@@ -235,9 +264,13 @@ CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
         }
 
         CGRect bounds = CGDisplayBounds(targetId);
-        size_t pw = CGDisplayPixelsWide(targetId);
-        size_t ph = CGDisplayPixelsHigh(targetId);
-        int scale = (bounds.size.width > 0) ? static_cast<int>(pw / bounds.size.width) : 1;
+        size_t pw = 0, ph = 0;
+        getBackingPixelSize(targetId, pw, ph);
+        int scale = (bounds.size.width > 0) ? static_cast<int>(pw / static_cast<size_t>(bounds.size.width)) : 1;
+        if (scale < 1) scale = 1;
+
+        NSLog(@"[ScreenCaptureUtils] captureDisplay: logical=%.0fx%.0f physical=%zux%zu scale=%d",
+              bounds.size.width, bounds.size.height, pw, ph, scale);
 
         CGImageRef cgImage = captureWithFilterSync(filter, static_cast<int>(pw), static_cast<int>(ph));
         [filter release];
@@ -246,6 +279,8 @@ CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
         if (!cgImage) return {};
 
         CaptureImage result = cgImageToCaptureImage(cgImage, scale);
+        NSLog(@"[ScreenCaptureUtils] captureDisplay result: %dx%d scaleFactor=%d",
+              result.width, result.height, result.scaleFactor);
         CGImageRelease(cgImage);
         return result;
     }
@@ -290,9 +325,10 @@ CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
 
         for (uint32_t i = 0; i < displayCount; ++i) {
             CGRect b = CGDisplayBounds(displayIds[i]);
-            size_t pw = CGDisplayPixelsWide(displayIds[i]);
-            size_t ph = CGDisplayPixelsHigh(displayIds[i]);
-            int scale = (b.size.width > 0) ? static_cast<int>(pw / b.size.width) : 1;
+            size_t pw = 0, ph = 0;
+            getBackingPixelSize(displayIds[i], pw, ph);
+            int scale = (b.size.width > 0) ? static_cast<int>(pw / static_cast<size_t>(b.size.width)) : 1;
+            if (scale < 1) scale = 1;
 
             minX = std::min(minX, b.origin.x);
             minY = std::min(minY, b.origin.y);
@@ -375,7 +411,14 @@ std::vector<WindowInfo> ScreenCaptureUtils_Mac::getWindowList()
 
         for (SCWindow* w in content.windows) {
             if (w.frame.size.width <= 0 || w.frame.size.height <= 0) continue;
-            if (w.windowLayer < 0) continue;
+            if (w.windowLayer != 0) continue;  // Only normal windows (skip menu bars, status items, etc.)
+
+            // Skip windows without a title and without an owning app
+            if ((!w.title || w.title.length == 0) &&
+                (!w.owningApplication || !w.owningApplication.applicationName ||
+                 w.owningApplication.applicationName.length == 0)) {
+                continue;
+            }
 
             WindowInfo info;
             info.windowId = w.windowID;
@@ -441,8 +484,10 @@ CaptureImage ScreenCaptureUtils_Mac::captureWindow(int64_t windowId)
             for (uint32_t i = 0; i < displayCount; ++i) {
                 CGRect db = CGDisplayBounds(displayIds[i]);
                 if (CGRectContainsPoint(db, center)) {
-                    size_t pw = CGDisplayPixelsWide(displayIds[i]);
-                    scale = (db.size.width > 0) ? static_cast<int>(pw / db.size.width) : 2;
+                    size_t pw = 0, ph = 0;
+                    getBackingPixelSize(displayIds[i], pw, ph);
+                    scale = (db.size.width > 0) ? static_cast<int>(pw / static_cast<size_t>(db.size.width)) : 2;
+                    if (scale < 1) scale = 2;
                     break;
                 }
             }

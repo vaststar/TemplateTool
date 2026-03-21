@@ -1714,24 +1714,24 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="434"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="500"/>
         <source>Screenshots folder not set</source>
         <translation>未設定截圖資料夾</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="449"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="474"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="490"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="515"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="556"/>
         <source>File not found: %1</source>
         <translation>檔案未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="465"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
         <source>Failed to load image: %1</source>
         <translation>載入圖片失敗: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="494"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="560"/>
         <source>Failed to delete file: %1</source>
         <translation>刪除檔案失敗: %1</translation>
     </message>
@@ -1739,107 +1739,87 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotGallery</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="75"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="91"/>
         <source>📷 Capture Region</source>
         <translation>📷 區域截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="90"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="106"/>
         <source>🖥 Full Screen</source>
         <translation>🖥 全螢幕截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="95"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="111"/>
         <source>🪟 Window</source>
         <translation>🪟 視窗截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="102"/>
-        <source>📂 Open Folder</source>
-        <translation>📂 開啟資料夾</translation>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="126"/>
+        <source>Grid View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="107"/>
-        <source>🔄</source>
-        <translation>🔄</translation>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="149"/>
+        <source>List View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="109"/>
-        <source>Refresh</source>
-        <translation>重新整理</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="120"/>
-        <source>Folder:</source>
-        <translation>資料夾:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="134"/>
-        <source>Change...</source>
-        <translation>變更...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="161"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="190"/>
         <source>No screenshots yet</source>
         <translation>暫無截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="168"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="197"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>點選「區域截圖」或「全螢幕截圖」來擷取螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="265"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="426"/>
         <source>%1 screenshots</source>
         <translation>%1 張截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="280"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="441"/>
         <source>Open</source>
         <translation>開啟</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="285"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="446"/>
         <source>Copy to Clipboard</source>
         <translation>複製到剪貼簿</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="290"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="451"/>
         <source>Show in Finder</source>
         <translation type="unfinished">在 Finder 中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="297"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="458"/>
         <source>Delete</source>
         <translation>刪除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="309"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="470"/>
         <source>Delete Screenshot</source>
         <translation>刪除截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="317"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="478"/>
         <source>Are you sure you want to delete this screenshot?</source>
         <translation>確定要刪除這張截圖嗎？</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="331"/>
-        <source>Select Screenshots Folder</source>
-        <translation>選擇截圖資料夾</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="354"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="507"/>
         <source>Select Window</source>
         <translation>選擇視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="372"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="526"/>
         <source>Unnamed Window</source>
         <translation>未命名視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="396"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="551"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
@@ -1847,68 +1827,68 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotOverlay</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="317"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="317"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="323"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="323"/>
         <source>Rectangle</source>
         <translation>矩形</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="329"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="329"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="335"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="335"/>
         <source>Ellipse</source>
         <translation>橢圓</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="341"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="341"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="347"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="347"/>
         <source>Arrow</source>
         <translation>箭頭</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="353"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="353"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="359"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="359"/>
         <source>Freehand</source>
         <translation>自由繪製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="365"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="365"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="371"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="371"/>
         <source>Text</source>
         <translation>文字</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="408"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="408"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="414"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="414"/>
         <source>Undo</source>
         <translation>復原</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="419"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="419"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="425"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="425"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="432"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="432"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="438"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="438"/>
         <source>Save</source>
         <translation>儲存</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="445"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="445"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="451"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="451"/>
         <source>Add Text</source>
         <translation>新增文字</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="460"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="460"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="466"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="466"/>
         <source>Enter text...</source>
         <translation>輸入文字...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="501"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="501"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="507"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="507"/>
         <source>Click and drag to select region
 Press ESC to cancel</source>
         <translation>點選並拖曳以選取區域
@@ -2004,107 +1984,87 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="368"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="551"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="40"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="91"/>
         <source>📷 Capture Region</source>
         <translation>📷 區域截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="56"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="106"/>
         <source>🖥 Full Screen</source>
         <translation>🖥 全螢幕截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="61"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="111"/>
         <source>🪟 Window</source>
         <translation>🪟 視窗截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="68"/>
-        <source>📂 Open Folder</source>
-        <translation>📂 開啟資料夾</translation>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="126"/>
+        <source>Grid View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="73"/>
-        <source>🔄</source>
-        <translation>🔄</translation>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="149"/>
+        <source>List View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="75"/>
-        <source>Refresh</source>
-        <translation>重新整理</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="89"/>
-        <source>Folder:</source>
-        <translation>資料夾:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="103"/>
-        <source>Change...</source>
-        <translation>變更...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="130"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="190"/>
         <source>No screenshots yet</source>
         <translation>暫無截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="137"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="197"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>點選「區域截圖」或「全螢幕截圖」來擷取螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="237"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="426"/>
         <source>%1 screenshots</source>
         <translation>%1 張截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="252"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="441"/>
         <source>Open</source>
         <translation>開啟</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="257"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="446"/>
         <source>Copy to Clipboard</source>
         <translation>複製到剪貼簿</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="262"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="451"/>
         <source>Show in Finder</source>
         <translation type="unfinished">在 Finder 中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="269"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="458"/>
         <source>Delete</source>
         <translation>刪除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="281"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="470"/>
         <source>Delete Screenshot</source>
         <translation>刪除截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="289"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="478"/>
         <source>Are you sure you want to delete this screenshot?</source>
         <translation>確定要刪除這張截圖嗎？</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="303"/>
-        <source>Select Screenshots Folder</source>
-        <translation>選擇截圖資料夾</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="326"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="507"/>
         <source>Select Window</source>
         <translation>選擇視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="344"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="526"/>
         <source>Unnamed Window</source>
         <translation>未命名視窗</translation>
     </message>

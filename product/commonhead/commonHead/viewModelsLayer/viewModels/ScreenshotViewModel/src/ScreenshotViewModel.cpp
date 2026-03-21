@@ -4,6 +4,7 @@
 #include <ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h>
 
 #include <chrono>
+#include <cmath>
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
@@ -189,20 +190,23 @@ void ScreenshotViewModel::captureWindow(int64_t windowId)
 // Region Selection & Save
 // ============================================================================
 
-void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, int scaleFactor)
+void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double scaleFactor)
 {
     setState(model::ScreenshotState::Saving);
 
     ImageData cropped;
+    double effectiveScale;
     {
         std::lock_guard lock(m_mutex);
 
+        effectiveScale = scaleFactor;
+
         // Scale logical coordinates to physical pixels
         Rect region;
-        region.x = x * scaleFactor;
-        region.y = y * scaleFactor;
-        region.width = w * scaleFactor;
-        region.height = h * scaleFactor;
+        region.x = static_cast<int>(std::round(x * effectiveScale));
+        region.y = static_cast<int>(std::round(y * effectiveScale));
+        region.width = static_cast<int>(std::round(w * effectiveScale));
+        region.height = static_cast<int>(std::round(h * effectiveScale));
 
         cropped = ImageProcessUtils::cropRegion(m_capturedImage, region);
     }
@@ -212,6 +216,27 @@ void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, int sc
                          std::string("Region crop failed"));
         setState(model::ScreenshotState::Captured);
         return;
+    }
+
+    // Scale annotation coordinates from logical to physical pixels
+    {
+        std::lock_guard lock(m_mutex);
+        for (auto& ann : m_annotations) {
+            ann.x = static_cast<int>(std::round(ann.x * effectiveScale));
+            ann.y = static_cast<int>(std::round(ann.y * effectiveScale));
+            ann.w = static_cast<int>(std::round(ann.w * effectiveScale));
+            ann.h = static_cast<int>(std::round(ann.h * effectiveScale));
+            ann.startX = static_cast<int>(std::round(ann.startX * effectiveScale));
+            ann.startY = static_cast<int>(std::round(ann.startY * effectiveScale));
+            ann.endX = static_cast<int>(std::round(ann.endX * effectiveScale));
+            ann.endY = static_cast<int>(std::round(ann.endY * effectiveScale));
+            ann.thickness = std::max(1, static_cast<int>(std::round(ann.thickness * effectiveScale)));
+            ann.fontSize = std::max(8, static_cast<int>(std::round(ann.fontSize * effectiveScale)));
+            for (auto& [px, py] : ann.points) {
+                px *= effectiveScale;
+                py *= effectiveScale;
+            }
+        }
     }
 
     // Draw annotations onto cropped image
@@ -384,6 +409,9 @@ std::string ScreenshotViewModel::saveScreenshot()
         std::lock_guard lock(m_mutex);
         if (!m_capturedImage.isValid()) return {};
 
+        fprintf(stderr, "[ScreenshotVM] saveScreenshot: image %dx%d pixels=%zu\n",
+                m_capturedImage.width, m_capturedImage.height, m_capturedImage.pixels.size());
+
         imageToSave = renderAnnotationsOnImage(m_capturedImage);
 
         std::string dir = m_settings.outputDirectory;
@@ -396,6 +424,7 @@ std::string ScreenshotViewModel::saveScreenshot()
     }
 
     if (ImageProcessUtils::saveToFile(imageToSave, filePath)) {
+        setState(model::ScreenshotState::Idle);
         fireNotification(&IScreenshotViewModelCallback::onScreenshotSaved, filePath);
         return filePath;
     }

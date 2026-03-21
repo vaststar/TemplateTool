@@ -8,16 +8,57 @@ import UTComponent
 import UIResourceLoader 1.0
 
 /**
- * Screenshot Tab - Browse screenshots folder and capture new screenshots
+ * Screenshot Gallery - Browse screenshots folder and capture new screenshots
  *
- * Design:
- * - Main view: Grid of existing screenshots in the screenshots folder
- * - Capture: Click → fullscreen overlay → select region → edit → save
+ * Features:
+ * - Grid (tile) / List view toggle
+ * - Click-based selection with highlight border
+ * - Capture Region / Full Screen / Window buttons
  */
 Item {
     id: root
 
     required property var controller
+
+    // === State ===
+    property int selectedIndex: -1
+    property string selectedFilePath: ""
+    property bool isGridView: true   // true = grid (tile), false = list
+
+    // Timer-based refresh
+    Timer {
+        id: refreshTimer
+        interval: 100
+        repeat: false
+        onTriggered: {
+            folderModel.folder = controller.screenshotsFolderUrl
+        }
+    }
+
+    function refreshGallery() {
+        folderModel.folder = ""
+        refreshTimer.restart()
+    }
+
+    function clearSelection() {
+        selectedIndex = -1
+        selectedFilePath = ""
+    }
+
+    Component.onCompleted: {
+        refreshGallery()
+    }
+
+    onVisibleChanged: {
+        if (visible) refreshGallery()
+    }
+
+    Connections {
+        target: controller
+        function onCaptureCompleted(filePath) {
+            refreshGallery()
+        }
+    }
 
     // Screenshot overlay component
     Component {
@@ -27,19 +68,28 @@ Item {
         }
     }
 
+    // Shared folder model
+    FolderListModel {
+        id: folderModel
+        folder: controller.screenshotsFolderUrl
+        nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif"]
+        showDirs: false
+        sortField: FolderListModel.Time
+        sortReversed: true
+    }
+
     ColumnLayout {
         anchors.fill: parent
-        spacing: 12
+        spacing: 8
 
         // === Top Toolbar ===
         RowLayout {
             Layout.fillWidth: true
-            spacing: 12
+            spacing: 8
 
             UTButton {
-                text: qsTr("📷 Capture Region")
+                text: qsTr("\ud83d\udcf7 Capture Region")
                 onClicked: {
-                    // First capture the screen, then show overlay
                     var result = controller.grabScreenForOverlay()
                     if (result.success) {
                         var overlay = overlayComponent.createObject(null, {
@@ -53,75 +103,85 @@ Item {
             }
 
             UTButton {
-                text: qsTr("🖥 Full Screen")
+                text: qsTr("\ud83d\udda5 Full Screen")
                 onClicked: controller.captureFullScreen()
             }
 
             UTButton {
-                text: qsTr("🪟 Window")
+                text: qsTr("\ud83e\ude9f Window")
                 onClicked: windowPicker.open()
             }
 
             Item { Layout.fillWidth: true }
 
-            UTButton {
-                text: qsTr("📂 Open Folder")
-                onClicked: controller.openScreenshotsFolder()
-            }
+            // View toggle: grid / list
+            RowLayout {
+                spacing: 2
 
-            UTButton {
-                text: qsTr("🔄")
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Refresh")
-                onClicked: {
-                    folderModel.folder = ""
-                    folderModel.folder = controller.screenshotsFolderUrl
+                ToolButton {
+                    id: gridBtn
+                    checked: isGridView
+                    onClicked: isGridView = true
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Grid View")
+
+                    contentItem: Text {
+                        text: "\u25a6"
+                        font.pixelSize: 16
+                        color: isGridView ? "#FFFFFF" : "#888888"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        radius: 4
+                        color: isGridView ? "#4488FF" : (parent.hovered ? "#3A3A3A" : "transparent")
+                    }
+                }
+
+                ToolButton {
+                    id: listBtn
+                    checked: !isGridView
+                    onClicked: isGridView = false
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("List View")
+
+                    contentItem: Text {
+                        text: "\u2630"
+                        font.pixelSize: 16
+                        color: !isGridView ? "#FFFFFF" : "#888888"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        radius: 4
+                        color: !isGridView ? "#4488FF" : (parent.hovered ? "#3A3A3A" : "transparent")
+                    }
                 }
             }
         }
 
-        // === Folder Path Display ===
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
-
-            UTText {
-                text: qsTr("Folder:")
-                fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Content_Secondary
-            }
-
-            UTText {
-                text: controller.outputDirectory
-                fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Content_Secondary
-                elide: Text.ElideMiddle
-                Layout.fillWidth: true
-            }
-
-            UTButton {
-                text: qsTr("Change...")
-                implicitHeight: 28
-                onClicked: folderDialog.open()
-            }
-        }
-
-        // === Screenshots Grid ===
+        // === Gallery Container ===
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#1E1E1E"  // Dark background
+            color: "#1E1E1E"
             radius: 8
 
             // Empty state
             ColumnLayout {
                 anchors.centerIn: parent
-                visible: gridView.count === 0
+                visible: folderModel.count === 0
                 spacing: 16
 
                 UTText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: "📷"
+                    text: "\ud83d\udcf7"
                     font.pixelSize: 48
                 }
 
@@ -134,89 +194,218 @@ Item {
 
                 UTText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Click 'Capture Region' or 'Full Screen' to take a screenshot")
+                    text: qsTr("Click \u0027Capture Region\u0027 or \u0027Full Screen\u0027 to take a screenshot")
                     fontEnum: UIFontToken.Caption_Text
                     colorEnum: UIColorToken.Content_Secondary
                 }
             }
 
-            // Screenshots grid
+            // === Grid View ===
             GridView {
                 id: gridView
                 anchors.fill: parent
-                anchors.margins: 12
-                cellWidth: 160
-                cellHeight: 140
+                anchors.margins: 8
+                cellWidth: 180
+                cellHeight: 160
                 clip: true
+                visible: isGridView && folderModel.count > 0
+                model: folderModel
+                currentIndex: selectedIndex
 
-                model: FolderListModel {
-                    id: folderModel
-                    folder: controller.screenshotsFolderUrl
-                    nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif"]
-                    showDirs: false
-                    sortField: FolderListModel.Time
-                    sortReversed: true  // Newest first
-                }
+                delegate: Item {
+                    width: gridView.cellWidth
+                    height: gridView.cellHeight
 
-                delegate: Rectangle {
-                    width: gridView.cellWidth - 8
-                    height: gridView.cellHeight - 8
-                    color: delegateMouseArea.containsMouse ?
-                           UTComponentUtil.getPlainUIColor(UIColorToken.Surface_Hover, UIColorState.Normal) :
-                           "#2A2A2A"  // Dark background for better text visibility
-                    radius: 8
-
-                    ColumnLayout {
+                    Rectangle {
+                        id: gridCard
                         anchors.fill: parent
-                        anchors.margins: 8
-                        spacing: 4
+                        anchors.margins: 4
+                        radius: 8
+                        color: isSelected ? "#2A3A5A" : (gridMouseArea.containsMouse ? "#333333" : "#2A2A2A")
+                        border.width: isSelected ? 2 : 0
+                        border.color: "#4488FF"
 
-                        // Thumbnail
-                        Image {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            source: fileUrl
-                            fillMode: Image.PreserveAspectFit
-                            asynchronous: true
-                            cache: true
+                        property bool isSelected: selectedIndex === index
 
-                            BusyIndicator {
-                                anchors.centerIn: parent
-                                running: parent.status === Image.Loading
-                                visible: running
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            spacing: 4
+
+                            Image {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                source: fileUrl
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                cache: true
+                                smooth: true
+                                mipmap: true
+
+                                BusyIndicator {
+                                    anchors.centerIn: parent
+                                    running: parent.status === Image.Loading
+                                    visible: running
+                                }
+                            }
+
+                            UTText {
+                                Layout.fillWidth: true
+                                text: fileName
+                                font.pixelSize: 11
+                                color: gridCard.isSelected ? "#FFFFFF" : "#CCCCCC"
+                                elide: Text.ElideMiddle
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            UTText {
+                                Layout.fillWidth: true
+                                text: Qt.formatDateTime(fileModified, "yyyy-MM-dd hh:mm")
+                                font.pixelSize: 10
+                                color: gridCard.isSelected ? "#BBBBBB" : "#888888"
+                                horizontalAlignment: Text.AlignHCenter
                             }
                         }
 
-                        // Filename
-                        UTText {
-                            Layout.fillWidth: true
-                            text: fileName
-                            font.pixelSize: 11
-                            color: "#FFFFFF"  // White text for visibility
-                            elide: Text.ElideMiddle
-                            horizontalAlignment: Text.AlignHCenter
+                        MouseArea {
+                            id: gridMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                            onClicked: function(mouse) {
+                                if (mouse.button === Qt.RightButton) {
+                                    selectedIndex = index
+                                    selectedFilePath = filePath
+                                    contextMenu.currentFilePath = filePath
+                                    contextMenu.popup()
+                                } else {
+                                    if (selectedIndex === index) {
+                                        clearSelection()
+                                    } else {
+                                        selectedIndex = index
+                                        selectedFilePath = filePath
+                                    }
+                                }
+                            }
+
+                            onDoubleClicked: controller.openFile(filePath)
+                        }
+                    }
+                }
+
+                ScrollBar.vertical: ScrollBar { }
+            }
+
+            // === List View ===
+            ListView {
+                id: listView
+                anchors.fill: parent
+                anchors.margins: 8
+                clip: true
+                spacing: 2
+                visible: !isGridView && folderModel.count > 0
+                model: folderModel
+                currentIndex: selectedIndex
+
+                delegate: Rectangle {
+                    id: listCard
+                    width: listView.width
+                    height: 56
+                    radius: 6
+                    color: isSelected ? "#2A3A5A" : (listMouseArea.containsMouse ? "#333333" : "transparent")
+                    border.width: isSelected ? 2 : 0
+                    border.color: "#4488FF"
+
+                    property bool isSelected: selectedIndex === index
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 8
+                        anchors.rightMargin: 12
+                        spacing: 12
+
+                        // Thumbnail
+                        Rectangle {
+                            width: 44
+                            height: 44
+                            radius: 4
+                            color: "#2A2A2A"
+
+                            Image {
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                source: fileUrl
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                cache: true
+                                smooth: true
+                                mipmap: true
+
+                                BusyIndicator {
+                                    anchors.centerIn: parent
+                                    running: parent.status === Image.Loading
+                                    visible: running
+                                    width: 20
+                                    height: 20
+                                }
+                            }
                         }
 
-                        // Date
-                        UTText {
+                        // File info
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            text: Qt.formatDateTime(fileModified, "yyyy-MM-dd hh:mm")
-                            font.pixelSize: 10
-                            color: "#AAAAAA"  // Gray text
-                            horizontalAlignment: Text.AlignHCenter
+                            spacing: 2
+
+                            UTText {
+                                text: fileName
+                                font.pixelSize: 13
+                                color: listCard.isSelected ? "#FFFFFF" : "#DDDDDD"
+                                elide: Text.ElideMiddle
+                                Layout.fillWidth: true
+                            }
+
+                            UTText {
+                                text: Qt.formatDateTime(fileModified, "yyyy-MM-dd hh:mm:ss")
+                                font.pixelSize: 11
+                                color: listCard.isSelected ? "#BBBBBB" : "#888888"
+                            }
+                        }
+
+                        // File size
+                        UTText {
+                            text: {
+                                var s = fileSize
+                                if (s === undefined || s === 0) return ""
+                                if (s > 1048576) return (s / 1048576).toFixed(1) + " MB"
+                                return (s / 1024).toFixed(0) + " KB"
+                            }
+                            font.pixelSize: 11
+                            color: "#888888"
+                            Layout.preferredWidth: 60
+                            horizontalAlignment: Text.AlignRight
                         }
                     }
 
                     MouseArea {
-                        id: delegateMouseArea
+                        id: listMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                         onClicked: function(mouse) {
                             if (mouse.button === Qt.RightButton) {
+                                selectedIndex = index
+                                selectedFilePath = filePath
                                 contextMenu.currentFilePath = filePath
                                 contextMenu.popup()
+                            } else {
+                                if (selectedIndex === index) {
+                                    clearSelection()
+                                } else {
+                                    selectedIndex = index
+                                    selectedFilePath = filePath
+                                }
                             }
                         }
 
@@ -234,7 +423,7 @@ Item {
             spacing: 12
 
             UTText {
-                text: qsTr("%1 screenshots").arg(gridView.count)
+                text: qsTr("%1 screenshots").arg(folderModel.count)
                 fontEnum: UIFontToken.Caption_Text
                 colorEnum: UIColorToken.Content_Secondary
             }
@@ -292,19 +481,8 @@ Item {
 
         onAccepted: {
             controller.deleteFile(targetFilePath)
-            folderModel.folder = ""
-            folderModel.folder = controller.screenshotsFolderUrl
-        }
-    }
-
-    // === Folder Selection Dialog ===
-    FolderDialog {
-        id: folderDialog
-        title: qsTr("Select Screenshots Folder")
-        currentFolder: controller.screenshotsFolderUrl
-        onAccepted: {
-            controller.setOutputDirectory(selectedFolder.toString().replace("file://", ""))
-            folderModel.folder = controller.screenshotsFolderUrl
+            clearSelection()
+            refreshGallery()
         }
     }
 
@@ -317,6 +495,9 @@ Item {
         modal: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+        onOpened: windowListView.model = controller.getWindowList()
+        onClosed: windowListView.model = []
+
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
@@ -328,10 +509,11 @@ Item {
             }
 
             ListView {
+                id: windowListView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                model: controller.getWindowList()
+                model: []
 
                 delegate: ItemDelegate {
                     width: ListView.view.width
@@ -348,9 +530,10 @@ Item {
                         }
 
                         UTText {
-                            text: modelData.ownerName + " - " + modelData.width + "×" + modelData.height
+                            text: modelData.ownerName || ""
                             fontEnum: UIFontToken.Caption_Text
                             colorEnum: UIColorToken.Content_Secondary
+                            visible: modelData.ownerName && modelData.ownerName.length > 0
                         }
                     }
 
@@ -376,15 +559,12 @@ Item {
         target: controller
 
         function onScreenshotChanged() {
-            // Refresh folder after capture
-            folderModel.folder = ""
-            folderModel.folder = controller.screenshotsFolderUrl
+            refreshGallery()
         }
 
         function onCaptureCompleted(filePath) {
             console.log("Screenshot saved:", filePath)
-            folderModel.folder = ""
-            folderModel.folder = controller.screenshotsFolderUrl
+            refreshGallery()
         }
 
         function onErrorOccurred(message) {

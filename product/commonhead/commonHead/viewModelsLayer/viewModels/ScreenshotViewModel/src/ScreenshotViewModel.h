@@ -33,7 +33,7 @@ public:
     std::vector<model::WindowInfoVM> getWindowList() const override;
 
     // === Region Selection & Save ===
-    void selectRegionAndSave(int x, int y, int w, int h, int scaleFactor) override;
+    void selectRegionAndSave(int x, int y, int w, int h, double scaleFactor) override;
     void discardCapture() override;
 
     // === Annotation Editing ===

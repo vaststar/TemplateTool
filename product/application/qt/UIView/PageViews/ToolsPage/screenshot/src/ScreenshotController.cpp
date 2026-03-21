@@ -14,6 +14,8 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QImage>
+#include <QWindow>
+#include <QThread>
 
 using namespace commonHead::viewModels;
 using namespace commonHead::viewModels::model;
@@ -168,6 +170,21 @@ void ScreenshotController::setIncludeTimestamp(bool include)
 }
 
 // ============================================================================
+// Helper: minimize / restore the main app window
+// ============================================================================
+
+static QWindow* findMainWindow()
+{
+    const auto windows = QGuiApplication::allWindows();
+    for (auto* w : windows) {
+        if (w->isVisible() && w->type() == Qt::Window) {
+            return w;
+        }
+    }
+    return nullptr;
+}
+
+// ============================================================================
 // Capture Methods — delegate to ViewModel
 // ============================================================================
 
@@ -175,7 +192,24 @@ void ScreenshotController::captureFullScreen()
 {
     if (!m_viewModel) return;
     UIVIEW_LOG_DEBUG("captureFullScreen -> ViewModel");
+
+    // Minimize the app window so it doesn't appear in the screenshot
+    QWindow* mainWin = findMainWindow();
+    if (mainWin) {
+        mainWin->showMinimized();
+        QThread::msleep(500); // Wait for minimize animation
+        QGuiApplication::processEvents();
+    }
+
     m_viewModel->captureFullScreen();
+    m_viewModel->saveScreenshot();
+
+    // Restore the app window
+    if (mainWin) {
+        mainWin->showNormal();
+        mainWin->raise();
+        mainWin->requestActivate();
+    }
 }
 
 void ScreenshotController::captureWindow(qint64 windowId)
@@ -183,6 +217,8 @@ void ScreenshotController::captureWindow(qint64 windowId)
     if (!m_viewModel) return;
     UIVIEW_LOG_DEBUG("captureWindow: " << windowId << " -> ViewModel");
     m_viewModel->captureWindow(static_cast<int64_t>(windowId));
+    // Immediately save to file
+    m_viewModel->saveScreenshot();
 }
 
 QVariantList ScreenshotController::getWindowList()
@@ -190,11 +226,26 @@ QVariantList ScreenshotController::getWindowList()
     QVariantList result;
     if (!m_viewModel) return result;
     auto windows = m_viewModel->getWindowList();
+
+    // Get our own process name to filter it out
+    QString ownAppName = QGuiApplication::applicationDisplayName();
+    if (ownAppName.isEmpty()) {
+        ownAppName = QGuiApplication::applicationName();
+    }
+
     for (const auto& w : windows) {
+        // Skip windows with empty names
+        QString name = QString::fromStdString(w.name);
+        QString owner = QString::fromStdString(w.ownerName);
+        if (name.isEmpty() && owner.isEmpty()) continue;
+
+        // Skip our own app windows
+        if (!ownAppName.isEmpty() && owner == ownAppName) continue;
+
         QVariantMap map;
         map["windowId"] = static_cast<qint64>(w.windowId);
-        map["name"] = QString::fromStdString(w.name);
-        map["ownerName"] = QString::fromStdString(w.ownerName);
+        map["name"] = name.isEmpty() ? owner : name;
+        map["ownerName"] = owner;
         result.append(map);
     }
     return result;
@@ -320,9 +371,24 @@ QVariantMap ScreenshotController::grabScreenForOverlay()
 
     UIVIEW_LOG_DEBUG("grabScreenForOverlay -> ViewModel");
 
+    // Minimize the app window so it doesn't appear in the screenshot
+    QWindow* mainWin = findMainWindow();
+    if (mainWin) {
+        mainWin->showMinimized();
+        QThread::msleep(500); // Wait for minimize animation
+        QGuiApplication::processEvents();
+    }
+
     // captureFullScreen is synchronous — it captures, converts to base64,
     // and fires onScreenCaptured callback which updates m_screenshotBase64/Width/Height
     m_viewModel->captureFullScreen();
+
+    // Restore the app window
+    if (mainWin) {
+        mainWin->showNormal();
+        mainWin->raise();
+        mainWin->requestActivate();
+    }
 
     // After captureFullScreen returns, the callback has already run (same thread),
     // so m_screenshotBase64/Width/Height are up-to-date.
@@ -353,11 +419,11 @@ QVariantMap ScreenshotController::saveRegionScreenshot(int x, int y, int w, int 
         return result;
     }
 
-    // Compute scale factor from painted size vs actual captured image size
-    int scaleFactor = 1;
+    // Compute scale factor from painted size vs actual captured image size (floating point for precision)
+    double scaleFactor = 1.0;
     if (paintedWidth > 0) {
-        scaleFactor = m_screenshotWidth / paintedWidth;
-        if (scaleFactor < 1) scaleFactor = 1;
+        scaleFactor = static_cast<double>(m_screenshotWidth) / static_cast<double>(paintedWidth);
+        if (scaleFactor < 1.0) scaleFactor = 1.0;
     }
 
     // Add annotations from QML overlay first
