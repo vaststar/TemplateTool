@@ -261,6 +261,9 @@ void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double
         if (dir.empty()) {
             // Default to user's Desktop
             const char* home = std::getenv("HOME");
+#if defined(_WIN32)
+            if (!home) home = std::getenv("USERPROFILE");
+#endif
             if (home) {
                 dir = std::string(home) + "/Desktop";
             } else {
@@ -428,6 +431,9 @@ std::string ScreenshotViewModel::saveScreenshot()
         std::string dir = m_settings.outputDirectory;
         if (dir.empty()) {
             const char* home = std::getenv("HOME");
+#if defined(_WIN32)
+            if (!home) home = std::getenv("USERPROFILE");
+#endif
             dir = home ? std::string(home) + "/Desktop" : ".";
         }
         std::filesystem::create_directories(dir);

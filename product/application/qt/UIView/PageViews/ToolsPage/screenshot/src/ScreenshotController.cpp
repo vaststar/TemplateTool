@@ -15,6 +15,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QImage>
+#include <QUrl>
 #include <QWindow>
 #include <QThread>
 #include <QTimer>
@@ -112,7 +113,7 @@ QString ScreenshotController::outputDirectory() const { return m_outputDirectory
 
 QString ScreenshotController::screenshotsFolderUrl() const
 {
-    return QStringLiteral("file://") + m_outputDirectory;
+    return QUrl::fromLocalFile(m_outputDirectory).toString();
 }
 
 int ScreenshotController::delaySeconds() const { return m_delaySeconds; }
