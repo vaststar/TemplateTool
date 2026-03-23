@@ -121,6 +121,17 @@ std::vector<model::WindowInfoVM> ScreenshotViewModel::getWindowList() const
     return result;
 }
 
+std::string ScreenshotViewModel::getWindowThumbnailBase64(int64_t windowId) const
+{
+    auto captured = ScreenCaptureUtils::captureWindow(windowId);
+    if (captured.pixels.empty()) return {};
+
+    auto rgbaImage = ImageProcessUtils::bgraToRgba(
+        captured.pixels, captured.width, captured.height, captured.bytesPerRow);
+
+    return ImageProcessUtils::toBase64Png(rgbaImage);
+}
+
 // ============================================================================
 // Capture
 // ============================================================================

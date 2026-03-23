@@ -73,6 +73,9 @@ public:
     [[nodiscard]] virtual std::vector<model::DisplayInfoVM> getDisplayList() const = 0;
     [[nodiscard]] virtual std::vector<model::WindowInfoVM> getWindowList() const = 0;
 
+    /// Capture a window thumbnail and return as base64 PNG (does NOT change state)
+    [[nodiscard]] virtual std::string getWindowThumbnailBase64(int64_t windowId) const = 0;
+
     // === Region Selection & Save ===
     virtual void selectRegionAndSave(int x, int y, int w, int h, double scaleFactor) = 0;
     virtual void discardCapture() = 0;

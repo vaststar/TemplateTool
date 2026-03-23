@@ -6,7 +6,7 @@ import UTComponent
 /**
  * Screenshot Panel - Main panel with Screenshot gallery and Settings tabs
  */
-Item {
+FocusScope {
     id: root
 
     required property var controller
@@ -15,18 +15,36 @@ Item {
         id: tabBar
         anchors {
             top: parent.top
+            topMargin: 4
             left: parent.left
+            leftMargin: 4
             right: parent.right
         }
+        focus: true   // forward initial focus into tab bar
+        clip: false
 
         TabButton {
+            id: screenshotTab
             text: qsTr("📷 Screenshot")
             width: implicitWidth
+            z: activeFocus ? 10 : 0
+
+            UTFocusItem {
+                target: screenshotTab
+                focusRadius: 4
+            }
         }
 
         TabButton {
+            id: settingsTab
             text: qsTr("⚙️ Settings")
             width: implicitWidth
+            z: activeFocus ? 10 : 0
+
+            UTFocusItem {
+                target: settingsTab
+                focusRadius: 4
+            }
         }
     }
 

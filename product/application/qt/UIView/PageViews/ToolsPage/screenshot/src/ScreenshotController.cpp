@@ -185,7 +185,7 @@ void ScreenshotController::captureFullScreen()
     sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Hide);
 
     // Wait for the window to finish hiding, then capture
-    QTimer::singleShot(300, this, [this]() {
+    QTimer::singleShot(150, this, [this]() {
         if (!m_viewModel) return;
 
         m_viewModel->captureFullScreen();
@@ -233,6 +233,13 @@ QVariantList ScreenshotController::getWindowList()
         result.append(map);
     }
     return result;
+}
+
+QString ScreenshotController::getWindowThumbnailBase64(qint64 windowId)
+{
+    if (!m_viewModel) return {};
+    auto base64 = m_viewModel->getWindowThumbnailBase64(static_cast<int64_t>(windowId));
+    return QString::fromStdString(base64);
 }
 
 // ============================================================================
@@ -360,7 +367,7 @@ QVariantMap ScreenshotController::grabScreenForOverlay()
 
     // Process events to let the hide take effect, then wait briefly
     QGuiApplication::processEvents();
-    QThread::msleep(300);
+    QThread::msleep(150);
     QGuiApplication::processEvents();
 
     // captureFullScreen is synchronous — it captures, converts to base64,

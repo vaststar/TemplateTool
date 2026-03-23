@@ -66,6 +66,7 @@ public:
     Q_INVOKABLE void captureFullScreen();
     Q_INVOKABLE void captureWindow(qint64 windowId);
     Q_INVOKABLE QVariantList getWindowList();
+    Q_INVOKABLE QString getWindowThumbnailBase64(qint64 windowId);
 
     // === Annotation Methods (delegate to ViewModel) ===
     Q_INVOKABLE void addRectangle(int x, int y, int w, int h, const QString& color, int thickness);

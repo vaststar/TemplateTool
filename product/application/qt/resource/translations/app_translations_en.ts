@@ -1389,24 +1389,24 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="480"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="487"/>
         <source>Screenshots folder not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="495"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="520"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="502"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="527"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="543"/>
         <source>File not found: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="511"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="518"/>
         <source>Failed to load image: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="547"/>
         <source>Failed to delete file: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1414,87 +1414,107 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotGallery</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="91"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="111"/>
         <source>📷 Capture Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="106"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="127"/>
         <source>🖥 Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="111"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="133"/>
         <source>🪟 Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="126"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="148"/>
         <source>Grid View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="149"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="176"/>
         <source>List View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="190"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="222"/>
         <source>No screenshots yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="197"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="229"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="426"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="565"/>
         <source>%1 screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="441"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="580"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="446"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="585"/>
         <source>Copy to Clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="451"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="590"/>
         <source>Show in Finder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="458"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="597"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="470"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="609"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="478"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="617"/>
         <source>Are you sure you want to delete this screenshot?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="507"/>
-        <source>Select Window</source>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="676"/>
+        <source>Select a Window to Capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="526"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="682"/>
+        <source>%1 windows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="846"/>
+        <source>Click to Capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="857"/>
         <source>Unnamed Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="551"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="915"/>
+        <source>No windows found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="936"/>
+        <source>Hover to preview, click to capture</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="944"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1561,12 +1581,12 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="23"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="28"/>
         <source>📷 Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="28"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="40"/>
         <source>⚙️ Settings</source>
         <translation type="unfinished"></translation>
     </message>
