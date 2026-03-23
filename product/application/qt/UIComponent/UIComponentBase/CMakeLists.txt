@@ -46,6 +46,8 @@ set(MODULE_QML_TARGET_FILES
     BaseLabel/BaseLabel.qml
     BaseQRCode/BaseQRCode.qml
     BaseImage/BaseIconImage.qml
+    BaseTabBar/BaseTabBar.qml
+    BaseTabButton/BaseTabButton.qml
     BaseText/BaseText.qml
     BaseToolTip/BaseToolTip.qml
     BaseTreeView/BaseTreeView.qml

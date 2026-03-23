@@ -11,7 +11,7 @@ FocusScope {
 
     required property var controller
 
-    TabBar {
+    UTTabBar {
         id: tabBar
         anchors {
             top: parent.top
@@ -21,30 +21,13 @@ FocusScope {
             right: parent.right
         }
         focus: true   // forward initial focus into tab bar
-        clip: false
 
-        TabButton {
-            id: screenshotTab
+        UTTabButton {
             text: qsTr("📷 Screenshot")
-            width: implicitWidth
-            z: activeFocus ? 10 : 0
-
-            UTFocusItem {
-                target: screenshotTab
-                focusRadius: 4
-            }
         }
 
-        TabButton {
-            id: settingsTab
+        UTTabButton {
             text: qsTr("⚙️ Settings")
-            width: implicitWidth
-            z: activeFocus ? 10 : 0
-
-            UTFocusItem {
-                target: settingsTab
-                focusRadius: 4
-            }
         }
     }
 

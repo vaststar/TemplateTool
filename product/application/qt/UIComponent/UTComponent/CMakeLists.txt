@@ -29,7 +29,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 
 set(MODULE_DEPENDENCIES_PRIVATE
     Qt6::Gui Qt6::Quick
-    LoggerUtils 
+    LoggerUtils
     UIResourceLoader
     UIComponentBase
 )
@@ -56,6 +56,8 @@ set(MODULE_QML_TARGET_FILES
     UTQRCode/UTQRCode.qml
     UTImage/UTIconImage.qml
     UTLabel/UTLabel.qml
+    UTTabBar/UTTabBar.qml
+    UTTabButton/UTTabButton.qml
     UTText/UTText.qml
     UTToolTip/UTToolTip.qml
     UTTreeView/UTTreeView.qml

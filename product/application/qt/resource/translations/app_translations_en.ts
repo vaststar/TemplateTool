@@ -1581,12 +1581,12 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="28"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="26"/>
         <source>📷 Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="40"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="30"/>
         <source>⚙️ Settings</source>
         <translation type="unfinished"></translation>
     </message>
