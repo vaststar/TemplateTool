@@ -20,6 +20,7 @@ namespace UIResource{
 
 namespace UIManager{
 class ITranslatorManager;
+class IUIEventBus;
 class UIManager_EXPORT IUIManagerProvider: public QObject
 {
 Q_OBJECT
@@ -34,6 +35,7 @@ public:
     virtual QPointer<ITranslatorManager> getTranslatorManager() const = 0;
     //UIResourceLoaderManager is unique for application and use UIResource namesapace
     virtual QPointer<UIResource::IUIResourceLoaderManager> getUIResourceLoaderManager() const = 0;
+    virtual QPointer<IUIEventBus> getUIEventBus() const = 0;
 
     static std::unique_ptr<IUIManagerProvider> createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
 };

@@ -103,6 +103,8 @@ set(MODULE_SOURCE_PRIVATE
     AppUIManager/src/UIStabilityMonitor.h
     AppUIManager/src/UIStabilityMonitor.cpp
 
+    UIEvents/UIMainWindowEvent.h
+    UIEvents/UIMainWindowEvent.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )

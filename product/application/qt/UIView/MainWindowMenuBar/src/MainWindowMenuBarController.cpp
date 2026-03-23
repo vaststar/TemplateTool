@@ -4,10 +4,10 @@
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/UILanguage.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
-#include <UIManager/ITranslatorManager.h>
+#include <TranslatorManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
 #include "LoggerDefine/LoggerDefine.h"
@@ -45,7 +45,7 @@ void MainWindowMenuBarController::createMenu()
     fileMenu->addSubItem(fileMenu_openFileItem);
     fileMenu->addSubItem(fileMenu_saveItem);
 
-    
+
     auto editMenu = new MenuItemModel("Edit", "Edit operations", mRootMenu);
     auto editMenu_cutItem = new MenuItemModel("Cut", "Cut the selection", editMenu);
     auto editMenu_copyItem = new MenuItemModel("Copy", "Copy the selection", editMenu);

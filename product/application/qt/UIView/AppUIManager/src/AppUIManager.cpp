@@ -8,7 +8,7 @@
 #include <UIAppCore/UIQmlEngine.h>
 #include <AppContext/AppContext.h>
 
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/UILanguage.h>
 #include <UTComponent/UTComponent.h>
 
 #include "LoggerDefine/LoggerDefine.h"
@@ -55,7 +55,7 @@ void AppUIManager::Impl::registerQmlTypes()
 {
     UIVIEW_LOG_DEBUG("");
     UIVMSignalEmitter::registerAllViewModelMetaTypes();
-    UILanguage::registerMetaObject();   
+    UILanguage::registerMetaObject();
     UTComponent::registerUTComponent();
     // mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());
     UIVIEW_LOG_DEBUG("done");

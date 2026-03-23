@@ -2,7 +2,8 @@
 
 #include <AppContext/AppContext.h>
 #include <UIManager/IUIManagerProvider.h>
-#include <UIManager/ITranslatorManager.h>
+#include <TranslatorManager/ITranslatorManager.h>
+#include <UIEventBus/IUIEventBus.h>
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 #include "LoggerDefine/LoggerDefine.h"
@@ -70,23 +71,23 @@ void UIViewController::setupController(UIViewController* controller)
         UIVIEW_LOG_WARN("setupController: controller is null");
         return;
     }
-    
+
     auto appContext = getAppContext();
     if (!appContext)
     {
         UIVIEW_LOG_WARN("setupController: appContext is null");
         return;
     }
-    
+
     UIVIEW_LOG_DEBUG("setupController start, from: " << getControllerName().toStdString()
         << ", target: " << controller->getControllerName().toStdString());
-    
+
     // Call subclass hook for custom logic
     onSetupController(controller);
-    
+
     // Common initialization
     controller->initializeController(appContext);
-    
+
     UIVIEW_LOG_DEBUG("setupController finish, target: " << controller->getControllerName().toStdString());
 }
 
@@ -109,4 +110,11 @@ void UIViewController::onThemeChanged()
 void UIViewController::logInfo(const QString& message)
 {
     UIVIEW_LOG_INFO("[" << getControllerName().toStdString() << "] " << message.toStdString());
+}
+
+QPointer<UIManager::IUIEventBus> UIViewController::getUIEventBus() const
+{
+    if (auto ctx = getAppContext())
+        return ctx->getManagerProvider()->getUIEventBus();
+    return nullptr;
 }

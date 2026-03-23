@@ -4,12 +4,12 @@
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
 
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/UILanguage.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>
-#include <UIManager/ITranslatorManager.h>
+#include <TranslatorManager/ITranslatorManager.h>
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 #include <QGuiApplication>

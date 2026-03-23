@@ -6,8 +6,8 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <UIManager/IUIManagerProvider.h>
-#include <UIManager/ITranslatorManager.h>
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/ITranslatorManager.h>
+#include <TranslatorManager/UILanguage.h>
 
 LanguageSettingsController::LanguageSettingsController(QObject* parent)
     : UIViewController(parent)

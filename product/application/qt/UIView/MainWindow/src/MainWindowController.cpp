@@ -4,11 +4,11 @@
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/UILanguage.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
-#include <UIManager/ITranslatorManager.h>
+#include <TranslatorManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
 #include <UIUtilities/UIPlatformUtils.h>

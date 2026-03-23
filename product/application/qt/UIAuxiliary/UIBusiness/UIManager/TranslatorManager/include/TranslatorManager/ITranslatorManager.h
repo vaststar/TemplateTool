@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QString>
 
-#include <UIManager/UIManagerExport.h>
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/TranslatorManagerExport.h>
+#include <TranslatorManager/UILanguage.h>
 
 namespace UICore{
     class CoreApplication;
@@ -15,7 +15,7 @@ namespace UICore{
 
 namespace UIManager{
 
-class UIManager_EXPORT ITranslatorManager: public QObject
+class TranslatorManager_EXPORT ITranslatorManager: public QObject
 {
 Q_OBJECT
 public:
@@ -29,6 +29,8 @@ public:
     virtual void loadSystemTranslation() = 0;
     // 加载特定语言的翻译文件
     virtual void loadTranslation(UILanguage::LanguageType languageType) = 0;
+
+    static std::unique_ptr<ITranslatorManager> createInstance(QPointer<QObject> application, QPointer<QObject> qmlEngine);
 signals:
     void languageChanged(const QString& language);
 };

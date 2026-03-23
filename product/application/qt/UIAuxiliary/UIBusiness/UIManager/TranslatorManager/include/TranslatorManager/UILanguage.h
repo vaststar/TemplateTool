@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QObject>
-#include <UIManager/UIManagerExport.h>
+#include <TranslatorManager/TranslatorManagerExport.h>
 
 namespace commonHead::viewModels::model {
     enum class LanguageType;
 }
 
 namespace UILanguage{
-Q_NAMESPACE_EXPORT(UIManager_EXPORT)
-void UIManager_EXPORT registerMetaObject();
+Q_NAMESPACE_EXPORT(TranslatorManager_EXPORT)
+void TranslatorManager_EXPORT registerMetaObject();
 
 enum class LanguageType {
     LanguageType_ENGLISH,
@@ -27,7 +27,7 @@ enum class LanguageType {
 Q_ENUM_NS(LanguageType)
 
 // 语言转换工具函数
-UIManager_EXPORT LanguageType convertFromViewModel(commonHead::viewModels::model::LanguageType language);
-UIManager_EXPORT commonHead::viewModels::model::LanguageType convertToViewModel(LanguageType language);
+TranslatorManager_EXPORT LanguageType convertFromViewModel(commonHead::viewModels::model::LanguageType language);
+TranslatorManager_EXPORT commonHead::viewModels::model::LanguageType convertToViewModel(LanguageType language);
 
 }

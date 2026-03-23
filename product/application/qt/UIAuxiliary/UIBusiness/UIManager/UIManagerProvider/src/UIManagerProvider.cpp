@@ -6,9 +6,10 @@
 #include <UIAppCore/UIQmlEngine.h>
 
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
+#include <TranslatorManager/ITranslatorManager.h>
+#include <UIEventBus/IUIEventBus.h>
 
-#include "LoggerDefine/LoggerDefine.h"
-#include "TranslatorManager/TranslatorManager.h"
+#include "LoggerDefine.h"
 
 namespace UIManager{
 std::unique_ptr<IUIManagerProvider> IUIManagerProvider::createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
@@ -17,8 +18,9 @@ std::unique_ptr<IUIManagerProvider> IUIManagerProvider::createInstance(QPointer<
 }
 
 UIManagerProvider::UIManagerProvider(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
-    : mTranslatorManager(std::make_unique<TranslatorManager>(application, qmlEngine))
+    : mTranslatorManager(ITranslatorManager::createInstance(application, qmlEngine))
     , mUIResourceLoaderManager(UIResource::IUIResourceLoaderManager::createInstance(application, qmlEngine, commonheadFramework))
+    , mUIEventBus(IUIEventBus::createInstance(this))
 {
     UIManager_LOG_DEBUG("create UIManagerProvider: " << this);
 }
@@ -36,5 +38,10 @@ QPointer<ITranslatorManager> UIManagerProvider::getTranslatorManager() const
 QPointer<UIResource::IUIResourceLoaderManager> UIManagerProvider::getUIResourceLoaderManager() const
 {
     return mUIResourceLoaderManager.get();
+}
+
+QPointer<IUIEventBus> UIManagerProvider::getUIEventBus() const
+{
+    return mUIEventBus.get();
 }
 }

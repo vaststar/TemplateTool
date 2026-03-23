@@ -28,8 +28,10 @@ public:
 
     virtual QPointer<ITranslatorManager> getTranslatorManager() const override;
     virtual QPointer<UIResource::IUIResourceLoaderManager> getUIResourceLoaderManager() const override;
+    virtual QPointer<IUIEventBus> getUIEventBus() const override;
 private:
     std::unique_ptr<ITranslatorManager> mTranslatorManager;
     std::unique_ptr<UIResource::IUIResourceLoaderManager> mUIResourceLoaderManager;
+    std::unique_ptr<IUIEventBus> mUIEventBus;
 };
 }

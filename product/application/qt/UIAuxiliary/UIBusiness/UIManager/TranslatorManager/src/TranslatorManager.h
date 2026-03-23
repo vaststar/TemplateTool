@@ -5,11 +5,11 @@
 #include <QString>
 #include <QTranslator>
 
-#include <UIManager/UILanguage.h>
+#include <TranslatorManager/UILanguage.h>
 #include <UIAppCore/UIApplication.h>
 #include <UIAppCore/UIQmlEngine.h>
 
-#include <UIManager/ITranslatorManager.h>
+#include <TranslatorManager/ITranslatorManager.h>
 
 namespace UIManager{
 class TranslatorManager final: public ITranslatorManager

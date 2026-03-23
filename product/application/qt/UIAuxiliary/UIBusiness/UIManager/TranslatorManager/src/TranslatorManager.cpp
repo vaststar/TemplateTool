@@ -3,15 +3,23 @@
 #include <map>
 #include <QLocale>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 
 namespace UIManager{
+
+std::unique_ptr<ITranslatorManager> ITranslatorManager::createInstance(QPointer<QObject> application, QPointer<QObject> qmlEngine)
+{
+    return std::make_unique<TranslatorManager>(
+        qobject_cast<UIAppCore::UIApplication*>(application.data()),
+        qobject_cast<UIAppCore::UIQmlEngine*>(qmlEngine.data()));
+}
+
 TranslatorManager::TranslatorManager(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
     , mTranslator(std::make_unique<QTranslator>())
 {
-    UIManager_LOG_DEBUG("");
+    TranslatorManager_LOG_DEBUG("");
 }
 
 TranslatorManager::~TranslatorManager()
@@ -23,42 +31,42 @@ void TranslatorManager::loadTranslation(const QString& language)
 {
     if (language.isEmpty())
     {
-        UIManager_LOG_WARN("empty language, check your code.");
+        TranslatorManager_LOG_WARN("empty language, check your code.");
         return;
     }
 
     if (!mApplication)
     {
-        UIManager_LOG_WARN("application not found");
+        TranslatorManager_LOG_WARN("application not found");
         return;
     }
 
     if (language == mCurrentLanguage)
     {
-        UIManager_LOG_WARN("won't load same translation file, language:" << language.toStdString());
+        TranslatorManager_LOG_WARN("won't load same translation file, language:" << language.toStdString());
         return;
     }
 
     if (!mApplication->removeTranslator(mTranslator.get()))
     {//if no translator installed, removeTranslator will return false and this is expected
-        UIManager_LOG_INFO("remove translation file failed");
+        TranslatorManager_LOG_INFO("remove translation file failed");
     }
 
     //ps: if the language is en, it may failed because the translation.ts is empty
     if (QString translationFileName = QString("app_translations_%1").arg(language); !mTranslator->load(translationFileName, ":/i18n"))
     {
-        UIManager_LOG_WARN("load translation file failed, language:" << language.toStdString() << ", file:" << translationFileName.toStdString());
+        TranslatorManager_LOG_WARN("load translation file failed, language:" << language.toStdString() << ", file:" << translationFileName.toStdString());
         return;
     }
 
     if (!mApplication->installTranslator(mTranslator.get()))
     {
-        UIManager_LOG_WARN("install translation file failed, language:" << language.toStdString());
+        TranslatorManager_LOG_WARN("install translation file failed, language:" << language.toStdString());
         return;
     }
 
     mCurrentLanguage = language;
-    UIManager_LOG_INFO("load translation file succeed, language:" << language.toStdString());
+    TranslatorManager_LOG_INFO("load translation file succeed, language:" << language.toStdString());
 
     if (mQmlEngine)
     {
