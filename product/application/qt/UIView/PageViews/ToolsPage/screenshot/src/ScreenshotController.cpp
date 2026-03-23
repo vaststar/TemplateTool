@@ -1,5 +1,6 @@
 #include "PageViews/ToolsPage/screenshot/include/ScreenshotController.h"
 #include "LoggerDefine/LoggerDefine.h"
+#include "UIEvents/UIMainWindowEvent.h"
 
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
@@ -16,6 +17,7 @@
 #include <QImage>
 #include <QWindow>
 #include <QThread>
+#include <QTimer>
 
 using namespace commonHead::viewModels;
 using namespace commonHead::viewModels::model;
@@ -170,46 +172,28 @@ void ScreenshotController::setIncludeTimestamp(bool include)
 }
 
 // ============================================================================
-// Helper: minimize / restore the main app window
-// ============================================================================
 
-static QWindow* findMainWindow()
-{
-    const auto windows = QGuiApplication::allWindows();
-    for (auto* w : windows) {
-        if (w->isVisible() && w->type() == Qt::Window) {
-            return w;
-        }
-    }
-    return nullptr;
-}
-
-// ============================================================================
 // Capture Methods — delegate to ViewModel
 // ============================================================================
 
 void ScreenshotController::captureFullScreen()
 {
     if (!m_viewModel) return;
-    UIVIEW_LOG_DEBUG("captureFullScreen -> ViewModel");
+    UIVIEW_LOG_DEBUG("captureFullScreen -> hide window, then capture");
 
-    // Minimize the app window so it doesn't appear in the screenshot
-    QWindow* mainWin = findMainWindow();
-    if (mainWin) {
-        mainWin->showMinimized();
-        QThread::msleep(500); // Wait for minimize animation
-        QGuiApplication::processEvents();
-    }
+    // Hide the main window via EventBus so it doesn't appear in the screenshot
+    sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Hide);
 
-    m_viewModel->captureFullScreen();
-    m_viewModel->saveScreenshot();
+    // Wait for the window to finish hiding, then capture
+    QTimer::singleShot(300, this, [this]() {
+        if (!m_viewModel) return;
 
-    // Restore the app window
-    if (mainWin) {
-        mainWin->showNormal();
-        mainWin->raise();
-        mainWin->requestActivate();
-    }
+        m_viewModel->captureFullScreen();
+        m_viewModel->saveScreenshot();
+
+        // Restore the main window
+        sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
+    });
 }
 
 void ScreenshotController::captureWindow(qint64 windowId)
@@ -371,24 +355,20 @@ QVariantMap ScreenshotController::grabScreenForOverlay()
 
     UIVIEW_LOG_DEBUG("grabScreenForOverlay -> ViewModel");
 
-    // Minimize the app window so it doesn't appear in the screenshot
-    QWindow* mainWin = findMainWindow();
-    if (mainWin) {
-        mainWin->showMinimized();
-        QThread::msleep(500); // Wait for minimize animation
-        QGuiApplication::processEvents();
-    }
+    // Hide the app window via EventBus so it doesn't appear in the screenshot
+    sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Hide);
+
+    // Process events to let the hide take effect, then wait briefly
+    QGuiApplication::processEvents();
+    QThread::msleep(300);
+    QGuiApplication::processEvents();
 
     // captureFullScreen is synchronous — it captures, converts to base64,
     // and fires onScreenCaptured callback which updates m_screenshotBase64/Width/Height
     m_viewModel->captureFullScreen();
 
-    // Restore the app window
-    if (mainWin) {
-        mainWin->showNormal();
-        mainWin->raise();
-        mainWin->requestActivate();
-    }
+    // Restore the app window via EventBus
+    sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
 
     // After captureFullScreen returns, the callback has already run (same thread),
     // so m_screenshotBase64/Width/Height are up-to-date.

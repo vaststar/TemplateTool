@@ -976,7 +976,7 @@ Double-click a rule to view details.</source>
         <translation>我的测试窗口标题栏</translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="53"/>
+        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="56"/>
         <source>my test window aa</source>
         <translation>我的测试窗口 aa</translation>
     </message>
@@ -1389,349 +1389,26 @@ Double-click a rule to view details.</source>
     </message>
 </context>
 <context>
-    <name>RecordingTab</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="47"/>
-        <source>FFmpeg is available</source>
-        <translation>FFmpeg 可用</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="48"/>
-        <source>FFmpeg not found</source>
-        <translation>未找到 FFmpeg</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="54"/>
-        <source>Install FFmpeg to enable screen recording features</source>
-        <translation>安装 FFmpeg 以启用录屏功能</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="75"/>
-        <source>Screen Recording</source>
-        <translation>录屏</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
-        <source>Resume</source>
-        <translation>继续</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
-        <source>Pause</source>
-        <translation>暂停</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="89"/>
-        <source>Start Recording</source>
-        <translation>开始录制</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="105"/>
-        <source>Stop</source>
-        <translation>停止</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="113"/>
-        <source>Mode:</source>
-        <translation>模式:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="120"/>
-        <source>Full Screen</source>
-        <translation>全屏</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="121"/>
-        <source>Select Region</source>
-        <translation>选择区域</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="162"/>
-        <source>Paused</source>
-        <translation>已暂停</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="162"/>
-        <source>Recording</source>
-        <translation>录制中</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="181"/>
-        <source>Convert to GIF</source>
-        <translation>转换为 GIF</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="189"/>
-        <source>Convert a video file to animated GIF</source>
-        <translation>将视频文件转换为动画 GIF</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="201"/>
-        <source>Select video file...</source>
-        <translation>选择视频文件...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="206"/>
-        <source>Browse...</source>
-        <translation>浏览...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="213"/>
-        <source>Convert</source>
-        <translation type="unfinished">转换</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="229"/>
-        <source>Tip: Use keyboard shortcuts for quick capture. Press Escape to cancel.</source>
-        <translation>提示：使用键盘快捷键快速捕获。按 Esc 取消。</translation>
-    </message>
-</context>
-<context>
-    <name>ScreenCaptureController</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="322"/>
-        <source>Interactive region capture not supported on this platform.</source>
-        <translation>此平台不支持交互式区域捕获。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="350"/>
-        <source>No image found in clipboard</source>
-        <translation>剪贴板中没有图片</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="412"/>
-        <source>Failed to capture window</source>
-        <translation>窗口捕获失败</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="672"/>
-        <source>No screenshot to save</source>
-        <translation>没有可保存的截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="241"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="434"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="688"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1234"/>
-        <source>Failed to save screenshot</source>
-        <translation>保存截图失败</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="219"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1003"/>
-        <source>Failed to capture screen</source>
-        <translation>屏幕捕获失败</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="696"/>
-        <source>No screenshot to copy</source>
-        <translation>没有可复制的截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="734"/>
-        <source>Recording already in progress</source>
-        <translation>录制已在进行中</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="739"/>
-        <source>FFmpeg not found. Please install FFmpeg to use recording features.</source>
-        <translation>未找到 FFmpeg。请安装 FFmpeg 以使用录制功能。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="909"/>
-        <source>Screenshots folder not set</source>
-        <translation>未设置截图文件夹</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="927"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="959"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="979"/>
-        <source>File not found: %1</source>
-        <translation>文件未找到: %1</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="946"/>
-        <source>Failed to load image: %1</source>
-        <translation>加载图片失败: %1</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="986"/>
-        <source>Failed to delete file: %1</source>
-        <translation>删除文件失败: %1</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1032"/>
-        <source>No screenshot available</source>
-        <translation>没有可用的截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1068"/>
-        <source>Invalid selection region</source>
-        <translation>无效的选择区域</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1083"/>
-        <source>Failed to crop region</source>
-        <translation>裁剪区域失败</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1103"/>
-        <source>Failed to create painter</source>
-        <translation>创建绘图器失败</translation>
-    </message>
-</context>
-<context>
-    <name>ScreenCapturePanel</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml" line="23"/>
-        <source>📷 Screenshot</source>
-        <translation>📷 截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml" line="28"/>
-        <source>🎬 Recording</source>
-        <translation>🎬 录屏</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml" line="33"/>
-        <source>⚙️ Settings</source>
-        <translation>⚙️ 设置</translation>
-    </message>
-</context>
-<context>
-    <name>ScreenCaptureSettingsTab</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="27"/>
-        <source>Output Settings</source>
-        <translation>输出设置</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="39"/>
-        <source>Save to:</source>
-        <translation>保存至:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="52"/>
-        <source>Browse...</source>
-        <translation>浏览...</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="63"/>
-        <source>Image format:</source>
-        <translation>图片格式:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="81"/>
-        <source>PNG for quality, JPG for smaller size</source>
-        <translation>PNG 画质更好，JPG 体积更小</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="93"/>
-        <source>Video format:</source>
-        <translation>视频格式:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="116"/>
-        <source>Capture Settings</source>
-        <translation>截图设置</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="128"/>
-        <source>Default delay:</source>
-        <translation>默认延迟:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="136"/>
-        <source>None</source>
-        <translation>无</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="137"/>
-        <source>3 seconds</source>
-        <translation>3 秒</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="138"/>
-        <source>5 seconds</source>
-        <translation>5 秒</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="139"/>
-        <source>10 seconds</source>
-        <translation>10 秒</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="164"/>
-        <source>Include timestamp:</source>
-        <translation>包含时间戳:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="180"/>
-        <source>Add date/time watermark to screenshots</source>
-        <translation>在截图上添加日期/时间水印</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="191"/>
-        <source>Recording Settings</source>
-        <translation>录制设置</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="203"/>
-        <source>Frame rate:</source>
-        <translation>帧率:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="211"/>
-        <source>15 fps (small size)</source>
-        <translation>15 fps（较小体积）</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="212"/>
-        <source>30 fps (standard)</source>
-        <translation>30 fps（标准）</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="213"/>
-        <source>60 fps (smooth)</source>
-        <translation>60 fps（流畅）</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="238"/>
-        <source>FFmpeg:</source>
-        <translation>FFmpeg:</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="246"/>
-        <source>Not found</source>
-        <translation>未找到</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="265"/>
-        <source>Select Output Directory</source>
-        <translation>选择输出目录</translation>
-    </message>
-</context>
-<context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="500"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="480"/>
         <source>Screenshots folder not set</source>
         <translation>未设置截图文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="515"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="556"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="495"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="520"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
         <source>File not found: %1</source>
         <translation>文件未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="511"/>
         <source>Failed to load image: %1</source>
         <translation>加载图片失败: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="560"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
         <source>Failed to delete file: %1</source>
         <translation>删除文件失败: %1</translation>
     </message>
@@ -1827,67 +1504,56 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotOverlay</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="323"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="323"/>
         <source>Rectangle</source>
         <translation>矩形</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="335"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="335"/>
         <source>Ellipse</source>
         <translation>椭圆</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="347"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="347"/>
         <source>Arrow</source>
         <translation>箭头</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="359"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="359"/>
         <source>Freehand</source>
         <translation>自由绘制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="371"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="371"/>
         <source>Text</source>
         <translation>文字</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="414"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="414"/>
         <source>Undo</source>
         <translation>撤销</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="425"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="425"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="438"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="438"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="451"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="451"/>
         <source>Add Text</source>
         <translation>添加文字</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="466"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="466"/>
         <source>Enter text...</source>
         <translation>输入文字...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="507"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="507"/>
         <source>Click and drag to select region
 Press ESC to cancel</source>
@@ -1979,94 +1645,6 @@ Press ESC to cancel</source>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="171"/>
         <source>Select Output Directory</source>
         <translation>选择输出目录</translation>
-    </message>
-</context>
-<context>
-    <name>ScreenshotTab</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="551"/>
-        <source>Cancel</source>
-        <translation type="unfinished">取消</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="91"/>
-        <source>📷 Capture Region</source>
-        <translation>📷 区域截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="106"/>
-        <source>🖥 Full Screen</source>
-        <translation>🖥 全屏截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="111"/>
-        <source>🪟 Window</source>
-        <translation>🪟 窗口截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="126"/>
-        <source>Grid View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="149"/>
-        <source>List View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="190"/>
-        <source>No screenshots yet</source>
-        <translation>暂无截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="197"/>
-        <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
-        <translation>点击「区域截图」或「全屏截图」来截取屏幕</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="426"/>
-        <source>%1 screenshots</source>
-        <translation>%1 张截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="441"/>
-        <source>Open</source>
-        <translation>打开</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="446"/>
-        <source>Copy to Clipboard</source>
-        <translation>复制到剪贴板</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="451"/>
-        <source>Show in Finder</source>
-        <translation type="unfinished">在访达中显示</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="458"/>
-        <source>Delete</source>
-        <translation>删除</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="470"/>
-        <source>Delete Screenshot</source>
-        <translation>删除截图</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="478"/>
-        <source>Are you sure you want to delete this screenshot?</source>
-        <translation>确定要删除这张截图吗？</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="507"/>
-        <source>Select Window</source>
-        <translation>选择窗口</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="526"/>
-        <source>Unnamed Window</source>
-        <translation>未命名窗口</translation>
     </message>
 </context>
 <context>

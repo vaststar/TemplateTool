@@ -974,7 +974,7 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="53"/>
+        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="56"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1387,349 +1387,26 @@ Double-click a rule to view details.</source>
     </message>
 </context>
 <context>
-    <name>RecordingTab</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="47"/>
-        <source>FFmpeg is available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="48"/>
-        <source>FFmpeg not found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="54"/>
-        <source>Install FFmpeg to enable screen recording features</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="75"/>
-        <source>Screen Recording</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
-        <source>Resume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="88"/>
-        <source>Pause</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="89"/>
-        <source>Start Recording</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="105"/>
-        <source>Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="113"/>
-        <source>Mode:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="120"/>
-        <source>Full Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="121"/>
-        <source>Select Region</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="162"/>
-        <source>Paused</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="162"/>
-        <source>Recording</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="181"/>
-        <source>Convert to GIF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="189"/>
-        <source>Convert a video file to animated GIF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="201"/>
-        <source>Select video file...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="206"/>
-        <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="213"/>
-        <source>Convert</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/RecordingTab.qml" line="229"/>
-        <source>Tip: Use keyboard shortcuts for quick capture. Press Escape to cancel.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScreenCaptureController</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="322"/>
-        <source>Interactive region capture not supported on this platform.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="350"/>
-        <source>No image found in clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="412"/>
-        <source>Failed to capture window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="672"/>
-        <source>No screenshot to save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="241"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="434"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="688"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1234"/>
-        <source>Failed to save screenshot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="219"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1003"/>
-        <source>Failed to capture screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="696"/>
-        <source>No screenshot to copy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="734"/>
-        <source>Recording already in progress</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="739"/>
-        <source>FFmpeg not found. Please install FFmpeg to use recording features.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="909"/>
-        <source>Screenshots folder not set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="927"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="959"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="979"/>
-        <source>File not found: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="946"/>
-        <source>Failed to load image: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="986"/>
-        <source>Failed to delete file: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1032"/>
-        <source>No screenshot available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1068"/>
-        <source>Invalid selection region</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1083"/>
-        <source>Failed to crop region</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/src/ScreenCaptureController.cpp" line="1103"/>
-        <source>Failed to create painter</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScreenCapturePanel</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml" line="23"/>
-        <source>📷 Screenshot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml" line="28"/>
-        <source>🎬 Recording</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCapturePanel.qml" line="33"/>
-        <source>⚙️ Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScreenCaptureSettingsTab</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="27"/>
-        <source>Output Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="39"/>
-        <source>Save to:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="52"/>
-        <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="63"/>
-        <source>Image format:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="81"/>
-        <source>PNG for quality, JPG for smaller size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="93"/>
-        <source>Video format:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="116"/>
-        <source>Capture Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="128"/>
-        <source>Default delay:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="136"/>
-        <source>None</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="137"/>
-        <source>3 seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="138"/>
-        <source>5 seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="139"/>
-        <source>10 seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="164"/>
-        <source>Include timestamp:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="180"/>
-        <source>Add date/time watermark to screenshots</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="191"/>
-        <source>Recording Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="203"/>
-        <source>Frame rate:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="211"/>
-        <source>15 fps (small size)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="212"/>
-        <source>30 fps (standard)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="213"/>
-        <source>60 fps (smooth)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="238"/>
-        <source>FFmpeg:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="246"/>
-        <source>Not found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenCaptureSettingsTab.qml" line="265"/>
-        <source>Select Output Directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="500"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="480"/>
         <source>Screenshots folder not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="515"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="556"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="495"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="520"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
         <source>File not found: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="511"/>
         <source>Failed to load image: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="560"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
         <source>Failed to delete file: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1825,67 +1502,56 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotOverlay</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="323"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="323"/>
         <source>Rectangle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="335"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="335"/>
         <source>Ellipse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="347"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="347"/>
         <source>Arrow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="359"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="359"/>
         <source>Freehand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="371"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="371"/>
         <source>Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="414"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="414"/>
         <source>Undo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="425"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="425"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="438"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="438"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="451"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="451"/>
         <source>Add Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="466"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="466"/>
         <source>Enter text...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotOverlay.qml" line="507"/>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="507"/>
         <source>Click and drag to select region
 Press ESC to cancel</source>
@@ -1975,94 +1641,6 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="171"/>
         <source>Select Output Directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScreenshotTab</name>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="551"/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="91"/>
-        <source>📷 Capture Region</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="106"/>
-        <source>🖥 Full Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="111"/>
-        <source>🪟 Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="126"/>
-        <source>Grid View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="149"/>
-        <source>List View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="190"/>
-        <source>No screenshots yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="197"/>
-        <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="426"/>
-        <source>%1 screenshots</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="441"/>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="446"/>
-        <source>Copy to Clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="451"/>
-        <source>Show in Finder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="458"/>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="470"/>
-        <source>Delete Screenshot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="478"/>
-        <source>Are you sure you want to delete this screenshot?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="507"/>
-        <source>Select Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screencapture/qml/ScreenshotTab.qml" line="526"/>
-        <source>Unnamed Window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

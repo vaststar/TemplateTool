@@ -70,7 +70,19 @@ ApplicationWindow
         }
 
         function onActivateWindow() {
-            onShowActivateWindow()
+            showAndActivate()
+        }
+
+        function onHideWindow() {
+            root.hide()
+        }
+
+        function onShowWindow() {
+            showAndActivate()
+        }
+
+        function onMinimizeWindow() {
+            root.showMinimized()
         }
     }
 
@@ -88,7 +100,7 @@ ApplicationWindow
         root.controller.componentCompleted()
     }
 
-    function onShowActivateWindow() {
+    function showAndActivate() {
         root.show()
         root.visibility = Window.Windowed
         root.raise()

@@ -38,6 +38,9 @@ void MainWindowController::init()
 {
     UIVIEW_LOG_DEBUG("");
 
+    // Listen for UIMainWindowEvent from EventBus
+    listenUIEvents<UIMainWindowEvent>();
+
     mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
     mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
     mMainViewModel->registerCallback(mMainViewModelEmitter);
@@ -150,4 +153,41 @@ bool MainWindowController::startSystemResize(QWindow *window, int edges)
     if (window)
         return window->startSystemResize(Qt::Edges(edges));
     return false;
+}
+
+bool MainWindowController::event(QEvent* event)
+{
+    if (event->type() == UIMainWindowEvent::type) {
+        auto* e = static_cast<UIMainWindowEvent*>(event);
+        switch (e->mAction) {
+        case UIMainWindowEvent::Action::Hide:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Hide");
+            emit hideWindow();
+            break;
+        case UIMainWindowEvent::Action::Show:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Show");
+            emit showWindow();
+            break;
+        case UIMainWindowEvent::Action::Activate:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Activate");
+            emit activateWindow();
+            break;
+        case UIMainWindowEvent::Action::Minimize:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Minimize");
+            emit minimizeWindow();
+            break;
+        case UIMainWindowEvent::Action::Maximize:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Maximize");
+            break;
+        case UIMainWindowEvent::Action::Restore:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Restore");
+            emit showWindow();
+            break;
+        case UIMainWindowEvent::Action::Close:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::Close");
+            break;
+        }
+        return true;
+    }
+    return UIViewController::event(event);
 }

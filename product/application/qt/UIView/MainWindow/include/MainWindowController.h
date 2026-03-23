@@ -6,6 +6,7 @@
 #include <QtQml>
 
 #include "UIViewBase/include/UIViewController.h"
+#include "UIEvents/UIMainWindowEvent.h"
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -43,6 +44,9 @@ signals:
     void titleChanged();
     void visibleChanged();
     void activateWindow();
+    void hideWindow();
+    void showWindow();
+    void minimizeWindow();
 public slots:
     void openCamera();
     void testFunc();
@@ -52,6 +56,7 @@ public slots:
 protected:
     void init() override;
     void onSetupController(UIViewController* controller) override;
+    bool event(QEvent* event) override;
 private:
     void connectSignals(UIViewController* controller);
 private:
