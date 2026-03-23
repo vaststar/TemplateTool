@@ -23,7 +23,7 @@ def normalize_ts_file(ts_path: Path) -> bool:
     Returns True if file was modified.
     """
     content = ts_path.read_text(encoding='utf-8')
-    
+
     # Pattern matches: build/<any-preset>/codegen
     # Examples:
     #   ../../../../../build/local-macos-release/codegen/UIResourceString/...
@@ -31,11 +31,11 @@ def normalize_ts_file(ts_path: Path) -> bool:
     # Replace with: build/CODEGEN/UIResourceString/...
     pattern = r'build/[^/]+/codegen/'
     replacement = r'build/CODEGEN/'
-    
+
     new_content = re.sub(pattern, replacement, content)
-    
+
     if new_content != content:
-        ts_path.write_text(new_content, encoding='utf-8')
+        ts_path.write_text(new_content, encoding='utf-8', newline='\n')
         print(f"[normalize_ts] Normalized: {ts_path}")
         return True
     else:
@@ -47,7 +47,7 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: normalize_ts_paths.py <file1.ts> [file2.ts ...]")
         sys.exit(1)
-    
+
     modified_count = 0
     for ts_file in sys.argv[1:]:
         ts_path = Path(ts_file)
@@ -56,7 +56,7 @@ def main():
                 modified_count += 1
         else:
             print(f"[normalize_ts] Skipped (not found or not .ts): {ts_file}")
-    
+
     print(f"[normalize_ts] Done. {modified_count} file(s) modified.")
 
 

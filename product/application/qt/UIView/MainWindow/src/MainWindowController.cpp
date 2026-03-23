@@ -112,15 +112,15 @@ void MainWindowController::onSetupController(UIViewController* controller)
 
 void MainWindowController::connectSignals(UIViewController* controller)
 {
-    if (auto pageController = dynamic_cast<ContactsPageController*>(controller))
+    if (dynamic_cast<ContactsPageController*>(controller))
     {
         UIVIEW_LOG_DEBUG("connectSignals for ContactsPageController");
     }
-    else if (auto pageController = dynamic_cast<HomePageController*>(controller))
+    else if (dynamic_cast<HomePageController*>(controller))
     {
         UIVIEW_LOG_DEBUG("connectSignals for HomePageController");
     }
-    else if (auto pageController = dynamic_cast<SettingsPageController*>(controller))
+    else if (dynamic_cast<SettingsPageController*>(controller))
     {
         UIVIEW_LOG_DEBUG("connectSignals for SettingsPageController");
     }

@@ -17,16 +17,25 @@ echo === Building proxy addon for Windows ===
 REM Create virtual environment if not exists
 if not exist "build_venv" (
     python -m venv build_venv
+    if errorlevel 1 exit /b %errorlevel%
 )
 
-call build_venv\Scripts\activate.bat
+set VENV_PYTHON=%SCRIPT_DIR%build_venv\Scripts\python.exe
+
+if not exist "%VENV_PYTHON%" (
+    echo Failed to locate virtual environment Python: %VENV_PYTHON%
+    exit /b 1
+)
 
 REM Install dependencies
-pip install --upgrade pip
-pip install -r requirements.txt
+"%VENV_PYTHON%" -m pip install --upgrade pip
+if errorlevel 1 exit /b %errorlevel%
+
+"%VENV_PYTHON%" -m pip install -r requirements.txt
+if errorlevel 1 exit /b %errorlevel%
 
 REM Build with PyInstaller
-pyinstaller ^
+"%VENV_PYTHON%" -m PyInstaller ^
     --noconfirm ^
     --clean ^
     --name proxy_addon ^
@@ -40,8 +49,7 @@ pyinstaller ^
     --collect-all mitmproxy ^
     --collect-all mitmproxy_rs ^
     proxy_addon.py
-
-call deactivate
+if errorlevel 1 exit /b %errorlevel%
 
 echo.
 echo === Build complete ===

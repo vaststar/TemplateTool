@@ -7,11 +7,9 @@
 
 namespace UIManager{
 
-std::unique_ptr<ITranslatorManager> ITranslatorManager::createInstance(QPointer<QObject> application, QPointer<QObject> qmlEngine)
+std::unique_ptr<ITranslatorManager> ITranslatorManager::createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine)
 {
-    return std::make_unique<TranslatorManager>(
-        qobject_cast<UIAppCore::UIApplication*>(application.data()),
-        qobject_cast<UIAppCore::UIQmlEngine*>(qmlEngine.data()));
+    return std::make_unique<TranslatorManager>(application, qmlEngine);
 }
 
 TranslatorManager::TranslatorManager(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine)

@@ -7,9 +7,9 @@
 #include <TranslatorManager/TranslatorManagerExport.h>
 #include <TranslatorManager/UILanguage.h>
 
-namespace UICore{
-    class CoreApplication;
-    class CoreQmlEngine;
+namespace UIAppCore{
+    class UIApplication;
+    class UIQmlEngine;
 }
 
 
@@ -30,7 +30,7 @@ public:
     // 加载特定语言的翻译文件
     virtual void loadTranslation(UILanguage::LanguageType languageType) = 0;
 
-    static std::unique_ptr<ITranslatorManager> createInstance(QPointer<QObject> application, QPointer<QObject> qmlEngine);
+    static std::unique_ptr<ITranslatorManager> createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine);
 signals:
     void languageChanged(const QString& language);
 };
