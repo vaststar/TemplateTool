@@ -20,9 +20,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: statusRow.implicitHeight + 24
-            color: controller.isFFmpegAvailable()
-                   ? UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_BG, UIColorState.Normal)
-                   : UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_BG, UIColorState.Normal)
+            color: controller.ffmpegAvailable ? "#e8f5e9" : "#fce4ec"
             radius: 8
 
             RowLayout {
@@ -34,7 +32,7 @@ Item {
                 spacing: 12
 
                 UTText {
-                    text: controller.isFFmpegAvailable() ? "✅" : "⚠️"
+                    text: controller.ffmpegAvailable ? "✅" : "⚠️"
                     font.pixelSize: 20
                 }
 
@@ -43,14 +41,14 @@ Item {
                     spacing: 2
 
                     UTText {
-                        text: controller.isFFmpegAvailable()
+                        text: controller.ffmpegAvailable
                               ? qsTr("FFmpeg is available")
                               : qsTr("FFmpeg not found")
-                        fontEnum: UIFontToken.Body_Text_Bold
+                        fontEnum: UIFontToken.Body_Text_Medium
                     }
 
                     UTText {
-                        visible: !controller.isFFmpegAvailable()
+                        visible: !controller.ffmpegAvailable
                         text: qsTr("Install FFmpeg to enable screen recording features")
                         fontEnum: UIFontToken.Caption_Text
                         wrapMode: Text.WordWrap
@@ -58,10 +56,10 @@ Item {
                     }
 
                     UTText {
-                        visible: controller.isFFmpegAvailable()
-                        text: controller.getFFmpegPath()
+                        visible: controller.ffmpegAvailable
+                        text: controller.ffmpegPath
                         fontEnum: UIFontToken.Caption_Text
-                        colorEnum: UIColorToken.Content_Secondary
+                        colorEnum: UIColorToken.Content_Secondary_Text
                         elide: Text.ElideMiddle
                         Layout.fillWidth: true
                     }
@@ -73,7 +71,7 @@ Item {
         GroupBox {
             Layout.fillWidth: true
             title: qsTr("Screen Recording")
-            enabled: controller.isFFmpegAvailable()
+            enabled: controller.ffmpegAvailable
 
             ColumnLayout {
                 anchors.fill: parent
@@ -133,7 +131,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 60
                     visible: controller.isRecording
-                    color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_BG, UIColorState.Normal)
+                    color: "#fce4ec"
                     radius: 8
 
                     RowLayout {
@@ -159,14 +157,14 @@ Item {
 
                         UTText {
                             text: controller.isPaused ? qsTr("Paused") : qsTr("Recording")
-                            fontEnum: UIFontToken.Body_Text_Bold
+                            fontEnum: UIFontToken.Body_Text_Medium
                         }
 
                         Item { Layout.fillWidth: true }
 
                         UTText {
                             text: formatDuration(controller.recordingDuration)
-                            fontEnum: UIFontToken.Body_Text_Bold
+                            fontEnum: UIFontToken.Body_Text_Medium
                             font.family: "monospace"
                         }
                     }
@@ -178,7 +176,7 @@ Item {
         GroupBox {
             Layout.fillWidth: true
             title: qsTr("Convert to GIF")
-            enabled: controller.isFFmpegAvailable()
+            enabled: controller.ffmpegAvailable
 
             ColumnLayout {
                 anchors.fill: parent
@@ -187,7 +185,7 @@ Item {
                 UTText {
                     text: qsTr("Convert a video file to animated GIF")
                     fontEnum: UIFontToken.Body_Text
-                    colorEnum: UIColorToken.Content_Secondary
+                    colorEnum: UIColorToken.Content_Secondary_Text
                 }
 
                 RowLayout {
@@ -227,7 +225,7 @@ Item {
             Layout.fillWidth: true
             text: qsTr("Tip: Use keyboard shortcuts for quick capture. Press Escape to cancel.")
             fontEnum: UIFontToken.Caption_Text
-            colorEnum: UIColorToken.Content_Secondary
+            colorEnum: UIColorToken.Content_Secondary_Text
             wrapMode: Text.WordWrap
         }
     }

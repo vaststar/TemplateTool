@@ -6,6 +6,16 @@
 namespace commonHead::viewModels::model {
 
 // ============================================================================
+// Recording State
+// ============================================================================
+
+enum class RecordingState {
+    Idle,           ///< No active recording
+    Recording,      ///< Recording in progress
+    Paused          ///< Recording paused
+};
+
+// ============================================================================
 // Recording Settings
 // ============================================================================
 

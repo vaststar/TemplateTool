@@ -1194,120 +1194,110 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingContent</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="47"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="45"/>
         <source>FFmpeg is available</source>
-        <translation>FFmpeg 可用</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="48"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="46"/>
         <source>FFmpeg not found</source>
-        <translation>未找到 FFmpeg</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="54"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="52"/>
         <source>Install FFmpeg to enable screen recording features</source>
-        <translation>安装 FFmpeg 以启用录屏功能</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="75"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="73"/>
         <source>Screen Recording</source>
-        <translation>录屏</translation>
+        <translation type="unfinished">录屏</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="86"/>
         <source>Resume</source>
-        <translation>继续</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="86"/>
         <source>Pause</source>
-        <translation>暂停</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="89"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="87"/>
         <source>Start Recording</source>
-        <translation>开始录制</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="105"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="103"/>
         <source>Stop</source>
-        <translation>停止</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="111"/>
         <source>Mode:</source>
-        <translation>模式:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="120"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="118"/>
         <source>Full Screen</source>
-        <translation>全屏</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="121"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="119"/>
         <source>Select Region</source>
-        <translation>选择区域</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="161"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="159"/>
         <source>Paused</source>
-        <translation>已暂停</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="161"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="159"/>
         <source>Recording</source>
-        <translation>录制中</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="180"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="178"/>
         <source>Convert to GIF</source>
-        <translation>转换为 GIF</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="188"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="186"/>
         <source>Convert a video file to animated GIF</source>
-        <translation>将视频文件转换为动画 GIF</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="200"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="198"/>
         <source>Select video file...</source>
-        <translation>选择视频文件...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="205"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="203"/>
         <source>Browse...</source>
-        <translation>浏览...</translation>
+        <translation type="unfinished">浏览...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="212"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="210"/>
         <source>Convert</source>
         <translation type="unfinished">转换</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="228"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="226"/>
         <source>Tip: Use keyboard shortcuts for quick capture. Press Escape to cancel.</source>
-        <translation>提示：使用键盘快捷键快速捕获。按 Esc 取消。</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="167"/>
-        <source>Recording already in progress</source>
-        <translation>录制已在进行中</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="172"/>
-        <source>FFmpeg not found. Please install FFmpeg to use recording features.</source>
-        <translation>未找到 FFmpeg。请安装 FFmpeg 以使用录制功能。</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="320"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="237"/>
         <source>Recordings folder not set</source>
         <translation>未设置录制文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="338"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="255"/>
         <source>File not found: %1</source>
         <translation>文件未找到: %1</translation>
     </message>

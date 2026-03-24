@@ -136,13 +136,13 @@ Item {
                         }
 
                         UTText {
-                            text: controller.isFFmpegAvailable()
-                                  ? controller.getFFmpegPath()
+                            text: controller.ffmpegAvailable
+                                  ? controller.ffmpegPath
                                   : qsTr("Not found")
                             fontEnum: UIFontToken.Caption_Text
-                            colorEnum: controller.isFFmpegAvailable()
+                            colorEnum: controller.ffmpegAvailable
                                        ? UIColorToken.Content_Text
-                                       : UIColorToken.Status_Error
+                                       : UIColorToken.Content_Error_Text
                             elide: Text.ElideMiddle
                             Layout.fillWidth: true
                         }

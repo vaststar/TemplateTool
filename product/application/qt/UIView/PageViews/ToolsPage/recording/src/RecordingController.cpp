@@ -10,7 +10,6 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QTimer>
 #include <QProcess>
 #include <QCoreApplication>
 #include <QUrl>
@@ -18,15 +17,15 @@
 using namespace commonHead::viewModels;
 using namespace commonHead::viewModels::model;
 
+// ============================================================================
+// Construction
+// ============================================================================
+
 RecordingController::RecordingController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::RecordingViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create RecordingController");
-
-    m_recordingTimer = new QTimer(this);
-    m_recordingTimer->setInterval(1000);
-    connect(m_recordingTimer, &QTimer::timeout, this, &RecordingController::onRecordingDurationTick);
 }
 
 RecordingController::~RecordingController()
@@ -46,6 +45,12 @@ void RecordingController::init()
 
     // Phase 1: Connect emitter Qt signals → controller slots
     using Emitter = UIVMSignalEmitter::RecordingViewModelEmitter;
+    connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,
+            this, &RecordingController::onVMStateChanged);
+    connect(m_viewModelEmitter.get(), &Emitter::signals_onDurationChanged,
+            this, &RecordingController::onVMDurationChanged);
+    connect(m_viewModelEmitter.get(), &Emitter::signals_onRecordingCompleted,
+            this, &RecordingController::onVMRecordingCompleted);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onSettingsChanged,
             this, &RecordingController::onVMSettingsChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onError,
@@ -57,6 +62,13 @@ void RecordingController::init()
 
     // Phase 3: Register emitter as callback
     m_viewModel->registerCallback(m_viewModelEmitter);
+
+    // Phase 4: Provide appDir to ViewModel for FFmpeg discovery
+    std::string appDir = QCoreApplication::applicationDirPath().toStdString();
+    m_viewModel->setAppDir(appDir);
+
+    // Notify QML that FFmpeg status is now resolved
+    emit ffmpegStatusChanged();
 
     // Sync initial settings from ViewModel
     auto settings = m_viewModel->getSettings();
@@ -76,45 +88,24 @@ void RecordingController::init()
         m_viewModel->updateSettings(s);
     }
 
-    m_ffmpegPath = findFFmpegPath();
-
     // Notify QML that settings properties are now loaded.
     emit settingsChanged();
 }
 
-// === Property Getters ===
+// ============================================================================
+// Property Getters
+// ============================================================================
 
-bool RecordingController::isRecording() const
-{
-    return m_isRecording;
-}
+bool RecordingController::isRecording() const { return m_isRecording; }
+int RecordingController::recordingDuration() const { return m_recordingDuration; }
+bool RecordingController::isPaused() const { return m_isPaused; }
+QString RecordingController::outputDirectory() const { return m_outputDirectory; }
+QString RecordingController::videoFormat() const { return m_videoFormat; }
+int RecordingController::fps() const { return m_fps; }
 
-int RecordingController::recordingDuration() const
-{
-    return m_recordingDuration;
-}
-
-bool RecordingController::isPaused() const
-{
-    return m_isPaused;
-}
-
-QString RecordingController::outputDirectory() const
-{
-    return m_outputDirectory;
-}
-
-QString RecordingController::videoFormat() const
-{
-    return m_videoFormat;
-}
-
-int RecordingController::fps() const
-{
-    return m_fps;
-}
-
-// === Property Setters ===
+// ============================================================================
+// Property Setters — push to ViewModel
+// ============================================================================
 
 void RecordingController::setOutputDirectory(const QString& path)
 {
@@ -159,147 +150,71 @@ void RecordingController::setFps(int fps)
     }
 }
 
-// === Recording Methods ===
+// ============================================================================
+// Recording Methods — delegate to ViewModel
+// ============================================================================
 
 void RecordingController::startRecording(const QString& mode)
 {
-    if (m_isRecording) {
-        emit errorOccurred(tr("Recording already in progress"));
-        return;
+    Q_UNUSED(mode)
+    if (m_viewModel) {
+        m_viewModel->startRecording();
     }
-
-    if (!isFFmpegAvailable()) {
-        emit errorOccurred(tr("FFmpeg not found. Please install FFmpeg to use recording features."));
-        return;
-    }
-
-    // TODO: Implement FFmpeg-based recording
-    UIVIEW_LOG_DEBUG("startRecording: " << mode.toStdString());
-
-    m_isRecording = true;
-    m_isPaused = false;
-    m_recordingDuration = 0;
-    m_recordingTimer->start();
-
-    emit recordingStateChanged();
 }
 
 void RecordingController::startRegionRecording(int x, int y, int width, int height)
 {
-    // TODO: Implement region recording
-    Q_UNUSED(x) Q_UNUSED(y) Q_UNUSED(width) Q_UNUSED(height)
-    startRecording("region");
+    if (m_viewModel) {
+        m_viewModel->startRegionRecording(x, y, width, height);
+    }
 }
 
 void RecordingController::stopRecording()
 {
-    if (!m_isRecording) {
-        return;
+    if (m_viewModel) {
+        m_viewModel->stopRecording();
     }
-
-    UIVIEW_LOG_DEBUG("stopRecording");
-
-    m_recordingTimer->stop();
-    m_isRecording = false;
-    m_isPaused = false;
-
-    // TODO: Stop FFmpeg process and emit recordingCompleted
-
-    emit recordingStateChanged();
 }
 
 void RecordingController::pauseRecording()
 {
-    if (m_isRecording && !m_isPaused) {
-        m_isPaused = true;
-        m_recordingTimer->stop();
-        emit recordingStateChanged();
+    if (m_viewModel) {
+        m_viewModel->pauseRecording();
     }
 }
 
 void RecordingController::resumeRecording()
 {
-    if (m_isRecording && m_isPaused) {
-        m_isPaused = false;
-        m_recordingTimer->start();
-        emit recordingStateChanged();
+    if (m_viewModel) {
+        m_viewModel->resumeRecording();
     }
-}
-
-void RecordingController::onRecordingDurationTick()
-{
-    m_recordingDuration++;
-    emit recordingDurationChanged();
 }
 
 void RecordingController::convertToGif(const QString& inputPath, const QString& outputPath)
 {
-    // TODO: Implement GIF conversion using FFmpeg
-    Q_UNUSED(inputPath) Q_UNUSED(outputPath)
-    UIVIEW_LOG_DEBUG("convertToGif: not yet implemented");
+    if (m_viewModel) {
+        m_viewModel->convertToGif(inputPath.toStdString(), outputPath.toStdString());
+    }
 }
 
-// === Utility ===
+// ============================================================================
+// Utility — delegate to ViewModel
+// ============================================================================
 
 QString RecordingController::getFFmpegPath()
 {
-    return m_ffmpegPath;
+    if (m_viewModel) {
+        return QString::fromStdString(m_viewModel->getFFmpegPath());
+    }
+    return {};
 }
 
 bool RecordingController::isFFmpegAvailable()
 {
-    return !m_ffmpegPath.isEmpty() && QFile::exists(m_ffmpegPath);
-}
-
-QString RecordingController::findFFmpegPath()
-{
-    QString appDir = QCoreApplication::applicationDirPath();
-
-#ifdef Q_OS_MAC
-    // On macOS, applicationDirPath() = .../mainEntry.app/Contents/MacOS
-    // ffmpeg is in the same directory as the .app bundle (i.e. .../bin/ffmpeg)
-    // So we go up 3 levels: MacOS → Contents → mainEntry.app → bin/
-    QStringList candidates = {
-        appDir + "/../../../ffmpeg",                   // build output: bin/ffmpeg (next to .app)
-        appDir + "/ffmpeg",                            // flat layout
-        appDir + "/../Resources/ffmpeg",               // bundled inside .app
-        "/opt/homebrew/bin/ffmpeg",
-        "/usr/local/bin/ffmpeg"
-    };
-#elif defined(Q_OS_WIN)
-    QStringList candidates = {
-        appDir + "/ffmpeg.exe",
-        appDir + "/ffmpeg/ffmpeg.exe"
-    };
-#else
-    QStringList candidates = {
-        appDir + "/ffmpeg",
-        "/usr/bin/ffmpeg",
-        "/usr/local/bin/ffmpeg"
-    };
-#endif
-
-    for (const QString& path : candidates) {
-        QString canonicalPath = QFileInfo(path).canonicalFilePath();
-        if (!canonicalPath.isEmpty() && QFile::exists(canonicalPath)) {
-            UIVIEW_LOG_DEBUG("Found FFmpeg: " << canonicalPath.toStdString());
-            return canonicalPath;
-        }
+    if (m_viewModel) {
+        return m_viewModel->isFFmpegAvailable();
     }
-
-    // Fallback: search PATH via 'which'
-    QProcess process;
-    process.start("which", {"ffmpeg"});
-    if (process.waitForFinished(3000) && process.exitCode() == 0) {
-        QString path = QString::fromUtf8(process.readAllStandardOutput()).trimmed();
-        if (!path.isEmpty()) {
-            UIVIEW_LOG_DEBUG("Found FFmpeg in PATH: " << path.toStdString());
-            return path;
-        }
-    }
-
-    UIVIEW_LOG_DEBUG("FFmpeg not found. appDir=" << appDir.toStdString());
-    return QString();
+    return false;
 }
 
 QString RecordingController::getDefaultSavePath()
@@ -310,7 +225,9 @@ QString RecordingController::getDefaultSavePath()
     return QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
 }
 
-// === File Browser Methods ===
+// ============================================================================
+// File Browser Methods (UI-layer only — uses platform Qt APIs)
+// ============================================================================
 
 void RecordingController::openRecordingsFolder()
 {
@@ -348,7 +265,41 @@ void RecordingController::openFile(const QString& filePath)
 #endif
 }
 
-// === ViewModel Callback Slots ===
+// ============================================================================
+// ViewModel Callback Slots
+// ============================================================================
+
+void RecordingController::onVMStateChanged(int state)
+{
+    auto newState = static_cast<RecordingState>(state);
+    bool wasRecording = m_isRecording;
+    bool wasPaused = m_isPaused;
+
+    m_isRecording = (newState == RecordingState::Recording || newState == RecordingState::Paused);
+    m_isPaused = (newState == RecordingState::Paused);
+
+    if (newState == RecordingState::Idle) {
+        m_recordingDuration = 0;
+    }
+
+    if (m_isRecording != wasRecording || m_isPaused != wasPaused) {
+        emit recordingStateChanged();
+    }
+}
+
+void RecordingController::onVMDurationChanged(int seconds)
+{
+    if (m_recordingDuration != seconds) {
+        m_recordingDuration = seconds;
+        emit recordingDurationChanged();
+    }
+}
+
+void RecordingController::onVMRecordingCompleted(const QString& filePath)
+{
+    UIVIEW_LOG_DEBUG("onVMRecordingCompleted: " << filePath.toStdString());
+    emit recordingCompleted(filePath);
+}
 
 void RecordingController::onVMSettingsChanged(const RecordingSettings& settings)
 {

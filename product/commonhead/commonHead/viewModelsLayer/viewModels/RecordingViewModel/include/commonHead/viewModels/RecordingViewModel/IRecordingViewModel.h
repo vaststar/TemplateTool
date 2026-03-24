@@ -28,6 +28,15 @@ public:
     IRecordingViewModelCallback& operator=(IRecordingViewModelCallback&&) = delete;
     virtual ~IRecordingViewModelCallback() = default;
 
+    /// Recording state machine transition (Idle / Recording / Paused)
+    virtual void onStateChanged(model::RecordingState state) = 0;
+
+    /// Duration tick (seconds elapsed)
+    virtual void onDurationChanged(int seconds) = 0;
+
+    /// Recording completed — output file path
+    virtual void onRecordingCompleted(const std::string& filePath) = 0;
+
     /// Settings updated (e.g. from another source or DB load)
     virtual void onSettingsChanged(const model::RecordingSettings& settings) = 0;
 
@@ -46,6 +55,24 @@ class COMMONHEAD_EXPORT IRecordingViewModel
 public:
     using IViewModel::IViewModel;
     ~IRecordingViewModel() override = default;
+
+    // === Recording Control ===
+    virtual void startRecording(int displayIndex = 0) = 0;
+    virtual void startRegionRecording(int x, int y, int w, int h) = 0;
+    virtual void stopRecording() = 0;
+    virtual void pauseRecording() = 0;
+    virtual void resumeRecording() = 0;
+    virtual void convertToGif(const std::string& inputPath, const std::string& outputPath) = 0;
+
+    // === State Query ===
+    [[nodiscard]] virtual model::RecordingState getState() const = 0;
+    [[nodiscard]] virtual int getDuration() const = 0;
+    [[nodiscard]] virtual bool isFFmpegAvailable() const = 0;
+    [[nodiscard]] virtual std::string getFFmpegPath() const = 0;
+
+    /// Set the application binary directory for FFmpeg discovery.
+    /// Must be called after initViewModel() and before startRecording().
+    virtual void setAppDir(const std::string& appDir) = 0;
 
     // === Settings ===
     [[nodiscard]] virtual model::RecordingSettings getSettings() const = 0;

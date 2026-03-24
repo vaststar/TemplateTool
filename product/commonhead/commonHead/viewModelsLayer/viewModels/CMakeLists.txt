@@ -108,6 +108,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     SystemUtils
     NetworkProxyAgent
     ScreenCaptureUtils
+    ScreenRecordingUtils
     ImageProcessUtils
 )
 
