@@ -125,7 +125,8 @@ void ClientInfoManager::initializeAppClient()
                 db::schema::UserContactTable{},
                 db::schema::GroupContactTable{},
                 db::schema::SettingsTable{},
-                db::schema::ScreenshotSettingsTable{}
+                db::schema::ScreenshotSettingsTable{},
+                db::schema::RecordingSettingsTable{}
             };
             dataWarehouseService->initializeDB(
                 std::make_shared<ucf::service::model::SqliteDBConfig>(dbConfig.getDBId(), dbConfig.getDBFilePath()),

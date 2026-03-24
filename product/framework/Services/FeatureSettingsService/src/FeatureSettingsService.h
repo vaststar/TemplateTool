@@ -38,6 +38,8 @@ public:
     // IFeatureSettingsService
     virtual model::ScreenshotFeatureSettings getScreenshotSettings() const override;
     virtual void updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings) override;
+    virtual model::RecordingFeatureSettings getRecordingSettings() const override;
+    virtual void updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings) override;
 
 protected:
     // IService

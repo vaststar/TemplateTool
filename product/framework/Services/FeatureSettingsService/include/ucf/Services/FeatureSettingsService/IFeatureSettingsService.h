@@ -31,6 +31,9 @@ public:
     [[nodiscard]] virtual model::ScreenshotFeatureSettings getScreenshotSettings() const = 0;
     virtual void updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings) = 0;
 
+    [[nodiscard]] virtual model::RecordingFeatureSettings getRecordingSettings() const = 0;
+    virtual void updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings) = 0;
+
 public:
     static std::shared_ptr<IFeatureSettingsService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

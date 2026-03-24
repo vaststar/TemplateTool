@@ -16,7 +16,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/AppContext/AppContext.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
+    src/LoggerDefine.h
     src/AppContext.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC

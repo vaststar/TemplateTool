@@ -33,6 +33,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/SettingsViewModelEmitter.h
     ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h
     ViewModelSingalEmitter/ScreenshotViewModelEmitter.h
+    ViewModelSingalEmitter/RecordingViewModelEmitter.h
 
     PageViews/ContactsPage/include/ContactListItemModel.h
     PageViews/ContactsPage/include/ContactsPageController.h

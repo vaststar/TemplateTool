@@ -38,4 +38,14 @@ ScreenshotSettingsTable::ScreenshotSettingsTable()
 {
 }
 
+RecordingSettingsTable::RecordingSettingsTable()
+    : ucf::service::model::DBTableModel(TableName,{
+        {SettingsIdentifierField, "TEXT UNIQUE NOT NULL"},
+        {OutputDirectoryField, "TEXT"},
+        {VideoFormatField, "TEXT"},
+        {FramesPerSecondField, "INTEGER"}
+    })
+{
+}
+
 }

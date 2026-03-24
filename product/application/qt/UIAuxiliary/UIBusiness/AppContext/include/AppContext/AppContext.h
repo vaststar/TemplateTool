@@ -34,7 +34,7 @@ Q_OBJECT
 public:
     explicit AppContext(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework);
     ~AppContext();
-    
+
     AppContext(const AppContext&) = delete;
     AppContext(AppContext&&) = delete;
     AppContext& operator=(const AppContext&) = delete;

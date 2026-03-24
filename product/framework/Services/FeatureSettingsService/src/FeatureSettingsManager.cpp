@@ -45,6 +45,7 @@ void FeatureSettingsManager::databaseInitialized(const std::string& databaseId)
 {
     SERVICE_LOG_DEBUG("Database initialized, databaseId:" << databaseId);
     loadScreenshotSettingsFromDatabase();
+    loadRecordingSettingsFromDatabase();
 }
 
 void FeatureSettingsManager::loadScreenshotSettingsFromDatabase()
@@ -157,6 +158,121 @@ void FeatureSettingsManager::saveScreenshotSettingsToDatabase()
         << " jpegQuality=" << settingsCopy.jpegQuality
         << " captureDelay=" << settingsCopy.captureDelay
         << " addTimestamp=" << settingsCopy.addTimestamp);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+////////////////////Recording Settings///////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+model::RecordingFeatureSettings FeatureSettingsManager::getRecordingSettings() const
+{
+    std::lock_guard lock(mMutex);
+    return mRecordingSettings;
+}
+
+void FeatureSettingsManager::updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings)
+{
+    {
+        std::lock_guard lock(mMutex);
+        mRecordingSettings = recordingSettings;
+    }
+    saveRecordingSettingsToDatabase();
+}
+
+void FeatureSettingsManager::loadRecordingSettingsFromDatabase()
+{
+    auto coreFramework = mCoreFrameworkWPtr.lock();
+    if (!coreFramework) return;
+
+    auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
+    if (!dataWarehouseService) return;
+
+    auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
+    if (!clientInfoService) return;
+
+    const std::string databaseId = clientInfoService->getSharedDBConfig().getDBId();
+
+    dataWarehouseService->fetchFromDatabase(
+        databaseId,
+        db::schema::RecordingSettingsTable::TableName,
+        {
+            db::schema::RecordingSettingsTable::SettingsIdentifierField,
+            db::schema::RecordingSettingsTable::OutputDirectoryField,
+            db::schema::RecordingSettingsTable::VideoFormatField,
+            db::schema::RecordingSettingsTable::FramesPerSecondField
+        },
+        {
+            {db::schema::RecordingSettingsTable::SettingsIdentifierField, "default", ucf::service::model::DBOperatorType::Equal}
+        },
+        [this](const ucf::service::model::DatabaseDataRecords& results) {
+            if (results.empty()) {
+                SERVICE_LOG_DEBUG("No recording settings found in database, using defaults");
+                return;
+            }
+
+            const auto& record = results.front();
+            std::lock_guard lock(mMutex);
+
+            auto outputDirectoryValue = record.getColumnData(db::schema::RecordingSettingsTable::OutputDirectoryField);
+            mRecordingSettings.outputDirectory = outputDirectoryValue.getStringValue();
+
+            auto videoFormatValue = record.getColumnData(db::schema::RecordingSettingsTable::VideoFormatField);
+            mRecordingSettings.videoFormat = videoFormatValue.getStringValue();
+
+            auto framesPerSecondValue = record.getColumnData(db::schema::RecordingSettingsTable::FramesPerSecondField);
+            mRecordingSettings.framesPerSecond = framesPerSecondValue.getIntValue();
+
+            SERVICE_LOG_DEBUG("Loaded recording settings from database:"
+                << " outputDirectory=" << mRecordingSettings.outputDirectory
+                << " videoFormat=" << mRecordingSettings.videoFormat
+                << " framesPerSecond=" << mRecordingSettings.framesPerSecond);
+        }
+    );
+}
+
+void FeatureSettingsManager::saveRecordingSettingsToDatabase()
+{
+    auto coreFramework = mCoreFrameworkWPtr.lock();
+    if (!coreFramework) return;
+
+    auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
+    if (!dataWarehouseService) return;
+
+    auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
+    if (!clientInfoService) return;
+
+    const std::string databaseId = clientInfoService->getSharedDBConfig().getDBId();
+
+    model::RecordingFeatureSettings settingsCopy;
+    {
+        std::lock_guard lock(mMutex);
+        settingsCopy = mRecordingSettings;
+    }
+
+    ucf::service::model::ListOfDBValues databaseValues;
+    databaseValues.emplace_back(ucf::service::model::DBDataValues{
+        std::string("default"),
+        settingsCopy.outputDirectory,
+        settingsCopy.videoFormat,
+        settingsCopy.framesPerSecond
+    });
+
+    dataWarehouseService->insertIntoDatabase(
+        databaseId,
+        db::schema::RecordingSettingsTable::TableName,
+        {
+            db::schema::RecordingSettingsTable::SettingsIdentifierField,
+            db::schema::RecordingSettingsTable::OutputDirectoryField,
+            db::schema::RecordingSettingsTable::VideoFormatField,
+            db::schema::RecordingSettingsTable::FramesPerSecondField
+        },
+        databaseValues
+    );
+
+    SERVICE_LOG_DEBUG("Saved recording settings to database:"
+        << " outputDirectory=" << settingsCopy.outputDirectory
+        << " videoFormat=" << settingsCopy.videoFormat
+        << " framesPerSecond=" << settingsCopy.framesPerSecond);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

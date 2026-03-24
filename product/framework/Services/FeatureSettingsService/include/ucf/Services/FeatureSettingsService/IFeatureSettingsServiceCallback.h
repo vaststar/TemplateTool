@@ -16,6 +16,7 @@ public:
 public:
     virtual void onFeatureSettingsReady() = 0;
     virtual void onScreenshotSettingsChanged(const model::ScreenshotFeatureSettings& screenshotSettings) = 0;
+    virtual void onRecordingSettingsChanged(const model::RecordingFeatureSettings& recordingSettings) = 0;
 };
 
 } // namespace ucf::service

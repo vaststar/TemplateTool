@@ -1292,22 +1292,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="167"/>
         <source>Recording already in progress</source>
         <translation>录制已在进行中</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="172"/>
         <source>FFmpeg not found. Please install FFmpeg to use recording features.</source>
         <translation>未找到 FFmpeg。请安装 FFmpeg 以使用录制功能。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="249"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="320"/>
         <source>Recordings folder not set</source>
         <translation>未设置录制文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="267"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="338"/>
         <source>File not found: %1</source>
         <translation>文件未找到: %1</translation>
     </message>
@@ -1315,12 +1315,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="23"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="26"/>
         <source>🎬 Recording</source>
         <translation>🎬 录屏</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="28"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="30"/>
         <source>⚙️ Settings</source>
         <translation>⚙️ 设置</translation>
     </message>

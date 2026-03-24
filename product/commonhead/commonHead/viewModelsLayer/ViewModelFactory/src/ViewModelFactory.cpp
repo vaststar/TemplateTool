@@ -12,6 +12,7 @@
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 #include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
+#include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
 
 namespace commonHead::viewModels{
 
@@ -89,5 +90,10 @@ std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory
 std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> ViewModelFactory::createScreenshotViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IScreenshotViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IRecordingViewModel> ViewModelFactory::createRecordingViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IRecordingViewModel>();
 }
 } // namespace commonHead::viewModels

@@ -39,4 +39,14 @@ struct SERVICE_EXPORT ScreenshotSettingsTable: public ucf::service::model::DBTab
     static constexpr auto CaptureDelayField = "CAPTURE_DELAY";
     static constexpr auto AddTimestampField = "ADD_TIMESTAMP";
 };
+
+struct SERVICE_EXPORT RecordingSettingsTable: public ucf::service::model::DBTableModel
+{
+    RecordingSettingsTable();
+    static constexpr auto TableName = "RecordingSettings";
+    static constexpr auto SettingsIdentifierField = "SETTINGS_IDENTIFIER";
+    static constexpr auto OutputDirectoryField = "OUTPUT_DIRECTORY";
+    static constexpr auto VideoFormatField = "VIDEO_FORMAT";
+    static constexpr auto FramesPerSecondField = "FRAMES_PER_SECOND";
+};
 }

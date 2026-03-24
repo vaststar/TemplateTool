@@ -6,27 +6,28 @@ import UTComponent
 /**
  * Recording Panel - Main panel with Recording controls and Settings tabs
  */
-Item {
+FocusScope {
     id: root
 
     required property var controller
 
-    TabBar {
+    UTTabBar {
         id: tabBar
         anchors {
             top: parent.top
+            topMargin: 4
             left: parent.left
+            leftMargin: 4
             right: parent.right
         }
+        focus: true
 
-        TabButton {
+        UTTabButton {
             text: qsTr("🎬 Recording")
-            width: implicitWidth
         }
 
-        TabButton {
+        UTTabButton {
             text: qsTr("⚙️ Settings")
-            width: implicitWidth
         }
     }
 

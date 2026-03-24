@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <mutex>
 #include <ucf/Services/FeatureSettingsService/FeatureSettingsModel.h>
 
 namespace ucf::framework {
@@ -24,15 +25,22 @@ public:
 public:
     model::ScreenshotFeatureSettings getScreenshotSettings() const;
     void updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings);
+
+    model::RecordingFeatureSettings getRecordingSettings() const;
+    void updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings);
+
     void databaseInitialized(const std::string& databaseId);
 
 private:
     void loadScreenshotSettingsFromDatabase();
     void saveScreenshotSettingsToDatabase();
+    void loadRecordingSettingsFromDatabase();
+    void saveRecordingSettingsToDatabase();
 
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     model::ScreenshotFeatureSettings mScreenshotSettings;
+    model::RecordingFeatureSettings mRecordingSettings;
     mutable std::mutex mMutex;
 };
 

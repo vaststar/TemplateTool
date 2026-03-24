@@ -112,6 +112,17 @@ void FeatureSettingsService::updateScreenshotSettings(const model::ScreenshotFea
     fireNotification(&IFeatureSettingsServiceCallback::onScreenshotSettingsChanged, screenshotSettings);
 }
 
+model::RecordingFeatureSettings FeatureSettingsService::getRecordingSettings() const
+{
+    return mDataPrivate->getFeatureSettingsManager().getRecordingSettings();
+}
+
+void FeatureSettingsService::updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings)
+{
+    mDataPrivate->getFeatureSettingsManager().updateRecordingSettings(recordingSettings);
+    fireNotification(&IFeatureSettingsServiceCallback::onRecordingSettingsChanged, recordingSettings);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish FeatureSettingsService Logic///////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

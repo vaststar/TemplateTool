@@ -3,10 +3,20 @@
 #include <QObject>
 #include <QRect>
 #include <QtQml>
+#include <memory>
 #include "UIViewBase/include/UIViewController.h"
+#include "ViewModelSingalEmitter/RecordingViewModelEmitter.h"
+
+namespace commonHead::viewModels {
+    class IRecordingViewModel;
+}
 
 /**
  * @brief Recording Controller - handles screen recording and GIF conversion
+ *
+ * Delegates settings persistence to IRecordingViewModel (commonhead layer).
+ * Receives ViewModel callbacks via RecordingViewModelEmitter and
+ * translates them to Q_PROPERTY / Qt signal updates for QML.
  *
  * Provides functionality for:
  * - Full screen recording (via FFmpeg)
@@ -76,15 +86,22 @@ signals:
 private slots:
     void onRecordingDurationTick();
 
+    // ── ViewModel emitter slots ──
+    void onVMSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
+    void onVMError(const QString& message);
+
 private:
-    void loadSettings();
-    void saveSettings();
     QString findFFmpegPath();
+
+    // ViewModel
+    std::shared_ptr<commonHead::viewModels::IRecordingViewModel> m_viewModel;
+    std::shared_ptr<UIVMSignalEmitter::RecordingViewModelEmitter> m_viewModelEmitter;
 
     bool m_isRecording = false;
     bool m_isPaused = false;
     int m_recordingDuration = 0;
 
+    // Settings shadow (for QML bindings)
     QString m_outputDirectory;
     QString m_videoFormat = "mp4";
     int m_fps = 30;
