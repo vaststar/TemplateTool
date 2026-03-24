@@ -80,7 +80,7 @@ Item {
                         UTText {
                             text: qsTr("PNG for quality, JPG for smaller size")
                             fontEnum: UIFontToken.Caption_Text
-                            colorEnum: UIColorToken.Content_Secondary
+                            colorEnum: UIColorToken.Content_Secondary_Text
                         }
                     }
                 }
@@ -155,7 +155,7 @@ Item {
                         UTText {
                             text: qsTr("Add date/time watermark to screenshots")
                             fontEnum: UIFontToken.Caption_Text
-                            colorEnum: UIColorToken.Content_Secondary
+                            colorEnum: UIColorToken.Content_Secondary_Text
                         }
                     }
                 }

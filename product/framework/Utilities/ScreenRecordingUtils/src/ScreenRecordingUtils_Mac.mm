@@ -106,13 +106,15 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     }
 
     // Build FFmpeg command-line arguments
-    // macOS screen capture: -f avfoundation -i "<display>:none"
+    // macOS screen capture: -f avfoundation -i "Capture screen <N>:none"
+    // We use the screen device name instead of a raw numeric index because
+    // avfoundation lists cameras before screens (e.g. index 0 = FaceTime camera,
+    // index 1 = Capture screen 0). Using the name avoids mis-targeting the camera.
     std::string inputSpec;
     if (config.isRegion) {
-        // For region capture on macOS we still capture full screen then crop
-        inputSpec = std::to_string(config.displayIndex) + ":none";
+        inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
     } else {
-        inputSpec = std::to_string(config.displayIndex) + ":none";
+        inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
     }
 
     std::vector<std::string> args;
@@ -174,12 +176,19 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
         dup2(stdinPipe[0], STDIN_FILENO);
         close(stdinPipe[0]);
 
-        // Redirect stdout/stderr to /dev/null to avoid polluting parent
+        // Redirect stdout to /dev/null, stderr to a log file for debugging
         int devnull = open("/dev/null", O_WRONLY);
         if (devnull >= 0) {
             dup2(devnull, STDOUT_FILENO);
-            dup2(devnull, STDERR_FILENO);
             close(devnull);
+        }
+
+        // Write FFmpeg stderr to a log file for troubleshooting
+        std::string logPath = config.outputPath + ".ffmpeg.log";
+        int logFd = open(logPath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if (logFd >= 0) {
+            dup2(logFd, STDERR_FILENO);
+            close(logFd);
         }
 
         execv(config.ffmpegPath.c_str(), argv.data());

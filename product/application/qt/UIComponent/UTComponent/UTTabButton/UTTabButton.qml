@@ -21,8 +21,9 @@ BaseTabButton {
 
     property var fontEnum: UIFontToken.Button_Text
     property var fontColorEnum: UIColorToken.Button_Primary_Text
+    property var checkedFontColorEnum: UIColorToken.Content_Heading
     property var backgroundColorEnum: UIColorToken.Button_Primary_Background
-    property var checkedBackgroundColorEnum: UIColorToken.Button_Primary_Background
+    property var checkedBackgroundColorEnum: UIColorToken.Content_Section_Background
     property var borderColorEnum: UIColorToken.Button_Primary_Border
     property real radius: 4
     property real borderWidth: 0
@@ -36,7 +37,9 @@ BaseTabButton {
     contentItem: Text {
         text: control.text
         font: UTComponentUtil.getUIFont(control.fontEnum)
-        color: UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
+        color: control.checked
+               ? UTComponentUtil.getPlainUIColor(control.checkedFontColorEnum, UIColorState.Normal)
+               : UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

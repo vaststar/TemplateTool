@@ -224,14 +224,14 @@ FocusScope {
                     Layout.alignment: Qt.AlignHCenter
                     text: qsTr("No screenshots yet")
                     fontEnum: UIFontToken.Body_Text
-                    colorEnum: UIColorToken.Content_Secondary
+                    colorEnum: UIColorToken.Content_Secondary_Text
                 }
 
                 UTText {
                     Layout.alignment: Qt.AlignHCenter
                     text: qsTr("Click \u0027Capture Region\u0027 or \u0027Full Screen\u0027 to take a screenshot")
                     fontEnum: UIFontToken.Caption_Text
-                    colorEnum: UIColorToken.Content_Secondary
+                    colorEnum: UIColorToken.Content_Secondary_Text
                 }
             }
 
@@ -567,7 +567,7 @@ FocusScope {
             UTText {
                 text: qsTr("%1 screenshots").arg(folderModel.count)
                 fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Content_Secondary
+                colorEnum: UIColorToken.Content_Secondary_Text
             }
 
             Item { Layout.fillWidth: true }
@@ -677,14 +677,14 @@ FocusScope {
 
                 UTText {
                     text: qsTr("Select a Window to Capture")
-                    fontEnum: UIFontToken.Body_Text_Bold
+                    fontEnum: UIFontToken.Body_Text_Medium
                     Layout.fillWidth: true
                 }
 
                 UTText {
                     text: qsTr("%1 windows").arg(windowPicker.windowModel.length)
                     fontEnum: UIFontToken.Caption_Text
-                    colorEnum: UIColorToken.Content_Secondary
+                    colorEnum: UIColorToken.Content_Secondary_Text
                 }
             }
 
@@ -917,7 +917,7 @@ FocusScope {
                         Layout.alignment: Qt.AlignHCenter
                         text: qsTr("No windows found")
                         fontEnum: UIFontToken.Body_Text
-                        colorEnum: UIColorToken.Content_Secondary
+                        colorEnum: UIColorToken.Content_Secondary_Text
                     }
                 }
             }
@@ -938,7 +938,7 @@ FocusScope {
                 UTText {
                     text: qsTr("Hover to preview, click to capture")
                     fontEnum: UIFontToken.Caption_Text
-                    colorEnum: UIColorToken.Content_Secondary
+                    colorEnum: UIColorToken.Content_Secondary_Text
                     Layout.fillWidth: true
                 }
 
