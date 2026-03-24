@@ -85,10 +85,15 @@ public:
     Q_INVOKABLE QString getDefaultSavePath();
 
     // === Overlay (delegate to ViewModel) ===
-    Q_INVOKABLE QVariantMap grabScreenForOverlay();
+    /// Hides the main window, waits for the animation, captures the screen,
+    /// then emits overlayScreenshotReady(...) asynchronously.
+    Q_INVOKABLE void grabScreenForOverlay();
     Q_INVOKABLE QVariantMap saveRegionScreenshot(int x, int y, int w, int h,
                                                   int paintedWidth, int paintedHeight,
                                                   const QVariantList& annotations);
+
+    /// Restore the main window after region-capture overlay closes.
+    Q_INVOKABLE void restoreMainWindow();
 
     // === File Browser Methods (UI-layer only) ===
     Q_INVOKABLE void openScreenshotsFolder();
@@ -110,6 +115,7 @@ signals:
     void annotationsChanged();
     void settingsChanged();
     void captureCompleted(const QString& filePath);
+    void overlayScreenshotReady(const QString& base64, int width, int height);
     void errorOccurred(const QString& message);
 
 private slots:

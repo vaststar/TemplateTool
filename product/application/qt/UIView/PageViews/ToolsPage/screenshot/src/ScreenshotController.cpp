@@ -17,7 +17,6 @@
 #include <QImage>
 #include <QUrl>
 #include <QWindow>
-#include <QThread>
 #include <QTimer>
 
 using namespace commonHead::viewModels;
@@ -97,6 +96,11 @@ void ScreenshotController::init()
         s.outputDirectory = m_outputDirectory.toStdString();
         m_viewModel->updateSettings(s);
     }
+
+    // Notify QML that settings properties are now loaded.
+    // QML bindings read default values before init() runs,
+    // so we must emit settingsChanged() to push the DB-loaded values.
+    emit settingsChanged();
 }
 
 // ============================================================================
@@ -186,13 +190,15 @@ void ScreenshotController::setIncludeTimestamp(bool include)
 void ScreenshotController::captureFullScreen()
 {
     if (!m_viewModel) return;
-    UIVIEW_LOG_DEBUG("captureFullScreen -> hide window, then capture");
+    UIVIEW_LOG_DEBUG("captureFullScreen -> delaySeconds=" << m_delaySeconds);
 
     // Hide the main window via EventBus so it doesn't appear in the screenshot
     sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Hide);
 
-    // Wait for the window to finish hiding, then capture
-    QTimer::singleShot(150, this, [this]() {
+    // Total delay = user delay (seconds) + 150ms for window hide animation
+    int totalDelayMs = m_delaySeconds * 1000 + 150;
+
+    QTimer::singleShot(totalDelayMs, this, [this]() {
         if (!m_viewModel) return;
 
         m_viewModel->captureFullScreen();
@@ -206,10 +212,19 @@ void ScreenshotController::captureFullScreen()
 void ScreenshotController::captureWindow(qint64 windowId)
 {
     if (!m_viewModel) return;
-    UIVIEW_LOG_DEBUG("captureWindow: " << windowId << " -> ViewModel");
-    m_viewModel->captureWindow(static_cast<int64_t>(windowId));
-    // Immediately save to file
-    m_viewModel->saveScreenshot();
+    UIVIEW_LOG_DEBUG("captureWindow: " << windowId << " delaySeconds=" << m_delaySeconds);
+
+    if (m_delaySeconds > 0) {
+        int delayMs = m_delaySeconds * 1000;
+        QTimer::singleShot(delayMs, this, [this, windowId]() {
+            if (!m_viewModel) return;
+            m_viewModel->captureWindow(static_cast<int64_t>(windowId));
+            m_viewModel->saveScreenshot();
+        });
+    } else {
+        m_viewModel->captureWindow(static_cast<int64_t>(windowId));
+        m_viewModel->saveScreenshot();
+    }
 }
 
 QVariantList ScreenshotController::getWindowList()
@@ -358,47 +373,46 @@ QString ScreenshotController::getDefaultSavePath()
 // Overlay Methods — delegate to ViewModel
 // ============================================================================
 
-QVariantMap ScreenshotController::grabScreenForOverlay()
+void ScreenshotController::grabScreenForOverlay()
 {
-    QVariantMap result;
     if (!m_viewModel) {
-        result["success"] = false;
-        result["error"] = QStringLiteral("ViewModel not initialized");
-        return result;
+        emit errorOccurred(QStringLiteral("ViewModel not initialized"));
+        return;
     }
 
-    UIVIEW_LOG_DEBUG("grabScreenForOverlay -> ViewModel");
+    UIVIEW_LOG_DEBUG("grabScreenForOverlay -> hide window, then capture");
 
-    // Hide the app window via EventBus so it doesn't appear in the screenshot
+    // Hide the main window so it won't appear in the screenshot.
     sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Hide);
 
-    // Process events to let the hide take effect, then wait briefly
-    QGuiApplication::processEvents();
-    QThread::msleep(150);
-    QGuiApplication::processEvents();
+    // Wait 150ms for the window-hide animation to finish, then capture.
+    // QTimer::singleShot returns to the event loop so the Hide event is
+    // delivered naturally — no processEvents() / msleep() needed.
+    QTimer::singleShot(150, this, [this]() {
+        if (!m_viewModel) {
+            sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
+            return;
+        }
 
-    // captureFullScreen is synchronous — it captures, converts to base64,
-    // and fires onScreenCaptured callback which updates m_screenshotBase64/Width/Height
-    m_viewModel->captureFullScreen();
+        // captureFullScreen is synchronous — fires onScreenCaptured callback
+        // on the same thread, so m_screenshotBase64/Width/Height are updated.
+        m_viewModel->captureFullScreen();
 
-    // Restore the app window via EventBus
-    sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
+        if (m_screenshotBase64.isEmpty()) {
+            sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
+            emit errorOccurred(QStringLiteral("Screen capture failed"));
+            return;
+        }
 
-    // After captureFullScreen returns, the callback has already run (same thread),
-    // so m_screenshotBase64/Width/Height are up-to-date.
-    if (m_screenshotBase64.isEmpty()) {
-        result["success"] = false;
-        result["error"] = QStringLiteral("Screen capture failed");
-        return result;
-    }
+        UIVIEW_LOG_DEBUG("grabScreenForOverlay captured: "
+                         << m_screenshotWidth << "x" << m_screenshotHeight);
 
-    result["success"] = true;
-    result["base64"] = m_screenshotBase64;
-    result["width"] = m_screenshotWidth;
-    result["height"] = m_screenshotHeight;
-
-    UIVIEW_LOG_DEBUG("grabScreenForOverlay captured: " << m_screenshotWidth << "x" << m_screenshotHeight);
-    return result;
+        // Notify QML to open the overlay. Main window stays hidden;
+        // restoreMainWindow() will be called when the overlay closes.
+        emit overlayScreenshotReady(m_screenshotBase64,
+                                    m_screenshotWidth,
+                                    m_screenshotHeight);
+    });
 }
 
 QVariantMap ScreenshotController::saveRegionScreenshot(int x, int y, int w, int h,
@@ -481,6 +495,16 @@ bool ScreenshotController::hasPermission()
 void ScreenshotController::requestPermission()
 {
     if (m_viewModel) m_viewModel->requestPermission();
+}
+
+// ============================================================================
+// Main Window Restore
+// ============================================================================
+
+void ScreenshotController::restoreMainWindow()
+{
+    UIVIEW_LOG_DEBUG("restoreMainWindow");
+    sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
 }
 
 // ============================================================================

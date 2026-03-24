@@ -61,6 +61,12 @@ Window {
     property real selW: Math.abs(selEndX - selStartX)
     property real selH: Math.abs(selEndY - selStartY)
 
+    // Restore the main app window whenever the overlay closes
+    // (Escape, Cancel button, or successful Save).
+    onClosing: {
+        controller.restoreMainWindow()
+    }
+
     // Close on Escape
     Shortcut {
         sequence: "Escape"

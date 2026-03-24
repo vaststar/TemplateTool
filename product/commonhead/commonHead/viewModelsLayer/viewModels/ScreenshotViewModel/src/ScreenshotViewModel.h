@@ -74,6 +74,9 @@ private:
     // Convert between ViewModel AnnotationData and Utilities Annotation
     static ucf::utilities::imageprocess::Annotation toUtilsAnnotation(const model::AnnotationData& ann);
 
+    // Add timestamp watermark text to the bottom-right corner of the image
+    void addTimestampWatermark(ucf::utilities::imageprocess::ImageData& image) const;
+
 private:
     mutable std::mutex m_mutex;
 

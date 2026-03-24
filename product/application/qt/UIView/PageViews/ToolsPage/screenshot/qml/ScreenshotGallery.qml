@@ -110,16 +110,19 @@ FocusScope {
             UTButton {
                 text: qsTr("\ud83d\udcf7 Capture Region")
                 focus: true  // first tab stop in gallery
-                onClicked: {
-                    var result = controller.grabScreenForOverlay()
-                    if (result.success) {
-                        var overlay = overlayComponent.createObject(null, {
-                            initialScreenshot: result.base64,
-                            imgWidth: result.width,
-                            imgHeight: result.height
-                        })
-                        overlay.show()
-                    }
+                onClicked: controller.grabScreenForOverlay()
+            }
+
+            // Open overlay when the async capture is ready
+            Connections {
+                target: controller
+                function onOverlayScreenshotReady(base64, width, height) {
+                    var overlay = overlayComponent.createObject(null, {
+                        initialScreenshot: base64,
+                        imgWidth: width,
+                        imgHeight: height
+                    })
+                    overlay.show()
                 }
             }
 

@@ -15,6 +15,7 @@
 #include <ucf/Services/MediaService/IMediaService.h>
 #include <ucf/Services/StabilityService/IStabilityService.h>
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
+#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -209,6 +210,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(mServiceFactory->createContactService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(mServiceFactory->createImageService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(mServiceFactory->createMediaService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IFeatureSettingsService>(mServiceFactory->createFeatureSettingsService());
 
         mFrameworkDependencies.coreFramework->initServices();
     }

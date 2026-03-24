@@ -274,6 +274,14 @@ void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double
     // Draw annotations onto cropped image
     cropped = renderAnnotationsOnImage(cropped);
 
+    // Add timestamp watermark if enabled
+    {
+        std::lock_guard lock(m_mutex);
+        if (m_settings.addTimestamp) {
+            addTimestampWatermark(cropped);
+        }
+    }
+
     // Save to file
     std::string filePath;
     {
@@ -449,6 +457,11 @@ std::string ScreenshotViewModel::saveScreenshot()
 
         imageToSave = renderAnnotationsOnImage(m_capturedImage);
 
+        // Add timestamp watermark if enabled
+        if (m_settings.addTimestamp) {
+            addTimestampWatermark(imageToSave);
+        }
+
         std::string dir = m_settings.outputDirectory;
         if (dir.empty()) {
             const char* home = std::getenv("HOME");
@@ -591,6 +604,56 @@ Annotation ScreenshotViewModel::toUtilsAnnotation(const model::AnnotationData& a
     a.mosaicBlockSize = ann.mosaicBlockSize;
 
     return a;
+}
+
+void ScreenshotViewModel::addTimestampWatermark(ImageData& image) const
+{
+    if (!image.isValid()) return;
+
+    // Generate timestamp string: "YYYY-MM-DD HH:MM:SS"
+    auto now = std::chrono::system_clock::now();
+    auto time = std::chrono::system_clock::to_time_t(now);
+    std::tm tm{};
+#if defined(_WIN32)
+    localtime_s(&tm, &time);
+#else
+    localtime_r(&time, &tm);
+#endif
+
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+    std::string timestampText = oss.str();
+
+    // Calculate font size based on image dimensions (roughly 2% of the shorter side)
+    int shorterSide = std::min(image.width, image.height);
+    int fontSize = std::max(12, shorterSide / 50);
+
+    // Position: bottom-right corner with padding
+    int padding = fontSize;
+    // For FONT_HERSHEY_SIMPLEX, character width ≈ fontScale * 20 = (fontSize/16) * 20 = fontSize * 1.25
+    int textWidth = static_cast<int>(timestampText.length() * fontSize * 1.3);
+    int textX = std::max(padding, image.width - textWidth - padding);
+    int textY = image.height - padding - fontSize;
+
+    // Draw shadow (dark offset) for readability
+    Annotation shadowAnnotation;
+    shadowAnnotation.type = AnnotationType::Text;
+    shadowAnnotation.rect = {textX + 1, textY + 1, 0, 0};
+    shadowAnnotation.text = timestampText;
+    shadowAnnotation.fontSize = fontSize;
+    shadowAnnotation.color = {0, 0, 0, 180};
+    shadowAnnotation.thickness = 1;
+    ImageProcessUtils::drawAnnotation(image, shadowAnnotation);
+
+    // Draw main text (white)
+    Annotation textAnnotation;
+    textAnnotation.type = AnnotationType::Text;
+    textAnnotation.rect = {textX, textY, 0, 0};
+    textAnnotation.text = timestampText;
+    textAnnotation.fontSize = fontSize;
+    textAnnotation.color = {255, 255, 255, 230};
+    textAnnotation.thickness = 1;
+    ImageProcessUtils::drawAnnotation(image, textAnnotation);
 }
 
 } // namespace commonHead::viewModels

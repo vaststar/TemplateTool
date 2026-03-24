@@ -33,6 +33,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     InvocationService
     StabilityService
     PerformanceService
+    FeatureSettingsService
     CoreFramework
     FilePathUtils
     LoggerUtils
