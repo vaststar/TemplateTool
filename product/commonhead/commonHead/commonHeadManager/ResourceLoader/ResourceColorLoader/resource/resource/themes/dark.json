@@ -277,6 +277,45 @@
         "hovered": "neutral-700",
         "selected": "neutral-700"
       }
+    },
+    {
+      "token": "tab-bar-background",
+      "color": {
+        "normal": "neutral-800"
+      }
+    },
+    {
+      "token": "tab-bar-indicator",
+      "color": {
+        "normal": "blue-500"
+      }
+    },
+    {
+      "token": "tab-button-background",
+      "color": {
+        "normal": "neutral-800",
+        "hovered": "neutral-700",
+        "pressed": "neutral-600"
+      }
+    },
+    {
+      "token": "tab-button-checked-background",
+      "color": {
+        "normal": "neutral-900"
+      }
+    },
+    {
+      "token": "tab-button-text",
+      "color": {
+        "normal": "neutral-400",
+        "hovered": "neutral-200"
+      }
+    },
+    {
+      "token": "tab-button-checked-text",
+      "color": {
+        "normal": "neutral-50"
+      }
     }
   ]
 }

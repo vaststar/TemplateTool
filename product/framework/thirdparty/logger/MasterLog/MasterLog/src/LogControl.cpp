@@ -53,7 +53,7 @@ void LogControl::initFileLogger( int logLevels, const std::string& logDirPath, c
     }
 }
 
-void LogControl::writeLog(const std::string& logTag, int logLevel, const std::string& filePath, 
+void LogControl::writeLog(const std::string& logTag, int logLevel, const std::string& filePath,
               int lineNumber,const std::string& functionName, const std::string& logMessage, const std::string& loggerName)
 {
     std::string messageLog = formatMessage(logTag,logLevel, filePath, lineNumber, functionName, logMessage);
@@ -77,8 +77,24 @@ void LogControl::stopLogger()
 
 std::string LogControl::getCurrentFormatedTime() const
 {
+#if defined(_WIN32)
     const auto start = std::chrono::utc_clock::now();
-    return std::format("{:%Y-%m-%dT%H:%M:%SZ}",start);
+    return std::format("{:%Y-%m-%dT%H:%M:%SZ}", start);
+#else
+    // macOS/Linux: libc++ doesn't support utc_clock, use system_clock + gmtime
+    const auto now = std::chrono::system_clock::now();
+    const auto nowTimeT = std::chrono::system_clock::to_time_t(now);
+    const auto nowMs = std::chrono::duration_cast<std::chrono::microseconds>(
+        now.time_since_epoch()) % 1000000;
+
+    std::tm utcTm{};
+    gmtime_r(&nowTimeT, &utcTm);
+
+    std::ostringstream oss;
+    oss << std::put_time(&utcTm, "%Y-%m-%dT%H:%M:%S")
+        << '.' << std::setfill('0') << std::setw(6) << nowMs.count() << 'Z';
+    return oss.str();
+#endif
 }
 
 std::string LogControl::getCurrentThreadId() const
@@ -107,7 +123,7 @@ std::string LogControl::getLogLevelString(int logLevel) const
     }
 }
 
-std::string LogControl::formatMessage(const std::string& logTag, int logLevel, const std::string& filePath, 
+std::string LogControl::formatMessage(const std::string& logTag, int logLevel, const std::string& filePath,
                           int lineNumber,const std::string& functionName, const std::string& logMessage)const
 {
     //filepath+linenumber
@@ -120,7 +136,7 @@ std::string LogControl::formatMessage(const std::string& logTag, int logLevel, c
     {
         fileString = std::string(40 - fileString.length(),' ') + fileString;
     }
-    
+
     return std::format("{} {} [{}] [{}] [{}] [{}] {}\n", getCurrentFormatedTime(), getLogLevelString(logLevel), getCurrentThreadId(), fileString, logTag, functionName, logMessage);
 }
 }
