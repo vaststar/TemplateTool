@@ -75,14 +75,14 @@ void ClientInfoManager::setApplicationLanguage(model::LanguageType languageType)
     {
         ucf::service::model::ListOfDBValues dbVals;
         dbVals.emplace_back(ucf::service::model::DBDataValues{std::string("Language"), static_cast<int>(languageType)});
-        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, 
+        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName,
             {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField}, dbVals);
     }
 }
 
 std::vector<model::LanguageType> ClientInfoManager::getSupportedLanguages() const
 {
-    return {model::LanguageType::ENGLISH, model::LanguageType::CHINESE_SIMPLIFIED, model::LanguageType::CHINESE_TRADITIONAL, model::LanguageType::FRENCH, model::LanguageType::GERMAN, 
+    return {model::LanguageType::ENGLISH, model::LanguageType::CHINESE_SIMPLIFIED, model::LanguageType::CHINESE_TRADITIONAL, model::LanguageType::FRENCH, model::LanguageType::GERMAN,
             model::LanguageType::ITALIAN, model::LanguageType::SPANISH, model::LanguageType::PORTUGUESE, model::LanguageType::JAPANESE, model::LanguageType::KOREAN, model::LanguageType::RUSSIAN};
 }
 
@@ -93,7 +93,7 @@ void ClientInfoManager::setCurrentThemeType(model::ThemeType themeType)
     {
         ucf::service::model::ListOfDBValues dbVals;
         dbVals.emplace_back(ucf::service::model::DBDataValues{std::string("Theme"), static_cast<int>(themeType)});
-        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, 
+        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName,
             {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField}, dbVals);
     }
 }
@@ -111,6 +111,28 @@ std::vector<model::ThemeType> ClientInfoManager::getSupportedThemeTypes() const
 model::SqliteDBConfig ClientInfoManager::getSharedDBConfig() const
 {
     return model::SqliteDBConfig("test", ucf::utilities::FilePathUtils::joinPaths(std::filesystem::path(getDataStoragePath()), "shared_database.db").string(), "");
+}
+
+void ClientInfoManager::initializeAppClient()
+{
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        if (auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
+        {
+            auto dbConfig = getSharedDBConfig();
+            SERVICE_LOG_DEBUG("initializeAppClient with dbId:" << dbConfig.getDBId() << ", dbFilePath:" << dbConfig.getDBFilePath());
+            std::vector<ucf::service::model::DBTableModel> tables{
+                db::schema::UserContactTable{},
+                db::schema::GroupContactTable{},
+                db::schema::SettingsTable{},
+                db::schema::ScreenshotSettingsTable{}
+            };
+            dataWarehouseService->initializeDB(
+                std::make_shared<ucf::service::model::SqliteDBConfig>(dbConfig.getDBId(), dbConfig.getDBFilePath()),
+                tables
+            );
+        }
+    }
 }
 
 void ClientInfoManager::databaseInitialized(const std::string& dbId)
@@ -132,7 +154,7 @@ void ClientInfoManager::databaseInitialized(const std::string& dbId)
                     SERVICE_LOG_DEBUG("got language from database:" << val.getIntValue());
                 }
         });
-        
+
         dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
             {{db::schema::SettingsTable::KeyField, "Theme", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
                 if (results.empty())

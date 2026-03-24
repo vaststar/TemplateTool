@@ -70,11 +70,11 @@ void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& a
 void ApplicationRunner::DataPrivate::initLogger()
 {
 	auto fileLogger = std::make_shared<ucf::utilities::FileLoggerConfig>(
-                        mApplicationConfig.appLogConfig.logLevel, 
-                        mApplicationConfig.appLogConfig.logDirPath, 
-                        mApplicationConfig.appLogConfig.logBaseFileName, 
-                        mApplicationConfig.appLogConfig.logMaxKeepDays, 
-                        mApplicationConfig.appLogConfig.logMaxSingleFileSize, 
+                        mApplicationConfig.appLogConfig.logLevel,
+                        mApplicationConfig.appLogConfig.logDirPath,
+                        mApplicationConfig.appLogConfig.logBaseFileName,
+                        mApplicationConfig.appLogConfig.logMaxKeepDays,
+                        mApplicationConfig.appLogConfig.logMaxSingleFileSize,
                         mApplicationConfig.appLogConfig.loggerName
                     );
 #if defined(_DEBUG)
@@ -174,7 +174,7 @@ void ApplicationRunner::DataPrivate::createApplicationConfig()
         180,
         50 * 1024 * 1024
     };
-    
+
     mApplicationConfig.appLogConfig = logConfig;
 }
 
@@ -203,17 +203,13 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IInvocationService>(mServiceFactory->createInvocationService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(mServiceFactory->createDataWarehouseService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(mServiceFactory->createClientInfoService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IStabilityService>(mServiceFactory->createStabilityService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IPerformanceService>(mServiceFactory->createPerformanceService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(mServiceFactory->createNetworkService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(mServiceFactory->createContactService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(mServiceFactory->createImageService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(mServiceFactory->createMediaService());
-        
-        // StabilityService - register service, will auto-install during initServices
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IStabilityService>(mServiceFactory->createStabilityService());
-        
-        // PerformanceService - CPU/Memory monitoring and timing
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IPerformanceService>(mServiceFactory->createPerformanceService());
-        
+
         mFrameworkDependencies.coreFramework->initServices();
     }
 

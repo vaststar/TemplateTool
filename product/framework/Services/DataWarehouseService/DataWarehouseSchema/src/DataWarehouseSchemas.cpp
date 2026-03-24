@@ -26,4 +26,16 @@ SettingsTable::SettingsTable()
 {
 }
 
+ScreenshotSettingsTable::ScreenshotSettingsTable()
+    : ucf::service::model::DBTableModel(TableName,{
+        {SettingsIdentifierField, "TEXT UNIQUE NOT NULL"},
+        {OutputDirectoryField, "TEXT"},
+        {ImageFormatField, "TEXT"},
+        {JpegQualityField, "INTEGER"},
+        {CaptureDelayField, "INTEGER"},
+        {AddTimestampField, "INTEGER"}
+    })
+{
+}
+
 }

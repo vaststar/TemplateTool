@@ -1391,24 +1391,24 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="487"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="494"/>
         <source>Screenshots folder not set</source>
         <translation>未设置截图文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="502"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="527"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="543"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="509"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="534"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="550"/>
         <source>File not found: %1</source>
         <translation>文件未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="518"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="525"/>
         <source>Failed to load image: %1</source>
         <translation>加载图片失败: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="547"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="554"/>
         <source>Failed to delete file: %1</source>
         <translation>删除文件失败: %1</translation>
     </message>

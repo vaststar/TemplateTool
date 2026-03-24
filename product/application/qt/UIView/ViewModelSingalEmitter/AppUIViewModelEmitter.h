@@ -14,17 +14,11 @@ public:
     {
     }
 
-    virtual void onDatabaseInitialized() override
+    virtual void onAppConfigInitialized() override
     {
-        emit signals_onDatabaseInitialized();
-    };
-
-    virtual void onShowMainWindow() override
-    {
-        emit signals_onShowMainWindow();
+        emit signals_onAppConfigInitialized();
     };
 signals:
-    void signals_onDatabaseInitialized();
-    void signals_onShowMainWindow();
+    void signals_onAppConfigInitialized();
 };
 }

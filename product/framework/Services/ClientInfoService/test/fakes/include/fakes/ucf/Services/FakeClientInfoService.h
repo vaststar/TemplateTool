@@ -9,12 +9,12 @@ namespace ucf::service::fakes {
 
 /**
  * @brief Fake implementation of IClientInfoService for unit testing
- * 
+ *
  * Usage:
  *   auto fakeService = std::make_shared<FakeClientInfoService>();
  *   ALLOW_CALL(*fakeService, getAppCrashStoragePath()).RETURN("/tmp/crash");
  */
-class FakeClientInfoService 
+class FakeClientInfoService
     : public IClientInfoService
     , public ucf::utilities::NotificationHelper<IClientInfoServiceCallback>
 {
@@ -41,6 +41,9 @@ public:
 
     // IClientInfoService - Database
     MAKE_CONST_MOCK0(getSharedDBConfig, model::SqliteDBConfig(), override);
+
+    // IClientInfoService - App Initialization
+    MAKE_MOCK0(initializeAppClient, void(), override);
 
     // IClientInfoService - Paths
     MAKE_CONST_MOCK0(getAppDataStoragePath, std::string(), override);

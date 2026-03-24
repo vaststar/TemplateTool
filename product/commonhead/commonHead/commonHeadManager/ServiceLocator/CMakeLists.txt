@@ -26,6 +26,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ImageService
     StabilityService
     PerformanceService
+    FeatureSettingsService
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

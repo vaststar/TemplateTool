@@ -17,6 +17,7 @@ namespace ucf::service{
     class IMediaService;
     class IStabilityService;
     class IPerformanceService;
+    class IFeatureSettingsService;
 }
 
 namespace ucf::service{
@@ -39,6 +40,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IMediaService> createMediaService() = 0;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IStabilityService> createStabilityService() = 0;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IPerformanceService> createPerformanceService() = 0;
+    [[nodiscard]] virtual std::shared_ptr<ucf::service::IFeatureSettingsService> createFeatureSettingsService() = 0;
 public:
     static std::shared_ptr<IServiceFactory> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

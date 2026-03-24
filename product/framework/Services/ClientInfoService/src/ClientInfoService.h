@@ -10,7 +10,7 @@
 
 
 namespace ucf::service{
-class SERVICE_EXPORT ClientInfoService final: public virtual IClientInfoService, 
+class SERVICE_EXPORT ClientInfoService final: public virtual IClientInfoService,
                                public virtual ucf::utilities::NotificationHelper<IClientInfoServiceCallback>,
                                public ucf::framework::CoreFrameworkCallbackDefault,
                                public ucf::service::IDataWarehouseServiceCallback,
@@ -49,11 +49,13 @@ public:
     virtual std::vector<model::ThemeType> getSupportedThemeTypes() const override;
 
     virtual model::SqliteDBConfig getSharedDBConfig() const override;
-    
+
     virtual std::string getAppDataStoragePath() const override;
     virtual std::string getAppLogStoragePath() const override;
     virtual std::string getAppCrashStoragePath() const override;
     virtual std::string getAppHangStoragePath() const override;
+
+    virtual void initializeAppClient() override;
 protected:
     //IService
     virtual void initService() override;

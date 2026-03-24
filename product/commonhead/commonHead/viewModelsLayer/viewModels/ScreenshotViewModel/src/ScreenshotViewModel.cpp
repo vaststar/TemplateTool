@@ -3,6 +3,10 @@
 #include <ucf/Utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
 #include <ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h>
 
+#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ServiceLocator/IServiceLocator.h>
+#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+
 #include <chrono>
 #include <cmath>
 #include <filesystem>
@@ -40,7 +44,24 @@ std::string ScreenshotViewModel::getViewModelName() const
 
 void ScreenshotViewModel::init()
 {
-    // Load default settings — could be extended to read from a persistent config
+    // Load settings from FeatureSettingsService if available, otherwise use defaults
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto featureSettingsService = serviceLocator->getFeatureSettingsService().lock())
+            {
+                auto serviceSettings = featureSettingsService->getScreenshotSettings();
+                m_settings.outputDirectory = serviceSettings.outputDirectory;
+                m_settings.imageFormat = serviceSettings.imageFormat;
+                m_settings.jpegQuality = serviceSettings.jpegQuality;
+                m_settings.captureDelay = serviceSettings.captureDelay;
+                m_settings.addTimestamp = serviceSettings.addTimestamp;
+                return;
+            }
+        }
+    }
+    // Fallback defaults
     m_settings.outputDirectory = "";
     m_settings.imageFormat = "png";
     m_settings.jpegQuality = 90;
@@ -475,6 +496,23 @@ void ScreenshotViewModel::updateSettings(const model::ScreenshotSettings& settin
     {
         std::lock_guard lock(m_mutex);
         m_settings = settings;
+    }
+    // Persist to FeatureSettingsService
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto featureSettingsService = serviceLocator->getFeatureSettingsService().lock())
+            {
+                ucf::service::model::ScreenshotFeatureSettings serviceSettings;
+                serviceSettings.outputDirectory = settings.outputDirectory;
+                serviceSettings.imageFormat = settings.imageFormat;
+                serviceSettings.jpegQuality = settings.jpegQuality;
+                serviceSettings.captureDelay = settings.captureDelay;
+                serviceSettings.addTimestamp = settings.addTimestamp;
+                featureSettingsService->updateScreenshotSettings(serviceSettings);
+            }
+        }
     }
     fireNotification(&IScreenshotViewModelCallback::onSettingsChanged, settings);
 }

@@ -10,6 +10,7 @@
 #include <ucf/Services/MediaService/IMediaService.h>
 #include <ucf/Services/StabilityService/IStabilityService.h>
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
+#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 #include "ServiceFactoryLogger.h"
 
 namespace ucf::service{
@@ -72,5 +73,10 @@ std::shared_ptr<ucf::service::IStabilityService> ServiceFactory::createStability
 std::shared_ptr<ucf::service::IPerformanceService> ServiceFactory::createPerformanceService()
 {
     return ucf::service::IPerformanceService::createInstance(mCoreFrameworkWPtr.lock());
+}
+
+std::shared_ptr<ucf::service::IFeatureSettingsService> ServiceFactory::createFeatureSettingsService()
+{
+    return ucf::service::IFeatureSettingsService::createInstance(mCoreFrameworkWPtr.lock());
 }
 }

@@ -1389,24 +1389,24 @@ Double-click a rule to view details.</source>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="488"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="494"/>
         <source>Screenshots folder not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="503"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="528"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="544"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="509"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="534"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="550"/>
         <source>File not found: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="519"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="525"/>
         <source>Failed to load image: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="548"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="554"/>
         <source>Failed to delete file: %1</source>
         <translation type="unfinished"></translation>
     </message>

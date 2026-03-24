@@ -14,6 +14,7 @@
 
 #include <QGuiApplication>
 #include <QStyleHints>
+#include <QTimer>
 
 #include "LoggerDefine/LoggerDefine.h"
 #include "MainWindow/include/MainWindowController.h"
@@ -22,77 +23,82 @@
 #include "UIStabilityMonitor.h"
 
 
-AppUIController::AppUIController(AppContext* appContext, QObject* parent)
-    : QObject(parent)
-    , mAppContext(appContext)
+AppUIController::AppUIController(QObject* parent)
+    : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create AppUIController, address: " << this << ", with appContext: " << appContext);
-    initializeController();
+    UIVIEW_LOG_DEBUG("create AppUIController, address: " << this);
 }
 
 AppUIController::~AppUIController() = default;
 
-void AppUIController::initializeController()
+void AppUIController::init()
 {
-    UIVIEW_LOG_DEBUG("start initializeController AppUIController, address: " << this);
-    assert(mAppContext);
+    UIVIEW_LOG_DEBUG("init AppUIController start");
+    auto appContext = getAppContext();
 
-    mAppUIViewModel = mAppContext->getViewModelFactory()->createAppUIViewModelInstance();
+    // Create ViewModel and connect signals
+    mAppUIViewModel = appContext->getViewModelFactory()->createAppUIViewModelInstance();
     mAppUIViewModelEmitter = std::make_shared<UIVMSignalEmitter::AppUIViewModelEmitter>();
     mAppUIViewModel->registerCallback(mAppUIViewModelEmitter);
 
-    QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onShowMainWindow,
-                     this, &AppUIController::onShowMainWindow);
-    QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onDatabaseInitialized,
-                     this, &AppUIController::onDatabaseInitialized);
+    QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onAppConfigInitialized,
+                     this, &AppUIController::onAppConfigInitialized);
 
-    UIVIEW_LOG_DEBUG("finish initializeController AppUIController, address: " << this);
+    // Start IPC server and stability monitor
+    mIPCServerHelper = std::make_unique<UIIPCServerHelper>(appContext, this);
+    mIPCServerHelper->start();
+
+    mStabilityMonitor = std::make_unique<UIStabilityMonitor>(appContext, this);
+    mStabilityMonitor->start();
+
+    // Defer application initialization to the first event loop iteration,
+    // ensuring QApplication::exec() is running before async callbacks fire.
+    QTimer::singleShot(0, this, [this]() {
+        mAppUIViewModel->initApplication();
+    });
+    UIVIEW_LOG_DEBUG("init AppUIController finish");
 }
 
-void AppUIController::onShowMainWindow()
+void AppUIController::onAppConfigInitialized()
+{
+    UIVIEW_LOG_DEBUG("onAppConfigInitialized start");
+    auto appContext = getAppContext();
+
+    // 1. Load translation
+    auto clientInfoViewModel = appContext->getViewModelFactory()->createClientInfoViewModelInstance();
+    UIVIEW_LOG_DEBUG("get language: " << static_cast<int>(clientInfoViewModel->getApplicationLanguage()));
+    appContext->getManagerProvider()->getTranslatorManager()->loadTranslation(
+        UILanguage::convertFromViewModel(clientInfoViewModel->getApplicationLanguage()));
+
+    // 2. Load theme
+    UIVIEW_LOG_DEBUG("get CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
+
+    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
+        auto clientInfoViewModel = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
+        UIVIEW_LOG_DEBUG("system color scheme changed, CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
+        if (clientInfoViewModel->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
+        {
+            UIVIEW_LOG_DEBUG("system color scheme changed, notifying theme refresh");
+            getAppContext()->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
+        }
+    });
+
+    // 3. Show main window
+    showMainWindow();
+
+    UIVIEW_LOG_DEBUG("onAppConfigInitialized finish");
+}
+
+void AppUIController::showMainWindow()
 {
     UIVIEW_LOG_DEBUG("start load main qml");
-    mAppContext->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), [this](auto controller){
+    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), [this](auto controller){
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
             UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
-            mainController->initializeController(mAppContext);
+            mainController->initializeController(getAppContext());
             UIVIEW_LOG_DEBUG("MainWindowController init done, callback end");
         }
     });
     UIVIEW_LOG_DEBUG("finish load main qml");
-}
-
-void AppUIController::onDatabaseInitialized()
-{
-    UIVIEW_LOG_DEBUG("1, load translation after database initialized");
-    auto clientInfoVM = mAppContext->getViewModelFactory()->createClientInfoViewModelInstance();
-    UIVIEW_LOG_DEBUG("get language" << static_cast<int>(clientInfoVM->getApplicationLanguage()));
-    mAppContext->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(clientInfoVM->getApplicationLanguage()));
-
-    UIVIEW_LOG_DEBUG("2, load theme after database initialized");
-    UIVIEW_LOG_DEBUG("get CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
-
-    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
-        auto clientInfoVM = mAppContext->getViewModelFactory()->createClientInfoViewModelInstance();
-        UIVIEW_LOG_DEBUG("system color scheme changed, CurrentTheme" << static_cast<int>(clientInfoVM->getCurrentThemeType()));
-        if (clientInfoVM->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
-        {
-            UIVIEW_LOG_DEBUG("system color scheme changed, notifying theme refresh");
-            mAppContext->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
-        }
-    });
-}
-
-void AppUIController::startApp()
-{
-    UIVIEW_LOG_DEBUG("startApp start");
-    mIPCServerHelper = std::make_unique<UIIPCServerHelper>(mAppContext, this);
-    mIPCServerHelper->start();
-
-    mStabilityMonitor = std::make_unique<UIStabilityMonitor>(mAppContext, this);
-    mStabilityMonitor->start();
-
-    mAppUIViewModel->initApplication();
-    UIVIEW_LOG_DEBUG("startApp finish");
 }

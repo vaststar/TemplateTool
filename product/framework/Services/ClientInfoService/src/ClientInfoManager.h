@@ -40,6 +40,7 @@ public:
     std::vector<model::ThemeType> getSupportedThemeTypes() const;
 
     model::SqliteDBConfig getSharedDBConfig() const;
+    void initializeAppClient();
     void databaseInitialized(const std::string& dbId);
 
     std::string getDataStoragePath() const;

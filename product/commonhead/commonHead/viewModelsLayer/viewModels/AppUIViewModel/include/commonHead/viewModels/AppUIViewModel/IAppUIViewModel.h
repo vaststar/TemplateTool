@@ -28,8 +28,7 @@ public:
     IAppUIViewModelCallback& operator=(IAppUIViewModelCallback&&) = delete;
     virtual ~IAppUIViewModelCallback() = default;
 public:
-    virtual void onDatabaseInitialized() = 0;
-    virtual void onShowMainWindow() = 0;
+    virtual void onAppConfigInitialized() = 0;
 };
 
 class COMMONHEAD_EXPORT IAppUIViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IAppUIViewModelCallback>

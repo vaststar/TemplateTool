@@ -1,8 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <QObject>
 #include <QPointer>
+
+#include <UIViewBase/include/UIViewController.h>
 
 namespace commonHead::viewModels{
     class IAppUIViewModel;
@@ -16,21 +17,23 @@ namespace UIVMSignalEmitter{
     class AppUIViewModelEmitter;
 }
 
-class AppUIController : public QObject
+class AppUIController : public UIViewController
 {
     Q_OBJECT
 public:
-    AppUIController(AppContext* appContext, QObject* parent = nullptr);
+    explicit AppUIController(QObject* parent = nullptr);
     ~AppUIController();
 
-    void startApp();
+protected:
+    void init() override;
+
 private slots:
-    void onShowMainWindow();
-    void onDatabaseInitialized();
+    void onAppConfigInitialized();
+
 private:
-    void initializeController();
+    void showMainWindow();
+
 private:
-    const QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mAppUIViewModel;
     std::shared_ptr<UIVMSignalEmitter::AppUIViewModelEmitter> mAppUIViewModelEmitter;
     std::unique_ptr<UIIPCServerHelper> mIPCServerHelper;

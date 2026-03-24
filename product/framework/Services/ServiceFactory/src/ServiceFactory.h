@@ -28,6 +28,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IMediaService> createMediaService() override;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IStabilityService> createStabilityService() override;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IPerformanceService> createPerformanceService() override;
+    [[nodiscard]] virtual std::shared_ptr<ucf::service::IFeatureSettingsService> createFeatureSettingsService() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

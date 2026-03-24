@@ -4,6 +4,7 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
+#include <ucf/Services/ClientInfoService/IClientInfoServiceCallback.h>
 
 namespace commonHead::viewModels::model{
     enum class LanguageType;
@@ -14,8 +15,9 @@ namespace ucf::service::model{
 }
 
 namespace commonHead::viewModels{
-class AppUIViewModel: public virtual IAppUIViewModel, 
+class AppUIViewModel: public virtual IAppUIViewModel,
                       public virtual commonHead::utilities::VMNotificationHelper<IAppUIViewModelCallback>,
+                      public ucf::service::IClientInfoServiceCallback,
                       public std::enable_shared_from_this<AppUIViewModel>
 {
 public:
@@ -28,9 +30,11 @@ public:
 public:
     virtual std::string getViewModelName() const override;
     virtual void initApplication() override;
+
+    // IClientInfoServiceCallback
+    virtual void onClientInfoReady() override;
+    virtual void onClientThemeChanged(ucf::service::model::ThemeType themeType) override;
 protected:
     void init();
-private:    
-    void initDatabase();
 };
 }

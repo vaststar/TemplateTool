@@ -126,11 +126,17 @@ bool ScreenshotController::includeTimestamp() const { return m_includeTimestamp;
 
 void ScreenshotController::setOutputDirectory(const QString& path)
 {
-    if (m_outputDirectory != path) {
-        m_outputDirectory = path;
+    // FolderDialog returns a QUrl (e.g. "file:///Users/..."), convert to local path
+    QString localPath = path;
+    if (localPath.startsWith("file://")) {
+        localPath = QUrl(localPath).toLocalFile();
+    }
+
+    if (m_outputDirectory != localPath) {
+        m_outputDirectory = localPath;
         if (m_viewModel) {
             auto s = m_viewModel->getSettings();
-            s.outputDirectory = path.toStdString();
+            s.outputDirectory = localPath.toStdString();
             m_viewModel->updateSettings(s);
         }
     }

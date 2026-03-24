@@ -90,11 +90,10 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ImageService
     ClientInfoService
     InvocationService
-    DataWarehouseService
-    DataWarehouseSchema
     ViewModelUtils
     StabilityService
     PerformanceService
+    FeatureSettingsService
     Base64Utils
     JsonUtils
     TimeUtils
