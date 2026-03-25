@@ -3,7 +3,7 @@ include(BuildModule)
 add_subdirectory(addon)
 
 set(MODULE_MODULE_NAME NetworkProxyAgent)
-set(MODULE_IDE_FOLDER framework/Agents)
+set(MODULE_IDE_FOLDER framework/Agents/NetworkProxyAgent)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
