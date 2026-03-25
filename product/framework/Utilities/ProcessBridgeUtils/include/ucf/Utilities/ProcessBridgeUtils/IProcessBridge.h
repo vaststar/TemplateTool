@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
-#include <ucf/Utilities/ProcessBridge/ProcessBridgeConfig.h>
+#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf::utilities {
@@ -14,7 +14,7 @@ class IProcessBridgeCallback;
 /// Manages a child process lifecycle: launch, monitor, and stop.
 ///
 /// This class is purely about process management. It does NOT handle
-/// communication (TCP, pipe, etc.) — that is the caller's responsibility.
+/// communication (TCP, pipe, etc.) â€” that is the caller's responsibility.
 ///
 /// Typical usage:
 /// @code

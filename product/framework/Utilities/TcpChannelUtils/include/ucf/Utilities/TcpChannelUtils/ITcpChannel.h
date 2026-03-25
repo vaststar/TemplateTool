@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
-#include <ucf/Utilities/TcpChannel/TcpChannelConfig.h>
+#include <ucf/Utilities/TcpChannelUtils/TcpChannelConfig.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf::utilities {
@@ -13,7 +13,7 @@ class ITcpChannelCallback;
 ///
 /// Listens on a local port, accepts one client connection,
 /// and provides bidirectional byte-stream communication.
-/// This class does NOT handle message framing — the caller
+/// This class does NOT handle message framing â€” the caller
 /// is responsible for delimiting messages (e.g. newline-delimited JSON).
 ///
 /// Typical usage:

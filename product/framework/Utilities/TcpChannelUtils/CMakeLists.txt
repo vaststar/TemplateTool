@@ -1,27 +1,27 @@
 include(BuildModule)
 
-set(MODULE_MODULE_NAME ProcessBridge)
+set(MODULE_MODULE_NAME TcpChannelUtils)
 set(MODULE_IDE_FOLDER framework/Utilities)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/ProcessBridge/ProcessBridgeConfig.h
-    include/ucf/Utilities/ProcessBridge/IProcessBridgeCallback.h
-    include/ucf/Utilities/ProcessBridge/IProcessBridge.h
+    include/ucf/Utilities/TcpChannelUtils/TcpChannelConfig.h
+    include/ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h
+    include/ucf/Utilities/TcpChannelUtils/ITcpChannel.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/ProcessBridge.h
-    src/ProcessBridge.cpp
-    src/ProcessBridgeLogger.h
-    src/ProcessLauncher.h
+    src/TcpChannel.h
+    src/TcpChannel.cpp
+    src/TcpChannelLogger.h
+    src/SocketHelper.h
 )
 
 # Platform-specific source files
 if(WIN32)
-    list(APPEND MODULE_SOURCE_PRIVATE src/ProcessLauncher_Win.cpp)
+    list(APPEND MODULE_SOURCE_PRIVATE src/SocketHelper_Win.cpp)
 else()
-    list(APPEND MODULE_SOURCE_PRIVATE src/ProcessLauncher_Unix.cpp)
+    list(APPEND MODULE_SOURCE_PRIVATE src/SocketHelper_Unix.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -33,6 +33,11 @@ set(MODULE_DEPENDENCIES_PRIVATE
     magic_enum
 )
 
+# Link Winsock on Windows
+if(WIN32)
+    set(MODULE_PLATFORM_LIBS ws2_32)
+endif()
+
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_BUILD_PRIVATE_DIR src)
@@ -42,7 +47,7 @@ MODULE_NAME ${MODULE_MODULE_NAME}
 TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
 TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
 TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
-TARGET_ADD_LINK_LIBRARY_PRIVATE ${MODULE_DEPENDENCIES_PRIVATE}
+TARGET_ADD_LINK_LIBRARY_PRIVATE ${MODULE_DEPENDENCIES_PRIVATE} ${MODULE_PLATFORM_LIBS}
 TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}

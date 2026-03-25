@@ -5,9 +5,9 @@
 #include <mutex>
 #include <thread>
 
-#include <ucf/Utilities/ProcessBridge/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridge/IProcessBridgeCallback.h>
-#include <ucf/Utilities/ProcessBridge/ProcessBridgeConfig.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 #include "ProcessLauncher.h"
@@ -25,7 +25,7 @@ public:
     ProcessBridge(ProcessBridge&&) = delete;
     ProcessBridge& operator=(ProcessBridge&&) = delete;
 
-    // ── IProcessBridge ──
+    // â”€â”€ IProcessBridge â”€â”€
     bool start(const ProcessBridgeConfig& config) override;
     void stop() override;
     ProcessState state() const override;
@@ -33,7 +33,7 @@ public:
     int64_t processPid() const override;
 
 private:
-    // ── State machine ──
+    // â”€â”€ State machine â”€â”€
 
     /// Attempt to transition mState to @p to.
     /// Valid source states are defined internally per target state.
@@ -52,7 +52,7 @@ private:
     /// Finalize a startup failure before Running was reached.
     void failStart(const std::string& errorMessage);
 
-    // ── Process management ──
+    // â”€â”€ Process management â”€â”€
 
     /// Background loop that monitors the child process.
     void monitorLoop();
@@ -60,7 +60,7 @@ private:
     /// Read available pipe data and fire callbacks.
     void readAndFirePipes();
 
-    /// Graceful terminate → waitForExit → force kill if needed. Returns exit code.
+    /// Graceful terminate â†’ waitForExit â†’ force kill if needed. Returns exit code.
     int terminateAndWait();
 
     /// Close handles, drain pipes, fire onProcessStopped, transition to Terminated.

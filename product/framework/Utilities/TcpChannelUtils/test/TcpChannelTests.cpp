@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Utilities/TcpChannel/ITcpChannel.h>
-#include <ucf/Utilities/TcpChannel/ITcpChannelCallback.h>
-#include <ucf/Utilities/TcpChannel/TcpChannelConfig.h>
+#include <ucf/Utilities/TcpChannelUtils/ITcpChannel.h>
+#include <ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h>
+#include <ucf/Utilities/TcpChannelUtils/TcpChannelConfig.h>
 
 #include <atomic>
 #include <chrono>
@@ -50,9 +50,9 @@
 
 using namespace ucf::utilities;
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Helper: connect a raw client socket to localhost:port
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 static SocketType connectToLocal(int port)
 {
@@ -76,9 +76,9 @@ static SocketType connectToLocal(int port)
     return s;
 }
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Test callback that records events
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 class TestTcpCallback : public ITcpChannelCallback
 {
@@ -144,9 +144,9 @@ private:
     std::condition_variable mCv;
 };
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Tests
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 TEST_CASE("TcpChannel creation", "[TcpChannel]")
 {
@@ -298,9 +298,9 @@ TEST_CASE("TcpChannel send without client returns false", "[TcpChannel]")
     channel->stop();
 }
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  State machine & thread-safety tests
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 TEST_CASE("TcpChannel stop on idle is no-op", "[TcpChannel]")
 {
@@ -363,7 +363,7 @@ TEST_CASE("TcpChannel restart after stop preserves functionality", "[TcpChannel]
     cb->disconnected = false;
     cb->receivedData.clear();
 
-    // Cycle 2 — full functionality should work again
+    // Cycle 2 â€” full functionality should work again
     REQUIRE(channel->startListening(config));
     int port2 = channel->listeningPort();
     REQUIRE(port2 > 0);
@@ -400,7 +400,7 @@ TEST_CASE("TcpChannel stop from onDataReceived callback (deferred cleanup)", "[T
         void onDataReceived(const std::string& /*data*/) override
         {
             gotData = true;
-            // Called on I/O thread — triggers deferred stop path
+            // Called on I/O thread â€” triggers deferred stop path
             if (channel)
             {
                 channel->stop();
@@ -520,7 +520,7 @@ TEST_CASE("TcpChannel concurrent stop from two threads", "[TcpChannel]")
 
     REQUIRE(channel->startListening(config));
 
-    // Two threads race to stop — only one should succeed, no crash
+    // Two threads race to stop â€” only one should succeed, no crash
     std::thread t1([&] { channel->stop(); });
     std::thread t2([&] { channel->stop(); });
     t1.join();
@@ -568,7 +568,7 @@ TEST_CASE("TcpChannel rejects second client connection", "[TcpChannel]")
     REQUIRE(cb->waitForConnected());
     REQUIRE(channel->isConnected());
 
-    // Second client — should be connected at TCP level but rejected by TcpChannel
+    // Second client â€” should be connected at TCP level but rejected by TcpChannel
     SocketType client2 = connectToLocal(port);
     // Give the server time to reject
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -588,7 +588,7 @@ TEST_CASE("TcpChannel callback weak_ptr safety", "[TcpChannel]")
     {
         auto cb = std::make_shared<TestTcpCallback>();
         channel->registerCallback(cb);
-        // cb goes out of scope — weak_ptr should handle gracefully
+        // cb goes out of scope â€” weak_ptr should handle gracefully
     }
 
     TcpChannelConfig config;
@@ -599,7 +599,7 @@ TEST_CASE("TcpChannel callback weak_ptr safety", "[TcpChannel]")
     REQUIRE(channel->startListening(config));
     int port = channel->listeningPort();
 
-    // Connect after callback is destroyed — should not crash
+    // Connect after callback is destroyed â€” should not crash
     SocketType client = connectToLocal(port);
     if (client != kBadSock)
     {

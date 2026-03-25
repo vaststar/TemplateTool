@@ -27,8 +27,8 @@ set(MODULE_DEPENDENCIES_PUBLIC
     NotificationHelper
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ProcessBridge
-    TcpChannel
+    ProcessBridgeUtils
+    TcpChannelUtils
     SystemUtils
     JsonUtils
     LoggerUtils

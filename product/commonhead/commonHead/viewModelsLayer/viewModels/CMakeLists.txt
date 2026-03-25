@@ -103,8 +103,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     JsonUtils
     TimeUtils
     UUIDUtils
-    ProcessBridge
-    TcpChannel
     SystemUtils
     NetworkProxyAgent
     ScreenCaptureUtils

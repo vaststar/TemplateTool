@@ -5,8 +5,8 @@
 #include <mutex>
 #include <thread>
 
-#include <ucf/Utilities/TcpChannel/ITcpChannel.h>
-#include <ucf/Utilities/TcpChannel/ITcpChannelCallback.h>
+#include <ucf/Utilities/TcpChannelUtils/ITcpChannel.h>
+#include <ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 #include "SocketHelper.h"
@@ -31,7 +31,7 @@ enum class ChannelState : int
 ///
 /// Thread safety:
 ///   - startListening() / stop() are guarded by CAS on mChannelState.
-///   - stop() from within a callback (I/O thread) is safe — cleanup
+///   - stop() from within a callback (I/O thread) is safe â€” cleanup
 ///     is deferred to the ioLoop exit path.
 ///   - mClientSocket is protected by mClientMutex for send() / I/O thread.
 class TcpChannel final : public virtual ITcpChannel, public virtual NotificationHelper<ITcpChannelCallback>
@@ -45,7 +45,7 @@ public:
     TcpChannel(TcpChannel&&) = delete;
     TcpChannel& operator=(TcpChannel&&) = delete;
 
-    // ── ITcpChannel ──
+    // â”€â”€ ITcpChannel â”€â”€
     bool startListening(const TcpChannelConfig& config) override;
     void stop() override;
     bool send(const std::string& data) override;
@@ -54,7 +54,7 @@ public:
     int  listeningPort() const override;
 
 private:
-    // ── State machine ──
+    // â”€â”€ State machine â”€â”€
 
     /// Attempt to transition mChannelState to @p to.
     /// Valid source states are defined internally per target state.
@@ -72,7 +72,7 @@ private:
     /// Read the current channel state (acquire semantics).
     ChannelState currentState() const;
 
-    // ── I/O ──
+    // â”€â”€ I/O â”€â”€
 
     /// Background I/O loop using select().
     void ioLoop();

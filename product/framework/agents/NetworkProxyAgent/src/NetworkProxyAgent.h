@@ -11,10 +11,10 @@
 #include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
-#include <ucf/Utilities/ProcessBridge/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridge/IProcessBridgeCallback.h>
-#include <ucf/Utilities/TcpChannel/ITcpChannel.h>
-#include <ucf/Utilities/TcpChannel/ITcpChannelCallback.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/Utilities/TcpChannelUtils/ITcpChannel.h>
+#include <ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h>
 
 namespace ucf::agents {
 
@@ -42,7 +42,7 @@ public:
     NetworkProxyAgent(NetworkProxyAgent&&) = delete;
     NetworkProxyAgent& operator=(NetworkProxyAgent&&) = delete;
 
-    // ── INetworkProxyAgent ──
+    // â”€â”€ INetworkProxyAgent â”€â”€
     bool start(const AgentConfig& config) override;
     void stop() override;
     AgentState state() const override;
@@ -67,20 +67,20 @@ private:
         ProcessExited
     };
 
-    // ── IProcessBridgeCallback ──
+    // â”€â”€ IProcessBridgeCallback â”€â”€
     void onProcessStarted(int64_t pid) override;
     void onProcessStopped(int exitCode, bool crashed) override;
     void onProcessError(const std::string& errorMessage) override;
     void onStdout(const std::string& data) override;
     void onStderr(const std::string& data) override;
 
-    // ── ITcpChannelCallback ──
+    // â”€â”€ ITcpChannelCallback â”€â”€
     void onClientConnected() override;
     void onClientDisconnected() override;
     void onDataReceived(const std::string& data) override;
     void onError(const std::string& errorMessage) override;
 
-    // ── Internal ──
+    // â”€â”€ Internal â”€â”€
     void handleAddonMessage(const std::string& jsonLine);
     void doCleanup();
     void failStart(const std::string& errorMessage);

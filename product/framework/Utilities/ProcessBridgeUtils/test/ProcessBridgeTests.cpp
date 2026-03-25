@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Utilities/ProcessBridge/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridge/IProcessBridgeCallback.h>
-#include <ucf/Utilities/ProcessBridge/ProcessBridgeConfig.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 
 #include <atomic>
 #include <chrono>
@@ -13,9 +13,9 @@
 
 using namespace ucf::utilities;
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Test callback that records events
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 class TestProcessCallback : public IProcessBridgeCallback
 {
@@ -95,9 +95,9 @@ private:
     std::condition_variable mCv;
 };
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Tests
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 TEST_CASE("ProcessBridge creation", "[ProcessBridge]")
 {
@@ -123,7 +123,7 @@ TEST_CASE("ProcessBridge error on invalid executable", "[ProcessBridge]")
     REQUIRE_FALSE(result);
     REQUIRE(bridge->state() == ProcessState::Terminated);
 #else
-    // Unix: fork() succeeds but execvp fails — child exits with code 127
+    // Unix: fork() succeeds but execvp fails â€” child exits with code 127
     REQUIRE(result);
     REQUIRE(callback->waitForStopped(5000));
     REQUIRE(callback->stoppedExitCode == 127);
@@ -299,7 +299,7 @@ TEST_CASE("ProcessBridge callback weak_ptr safety", "[ProcessBridge]")
     {
         auto callback = std::make_shared<TestProcessCallback>();
         bridge->registerCallback(callback);
-        // callback goes out of scope — weak_ptr should be properly cleaned up
+        // callback goes out of scope â€” weak_ptr should be properly cleaned up
     }
 
     // Starting after callback is destroyed should not crash
@@ -346,7 +346,7 @@ TEST_CASE("ProcessBridge restart after Terminated", "[ProcessBridge]")
     callback->stopped = false;
     callback->stdoutData.clear();
 
-    // Second run — should succeed from Terminated state
+    // Second run â€” should succeed from Terminated state
 #ifdef _WIN32
     config.arguments = {"/C", "echo second"};
 #else
@@ -390,9 +390,9 @@ TEST_CASE("ProcessBridge stop on idle is no-op", "[ProcessBridge]")
     REQUIRE(bridge->state() == ProcessState::Idle);
 }
 
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  State machine & thread-safety tests
-// ════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 TEST_CASE("ProcessBridge stop on Running reports clean termination", "[ProcessBridge]")
 {
@@ -510,7 +510,7 @@ TEST_CASE("ProcessBridge stop from onStdout callback (deferred cleanup)", "[Proc
         void onProcessError(const std::string& /*msg*/) override {}
         void onStdout(const std::string& /*data*/) override
         {
-            // Called on monitor thread — triggers deferred stop path
+            // Called on monitor thread â€” triggers deferred stop path
             if (bridge)
             {
                 bridge->stop();
@@ -566,7 +566,7 @@ TEST_CASE("ProcessBridge concurrent stop from two threads", "[ProcessBridge]")
     REQUIRE(bridge->start(config));
     REQUIRE(callback->waitForStarted(3000));
 
-    // Two threads race to stop — only one should succeed, no crash
+    // Two threads race to stop â€” only one should succeed, no crash
     std::thread t1([&] { bridge->stop(); });
     std::thread t2([&] { bridge->stop(); });
     t1.join();

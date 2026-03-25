@@ -3,17 +3,17 @@ cmake_minimum_required(VERSION 3.11)
 include(BuildUnitTestModule)
 
 set(TARGET_SOURCE_FILES_PRIVATE
-    ProcessBridgeTests.cpp
+    TcpChannelTests.cpp
 )
 
 BuildUnitTestModule(
     MODULE_NAME
-        ProcessBridgeTests
+        TcpChannelTests
     TARGET_SOURCE
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_ADD_LINK_LIBRARY_PRIVATE
         Catch2::Catch2WithMain
-        ProcessBridge
+        TcpChannelUtils
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
