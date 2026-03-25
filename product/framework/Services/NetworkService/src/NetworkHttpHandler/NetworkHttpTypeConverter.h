@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::service::network::http {
 
@@ -9,25 +9,25 @@ namespace ucf::service::network::http {
 constexpr int kMaxRedirectCount = 3;
 
 /// @brief Convert service layer HTTPMethod to utilities layer HTTPMethod
-inline ucf::utilities::network::http::HTTPMethod 
+inline ucf::agents::network::http::HTTPMethod 
 convertToUtilitiesHttpMethod(HTTPMethod method)
 {
     switch (method)
     {
-    case HTTPMethod::GET:     return ucf::utilities::network::http::HTTPMethod::GET;
-    case HTTPMethod::POST:    return ucf::utilities::network::http::HTTPMethod::POST;
-    case HTTPMethod::HEAD:    return ucf::utilities::network::http::HTTPMethod::HEAD;
-    case HTTPMethod::PUT:     return ucf::utilities::network::http::HTTPMethod::PUT;
-    case HTTPMethod::DEL:     return ucf::utilities::network::http::HTTPMethod::DEL;
-    case HTTPMethod::PATCH:   return ucf::utilities::network::http::HTTPMethod::PATCH;
-    case HTTPMethod::OPTIONS: return ucf::utilities::network::http::HTTPMethod::OPTIONS;
-    default:                  return ucf::utilities::network::http::HTTPMethod::GET;
+    case HTTPMethod::GET:     return ucf::agents::network::http::HTTPMethod::GET;
+    case HTTPMethod::POST:    return ucf::agents::network::http::HTTPMethod::POST;
+    case HTTPMethod::HEAD:    return ucf::agents::network::http::HTTPMethod::HEAD;
+    case HTTPMethod::PUT:     return ucf::agents::network::http::HTTPMethod::PUT;
+    case HTTPMethod::DEL:     return ucf::agents::network::http::HTTPMethod::DEL;
+    case HTTPMethod::PATCH:   return ucf::agents::network::http::HTTPMethod::PATCH;
+    case HTTPMethod::OPTIONS: return ucf::agents::network::http::HTTPMethod::OPTIONS;
+    default:                  return ucf::agents::network::http::HTTPMethod::GET;
     }
 }
 
 /// @brief Convert utilities layer ResponseErrorStruct to service layer ResponseErrorStruct
 inline ResponseErrorStruct 
-convertToServiceErrorStruct(const ucf::utilities::network::http::ResponseErrorStruct& error)
+convertToServiceErrorStruct(const ucf::agents::network::http::ResponseErrorStruct& error)
 {
     ResponseErrorStruct result;
     result.errorCode = error.errorCode;
@@ -35,28 +35,28 @@ convertToServiceErrorStruct(const ucf::utilities::network::http::ResponseErrorSt
     
     switch (error.errorType)
     {
-    case ucf::utilities::network::http::ResponseErrorType::NoError:
+    case ucf::agents::network::http::ResponseErrorType::NoError:
         result.errorType = ResponseErrorType::NoError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::DNSError:
+    case ucf::agents::network::http::ResponseErrorType::DNSError:
         result.errorType = ResponseErrorType::DNSError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::SocketError:
+    case ucf::agents::network::http::ResponseErrorType::SocketError:
         result.errorType = ResponseErrorType::SocketError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::TLSError:
+    case ucf::agents::network::http::ResponseErrorType::TLSError:
         result.errorType = ResponseErrorType::TLSError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::TimeoutError:
+    case ucf::agents::network::http::ResponseErrorType::TimeoutError:
         result.errorType = ResponseErrorType::TimeoutError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::CanceledError:
+    case ucf::agents::network::http::ResponseErrorType::CanceledError:
         result.errorType = ResponseErrorType::CanceledError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::OtherError:
+    case ucf::agents::network::http::ResponseErrorType::OtherError:
         result.errorType = ResponseErrorType::OtherError;
         break;
-    case ucf::utilities::network::http::ResponseErrorType::UnHandledError:
+    case ucf::agents::network::http::ResponseErrorType::UnHandledError:
         result.errorType = ResponseErrorType::UnHandledError;
         break;
     default:

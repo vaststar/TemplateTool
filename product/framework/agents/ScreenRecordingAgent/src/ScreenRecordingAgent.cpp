@@ -3,7 +3,7 @@
 
 #include <filesystem>
 
-#include <magic_enum.hpp>
+#include <magic_enum/magic_enum.hpp>
 
 namespace fs = std::filesystem;
 using namespace ucf::utilities::screenrecording;

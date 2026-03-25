@@ -19,7 +19,7 @@ class ContactModel
 {
 public:
     explicit ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework);
-    
+
     ContactModel(const ContactModel&) = delete;
     ContactModel(ContactModel&&) = delete;
     ContactModel& operator=(const ContactModel&) = delete;
@@ -47,6 +47,6 @@ private:
     std::vector<model::ContactRelationPtr> mContactRelations;
 
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    // std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> mContactDatabase;
+    // std::shared_ptr<ucf::agents::database::IDatabaseWrapper> mContactDatabase;
 };
 }

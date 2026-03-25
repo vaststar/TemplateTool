@@ -30,7 +30,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
-    DatabaseWrapper
+    DatabaseAgent
     CoreFramework
     LoggerUtils
     ThreadPool

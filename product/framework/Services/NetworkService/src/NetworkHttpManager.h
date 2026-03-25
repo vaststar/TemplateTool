@@ -3,10 +3,10 @@
 #include <memory>
 #include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
 
-namespace ucf::utilities::network::http
+namespace ucf::agents::network::http
 {
 class NetworkHttpRequest;
-} // namespace ucf::utilities::network::http
+} // namespace ucf::agents::network::http
 
 namespace ucf::service::network::http{
 class INetworkHttpHandler;

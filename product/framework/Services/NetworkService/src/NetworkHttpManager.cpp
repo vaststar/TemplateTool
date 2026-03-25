@@ -1,9 +1,9 @@
 #include "NetworkHttpManager.h"
 
-#include <ucf/Utilities/NetworkUtils/LibCurlClient/LibCurlClient.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Agents/NetworkAgent/LibCurlClient/LibCurlClient.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpResponse.h>
 
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
@@ -30,18 +30,18 @@ class NetworkHttpManager::DataPrivate
 {
 public:
     DataPrivate();
-    std::shared_ptr<ucf::utilities::network::http::INetworkHttpClient> getNetworkHttpClient() const;
+    std::shared_ptr<ucf::agents::network::http::INetworkHttpClient> getNetworkHttpClient() const;
 private:
-    std::shared_ptr<ucf::utilities::network::http::INetworkHttpClient> mNetworkHttpClient;
+    std::shared_ptr<ucf::agents::network::http::INetworkHttpClient> mNetworkHttpClient;
 };
 
 NetworkHttpManager::DataPrivate::DataPrivate()
-    :mNetworkHttpClient(std::make_shared<ucf::utilities::network::libcurl::LibCurlClient>())
+    :mNetworkHttpClient(std::make_shared<ucf::agents::network::libcurl::LibCurlClient>())
 {
 
 }
 
-std::shared_ptr<ucf::utilities::network::http::INetworkHttpClient> NetworkHttpManager::DataPrivate::getNetworkHttpClient() const
+std::shared_ptr<ucf::agents::network::http::INetworkHttpClient> NetworkHttpManager::DataPrivate::getNetworkHttpClient() const
 {
     return mNetworkHttpClient;
 }
@@ -108,19 +108,19 @@ void NetworkHttpManager::sendHttpRequest(std::shared_ptr<INetworkHttpHandler> ht
 
     std::string trackingId = httpHandler->getHttpRequest().getTrackingId();
     std::string requestId = httpHandler->getHttpRequest().getRequestId();
-    auto curlHeaderCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData) {
+    auto curlHeaderCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](int statusCode, const ucf::agents::network::http::NetworkHttpHeaders& headers, std::optional<ucf::agents::network::http::ResponseErrorStruct> errorData) {
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive header, status code: " << statusCode << ", requestId: " << requestId << ", trackingId: " << trackingId);
         httpHandler->setResponseHeader(statusCode, headers, errorData);
     };
 
-    auto curlBodyCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished){
+    auto curlBodyCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](const ucf::agents::network::http::ByteBuffer& buffer, bool isFinished){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive body data, size: " << buffer.size() << ", isFinished: "<< isFinished<< ", requestId: "<< requestId<< ", trackingId: " << trackingId);
         httpHandler->appendResponseBody(buffer, isFinished);
     };
 
-    auto curlCompletionCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](const ucf::utilities::network::http::HttpResponseMetrics& metrics){
+    auto curlCompletionCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](const ucf::agents::network::http::HttpResponseMetrics& metrics){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive completion callback"<< ", requestId: "<< requestId<< ", trackingId: "<< trackingId);
         if (httpHandler->shouldRedirectRequest())

@@ -4,7 +4,7 @@
 #include <mutex>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
+#include <ucf/Agents/DatabaseAgent/IDatabaseWrapper.h>
 #include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
 
 #include "DataWarehouseServiceLogger.h"
@@ -148,7 +148,7 @@ void DataWarehouseService::initializeDB(std::shared_ptr<model::DBConfig> dbConfi
 
 bool DataWarehouseService::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about to insert data into table: " << tableName << ", from: " 
+    SERVICE_LOG_DEBUG("about to insert data into table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"
@@ -158,7 +158,7 @@ bool DataWarehouseService::insertIntoDatabase(const std::string& dbId, const std
 
 void DataWarehouseService::fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about to fetch data from table: " << tableName << ", from: " 
+    SERVICE_LOG_DEBUG("about to fetch data from table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"
@@ -168,7 +168,7 @@ void DataWarehouseService::fetchFromDatabase(const std::string& dbId, const std:
 
 int64_t DataWarehouseService::updateInDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::DBDataValues& values, const model::ListsOfWhereCondition& whereConditions, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about to update data in table: " << tableName << ", from: " 
+    SERVICE_LOG_DEBUG("about to update data in table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"
@@ -178,14 +178,14 @@ int64_t DataWarehouseService::updateInDatabase(const std::string& dbId, const st
 
 bool DataWarehouseService::updateBatch(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& keyColumns, const model::DBColumnFields& valueColumns, const model::ListOfDBValues& items, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about to batch update table: " << tableName << ", rows: " << items.size() << ", from: " 
+    SERVICE_LOG_DEBUG("about to batch update table: " << tableName << ", rows: " << items.size() << ", from: "
               << location.file_name() << '(' << location.line() << ')');
     return mDataPrivate->updateBatch(dbId, tableName, keyColumns, valueColumns, items, location);
 }
 
 int64_t DataWarehouseService::deleteFromDatabase(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions, const std::source_location location)
 {
-    SERVICE_LOG_DEBUG("about to delete from table: " << tableName << ", from: " 
+    SERVICE_LOG_DEBUG("about to delete from table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"

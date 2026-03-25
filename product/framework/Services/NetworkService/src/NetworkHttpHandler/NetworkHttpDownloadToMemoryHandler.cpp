@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <cctype>
 
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
 
@@ -23,18 +23,18 @@ class NetworkHttpDownloadToMemoryHandler::DataPrivate{
 public:
     DataPrivate(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const HttpDownloadToMemoryResponseCallbackFunc& downloadResponseCallback);
     
-    const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
+    const ucf::agents::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
     ucf::service::network::http::HttpDownloadToMemoryResponse& getDownloadResponse(){return mDownloadResponse;}
     const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
     int getRedirectCount() const{ return mRedirectCount;}
     void prepareRedirect();
 
-    void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
+    void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::agents::network::http::NetworkHttpRequest& httpRequest) const;
 private:
     ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc mResponseCallBack;
     ucf::service::network::http::HttpDownloadToMemoryResponse mDownloadResponse;
-    ucf::utilities::network::http::NetworkHttpRequest mHttpRequest;
+    ucf::agents::network::http::NetworkHttpRequest mHttpRequest;
     int mRedirectCount{0};
 };
 
@@ -44,9 +44,9 @@ NetworkHttpDownloadToMemoryHandler::DataPrivate::DataPrivate(const ucf::service:
     convertDownloadRequestToHttpRequest(downloadRequest, mHttpRequest);
 }
 
-void NetworkHttpDownloadToMemoryHandler::DataPrivate::convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
+void NetworkHttpDownloadToMemoryHandler::DataPrivate::convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::agents::network::http::NetworkHttpRequest& httpRequest) const
 {
-    httpRequest.setRequestMethod(ucf::utilities::network::http::HTTPMethod::GET);
+    httpRequest.setRequestMethod(ucf::agents::network::http::HTTPMethod::GET);
     httpRequest.setRequestHeaders(downloadRequest.getRequestHeaders());
     httpRequest.setRequestId(downloadRequest.getRequestId());
     httpRequest.setTrackingId(downloadRequest.getTrackingId());
@@ -96,12 +96,12 @@ NetworkHttpDownloadToMemoryHandler::~NetworkHttpDownloadToMemoryHandler()
 
 }
 
-const ucf::utilities::network::http::NetworkHttpRequest& NetworkHttpDownloadToMemoryHandler::getHttpRequest() const
+const ucf::agents::network::http::NetworkHttpRequest& NetworkHttpDownloadToMemoryHandler::getHttpRequest() const
 {
     return mDataPrivate->getHttpRequest();
 }
 
-void NetworkHttpDownloadToMemoryHandler::setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData)
+void NetworkHttpDownloadToMemoryHandler::setResponseHeader(int statusCode, const ucf::agents::network::http::NetworkHttpHeaders& headers, std::optional<ucf::agents::network::http::ResponseErrorStruct> errorData)
 {
 
     mDataPrivate->getDownloadResponse().setHttpResponseCode(statusCode);
@@ -113,7 +113,7 @@ void NetworkHttpDownloadToMemoryHandler::setResponseHeader(int statusCode, const
     }
 }
 
-void NetworkHttpDownloadToMemoryHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
+void NetworkHttpDownloadToMemoryHandler::appendResponseBody(const ucf::agents::network::http::ByteBuffer& buffer, bool isFinished)
 {
     if (!buffer.empty())
     {
@@ -126,7 +126,7 @@ void NetworkHttpDownloadToMemoryHandler::appendResponseBody(const ucf::utilities
     }
 }
 
-void NetworkHttpDownloadToMemoryHandler::completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics)
+void NetworkHttpDownloadToMemoryHandler::completeResponse(const ucf::agents::network::http::HttpResponseMetrics& metrics)
 {
     if (auto callback = mDataPrivate->getResponseCallback())
     {

@@ -7,12 +7,12 @@
 #include <functional>
 #include <filesystem>
 
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataValue.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseSchema.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseDataRecord.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/IDatabaseWrapper.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseFactory.h>
-#include <ucf/Utilities/DatabaseUtils/DatabaseWrapper/DatabaseConfig.h>
+#include <ucf/Agents/DatabaseAgent/DatabaseDataValue.h>
+#include <ucf/Agents/DatabaseAgent/DatabaseSchema.h>
+#include <ucf/Agents/DatabaseAgent/DatabaseDataRecord.h>
+#include <ucf/Agents/DatabaseAgent/IDatabaseWrapper.h>
+#include <ucf/Agents/DatabaseAgent/DatabaseFactory.h>
+#include <ucf/Agents/DatabaseAgent/DatabaseConfig.h>
 
 #include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
 #include <ucf/Services/DataWarehouseService/DatabaseDataValue.h>
@@ -42,20 +42,20 @@ public:
     int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
 
     void createFolder(const std::string& dbFilePath) const;
-    std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> getDBWrapper(const std::string& dbId);
+    std::shared_ptr<ucf::agents::database::IDatabaseWrapper> getDBWrapper(const std::string& dbId);
 
 private:
-    ucf::utilities::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const;
-    ucf::utilities::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values) const;
-    ucf::utilities::database::DatabaseDataValue convertToDatabaseDataValue(const model::DatabaseDataValue& value) const;
-    ucf::utilities::database::ListsOfWhereCondition convertToDatabaseWhereConditions(const model::ListsOfWhereCondition& conditions) const;
-    ucf::utilities::database::DBOperatorType convertToDatabaseOperatorType(model::DBOperatorType operatorType) const;
+    ucf::agents::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const;
+    ucf::agents::database::ListOfArguments convertToDatabaseArguments(const model::ListOfDBValues& values) const;
+    ucf::agents::database::DatabaseDataValue convertToDatabaseDataValue(const model::DatabaseDataValue& value) const;
+    ucf::agents::database::ListsOfWhereCondition convertToDatabaseWhereConditions(const model::ListsOfWhereCondition& conditions) const;
+    ucf::agents::database::DBOperatorType convertToDatabaseOperatorType(model::DBOperatorType operatorType) const;
 
-    model::DatabaseDataValue convertFromDatabaseDataValue(const ucf::utilities::database::DatabaseDataValue& value) const;
-    model::DatabaseDataRecords convertFromDatabaseRecords(const ucf::utilities::database::DatabaseDataRecords& records) const;
+    model::DatabaseDataValue convertFromDatabaseDataValue(const ucf::agents::database::DatabaseDataValue& value) const;
+    model::DatabaseDataRecords convertFromDatabaseRecords(const ucf::agents::database::DatabaseDataRecords& records) const;
 private:
     mutable std::mutex mDatabaseMutex;
-    std::map<std::string, std::shared_ptr<ucf::utilities::database::IDatabaseWrapper>> mDatabaseWrapper;
+    std::map<std::string, std::shared_ptr<ucf::agents::database::IDatabaseWrapper>> mDatabaseWrapper;
 };
 
 DataWarehouseManager::DataPrivate::DataPrivate()
@@ -67,7 +67,7 @@ DataWarehouseManager::DataPrivate::~DataPrivate()
     mDatabaseWrapper.clear();
 }
 
-std::shared_ptr<ucf::utilities::database::IDatabaseWrapper> DataWarehouseManager::DataPrivate::getDBWrapper(const std::string& dbId)
+std::shared_ptr<ucf::agents::database::IDatabaseWrapper> DataWarehouseManager::DataPrivate::getDBWrapper(const std::string& dbId)
 {
     std::scoped_lock<std::mutex> loc(mDatabaseMutex);
     if (auto it = mDatabaseWrapper.find(dbId); it != mDatabaseWrapper.end())
@@ -102,10 +102,10 @@ void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
         if (auto sqliteConfig = std::dynamic_pointer_cast<model::SqliteDBConfig>(dbConfig))
         {
             createFolder(sqliteConfig->getDBFilePath());
-            ucf::utilities::database::SqliteDatabaseConfig config;
+            ucf::agents::database::SqliteDatabaseConfig config;
             config.fileName = sqliteConfig->getDBFilePath();
             config.password = sqliteConfig->getDBPassword();
-            auto dataBaseWrapper = ucf::utilities::database::DatabaseFactory::create(config);
+            auto dataBaseWrapper = ucf::agents::database::DatabaseFactory::create(config);
             
             if (!dataBaseWrapper->open())
             {
@@ -127,54 +127,54 @@ void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBCo
     }
 }
 
-ucf::utilities::database::DatabaseSchemas DataWarehouseManager::DataPrivate::convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const
+ucf::agents::database::DatabaseSchemas DataWarehouseManager::DataPrivate::convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const
 {
-    ucf::utilities::database::DatabaseSchemas databaseSchemas;
+    ucf::agents::database::DatabaseSchemas databaseSchemas;
     std::transform(tableModels.cbegin(), tableModels.cend(), std::back_inserter(databaseSchemas), [](const auto& table) {
-        std::vector<ucf::utilities::database::DatabaseSchema::Column> columns;
+        std::vector<ucf::agents::database::DatabaseSchema::Column> columns;
         auto tableColumns = table.columns();
         std::transform(tableColumns.cbegin(), tableColumns.cend(), std::back_inserter(columns), [](const auto& column) {
-            return ucf::utilities::database::DatabaseSchema::Column{column.mName, column.mAttributes};
+            return ucf::agents::database::DatabaseSchema::Column{column.mName, column.mAttributes};
         });
-        return ucf::utilities::database::DatabaseSchema(table.tableName(), columns);
+        return ucf::agents::database::DatabaseSchema(table.tableName(), columns);
     });
     return databaseSchemas;
 }
 
-ucf::utilities::database::DatabaseDataValue DataWarehouseManager::DataPrivate::convertToDatabaseDataValue(const model::DatabaseDataValue& value) const
+ucf::agents::database::DatabaseDataValue DataWarehouseManager::DataPrivate::convertToDatabaseDataValue(const model::DatabaseDataValue& value) const
 {
     if (value.isNull())
     {
-        return ucf::utilities::database::DatabaseDataValue{};
+        return ucf::agents::database::DatabaseDataValue{};
     }
     else if (value.holdsType<model::DBSupportedTypes::STRING>())
     {
-        return ucf::utilities::database::DatabaseDataValue(value.getStringValue());
+        return ucf::agents::database::DatabaseDataValue(value.getStringValue());
     }
     else if (value.holdsType<model::DBSupportedTypes::INT>())
     {
-        return ucf::utilities::database::DatabaseDataValue(value.getIntValue());
+        return ucf::agents::database::DatabaseDataValue(value.getIntValue());
     }
     else if (value.holdsType<model::DBSupportedTypes::FLOAT>())
     {
-        return ucf::utilities::database::DatabaseDataValue(value.getFloatValue());
+        return ucf::agents::database::DatabaseDataValue(value.getFloatValue());
     }
     else if (value.holdsType<model::DBSupportedTypes::BUFFER>())
     {
-        return ucf::utilities::database::DatabaseDataValue(value.getBufferValue());
+        return ucf::agents::database::DatabaseDataValue(value.getBufferValue());
     }
     else
     {
         SERVICE_LOG_WARN("convert data failed");
-        return ucf::utilities::database::DatabaseDataValue("");
+        return ucf::agents::database::DatabaseDataValue("");
     }
 }
 
-ucf::utilities::database::ListOfArguments DataWarehouseManager::DataPrivate::convertToDatabaseArguments(const model::ListOfDBValues& values) const
+ucf::agents::database::ListOfArguments DataWarehouseManager::DataPrivate::convertToDatabaseArguments(const model::ListOfDBValues& values) const
 {
-    ucf::utilities::database::ListOfArguments listOfArguments;
+    ucf::agents::database::ListOfArguments listOfArguments;
     std::transform(values.cbegin(), values.cend(), std::back_inserter(listOfArguments), [this](const auto& value) {
-        ucf::utilities::database::Arguments arguments; 
+        ucf::agents::database::Arguments arguments; 
         std::transform(value.begin(), value.end(), std::back_inserter(arguments), std::bind_front(&DataWarehouseManager::DataPrivate::convertToDatabaseDataValue, this));
         return arguments;
     });
@@ -205,38 +205,38 @@ bool DataWarehouseManager::DataPrivate::insertIntoDatabase(const std::string& db
     return false;
 }
 
-ucf::utilities::database::DBOperatorType DataWarehouseManager::DataPrivate::convertToDatabaseOperatorType(model::DBOperatorType operatorType) const
+ucf::agents::database::DBOperatorType DataWarehouseManager::DataPrivate::convertToDatabaseOperatorType(model::DBOperatorType operatorType) const
 {
     switch (operatorType)
     {
     case model::DBOperatorType::Equal:
-        return ucf::utilities::database::DBOperatorType::Equal;
+        return ucf::agents::database::DBOperatorType::Equal;
     case model::DBOperatorType::Less:
-        return ucf::utilities::database::DBOperatorType::Less;
+        return ucf::agents::database::DBOperatorType::Less;
     case model::DBOperatorType::Greater:
-        return ucf::utilities::database::DBOperatorType::Greater;
+        return ucf::agents::database::DBOperatorType::Greater;
     case model::DBOperatorType::Match:
-        return ucf::utilities::database::DBOperatorType::Match;
+        return ucf::agents::database::DBOperatorType::Match;
     case model::DBOperatorType::In:
-        return ucf::utilities::database::DBOperatorType::In;
+        return ucf::agents::database::DBOperatorType::In;
     case model::DBOperatorType::NotIn:
-        return ucf::utilities::database::DBOperatorType::NotIn;
+        return ucf::agents::database::DBOperatorType::NotIn;
     case model::DBOperatorType::And:
-        return ucf::utilities::database::DBOperatorType::And;
+        return ucf::agents::database::DBOperatorType::And;
     case model::DBOperatorType::Like:
-        return ucf::utilities::database::DBOperatorType::Like;
+        return ucf::agents::database::DBOperatorType::Like;
     case model::DBOperatorType::Not:
-        return ucf::utilities::database::DBOperatorType::Not;
+        return ucf::agents::database::DBOperatorType::Not;
     case model::DBOperatorType::IsNull:
-        return ucf::utilities::database::DBOperatorType::IsNull;
+        return ucf::agents::database::DBOperatorType::IsNull;
     default:
-        return ucf::utilities::database::DBOperatorType::Equal;
+        return ucf::agents::database::DBOperatorType::Equal;
     }
 }
 
-ucf::utilities::database::ListsOfWhereCondition DataWarehouseManager::DataPrivate::convertToDatabaseWhereConditions(const model::ListsOfWhereCondition& conditions) const
+ucf::agents::database::ListsOfWhereCondition DataWarehouseManager::DataPrivate::convertToDatabaseWhereConditions(const model::ListsOfWhereCondition& conditions) const
 {
-    ucf::utilities::database::ListsOfWhereCondition dbWhereCondition;
+    ucf::agents::database::ListsOfWhereCondition dbWhereCondition;
 
     std::transform(conditions.cbegin(), conditions.cend(), std::back_inserter(dbWhereCondition), [this](const auto& condition){
         return std::make_tuple(std::get<0>(condition), convertToDatabaseDataValue(std::get<1>(condition)), convertToDatabaseOperatorType(std::get<2>(condition)));
@@ -244,25 +244,25 @@ ucf::utilities::database::ListsOfWhereCondition DataWarehouseManager::DataPrivat
     return dbWhereCondition;
 }
 
-model::DatabaseDataValue DataWarehouseManager::DataPrivate::convertFromDatabaseDataValue(const ucf::utilities::database::DatabaseDataValue& value) const
+model::DatabaseDataValue DataWarehouseManager::DataPrivate::convertFromDatabaseDataValue(const ucf::agents::database::DatabaseDataValue& value) const
 {
     if (value.isNull())
     {
         return model::DatabaseDataValue{};
     }
-    else if (value.holdsType<ucf::utilities::database::DBSupportedTypes::STRING>())
+    else if (value.holdsType<ucf::agents::database::DBSupportedTypes::STRING>())
     {
         return model::DatabaseDataValue(value.getStringValue());
     }
-    else if (value.holdsType<ucf::utilities::database::DBSupportedTypes::INT>())
+    else if (value.holdsType<ucf::agents::database::DBSupportedTypes::INT>())
     {
         return model::DatabaseDataValue(value.getIntValue());
     }
-    else if (value.holdsType<ucf::utilities::database::DBSupportedTypes::FLOAT>())
+    else if (value.holdsType<ucf::agents::database::DBSupportedTypes::FLOAT>())
     {
         return model::DatabaseDataValue(value.getFloatValue());
     }
-    else if (value.holdsType<ucf::utilities::database::DBSupportedTypes::BLOB>())
+    else if (value.holdsType<ucf::agents::database::DBSupportedTypes::BLOB>())
     {
         return model::DatabaseDataValue(value.getBufferValue());
     }
@@ -273,7 +273,7 @@ model::DatabaseDataValue DataWarehouseManager::DataPrivate::convertFromDatabaseD
     }
 }
 
-model::DatabaseDataRecords DataWarehouseManager::DataPrivate::convertFromDatabaseRecords(const ucf::utilities::database::DatabaseDataRecords& records) const
+model::DatabaseDataRecords DataWarehouseManager::DataPrivate::convertFromDatabaseRecords(const ucf::agents::database::DatabaseDataRecords& records) const
 {
     model::DatabaseDataRecords resultRecords;
     std::transform(records.cbegin(), records.cend(), std::back_inserter(resultRecords), [this](const auto& dbRecord){
@@ -292,8 +292,8 @@ void DataWarehouseManager::DataPrivate::fetchFromDatabase(const std::string& dbI
 {
     if (auto dbWrapper = getDBWrapper(dbId))
     {
-        ucf::utilities::database::ListsOfWhereCondition dbQueryConditions = convertToDatabaseWhereConditions(whereConditions);
-        ucf::utilities::database::DatabaseDataRecordsCallback dbWrapperCallback= [func, this](const ucf::utilities::database::DatabaseDataRecords& dbRecords){
+        ucf::agents::database::ListsOfWhereCondition dbQueryConditions = convertToDatabaseWhereConditions(whereConditions);
+        ucf::agents::database::DatabaseDataRecordsCallback dbWrapperCallback= [func, this](const ucf::agents::database::DatabaseDataRecords& dbRecords){
             func(convertFromDatabaseRecords(dbRecords));
         };
         dbWrapper->fetchFromDatabase(tableName, columnFields, dbQueryConditions, dbWrapperCallback, limit, location);
@@ -310,10 +310,10 @@ int64_t DataWarehouseManager::DataPrivate::updateInDatabase(const std::string& d
 {
     if (auto dbWrapper = getDBWrapper(dbId))
     {
-        ucf::utilities::database::Arguments dbValues;
+        ucf::agents::database::Arguments dbValues;
         std::transform(values.cbegin(), values.cend(), std::back_inserter(dbValues), 
             std::bind_front(&DataWarehouseManager::DataPrivate::convertToDatabaseDataValue, this));
-        ucf::utilities::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
+        ucf::agents::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
         return dbWrapper->updateInDatabase(tableName, columnFields, dbValues, dbConditions, location);
     }
     SERVICE_LOG_WARN("no db:" << dbId);
@@ -335,7 +335,7 @@ int64_t DataWarehouseManager::DataPrivate::deleteFromDatabase(const std::string&
 {
     if (auto dbWrapper = getDBWrapper(dbId))
     {
-        ucf::utilities::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
+        ucf::agents::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
         return dbWrapper->deleteFromDatabase(tableName, dbConditions, location);
     }
     SERVICE_LOG_WARN("no db:" << dbId);
@@ -346,7 +346,7 @@ bool DataWarehouseManager::DataPrivate::exists(const std::string& dbId, const st
 {
     if (auto dbWrapper = getDBWrapper(dbId))
     {
-        ucf::utilities::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
+        ucf::agents::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
         return dbWrapper->exists(tableName, dbConditions);
     }
     SERVICE_LOG_WARN("no db:" << dbId);
@@ -357,7 +357,7 @@ int64_t DataWarehouseManager::DataPrivate::count(const std::string& dbId, const 
 {
     if (auto dbWrapper = getDBWrapper(dbId))
     {
-        ucf::utilities::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
+        ucf::agents::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
         return dbWrapper->count(tableName, dbConditions);
     }
     SERVICE_LOG_WARN("no db:" << dbId);

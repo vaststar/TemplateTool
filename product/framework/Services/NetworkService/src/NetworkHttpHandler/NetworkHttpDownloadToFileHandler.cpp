@@ -5,9 +5,9 @@
 #include <cctype>
 #include <fstream>
 
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Utilities/NetworkUtils/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
 
@@ -24,14 +24,14 @@ class NetworkHttpDownloadToFileHandler::DataPrivate{
 public:
     DataPrivate(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, const HttpDownloadToFileResponseCallbackFunc& responseCallback);
     
-    const ucf::utilities::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
+    const ucf::agents::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
     ucf::service::network::http::HttpDownloadToFileResponse& getDownloadResponse(){return mDownloadResponse;}
     const ucf::service::network::http::HttpDownloadToFileResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
     int getRedirectCount() const{ return mRedirectCount;}
     void prepareRedirect();
 
-    void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const;
+    void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, ucf::agents::network::http::NetworkHttpRequest& httpRequest) const;
 
     bool openFile();
     bool writeToFile(const ByteBuffer& buffer);
@@ -41,7 +41,7 @@ private:
     ucf::service::network::http::HttpDownloadToFileResponse mDownloadResponse;
     std::string mDownloadFilePath;
     std::ofstream mOutFilestream;
-    ucf::utilities::network::http::NetworkHttpRequest mHttpRequest;
+    ucf::agents::network::http::NetworkHttpRequest mHttpRequest;
     int mRedirectCount{0};
 };
 
@@ -53,9 +53,9 @@ NetworkHttpDownloadToFileHandler::DataPrivate::DataPrivate(const ucf::service::n
     mDownloadFilePath = downloadRequest.getDownloadFilePath();
 }
 
-void NetworkHttpDownloadToFileHandler::DataPrivate::convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, ucf::utilities::network::http::NetworkHttpRequest& httpRequest) const
+void NetworkHttpDownloadToFileHandler::DataPrivate::convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, ucf::agents::network::http::NetworkHttpRequest& httpRequest) const
 {
-    httpRequest.setRequestMethod(ucf::utilities::network::http::HTTPMethod::GET);
+    httpRequest.setRequestMethod(ucf::agents::network::http::HTTPMethod::GET);
     httpRequest.setRequestHeaders(downloadRequest.getRequestHeaders());
     httpRequest.setRequestId(downloadRequest.getRequestId());
     httpRequest.setTrackingId(downloadRequest.getTrackingId());
@@ -139,12 +139,12 @@ NetworkHttpDownloadToFileHandler::~NetworkHttpDownloadToFileHandler()
 
 }
 
-const ucf::utilities::network::http::NetworkHttpRequest& NetworkHttpDownloadToFileHandler::getHttpRequest() const
+const ucf::agents::network::http::NetworkHttpRequest& NetworkHttpDownloadToFileHandler::getHttpRequest() const
 {
     return mDataPrivate->getHttpRequest();
 }
 
-void NetworkHttpDownloadToFileHandler::setResponseHeader(int statusCode, const ucf::utilities::network::http::NetworkHttpHeaders& headers, std::optional<ucf::utilities::network::http::ResponseErrorStruct> errorData)
+void NetworkHttpDownloadToFileHandler::setResponseHeader(int statusCode, const ucf::agents::network::http::NetworkHttpHeaders& headers, std::optional<ucf::agents::network::http::ResponseErrorStruct> errorData)
 {
     mDataPrivate->getDownloadResponse().setHttpResponseCode(statusCode);
     mDataPrivate->getDownloadResponse().setResponseHeaders(headers);
@@ -155,7 +155,7 @@ void NetworkHttpDownloadToFileHandler::setResponseHeader(int statusCode, const u
     }
 }
 
-void NetworkHttpDownloadToFileHandler::appendResponseBody(const ucf::utilities::network::http::ByteBuffer& buffer, bool isFinished)
+void NetworkHttpDownloadToFileHandler::appendResponseBody(const ucf::agents::network::http::ByteBuffer& buffer, bool isFinished)
 {
     if (!buffer.empty())
     {
@@ -175,7 +175,7 @@ void NetworkHttpDownloadToFileHandler::appendResponseBody(const ucf::utilities::
     }
 }
 
-void NetworkHttpDownloadToFileHandler::completeResponse(const ucf::utilities::network::http::HttpResponseMetrics& metrics)
+void NetworkHttpDownloadToFileHandler::completeResponse(const ucf::agents::network::http::HttpResponseMetrics& metrics)
 {
     mDataPrivate->closeFile();
     mDataPrivate->getDownloadResponse().setFinished();
