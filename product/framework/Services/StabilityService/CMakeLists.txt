@@ -60,6 +60,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
     FilePathUtils
     ClientInfoService
+    TimeUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

@@ -32,7 +32,7 @@ message(STATUS "[FFmpeg] macOS ${FFMPEG_ARCH_DIR}")
 message(STATUS "[FFmpeg] ffmpeg: ${FFMPEG_EXECUTABLE}")
 message(STATUS "[FFmpeg] ffprobe: ${FFPROBE_EXECUTABLE}")
 
-# Create copy target to output directory
+# Copy ffmpeg executables to output directory
 add_custom_target(copy_ffmpeg ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFMPEG_EXECUTABLE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
@@ -43,7 +43,3 @@ set_target_properties(copy_ffmpeg PROPERTIES FOLDER framework/thirdparty/ffmpeg)
 
 install(PROGRAMS "${FFMPEG_EXECUTABLE}" DESTINATION bin)
 install(PROGRAMS "${FFPROBE_EXECUTABLE}" DESTINATION bin)
-
-# Export paths for use by other targets
-set(FFMPEG_EXECUTABLE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffmpeg" CACHE INTERNAL "Path to ffmpeg executable")
-set(FFPROBE_EXECUTABLE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffprobe" CACHE INTERNAL "Path to ffprobe executable")

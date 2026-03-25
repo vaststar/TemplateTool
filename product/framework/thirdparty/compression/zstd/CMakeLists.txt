@@ -16,7 +16,8 @@ set(ZSTD_LEGACY_SUPPORT OFF CACHE BOOL "" FORCE)
 set(ZSTD_MULTITHREAD_SUPPORT ON CACHE BOOL "" FORCE)
 
 # Add official zstd CMake (entry point is build/cmake)
-add_subdirectory(zstd/build/cmake zstd_build)
+# EXCLUDE_FROM_ALL: zstd is linked privately, skip its install() rules
+add_subdirectory(zstd/build/cmake zstd_build EXCLUDE_FROM_ALL)
 
 # Set IDE folder for zstd targets (only real targets, not ALIAS)
 foreach(_target libzstd_static clean-all uninstall)

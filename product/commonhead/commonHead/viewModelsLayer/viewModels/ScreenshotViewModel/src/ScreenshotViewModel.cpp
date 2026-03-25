@@ -2,6 +2,7 @@
 
 #include <ucf/Utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
 #include <ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h>
+#include <ucf/Utilities/TimeUtils/TimeUtils.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
@@ -10,7 +11,6 @@
 #include <chrono>
 #include <cmath>
 #include <filesystem>
-#include <iomanip>
 #include <sstream>
 
 namespace commonHead::viewModels {
@@ -537,20 +537,8 @@ void ScreenshotViewModel::updateSettings(const model::ScreenshotSettings& settin
 std::string ScreenshotViewModel::generateFilename() const
 {
     // Format: Screenshot_YYYYMMDD_HHmmss.ext
-    auto now = std::chrono::system_clock::now();
-    auto time = std::chrono::system_clock::to_time_t(now);
-    std::tm tm{};
-#if defined(_WIN32)
-    localtime_s(&tm, &time);
-#else
-    localtime_r(&time, &tm);
-#endif
-
-    std::ostringstream oss;
-    oss << "Screenshot_"
-        << std::put_time(&tm, "%Y%m%d_%H%M%S")
-        << "." << m_settings.imageFormat;
-    return oss.str();
+    auto timestamp = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y%m%d_%H%M%S");
+    return "Screenshot_" + timestamp + "." + m_settings.imageFormat;
 }
 
 ImageData ScreenshotViewModel::renderAnnotationsOnImage(const ImageData& source) const
@@ -611,18 +599,7 @@ void ScreenshotViewModel::addTimestampWatermark(ImageData& image) const
     if (!image.isValid()) return;
 
     // Generate timestamp string: "YYYY-MM-DD HH:MM:SS"
-    auto now = std::chrono::system_clock::now();
-    auto time = std::chrono::system_clock::to_time_t(now);
-    std::tm tm{};
-#if defined(_WIN32)
-    localtime_s(&tm, &time);
-#else
-    localtime_r(&time, &tm);
-#endif
-
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-    std::string timestampText = oss.str();
+    std::string timestampText = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y-%m-%d %H:%M:%S");
 
     // Calculate font size based on image dimensions (roughly 2% of the shorter side)
     int shorterSide = std::min(image.width, image.height);

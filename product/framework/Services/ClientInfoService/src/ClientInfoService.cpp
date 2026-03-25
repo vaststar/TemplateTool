@@ -134,7 +134,7 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os cpu core: " << std::to_string(ucf::utilities::OSUtils::getCPUCoreCount()));
     SERVICE_LOG_DEBUG("os cpu info: " << ucf::utilities::OSUtils::getCPUInfo());
     SERVICE_LOG_DEBUG("os local language: " << ucf::utilities::OSUtils::getSystemLanguage());
-    SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZone());
+    SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZoneName());
     SERVICE_LOG_DEBUG("os total memory: " << ucf::utilities::OSUtils::getMemoryInfo().totalMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os available memory: " << ucf::utilities::OSUtils::getMemoryInfo().availableMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os gpu info: " << ucf::utilities::OSUtils::getGPUInfo());

@@ -70,12 +70,13 @@ if /i "%ACTION%"=="build" goto :build
 if /i "%ACTION%"=="rebuild" goto :rebuild
 if /i "%ACTION%"=="clean" goto :clean
 if /i "%ACTION%"=="install" goto :install
+if /i "%ACTION%"=="install-only" goto :install_only
 if /i "%ACTION%"=="package" goto :package
 if /i "%ACTION%"=="test" goto :test
 if /i "%ACTION%"=="all" goto :all
 
 echo [WARNING] Unknown action: %ACTION%
-echo [INFO] Valid actions: configure, build, rebuild, clean, install, package, test, all
+echo [INFO] Valid actions: configure, build, rebuild, clean, install, install-only, package, test, all
 echo [INFO] Falling back to 'all'
 goto :all
 
@@ -130,6 +131,23 @@ echo   Build Dir  : %BUILD_DIR%
 echo   Install to : %ROOT_DIR%install\%PRESET%
 echo.
 "%CMAKE%" --build --preset %PRESET% --target install
+set "EXIT_CODE=%errorlevel%"
+goto :result
+
+:install_only
+echo.
+echo [Step 1/1] Installing (skip build)...
+echo ----------------------------------------------------
+call :is_configured
+if !errorlevel! neq 0 (
+    echo   [ERROR] Project not configured. Run 'build.bat %PRESET% configure' first.
+    set "EXIT_CODE=1"
+    goto :result
+)
+echo   Build Dir  : %BUILD_DIR%
+echo   Install to : %ROOT_DIR%install\%PRESET%
+echo.
+"%CMAKE%" --install "%BUILD_DIR%" --config Release
 set "EXIT_CODE=%errorlevel%"
 goto :result
 
@@ -241,6 +259,7 @@ echo   build        Build the project
 echo   rebuild      Clean and rebuild the project
 echo   clean        Clean build artifacts
 echo   install      Build and install the project
+echo   install-only Install without rebuilding (cmake --install)
 echo   package      Build and create package
 echo   test         Build and run tests
 echo   all          Configure and build (default)

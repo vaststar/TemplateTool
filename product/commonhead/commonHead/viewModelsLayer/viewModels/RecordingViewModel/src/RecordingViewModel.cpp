@@ -3,10 +3,10 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/Utilities/TimeUtils/TimeUtils.h>
 
 #include <chrono>
 #include <filesystem>
-#include <iomanip>
 #include <sstream>
 
 namespace fs = std::filesystem;
@@ -367,15 +367,8 @@ void RecordingViewModel::updateSettings(const model::RecordingSettings& settings
 std::string RecordingViewModel::generateOutputPath() const
 {
     // Format: Recording_YYYYMMDD_HHmmss.ext
-    auto now = std::chrono::system_clock::now();
-    auto time = std::chrono::system_clock::to_time_t(now);
-    std::tm tm{};
-    localtime_r(&time, &tm);
-
-    std::ostringstream oss;
-    oss << "Recording_"
-        << std::put_time(&tm, "%Y%m%d_%H%M%S")
-        << "." << m_settings.videoFormat;
+    auto timestamp = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y%m%d_%H%M%S");
+    std::string filename = "Recording_" + timestamp + "." + m_settings.videoFormat;
 
     std::string dir = m_settings.outputDirectory;
     if (dir.empty()) {
@@ -386,7 +379,7 @@ std::string RecordingViewModel::generateOutputPath() const
     std::error_code ec;
     fs::create_directories(dir, ec);
 
-    return (fs::path(dir) / oss.str()).string();
+    return (fs::path(dir) / filename).string();
 }
 
 void RecordingViewModel::startDurationTimer()

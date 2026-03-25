@@ -253,7 +253,7 @@ TimestampResult ToolsViewModel::timestampToDateTime(int64_t timestamp, bool isMi
         result.success = true;
         result.timestamp = timestamp;
         result.dateTimeStr = oss.str();
-        result.timezone = ucf::utilities::TimeUtils::getLocalTimeZone();
+        result.timezone = ucf::utilities::TimeUtils::getLocalTimeZoneName();
     }
     catch (const std::exception& e)
     {
@@ -296,7 +296,7 @@ TimestampResult ToolsViewModel::dateTimeToTimestamp(const std::string& dateTimeS
         result.success = true;
         result.timestamp = static_cast<int64_t>(seconds) * 1000;  // Return milliseconds
         result.dateTimeStr = dateTimeStr;
-        result.timezone = ucf::utilities::TimeUtils::getLocalTimeZone();
+        result.timezone = ucf::utilities::TimeUtils::getLocalTimeZoneName();
     }
     catch (const std::exception& e)
     {
@@ -312,9 +312,9 @@ TimestampResult ToolsViewModel::getCurrentTimestamp()
     TimestampResult result;
 
     result.success = true;
-    result.timestamp = ucf::utilities::TimeUtils::getUTCNowInMilliseconds();
-    result.dateTimeStr = ucf::utilities::TimeUtils::getUTCCurrentTime();
-    result.timezone = ucf::utilities::TimeUtils::getLocalTimeZone();
+    result.timestamp = ucf::utilities::TimeUtils::getCurrentUTCMilliseconds();
+    result.dateTimeStr = ucf::utilities::TimeUtils::getCurrentUTCTimeString();
+    result.timezone = ucf::utilities::TimeUtils::getLocalTimeZoneName();
 
     return result;
 }

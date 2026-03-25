@@ -28,6 +28,7 @@ if [[ "$PRESET" == "help" || "$PRESET" == "--help" || "$PRESET" == "-h" ]]; then
     echo "  rebuild      Clean and rebuild the project"
     echo "  clean        Clean build artifacts"
     echo "  install      Build and install the project"
+    echo "  install-only Install without rebuilding (cmake --install)"
     echo "  package      Build and create package"
     echo "  test         Build and run tests"
     echo "  all          Configure and build (default)"
@@ -142,7 +143,7 @@ case "$ACTION" in
         "$CMAKE" --preset "$PRESET" --graphviz="$GRAPHVIZ_FILE"
         EXIT_CODE=$?
         ;;
-    
+
     build)
         echo ""
         echo "[Step 1/1] Building project..."
@@ -154,7 +155,7 @@ case "$ACTION" in
         "$CMAKE" --build --preset "$PRESET"
         EXIT_CODE=$?
         ;;
-    
+
     rebuild)
         echo ""
         echo "[Step 1/3] Cleaning previous build..."
@@ -179,7 +180,7 @@ case "$ACTION" in
             EXIT_CODE=$?
         fi
         ;;
-    
+
     clean)
         echo ""
         echo "[Step 1/1] Cleaning build artifacts..."
@@ -194,7 +195,7 @@ case "$ACTION" in
             EXIT_CODE=0
         fi
         ;;
-    
+
     install)
         echo ""
         echo "[Step 1/1] Building and installing..."
@@ -207,7 +208,28 @@ case "$ACTION" in
         "$CMAKE" --build --preset "$PRESET" --target install
         EXIT_CODE=$?
         ;;
-    
+
+    install-only)
+        echo ""
+        echo "[Step 1/1] Installing (skip build)..."
+        echo "----------------------------------------------------"
+        if ! is_configured; then
+            echo "  [ERROR] Project not configured. Run './build.sh $PRESET configure' first."
+            EXIT_CODE=1
+        else
+            # Detect build type from preset name
+            BUILD_CONFIG="Release"
+            if [[ "$PRESET" == *"-debug"* ]]; then
+                BUILD_CONFIG="Debug"
+            fi
+            echo "  Build Dir  : $BUILD_DIR"
+            echo "  Install to : $ROOT_DIR/install/$PRESET"
+            echo ""
+            "$CMAKE" --install "$BUILD_DIR" --config "$BUILD_CONFIG"
+            EXIT_CODE=$?
+        fi
+        ;;
+
     package)
         echo ""
         echo "[Step 1/2] Building project..."
@@ -228,7 +250,7 @@ case "$ACTION" in
             EXIT_CODE=$BUILD_RESULT
         fi
         ;;
-    
+
     test)
         echo ""
         echo "[Step 1/2] Building project..."
@@ -248,14 +270,14 @@ case "$ACTION" in
             EXIT_CODE=$BUILD_RESULT
         fi
         ;;
-    
+
     all)
         do_all
         ;;
-    
+
     *)
         echo "[WARNING] Unknown action: $ACTION"
-        echo "[INFO] Valid actions: configure, build, rebuild, clean, install, package, test, all"
+        echo "[INFO] Valid actions: configure, build, rebuild, clean, install, install-only, package, test, all"
         echo "[INFO] Falling back to 'all'"
         do_all
         ;;
@@ -278,7 +300,7 @@ else
     echo " Preset     : $PRESET"
     echo " Action     : $ACTION"
     echo " Build Dir  : $BUILD_DIR"
-    if [ "$ACTION" = "install" ]; then
+    if [ "$ACTION" = "install" ] || [ "$ACTION" = "install-only" ]; then
         echo " Installed  : $ROOT_DIR/install/$PRESET"
     fi
     if [ "$ACTION" = "package" ]; then
