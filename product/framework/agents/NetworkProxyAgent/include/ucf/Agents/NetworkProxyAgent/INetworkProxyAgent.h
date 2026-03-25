@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Agents/AgentsCommonFile/AgentsExport.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
-#include <ucf/Utilities/NetworkProxyAgent/NetworkProxyAgentTypes.h>
+#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 
-namespace ucf::utilities {
+namespace ucf::agents {
 
 class INetworkProxyAgentCallback;
 
@@ -31,8 +31,8 @@ class INetworkProxyAgentCallback;
 /// Thread safety:
 ///   - start(), stop(), sendCommand(), and state queries are thread-safe.
 ///   - Callbacks are invoked on internal worker threads.
-class Utilities_EXPORT INetworkProxyAgent
-    : public virtual INotificationHelper<INetworkProxyAgentCallback>
+class Agents_EXPORT INetworkProxyAgent
+    : public virtual ucf::utilities::INotificationHelper<INetworkProxyAgentCallback>
 {
 public:
     ~INetworkProxyAgent() override = default;
@@ -95,4 +95,4 @@ public:
     static std::shared_ptr<INetworkProxyAgent> create();
 };
 
-} // namespace ucf::utilities
+} // namespace ucf::agents

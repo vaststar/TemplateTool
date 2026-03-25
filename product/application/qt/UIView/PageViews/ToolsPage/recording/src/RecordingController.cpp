@@ -176,6 +176,13 @@ void RecordingController::stopRecording()
     }
 }
 
+void RecordingController::abortRecording()
+{
+    if (m_viewModel) {
+        m_viewModel->abortRecording();
+    }
+}
+
 void RecordingController::pauseRecording()
 {
     if (m_viewModel) {

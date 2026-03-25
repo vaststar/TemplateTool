@@ -3,7 +3,7 @@
 
 #include <ucf/Utilities/JsonUtils/JsonValue.h>
 
-namespace ucf::utilities::detail {
+namespace ucf::agents::detail {
 
 // ═══════════════════════════════════════════════════════════════
 //  Incoming message parsing
@@ -14,7 +14,7 @@ AddonMessage AddonProtocol::parseMessage(const std::string& jsonLine)
     AddonMessage result;
     result.rawJson = jsonLine;
 
-    auto parsed = JsonValue::parse(jsonLine);
+    auto parsed = ucf::utilities::JsonValue::parse(jsonLine);
     if (!parsed.isObject())
     {
         NPA_LOG_WARN("Failed to parse addon message as JSON object");
@@ -51,7 +51,7 @@ AddonMessage AddonProtocol::parseMessage(const std::string& jsonLine)
 
 std::string AddonProtocol::buildSetIntercept(bool enabled)
 {
-    auto obj = JsonValue::object();
+    auto obj = ucf::utilities::JsonValue::object();
     obj.set("type", "set_intercept");
     obj.set("enabled", enabled);
     return obj.dump() + "\n";
@@ -59,7 +59,7 @@ std::string AddonProtocol::buildSetIntercept(bool enabled)
 
 std::string AddonProtocol::buildResumeFlow(const std::string& flowId)
 {
-    auto obj = JsonValue::object();
+    auto obj = ucf::utilities::JsonValue::object();
     obj.set("type", "resume_flow");
     obj.set("flow_id", flowId);
     return obj.dump() + "\n";
@@ -67,7 +67,7 @@ std::string AddonProtocol::buildResumeFlow(const std::string& flowId)
 
 std::string AddonProtocol::buildDropFlow(const std::string& flowId)
 {
-    auto obj = JsonValue::object();
+    auto obj = ucf::utilities::JsonValue::object();
     obj.set("type", "drop_flow");
     obj.set("flow_id", flowId);
     return obj.dump() + "\n";
@@ -77,9 +77,9 @@ std::string AddonProtocol::buildUpdateRules(const std::string& ruleType,
                                              const std::string& rulesJson)
 {
     // The rules are already a JSON array string; we parse and embed it
-    auto rulesVal = JsonValue::parse(rulesJson);
+    auto rulesVal = ucf::utilities::JsonValue::parse(rulesJson);
 
-    auto obj = JsonValue::object();
+    auto obj = ucf::utilities::JsonValue::object();
     obj.set("type", "update_" + ruleType);
 
     if (rulesVal.isArray())
@@ -90,7 +90,7 @@ std::string AddonProtocol::buildUpdateRules(const std::string& ruleType,
     {
         // If parsing failed, embed as empty array and log warning
         NPA_LOG_WARN("Failed to parse rules JSON for " << ruleType << ", using empty array");
-        obj.set("rules", JsonValue::array());
+        obj.set("rules", ucf::utilities::JsonValue::array());
     }
 
     return obj.dump() + "\n";
@@ -100,7 +100,7 @@ std::string AddonProtocol::buildSetThrottle(bool enabled,
                                              int downloadKbps,
                                              int uploadKbps)
 {
-    auto obj = JsonValue::object();
+    auto obj = ucf::utilities::JsonValue::object();
     obj.set("type", "set_throttle");
     obj.set("enabled", enabled);
     obj.set("download_kbps", downloadKbps);
@@ -108,4 +108,4 @@ std::string AddonProtocol::buildSetThrottle(bool enabled,
     return obj.dump() + "\n";
 }
 
-} // namespace ucf::utilities::detail
+} // namespace ucf::agents::detail

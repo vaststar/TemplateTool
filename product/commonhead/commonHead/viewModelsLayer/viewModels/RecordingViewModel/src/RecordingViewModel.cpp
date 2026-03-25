@@ -5,9 +5,7 @@
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/Utilities/TimeUtils/TimeUtils.h>
 
-#include <chrono>
 #include <filesystem>
-#include <sstream>
 
 namespace fs = std::filesystem;
 using namespace ucf::utilities::screenrecording;
@@ -30,23 +28,12 @@ std::shared_ptr<IRecordingViewModel> IRecordingViewModel::createInstance(
 
 RecordingViewModel::RecordingViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : IRecordingViewModel(framework)
+    , m_agent(ucf::agents::IScreenRecordingAgent::create())
 {
 }
 
 RecordingViewModel::~RecordingViewModel()
 {
-    // Wait for any pending async stop operation
-    if (m_stopThread.joinable()) {
-        m_stopThread.join();
-    }
-
-    // Ensure timer thread is stopped
-    stopDurationTimer();
-
-    // If still recording, force stop
-    if (m_session.isValid()) {
-        ScreenRecordingUtils::stopRecording(m_session);
-    }
 }
 
 std::string RecordingViewModel::getViewModelName() const
@@ -60,12 +47,7 @@ std::string RecordingViewModel::getViewModelName() const
 
 void RecordingViewModel::init()
 {
-    // Discover appDir from the framework's data storage path
-    // For FFmpeg discovery we need the app binary directory.
-    // The ICommonHeadFramework provides dataStoragePath; appDir is derived
-    // at the UI layer and passed via settings. However, for a clean approach,
-    // we try to find ffmpeg using common system paths first.
-    // The UI layer can also call updateSettings() with the correct appDir.
+    m_agent->registerCallback(shared_from_this());
 
     // Load settings from FeatureSettingsService if available
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
@@ -81,34 +63,22 @@ void RecordingViewModel::init()
             }
         }
     }
-
-    // FFmpeg discovery will be done when appDir is provided via setAppDir
-    // or lazily on first startRecording call
 }
 
 // ============================================================================
-// State Management
+// State Query
 // ============================================================================
 
 model::RecordingState RecordingViewModel::getState() const
 {
-    std::lock_guard lock(m_mutex);
-    return m_state;
-}
-
-void RecordingViewModel::setState(model::RecordingState newState)
-{
-    {
-        std::lock_guard lock(m_mutex);
-        if (m_state == newState) return;
-        m_state = newState;
-    }
-    fireNotification(&IRecordingViewModelCallback::onStateChanged, newState);
+    if (m_agent->isPaused()) return model::RecordingState::Paused;
+    if (m_agent->isRecording()) return model::RecordingState::Recording;
+    return model::RecordingState::Idle;
 }
 
 int RecordingViewModel::getDuration() const
 {
-    return m_duration.load();
+    return m_agent->duration();
 }
 
 bool RecordingViewModel::isFFmpegAvailable() const
@@ -131,28 +101,19 @@ void RecordingViewModel::setAppDir(const std::string& appDir)
 }
 
 // ============================================================================
-// Recording Control
+// Recording Control — delegate to agent
 // ============================================================================
 
 void RecordingViewModel::startRecording(int displayIndex)
 {
+    ucf::agents::RecordingAgentConfig config;
     {
         std::lock_guard lock(m_mutex);
-        if (m_state != model::RecordingState::Idle) {
-            fireNotification(&IRecordingViewModelCallback::onError,
-                             std::string("Recording already in progress"));
-            return;
-        }
         if (m_ffmpegPath.empty()) {
             fireNotification(&IRecordingViewModelCallback::onError,
                              std::string("FFmpeg not found. Please install FFmpeg to use recording features."));
             return;
         }
-    }
-
-    RecordingConfig config;
-    {
-        std::lock_guard lock(m_mutex);
         config.ffmpegPath = m_ffmpegPath;
         config.outputPath = generateOutputPath();
         config.videoFormat = m_settings.videoFormat;
@@ -160,29 +121,19 @@ void RecordingViewModel::startRecording(int displayIndex)
         config.displayIndex = displayIndex;
         config.isRegion = false;
     }
-
-    doStartRecording(config);
+    m_agent->start(config);
 }
 
 void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
 {
+    ucf::agents::RecordingAgentConfig config;
     {
         std::lock_guard lock(m_mutex);
-        if (m_state != model::RecordingState::Idle) {
-            fireNotification(&IRecordingViewModelCallback::onError,
-                             std::string("Recording already in progress"));
-            return;
-        }
         if (m_ffmpegPath.empty()) {
             fireNotification(&IRecordingViewModelCallback::onError,
                              std::string("FFmpeg not found."));
             return;
         }
-    }
-
-    RecordingConfig config;
-    {
-        std::lock_guard lock(m_mutex);
         config.ffmpegPath = m_ffmpegPath;
         config.outputPath = generateOutputPath();
         config.videoFormat = m_settings.videoFormat;
@@ -193,112 +144,27 @@ void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
         config.regionW = w;
         config.regionH = h;
     }
-
-    doStartRecording(config);
-}
-
-void RecordingViewModel::doStartRecording(const RecordingConfig& config)
-{
-    // Wait for any pending stop operation to complete
-    if (m_stopThread.joinable()) {
-        m_stopThread.join();
-    }
-
-    auto session = ScreenRecordingUtils::startRecording(config);
-    if (!session.isValid()) {
-        fireNotification(&IRecordingViewModelCallback::onError,
-                         std::string("Failed to start FFmpeg recording process"));
-        return;
-    }
-
-    {
-        std::lock_guard lock(m_mutex);
-        m_session = session;
-    }
-
-    setState(model::RecordingState::Recording);
-    startDurationTimer();
+    m_agent->start(config);
 }
 
 void RecordingViewModel::stopRecording()
 {
-    {
-        std::lock_guard lock(m_mutex);
-        if (m_state == model::RecordingState::Idle) return;
-    }
+    m_agent->stop();
+}
 
-    // Prevent concurrent stop calls
-    bool expected = false;
-    if (!m_stopping.compare_exchange_strong(expected, true)) return;
-
-    // Capture whether recording was paused before changing state
-    bool wasPaused = false;
-    {
-        std::lock_guard lock(m_mutex);
-        wasPaused = (m_state == model::RecordingState::Paused);
-    }
-
-    // Update UI state immediately so the interface stays responsive
-    setState(model::RecordingState::Idle);
-
-    // Join any previous stop thread
-    if (m_stopThread.joinable()) {
-        m_stopThread.join();
-    }
-
-    // Run heavy FFmpeg teardown + waitpid on a background thread
-    m_stopThread = std::thread([this, wasPaused]() {
-        stopDurationTimer();
-
-        RecordingResult result;
-        {
-            std::lock_guard lock(m_mutex);
-            if (m_session.isValid()) {
-                if (wasPaused) {
-                    ScreenRecordingUtils::resumeRecording(m_session);
-                }
-                result = ScreenRecordingUtils::stopRecording(m_session);
-            }
-        }
-
-        if (result.success) {
-            fireNotification(&IRecordingViewModelCallback::onRecordingCompleted, result.outputPath);
-        } else if (!result.errorMessage.empty()) {
-            fireNotification(&IRecordingViewModelCallback::onError, result.errorMessage);
-        }
-
-        m_stopping.store(false);
-    });
+void RecordingViewModel::abortRecording()
+{
+    m_agent->abort();
 }
 
 void RecordingViewModel::pauseRecording()
 {
-    std::lock_guard lock(m_mutex);
-    if (m_state != model::RecordingState::Recording) return;
-
-    if (ScreenRecordingUtils::pauseRecording(m_session)) {
-        m_state = model::RecordingState::Paused;
-        // Stop the timer but don't reset
-        m_timerRunning.store(false);
-        m_timerCv.notify_all();
-
-        fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Paused);
-    }
+    m_agent->pause();
 }
 
 void RecordingViewModel::resumeRecording()
 {
-    std::lock_guard lock(m_mutex);
-    if (m_state != model::RecordingState::Paused) return;
-
-    if (ScreenRecordingUtils::resumeRecording(m_session)) {
-        m_state = model::RecordingState::Recording;
-        // Restart the timer
-        m_timerRunning.store(true);
-        m_timerCv.notify_all();
-
-        fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Recording);
-    }
+    m_agent->resume();
 }
 
 void RecordingViewModel::convertToGif(const std::string& inputPath, const std::string& outputPath)
@@ -311,7 +177,6 @@ void RecordingViewModel::convertToGif(const std::string& inputPath, const std::s
 
     std::string outPath = outputPath;
     if (outPath.empty()) {
-        // Auto-generate: replace extension with .gif
         auto p = fs::path(inputPath);
         p.replace_extension(".gif");
         outPath = p.string();
@@ -361,12 +226,58 @@ void RecordingViewModel::updateSettings(const model::RecordingSettings& settings
 }
 
 // ============================================================================
+// Agent Callback Translation → IRecordingViewModelCallback
+// ============================================================================
+
+void RecordingViewModel::onAgentStateChanged(ucf::agents::RecordingAgentState /*state*/)
+{
+    // State changes are currently translated via the specific callbacks below.
+    // This hook is available for future use (e.g. exposing Starting/Stopping
+    // to the UI layer).
+}
+
+void RecordingViewModel::onRecordingStarted()
+{
+    fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Recording);
+}
+
+void RecordingViewModel::onRecordingPaused()
+{
+    fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Paused);
+}
+
+void RecordingViewModel::onRecordingResumed()
+{
+    fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Recording);
+}
+
+void RecordingViewModel::onDurationChanged(int seconds)
+{
+    fireNotification(&IRecordingViewModelCallback::onDurationChanged, seconds);
+}
+
+void RecordingViewModel::onRecordingCompleted(const std::string& outputPath)
+{
+    fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Idle);
+    fireNotification(&IRecordingViewModelCallback::onRecordingCompleted, outputPath);
+}
+
+void RecordingViewModel::onRecordingAborted()
+{
+    fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Idle);
+}
+
+void RecordingViewModel::onError(const std::string& message)
+{
+    fireNotification(&IRecordingViewModelCallback::onError, message);
+}
+
+// ============================================================================
 // Internal Helpers
 // ============================================================================
 
 std::string RecordingViewModel::generateOutputPath() const
 {
-    // Format: Recording_YYYYMMDD_HHmmss.ext
     auto timestamp = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y%m%d_%H%M%S");
     std::string filename = "Recording_" + timestamp + "." + m_settings.videoFormat;
 
@@ -375,56 +286,10 @@ std::string RecordingViewModel::generateOutputPath() const
         dir = "/tmp";
     }
 
-    // Ensure directory exists
     std::error_code ec;
     fs::create_directories(dir, ec);
 
     return (fs::path(dir) / filename).string();
-}
-
-void RecordingViewModel::startDurationTimer()
-{
-    m_duration.store(0);
-    m_timerRunning.store(true);
-    m_timerShouldExit.store(false);
-
-    // Stop any existing timer first
-    if (m_timerThread.joinable()) {
-        m_timerShouldExit.store(true);
-        m_timerCv.notify_all();
-        m_timerThread.join();
-        m_timerRunning.store(true);
-        m_timerShouldExit.store(false);
-    }
-
-    m_timerThread = std::thread([this]() {
-        while (true) {
-            std::unique_lock lock(m_timerMutex);
-            m_timerCv.wait_for(lock, std::chrono::seconds(1), [this]() {
-                return m_timerShouldExit.load();
-            });
-
-            if (m_timerShouldExit.load()) {
-                break;
-            }
-
-            // Only count when actively recording (not paused)
-            if (m_timerRunning.load()) {
-                int seconds = m_duration.fetch_add(1) + 1;
-                fireNotification(&IRecordingViewModelCallback::onDurationChanged, seconds);
-            }
-        }
-    });
-}
-
-void RecordingViewModel::stopDurationTimer()
-{
-    m_timerShouldExit.store(true);
-    m_timerRunning.store(false);
-    m_timerCv.notify_all();
-    if (m_timerThread.joinable()) {
-        m_timerThread.join();
-    }
 }
 
 } // namespace commonHead::viewModels

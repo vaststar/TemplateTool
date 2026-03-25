@@ -7,8 +7,8 @@
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
-#include <ucf/Utilities/NetworkProxyAgent/INetworkProxyAgent.h>
-#include <ucf/Utilities/NetworkProxyAgent/INetworkProxyAgentCallback.h>
+#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgent.h>
+#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgentCallback.h>
 
 namespace commonHead::viewModels {
 
@@ -21,7 +21,7 @@ namespace commonHead::viewModels {
 class NetworkProxyViewModel final
     : public virtual INetworkProxyViewModel
     , public virtual commonHead::utilities::VMNotificationHelper<INetworkProxyViewModelCallback>
-    , public ucf::utilities::INetworkProxyAgentCallback
+    , public ucf::agents::INetworkProxyAgentCallback
     , public std::enable_shared_from_this<NetworkProxyViewModel>
 {
 public:
@@ -59,7 +59,7 @@ protected:
 
 private:
     // ── INetworkProxyAgentCallback ──
-    void onAgentStateChanged(ucf::utilities::AgentState state) override;
+    void onAgentStateChanged(ucf::agents::AgentState state) override;
     void onAddonConnected() override;
     void onAddonDisconnected() override;
     void onRequestCaptured(const std::string& flowId,
@@ -71,7 +71,7 @@ private:
     void onStatusMessage(const std::string& message) override;
     void onError(const std::string& errorMessage) override;
 
-    std::shared_ptr<ucf::utilities::INetworkProxyAgent> mAgent;
+    std::shared_ptr<ucf::agents::INetworkProxyAgent> mAgent;
 };
 
 } // namespace commonHead::viewModels

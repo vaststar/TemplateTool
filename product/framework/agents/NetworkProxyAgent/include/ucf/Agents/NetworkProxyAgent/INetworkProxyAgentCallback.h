@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include <ucf/Utilities/NetworkProxyAgent/NetworkProxyAgentTypes.h>
+#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 
-namespace ucf::utilities {
+namespace ucf::agents {
 
 /// Callback interface for NetworkProxyAgent events.
 ///
@@ -49,4 +49,4 @@ public:
     virtual void onError(const std::string& errorMessage) = 0;
 };
 
-} // namespace ucf::utilities
+} // namespace ucf::agents

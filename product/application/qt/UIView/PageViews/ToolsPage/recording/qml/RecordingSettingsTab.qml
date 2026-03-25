@@ -13,6 +13,11 @@ Item {
 
     required property var controller
 
+    // Section style helpers
+    readonly property color _sectionBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
+    readonly property color _sectionBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
+    readonly property color _sectionTitle: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title, UIColorState.Normal)
+
     ScrollView {
         anchors.fill: parent
         contentWidth: availableWidth
@@ -21,13 +26,24 @@ Item {
             width: parent.width
             spacing: 24
 
-            // === Output Settings ===
-            GroupBox {
+            // === Output Settings Section ===
+            Rectangle {
                 Layout.fillWidth: true
-                title: qsTr("Output Settings")
+                implicitHeight: outputCol.implicitHeight + 52
+                color: root._sectionBg
+                border.color: root._sectionBorder
+                border.width: 1
+                radius: 4
 
                 ColumnLayout {
-                    anchors.fill: parent
+                    id: outputCol
+                    anchors {
+                        fill: parent
+                        topMargin: 36
+                        leftMargin: 16
+                        rightMargin: 16
+                        bottomMargin: 16
+                    }
                     spacing: 16
 
                     // Output directory
@@ -78,15 +94,35 @@ Item {
                         }
                     }
                 }
+
+                // Section title
+                UTText {
+                    x: 12
+                    y: 10
+                    text: qsTr("Output Settings")
+                    fontEnum: UIFontToken.Body_Text_Medium
+                    color: root._sectionTitle
+                }
             }
 
-            // === Recording Settings ===
-            GroupBox {
+            // === Recording Settings Section ===
+            Rectangle {
                 Layout.fillWidth: true
-                title: qsTr("Recording Settings")
+                implicitHeight: recordCol.implicitHeight + 52
+                color: root._sectionBg
+                border.color: root._sectionBorder
+                border.width: 1
+                radius: 4
 
                 ColumnLayout {
-                    anchors.fill: parent
+                    id: recordCol
+                    anchors {
+                        fill: parent
+                        topMargin: 36
+                        leftMargin: 16
+                        rightMargin: 16
+                        bottomMargin: 16
+                    }
                     spacing: 16
 
                     // FPS
@@ -124,6 +160,25 @@ Item {
                         }
                     }
 
+                    // Audio (placeholder)
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        UTText {
+                            text: qsTr("Audio:")
+                            fontEnum: UIFontToken.Body_Text
+                            Layout.preferredWidth: 120
+                        }
+
+                        UTText {
+                            text: qsTr("Coming soon")
+                            fontEnum: UIFontToken.Caption_Text
+                            colorEnum: UIColorToken.Content_Secondary_Text
+                            font.italic: true
+                        }
+                    }
+
                     // FFmpeg path info
                     RowLayout {
                         Layout.fillWidth: true
@@ -147,6 +202,15 @@ Item {
                             Layout.fillWidth: true
                         }
                     }
+                }
+
+                // Section title
+                UTText {
+                    x: 12
+                    y: 10
+                    text: qsTr("Recording Settings")
+                    fontEnum: UIFontToken.Body_Text_Medium
+                    color: root._sectionTitle
                 }
             }
 

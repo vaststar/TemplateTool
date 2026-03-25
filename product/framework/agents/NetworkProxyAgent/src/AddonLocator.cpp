@@ -12,7 +12,7 @@
 #include <climits>
 #endif
 
-namespace ucf::utilities::detail {
+namespace ucf::agents::detail {
 
 // ═══════════════════════════════════════════════════════════════
 //  getLibraryDirectory — find the directory containing this DLL
@@ -195,4 +195,4 @@ std::string AddonLocator::findCACertPath()
 #endif
 }
 
-} // namespace ucf::utilities::detail
+} // namespace ucf::agents::detail

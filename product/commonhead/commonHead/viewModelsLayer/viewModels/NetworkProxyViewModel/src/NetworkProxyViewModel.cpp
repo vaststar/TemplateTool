@@ -3,23 +3,23 @@
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
-#include <ucf/Utilities/NetworkProxyAgent/NetworkProxyAgentTypes.h>
+#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 
 namespace commonHead::viewModels {
 
 namespace {
 
 /// Convert low-level AgentState → ViewModel ProxyState
-model::ProxyState toProxyState(ucf::utilities::AgentState s)
+model::ProxyState toProxyState(ucf::agents::AgentState s)
 {
     switch (s)
     {
-    case ucf::utilities::AgentState::Idle:       return model::ProxyState::Idle;
-    case ucf::utilities::AgentState::Starting:   return model::ProxyState::Starting;
-    case ucf::utilities::AgentState::Running:    return model::ProxyState::Running;
-    case ucf::utilities::AgentState::Stopping:   return model::ProxyState::Stopping;
-    case ucf::utilities::AgentState::Terminated: return model::ProxyState::Terminated;
-    default:                                     return model::ProxyState::Idle;
+    case ucf::agents::AgentState::Idle:       return model::ProxyState::Idle;
+    case ucf::agents::AgentState::Starting:   return model::ProxyState::Starting;
+    case ucf::agents::AgentState::Running:    return model::ProxyState::Running;
+    case ucf::agents::AgentState::Stopping:   return model::ProxyState::Stopping;
+    case ucf::agents::AgentState::Terminated: return model::ProxyState::Terminated;
+    default:                                  return model::ProxyState::Idle;
     }
 }
 
@@ -85,7 +85,7 @@ std::string NetworkProxyViewModel::getViewModelName() const
 
 void NetworkProxyViewModel::init()
 {
-    mAgent = ucf::utilities::INetworkProxyAgent::create();
+    mAgent = ucf::agents::INetworkProxyAgent::create();
     mAgent->registerCallback(shared_from_this());
 }
 
@@ -95,7 +95,7 @@ void NetworkProxyViewModel::init()
 
 void NetworkProxyViewModel::startProxy(const model::ProxyConfig& config)
 {
-    ucf::utilities::AgentConfig agentConfig;
+    ucf::agents::AgentConfig agentConfig;
     agentConfig.proxyPort = config.proxyPort;
     agentConfig.autoSystemProxy = config.autoSystemProxy;
     agentConfig.stopTimeoutMs = config.stopTimeoutMs;
@@ -226,7 +226,7 @@ void NetworkProxyViewModel::checkCertStatus()
 //  INetworkProxyAgentCallback — translate to ViewModel callbacks
 // ════════════════════════════════════════════════════════════
 
-void NetworkProxyViewModel::onAgentStateChanged(ucf::utilities::AgentState state)
+void NetworkProxyViewModel::onAgentStateChanged(ucf::agents::AgentState state)
 {
     auto proxyState = toProxyState(state);
     fireNotification(&INetworkProxyViewModelCallback::onProxyStateChanged, proxyState);

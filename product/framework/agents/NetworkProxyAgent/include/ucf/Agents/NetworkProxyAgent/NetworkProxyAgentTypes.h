@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Agents/AgentsCommonFile/AgentsExport.h>
 #include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
 
-namespace ucf::utilities {
+namespace ucf::agents {
 
 /// Current state of the Network Proxy Agent.
 enum class AgentState
@@ -35,4 +35,4 @@ struct AgentConfig
 using CertTrustStatus = ucf::utilities::CertTrustStatus;
 using CertInstallResult = ucf::utilities::CertInstallResult;
 
-} // namespace ucf::utilities
+} // namespace ucf::agents

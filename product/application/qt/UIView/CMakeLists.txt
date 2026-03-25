@@ -162,6 +162,8 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ToolsPage/recording/qml/RecordingPanel.qml
     PageViews/ToolsPage/recording/qml/RecordingContent.qml
     PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml
+    PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml
+    PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml
     PageViews/PlaceholderPage/qml/PlaceholderPage.qml
     MainWindowTitleBar/qml/MainWindowTitleBar.qml
     MainWindowMenuBar/qml/MainWindowMenuBar.qml

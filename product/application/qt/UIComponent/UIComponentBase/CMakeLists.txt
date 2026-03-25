@@ -49,6 +49,7 @@ set(MODULE_QML_TARGET_FILES
     BaseTabBar/BaseTabBar.qml
     BaseTabButton/BaseTabButton.qml
     BaseText/BaseText.qml
+    BaseToolButton/BaseToolButton.qml
     BaseToolTip/BaseToolTip.qml
     BaseTreeView/BaseTreeView.qml
 )

@@ -59,6 +59,7 @@ set(MODULE_QML_TARGET_FILES
     UTTabBar/UTTabBar.qml
     UTTabButton/UTTabButton.qml
     UTText/UTText.qml
+    UTToolButton/UTToolButton.qml
     UTToolTip/UTToolTip.qml
     UTTreeView/UTTreeView.qml
 )

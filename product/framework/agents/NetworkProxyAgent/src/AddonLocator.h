@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace ucf::utilities::detail {
+namespace ucf::agents::detail {
 
 /// Locates the proxy addon executable and related files relative to the
 /// NetworkProxyAgent shared library (DLL/dylib/so) at runtime.
@@ -32,4 +32,4 @@ private:
     static std::string getLibraryDirectory();
 };
 
-} // namespace ucf::utilities::detail
+} // namespace ucf::agents::detail

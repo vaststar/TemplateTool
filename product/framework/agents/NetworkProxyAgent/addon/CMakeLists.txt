@@ -39,7 +39,7 @@ add_custom_command(
 add_custom_target(build_proxy_addon
     DEPENDS ${ADDON_EXE_PATH}
 )
-set_target_properties(build_proxy_addon PROPERTIES FOLDER framework/Utilities/NetworkProxyAgent)
+set_target_properties(build_proxy_addon PROPERTIES FOLDER framework/Agents/NetworkProxyAgent)
 
 # ── Copy target: copy dist folder to runtime output directory ─────────────
 if(WIN32)
@@ -57,13 +57,13 @@ add_custom_target(copy_proxy_addon ALL
     VERBATIM
 )
 add_dependencies(copy_proxy_addon build_proxy_addon)
-set_target_properties(copy_proxy_addon PROPERTIES FOLDER framework/Utilities/NetworkProxyAgent)
+set_target_properties(copy_proxy_addon PROPERTIES FOLDER framework/Agents/NetworkProxyAgent)
 
 # ── Public interface target for external modules ──────────────────────────
 # Usage: add_dependencies(YourTarget ProxyAddonRuntime)
 add_custom_target(ProxyAddonRuntime)
 add_dependencies(ProxyAddonRuntime copy_proxy_addon)
-set_target_properties(ProxyAddonRuntime PROPERTIES FOLDER framework/Utilities/NetworkProxyAgent)
+set_target_properties(ProxyAddonRuntime PROPERTIES FOLDER framework/Agents/NetworkProxyAgent)
 
 # ── Install rule ──────────────────────────────────────────────────────────
 install(

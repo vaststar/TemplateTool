@@ -60,6 +60,7 @@ public:
     virtual void startRecording(int displayIndex = 0) = 0;
     virtual void startRegionRecording(int x, int y, int w, int h) = 0;
     virtual void stopRecording() = 0;
+    virtual void abortRecording() = 0;
     virtual void pauseRecording() = 0;
     virtual void resumeRecording() = 0;
     virtual void convertToGif(const std::string& inputPath, const std::string& outputPath) = 0;

@@ -131,8 +131,13 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
 
     // Region crop filter
     if (config.isRegion && config.regionW > 0 && config.regionH > 0) {
-        std::string cropFilter = "crop=" + std::to_string(config.regionW) + ":"
-                                + std::to_string(config.regionH) + ":"
+        // libx264 + yuv420p requires even dimensions; round down to nearest 2
+        int w = config.regionW & ~1;
+        int h = config.regionH & ~1;
+        if (w < 2) w = 2;
+        if (h < 2) h = 2;
+        std::string cropFilter = "crop=" + std::to_string(w) + ":"
+                                + std::to_string(h) + ":"
                                 + std::to_string(config.regionX) + ":"
                                 + std::to_string(config.regionY);
         args.push_back("-vf");

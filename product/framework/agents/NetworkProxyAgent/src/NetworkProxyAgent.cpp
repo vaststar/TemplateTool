@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace ucf::utilities {
+namespace ucf::agents {
 
 // ════════════════════════════════════════════════════════════
 //  State machine
@@ -87,7 +87,7 @@ void NetworkProxyAgent::finalizeShutdown(ShutdownReason reason,
 
     if (mConfig.autoSystemProxy)
     {
-        SystemProxyUtils::disableHttpProxy();
+        ucf::utilities::SystemProxyUtils::disableHttpProxy();
     }
 
     if (!tryTransition(AgentState::Terminated))
@@ -141,8 +141,8 @@ std::shared_ptr<INetworkProxyAgent> INetworkProxyAgent::create()
 
 NetworkProxyAgent::NetworkProxyAgent()
 {
-    mProcessBridge = IProcessBridge::create();
-    mTcpChannel = ITcpChannel::create();
+    mProcessBridge = ucf::utilities::IProcessBridge::create();
+    mTcpChannel = ucf::utilities::ITcpChannel::create();
     NPA_LOG_DEBUG("NetworkProxyAgent created");
 }
 
@@ -185,7 +185,7 @@ bool NetworkProxyAgent::start(const AgentConfig& config)
     }
 
     // Step 2: Start TCP control channel on ephemeral port
-    TcpChannelConfig tcpConfig;
+    ucf::utilities::TcpChannelConfig tcpConfig;
     tcpConfig.listenAddress = "127.0.0.1";
     tcpConfig.listenPort = 0;   // OS picks
     tcpConfig.maxConnections = 1;
@@ -203,7 +203,7 @@ bool NetworkProxyAgent::start(const AgentConfig& config)
     NPA_LOG_INFO("Control channel listening on port " << controlPort);
 
     // Step 3: Launch addon process
-    ProcessBridgeConfig pbConfig;
+    ucf::utilities::ProcessBridgeConfig pbConfig;
     pbConfig.executablePath = addonPath;
     pbConfig.arguments = {
         "--proxy-port", std::to_string(config.proxyPort),
@@ -329,7 +329,7 @@ std::string NetworkProxyAgent::caCertPath() const
 CertInstallResult NetworkProxyAgent::installCACert()
 {
     std::string path = caCertPath();
-    auto result = CertStoreUtils::installToTrustStore(path);
+    auto result = ucf::utilities::CertStoreUtils::installToTrustStore(path);
 
     if (result == CertInstallResult::Success)
     {
@@ -342,7 +342,7 @@ CertInstallResult NetworkProxyAgent::installCACert()
 void NetworkProxyAgent::checkCertStatus()
 {
     std::string path = caCertPath();
-    auto trustStatus = CertStoreUtils::checkTrustStatus(path);
+    auto trustStatus = ucf::utilities::CertStoreUtils::checkTrustStatus(path);
     mCertStatus = trustStatus;
 }
 
@@ -403,7 +403,7 @@ void NetworkProxyAgent::onClientConnected()
         // Enable system proxy now that addon is fully connected
         if (mConfig.autoSystemProxy)
         {
-            SystemProxyUtils::enableHttpProxy("127.0.0.1", mConfig.proxyPort);
+            ucf::utilities::SystemProxyUtils::enableHttpProxy("127.0.0.1", mConfig.proxyPort);
         }
 
         fireNotification(&INetworkProxyAgentCallback::onAddonConnected);
@@ -510,4 +510,4 @@ void NetworkProxyAgent::handleAddonMessage(const std::string& jsonLine)
     }
 }
 
-} // namespace ucf::utilities
+} // namespace ucf::agents

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace ucf::utilities::detail {
+namespace ucf::agents::detail {
 
 /// Parsed addon message from the TCP control channel.
 struct AddonMessage
@@ -41,4 +41,4 @@ public:
                                         int uploadKbps = 0);
 };
 
-} // namespace ucf::utilities::detail
+} // namespace ucf::agents::detail

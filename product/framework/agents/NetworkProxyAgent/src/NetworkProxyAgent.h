@@ -6,9 +6,9 @@
 #include <mutex>
 #include <string>
 
-#include <ucf/Utilities/NetworkProxyAgent/INetworkProxyAgent.h>
-#include <ucf/Utilities/NetworkProxyAgent/INetworkProxyAgentCallback.h>
-#include <ucf/Utilities/NetworkProxyAgent/NetworkProxyAgentTypes.h>
+#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgent.h>
+#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgentCallback.h>
+#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 #include <ucf/Utilities/ProcessBridge/IProcessBridge.h>
@@ -16,7 +16,7 @@
 #include <ucf/Utilities/TcpChannel/ITcpChannel.h>
 #include <ucf/Utilities/TcpChannel/ITcpChannelCallback.h>
 
-namespace ucf::utilities {
+namespace ucf::agents {
 
 /// Concrete implementation of INetworkProxyAgent.
 ///
@@ -28,9 +28,9 @@ namespace ucf::utilities {
 /// notifications.
 class NetworkProxyAgent final
     : public virtual INetworkProxyAgent
-    , public virtual NotificationHelper<INetworkProxyAgentCallback>
-    , public IProcessBridgeCallback
-    , public ITcpChannelCallback
+    , public virtual ucf::utilities::NotificationHelper<INetworkProxyAgentCallback>
+    , public ucf::utilities::IProcessBridgeCallback
+    , public ucf::utilities::ITcpChannelCallback
     , public std::enable_shared_from_this<NetworkProxyAgent>
 {
 public:
@@ -96,8 +96,8 @@ private:
     /// CAS helper: try transitioning from any of @p fromStates to @p to.
     bool casFrom(std::initializer_list<AgentState> fromStates, AgentState to);
 
-    std::unique_ptr<IProcessBridge> mProcessBridge;
-    std::unique_ptr<ITcpChannel> mTcpChannel;
+    std::unique_ptr<ucf::utilities::IProcessBridge> mProcessBridge;
+    std::unique_ptr<ucf::utilities::ITcpChannel> mTcpChannel;
 
     std::atomic<AgentState> mState{AgentState::Idle};
     std::atomic<CertTrustStatus> mCertStatus{CertTrustStatus::Unknown};
@@ -108,4 +108,4 @@ private:
     std::string mTcpBuffer;     ///< Accumulates partial newline-delimited JSON
 };
 
-} // namespace ucf::utilities
+} // namespace ucf::agents

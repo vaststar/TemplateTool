@@ -3,14 +3,14 @@ include(BuildModule)
 add_subdirectory(addon)
 
 set(MODULE_MODULE_NAME NetworkProxyAgent)
-set(MODULE_IDE_FOLDER framework/Utilities)
+set(MODULE_IDE_FOLDER framework/Agents)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/NetworkProxyAgent/NetworkProxyAgentTypes.h
-    include/ucf/Utilities/NetworkProxyAgent/INetworkProxyAgentCallback.h
-    include/ucf/Utilities/NetworkProxyAgent/INetworkProxyAgent.h
+    include/ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h
+    include/ucf/Agents/NetworkProxyAgent/INetworkProxyAgentCallback.h
+    include/ucf/Agents/NetworkProxyAgent/INetworkProxyAgent.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/NetworkProxyAgent.h
@@ -23,7 +23,7 @@ set(MODULE_SOURCE_PRIVATE
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC
-    UtilitiesCommonFile
+    AgentsCommonFile
     NotificationHelper
 )
 set(MODULE_DEPENDENCIES_PRIVATE
@@ -49,7 +49,7 @@ TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
 TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_BUILD_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
 TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
-TARGET_DEFINITIONS ${ADD_UTILITIES_DEFINITIONS}
+TARGET_DEFINITIONS ${ADD_AGENTS_DEFINITIONS}
 TARGET_ADD_DEPENDENCIES ProxyAddonRuntime
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )

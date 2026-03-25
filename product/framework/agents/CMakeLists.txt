@@ -1,0 +1,8 @@
+if (WIN32)
+    set(ADD_AGENTS_DEFINITIONS Agents_DLL) #Agents_DLL Agents_LIB
+else()
+    set(ADD_AGENTS_DEFINITIONS)
+endif()
+add_subdirectory(common_file)
+add_subdirectory(NetworkProxyAgent)
+add_subdirectory(ScreenRecordingAgent)

@@ -23,7 +23,7 @@ FocusScope {
         focus: true
 
         UTTabButton {
-            text: qsTr("🎬 Recording")
+            text: qsTr("🎬 Gallery")
         }
 
         UTTabButton {

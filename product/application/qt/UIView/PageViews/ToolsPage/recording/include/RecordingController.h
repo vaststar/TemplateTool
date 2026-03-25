@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE void startRecording(const QString& mode = "fullscreen");
     Q_INVOKABLE void startRegionRecording(int x, int y, int width, int height);
     Q_INVOKABLE void stopRecording();
+    Q_INVOKABLE void abortRecording();
     Q_INVOKABLE void pauseRecording();
     Q_INVOKABLE void resumeRecording();
     Q_INVOKABLE void convertToGif(const QString& inputPath, const QString& outputPath = QString());
