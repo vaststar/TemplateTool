@@ -104,7 +104,16 @@ else()
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
-    message(STATUS "  Install: bin/")
+    install(CODE "
+        set(APP_NAME \"${MAIN_ENTRY}\")
+        set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")
+        set(RESOURCE_FILE_PAYLOADS \"ffmpeg;ffprobe\")
+        set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
+        set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
+        set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
+    ")
+    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_linux.cmake")
+    message(STATUS "  Install: bin/ + post_install_linux.cmake")
 endif()
 
 message(STATUS "Finished building ${MAIN_ENTRY}")

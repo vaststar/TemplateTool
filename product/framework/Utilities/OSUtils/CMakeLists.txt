@@ -12,17 +12,17 @@ set(MODULE_SOURCE_PRIVATE
     src/OSUtils.cpp
 )
 if (WIN32)
-    list(APPEND MODULE_SOURCE_PRIVATE 
+    list(APPEND MODULE_SOURCE_PRIVATE
     src/OSUtils_Win.h
     src/OSUtils_Win.cpp)
 elseif (APPLE)
-    list(APPEND MODULE_SOURCE_PRIVATE 
+    list(APPEND MODULE_SOURCE_PRIVATE
     src/OSUtils_Mac.h
     src/OSUtils_Mac.cpp)
 elseif (UNIX)
-    list(APPEND MODULE_SOURCE_PRIVATE 
-    src/OSUtils_Mac.h
-    src/OSUtils_Mac.cpp)
+    list(APPEND MODULE_SOURCE_PRIVATE
+    src/OSUtils_Linux.h
+    src/OSUtils_Linux.cpp)
 endif()
 set(MODULE_DEPENDENCIES_PUBLIC
     UtilitiesCommonFile
@@ -33,7 +33,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
 if (APPLE)
     find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
     find_library(IOKIT_FRAMEWORK IOKit)
-    list(APPEND MODULE_DEPENDENCIES_PRIVATE 
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE
         ${COREFOUNDATION_FRAMEWORK}
         ${IOKIT_FRAMEWORK}
     )
