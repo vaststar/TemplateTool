@@ -22,7 +22,7 @@ generate_from_template(
 list(APPEND RESOURCE_TARGETS ${FONT_TARGET})
 
 ## FontToken
-set(GLOBAL_FONT_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json")
+set(GLOBAL_FONT_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE FontToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/FontToken.h.j2)

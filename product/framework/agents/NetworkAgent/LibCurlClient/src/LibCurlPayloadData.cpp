@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <algorithm>
+#include <cstring>
 #include "LibCurlPayloadData.h"
 
 
@@ -196,7 +197,7 @@ public:
     }
 
     std::string getFilePath() const { return mFilePath;}
-    
+
     size_t getSizeLeft() const { return mTotalSize - mOffset;}
     size_t getOffset() const { return mOffset; }
     void setOffset(size_t offset) { mOffset = offset;}
@@ -208,13 +209,13 @@ public:
         if (!mFileHandle.is_open())
         {
             mFileHandle.open(mFilePath);
-            if (!mFileHandle.is_open()) 
+            if (!mFileHandle.is_open())
             {
                 throw std::runtime_error("Failed to open file: " + mFilePath);
             }
         }
         mFileHandle.read(buffer, readSize);
-        if (mFileHandle.fail() && !mFileHandle.eof()) 
+        if (mFileHandle.fail() && !mFileHandle.eof())
         {
             throw std::runtime_error("Failed to read from file: " + mFilePath);
         }
@@ -254,7 +255,7 @@ size_t FilePayloadData::readData(char* data, size_t size)
         mDataPrivate->read(reinterpret_cast<char*>(slice.data()), sizeCopy);
         std::memcpy(data, slice.data(), slice.size());
         mDataPrivate->setOffset(mDataPrivate->getOffset() + sizeCopy);
-        
+
         if (mDataPrivate->getProgressFunction())
         {
             mDataPrivate->getProgressFunction()(mDataPrivate->getOffset(), mDataPrivate->getTotalSize());

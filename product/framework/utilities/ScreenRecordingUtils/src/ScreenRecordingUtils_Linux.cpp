@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <climits>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/stat.h>

@@ -8,3 +8,4 @@ target_include_directories(qrcodegen PUBLIC
 )
 
 target_compile_features(qrcodegen PUBLIC cxx_std_11)
+set_target_properties(qrcodegen PROPERTIES POSITION_INDEPENDENT_CODE ON)

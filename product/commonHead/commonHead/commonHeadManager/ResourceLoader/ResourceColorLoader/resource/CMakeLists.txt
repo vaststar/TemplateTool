@@ -33,7 +33,7 @@ generate_from_template(
 list(APPEND RESOURCE_TARGETS ${COLOR_TARGET})
 
 ## ColorToken
-set(GLOBAL_COLOR_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json")
+set(GLOBAL_COLOR_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE ColorToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ColorToken.h.j2)

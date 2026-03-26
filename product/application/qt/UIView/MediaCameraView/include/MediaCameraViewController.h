@@ -5,7 +5,7 @@
 #include <QtQml>
 #include <QImage>
 #include <QVideoFrame>
-#include <QVideosink>
+#include <QVideoSink>
 #include <commonHead/viewModels/ViewModelDataDefine/VideoFrame.h>
 
 #include "UIViewBase/include/UIViewController.h"
@@ -35,7 +35,7 @@ public:
     void setVideoSink(QVideoSink* videoSink);
 
     QVideoFrame imageToVideoFrame(const QImage& image) const;
-    
+
     bool isVisible() const;
 private slots:
     virtual void onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame);

@@ -10,7 +10,7 @@ set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceAsset)
 set(RESOURCE_TARGETS )
 
 ## AssetToken
-set(GLOBAL_ASSET_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json")
+set(GLOBAL_ASSET_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE AssetToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/AssetToken.h.j2)
@@ -33,7 +33,7 @@ foreach(item IN LISTS THEME_JSON_NAMES)
   set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
   set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
   set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeAssetSet.h.j2)
-  
+
   generate_from_template(
       TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
       INPUT_FILE ${THEME_JSON_PATH}
@@ -42,8 +42,8 @@ foreach(item IN LISTS THEME_JSON_NAMES)
   )
   list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
 endforeach()
-set(GLOBAL_ASSET_THEME_FILES "${THEME_JSON_PATH_SET}" CACHE STRING "all asset json files")
-set(GLOBAL_ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource CACHE STRING "base asset dir")
+set(GLOBAL_ASSET_THEME_FILES "${THEME_JSON_PATH_SET}" CACHE STRING "all asset json files" FORCE)
+set(GLOBAL_ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource CACHE STRING "base asset dir" FORCE)
 
 include(BuildInterface)
 BuildInterface(

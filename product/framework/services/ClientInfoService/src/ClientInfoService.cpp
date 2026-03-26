@@ -6,7 +6,7 @@
 #include <ucf/Utilities/OSUtils/OSUtils.h>
 #include <ucf/Utilities/StringUtils/StringUtils.h>
 
-#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
+#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 
 #include <magic_enum/magic_enum.hpp>

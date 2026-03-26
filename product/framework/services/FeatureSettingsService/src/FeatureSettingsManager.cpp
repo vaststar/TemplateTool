@@ -1,7 +1,7 @@
 #include "FeatureSettingsManager.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/DataWarehouseService/DataBaseConfig.h>
+#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
 #include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>

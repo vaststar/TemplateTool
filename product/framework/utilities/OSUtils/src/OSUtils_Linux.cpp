@@ -1,5 +1,10 @@
 #include "OSUtils_Linux.h"
 #include <fstream>
+#include <array>
+#include <memory>
+#include <cstdio>
+#include <cstdint>
+#include <sys/sysinfo.h>
 
 namespace ucf::utilities{
 std::string OSUtils_Linux::getOSVersion()
