@@ -25,7 +25,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/RegisterViewModelMetaTypes.h
     ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
     ViewModelSingalEmitter/InvocationViewModelEmitter.h
-    ViewModelSingalEmitter/AppUiViewModelEmitter.h
+    ViewModelSingalEmitter/AppUIViewModelEmitter.h
     ViewModelSingalEmitter/MainWindowViewModelEmitter.h
     ViewModelSingalEmitter/StabilityViewModelEmitter.h
     ViewModelSingalEmitter/SideBarViewModelEmitter.h

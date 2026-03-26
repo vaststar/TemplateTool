@@ -9,16 +9,16 @@ set(MODULE_HEADER_FILES
     include/ucf/Agents/DatabaseAgent/IDatabaseWrapper.h
     include/ucf/Agents/DatabaseAgent/DatabaseConfig.h
     include/ucf/Agents/DatabaseAgent/DatabaseFactory.h
-    include/ucf/Agents/DatabaseAgent/DataBaseSchema.h
-    include/ucf/Agents/DatabaseAgent/DataBaseDataValue.h
+    include/ucf/Agents/DatabaseAgent/DatabaseSchema.h
+    include/ucf/Agents/DatabaseAgent/DatabaseDataValue.h
     include/ucf/Agents/DatabaseAgent/DatabaseDataRecord.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DatabaseAgentLogger.h
     src/DatabaseFactory.cpp
     src/DatabaseDataRecord.cpp
-    src/DataBaseSchema.cpp
-    src/DataBaseDataValue.cpp
+    src/DatabaseSchema.cpp
+    src/DatabaseDataValue.cpp
     src/SqliteWrapper/SqliteDatabaseWrapper.h
     src/SqliteWrapper/SqliteDatabaseWrapper.cpp
 )

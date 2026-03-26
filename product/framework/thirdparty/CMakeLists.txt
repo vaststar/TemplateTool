@@ -76,5 +76,5 @@ add_subdirectory(qrcodegen)
 add_subdirectory(ffmpeg)
 
 #my lib
-add_subdirectory(threadpool)
+add_subdirectory(ThreadPool)
 add_subdirectory(logger)

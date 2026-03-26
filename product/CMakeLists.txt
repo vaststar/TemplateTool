@@ -1,9 +1,9 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 
-set(CMAKE_MODULE_PATH 
-    ${CMAKE_MODULE_PATH} 
-    "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/BuildModule" 
-    "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/FindModule" 
+set(CMAKE_MODULE_PATH
+    ${CMAKE_MODULE_PATH}
+    "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/BuildModule"
+    "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/FindModule"
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/UtilModule"
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/VersionModule"
     "${CMAKE_CURRENT_SOURCE_DIR}/framework/thirdparty/Catch2/Catch2/extras"
