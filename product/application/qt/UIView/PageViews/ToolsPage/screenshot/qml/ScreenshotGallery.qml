@@ -252,9 +252,9 @@ FocusScope {
                 interactive: true
                 activeFocusOnTab: true
 
-                // Sync currentIndex with selectedIndex when Tab enters
+                // Initialize keyboard navigation only when focus enters without a current item
                 onActiveFocusChanged: {
-                    if (activeFocus && count > 0) {
+                    if (activeFocus && count > 0 && currentIndex < 0) {
                         currentIndex = selectedIndex >= 0 ? selectedIndex : 0
                     } else if (!activeFocus) {
                         currentIndex = -1
@@ -358,19 +358,23 @@ FocusScope {
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                             onClicked: function(mouse) {
-                                gridView.forceActiveFocus()
-                                gridView.currentIndex = index
                                 if (mouse.button === Qt.RightButton) {
                                     selectedIndex = index
                                     selectedFilePath = filePath
+                                    gridView.currentIndex = index
+                                    gridView.forceActiveFocus()
                                     contextMenu.currentFilePath = filePath
                                     contextMenu.popup()
                                 } else {
                                     if (selectedIndex === index) {
+                                        gridView.currentIndex = index
+                                        gridView.forceActiveFocus()
                                         clearSelection()
                                     } else {
                                         selectedIndex = index
                                         selectedFilePath = filePath
+                                        gridView.currentIndex = index
+                                        gridView.forceActiveFocus()
                                     }
                                 }
                             }
@@ -401,9 +405,9 @@ FocusScope {
                 interactive: true
                 activeFocusOnTab: true
 
-                // Sync currentIndex with selectedIndex when Tab enters
+                // Initialize keyboard navigation only when focus enters without a current item
                 onActiveFocusChanged: {
-                    if (activeFocus && count > 0) {
+                    if (activeFocus && count > 0 && currentIndex < 0) {
                         currentIndex = selectedIndex >= 0 ? selectedIndex : 0
                     } else if (!activeFocus) {
                         currentIndex = -1
@@ -532,19 +536,23 @@ FocusScope {
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                         onClicked: function(mouse) {
-                            listView.forceActiveFocus()
-                            listView.currentIndex = index
                             if (mouse.button === Qt.RightButton) {
                                 selectedIndex = index
                                 selectedFilePath = filePath
+                                    listView.currentIndex = index
+                                    listView.forceActiveFocus()
                                 contextMenu.currentFilePath = filePath
                                 contextMenu.popup()
                             } else {
                                 if (selectedIndex === index) {
+                                        listView.currentIndex = index
+                                        listView.forceActiveFocus()
                                     clearSelection()
                                 } else {
                                     selectedIndex = index
                                     selectedFilePath = filePath
+                                        listView.currentIndex = index
+                                        listView.forceActiveFocus()
                                 }
                             }
                         }
