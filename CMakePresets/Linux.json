@@ -1,0 +1,72 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "include": [
+    "Base.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "inherits": "default",
+      "description": "Linux platform base configuration",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "description": "Linux GCC - Debug configuration",
+      "inherits": ["linux-base", "ninja", "debug"]
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "description": "Linux GCC - Release configuration",
+      "inherits": ["linux-base", "ninja", "release"]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug",
+      "targets": ["mainEntry"]
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "targets": ["mainEntry"]
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "generators": ["TGZ", "DEB", "RPM"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug",
+      "inherits": "test-base"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "inherits": "test-base"
+    }
+  ]
+}

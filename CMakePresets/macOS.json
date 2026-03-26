@@ -1,0 +1,72 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "include": [
+    "Base.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "macos-base",
+      "hidden": true,
+      "inherits": "default",
+      "description": "macOS platform base configuration",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "macOS Debug",
+      "description": "macOS Clang - Debug configuration",
+      "inherits": ["macos-base", "unix-makefiles", "clang-compiler", "debug"]
+    },
+    {
+      "name": "macos-release",
+      "displayName": "macOS Release",
+      "description": "macOS Clang - Release configuration",
+      "inherits": ["macos-base", "unix-makefiles", "clang-compiler", "release"]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-debug",
+      "targets": ["mainEntry"]
+    },
+    {
+      "name": "macos-release",
+      "configurePreset": "macos-release",
+      "targets": ["mainEntry"]
+    }
+  ],
+  "packagePresets": [
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-debug",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "macos-release",
+      "configurePreset": "macos-release",
+      "generators": ["TGZ", "DragNDrop"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-debug",
+      "inherits": "test-base"
+    },
+    {
+      "name": "macos-release",
+      "configurePreset": "macos-release",
+      "inherits": "test-base"
+    }
+  ]
+}
