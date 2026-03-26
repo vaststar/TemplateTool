@@ -50,4 +50,3 @@ endif()
 enable_testing()
 
 add_subdirectory(product)
-add_subdirectory(bundle_pack)
