@@ -22,6 +22,11 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 # Add official zlib-ng CMake
 add_subdirectory(zlib-ng zlib-ng_build)
 
+# Static libs linked into shared libs need PIC on Linux
+if(TARGET zlib-ng)
+    set_target_properties(zlib-ng PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # Set IDE folder for zlib-ng targets (only real targets, not ALIAS)
 foreach(_target zlib-ng zlib-ng-static)
     if(TARGET "${_target}")

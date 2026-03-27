@@ -4,7 +4,8 @@
 
 namespace ucf::utilities::screenrecording {
 
-class ScreenRecordingUtils_Win final {
+class ScreenRecordingUtils_Win final
+{
 public:
     static std::string findFFmpegPath(const std::string& appDir);
     static RecordingSession startRecording(const RecordingConfig& config);

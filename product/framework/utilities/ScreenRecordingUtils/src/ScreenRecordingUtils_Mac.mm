@@ -30,7 +30,8 @@ static bool fileExists(const std::string& path)
 static std::string resolvePath(const std::string& path)
 {
     char resolved[PATH_MAX];
-    if (realpath(path.c_str(), resolved)) {
+    if (realpath(path.c_str(), resolved))
+    {
         return std::string(resolved);
     }
     return {};
@@ -42,11 +43,16 @@ static std::string execCommand(const char* cmd)
     std::array<char, 256> buffer{};
     std::string result;
     FILE* pipe = popen(cmd, "r");
-    if (!pipe) return {};
-    if (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe)) {
+    if (!pipe)
+    {
+        return {};
+    }
+    if (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe))
+    {
         result = buffer.data();
         // trim trailing whitespace
-        while (!result.empty() && (result.back() == '\n' || result.back() == '\r' || result.back() == ' ')) {
+        while (!result.empty() && (result.back() == '\n' || result.back() == '\r' || result.back() == ' '))
+        {
             result.pop_back();
         }
     }
@@ -70,16 +76,19 @@ std::string ScreenRecordingUtils_Mac::findFFmpegPath(const std::string& appDir)
         "/usr/local/bin/ffmpeg"
     };
 
-    for (const auto& candidate : candidates) {
+    for (const auto& candidate : candidates)
+    {
         std::string resolved = resolvePath(candidate);
-        if (!resolved.empty() && fileExists(resolved)) {
+        if (!resolved.empty() && fileExists(resolved))
+        {
             return resolved;
         }
     }
 
     // Fallback: search PATH via 'which'
     std::string whichResult = execCommand("which ffmpeg 2>/dev/null");
-    if (!whichResult.empty() && fileExists(whichResult)) {
+    if (!whichResult.empty() && fileExists(whichResult))
+    {
         return whichResult;
     }
 
@@ -95,13 +104,15 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     RecordingSession session;
     session.outputPath = config.outputPath;
 
-    if (config.ffmpegPath.empty() || config.outputPath.empty()) {
+    if (config.ffmpegPath.empty() || config.outputPath.empty())
+    {
         return session; // invalid
     }
 
     // Create a pipe for FFmpeg's stdin so we can send 'q' to stop it
     int stdinPipe[2]; // [0]=read, [1]=write
-    if (pipe(stdinPipe) < 0) {
+    if (pipe(stdinPipe) < 0)
+    {
         return session;
     }
 
@@ -111,9 +122,12 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     // avfoundation lists cameras before screens (e.g. index 0 = FaceTime camera,
     // index 1 = Capture screen 0). Using the name avoids mis-targeting the camera.
     std::string inputSpec;
-    if (config.isRegion) {
+    if (config.isRegion)
+    {
         inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
-    } else {
+    }
+    else
+    {
         inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
     }
 
@@ -130,12 +144,19 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     args.push_back(inputSpec);
 
     // Region crop filter
-    if (config.isRegion && config.regionW > 0 && config.regionH > 0) {
+    if (config.isRegion && config.regionW > 0 && config.regionH > 0)
+    {
         // libx264 + yuv420p requires even dimensions; round down to nearest 2
         int w = config.regionW & ~1;
         int h = config.regionH & ~1;
-        if (w < 2) w = 2;
-        if (h < 2) h = 2;
+        if (w < 2)
+        {
+            w = 2;
+        }
+        if (h < 2)
+        {
+            h = 2;
+        }
         std::string cropFilter = "crop=" + std::to_string(w) + ":"
                                 + std::to_string(h) + ":"
                                 + std::to_string(config.regionX) + ":"
@@ -146,11 +167,14 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
 
     // Output codec settings
     args.push_back("-c:v");
-    if (config.videoFormat == "webm") {
+    if (config.videoFormat == "webm")
+    {
         args.push_back("libvpx-vp9");
         args.push_back("-b:v");
         args.push_back("2M");
-    } else {
+    }
+    else
+    {
         args.push_back("libx264");
         args.push_back("-preset");
         args.push_back("ultrafast");
@@ -163,19 +187,22 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     // Convert to C-style argv
     std::vector<char*> argv;
     argv.reserve(args.size() + 1);
-    for (auto& a : args) {
+    for (auto& a : args)
+    {
         argv.push_back(a.data());
     }
     argv.push_back(nullptr);
 
     pid_t pid = fork();
-    if (pid < 0) {
+    if (pid < 0)
+    {
         close(stdinPipe[0]);
         close(stdinPipe[1]);
         return session;
     }
 
-    if (pid == 0) {
+    if (pid == 0)
+    {
         // Child process
         close(stdinPipe[1]); // close write end
         dup2(stdinPipe[0], STDIN_FILENO);
@@ -183,7 +210,8 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
 
         // Redirect stdout to /dev/null, stderr to a log file for debugging
         int devnull = open("/dev/null", O_WRONLY);
-        if (devnull >= 0) {
+        if (devnull >= 0)
+        {
             dup2(devnull, STDOUT_FILENO);
             close(devnull);
         }
@@ -191,7 +219,8 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
         // Write FFmpeg stderr to a log file for troubleshooting
         std::string logPath = config.outputPath + ".ffmpeg.log";
         int logFd = open(logPath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (logFd >= 0) {
+        if (logFd >= 0)
+        {
             dup2(logFd, STDERR_FILENO);
             close(logFd);
         }
@@ -219,14 +248,16 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
     RecordingResult result;
     result.outputPath = session.outputPath;
 
-    if (!session.isValid()) {
+    if (!session.isValid())
+    {
         result.errorMessage = "Invalid session";
         return result;
     }
 
     // Send 'q' to FFmpeg's stdin to gracefully stop.
     // Ignore SIGPIPE in case FFmpeg has already exited (broken pipe).
-    if (session.stdinFd >= 0) {
+    if (session.stdinFd >= 0)
+    {
         struct sigaction sa_old{}, sa_ign{};
         sa_ign.sa_handler = SIG_IGN;
         sigemptyset(&sa_ign.sa_mask);
@@ -247,13 +278,18 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
     int waitAttempts = 100; // 100 x 100ms = 10s
     pid_t wpid = 0;
 
-    while (waitAttempts-- > 0) {
+    while (waitAttempts-- > 0)
+    {
         wpid = waitpid(static_cast<pid_t>(session.pid), &status, WNOHANG);
-        if (wpid != 0) break;
+        if (wpid != 0)
+        {
+            break;
+        }
         usleep(100000); // 100ms
     }
 
-    if (wpid == 0) {
+    if (wpid == 0)
+    {
         // Still running — force kill
         kill(static_cast<pid_t>(session.pid), SIGKILL);
         waitpid(static_cast<pid_t>(session.pid), &status, 0);
@@ -263,10 +299,14 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
     session.pid = -1;
 
     // Check if output file exists
-    if (fileExists(result.outputPath)) {
+    if (fileExists(result.outputPath))
+    {
         result.success = true;
-    } else {
-        if (result.errorMessage.empty()) {
+    }
+    else
+    {
+        if (result.errorMessage.empty())
+        {
             result.errorMessage = "Output file not found: " + result.outputPath;
         }
     }
@@ -276,13 +316,19 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
 
 bool ScreenRecordingUtils_Mac::pauseRecording(const RecordingSession& session)
 {
-    if (!session.isValid()) return false;
+    if (!session.isValid())
+    {
+        return false;
+    }
     return kill(static_cast<pid_t>(session.pid), SIGSTOP) == 0;
 }
 
 bool ScreenRecordingUtils_Mac::resumeRecording(const RecordingSession& session)
 {
-    if (!session.isValid()) return false;
+    if (!session.isValid())
+    {
+        return false;
+    }
     return kill(static_cast<pid_t>(session.pid), SIGCONT) == 0;
 }
 
@@ -295,7 +341,8 @@ bool ScreenRecordingUtils_Mac::convertToGif(const std::string& ffmpegPath,
                                             const std::string& outputPath,
                                             int fps)
 {
-    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty()) {
+    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
+    {
         return false;
     }
 
@@ -304,12 +351,17 @@ bool ScreenRecordingUtils_Mac::convertToGif(const std::string& ffmpegPath,
         + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
 
     pid_t pid = fork();
-    if (pid < 0) return false;
+    if (pid < 0)
+    {
+        return false;
+    }
 
-    if (pid == 0) {
+    if (pid == 0)
+    {
         // Redirect output
         int devnull = open("/dev/null", O_WRONLY);
-        if (devnull >= 0) {
+        if (devnull >= 0)
+        {
             dup2(devnull, STDOUT_FILENO);
             dup2(devnull, STDERR_FILENO);
             close(devnull);

@@ -4,7 +4,8 @@
 
 namespace ucf::utilities::screencapture {
 
-class ScreenCaptureUtils_Linux final {
+class ScreenCaptureUtils_Linux final
+{
 public:
     static std::vector<DisplayInfo> getDisplayList();
     static int getDisplayCount();

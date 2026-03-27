@@ -28,7 +28,8 @@ ScreenRecordingAgent::ScreenRecordingAgent() = default;
 ScreenRecordingAgent::~ScreenRecordingAgent()
 {
     // Wait for any pending async stop operation
-    if (m_stopThread.joinable()) {
+    if (m_stopThread.joinable())
+    {
         m_stopThread.join();
     }
 
@@ -38,7 +39,8 @@ ScreenRecordingAgent::~ScreenRecordingAgent()
     // If still recording, force stop
     {
         std::lock_guard lock(m_sessionMutex);
-        if (m_session.isValid()) {
+        if (m_session.isValid())
+        {
             ScreenRecordingUtils::stopRecording(m_session);
         }
     }
@@ -50,7 +52,8 @@ ScreenRecordingAgent::~ScreenRecordingAgent()
 
 RecordingAgentState ScreenRecordingAgent::toPublicState(State s)
 {
-    switch (s) {
+    switch (s)
+    {
     case State::Idle:      return RecordingAgentState::Idle;
     case State::Starting:  return RecordingAgentState::Starting;
     case State::Recording: return RecordingAgentState::Recording;
@@ -62,21 +65,37 @@ RecordingAgentState ScreenRecordingAgent::toPublicState(State s)
 
 bool ScreenRecordingAgent::tryTransition(State to)
 {
-    switch (to) {
+    switch (to)
+    {
     case State::Starting:
-        if (casFrom({State::Idle}, to)) return true;
+        if (casFrom({State::Idle}, to))
+        {
+            return true;
+        }
         break;
     case State::Recording:
-        if (casFrom({State::Starting, State::Paused}, to)) return true;
+        if (casFrom({State::Starting, State::Paused}, to))
+        {
+            return true;
+        }
         break;
     case State::Paused:
-        if (casFrom({State::Recording}, to)) return true;
+        if (casFrom({State::Recording}, to))
+        {
+            return true;
+        }
         break;
     case State::Stopping:
-        if (casFrom({State::Recording, State::Paused, State::Starting}, to)) return true;
+        if (casFrom({State::Recording, State::Paused, State::Starting}, to))
+        {
+            return true;
+        }
         break;
     case State::Idle:
-        if (casFrom({State::Stopping}, to)) return true;
+        if (casFrom({State::Stopping}, to))
+        {
+            return true;
+        }
         break;
     }
     SRA_LOG_WARN("Transition rejected: current=" << magic_enum::enum_name(state())
@@ -86,10 +105,12 @@ bool ScreenRecordingAgent::tryTransition(State to)
 
 bool ScreenRecordingAgent::casFrom(std::initializer_list<State> fromStates, State to)
 {
-    for (auto expected : fromStates) {
+    for (auto expected : fromStates)
+    {
         if (m_state.compare_exchange_strong(expected, to,
                                             std::memory_order_acq_rel,
-                                            std::memory_order_acquire)) {
+                                            std::memory_order_acquire))
+        {
             return true;
         }
     }
@@ -102,7 +123,8 @@ bool ScreenRecordingAgent::casFrom(std::initializer_list<State> fromStates, Stat
 
 bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 {
-    if (!tryTransition(State::Starting)) {
+    if (!tryTransition(State::Starting))
+    {
         fireNotification(&IScreenRecordingAgentCallback::onError,
                          std::string("Recording already in progress"));
         return false;
@@ -111,14 +133,29 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
                      RecordingAgentState::Starting);
 
     // Wait for any pending stop operation to complete
-    if (m_stopThread.joinable()) {
+    if (m_stopThread.joinable())
+    {
         m_stopThread.join();
     }
 
     auto lowLevelConfig = toRecordingConfig(config);
+
+    // GIF mode: record as mp4 internally, convert after stop
+    m_isGifMode = (config.videoFormat == "gif");
+    if (m_isGifMode)
+    {
+        m_gifOutputPath = config.outputPath;
+        m_ffmpegPath = config.ffmpegPath;
+        m_gifFps = 10;
+        lowLevelConfig.videoFormat = "mp4";
+        lowLevelConfig.outputPath = config.outputPath + ".tmp.mp4";
+    }
+
     auto session = ScreenRecordingUtils::startRecording(lowLevelConfig);
 
-    if (!session.isValid()) {
+    if (!session.isValid())
+    {
+        m_isGifMode = false;
         // Revert state
         m_state.store(State::Idle, std::memory_order_release);
         fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
@@ -133,8 +170,10 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
         m_session = session;
     }
 
-    if (!tryTransition(State::Recording)) {
+    if (!tryTransition(State::Recording))
+    {
         // Shouldn't happen given we just set Starting, but guard anyway
+        m_isGifMode = false;
         std::lock_guard lock(m_sessionMutex);
         ScreenRecordingUtils::stopRecording(m_session);
         m_state.store(State::Idle, std::memory_order_release);
@@ -154,17 +193,24 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 
 void ScreenRecordingAgent::stop()
 {
-    if (state() == State::Idle) return;
+    if (state() == State::Idle)
+    {
+        return;
+    }
 
     // Prevent concurrent stop calls
     bool expected = false;
-    if (!m_stopping.compare_exchange_strong(expected, true)) return;
+    if (!m_stopping.compare_exchange_strong(expected, true))
+    {
+        return;
+    }
 
     // Capture whether recording was paused
     bool wasPaused = (state() == State::Paused);
 
     // Transition to Stopping
-    if (!tryTransition(State::Stopping)) {
+    if (!tryTransition(State::Stopping))
+    {
         m_stopping.store(false);
         return;
     }
@@ -172,22 +218,54 @@ void ScreenRecordingAgent::stop()
                      RecordingAgentState::Stopping);
 
     // Join any previous stop thread
-    if (m_stopThread.joinable()) {
+    if (m_stopThread.joinable())
+    {
         m_stopThread.join();
     }
 
     // Run heavy FFmpeg teardown on a background thread
-    m_stopThread = std::thread([this, wasPaused]() {
+    m_stopThread = std::thread([this, wasPaused]()
+    {
         stopDurationTimer();
 
         RecordingResult result;
         {
             std::lock_guard lock(m_sessionMutex);
-            if (m_session.isValid()) {
-                if (wasPaused) {
+            if (m_session.isValid())
+            {
+                if (wasPaused)
+                {
                     ScreenRecordingUtils::resumeRecording(m_session);
                 }
                 result = ScreenRecordingUtils::stopRecording(m_session);
+            }
+        }
+
+        // GIF post-conversion
+        bool isGif = m_isGifMode;
+        std::string gifOutputPath = m_gifOutputPath;
+        std::string ffmpegPath = m_ffmpegPath;
+        int gifFps = m_gifFps;
+        m_isGifMode = false;
+
+        if (isGif && result.success)
+        {
+            SRA_LOG_INFO("Converting recording to GIF: " << gifOutputPath);
+            bool gifOk = ScreenRecordingUtils::convertToGif(
+                ffmpegPath, result.outputPath, gifOutputPath, gifFps);
+
+            // Delete temporary mp4
+            std::error_code ec;
+            fs::remove(result.outputPath, ec);
+
+            if (gifOk)
+            {
+                result.outputPath = gifOutputPath;
+            }
+            else
+            {
+                result.success = false;
+                result.errorMessage = "GIF conversion failed";
             }
         }
 
@@ -197,17 +275,29 @@ void ScreenRecordingAgent::stop()
                          RecordingAgentState::Idle);
 
         // If abort was requested, delete the output file silently
-        if (m_aborting.exchange(false)) {
-            if (!result.outputPath.empty()) {
+        if (m_aborting.exchange(false))
+        {
+            if (!result.outputPath.empty())
+            {
                 std::error_code ec;
                 fs::remove(result.outputPath, ec);
             }
+            // Also delete gif output if it was created
+            if (isGif && !gifOutputPath.empty())
+            {
+                std::error_code ec;
+                fs::remove(gifOutputPath, ec);
+            }
             SRA_LOG_INFO("Recording aborted, file deleted");
             fireNotification(&IScreenRecordingAgentCallback::onRecordingAborted);
-        } else if (result.success) {
+        }
+        else if (result.success)
+        {
             SRA_LOG_INFO("Recording completed: " << result.outputPath);
             fireNotification(&IScreenRecordingAgentCallback::onRecordingCompleted, result.outputPath);
-        } else if (!result.errorMessage.empty()) {
+        }
+        else if (!result.errorMessage.empty())
+        {
             SRA_LOG_ERROR("Recording error: " << result.errorMessage);
             fireNotification(&IScreenRecordingAgentCallback::onError, result.errorMessage);
         }
@@ -225,11 +315,16 @@ void ScreenRecordingAgent::abort()
 
 void ScreenRecordingAgent::pause()
 {
-    if (state() != State::Recording) return;
+    if (state() != State::Recording)
+    {
+        return;
+    }
 
     std::lock_guard lock(m_sessionMutex);
-    if (ScreenRecordingUtils::pauseRecording(m_session)) {
-        if (tryTransition(State::Paused)) {
+    if (ScreenRecordingUtils::pauseRecording(m_session))
+    {
+        if (tryTransition(State::Paused))
+        {
             // Stop timer ticking but don't reset
             m_timerRunning.store(false);
             m_timerCv.notify_all();
@@ -244,11 +339,16 @@ void ScreenRecordingAgent::pause()
 
 void ScreenRecordingAgent::resume()
 {
-    if (state() != State::Paused) return;
+    if (state() != State::Paused)
+    {
+        return;
+    }
 
     std::lock_guard lock(m_sessionMutex);
-    if (ScreenRecordingUtils::resumeRecording(m_session)) {
-        if (tryTransition(State::Recording)) {
+    if (ScreenRecordingUtils::resumeRecording(m_session))
+    {
+        if (tryTransition(State::Recording))
+        {
             // Restart timer ticking
             m_timerRunning.store(true);
             m_timerCv.notify_all();
@@ -297,7 +397,8 @@ void ScreenRecordingAgent::startDurationTimer()
     m_timerShouldExit.store(false);
 
     // Stop any existing timer first
-    if (m_timerThread.joinable()) {
+    if (m_timerThread.joinable())
+    {
         m_timerShouldExit.store(true);
         m_timerCv.notify_all();
         m_timerThread.join();
@@ -305,19 +406,24 @@ void ScreenRecordingAgent::startDurationTimer()
         m_timerShouldExit.store(false);
     }
 
-    m_timerThread = std::thread([this]() {
-        while (true) {
+    m_timerThread = std::thread([this]()
+    {
+        while (true)
+        {
             std::unique_lock lock(m_timerMutex);
-            m_timerCv.wait_for(lock, std::chrono::seconds(1), [this]() {
+            m_timerCv.wait_for(lock, std::chrono::seconds(1), [this]()
+            {
                 return m_timerShouldExit.load();
             });
 
-            if (m_timerShouldExit.load()) {
+            if (m_timerShouldExit.load())
+            {
                 break;
             }
 
             // Only count when actively recording (not paused)
-            if (m_timerRunning.load()) {
+            if (m_timerRunning.load())
+            {
                 int seconds = m_duration.fetch_add(1) + 1;
                 fireNotification(&IScreenRecordingAgentCallback::onDurationChanged, seconds);
             }
@@ -330,7 +436,8 @@ void ScreenRecordingAgent::stopDurationTimer()
     m_timerShouldExit.store(true);
     m_timerRunning.store(false);
     m_timerCv.notify_all();
-    if (m_timerThread.joinable()) {
+    if (m_timerThread.joinable())
+    {
         m_timerThread.join();
     }
 }

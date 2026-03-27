@@ -17,7 +17,8 @@ enum class RecordingAgentState
 };
 
 /// Configuration for starting a screen recording session.
-struct Agents_EXPORT RecordingAgentConfig {
+struct Agents_EXPORT RecordingAgentConfig
+{
     std::string ffmpegPath;             ///< Absolute path to ffmpeg binary
     std::string outputPath;             ///< Full output file path (e.g. /path/recording.mp4)
     std::string videoFormat = "mp4";    ///< mp4 / mov / webm

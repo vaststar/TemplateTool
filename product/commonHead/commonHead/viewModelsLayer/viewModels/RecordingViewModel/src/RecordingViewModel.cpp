@@ -269,6 +269,7 @@ void RecordingViewModel::onRecordingAborted()
 
 void RecordingViewModel::onError(const std::string& message)
 {
+    fireNotification(&IRecordingViewModelCallback::onStateChanged, model::RecordingState::Idle);
     fireNotification(&IRecordingViewModelCallback::onError, message);
 }
 

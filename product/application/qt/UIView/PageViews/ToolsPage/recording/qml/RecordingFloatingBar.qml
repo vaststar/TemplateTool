@@ -34,21 +34,9 @@ Window {
         return String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0')
     }
 
-    Connections {
-        target: controller
-
-        function onRecordingCompleted(filePath) {
-            barWindow.close()
-            barWindow.destroy()
-        }
-
-        function onRecordingStateChanged() {
-            if (!controller.isRecording) {
-                barWindow.close()
-                barWindow.destroy()
-            }
-        }
-    }
+    // Lifecycle managed by RecordingContent — no self-destroy here.
+    // RecordingContent listens for onRecordingStateChanged and
+    // calls close()/destroy() on the activeFloatingBar property.
 
     Rectangle {
         anchors.fill: parent

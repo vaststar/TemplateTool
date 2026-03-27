@@ -83,7 +83,7 @@ Item {
 
                         ComboBox {
                             id: videoFormatCombo
-                            model: ["mp4", "webm", "mov"]
+                            model: ["mp4", "webm", "mov", "gif"]
                             currentIndex: model.indexOf(controller.videoFormat)
                             onCurrentTextChanged: {
                                 if (currentText !== controller.videoFormat) {

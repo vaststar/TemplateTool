@@ -19,7 +19,8 @@ namespace ucf::utilities::screencapture {
  */
 static CaptureImage cgImageToCaptureImage(CGImageRef cgImage, int scaleFactor = 1)
 {
-    if (!cgImage) {
+    if (!cgImage)
+    {
         return {};
     }
 
@@ -40,7 +41,8 @@ static CaptureImage cgImageToCaptureImage(CGImageRef cgImage, int scaleFactor = 
         colorSpace,
         static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) | kCGBitmapByteOrder32Little); // BGRA
 
-    if (ctx) {
+    if (ctx)
+    {
         CGContextDrawImage(ctx, CGRectMake(0, 0, width, height), cgImage);
         CGContextRelease(ctx);
     }
@@ -62,8 +64,10 @@ static SCShareableContent* getShareableContentSync(bool onScreenOnly = false)
 
     [SCShareableContent getShareableContentExcludingDesktopWindows:YES
                                                onScreenWindowsOnly:onScreenOnly
-                                                 completionHandler:^(SCShareableContent* content, NSError* err) {
-        if (!err && content) {
+                                                 completionHandler:^(SCShareableContent* content, NSError* err)
+    {
+        if (!err && content)
+        {
             result = [content retain];   // MRC: explicitly retain for caller
         }
         dispatch_semaphore_signal(sem);
@@ -72,7 +76,8 @@ static SCShareableContent* getShareableContentSync(bool onScreenOnly = false)
     long waitResult = dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)));
     [sem release];
 
-    if (waitResult != 0) {
+    if (waitResult != 0)
+    {
         NSLog(@"[ScreenCaptureUtils] getShareableContentSync timed out");
         return nil;
     }
@@ -85,7 +90,10 @@ static SCShareableContent* getShareableContentSync(bool onScreenOnly = false)
  */
 static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int height)
 {
-    if (!filter || width <= 0 || height <= 0) return nullptr;
+    if (!filter || width <= 0 || height <= 0)
+    {
+        return nullptr;
+    }
 
     SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
     config.width = width;
@@ -94,7 +102,8 @@ static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int 
     config.showsCursor = NO;
 
     // Ensure highest-quality capture on Retina displays
-    if (@available(macOS 14.0, *)) {
+    if (@available(macOS 14.0, *))
+    {
         config.captureResolution = SCCaptureResolutionBest;
     }
 
@@ -103,13 +112,16 @@ static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int 
 
     [SCScreenshotManager captureImageWithFilter:filter
                                   configuration:config
-                              completionHandler:^(CGImageRef image, NSError* err) {
-        if (image && !err) {
+                              completionHandler:^(CGImageRef image, NSError* err)
+    {
+        if (image && !err)
+        {
             capturedImage = CGImageRetain(image);
             NSLog(@"[ScreenCaptureUtils] captured CGImage: %zux%zu (requested %dx%d)",
                   CGImageGetWidth(image), CGImageGetHeight(image), width, height);
         }
-        if (err) {
+        if (err)
+        {
             NSLog(@"[ScreenCaptureUtils] captureWithFilterSync error: %@", err);
         }
         dispatch_semaphore_signal(sem);
@@ -119,7 +131,8 @@ static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int 
     [sem release];
     [config release];
 
-    if (waitResult != 0) {
+    if (waitResult != 0)
+    {
         NSLog(@"[ScreenCaptureUtils] captureWithFilterSync timed out");
         return nullptr;
     }
@@ -131,9 +144,14 @@ static CGImageRef captureWithFilterSync(SCContentFilter* filter, int width, int 
  */
 static SCDisplay* findSCDisplay(NSArray<SCDisplay*>* displays, CGDirectDisplayID displayId)
 {
-    if (!displays) return nil;
-    for (SCDisplay* d in displays) {
-        if (d.displayID == displayId) {
+    if (!displays)
+    {
+        return nil;
+    }
+    for (SCDisplay* d in displays)
+    {
+        if (d.displayID == displayId)
+        {
             return d;
         }
     }
@@ -151,11 +169,14 @@ static void getBackingPixelSize(CGDirectDisplayID displayId,
                                 size_t& outPixelWidth, size_t& outPixelHeight)
 {
     CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayId);
-    if (mode) {
+    if (mode)
+    {
         outPixelWidth  = CGDisplayModeGetPixelWidth(mode);
         outPixelHeight = CGDisplayModeGetPixelHeight(mode);
         CGDisplayModeRelease(mode);
-    } else {
+    }
+    else
+    {
         // Fallback (should never happen for active displays)
         outPixelWidth  = CGDisplayPixelsWide(displayId);
         outPixelHeight = CGDisplayPixelsHigh(displayId);
@@ -172,13 +193,15 @@ std::vector<DisplayInfo> ScreenCaptureUtils_Mac::getDisplayList()
 
     CGDirectDisplayID displayIds[16];
     uint32_t displayCount = 0;
-    if (CGGetActiveDisplayList(16, displayIds, &displayCount) != kCGErrorSuccess) {
+    if (CGGetActiveDisplayList(16, displayIds, &displayCount) != kCGErrorSuccess)
+    {
         return displays;
     }
 
     CGDirectDisplayID mainDisplay = CGMainDisplayID();
 
-    for (uint32_t i = 0; i < displayCount; ++i) {
+    for (uint32_t i = 0; i < displayCount; ++i)
+    {
         DisplayInfo info;
         info.displayId = static_cast<int>(displayIds[i]);
 
@@ -213,12 +236,15 @@ int ScreenCaptureUtils_Mac::getDisplayCount()
 DisplayInfo ScreenCaptureUtils_Mac::getPrimaryDisplay()
 {
     auto displays = getDisplayList();
-    for (auto& d : displays) {
-        if (d.isPrimary) {
+    for (auto& d : displays)
+    {
+        if (d.isPrimary)
+        {
             return d;
         }
     }
-    if (!displays.empty()) {
+    if (!displays.empty())
+    {
         return displays.front();
     }
     return {};
@@ -231,34 +257,42 @@ DisplayInfo ScreenCaptureUtils_Mac::getPrimaryDisplay()
 CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
 {
     @autoreleasepool {
-        if (!CGPreflightScreenCaptureAccess()) {
+        if (!CGPreflightScreenCaptureAccess())
+        {
             NSLog(@"[ScreenCaptureUtils] Screen capture permission not granted");
             return {};
         }
 
         CGDirectDisplayID displayIds[16];
         uint32_t displayCount = 0;
-        if (CGGetActiveDisplayList(16, displayIds, &displayCount) != kCGErrorSuccess) {
+        if (CGGetActiveDisplayList(16, displayIds, &displayCount) != kCGErrorSuccess)
+        {
             return {};
         }
 
-        if (displayIndex < 0 || static_cast<uint32_t>(displayIndex) >= displayCount) {
+        if (displayIndex < 0 || static_cast<uint32_t>(displayIndex) >= displayCount)
+        {
             return {};
         }
 
         CGDirectDisplayID targetId = displayIds[displayIndex];
         SCShareableContent* content = getShareableContentSync();  // retained
-        if (!content) return {};
+        if (!content)
+        {
+            return {};
+        }
 
         SCDisplay* scDisplay = findSCDisplay(content.displays, targetId);
-        if (!scDisplay) {
+        if (!scDisplay)
+        {
             [content release];
             return {};
         }
 
         SCContentFilter* filter = [[SCContentFilter alloc] initWithDisplay:scDisplay
                                                           excludingWindows:@[]];
-        if (!filter) {
+        if (!filter)
+        {
             [content release];
             return {};
         }
@@ -267,7 +301,10 @@ CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
         size_t pw = 0, ph = 0;
         getBackingPixelSize(targetId, pw, ph);
         int scale = (bounds.size.width > 0) ? static_cast<int>(pw / static_cast<size_t>(bounds.size.width)) : 1;
-        if (scale < 1) scale = 1;
+        if (scale < 1)
+        {
+            scale = 1;
+        }
 
         NSLog(@"[ScreenCaptureUtils] captureDisplay: logical=%.0fx%.0f physical=%zux%zu scale=%d",
               bounds.size.width, bounds.size.height, pw, ph, scale);
@@ -276,7 +313,10 @@ CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
         [filter release];
         [content release];
 
-        if (!cgImage) return {};
+        if (!cgImage)
+        {
+            return {};
+        }
 
         CaptureImage result = cgImageToCaptureImage(cgImage, scale);
         NSLog(@"[ScreenCaptureUtils] captureDisplay result: %dx%d scaleFactor=%d",
@@ -289,30 +329,37 @@ CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
 CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
 {
     @autoreleasepool {
-        if (!CGPreflightScreenCaptureAccess()) {
+        if (!CGPreflightScreenCaptureAccess())
+        {
             NSLog(@"[ScreenCaptureUtils] Screen capture permission not granted");
             return {};
         }
 
         CGDirectDisplayID displayIds[16];
         uint32_t displayCount = 0;
-        if (CGGetActiveDisplayList(16, displayIds, &displayCount) != kCGErrorSuccess || displayCount == 0) {
+        if (CGGetActiveDisplayList(16, displayIds, &displayCount) != kCGErrorSuccess || displayCount == 0)
+        {
             return {};
         }
 
         // Single display — fast path
-        if (displayCount == 1) {
+        if (displayCount == 1)
+        {
             return captureDisplay(0);
         }
 
         SCShareableContent* content = getShareableContentSync();  // retained
-        if (!content) return {};
+        if (!content)
+        {
+            return {};
+        }
 
         // ------------------------------------------------------------------
         // Multi-display: capture each display, then composite into one image
         // ------------------------------------------------------------------
 
-        struct DisplayCapInfo {
+        struct DisplayCapInfo
+        {
             CGDirectDisplayID cgId;
             CGRect bounds;
             int physW, physH;
@@ -323,12 +370,16 @@ CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
         CGFloat minX = CGFLOAT_MAX, minY = CGFLOAT_MAX;
         CGFloat maxX = -CGFLOAT_MAX, maxY = -CGFLOAT_MAX;
 
-        for (uint32_t i = 0; i < displayCount; ++i) {
+        for (uint32_t i = 0; i < displayCount; ++i)
+        {
             CGRect b = CGDisplayBounds(displayIds[i]);
             size_t pw = 0, ph = 0;
             getBackingPixelSize(displayIds[i], pw, ph);
             int scale = (b.size.width > 0) ? static_cast<int>(pw / static_cast<size_t>(b.size.width)) : 1;
-            if (scale < 1) scale = 1;
+            if (scale < 1)
+            {
+                scale = 1;
+            }
 
             minX = std::min(minX, b.origin.x);
             minY = std::min(minY, b.origin.y);
@@ -339,11 +390,15 @@ CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
         }
 
         int maxScale = 1;
-        for (auto& c : caps) maxScale = std::max(maxScale, c.scale);
+        for (auto& c : caps)
+        {
+            maxScale = std::max(maxScale, c.scale);
+        }
 
         int totalW = static_cast<int>((maxX - minX) * maxScale);
         int totalH = static_cast<int>((maxY - minY) * maxScale);
-        if (totalW <= 0 || totalH <= 0) {
+        if (totalW <= 0 || totalH <= 0)
+        {
             [content release];
             return {};
         }
@@ -357,23 +412,34 @@ CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
             compositePixels.data(), totalW, totalH, 8, bytesPerRow, cs,
             static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) | kCGBitmapByteOrder32Little);
         CGColorSpaceRelease(cs);
-        if (!ctx) {
+        if (!ctx)
+        {
             [content release];
             return {};
         }
 
         // Capture each display and draw into composite
-        for (auto& c : caps) {
+        for (auto& c : caps)
+        {
             SCDisplay* scDisp = findSCDisplay(content.displays, c.cgId);
-            if (!scDisp) continue;
+            if (!scDisp)
+            {
+                continue;
+            }
 
             SCContentFilter* filter = [[SCContentFilter alloc] initWithDisplay:scDisp
                                                               excludingWindows:@[]];
-            if (!filter) continue;
+            if (!filter)
+            {
+                continue;
+            }
 
             CGImageRef img = captureWithFilterSync(filter, c.physW, c.physH);
             [filter release];
-            if (!img) continue;
+            if (!img)
+            {
+                continue;
+            }
 
             CGFloat offsetX = (c.bounds.origin.x - minX) * maxScale;
             CGFloat offsetY = totalH - (c.bounds.origin.y - minY + c.bounds.size.height) * maxScale;
@@ -407,16 +473,27 @@ std::vector<WindowInfo> ScreenCaptureUtils_Mac::getWindowList()
         std::vector<WindowInfo> windows;
 
         SCShareableContent* content = getShareableContentSync(/*onScreenOnly=*/true);  // retained
-        if (!content) return windows;
+        if (!content)
+        {
+            return windows;
+        }
 
-        for (SCWindow* w in content.windows) {
-            if (w.frame.size.width <= 0 || w.frame.size.height <= 0) continue;
-            if (w.windowLayer != 0) continue;  // Only normal windows (skip menu bars, status items, etc.)
+        for (SCWindow* w in content.windows)
+        {
+            if (w.frame.size.width <= 0 || w.frame.size.height <= 0)
+            {
+                continue;
+            }
+            if (w.windowLayer != 0)
+            {
+                continue;  // Only normal windows (skip menu bars, status items, etc.)
+            }
 
             // Skip windows without a title and without an owning app
             if ((!w.title || w.title.length == 0) &&
                 (!w.owningApplication || !w.owningApplication.applicationName ||
-                 w.owningApplication.applicationName.length == 0)) {
+                 w.owningApplication.applicationName.length == 0))
+            {
                 continue;
             }
 
@@ -429,10 +506,12 @@ std::vector<WindowInfo> ScreenCaptureUtils_Mac::getWindowList()
             info.isOnScreen = true;
             info.isMinimized = false;
 
-            if (w.title) {
+            if (w.title)
+            {
                 info.name = [w.title UTF8String];
             }
-            if (w.owningApplication && w.owningApplication.applicationName) {
+            if (w.owningApplication && w.owningApplication.applicationName)
+            {
                 info.ownerName = [w.owningApplication.applicationName UTF8String];
             }
 
@@ -447,28 +526,36 @@ std::vector<WindowInfo> ScreenCaptureUtils_Mac::getWindowList()
 CaptureImage ScreenCaptureUtils_Mac::captureWindow(int64_t windowId)
 {
     @autoreleasepool {
-        if (!CGPreflightScreenCaptureAccess()) {
+        if (!CGPreflightScreenCaptureAccess())
+        {
             return {};
         }
 
         SCShareableContent* content = getShareableContentSync(/*onScreenOnly=*/false);  // retained
-        if (!content) return {};
+        if (!content)
+        {
+            return {};
+        }
 
         SCWindow* targetWindow = nil;
-        for (SCWindow* w in content.windows) {
-            if (w.windowID == static_cast<CGWindowID>(windowId)) {
+        for (SCWindow* w in content.windows)
+        {
+            if (w.windowID == static_cast<CGWindowID>(windowId))
+            {
                 targetWindow = w;
                 break;
             }
         }
-        if (!targetWindow) {
+        if (!targetWindow)
+        {
             [content release];
             return {};
         }
 
         SCContentFilter* filter = [[SCContentFilter alloc]
             initWithDesktopIndependentWindow:targetWindow];
-        if (!filter) {
+        if (!filter)
+        {
             [content release];
             return {};
         }
@@ -477,17 +564,23 @@ CaptureImage ScreenCaptureUtils_Mac::captureWindow(int64_t windowId)
         int scale = 2; // default Retina
         CGDirectDisplayID displayIds[16];
         uint32_t displayCount = 0;
-        if (CGGetActiveDisplayList(16, displayIds, &displayCount) == kCGErrorSuccess) {
+        if (CGGetActiveDisplayList(16, displayIds, &displayCount) == kCGErrorSuccess)
+        {
             CGPoint center = CGPointMake(
                 targetWindow.frame.origin.x + targetWindow.frame.size.width / 2,
                 targetWindow.frame.origin.y + targetWindow.frame.size.height / 2);
-            for (uint32_t i = 0; i < displayCount; ++i) {
+            for (uint32_t i = 0; i < displayCount; ++i)
+            {
                 CGRect db = CGDisplayBounds(displayIds[i]);
-                if (CGRectContainsPoint(db, center)) {
+                if (CGRectContainsPoint(db, center))
+                {
                     size_t pw = 0, ph = 0;
                     getBackingPixelSize(displayIds[i], pw, ph);
                     scale = (db.size.width > 0) ? static_cast<int>(pw / static_cast<size_t>(db.size.width)) : 2;
-                    if (scale < 1) scale = 2;
+                    if (scale < 1)
+                    {
+                        scale = 2;
+                    }
                     break;
                 }
             }
@@ -500,7 +593,10 @@ CaptureImage ScreenCaptureUtils_Mac::captureWindow(int64_t windowId)
         [filter release];
         [content release];
 
-        if (!cgImage) return {};
+        if (!cgImage)
+        {
+            return {};
+        }
 
         CaptureImage result = cgImageToCaptureImage(cgImage, scale);
         CGImageRelease(cgImage);

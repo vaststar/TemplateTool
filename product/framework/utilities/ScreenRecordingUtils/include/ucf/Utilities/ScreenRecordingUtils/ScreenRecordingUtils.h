@@ -16,7 +16,8 @@ namespace ucf::utilities::screenrecording {
 /**
  * @brief Configuration for starting a recording session
  */
-struct Utilities_EXPORT RecordingConfig {
+struct Utilities_EXPORT RecordingConfig
+{
     std::string ffmpegPath;             ///< Absolute path to ffmpeg binary
     std::string outputPath;             ///< Full output file path (e.g. /path/recording.mp4)
     std::string videoFormat = "mp4";    ///< mp4 / mov / webm
@@ -31,18 +32,28 @@ struct Utilities_EXPORT RecordingConfig {
 /**
  * @brief Handle for an active recording session
  */
-struct Utilities_EXPORT RecordingSession {
+struct Utilities_EXPORT RecordingSession
+{
     int64_t pid = -1;                   ///< Child process PID (posix) / HANDLE (Win)
     int stdinFd = -1;                   ///< Write-end of stdin pipe (to send 'q')
     std::string outputPath;
 
-    bool isValid() const { return pid > 0; }
+    // Wayland-specific (xdg-desktop-portal ScreenCast + GStreamer)
+    bool isWaylandScreencast = false;   ///< True if using portal ScreenCast
+    std::string waylandTempPath;        ///< Temp WebM path recorded by GStreamer
+    std::string ffmpegPath;             ///< FFmpeg path for post-conversion on Wayland
+
+    [[nodiscard]] bool isValid() const
+    {
+        return pid > 0 || isWaylandScreencast;
+    }
 };
 
 /**
  * @brief Result returned after stopping a recording
  */
-struct Utilities_EXPORT RecordingResult {
+struct Utilities_EXPORT RecordingResult
+{
     bool success = false;
     std::string outputPath;
     std::string errorMessage;
@@ -57,7 +68,8 @@ struct Utilities_EXPORT RecordingResult {
  *
  * No Qt dependency — uses POSIX fork/exec (macOS/Linux) or CreateProcess (Windows).
  */
-class Utilities_EXPORT ScreenRecordingUtils final {
+class Utilities_EXPORT ScreenRecordingUtils final
+{
 public:
     // === FFmpeg Discovery ===
 

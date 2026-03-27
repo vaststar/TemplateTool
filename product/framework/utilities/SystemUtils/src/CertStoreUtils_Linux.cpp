@@ -61,13 +61,14 @@ CertInstallResult CertStoreUtils_Linux::installToTrustStore(const std::string& c
         filename = filename.substr(0, dot) + ".crt";
     }
 
-    // Requires sudo — will prompt for password in a terminal context.
-    // In a GUI application, consider using pkexec instead.
-    std::string cmd = "sudo cp \"" + certPath
-                      + "\" /usr/local/share/ca-certificates/" + filename
-                      + " && sudo update-ca-certificates 2>/dev/null";
+    // Use pkexec for GUI-friendly privilege escalation (shows a password dialog).
+    std::string copyCmd = "pkexec cp \"" + certPath
+                          + "\" /usr/local/share/ca-certificates/" + filename;
+    int ret = std::system(copyCmd.c_str());
+    if (ret != 0) return CertInstallResult::Failed;
 
-    int ret = std::system(cmd.c_str());
+    std::string updateCmd = "pkexec update-ca-certificates 2>/dev/null";
+    ret = std::system(updateCmd.c_str());
     return (ret == 0) ? CertInstallResult::Success : CertInstallResult::Failed;
 }
 

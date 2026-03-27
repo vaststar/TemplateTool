@@ -649,7 +649,6 @@ FocusScope {
         property var windowModel: []
         // Cache of loaded thumbnail base64 strings keyed by windowId
         property var thumbnailCache: ({})
-
         onOpened: {
             windowModel = controller.getWindowList()
             thumbnailCache = {}
@@ -709,6 +708,7 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.margins: 12
+                visible: windowPicker.windowModel.length > 0
                 cellWidth: 200
                 cellHeight: 170
                 clip: true
@@ -908,26 +908,31 @@ FocusScope {
                 }
 
                 ScrollBar.vertical: ScrollBar { }
+            }
 
-                // Empty state
-                ColumnLayout {
-                    anchors.centerIn: parent
-                    visible: windowPicker.windowModel.length === 0
-                    spacing: 12
+            // Empty state
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: windowPicker.windowModel.length === 0
+                spacing: 12
 
-                    Text {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: "🖥"
-                        font.pixelSize: 48
-                    }
+                Item { Layout.fillHeight: true }
 
-                    UTText {
-                        Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("No windows found")
-                        fontEnum: UIFontToken.Body_Text
-                        colorEnum: UIColorToken.Content_Secondary_Text
-                    }
+                Text {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "🖥"
+                    font.pixelSize: 48
                 }
+
+                UTText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: qsTr("No windows found")
+                    fontEnum: UIFontToken.Body_Text
+                    colorEnum: UIColorToken.Content_Secondary_Text
+                }
+
+                Item { Layout.fillHeight: true }
             }
 
             // Separator

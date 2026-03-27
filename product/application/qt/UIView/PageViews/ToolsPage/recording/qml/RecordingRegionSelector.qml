@@ -81,31 +81,35 @@ Window {
         return String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0')
     }
 
+    // Screen-absolute coordinates for the selected region
+    property real absSelX: Screen.virtualX + selX
+    property real absSelY: Screen.virtualY + selY
+
     function startRegionRecording() {
         isRecording = true
 
-        // Shrink the window to the selection area (becomes border frame)
+        // Keep the window fullscreen but make it click-through.
+        // On Wayland, shrinking/moving a window is unreliable — the compositor
+        // may reposition it, causing the "jump to fullscreen" or "shifted position"
+        // bugs.  Instead we stay fullscreen + transparent-for-input and draw
+        // the recording border at the selection coordinates inside this window.
         selectorWindow.flags = Qt.FramelessWindowHint
                              | Qt.WindowStaysOnTopHint
                              | Qt.Tool
                              | Qt.WindowTransparentForInput
-        selectorWindow.x = selX
-        selectorWindow.y = selY
-        selectorWindow.width = selW
-        selectorWindow.height = selH
         selectorWindow.color = "transparent"
 
-        // Show floating control bar
-        floatingBar.x = selX
-        floatingBar.y = selY + selH + 8
+        // Show floating control bar (screen-absolute coordinates)
+        floatingBar.x = absSelX
+        floatingBar.y = absSelY + selH + 8
         // If bar would go off-screen, put it above
-        if (floatingBar.y + floatingBar.height > Screen.height) {
-            floatingBar.y = selY - floatingBar.height - 8
+        if (floatingBar.y + floatingBar.height > Screen.virtualY + Screen.height) {
+            floatingBar.y = absSelY - floatingBar.height - 8
         }
         floatingBar.show()
 
-        // Start the actual recording
-        controller.startRegionRecording(selX, selY, selW, selH)
+        // Start the actual recording with screen-absolute coordinates
+        controller.startRegionRecording(absSelX, absSelY, selW, selH)
     }
 
     function stopRecording() {
@@ -301,13 +305,19 @@ Window {
     // ==========================================
 
     // Red border for recording area (visible when recording)
+    // Window stays fullscreen, so we position the border at the selection rect.
+    // Border is drawn OUTSIDE the selection so it doesn't contaminate the recorded crop.
     Rectangle {
         id: recordingBorder
-        anchors.fill: parent
+        readonly property int bw: 3
+        x: selX - bw
+        y: selY - bw
+        width: selW + bw * 2
+        height: selH + bw * 2
         visible: isRecording
         color: "transparent"
         border.color: "red"
-        border.width: 3
+        border.width: bw
 
         SequentialAnimation on border.color {
             running: isRecording && !controller.isPaused
@@ -317,7 +327,7 @@ Window {
         }
     }
 
-    // Corner markers for recording area
+    // Corner markers for recording area (outside the selection)
     Repeater {
         model: isRecording ? 4 : 0
         Rectangle {
@@ -325,8 +335,8 @@ Window {
             height: 12
             color: "red"
             radius: 2
-            x: (index % 2 === 0) ? 0 : parent.width - width
-            y: (index < 2) ? 0 : parent.height - height
+            x: selX + ((index % 2 === 0) ? -width : selW)
+            y: selY + ((index < 2) ? -height : selH)
         }
     }
 

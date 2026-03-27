@@ -29,7 +29,7 @@ FocusScope {
         interval: 100
         repeat: false
         onTriggered: {
-            folderModel.folder = "file:///" + controller.getDefaultSavePath()
+            folderModel.folder = "file://" + controller.getDefaultSavePath()
         }
     }
 
@@ -129,8 +129,13 @@ FocusScope {
         RecordingRegionSelector {
             controller: root.controller
             onRecordingFinished: function(filePath) {
+                root.activeRegionSelector = null
                 root.refreshGallery()
                 scrollToLatestTimer.restart()
+            }
+            Component.onDestruction: {
+                if (root.activeRegionSelector === this)
+                    root.activeRegionSelector = null
             }
         }
     }
@@ -145,6 +150,8 @@ FocusScope {
 
     // Keep track of active floating bar for fullscreen mode
     property var activeFloatingBar: null
+    // Keep track of active region selector to prevent GC
+    property var activeRegionSelector: null
     // Track if we initiated a fullscreen recording (to know when to show bar)
     property bool pendingFullscreenBar: false
 
@@ -165,8 +172,8 @@ FocusScope {
 
                 onClicked: {
                     if (modeCombo.currentValue === "region") {
-                        var selector = regionSelectorComponent.createObject(null)
-                        selector.show()
+                        activeRegionSelector = regionSelectorComponent.createObject(null)
+                        activeRegionSelector.show()
                     } else {
                         pendingFullscreenBar = true
                         controller.startRecording("fullscreen")

@@ -21,16 +21,28 @@ bool NetworkProxyAgent::tryTransition(AgentState to)
     switch (to)
     {
     case AgentState::Starting:
-        if (casFrom({AgentState::Idle, AgentState::Terminated}, to)) return true;
+        if (casFrom({AgentState::Idle, AgentState::Terminated}, to))
+        {
+            return true;
+        }
         break;
     case AgentState::Running:
-        if (casFrom({AgentState::Starting}, to)) return true;
+        if (casFrom({AgentState::Starting}, to))
+        {
+            return true;
+        }
         break;
     case AgentState::Stopping:
-        if (casFrom({AgentState::Running, AgentState::Starting}, to)) return true;
+        if (casFrom({AgentState::Running, AgentState::Starting}, to))
+        {
+            return true;
+        }
         break;
     case AgentState::Terminated:
-        if (casFrom({AgentState::Stopping, AgentState::Starting, AgentState::Running}, to)) return true;
+        if (casFrom({AgentState::Stopping, AgentState::Starting, AgentState::Running}, to))
+        {
+            return true;
+        }
         break;
     case AgentState::Idle:
         break;  // Idle is the initial state, no transition back

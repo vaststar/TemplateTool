@@ -31,11 +31,16 @@ static std::string execCommand(const std::string& cmd)
     std::array<char, 512> buffer{};
     std::string result;
     FILE* pipe = _popen(cmd.c_str(), "r");
-    if (!pipe) return {};
-    if (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe)) {
+    if (!pipe)
+    {
+        return {};
+    }
+    if (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe))
+    {
         result = buffer.data();
         while (!result.empty() &&
-               (result.back() == '\n' || result.back() == '\r' || result.back() == ' ')) {
+               (result.back() == '\n' || result.back() == '\r' || result.back() == ' '))
+        {
             result.pop_back();
         }
     }
@@ -54,19 +59,23 @@ std::string ScreenRecordingUtils_Win::findFFmpegPath(const std::string& appDir)
         appDir + "/ffmpeg/ffmpeg.exe"
     };
 
-    for (const auto& candidate : candidates) {
+    for (const auto& candidate : candidates)
+    {
         std::error_code ec;
         auto canonical = fs::canonical(candidate, ec);
-        if (!ec && fs::is_regular_file(canonical, ec)) {
+        if (!ec && fs::is_regular_file(canonical, ec))
+        {
             return canonical.string();
         }
     }
 
     // Fallback: search PATH via 'where'
     std::string whereResult = execCommand("where ffmpeg.exe 2>nul");
-    if (!whereResult.empty()) {
+    if (!whereResult.empty())
+    {
         std::error_code ec;
-        if (fs::is_regular_file(whereResult, ec)) {
+        if (fs::is_regular_file(whereResult, ec))
+        {
             return whereResult;
         }
     }
@@ -83,7 +92,8 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
     RecordingSession session;
     session.outputPath = config.outputPath;
 
-    if (config.ffmpegPath.empty() || config.outputPath.empty()) {
+    if (config.ffmpegPath.empty() || config.outputPath.empty())
+    {
         return session; // invalid
     }
 
@@ -95,7 +105,8 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
 
     HANDLE hStdinRead  = nullptr;
     HANDLE hStdinWrite = nullptr;
-    if (!CreatePipe(&hStdinRead, &hStdinWrite, &sa, 0)) {
+    if (!CreatePipe(&hStdinRead, &hStdinWrite, &sa, 0))
+    {
         return session;
     }
 
@@ -111,12 +122,19 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
             << " -framerate " << config.fps
             << " -draw_mouse 1";
 
-    if (config.isRegion && config.regionW > 0 && config.regionH > 0) {
+    if (config.isRegion && config.regionW > 0 && config.regionH > 0)
+    {
         // libx264 + yuv420p requires even dimensions; round down to nearest 2
         int w = config.regionW & ~1;
         int h = config.regionH & ~1;
-        if (w < 2) w = 2;
-        if (h < 2) h = 2;
+        if (w < 2)
+        {
+            w = 2;
+        }
+        if (h < 2)
+        {
+            h = 2;
+        }
         cmdLine << " -offset_x " << config.regionX
                 << " -offset_y " << config.regionY
                 << " -video_size " << w << "x" << h;
@@ -125,9 +143,12 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
     cmdLine << " -i desktop";
 
     // Output codec settings
-    if (config.videoFormat == "webm") {
+    if (config.videoFormat == "webm")
+    {
         cmdLine << " -c:v libvpx-vp9 -b:v 2M";
-    } else {
+    }
+    else
+    {
         // -pix_fmt yuv420p requires even width & height (handled above for region)
         cmdLine << " -c:v libx264 -preset ultrafast -pix_fmt yuv420p";
     }
@@ -174,11 +195,13 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
 
     // Close handles we no longer need in the parent
     CloseHandle(hStdinRead);
-    if (hLogFile != INVALID_HANDLE_VALUE) {
+    if (hLogFile != INVALID_HANDLE_VALUE)
+    {
         CloseHandle(hLogFile);
     }
 
-    if (!ok) {
+    if (!ok)
+    {
         CloseHandle(hStdinWrite);
         return session; // invalid, pid stays -1
     }
@@ -201,7 +224,8 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
     RecordingResult result;
     result.outputPath = session.outputPath;
 
-    if (!session.isValid()) {
+    if (!session.isValid())
+    {
         result.errorMessage = "Invalid session";
         return result;
     }
@@ -210,7 +234,8 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
     HANDLE hStdinWrite = reinterpret_cast<HANDLE>(static_cast<intptr_t>(session.stdinFd));
 
     // Send 'q' to FFmpeg's stdin to gracefully stop
-    if (hStdinWrite) {
+    if (hStdinWrite)
+    {
         const char quit = 'q';
         DWORD written = 0;
         WriteFile(hStdinWrite, &quit, 1, &written, nullptr);
@@ -220,7 +245,8 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
 
     // Wait for process to exit (up to 10 seconds)
     DWORD waitResult = WaitForSingleObject(hProcess, 10000);
-    if (waitResult == WAIT_TIMEOUT) {
+    if (waitResult == WAIT_TIMEOUT)
+    {
         // Still running — force kill
         TerminateProcess(hProcess, 1);
         WaitForSingleObject(hProcess, 3000);
@@ -232,10 +258,14 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
 
     // Check if output file exists
     std::error_code ec;
-    if (fs::is_regular_file(result.outputPath, ec)) {
+    if (fs::is_regular_file(result.outputPath, ec))
+    {
         result.success = true;
-    } else {
-        if (result.errorMessage.empty()) {
+    }
+    else
+    {
+        if (result.errorMessage.empty())
+        {
             result.errorMessage = "Output file not found: " + result.outputPath;
         }
     }
@@ -249,7 +279,10 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
 
 bool ScreenRecordingUtils_Win::pauseRecording(const RecordingSession& session)
 {
-    if (!session.isValid()) return false;
+    if (!session.isValid())
+    {
+        return false;
+    }
     HANDLE hProcess = reinterpret_cast<HANDLE>(session.pid);
 
     // Suspend all threads in the FFmpeg process via NtSuspendProcess.
@@ -257,18 +290,25 @@ bool ScreenRecordingUtils_Win::pauseRecording(const RecordingSession& session)
     // Simplest approach: use the DebugActiveProcess trick or just suspend via
     // toolhelp. For now, use a snapshot to suspend all threads.
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
-    if (hSnapshot == INVALID_HANDLE_VALUE) return false;
+    if (hSnapshot == INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
 
     DWORD processId = GetProcessId(hProcess);
     THREADENTRY32 te{};
     te.dwSize = sizeof(te);
 
     bool suspended = false;
-    if (Thread32First(hSnapshot, &te)) {
-        do {
-            if (te.th32OwnerProcessID == processId) {
+    if (Thread32First(hSnapshot, &te))
+    {
+        do
+        {
+            if (te.th32OwnerProcessID == processId)
+            {
                 HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, te.th32ThreadID);
-                if (hThread) {
+                if (hThread)
+                {
                     SuspendThread(hThread);
                     CloseHandle(hThread);
                     suspended = true;
@@ -283,22 +323,32 @@ bool ScreenRecordingUtils_Win::pauseRecording(const RecordingSession& session)
 
 bool ScreenRecordingUtils_Win::resumeRecording(const RecordingSession& session)
 {
-    if (!session.isValid()) return false;
+    if (!session.isValid())
+    {
+        return false;
+    }
     HANDLE hProcess = reinterpret_cast<HANDLE>(session.pid);
 
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
-    if (hSnapshot == INVALID_HANDLE_VALUE) return false;
+    if (hSnapshot == INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
 
     DWORD processId = GetProcessId(hProcess);
     THREADENTRY32 te{};
     te.dwSize = sizeof(te);
 
     bool resumed = false;
-    if (Thread32First(hSnapshot, &te)) {
-        do {
-            if (te.th32OwnerProcessID == processId) {
+    if (Thread32First(hSnapshot, &te))
+    {
+        do
+        {
+            if (te.th32OwnerProcessID == processId)
+            {
                 HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, te.th32ThreadID);
-                if (hThread) {
+                if (hThread)
+                {
                     ResumeThread(hThread);
                     CloseHandle(hThread);
                     resumed = true;
@@ -320,7 +370,8 @@ bool ScreenRecordingUtils_Win::convertToGif(const std::string& ffmpegPath,
                                             const std::string& outputPath,
                                             int fps)
 {
-    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty()) {
+    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
+    {
         return false;
     }
 
@@ -348,7 +399,10 @@ bool ScreenRecordingUtils_Win::convertToGif(const std::string& ffmpegPath,
         nullptr, cmdBuf.data(), nullptr, nullptr,
         FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi);
 
-    if (!ok) return false;
+    if (!ok)
+    {
+        return false;
+    }
 
     CloseHandle(pi.hThread);
     WaitForSingleObject(pi.hProcess, INFINITE);

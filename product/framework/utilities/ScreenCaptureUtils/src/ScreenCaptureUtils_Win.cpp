@@ -21,7 +21,8 @@ namespace ucf::utilities::screencapture {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-struct MonitorEnumContext {
+struct MonitorEnumContext
+{
     std::vector<DisplayInfo> displays;
     int index = 0;
 };
@@ -33,7 +34,8 @@ static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC /*hdc*/,
 
     MONITORINFOEXW mi = {};
     mi.cbSize = sizeof(mi);
-    if (!GetMonitorInfoW(hMonitor, &mi)) {
+    if (!GetMonitorInfoW(hMonitor, &mi))
+    {
         return TRUE;
     }
 
@@ -47,9 +49,13 @@ static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC /*hdc*/,
 
     // DPI-aware physical size
     UINT dpiX = 96, dpiY = 96;
-    if (SUCCEEDED(GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY))) {
+    if (SUCCEEDED(GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY)))
+    {
         info.scaleFactor = static_cast<int>(dpiX / 96);
-        if (info.scaleFactor < 1) info.scaleFactor = 1;
+        if (info.scaleFactor < 1)
+        {
+            info.scaleFactor = 1;
+        }
     }
     info.physicalWidth = info.width * info.scaleFactor;
     info.physicalHeight = info.height * info.scaleFactor;
@@ -70,7 +76,8 @@ static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC /*hdc*/,
 static CaptureImage captureRegion(int x, int y, int width, int height, int scaleFactor = 1)
 {
     HDC hdcScreen = GetDC(nullptr);
-    if (!hdcScreen) {
+    if (!hdcScreen)
+    {
         return {};
     }
 
@@ -129,12 +136,15 @@ int ScreenCaptureUtils_Win::getDisplayCount()
 DisplayInfo ScreenCaptureUtils_Win::getPrimaryDisplay()
 {
     auto displays = getDisplayList();
-    for (auto& d : displays) {
-        if (d.isPrimary) {
+    for (auto& d : displays)
+    {
+        if (d.isPrimary)
+        {
             return d;
         }
     }
-    if (!displays.empty()) {
+    if (!displays.empty())
+    {
         return displays.front();
     }
     return {};
@@ -147,7 +157,8 @@ DisplayInfo ScreenCaptureUtils_Win::getPrimaryDisplay()
 CaptureImage ScreenCaptureUtils_Win::captureDisplay(int displayIndex)
 {
     auto displays = getDisplayList();
-    if (displayIndex < 0 || static_cast<size_t>(displayIndex) >= displays.size()) {
+    if (displayIndex < 0 || static_cast<size_t>(displayIndex) >= displays.size())
+    {
         return {};
     }
 
@@ -165,7 +176,8 @@ CaptureImage ScreenCaptureUtils_Win::captureAllDisplays()
     int w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
     int h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
 
-    if (w <= 0 || h <= 0) {
+    if (w <= 0 || h <= 0)
+    {
         return {};
     }
 
@@ -176,7 +188,8 @@ CaptureImage ScreenCaptureUtils_Win::captureAllDisplays()
 // Window List / Capture
 // ---------------------------------------------------------------------------
 
-struct WindowEnumContext {
+struct WindowEnumContext
+{
     std::vector<WindowInfo> windows;
 };
 
@@ -184,20 +197,23 @@ static BOOL CALLBACK windowEnumProc(HWND hwnd, LPARAM lParam)
 {
     auto* ctx = reinterpret_cast<WindowEnumContext*>(lParam);
 
-    if (!IsWindowVisible(hwnd)) {
+    if (!IsWindowVisible(hwnd))
+    {
         return TRUE;
     }
 
     // Skip zero-size windows
     RECT rect = {};
     if (DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS,
-                               &rect, sizeof(rect)) != S_OK) {
+                               &rect, sizeof(rect)) != S_OK)
+    {
         GetWindowRect(hwnd, &rect);
     }
 
     int w = rect.right - rect.left;
     int h = rect.bottom - rect.top;
-    if (w <= 0 || h <= 0) {
+    if (w <= 0 || h <= 0)
+    {
         return TRUE;
     }
 
@@ -221,7 +237,8 @@ static BOOL CALLBACK windowEnumProc(HWND hwnd, LPARAM lParam)
     // For now, leave ownerName empty; can be extended with process enumeration
     info.ownerName = "";
 
-    if (!info.name.empty()) {
+    if (!info.name.empty())
+    {
         ctx->windows.push_back(std::move(info));
     }
 
@@ -238,19 +255,22 @@ std::vector<WindowInfo> ScreenCaptureUtils_Win::getWindowList()
 CaptureImage ScreenCaptureUtils_Win::captureWindow(int64_t windowId)
 {
     HWND hwnd = reinterpret_cast<HWND>(windowId);
-    if (!IsWindow(hwnd)) {
+    if (!IsWindow(hwnd))
+    {
         return {};
     }
 
     RECT rect = {};
     if (DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS,
-                               &rect, sizeof(rect)) != S_OK) {
+                               &rect, sizeof(rect)) != S_OK)
+    {
         GetWindowRect(hwnd, &rect);
     }
 
     int w = rect.right - rect.left;
     int h = rect.bottom - rect.top;
-    if (w <= 0 || h <= 0) {
+    if (w <= 0 || h <= 0)
+    {
         return {};
     }
 

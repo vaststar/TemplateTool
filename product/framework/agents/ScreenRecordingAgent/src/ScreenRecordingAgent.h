@@ -78,6 +78,12 @@ private:
     std::atomic<bool> m_stopping{false};
     std::atomic<bool> m_aborting{false};
     std::thread m_stopThread;
+
+    // GIF post-conversion state (set in start(), consumed in stop())
+    bool m_isGifMode{false};
+    std::string m_gifOutputPath;
+    std::string m_ffmpegPath;
+    int m_gifFps{10};
 };
 
 } // namespace ucf::agents

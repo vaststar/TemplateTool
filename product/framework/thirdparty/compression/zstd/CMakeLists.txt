@@ -19,6 +19,11 @@ set(ZSTD_MULTITHREAD_SUPPORT ON CACHE BOOL "" FORCE)
 # EXCLUDE_FROM_ALL: zstd is linked privately, skip its install() rules
 add_subdirectory(zstd/build/cmake zstd_build EXCLUDE_FROM_ALL)
 
+# Static libs linked into shared libs need PIC on Linux
+if(TARGET libzstd_static)
+    set_target_properties(libzstd_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # Set IDE folder for zstd targets (only real targets, not ALIAS)
 foreach(_target libzstd_static clean-all uninstall)
     if(TARGET "${_target}")
