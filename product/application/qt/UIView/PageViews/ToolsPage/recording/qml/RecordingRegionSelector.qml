@@ -14,9 +14,21 @@ import UTComponent
 Window {
     id: selectorWindow
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
-    visibility: Window.FullScreen
     visible: false
     color: "transparent"
+
+    // macOS: do NOT use Window.FullScreen / showFullScreen().
+    // Native fullscreen on macOS creates a new Space (virtual desktop),
+    // hiding the real desktop — the user can't see what to select.
+    // Instead, manually size the window to cover the screen.
+    Component.onCompleted: {
+        if (Qt.platform.os === "osx") {
+            selectorWindow.x = Screen.virtualX
+            selectorWindow.y = Screen.virtualY
+            selectorWindow.width = Screen.width
+            selectorWindow.height = Screen.height
+        }
+    }
 
     required property var controller
 
@@ -83,6 +95,13 @@ Window {
     // global screen coords, so we add the monitor origin offset.
     property real absSelX: Qt.platform.os === "linux" ? selX : Screen.virtualX + selX
     property real absSelY: Qt.platform.os === "linux" ? selY : Screen.virtualY + selY
+    // FFmpeg screen capture backends expect physical pixels. Qt/QML coordinates
+    // are logical pixels on HiDPI displays (e.g. macOS Retina), so convert.
+    property real captureScale: Qt.platform.os === "osx" ? Screen.devicePixelRatio : 1.0
+    property int captureSelX: Math.round(absSelX * captureScale)
+    property int captureSelY: Math.round(absSelY * captureScale)
+    property int captureSelW: Math.max(2, Math.round(selW * captureScale))
+    property int captureSelH: Math.max(2, Math.round(selH * captureScale))
 
     function startRegionRecording() {
         isRecording = true
@@ -105,7 +124,7 @@ Window {
         floatingBar.show()
 
         // Start the actual recording with screen-absolute coordinates
-        controller.startRegionRecording(absSelX, absSelY, selW, selH)
+        controller.startRegionRecording(captureSelX, captureSelY, captureSelW, captureSelH)
     }
 
     function stopRecording() {
@@ -306,14 +325,16 @@ Window {
     Rectangle {
         id: recordingBorder
         readonly property int bw: 3
-        x: selX - bw
-        y: selY - bw
-        width: selW + bw * 2
-        height: selH + bw * 2
+        readonly property int extraGap: 1
+        x: selX - bw - extraGap
+        y: selY - bw - extraGap
+        width: selW + (bw + extraGap) * 2
+        height: selH + (bw + extraGap) * 2
         visible: isRecording
         color: "transparent"
         border.color: "red"
         border.width: bw
+        antialiasing: false
 
         SequentialAnimation on border.color {
             running: isRecording && !controller.isPaused
@@ -331,8 +352,8 @@ Window {
             height: 12
             color: "red"
             radius: 2
-            x: selX + ((index % 2 === 0) ? -width : selW)
-            y: selY + ((index < 2) ? -height : selH)
+            x: selX + ((index % 2 === 0) ? -(width + recordingBorder.extraGap) : (selW + recordingBorder.extraGap))
+            y: selY + ((index < 2) ? -(height + recordingBorder.extraGap) : (selH + recordingBorder.extraGap))
         }
     }
 
@@ -341,11 +362,17 @@ Window {
     // ==========================================
     Window {
         id: floatingBar
-        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
+        flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus
         width: barContent.width + 24
         height: 44
         visible: false
         color: "transparent"
+
+        onVisibleChanged: {
+            if (visible) {
+                raise()
+            }
+        }
 
         Rectangle {
             anchors.fill: parent

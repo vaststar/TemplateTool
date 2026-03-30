@@ -1199,82 +1199,82 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="187"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="194"/>
         <source>Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="188"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="195"/>
         <source>Select Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="200"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="207"/>
         <source>⚠ FFmpeg not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="208"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="215"/>
         <source>📂 Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="221"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="228"/>
         <source>Grid View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="244"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="251"/>
         <source>List View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="295"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="302"/>
         <source>No recordings yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="302"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="309"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="616"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="623"/>
         <source>%1 recordings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="626"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="633"/>
         <source>▶ Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="632"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="639"/>
         <source>🗑 Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="647"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="654"/>
         <source>Open</source>
         <translation type="unfinished">打开</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="652"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="659"/>
         <source>Show in Explorer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="659"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="666"/>
         <source>Delete</source>
         <translation type="unfinished">删除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="671"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="678"/>
         <source>Delete Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="679"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="686"/>
         <source>Are you sure you want to delete this recording?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1295,22 +1295,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingFloatingBar</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="102"/>
         <source>Resume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="102"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="108"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="114"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="115"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="121"/>
         <source>Abort recording</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1331,43 +1331,43 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingRegionSelector</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="242"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="261"/>
         <source>Start recording this region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="258"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="277"/>
         <source>Draw a new selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="271"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="290"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="292"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="311"/>
         <source>Click and drag to select recording region
 Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="390"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="417"/>
         <source>Resume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="390"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="417"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="402"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="429"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="409"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="436"/>
         <source>Abort recording</source>
         <translation type="unfinished"></translation>
     </message>

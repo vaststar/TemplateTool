@@ -140,8 +140,16 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     args.push_back(std::to_string(config.fps));
     args.push_back("-capture_cursor");
     args.push_back("1");
+    // avfoundation may expose unstable stream timestamps for screen capture.
+    // Use wallclock timestamps to avoid huge duplicate-frame bursts.
+    args.push_back("-use_wallclock_as_timestamps");
+    args.push_back("1");
     args.push_back("-i");
     args.push_back(inputSpec);
+
+    // Do not synthesize CFR by duplicating frames from unstable input timestamps.
+    args.push_back("-vsync");
+    args.push_back("0");
 
     // Region crop filter
     if (config.isRegion && config.regionW > 0 && config.regionH > 0)
@@ -180,6 +188,13 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
         args.push_back("ultrafast");
         args.push_back("-pix_fmt");
         args.push_back("yuv420p");
+
+        // Improve mp4/mov compatibility with QuickTime players.
+        if (config.videoFormat == "mp4" || config.videoFormat == "mov")
+        {
+            args.push_back("-video_track_timescale");
+            args.push_back("600");
+        }
     }
 
     args.push_back(config.outputPath);
@@ -263,8 +278,8 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
         sigemptyset(&sa_ign.sa_mask);
         sigaction(SIGPIPE, &sa_ign, &sa_old);
 
-        const char quit = 'q';
-        ssize_t written = write(session.stdinFd, &quit, 1);
+        const char quitCmd[] = "q\n";
+        ssize_t written = write(session.stdinFd, quitCmd, sizeof(quitCmd) - 1);
         (void)written; // may fail with EPIPE if FFmpeg already exited
 
         sigaction(SIGPIPE, &sa_old, nullptr);
@@ -290,10 +305,27 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
 
     if (wpid == 0)
     {
-        // Still running — force kill
-        kill(static_cast<pid_t>(session.pid), SIGKILL);
-        waitpid(static_cast<pid_t>(session.pid), &status, 0);
-        result.errorMessage = "FFmpeg did not exit in time, force killed";
+        // FFmpeg didn't react to stdin quit. Try SIGINT first for graceful muxer finalization.
+        kill(static_cast<pid_t>(session.pid), SIGINT);
+
+        int intWaitAttempts = 50; // 5s
+        while (intWaitAttempts-- > 0)
+        {
+            wpid = waitpid(static_cast<pid_t>(session.pid), &status, WNOHANG);
+            if (wpid != 0)
+            {
+                break;
+            }
+            usleep(100000); // 100ms
+        }
+
+        if (wpid == 0)
+        {
+            // Last resort: force kill
+            kill(static_cast<pid_t>(session.pid), SIGKILL);
+            waitpid(static_cast<pid_t>(session.pid), &status, 0);
+            result.errorMessage = "FFmpeg did not exit in time, force killed";
+        }
     }
 
     session.pid = -1;

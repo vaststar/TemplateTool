@@ -173,7 +173,14 @@ FocusScope {
                 onClicked: {
                     if (modeCombo.currentValue === "region") {
                         activeRegionSelector = regionSelectorComponent.createObject(null)
-                        activeRegionSelector.showFullScreen()
+                        if (Qt.platform.os === "osx") {
+                            // macOS: show() instead of showFullScreen() to avoid
+                            // entering a native Space. The window already covers
+                            // the screen via manual sizing in Component.onCompleted.
+                            activeRegionSelector.show()
+                        } else {
+                            activeRegionSelector.showFullScreen()
+                        }
                     } else {
                         pendingFullscreenBar = true
                         controller.startRecording("fullscreen")

@@ -12,13 +12,19 @@ import UTComponent
  */
 Window {
     id: barWindow
-    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
+    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus
     width: barContent.width + 24
     height: 44
     x: Screen.width / 2 - width / 2
     y: 12
     visible: false
     color: "transparent"
+
+    onVisibleChanged: {
+        if (visible) {
+            raise()
+        }
+    }
 
     required property var controller
 
