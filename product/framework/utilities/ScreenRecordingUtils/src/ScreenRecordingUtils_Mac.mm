@@ -2,17 +2,25 @@
 
 #ifdef __APPLE__
 
+#include "LoggerDefine.h"
+
 #include <cerrno>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <array>
-#include <unistd.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
+#include <sstream>
+#include <string>
+#include <vector>
 
-namespace fs = std::filesystem;
+#include <fcntl.h>
+#include <signal.h>
+#include <spawn.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#include <CoreGraphics/CGDirectDisplay.h>
+
+extern char** environ;
 
 namespace ucf::utilities::screenrecording {
 
@@ -20,44 +28,104 @@ namespace ucf::utilities::screenrecording {
 // Helpers
 // ============================================================================
 
-static bool fileExists(const std::string& path)
+/// Round a dimension down to the nearest even number (minimum 2).
+/// libx264 + yuv420p requires even width and height.
+static inline int alignToEven(int v)
 {
-    struct stat st{};
-    return (stat(path.c_str(), &st) == 0 && S_ISREG(st.st_mode));
+    return std::max(2, v & ~1);
 }
 
-/// Resolve a path that may contain ".." to its canonical form.
-static std::string resolvePath(const std::string& path)
+/// Set close-on-exec flag on a file descriptor.
+static inline void setCloseOnExec(int fd)
 {
-    char resolved[PATH_MAX];
-    if (realpath(path.c_str(), resolved))
+    fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+}
+
+/// Search the PATH environment variable for an executable by name.
+static std::string findInPath(const std::string& name)
+{
+    const char* pathEnv = std::getenv("PATH");
+    if (!pathEnv)
     {
-        return std::string(resolved);
+        return {};
+    }
+
+    std::string pathStr(pathEnv);
+    std::string::size_type start = 0;
+
+    while (start < pathStr.size())
+    {
+        auto end = pathStr.find(':', start);
+        if (end == std::string::npos)
+        {
+            end = pathStr.size();
+        }
+
+        std::string dir = pathStr.substr(start, end - start);
+        if (!dir.empty())
+        {
+            std::filesystem::path candidate = std::filesystem::path(dir) / name;
+            std::error_code ec;
+            if (std::filesystem::is_regular_file(candidate, ec) && access(candidate.c_str(), X_OK) == 0)
+            {
+                auto canonical = std::filesystem::canonical(candidate, ec);
+                if (!ec)
+                {
+                    return canonical.string();
+                }
+            }
+        }
+        start = end + 1;
     }
     return {};
 }
 
-/// Run a command synchronously and capture stdout (first line).
-static std::string execCommand(const char* cmd)
+/// Wait for a child process with timeout, escalating from SIGINT to SIGKILL.
+/// @param pid        Child PID
+/// @param status     Output: exit status
+/// @param timeoutMs  Total timeout in milliseconds before first escalation
+/// @param errorMsg   Output: set if force-killed
+/// @return true if process exited normally, false if force-killed
+static bool waitForChildWithTimeout(pid_t pid, int& status, int timeoutMs, std::string& errorMsg)
 {
-    std::array<char, 256> buffer{};
-    std::string result;
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe)
+    constexpr int pollIntervalMs = 100;
+
+    // Phase 1: wait for voluntary exit
+    int elapsed = 0;
+    while (elapsed < timeoutMs)
     {
-        return {};
-    }
-    if (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe))
-    {
-        result = buffer.data();
-        // trim trailing whitespace
-        while (!result.empty() && (result.back() == '\n' || result.back() == '\r' || result.back() == ' '))
+        pid_t wpid = waitpid(pid, &status, WNOHANG);
+        if (wpid != 0)
         {
-            result.pop_back();
+            return true;
         }
+        usleep(pollIntervalMs * 1000);
+        elapsed += pollIntervalMs;
     }
-    pclose(pipe);
-    return result;
+
+    // Phase 2: SIGINT for graceful muxer finalization (5 seconds)
+    SRU_LOG_WARN("Child process " << pid << " did not exit in " << timeoutMs << "ms, sending SIGINT");
+    kill(pid, SIGINT);
+
+    constexpr int intTimeoutMs = 5000;
+    elapsed = 0;
+    while (elapsed < intTimeoutMs)
+    {
+        pid_t wpid = waitpid(pid, &status, WNOHANG);
+        if (wpid != 0)
+        {
+            return true;
+        }
+        usleep(pollIntervalMs * 1000);
+        elapsed += pollIntervalMs;
+    }
+
+    // Phase 3: SIGKILL as last resort
+    SRU_LOG_ERROR("Child process " << pid << " did not respond to SIGINT, sending SIGKILL");
+    kill(pid, SIGKILL);
+    waitpid(pid, &status, 0);
+    errorMsg = "FFmpeg did not exit in time, force killed";
+    return false;
 }
 
 // ============================================================================
@@ -78,21 +146,40 @@ std::string ScreenRecordingUtils_Mac::findFFmpegPath(const std::string& appDir)
 
     for (const auto& candidate : candidates)
     {
-        std::string resolved = resolvePath(candidate);
-        if (!resolved.empty() && fileExists(resolved))
+        std::error_code ec;
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec))
         {
-            return resolved;
+            return canonical.string();
         }
     }
 
-    // Fallback: search PATH via 'which'
-    std::string whichResult = execCommand("which ffmpeg 2>/dev/null");
-    if (!whichResult.empty() && fileExists(whichResult))
+    // Fallback: search PATH manually (no shell invocation)
+    std::string pathResult = findInPath("ffmpeg");
+    if (!pathResult.empty())
     {
-        return whichResult;
+        return pathResult;
     }
 
+    SRU_LOG_WARN("FFmpeg not found in candidates or PATH");
     return {};
+}
+
+// ============================================================================
+// Permission Check
+// ============================================================================
+
+bool ScreenRecordingUtils_Mac::hasScreenRecordingPermission()
+{
+    // CGPreflightScreenCaptureAccess() is available on macOS 10.15+.
+    // Returns true if the app already has screen recording permission.
+    // Does NOT trigger the system permission dialog.
+    if (__builtin_available(macOS 10.15, *))
+    {
+        return CGPreflightScreenCaptureAccess();
+    }
+    // Before macOS 10.15, no permission was required.
+    return true;
 }
 
 // ============================================================================
@@ -106,30 +193,38 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
 
     if (config.ffmpegPath.empty() || config.outputPath.empty())
     {
+        SRU_LOG_ERROR("startRecording: ffmpegPath or outputPath is empty");
         return session; // invalid
+    }
+
+    // Pre-check screen recording permission to fail fast with a clear error
+    // instead of launching an FFmpeg process that silently captures a black screen.
+    if (!hasScreenRecordingPermission())
+    {
+        SRU_LOG_ERROR("startRecording: screen recording permission not granted. "
+                      "Go to System Settings > Privacy & Security > Screen Recording to enable.");
+        return session;
     }
 
     // Create a pipe for FFmpeg's stdin so we can send 'q' to stop it
     int stdinPipe[2]; // [0]=read, [1]=write
     if (pipe(stdinPipe) < 0)
     {
+        SRU_LOG_ERROR("startRecording: pipe() failed: " << strerror(errno));
         return session;
     }
+    setCloseOnExec(stdinPipe[0]);
+    setCloseOnExec(stdinPipe[1]);
+
+    // Prevent SIGPIPE when writing to this fd after FFmpeg exits
+    fcntl(stdinPipe[1], F_SETNOSIGPIPE, 1);
 
     // Build FFmpeg command-line arguments
     // macOS screen capture: -f avfoundation -i "Capture screen <N>:none"
     // We use the screen device name instead of a raw numeric index because
     // avfoundation lists cameras before screens (e.g. index 0 = FaceTime camera,
     // index 1 = Capture screen 0). Using the name avoids mis-targeting the camera.
-    std::string inputSpec;
-    if (config.isRegion)
-    {
-        inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
-    }
-    else
-    {
-        inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
-    }
+    std::string inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
 
     std::vector<std::string> args;
     args.push_back(config.ffmpegPath);
@@ -154,17 +249,8 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     // Region crop filter
     if (config.isRegion && config.regionW > 0 && config.regionH > 0)
     {
-        // libx264 + yuv420p requires even dimensions; round down to nearest 2
-        int w = config.regionW & ~1;
-        int h = config.regionH & ~1;
-        if (w < 2)
-        {
-            w = 2;
-        }
-        if (h < 2)
-        {
-            h = 2;
-        }
+        int w = alignToEven(config.regionW);
+        int h = alignToEven(config.regionH);
         std::string cropFilter = "crop=" + std::to_string(w) + ":"
                                 + std::to_string(h) + ":"
                                 + std::to_string(config.regionX) + ":"
@@ -199,7 +285,7 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
 
     args.push_back(config.outputPath);
 
-    // Convert to C-style argv
+    // Convert to C-style argv for posix_spawn
     std::vector<char*> argv;
     argv.reserve(args.size() + 1);
     for (auto& a : args)
@@ -208,53 +294,45 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     }
     argv.push_back(nullptr);
 
-    pid_t pid = fork();
-    if (pid < 0)
+    // Set up file actions for the child process
+    posix_spawn_file_actions_t fileActions;
+    posix_spawn_file_actions_init(&fileActions);
+
+    // Redirect stdin from the pipe read end
+    posix_spawn_file_actions_adddup2(&fileActions, stdinPipe[0], STDIN_FILENO);
+    posix_spawn_file_actions_addclose(&fileActions, stdinPipe[0]);
+    posix_spawn_file_actions_addclose(&fileActions, stdinPipe[1]);
+
+    // Redirect stdout to /dev/null
+    posix_spawn_file_actions_addopen(&fileActions, STDOUT_FILENO,
+                                     "/dev/null", O_WRONLY, 0);
+
+    // Redirect stderr to a log file for troubleshooting
+    std::string logPath = config.outputPath + ".ffmpeg.log";
+    posix_spawn_file_actions_addopen(&fileActions, STDERR_FILENO,
+                                     logPath.c_str(),
+                                     O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+    pid_t pid = 0;
+    int spawnResult = posix_spawn(&pid, config.ffmpegPath.c_str(),
+                                  &fileActions, nullptr,
+                                  argv.data(), environ);
+    posix_spawn_file_actions_destroy(&fileActions);
+
+    // Close read end in parent (write end kept for sending 'q')
+    close(stdinPipe[0]);
+
+    if (spawnResult != 0)
     {
-        close(stdinPipe[0]);
+        SRU_LOG_ERROR("startRecording: posix_spawn failed: " << strerror(spawnResult));
         close(stdinPipe[1]);
         return session;
     }
 
-    if (pid == 0)
-    {
-        // Child process
-        close(stdinPipe[1]); // close write end
-        dup2(stdinPipe[0], STDIN_FILENO);
-        close(stdinPipe[0]);
-
-        // Redirect stdout to /dev/null, stderr to a log file for debugging
-        int devnull = open("/dev/null", O_WRONLY);
-        if (devnull >= 0)
-        {
-            dup2(devnull, STDOUT_FILENO);
-            close(devnull);
-        }
-
-        // Write FFmpeg stderr to a log file for troubleshooting
-        std::string logPath = config.outputPath + ".ffmpeg.log";
-        int logFd = open(logPath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (logFd >= 0)
-        {
-            dup2(logFd, STDERR_FILENO);
-            close(logFd);
-        }
-
-        execv(config.ffmpegPath.c_str(), argv.data());
-        _exit(127); // exec failed
-    }
-
-    // Parent process
-    close(stdinPipe[0]); // close read end
-
-    // Prevent SIGPIPE when writing to this fd after FFmpeg exits
-#ifdef F_SETNOSIGPIPE
-    fcntl(stdinPipe[1], F_SETNOSIGPIPE, 1);
-#endif
-
     session.pid = pid;
     session.stdinFd = stdinPipe[1];
 
+    SRU_LOG_INFO("startRecording: started ffmpeg pid=" << pid << " output=" << config.outputPath);
     return session;
 }
 
@@ -266,72 +344,41 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
     if (!session.isValid())
     {
         result.errorMessage = "Invalid session";
+        SRU_LOG_ERROR("stopRecording: " << result.errorMessage);
         return result;
     }
 
     // Send 'q' to FFmpeg's stdin to gracefully stop.
-    // Ignore SIGPIPE in case FFmpeg has already exited (broken pipe).
+    // F_SETNOSIGPIPE was set on this fd in startRecording, so write() returns
+    // EPIPE instead of raising SIGPIPE if FFmpeg has already exited.
     if (session.stdinFd >= 0)
     {
-        struct sigaction sa_old{}, sa_ign{};
-        sa_ign.sa_handler = SIG_IGN;
-        sigemptyset(&sa_ign.sa_mask);
-        sigaction(SIGPIPE, &sa_ign, &sa_old);
-
         const char quitCmd[] = "q\n";
         ssize_t written = write(session.stdinFd, quitCmd, sizeof(quitCmd) - 1);
-        (void)written; // may fail with EPIPE if FFmpeg already exited
-
-        sigaction(SIGPIPE, &sa_old, nullptr);
+        if (written < 0 && errno != EPIPE)
+        {
+            SRU_LOG_WARN("stopRecording: write to stdin pipe failed: " << strerror(errno));
+        }
 
         close(session.stdinFd);
         session.stdinFd = -1;
     }
 
-    // Wait for process to exit (up to 10 seconds)
+    // Wait for process to exit (up to 10 seconds, then escalate)
     int status = 0;
-    int waitAttempts = 100; // 100 x 100ms = 10s
-    pid_t wpid = 0;
+    std::string killError;
+    waitForChildWithTimeout(static_cast<pid_t>(session.pid), status, 10000, killError);
 
-    while (waitAttempts-- > 0)
+    if (!killError.empty())
     {
-        wpid = waitpid(static_cast<pid_t>(session.pid), &status, WNOHANG);
-        if (wpid != 0)
-        {
-            break;
-        }
-        usleep(100000); // 100ms
-    }
-
-    if (wpid == 0)
-    {
-        // FFmpeg didn't react to stdin quit. Try SIGINT first for graceful muxer finalization.
-        kill(static_cast<pid_t>(session.pid), SIGINT);
-
-        int intWaitAttempts = 50; // 5s
-        while (intWaitAttempts-- > 0)
-        {
-            wpid = waitpid(static_cast<pid_t>(session.pid), &status, WNOHANG);
-            if (wpid != 0)
-            {
-                break;
-            }
-            usleep(100000); // 100ms
-        }
-
-        if (wpid == 0)
-        {
-            // Last resort: force kill
-            kill(static_cast<pid_t>(session.pid), SIGKILL);
-            waitpid(static_cast<pid_t>(session.pid), &status, 0);
-            result.errorMessage = "FFmpeg did not exit in time, force killed";
-        }
+        result.errorMessage = killError;
     }
 
     session.pid = -1;
 
     // Check if output file exists
-    if (fileExists(result.outputPath))
+    std::error_code ec;
+    if (std::filesystem::is_regular_file(result.outputPath, ec))
     {
         result.success = true;
     }
@@ -341,6 +388,7 @@ RecordingResult ScreenRecordingUtils_Mac::stopRecording(RecordingSession& sessio
         {
             result.errorMessage = "Output file not found: " + result.outputPath;
         }
+        SRU_LOG_ERROR("stopRecording: " << result.errorMessage);
     }
 
     return result;
@@ -375,6 +423,7 @@ bool ScreenRecordingUtils_Mac::convertToGif(const std::string& ffmpegPath,
 {
     if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
     {
+        SRU_LOG_ERROR("convertToGif: empty path argument");
         return false;
     }
 
@@ -382,35 +431,60 @@ bool ScreenRecordingUtils_Mac::convertToGif(const std::string& ffmpegPath,
     std::string filterComplex = "fps=" + std::to_string(fps)
         + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
 
-    pid_t pid = fork();
-    if (pid < 0)
+    // Build argv
+    std::vector<std::string> args = {
+        ffmpegPath, "-y", "-i", inputPath,
+        "-filter_complex", filterComplex,
+        outputPath
+    };
+    std::vector<char*> argv;
+    argv.reserve(args.size() + 1);
+    for (auto& a : args)
     {
+        argv.push_back(a.data());
+    }
+    argv.push_back(nullptr);
+
+    // Set up file actions: redirect stdout and stderr to /dev/null
+    posix_spawn_file_actions_t fileActions;
+    posix_spawn_file_actions_init(&fileActions);
+    posix_spawn_file_actions_addopen(&fileActions, STDOUT_FILENO,
+                                     "/dev/null", O_WRONLY, 0);
+    posix_spawn_file_actions_addopen(&fileActions, STDERR_FILENO,
+                                     "/dev/null", O_WRONLY, 0);
+
+    pid_t pid = 0;
+    int spawnResult = posix_spawn(&pid, ffmpegPath.c_str(),
+                                  &fileActions, nullptr,
+                                  argv.data(), environ);
+    posix_spawn_file_actions_destroy(&fileActions);
+
+    if (spawnResult != 0)
+    {
+        SRU_LOG_ERROR("convertToGif: posix_spawn failed: " << strerror(spawnResult));
         return false;
     }
 
-    if (pid == 0)
-    {
-        // Redirect output
-        int devnull = open("/dev/null", O_WRONLY);
-        if (devnull >= 0)
-        {
-            dup2(devnull, STDOUT_FILENO);
-            dup2(devnull, STDERR_FILENO);
-            close(devnull);
-        }
+    // Wait with timeout (120 seconds for potentially long GIF conversions)
+    int status = 0;
+    std::string killError;
+    bool exited = waitForChildWithTimeout(pid, status, 120000, killError);
 
-        execlp(ffmpegPath.c_str(), ffmpegPath.c_str(),
-               "-y", "-i", inputPath.c_str(),
-               "-filter_complex", filterComplex.c_str(),
-               outputPath.c_str(),
-               nullptr);
-        _exit(127);
+    if (!exited)
+    {
+        SRU_LOG_ERROR("convertToGif: " << killError);
+        return false;
     }
 
-    int status = 0;
-    waitpid(pid, &status, 0);
-
-    return WIFEXITED(status) && WEXITSTATUS(status) == 0 && fileExists(outputPath);
+    std::error_code ec;
+    bool ok = WIFEXITED(status) && WEXITSTATUS(status) == 0
+              && std::filesystem::is_regular_file(outputPath, ec);
+    if (!ok)
+    {
+        SRU_LOG_ERROR("convertToGif: ffmpeg exited with status "
+                      << (WIFEXITED(status) ? WEXITSTATUS(status) : -1));
+    }
+    return ok;
 }
 
 } // namespace ucf::utilities::screenrecording

@@ -86,6 +86,13 @@ public:
     /// Convenience wrapper around findFFmpegPath.
     static bool isFFmpegAvailable(const std::string& appDir);
 
+    // === Permission Check ===
+
+    /// Check if the application has screen recording permission (macOS 10.15+).
+    /// On Windows and Linux, always returns true.
+    /// Does NOT trigger a system permission dialog.
+    static bool hasScreenRecordingPermission();
+
     // === Recording Control ===
 
     /// Start an FFmpeg recording subprocess.

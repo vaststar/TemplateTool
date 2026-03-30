@@ -29,6 +29,19 @@ bool ScreenRecordingUtils::isFFmpegAvailable(const std::string& appDir)
     return !findFFmpegPath(appDir).empty();
 }
 
+bool ScreenRecordingUtils::hasScreenRecordingPermission()
+{
+#if defined(_WIN32)
+    return ScreenRecordingUtils_Win::hasScreenRecordingPermission();
+#elif defined(__APPLE__)
+    return ScreenRecordingUtils_Mac::hasScreenRecordingPermission();
+#elif defined(__linux__)
+    return ScreenRecordingUtils_Linux::hasScreenRecordingPermission();
+#else
+    return true;
+#endif
+}
+
 RecordingSession ScreenRecordingUtils::startRecording(const RecordingConfig& config)
 {
 #if defined(_WIN32)

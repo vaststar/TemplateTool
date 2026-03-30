@@ -140,6 +140,18 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 
     auto lowLevelConfig = toRecordingConfig(config);
 
+    // Pre-check screen recording permission to fail fast with a clear error
+    if (!ScreenRecordingUtils::hasScreenRecordingPermission())
+    {
+        m_state.store(State::Idle, std::memory_order_release);
+        fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
+                         RecordingAgentState::Idle);
+        fireNotification(&IScreenRecordingAgentCallback::onError,
+                         std::string("Screen recording permission not granted. "
+                                     "Go to System Settings > Privacy & Security > Screen Recording to enable."));
+        return false;
+    }
+
     // GIF mode: record as mp4 internally, convert after stop
     m_isGifMode = (config.videoFormat == "gif");
     if (m_isGifMode)

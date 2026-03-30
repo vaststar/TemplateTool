@@ -8,6 +8,7 @@ class ScreenRecordingUtils_Mac final
 {
 public:
     static std::string findFFmpegPath(const std::string& appDir);
+    static bool hasScreenRecordingPermission();
     static RecordingSession startRecording(const RecordingConfig& config);
     static RecordingResult stopRecording(RecordingSession& session);
     static bool pauseRecording(const RecordingSession& session);

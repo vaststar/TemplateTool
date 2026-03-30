@@ -2,14 +2,13 @@
 
 #ifdef _WIN32
 
-#include <filesystem>
+#include "LoggerDefine.h"
+
 #include <cstdlib>
-#include <vector>
-#include <string>
-#include <array>
+#include <filesystem>
 #include <sstream>
-#include <chrono>
-#include <thread>
+#include <string>
+#include <vector>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -17,35 +16,75 @@
 #include <windows.h>
 #include <tlhelp32.h>
 
-namespace fs = std::filesystem;
-
 namespace ucf::utilities::screenrecording {
 
 // ============================================================================
 // Helpers
 // ============================================================================
 
-/// Run a command and capture the first line of stdout.
-static std::string execCommand(const std::string& cmd)
+/// Round a dimension down to the nearest even number (minimum 2).
+/// libx264 + yuv420p requires even width and height.
+static inline int alignToEven(int v)
 {
-    std::array<char, 512> buffer{};
-    std::string result;
-    FILE* pipe = _popen(cmd.c_str(), "r");
-    if (!pipe)
+    return (std::max)(2, v & ~1);
+}
+
+/// Search the PATH environment variable for an executable by name.
+static std::string findInPath(const std::string& name)
+{
+    const char* pathEnv = std::getenv("PATH");
+    if (!pathEnv)
     {
         return {};
     }
-    if (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe))
+
+    std::string pathStr(pathEnv);
+    std::string::size_type start = 0;
+
+    while (start < pathStr.size())
     {
-        result = buffer.data();
-        while (!result.empty() &&
-               (result.back() == '\n' || result.back() == '\r' || result.back() == ' '))
+        auto end = pathStr.find(';', start);
+        if (end == std::string::npos)
         {
-            result.pop_back();
+            end = pathStr.size();
         }
+
+        std::string dir = pathStr.substr(start, end - start);
+        if (!dir.empty())
+        {
+            std::filesystem::path candidate = std::filesystem::path(dir) / name;
+            std::error_code ec;
+            if (std::filesystem::is_regular_file(candidate, ec))
+            {
+                auto canonical = std::filesystem::canonical(candidate, ec);
+                if (!ec)
+                {
+                    return canonical.string();
+                }
+            }
+        }
+        start = end + 1;
     }
-    _pclose(pipe);
-    return result;
+    return {};
+}
+
+/// Wait for a process with timeout, then force-terminate if still running.
+/// @param hProcess   Process handle
+/// @param timeoutMs  Timeout in milliseconds
+/// @param errorMsg   Output: set if force-terminated
+/// @return true if process exited within timeout, false if force-terminated
+static bool waitForProcessWithTimeout(HANDLE hProcess, DWORD timeoutMs, std::string& errorMsg)
+{
+    DWORD waitResult = WaitForSingleObject(hProcess, timeoutMs);
+    if (waitResult == WAIT_TIMEOUT)
+    {
+        SRU_LOG_WARN("Process did not exit in " << timeoutMs << "ms, force terminating");
+        TerminateProcess(hProcess, 1);
+        WaitForSingleObject(hProcess, 5000);
+        errorMsg = "FFmpeg did not exit in time, force killed";
+        return false;
+    }
+    return true;
 }
 
 // ============================================================================
@@ -62,24 +101,21 @@ std::string ScreenRecordingUtils_Win::findFFmpegPath(const std::string& appDir)
     for (const auto& candidate : candidates)
     {
         std::error_code ec;
-        auto canonical = fs::canonical(candidate, ec);
-        if (!ec && fs::is_regular_file(canonical, ec))
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec))
         {
             return canonical.string();
         }
     }
 
-    // Fallback: search PATH via 'where'
-    std::string whereResult = execCommand("where ffmpeg.exe 2>nul");
-    if (!whereResult.empty())
+    // Fallback: search PATH manually (no shell invocation)
+    std::string pathResult = findInPath("ffmpeg.exe");
+    if (!pathResult.empty())
     {
-        std::error_code ec;
-        if (fs::is_regular_file(whereResult, ec))
-        {
-            return whereResult;
-        }
+        return pathResult;
     }
 
+    SRU_LOG_WARN("FFmpeg not found in candidates or PATH");
     return {};
 }
 
@@ -94,6 +130,7 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
 
     if (config.ffmpegPath.empty() || config.outputPath.empty())
     {
+        SRU_LOG_ERROR("startRecording: ffmpegPath or outputPath is empty");
         return session; // invalid
     }
 
@@ -107,6 +144,7 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
     HANDLE hStdinWrite = nullptr;
     if (!CreatePipe(&hStdinRead, &hStdinWrite, &sa, 0))
     {
+        SRU_LOG_ERROR("startRecording: CreatePipe failed, error=" << GetLastError());
         return session;
     }
 
@@ -124,17 +162,8 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
 
     if (config.isRegion && config.regionW > 0 && config.regionH > 0)
     {
-        // libx264 + yuv420p requires even dimensions; round down to nearest 2
-        int w = config.regionW & ~1;
-        int h = config.regionH & ~1;
-        if (w < 2)
-        {
-            w = 2;
-        }
-        if (h < 2)
-        {
-            h = 2;
-        }
+        int w = alignToEven(config.regionW);
+        int h = alignToEven(config.regionH);
         cmdLine << " -offset_x " << config.regionX
                 << " -offset_y " << config.regionY
                 << " -video_size " << w << "x" << h;
@@ -202,6 +231,7 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
 
     if (!ok)
     {
+        SRU_LOG_ERROR("startRecording: CreateProcess failed, error=" << GetLastError());
         CloseHandle(hStdinWrite);
         return session; // invalid, pid stays -1
     }
@@ -212,6 +242,8 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
     session.pid = reinterpret_cast<int64_t>(pi.hProcess);
     session.stdinFd = static_cast<int>(reinterpret_cast<intptr_t>(hStdinWrite));
 
+    SRU_LOG_INFO("startRecording: started ffmpeg pid=" << pi.dwProcessId
+                 << " output=" << config.outputPath);
     return session;
 }
 
@@ -227,30 +259,33 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
     if (!session.isValid())
     {
         result.errorMessage = "Invalid session";
+        SRU_LOG_ERROR("stopRecording: " << result.errorMessage);
         return result;
     }
 
     HANDLE hProcess = reinterpret_cast<HANDLE>(session.pid);
     HANDLE hStdinWrite = reinterpret_cast<HANDLE>(static_cast<intptr_t>(session.stdinFd));
 
-    // Send 'q' to FFmpeg's stdin to gracefully stop
+    // Send 'q\n' to FFmpeg's stdin to gracefully stop
     if (hStdinWrite)
     {
-        const char quit = 'q';
+        const char quitCmd[] = "q\n";
         DWORD written = 0;
-        WriteFile(hStdinWrite, &quit, 1, &written, nullptr);
+        if (!WriteFile(hStdinWrite, quitCmd, sizeof(quitCmd) - 1, &written, nullptr))
+        {
+            SRU_LOG_WARN("stopRecording: WriteFile to stdin pipe failed, error=" << GetLastError());
+        }
         CloseHandle(hStdinWrite);
         session.stdinFd = -1;
     }
 
-    // Wait for process to exit (up to 10 seconds)
-    DWORD waitResult = WaitForSingleObject(hProcess, 10000);
-    if (waitResult == WAIT_TIMEOUT)
+    // Wait for process to exit (up to 10 seconds, then force-terminate)
+    std::string killError;
+    waitForProcessWithTimeout(hProcess, 10000, killError);
+
+    if (!killError.empty())
     {
-        // Still running — force kill
-        TerminateProcess(hProcess, 1);
-        WaitForSingleObject(hProcess, 3000);
-        result.errorMessage = "FFmpeg did not exit in time, force killed";
+        result.errorMessage = killError;
     }
 
     CloseHandle(hProcess);
@@ -258,7 +293,7 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
 
     // Check if output file exists
     std::error_code ec;
-    if (fs::is_regular_file(result.outputPath, ec))
+    if (std::filesystem::is_regular_file(result.outputPath, ec))
     {
         result.success = true;
     }
@@ -268,6 +303,7 @@ RecordingResult ScreenRecordingUtils_Win::stopRecording(RecordingSession& sessio
         {
             result.errorMessage = "Output file not found: " + result.outputPath;
         }
+        SRU_LOG_ERROR("stopRecording: " << result.errorMessage);
     }
 
     return result;
@@ -372,6 +408,7 @@ bool ScreenRecordingUtils_Win::convertToGif(const std::string& ffmpegPath,
 {
     if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
     {
+        SRU_LOG_ERROR("convertToGif: empty path argument");
         return false;
     }
 
@@ -401,18 +438,33 @@ bool ScreenRecordingUtils_Win::convertToGif(const std::string& ffmpegPath,
 
     if (!ok)
     {
+        SRU_LOG_ERROR("convertToGif: CreateProcess failed, error=" << GetLastError());
         return false;
     }
 
     CloseHandle(pi.hThread);
-    WaitForSingleObject(pi.hProcess, INFINITE);
+
+    // Wait with timeout (120 seconds for potentially long GIF conversions)
+    std::string killError;
+    bool exited = waitForProcessWithTimeout(pi.hProcess, 120000, killError);
 
     DWORD exitCode = 1;
     GetExitCodeProcess(pi.hProcess, &exitCode);
     CloseHandle(pi.hProcess);
 
+    if (!exited)
+    {
+        SRU_LOG_ERROR("convertToGif: " << killError);
+        return false;
+    }
+
     std::error_code ec;
-    return exitCode == 0 && fs::is_regular_file(outputPath, ec);
+    bool result = exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
+    if (!result)
+    {
+        SRU_LOG_ERROR("convertToGif: ffmpeg exited with code " << exitCode);
+    }
+    return result;
 }
 
 } // namespace ucf::utilities::screenrecording

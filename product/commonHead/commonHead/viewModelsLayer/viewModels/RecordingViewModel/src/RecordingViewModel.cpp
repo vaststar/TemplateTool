@@ -100,6 +100,11 @@ void RecordingViewModel::setAppDir(const std::string& appDir)
     m_ffmpegPath = ScreenRecordingUtils::findFFmpegPath(appDir);
 }
 
+bool RecordingViewModel::hasScreenRecordingPermission() const
+{
+    return ScreenRecordingUtils::hasScreenRecordingPermission();
+}
+
 // ============================================================================
 // Recording Control — delegate to agent
 // ============================================================================

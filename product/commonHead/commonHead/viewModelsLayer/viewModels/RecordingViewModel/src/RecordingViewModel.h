@@ -46,6 +46,7 @@ public:
     int getDuration() const override;
     bool isFFmpegAvailable() const override;
     std::string getFFmpegPath() const override;
+    bool hasScreenRecordingPermission() const override;
     void setAppDir(const std::string& appDir) override;
 
     // === Settings ===

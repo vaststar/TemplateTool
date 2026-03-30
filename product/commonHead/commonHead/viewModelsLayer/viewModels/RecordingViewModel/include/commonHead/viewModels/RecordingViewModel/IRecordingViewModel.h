@@ -71,6 +71,10 @@ public:
     [[nodiscard]] virtual bool isFFmpegAvailable() const = 0;
     [[nodiscard]] virtual std::string getFFmpegPath() const = 0;
 
+    /// Check if the application has screen recording permission (macOS).
+    /// Always returns true on Windows and Linux.
+    [[nodiscard]] virtual bool hasScreenRecordingPermission() const = 0;
+
     /// Set the application binary directory for FFmpeg discovery.
     /// Must be called after initViewModel() and before startRecording().
     virtual void setAppDir(const std::string& appDir) = 0;

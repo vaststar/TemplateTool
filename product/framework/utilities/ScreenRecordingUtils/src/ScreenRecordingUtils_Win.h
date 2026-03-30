@@ -8,6 +8,7 @@ class ScreenRecordingUtils_Win final
 {
 public:
     static std::string findFFmpegPath(const std::string& appDir);
+    static bool hasScreenRecordingPermission() { return true; }
     static RecordingSession startRecording(const RecordingConfig& config);
     static RecordingResult stopRecording(RecordingSession& session);
     static bool pauseRecording(const RecordingSession& session);
