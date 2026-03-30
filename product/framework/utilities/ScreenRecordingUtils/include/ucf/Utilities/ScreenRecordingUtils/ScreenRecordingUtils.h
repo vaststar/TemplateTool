@@ -43,6 +43,11 @@ struct Utilities_EXPORT RecordingSession
     std::string waylandTempPath;        ///< Temp WebM path recorded by GStreamer
     std::string ffmpegPath;             ///< FFmpeg path for post-conversion on Wayland
 
+    // Region crop (applied via FFmpeg after recording stops)
+    bool isRegion = false;
+    int regionX = 0, regionY = 0;
+    int regionW = 0, regionH = 0;
+
     [[nodiscard]] bool isValid() const
     {
         return pid > 0 || isWaylandScreencast;

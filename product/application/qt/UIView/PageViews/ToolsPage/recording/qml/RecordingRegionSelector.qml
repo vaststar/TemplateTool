@@ -13,11 +13,8 @@ import UTComponent
  */
 Window {
     id: selectorWindow
-    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
-    x: Screen.virtualX
-    y: Screen.virtualY
-    width: Screen.width
-    height: Screen.height
+    flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    visibility: Window.FullScreen
     visible: false
     color: "transparent"
 
@@ -81,21 +78,20 @@ Window {
         return String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0')
     }
 
-    // Screen-absolute coordinates for the selected region
-    property real absSelX: Screen.virtualX + selX
-    property real absSelY: Screen.virtualY + selY
+    // On Linux Portal, recording captures one monitor starting at (0,0) so
+    // window-local coords are correct.  On Windows/macOS the capture APIs use
+    // global screen coords, so we add the monitor origin offset.
+    property real absSelX: Qt.platform.os === "linux" ? selX : Screen.virtualX + selX
+    property real absSelY: Qt.platform.os === "linux" ? selY : Screen.virtualY + selY
 
     function startRegionRecording() {
         isRecording = true
 
-        // Keep the window fullscreen but make it click-through.
-        // On Wayland, shrinking/moving a window is unreliable — the compositor
-        // may reposition it, causing the "jump to fullscreen" or "shifted position"
-        // bugs.  Instead we stay fullscreen + transparent-for-input and draw
-        // the recording border at the selection coordinates inside this window.
+        // Stay fullscreen but make click-through so the user can interact
+        // with the desktop.  The red border/corner markers are drawn OUTSIDE
+        // the selection rect, so FFmpeg post-crop excludes them.
         selectorWindow.flags = Qt.FramelessWindowHint
                              | Qt.WindowStaysOnTopHint
-                             | Qt.Tool
                              | Qt.WindowTransparentForInput
         selectorWindow.color = "transparent"
 

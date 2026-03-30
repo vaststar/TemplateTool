@@ -173,7 +173,7 @@ FocusScope {
                 onClicked: {
                     if (modeCombo.currentValue === "region") {
                         activeRegionSelector = regionSelectorComponent.createObject(null)
-                        activeRegionSelector.show()
+                        activeRegionSelector.showFullScreen()
                     } else {
                         pendingFullscreenBar = true
                         controller.startRecording("fullscreen")

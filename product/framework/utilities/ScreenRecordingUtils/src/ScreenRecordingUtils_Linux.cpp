@@ -63,9 +63,12 @@ static std::string execCmd(const std::string& cmd)
 }
 
 /// Convert a video file to a different container/codec using FFmpeg.
+/// Optionally crops to region (x, y, w, h) if cropW > 0.
 static bool convertVideoFormat(const std::string& ffmpegPath,
                                const std::string& inputPath,
-                               const std::string& outputPath)
+                               const std::string& outputPath,
+                               int cropX = 0, int cropY = 0,
+                               int cropW = 0, int cropH = 0)
 {
     if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
     {
@@ -78,18 +81,53 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
     }
 
     std::string ext = fs::path(outputPath).extension().string();
+
+    // Build video filter: crop + any format-specific pixel format
+    std::string vfArgs;
     std::string codecArgs;
+
+    // libx264 requires even dimensions; round crop size down to even
+    int cw = cropW & ~1;
+    int ch = cropH & ~1;
+
     if (ext == ".mp4" || ext == ".mov")
     {
-        codecArgs = "-c:v libx264 -preset fast -crf 22 -pix_fmt yuv420p";
+        if (cw > 0 && ch > 0)
+        {
+            vfArgs = "-vf \"crop=" + std::to_string(cw) + ":"
+                     + std::to_string(ch) + ":"
+                     + std::to_string(cropX) + ":"
+                     + std::to_string(cropY) + ",format=yuv420p\"";
+        }
+        else
+        {
+            vfArgs = "-pix_fmt yuv420p";
+        }
+        codecArgs = "-c:v libx264 -preset fast -crf 22";
     }
     else
     {
+        if (cw > 0 && ch > 0)
+        {
+            vfArgs = "-vf \"crop=" + std::to_string(cw) + ":"
+                     + std::to_string(ch) + ":"
+                     + std::to_string(cropX) + ":"
+                     + std::to_string(cropY) + "\"";
+        }
         codecArgs = "-c copy";
+        // If we have a crop filter, we can't use copy — need re-encode
+        if (!vfArgs.empty())
+        {
+            codecArgs = "-c:v libvpx -b:v 2M";
+        }
     }
 
-    std::string cmd = "\"" + ffmpegPath + "\" -y -i \"" + inputPath
-                      + "\" " + codecArgs + " \"" + outputPath + "\" 2>&1";
+    std::string cmd = "\"" + ffmpegPath + "\" -y -i \"" + inputPath + "\"";
+    if (!vfArgs.empty())
+    {
+        cmd += " " + vfArgs;
+    }
+    cmd += " " + codecArgs + " \"" + outputPath + "\" 2>&1";
     execCmd(cmd);
 
     std::error_code ec;
@@ -117,7 +155,7 @@ Protocol (stdout):
 
 Stops on SIGTERM or SIGINT.
 """
-import sys, os, signal, subprocess, time, re
+import sys, os, signal, subprocess, time
 
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
@@ -127,16 +165,6 @@ DBusGMainLoop(set_as_default=True)
 
 output_path = sys.argv[1]
 fps = int(sys.argv[2])
-
-# Optional region crop parameters
-crop_region = None
-if len(sys.argv) >= 7:
-    crop_region = {
-        'x': int(sys.argv[3]),
-        'y': int(sys.argv[4]),
-        'w': int(sys.argv[5]),
-        'h': int(sys.argv[6]),
-    }
 
 # Token persistence file (persist_mode=2 lets portal skip the dialog)
 TOKEN_FILE = os.path.expanduser('~/.cache/portal_screencast_token')
@@ -156,23 +184,6 @@ def save_restore_token(token):
     except Exception:
         pass
 
-def probe_buffer_size(node_id):
-    """Capture one frame from PipeWire to detect actual buffer dimensions."""
-    try:
-        r = subprocess.run(
-            ['gst-launch-1.0', '-v',
-             'pipewiresrc', f'path={node_id}', 'num-buffers=1', '!',
-             'fakesink'],
-            capture_output=True, text=True, timeout=5
-        )
-        for line in r.stderr.splitlines():
-            m = re.search(r'width=\(int\)(\d+).*?height=\(int\)(\d+)', line)
-            if m:
-                return (int(m.group(1)), int(m.group(2)))
-    except Exception:
-        pass
-    return None
-
 bus = dbus.SessionBus()
 
 portal_obj = bus.get_object('org.freedesktop.portal.Desktop',
@@ -182,7 +193,6 @@ screencast_iface = dbus.Interface(portal_obj, 'org.freedesktop.portal.ScreenCast
 request_counter = 0
 session_path = None
 pw_node_id = None
-stream_size = None  # (width, height) from portal
 gst_proc = None
 loop = GLib.MainLoop()
 
@@ -199,7 +209,7 @@ def emit_error(msg):
     loop.quit()
 
 def on_start_response(response, results):
-    global pw_node_id, stream_size
+    global pw_node_id
     if response != 0:
         emit_error(f'Start rejected (response={response})')
         return
@@ -214,47 +224,13 @@ def on_start_response(response, results):
         emit_error('No streams returned by portal')
         return
     pw_node_id = int(streams[0][0])
-
-    # Extract stream resolution from properties
-    props = streams[0][1] if len(streams[0]) > 1 else {}
-    sz = props.get('size', None)
-    if sz and len(sz) == 2:
-        stream_size = (int(sz[0]), int(sz[1]))
-
     launch_gstreamer()
 
 def launch_gstreamer():
     global gst_proc
     ext = os.path.splitext(output_path)[1].lower()
 
-    # Build crop element if region is requested
-    crop_element = ''
-    if crop_region:
-        # Probe actual PipeWire buffer dimensions (physical pixels)
-        actual_size = probe_buffer_size(pw_node_id)
-        # Fallback to portal-reported size if probe fails
-        buf_w, buf_h = actual_size if actual_size else (stream_size if stream_size else (0, 0))
-
-        if buf_w > 0 and buf_h > 0:
-            # Compute scale factor: portal's size is logical, buffer may be physical (HiDPI)
-            sx, sy = 1.0, 1.0
-            if stream_size and stream_size[0] > 0 and stream_size[1] > 0:
-                sx = buf_w / stream_size[0]
-                sy = buf_h / stream_size[1]
-
-            # Scale crop coordinates from logical to physical pixel space
-            cx = int(crop_region['x'] * sx)
-            cy = int(crop_region['y'] * sy)
-            cw = int(crop_region['w'] * sx)
-            ch = int(crop_region['h'] * sy)
-
-            top = max(0, cy)
-            left = max(0, cx)
-            bottom = max(0, buf_h - cy - ch)
-            right = max(0, buf_w - cx - cw)
-            if top > 0 or left > 0 or bottom > 0 or right > 0:
-                crop_element = f'videocrop top={top} left={left} bottom={bottom} right={right} ! '
-
+    # Always record full screen; region cropping is done via FFmpeg after recording.
     # Build encode pipeline based on target format
     if ext == '.webm':
         encode = 'videoconvert ! vp8enc deadline=1 cpu-used=4 min_quantizer=10 max_quantizer=50 ! webmmux'
@@ -266,7 +242,6 @@ def launch_gstreamer():
     pipeline = (
         f'pipewiresrc path={pw_node_id} do-timestamp=true keepalive-time=1000 ! '
         f'videorate ! video/x-raw,framerate={fps}/1 ! '
-        f'{crop_element}'
         f'{encode} ! filesink location={output_path}'
     )
 
@@ -482,23 +457,8 @@ RecordingSession ScreenRecordingUtils_Linux::startRecording(const RecordingConfi
         }
 
         std::string fpsStr = std::to_string(config.fps);
-
-        if (config.isRegion && config.regionW > 0 && config.regionH > 0)
-        {
-            std::string rxStr = std::to_string(config.regionX);
-            std::string ryStr = std::to_string(config.regionY);
-            std::string rwStr = std::to_string(config.regionW);
-            std::string rhStr = std::to_string(config.regionH);
-            execlp("python3", "python3", scriptPath.c_str(),
-                   tempWebm.c_str(), fpsStr.c_str(),
-                   rxStr.c_str(), ryStr.c_str(),
-                   rwStr.c_str(), rhStr.c_str(), nullptr);
-        }
-        else
-        {
-            execlp("python3", "python3", scriptPath.c_str(),
-                   tempWebm.c_str(), fpsStr.c_str(), nullptr);
-        }
+        execlp("python3", "python3", scriptPath.c_str(),
+               tempWebm.c_str(), fpsStr.c_str(), nullptr);
         _exit(127);
     }
 
@@ -506,6 +466,16 @@ RecordingSession ScreenRecordingUtils_Linux::startRecording(const RecordingConfi
     close(pipeFds[1]); // close write end
     session.pid = pid;
     session.stdinFd = pipeFds[0]; // repurpose stdinFd as read-end of stdout pipe
+
+    // Store region info for post-recording FFmpeg crop
+    if (config.isRegion && config.regionW > 0 && config.regionH > 0)
+    {
+        session.isRegion = true;
+        session.regionX = config.regionX;
+        session.regionY = config.regionY;
+        session.regionW = config.regionW;
+        session.regionH = config.regionH;
+    }
 
     // Wait for "RECORDING" or "ERROR:" from the child (with timeout)
     // The portal will show a permission dialog on first use, so give generous timeout.
@@ -672,9 +642,9 @@ RecordingResult ScreenRecordingUtils_Linux::stopRecording(RecordingSession& sess
         }
     }
 
-    // If the requested format is WebM, just rename the temp file
+    // If the requested format is WebM and no region crop, just rename the temp file
     std::string targetExt = fs::path(session.outputPath).extension().string();
-    if (targetExt == ".webm")
+    if (targetExt == ".webm" && !session.isRegion)
     {
         std::error_code ec;
         fs::rename(session.waylandTempPath, session.outputPath, ec);
@@ -691,10 +661,20 @@ RecordingResult ScreenRecordingUtils_Linux::stopRecording(RecordingSession& sess
         return {false, {}, "Failed to move recording file"};
     }
 
-    // Convert webm → target format (mp4, mov, etc.)
+    // Convert webm → target format (and apply region crop if needed)
+    int cx = 0, cy = 0, cw = 0, ch = 0;
+    if (session.isRegion && session.regionW > 0 && session.regionH > 0)
+    {
+        cx = session.regionX;
+        cy = session.regionY;
+        cw = session.regionW;
+        ch = session.regionH;
+    }
+
     bool ok = convertVideoFormat(session.ffmpegPath,
                                  session.waylandTempPath,
-                                 session.outputPath);
+                                 session.outputPath,
+                                 cx, cy, cw, ch);
     std::error_code ec;
     fs::remove(session.waylandTempPath, ec);
 

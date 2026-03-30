@@ -1329,43 +1329,43 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingRegionSelector</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="246"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="242"/>
         <source>Start recording this region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="262"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="258"/>
         <source>Draw a new selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="275"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="271"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="296"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="292"/>
         <source>Click and drag to select recording region
 Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="394"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="390"/>
         <source>Resume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="394"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="390"/>
         <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="406"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="402"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="413"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="409"/>
         <source>Abort recording</source>
         <translation type="unfinished"></translation>
     </message>
