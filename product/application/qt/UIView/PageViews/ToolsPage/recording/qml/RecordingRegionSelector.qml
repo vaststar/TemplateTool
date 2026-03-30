@@ -96,8 +96,9 @@ Window {
     property real absSelX: Qt.platform.os === "linux" ? selX : Screen.virtualX + selX
     property real absSelY: Qt.platform.os === "linux" ? selY : Screen.virtualY + selY
     // FFmpeg screen capture backends expect physical pixels. Qt/QML coordinates
-    // are logical pixels on HiDPI displays (e.g. macOS Retina), so convert.
-    property real captureScale: Qt.platform.os === "osx" ? Screen.devicePixelRatio : 1.0
+    // are logical pixels on HiDPI displays (e.g. macOS Retina, Windows 125%+),
+    // so convert.  Linux portal captures start at (0,0) in logical coords.
+    property real captureScale: Qt.platform.os === "linux" ? 1.0 : Screen.devicePixelRatio
     property int captureSelX: Math.round(absSelX * captureScale)
     property int captureSelY: Math.round(absSelY * captureScale)
     property int captureSelW: Math.max(2, Math.round(selW * captureScale))
