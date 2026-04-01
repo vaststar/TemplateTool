@@ -3,13 +3,15 @@
 /// @file detail/Traits.h
 /// @brief Type traits, compile-time utilities, and concepts for the FSM.
 
+#include "Transitions.h"
+
 #include <concepts>
 #include <cstddef>
 #include <string_view>
 #include <type_traits>
 #include <variant>
 
-namespace fsm {
+namespace ucf::utilities::fsm {
 
 // ============================================================================
 // Type traits
@@ -88,30 +90,87 @@ constexpr std::string_view type_name() noexcept
 #endif
 }
 
+// ============================================================================
+// Transition result type traits
+// ============================================================================
+
+template <typename T>
+struct is_transition_to : std::false_type {};
+
+template <typename S>
+struct is_transition_to<TransitionTo<S>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool is_transition_to_v = is_transition_to<T>::value;
+
+/// Check whether T is a valid onEvent return type.
+/// Valid: Stay, Defer, SelfTransition, TransitionTo<S>,
+/// or std::variant (OneOf) whose every alternative is itself valid.
+template <typename T>
+struct is_valid_transition_result : std::bool_constant<
+    std::is_same_v<T, Stay> ||
+    std::is_same_v<T, Defer> ||
+    std::is_same_v<T, SelfTransition> ||
+    is_transition_to_v<T>> {};
+
+template <typename... Ts>
+struct is_valid_transition_result<std::variant<Ts...>>
+    : std::bool_constant<(is_valid_transition_result<Ts>::value && ...)> {};
+
+template <typename T>
+inline constexpr bool is_valid_transition_result_v = is_valid_transition_result<T>::value;
+
 } // namespace detail
 
 // ============================================================================
 // Concepts
 // ============================================================================
 
+/// Helper: true if Context is NoContext.
+template <typename C>
+concept IsNoContext = std::is_same_v<C, NoContext>;
+
+/// True if T is a valid FSM transition result type.
+template <typename T>
+concept ValidTransitionResult = detail::is_valid_transition_result_v<std::remove_cvref_t<T>>;
+
+/// True if State has an onEvent member (with or without Context).
 template <typename State, typename Context, typename Event>
-concept EventHandler = requires(State& s, Context& ctx, const Event& e) {
-    s.onEvent(ctx, e);
-};
+concept EventHandler =
+    (IsNoContext<Context> &&
+     requires(State& s, const Event& e) { s.onEvent(e); }) ||
+    (!IsNoContext<Context> &&
+     requires(State& s, Context& ctx, const Event& e) { s.onEvent(ctx, e); });
+
+/// True if State has onEvent AND its return type is a valid transition result.
+template <typename State, typename Context, typename Event>
+concept ValidEventHandler = EventHandler<State, Context, Event> &&
+    ((IsNoContext<Context> &&
+      requires(State& s, const Event& e) {
+          { s.onEvent(e) } -> ValidTransitionResult;
+      }) ||
+     (!IsNoContext<Context> &&
+      requires(State& s, Context& ctx, const Event& e) {
+          { s.onEvent(ctx, e) } -> ValidTransitionResult;
+      }));
 
 template <typename State, typename Context>
-concept HasOnEnter = requires(State& s, Context& ctx) {
-    { s.onEnter(ctx) } -> std::same_as<void>;
-};
+concept HasOnEnter =
+    (IsNoContext<Context> &&
+     requires(State& s) { { s.onEnter() } -> std::same_as<void>; }) ||
+    (!IsNoContext<Context> &&
+     requires(State& s, Context& ctx) { { s.onEnter(ctx) } -> std::same_as<void>; });
 
 template <typename State, typename Context>
-concept HasOnExit = requires(State& s, Context& ctx) {
-    { s.onExit(ctx) } -> std::same_as<void>;
-};
+concept HasOnExit =
+    (IsNoContext<Context> &&
+     requires(State& s) { { s.onExit() } -> std::same_as<void>; }) ||
+    (!IsNoContext<Context> &&
+     requires(State& s, Context& ctx) { { s.onExit(ctx) } -> std::same_as<void>; });
 
 template <typename State>
 concept HasStateName = requires {
     { State::name() } -> std::convertible_to<std::string_view>;
 };
 
-} // namespace fsm
+} // namespace ucf::utilities::fsm

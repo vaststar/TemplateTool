@@ -8,7 +8,7 @@
 /// To enable logging, define FSM_LOG_HEADER *before* including StateMachine.h:
 ///
 ///   #define FSM_LOG_HEADER "MyFSMLoggerDefine.h"
-///   #include <ucf/Utilities/FSM/StateMachine.h>
+///   #include <ucf/Utilities/StateMachineUtils/StateMachine.h>
 ///
 /// The header file referenced by FSM_LOG_HEADER should define:
 ///   FSM_LOG_DEBUG(msg)

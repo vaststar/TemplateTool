@@ -7,7 +7,10 @@
 #include <utility>
 #include <variant>
 
-namespace fsm {
+namespace ucf::utilities::fsm {
+
+/// Sentinel type indicating no context is needed.
+struct NoContext {};
 
 // ============================================================================
 // Transition result types
@@ -43,4 +46,4 @@ struct TransitionTo
 template <typename... Results>
 using OneOf = std::variant<Results...>;
 
-} // namespace fsm
+} // namespace ucf::utilities::fsm

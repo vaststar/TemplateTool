@@ -7,12 +7,13 @@
 /// Callables that fit within BufSize bytes are stored inline (SBO);
 /// larger callables fall back to heap allocation transparently.
 
+#include <cassert>
 #include <cstddef>
 #include <new>
 #include <type_traits>
 #include <utility>
 
-namespace fsm::detail {
+namespace ucf::utilities::fsm::detail {
 
 template <typename Signature, std::size_t BufSize = 64>
 class MoveOnlyFunction;
@@ -130,8 +131,9 @@ public:
 
     R operator()(Args... args)
     {
+        assert(m_invoke && "Calling empty MoveOnlyFunction");
         return m_invoke(m_buf, std::forward<Args>(args)...);
     }
 };
 
-} // namespace fsm::detail
+} // namespace ucf::utilities::fsm::detail

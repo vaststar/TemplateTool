@@ -6,10 +6,17 @@
 /// Design notes:
 ///   - States are plain types; no base class is required.
 ///   - Events are plain types; no common event base is required.
-///   - Context is owned by the FSM via std::unique_ptr.
+///   - Context is borrowed by reference (FSM does not own it).
+///   - Use fsm::NoContext if no shared context is needed.
 ///   - The FSM is thread-safe by default.
 ///   - Async callbacks should prefer postEvent(...); update() drains the queue.
 ///   - processEvent(...) is immediate but still serialized and re-entrant safe.
+///
+/// Callback constraints (onEnter, onExit, onEvent, onTransition, visitor):
+///   - Must be short and non-blocking; they execute under the FSM mutex.
+///   - Must not acquire external locks that could also be held when calling the FSM.
+///   - Visitors passed to withContext/visitState must not return references or
+///     pointers to internal objects; the lock is released when the call returns.
 
 #include "detail/Transitions.h"
 #include "detail/Traits.h"
@@ -19,22 +26,24 @@
 #include <cassert>
 #include <deque>
 #include <functional>
-#include <memory>
 #include <mutex>
-#include <stdexcept>
+#include <string>
+#include <string_view>
 
-namespace fsm {
+namespace ucf::utilities::fsm {
 
 // ============================================================================
 // StateMachine
 // ============================================================================
 
-template <typename Context, typename... States>
+template <typename Context = NoContext, typename... States>
 class StateMachine
 {
     static_assert(sizeof...(States) >= 1, "StateMachine requires at least one state.");
     static_assert((std::is_move_constructible_v<States> && ...),
                   "All states must be move-constructible.");
+
+    static constexpr bool has_context = !std::is_same_v<Context, NoContext>;
 
 public:
     using StateVariant = std::variant<States...>;
@@ -42,7 +51,12 @@ public:
     using TransResult = std::variant<Stay, Defer,
                                      SelfTransition, TransitionTo<States>...>;
 
-    using TransitionCB = std::function<void(std::size_t fromIdx, std::size_t toIdx)>;
+    using TransitionCB = std::function<void(
+        std::size_t fromIdx, std::size_t toIdx,
+        std::string_view fromName, std::string_view toName)>;
+    using UnhandledEventCB = std::function<void(
+        std::size_t stateIdx, std::string_view stateName,
+        std::string_view eventName)>;
 
     static constexpr std::size_t state_count = sizeof...(States);
 
@@ -61,56 +75,39 @@ private:
     };
 
 public:
+    // ── Constructors: No-Context mode ────────────────────────────────
+
     StateMachine()
-        requires(std::default_initializable<Context> && std::default_initializable<InitialState>)
-        : m_ctx(std::make_unique<Context>())
-        , m_state(InitialState{})
+        requires(!has_context && std::default_initializable<InitialState>)
+        : m_state(InitialState{})
     {
         invokeOnEnter();
     }
 
-    explicit StateMachine(Context ctx)
-        requires std::default_initializable<InitialState>
-        : m_ctx(std::make_unique<Context>(std::move(ctx)))
-        , m_state(InitialState{})
+    template <typename InitState>
+        requires(!has_context && detail::is_one_of_v<std::decay_t<InitState>, States...>)
+    explicit StateMachine(InitState init)
+        : m_state(std::move(init))
     {
         invokeOnEnter();
     }
 
-    explicit StateMachine(std::unique_ptr<Context> ctx)
-        requires std::default_initializable<InitialState>
-        : m_ctx(std::move(ctx))
-        , m_state(InitialState{})
-    {
-        assert(m_ctx && "StateMachine requires a non-null Context.");
-        invokeOnEnter();
-    }
+    // ── Constructors: With-Context mode (borrowed reference) ─────────
 
-    template <typename... CtxArgs>
-    explicit StateMachine(std::in_place_t, CtxArgs&&... ctxArgs)
-        requires std::default_initializable<InitialState>
-        : m_ctx(std::make_unique<Context>(std::forward<CtxArgs>(ctxArgs)...))
+    explicit StateMachine(Context& ctx)
+        requires(has_context && std::default_initializable<InitialState>)
+        : m_ctx(&ctx)
         , m_state(InitialState{})
     {
         invokeOnEnter();
     }
 
     template <typename InitState>
-        requires detail::is_one_of_v<std::decay_t<InitState>, States...>
-    StateMachine(Context ctx, InitState init)
-        : m_ctx(std::make_unique<Context>(std::move(ctx)))
+        requires(has_context && detail::is_one_of_v<std::decay_t<InitState>, States...>)
+    StateMachine(Context& ctx, InitState init)
+        : m_ctx(&ctx)
         , m_state(std::move(init))
     {
-        invokeOnEnter();
-    }
-
-    template <typename InitState>
-        requires detail::is_one_of_v<std::decay_t<InitState>, States...>
-    StateMachine(std::unique_ptr<Context> ctx, InitState init)
-        : m_ctx(std::move(ctx))
-        , m_state(std::move(init))
-    {
-        assert(m_ctx && "StateMachine requires a non-null Context.");
         invokeOnEnter();
     }
 
@@ -118,7 +115,18 @@ public:
     StateMachine& operator=(const StateMachine&) = delete;
     StateMachine(StateMachine&&) = delete;
     StateMachine& operator=(StateMachine&&) = delete;
-    ~StateMachine() = default;
+
+    ~StateMachine()
+    {
+        try {
+            std::lock_guard lock(m_mutex);
+            invokeOnExit();
+        } catch (...) {
+            FSM_LOG_ERROR(logPrefix() << "exception in onExit during destruction");
+        }
+    }
+
+    // ── Public API: Event Processing ─────────────────────────────────
 
     template <typename Event>
     void processEvent(Event&& event)
@@ -176,6 +184,8 @@ public:
         forceTransition(InitialState{});
     }
 
+    // ── Public API: State Introspection ──────────────────────────────
+
     template <typename S>
     [[nodiscard]] bool isIn() const
     {
@@ -212,16 +222,7 @@ public:
     [[nodiscard]] std::string_view currentStateName() const
     {
         std::lock_guard lock(m_mutex);
-        return std::visit(
-            [](const auto& s) -> std::string_view
-            {
-                using S = std::decay_t<decltype(s)>;
-                if constexpr (HasStateName<S>)
-                    return S::name();
-                else
-                    return detail::type_name<S>();
-            },
-            m_state);
+        return currentStateNameUnlocked();
     }
 
     template <typename S>
@@ -253,6 +254,7 @@ public:
 
     template <typename Visitor>
     decltype(auto) withContext(Visitor&& visitor)
+        requires has_context
     {
         std::lock_guard lock(m_mutex);
         return std::forward<Visitor>(visitor)(*m_ctx);
@@ -260,9 +262,10 @@ public:
 
     template <typename Visitor>
     decltype(auto) withContext(Visitor&& visitor) const
+        requires has_context
     {
         std::lock_guard lock(m_mutex);
-        return std::forward<Visitor>(visitor)(*m_ctx);
+        return std::forward<Visitor>(visitor)(std::as_const(*m_ctx));
     }
 
     template <typename Visitor>
@@ -279,13 +282,36 @@ public:
         return std::visit(std::forward<Visitor>(visitor), m_state);
     }
 
+    // ── Public API: Callbacks & Configuration ────────────────────────
+
     void onTransition(TransitionCB cb)
     {
         std::lock_guard lock(m_mutex);
         m_onTransition = std::move(cb);
     }
 
+    void onUnhandledEvent(UnhandledEventCB cb)
+    {
+        std::lock_guard lock(m_mutex);
+        m_onUnhandledEvent = std::move(cb);
+    }
+
+    void setName(std::string name)
+    {
+        std::lock_guard lock(m_mutex);
+        m_name = std::move(name);
+        updateLogPrefix();
+    }
+
+    [[nodiscard]] std::string name() const
+    {
+        std::lock_guard lock(m_mutex);
+        return m_name;
+    }
+
 private:
+    // ── Private: Event Queue Management ─────────────────────────────
+
     template <typename Event>
     void enqueuePendingEvent(Event&& event)
     {
@@ -318,21 +344,21 @@ private:
 
     void movePostedToPending()
     {
-        while (!m_postedActions.empty())
-        {
-            m_pendingActions.push_back(std::move(m_postedActions.front()));
-            m_postedActions.pop_front();
-        }
+        m_pendingActions.insert(m_pendingActions.end(),
+            std::make_move_iterator(m_postedActions.begin()),
+            std::make_move_iterator(m_postedActions.end()));
+        m_postedActions.clear();
     }
 
     void replayDeferredEvents()
     {
-        while (!m_deferredActions.empty())
-        {
-            m_pendingActions.push_back(std::move(m_deferredActions.front()));
-            m_deferredActions.pop_front();
-        }
+        m_pendingActions.insert(m_pendingActions.end(),
+            std::make_move_iterator(m_deferredActions.begin()),
+            std::make_move_iterator(m_deferredActions.end()));
+        m_deferredActions.clear();
     }
+
+    // ── Private: Event Drain ─────────────────────────────────────────
 
     void drainPendingActions()
     {
@@ -349,24 +375,42 @@ private:
             {
                 action(*this);
             }
-            catch (const std::exception& e)
+            catch (const std::exception& ex)
             {
-                FSM_LOG_ERROR("FSM action exception: " << e.what()
+                (void)ex;
+                FSM_LOG_ERROR(logPrefix() << "action exception: " << ex.what()
                               << " in state: " << currentStateNameUnlocked());
+                m_pendingActions.clear();
+                break;
             }
             catch (...)
             {
-                FSM_LOG_ERROR("FSM action unknown exception"
+                FSM_LOG_ERROR(logPrefix() << "action unknown exception"
                               << " in state: " << currentStateNameUnlocked());
+                m_pendingActions.clear();
+                break;
             }
         }
     }
 
+    // ── Private: Event Dispatch ──────────────────────────────────────
+    template <typename S, typename Event>
+    auto dispatchEvent(S& state, const Event& event)
+    {
+        if constexpr (has_context)
+            return state.onEvent(*m_ctx, event);
+        else
+            return state.onEvent(event);
+    }
     template <typename Event>
     void processEventImpl(Event&& event)
     {
         using EventT = std::decay_t<Event>;
         const EventT& eventRef = event;
+
+        FSM_LOG_DEBUG(logPrefix() << "processing event: "
+                      << detail::type_name<EventT>()
+                      << " in state: " << currentStateNameUnlocked());
 
         auto result = std::visit(
             [&](auto& currentState) -> TransResult
@@ -374,11 +418,21 @@ private:
                 using S = std::decay_t<decltype(currentState)>;
                 if constexpr (EventHandler<S, Context, EventT>)
                 {
-                    auto r = currentState.onEvent(*m_ctx, eventRef);
+                    static_assert(ValidEventHandler<S, Context, EventT>,
+                        "onEvent() return type must be Stay, Defer, SelfTransition, "
+                        "TransitionTo<S>, or OneOf<...> of these types.");
+                    auto r = dispatchEvent(currentState, eventRef);
                     return toTransResult(std::move(r));
                 }
                 else
                 {
+                    FSM_LOG_WARN(logPrefix() << "unhandled event: "
+                                 << detail::type_name<EventT>()
+                                 << " in state: " << currentStateNameUnlocked());
+                    if (m_onUnhandledEvent)
+                        m_onUnhandledEvent(m_state.index(),
+                                           currentStateNameUnlocked(),
+                                           detail::type_name<EventT>());
                     return Stay{};
                 }
             },
@@ -419,6 +473,26 @@ private:
         }
     }
 
+    // ── Private: Transition Execution ────────────────────────────────
+
+    template <typename EmplaceFn>
+    void executeTransition(EmplaceFn&& emplace, [[maybe_unused]] std::string_view label)
+    {
+        const auto fromIdx = m_state.index();
+        const auto fromName = currentStateNameUnlocked();
+        invokeOnExit();
+
+        std::forward<EmplaceFn>(emplace)();
+
+        const auto toIdx = m_state.index();
+        const auto toName = currentStateNameUnlocked();
+        FSM_LOG_INFO(logPrefix() << label << ": "
+                     << fromName << " -> " << toName);
+        invokeOnEnter();
+        notifyTransition(fromIdx, toIdx, fromName, toName);
+        replayDeferredEvents();
+    }
+
     template <typename Event>
     void applyTransition(TransResult& result, Event&& event)
     {
@@ -432,35 +506,20 @@ private:
                 }
                 else if constexpr (std::is_same_v<T, Defer>)
                 {
-                    FSM_LOG_DEBUG("FSM event deferred in state: "
+                    FSM_LOG_DEBUG(logPrefix() << "event deferred in state: "
                                   << currentStateNameUnlocked());
                     enqueueDeferredEvent(std::forward<Event>(event));
                 }
                 else if constexpr (std::is_same_v<T, SelfTransition>)
                 {
-                    const auto idx = m_state.index();
-                    const auto name = currentStateNameUnlocked();
-                    FSM_LOG_INFO("FSM self-transition: " << name);
-                    invokeOnExit();
-                    invokeOnEnter();
-                    notifyTransition(idx, idx);
-                    replayDeferredEvents();
+                    executeTransition([]{}, "self-transition");
                 }
                 else
                 {
-                    const auto fromIdx = m_state.index();
-                    const auto fromName = currentStateNameUnlocked();
-                    invokeOnExit();
-
                     using TargetState = typename T::target_state_type;
-                    m_state.template emplace<TargetState>(std::move(t.state));
-
-                    const auto toName = currentStateNameUnlocked();
-                    FSM_LOG_INFO("FSM transition: "
-                                 << fromName << " -> " << toName);
-                    invokeOnEnter();
-                    notifyTransition(fromIdx, m_state.index());
-                    replayDeferredEvents();
+                    executeTransition(
+                        [&]{ m_state.template emplace<TargetState>(std::move(t.state)); },
+                        "transition");
                 }
             },
             result);
@@ -470,18 +529,12 @@ private:
     void forceTransitionImpl(TargetState&& newState)
     {
         using StateT = std::decay_t<TargetState>;
-
-        const auto fromIdx = m_state.index();
-        const auto fromName = currentStateNameUnlocked();
-        invokeOnExit();
-        m_state.template emplace<StateT>(std::forward<TargetState>(newState));
-        const auto toName = currentStateNameUnlocked();
-        FSM_LOG_INFO("FSM force transition: "
-                     << fromName << " -> " << toName);
-        invokeOnEnter();
-        notifyTransition(fromIdx, m_state.index());
-        replayDeferredEvents();
+        executeTransition(
+            [&]{ m_state.template emplace<StateT>(std::forward<TargetState>(newState)); },
+            "force transition");
     }
+
+    // ── Private: Lifecycle Hooks ─────────────────────────────────────
 
     void invokeOnEnter()
     {
@@ -490,7 +543,12 @@ private:
             {
                 using S = std::decay_t<decltype(s)>;
                 if constexpr (HasOnEnter<S, Context>)
-                    s.onEnter(*m_ctx);
+                {
+                    if constexpr (has_context)
+                        s.onEnter(*m_ctx);
+                    else
+                        s.onEnter();
+                }
             },
             m_state);
     }
@@ -502,16 +560,24 @@ private:
             {
                 using S = std::decay_t<decltype(s)>;
                 if constexpr (HasOnExit<S, Context>)
-                    s.onExit(*m_ctx);
+                {
+                    if constexpr (has_context)
+                        s.onExit(*m_ctx);
+                    else
+                        s.onExit();
+                }
             },
             m_state);
     }
 
-    void notifyTransition(std::size_t from, std::size_t to)
+    void notifyTransition(std::size_t from, std::size_t to,
+                          std::string_view fromName, std::string_view toName)
     {
         if (m_onTransition)
-            m_onTransition(from, to);
+            m_onTransition(from, to, fromName, toName);
     }
+
+    // ── Private: Utilities ──────────────────────────────────────────
 
     [[nodiscard]] std::string_view currentStateNameUnlocked() const
     {
@@ -527,13 +593,31 @@ private:
             m_state);
     }
 
+    [[nodiscard]] const std::string& logPrefix() const noexcept
+    {
+        return m_logPrefix;
+    }
+
+    void updateLogPrefix()
+    {
+        if (m_name.empty())
+            m_logPrefix = "FSM ";
+        else
+            m_logPrefix = "FSM[" + m_name + "] ";
+    }
+
 private:
+    // ── Private: Data Members ───────────────────────────────────────
+
     mutable std::recursive_mutex m_mutex;
 
-    std::unique_ptr<Context> m_ctx;
+    Context* m_ctx = nullptr;
     StateVariant m_state;
+    std::string m_name;
+    std::string m_logPrefix = "FSM ";
 
     TransitionCB m_onTransition;
+    UnhandledEventCB m_onUnhandledEvent;
 
     std::deque<Action> m_postedActions;
     std::deque<Action> m_deferredActions;
@@ -542,4 +626,4 @@ private:
     bool m_processing = false;
 };
 
-} // namespace fsm
+} // namespace ucf::utilities::fsm
