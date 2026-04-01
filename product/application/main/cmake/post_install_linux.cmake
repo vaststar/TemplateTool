@@ -185,13 +185,14 @@ else()
         message(STATUS "  linuxdeployqt not found, performing manual Qt plugin copy")
     endif()
 
-    # Manual fallback: copy essential Qt plugins
+    # Manual fallback: copy Qt shared libraries and essential plugins
     if(SKIP_QT_DEPLOY)
+        set(QT_LIB_SRC "${QT_ROOT}/lib")
         set(QT_PLUGINS_SRC "${QT_ROOT}/plugins")
         set(QT_QML_SRC "${QT_ROOT}/qml")
         set(PLUGINS_DST "${BIN_DIR}")
 
-        # Essential plugin directories for a Qt Quick application
+        # ---- Step A: Copy essential Qt plugins first ----
         set(ESSENTIAL_PLUGINS
             platforms
             platforminputcontexts
@@ -223,6 +224,8 @@ else()
             endif()
         endforeach()
 
+        message(STATUS "  Manual plugin copy: ${PLUGIN_COPIED_COUNT} plugins copied")
+
         # Copy QML modules if available
         if(EXISTS "${QT_QML_SRC}")
             set(QML_DST "${PLUGINS_DST}/qml")
@@ -232,7 +235,65 @@ else()
             endif()
         endif()
 
-        message(STATUS "  Manual plugin copy: ${PLUGIN_COPIED_COUNT} plugins copied")
+        # ---- Step B: Scan ALL binaries (app + project libs + plugins + QML) for Qt/ICU deps ----
+        set(QT_LIB_COPIED_COUNT 0)
+        set(BINARIES_TO_SCAN "${BIN_DIR}/${APP_NAME}")
+        file(GLOB PROJECT_LIBS "${LIB_DIR}/*.so")
+        file(GLOB_RECURSE PLUGIN_LIBS "${BIN_DIR}/*.so")
+        list(APPEND BINARIES_TO_SCAN ${PROJECT_LIBS} ${PLUGIN_LIBS})
+
+        set(ALL_QT_SONAMES "")
+        set(ALL_ICU_SONAMES "")
+        set(ENV{LD_LIBRARY_PATH} "${QT_LIB_SRC}:${LIB_DIR}:${BIN_DIR}:$ENV{LD_LIBRARY_PATH}")
+
+        foreach(bin ${BINARIES_TO_SCAN})
+            if(NOT EXISTS "${bin}")
+                continue()
+            endif()
+            execute_process(
+                COMMAND ldd "${bin}"
+                OUTPUT_VARIABLE LDD_OUT
+                ERROR_QUIET
+            )
+            string(REGEX MATCHALL "libQt6[A-Za-z0-9_]+\\.so\\.[0-9]+" QT_MATCHES "${LDD_OUT}")
+            string(REGEX MATCHALL "libicu[a-z0-9]+\\.so\\.[0-9]+" ICU_MATCHES "${LDD_OUT}")
+            list(APPEND ALL_QT_SONAMES ${QT_MATCHES})
+            list(APPEND ALL_ICU_SONAMES ${ICU_MATCHES})
+        endforeach()
+        list(REMOVE_DUPLICATES ALL_QT_SONAMES)
+        list(REMOVE_DUPLICATES ALL_ICU_SONAMES)
+
+        # Copy Qt shared libraries
+        foreach(soname ${ALL_QT_SONAMES})
+            file(GLOB QT_SO_FILES "${QT_LIB_SRC}/${soname}*")
+            foreach(qt_so ${QT_SO_FILES})
+                get_filename_component(qt_so_name "${qt_so}" NAME)
+                set(dest_path "${LIB_DIR}/${qt_so_name}")
+                if(NOT EXISTS "${dest_path}")
+                    file(COPY "${qt_so}" DESTINATION "${LIB_DIR}" FOLLOW_SYMLINK_CHAIN)
+                    math(EXPR QT_LIB_COPIED_COUNT "${QT_LIB_COPIED_COUNT} + 1")
+                endif()
+            endforeach()
+        endforeach()
+
+        message(STATUS "  Qt shared libraries copied: ${QT_LIB_COPIED_COUNT}")
+
+        # Copy ICU libraries that Qt depends on (from Qt's lib dir)
+        set(ICU_LIB_COPIED_COUNT 0)
+        foreach(soname ${ALL_ICU_SONAMES})
+            file(GLOB ICU_SO_FILES "${QT_LIB_SRC}/${soname}*")
+            foreach(icu_so ${ICU_SO_FILES})
+                get_filename_component(icu_so_name "${icu_so}" NAME)
+                set(dest_path "${LIB_DIR}/${icu_so_name}")
+                if(NOT EXISTS "${dest_path}")
+                    file(COPY "${icu_so}" DESTINATION "${LIB_DIR}" FOLLOW_SYMLINK_CHAIN)
+                    math(EXPR ICU_LIB_COPIED_COUNT "${ICU_LIB_COPIED_COUNT} + 1")
+                endif()
+            endforeach()
+        endforeach()
+        if(ICU_LIB_COPIED_COUNT GREATER 0)
+            message(STATUS "  ICU libraries copied: ${ICU_LIB_COPIED_COUNT}")
+        endif()
     endif()
 endif()
 

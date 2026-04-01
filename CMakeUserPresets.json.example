@@ -75,5 +75,31 @@
       "name": "local-linux-debug",
       "configurePreset": "local-linux-debug"
     }
+  ],
+  "testPresets": [
+    {
+      "name": "local-macos-release",
+      "configurePreset": "local-macos-release"
+    },
+    {
+      "name": "local-macos-debug",
+      "configurePreset": "local-macos-debug"
+    },
+    {
+      "name": "local-windows-msvc-release",
+      "configurePreset": "local-windows-msvc-release"
+    },
+    {
+      "name": "local-windows-msvc-debug",
+      "configurePreset": "local-windows-msvc-debug"
+    },
+    {
+      "name": "local-linux-release",
+      "configurePreset": "local-linux-release"
+    },
+    {
+      "name": "local-linux-debug",
+      "configurePreset": "local-linux-debug"
+    }
   ]
 }

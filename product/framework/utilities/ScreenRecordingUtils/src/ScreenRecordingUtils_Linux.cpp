@@ -470,6 +470,7 @@ std::string ScreenRecordingUtils_Linux::findFFmpegPath(const std::string& appDir
 {
     std::vector<std::string> candidates = {
         appDir + "/ffmpeg",
+        appDir + "/../lib/ffmpeg",
         "/usr/bin/ffmpeg",
         "/usr/local/bin/ffmpeg"
     };

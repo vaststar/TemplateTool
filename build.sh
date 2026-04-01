@@ -4,7 +4,16 @@ set -e
 # ==========================================
 # Basic configuration
 # ==========================================
-PRESET="${1:-macos-release}"
+if [[ -z "$1" ]]; then
+    case "$(uname -s)" in
+        Linux*)  DEFAULT_PRESET="linux-release" ;;
+        Darwin*) DEFAULT_PRESET="macos-release" ;;
+        *)       DEFAULT_PRESET="macos-release" ;;
+    esac
+else
+    DEFAULT_PRESET="$1"
+fi
+PRESET="$DEFAULT_PRESET"
 ACTION="${2:-all}"
 
 # Handle help request
