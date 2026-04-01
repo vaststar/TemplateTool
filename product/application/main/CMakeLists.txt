@@ -1,5 +1,6 @@
 include(BuildRCFileModule)
 include(BuildBundlePListModule)
+include(BuildLinuxDesktopModule)
 project(application VERSION 1.0 LANGUAGES CXX)
 
 set(MAIN_ENTRY "mainEntry")
@@ -53,6 +54,12 @@ elseif(WIN32)
 else()
     message(STATUS "  Platform: Linux")
     add_executable(${MAIN_ENTRY} main.cpp)
+
+    BuildLinuxDesktopModule(
+        MODULE_NAME ${MAIN_ENTRY}
+        FILE_DESCRIPTION "TemplateTool Application Executable"
+        ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/logo.png
+    )
 endif()
 
 # ==========================================

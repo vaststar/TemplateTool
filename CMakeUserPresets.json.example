@@ -101,5 +101,37 @@
       "name": "local-linux-debug",
       "configurePreset": "local-linux-debug"
     }
+  ],
+  "packagePresets": [
+    {
+      "name": "local-macos-release",
+      "configurePreset": "local-macos-release",
+      "generators": ["TGZ", "DragNDrop"]
+    },
+    {
+      "name": "local-macos-debug",
+      "configurePreset": "local-macos-debug",
+      "generators": ["TGZ"]
+    },
+    {
+      "name": "local-windows-msvc-release",
+      "configurePreset": "local-windows-msvc-release",
+      "generators": ["ZIP", "NSIS"]
+    },
+    {
+      "name": "local-windows-msvc-debug",
+      "configurePreset": "local-windows-msvc-debug",
+      "generators": ["ZIP"]
+    },
+    {
+      "name": "local-linux-release",
+      "configurePreset": "local-linux-release",
+      "generators": ["TGZ", "DEB", "RPM"]
+    },
+    {
+      "name": "local-linux-debug",
+      "configurePreset": "local-linux-debug",
+      "generators": ["TGZ"]
+    }
   ]
 }

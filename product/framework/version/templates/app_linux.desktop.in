@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=@PRODUCT_NAME@
+GenericName=@FILE_DESCRIPTION@
+Comment=@PRODUCT_DESCRIPTION@
+Exec=@INTERNAL_NAME@
+Icon=@INTERNAL_NAME@
+Terminal=false
+Categories=Development;Utility;
+Version=@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@
