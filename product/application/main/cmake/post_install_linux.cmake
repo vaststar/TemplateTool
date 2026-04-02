@@ -5,6 +5,7 @@
 # - Moves all .so files to lib/ next to the binary
 # - Deploys runtime payloads (proxy_addon, ffmpeg, etc.)
 # - Runs linuxdeployqt or manual Qt plugin copy for Qt dependencies
+# - Creates bin/lib -> ../lib symlink for QML plugin RUNPATH resolution
 # - Verifies deployment results
 
 set(INSTALL_PREFIX "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
@@ -300,8 +301,27 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Checking deployment results
+# Step 4: Create bin/lib -> ../lib symlink
 # ==========================================
+# Qt QML plugins have RUNPATH = $ORIGIN/../../../lib which resolves
+# relative to the plugin location (e.g. bin/qml/QtQuick/Controls/).
+# This lands at bin/lib/ instead of the actual lib/ directory.
+# A symlink bridges this gap without patching every plugin.
+message(STATUS "[4/5] Creating lib symlink...")
+set(_bin_lib_link "${BIN_DIR}/lib")
+if(NOT EXISTS "${_bin_lib_link}")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "../lib" "${_bin_lib_link}")
+    message(STATUS "  Created: bin/lib -> ../lib")
+else()
+    message(STATUS "  bin/lib already exists, skipping")
+endif()
+
+message(STATUS "")
+
+# ==========================================
+# Step 5: Deployment summary
+# ==========================================
+message(STATUS "[5/5] Checking deployment results...")
 message(STATUS "")
 message(STATUS "  Deployment Summary:")
 
@@ -336,22 +356,6 @@ foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
         message(STATUS "    Resource file deployed: ${payload_file}")
     endif()
 endforeach()
-
-# ==========================================
-# Step 4: Create bin/lib -> ../lib symlink
-# ==========================================
-# Qt QML plugins have RUNPATH = $ORIGIN/../../../lib which resolves
-# relative to the plugin location (e.g. bin/qml/QtQuick/Controls/).
-# This lands at bin/lib/ instead of the actual lib/ directory.
-# A symlink bridges this gap without patching every plugin.
-message(STATUS "[4/4] Creating lib symlink...")
-set(_bin_lib_link "${BIN_DIR}/lib")
-if(NOT EXISTS "${_bin_lib_link}")
-    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "../lib" "${_bin_lib_link}")
-    message(STATUS "  Created: bin/lib -> ../lib")
-else()
-    message(STATUS "  bin/lib already exists, skipping")
-endif()
 
 message(STATUS "")
 message(STATUS "========================================")

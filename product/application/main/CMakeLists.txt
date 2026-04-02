@@ -87,19 +87,24 @@ message(STATUS "  Dependencies: MainUI")
 # ==========================================
 # Platform-specific installation
 # ==========================================
+# Common variables passed to all post-install scripts
+set(_COMMON_VARS "
+    set(APP_NAME \"${MAIN_ENTRY}\")
+    set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
+    set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
+    set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
+")
+set(_RESOURCE_VARS "
+    set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")
+    set(RESOURCE_FILE_PAYLOADS \"ffmpeg;ffprobe\")
+")
+
 if(APPLE)
     install(TARGETS ${MAIN_ENTRY}
         EXPORT ${MAIN_ENTRY}Targets
         BUNDLE DESTINATION bin
     )
-    install(CODE "
-        set(APP_NAME \"${MAIN_ENTRY}\")
-        set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")
-        set(RESOURCE_FILE_PAYLOADS \"ffmpeg;ffprobe\")
-        set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
-        set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
-        set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
-    ")
+    install(CODE "${_COMMON_VARS} ${_RESOURCE_VARS}")
     install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_macosx.cmake")
     message(STATUS "  Install: bin/${MAIN_ENTRY}.app + post_install_macosx.cmake")
 
@@ -108,12 +113,7 @@ elseif(WIN32)
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
-    install(CODE "
-        set(APP_NAME \"${MAIN_ENTRY}\")
-        set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
-        set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
-        set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
-    ")
+    install(CODE "${_COMMON_VARS}")
     install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_windows.cmake")
     message(STATUS "  Install: bin/ + post_install_windows.cmake")
 
@@ -122,15 +122,7 @@ else()
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
-
-    install(CODE "
-        set(APP_NAME \"${MAIN_ENTRY}\")
-        set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")
-        set(RESOURCE_FILE_PAYLOADS \"ffmpeg;ffprobe\")
-        set(TEMPLATE_TOOL_SOURCE_DIR \"${CMAKE_SOURCE_DIR}\")
-        set(TEMPLATE_TOOL_BINARY_DIR \"${CMAKE_BINARY_DIR}\")
-        set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
-    ")
+    install(CODE "${_COMMON_VARS} ${_RESOURCE_VARS}")
     install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_linux.cmake")
     message(STATUS "  Install: bin/ + post_install_linux.cmake")
 endif()

@@ -24,10 +24,10 @@ elseif(UNIX)
         OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
     )
     # Install to private /opt directory to avoid polluting /usr/bin with
-    # plugins, qml files, etc.  .desktop and icons are installed to
-    # /usr/share/ via absolute paths in BuildLinuxDesktopModule.
+    # plugins, qml files, etc.  .desktop and icons are relocated to
+    # /usr/share/ by cpack_pre_build.cmake during packaging.
     set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/template-factory")
 endif()
 
-# include CPack 必须在最后
+# Must be last — CPack reads all CPACK_* variables at this point
 include(CPack)

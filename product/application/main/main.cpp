@@ -7,6 +7,9 @@
 #include <climits>
 #include <libgen.h>
 
+// Set QT_PLUGIN_PATH and QML2_IMPORT_PATH so Qt finds plugins and QML
+// modules relative to the binary location.  Shared library loading is
+// handled by RPATH + a bin/lib -> ../lib symlink for transitive deps.
 static void setupLinuxLibraryPaths()
 {
     char buf[PATH_MAX];
