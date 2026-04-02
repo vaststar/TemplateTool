@@ -1,0 +1,24 @@
+# ==========================================
+# macOS CPack Configuration (Auto-generated from product_info.json)
+# ==========================================
+# This file parallels:
+#   Windows:  cpack_windows_config.cmake.in → .cmake (ZIP/NSIS package metadata)
+#   macOS:    cpack_macos_config.cmake.in   → .cmake (TGZ/DragNDrop package metadata)
+#   Linux:    cpack_linux_config.cmake.in   → .cmake (DEB/RPM package metadata)
+#
+# Template variables are filled by GenerateAppInfoFiles from the same
+# product_info.json used by RC and PList generation.
+# ==========================================
+
+# ── Common ────────────────────────────────────────────────────────────────
+set(CPACK_PACKAGE_NAME          "@PRODUCT_NAME@")
+set(CPACK_PACKAGE_VERSION       "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@")
+set(CPACK_PACKAGE_CONTACT       "@COMPANY_NAME@")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "@PRODUCT_DESCRIPTION@")
+set(CPACK_PACKAGE_VENDOR        "@COMPANY_NAME@")
+
+# ── Generators ────────────────────────────────────────────────────────────
+set(CPACK_GENERATOR "TGZ;DragNDrop")
+
+# ── DragNDrop ─────────────────────────────────────────────────────────────
+set(CPACK_DMG_VOLUME_NAME       "@PRODUCT_NAME@ @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@")

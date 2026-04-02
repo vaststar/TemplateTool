@@ -1,24 +1,36 @@
 
-# 包信息
-set(CPACK_PACKAGE_NAME "mainEntry")
-set(CPACK_PACKAGE_VERSION "0.0.0")
-set(CPACK_PACKAGE_CONTACT "47029316@qq.com")
+# Remove development files (include/, cmake/) before packaging
+set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cpack_pre_build.cmake")
 
-# 选择生成器 (可改成 "TGZ" "NSIS" "DEB" "RPM" 等)
+# Auto-generate CPack config from product_info.json (all platforms)
+include(BuildCPackModule)
+set(CPACK_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/templates")
+
 if(WIN32)
-    set(CPACK_GENERATOR "ZIP;NSIS")
+    BuildCPackModule(
+        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_windows_config.cmake.in"
+        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
+    )
 elseif(APPLE)
-    set(CPACK_GENERATOR "TGZ;DragNDrop")
+    BuildCPackModule(
+        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_macos_config.cmake.in"
+        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
+    )
 elseif(UNIX)
-    # Auto-generate Linux CPack config from product_info.json
-    # (parallels Windows .rc via BuildRCFileModule and macOS Info.plist via BuildBundlePListModule)
-    include(BuildLinuxCPackModule)
-    BuildLinuxCPackModule(OUTPUT_CONFIG_VAR LINUX_CPACK_CONFIG)
-    if(EXISTS "${LINUX_CPACK_CONFIG}")
-        include(${LINUX_CPACK_CONFIG})
-    else()
-        set(CPACK_GENERATOR "TGZ")
-    endif()
+    BuildCPackModule(
+        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_linux_config.cmake.in"
+        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
+    )
+endif()
+
+if(PLATFORM_CPACK_CONFIG AND EXISTS "${PLATFORM_CPACK_CONFIG}")
+    include(${PLATFORM_CPACK_CONFIG})
+else()
+    # Fallback defaults
+    set(CPACK_PACKAGE_NAME "mainEntry")
+    set(CPACK_PACKAGE_VERSION "0.0.0")
+    set(CPACK_PACKAGE_CONTACT "47029316@qq.com")
+    set(CPACK_GENERATOR "TGZ")
 endif()
 
 # include CPack 必须在最后

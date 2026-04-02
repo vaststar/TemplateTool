@@ -17,14 +17,16 @@ if(APPLE)
         FILE_DESCRIPTION "TemplateTool Application Executable"
     )
 
-    # Get Qt lib path for INSTALL_RPATH (Qt6_DIR is like .../lib/cmake/Qt6)
+    # Get Qt lib path for BUILD_RPATH (Qt6_DIR is like .../lib/cmake/Qt6)
     get_filename_component(QT_LIB_DIR "${Qt6_DIR}/../.." ABSOLUTE)
 
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "logo"
-        INSTALL_RPATH "@executable_path/../Frameworks;${QT_LIB_DIR}"
+        INSTALL_RPATH "@executable_path/../Frameworks"
+        BUILD_RPATH "${QT_LIB_DIR}"
     )
-    message(STATUS "  RPATH: @executable_path/../Frameworks;${QT_LIB_DIR}")
+    message(STATUS "  INSTALL_RPATH: @executable_path/../Frameworks")
+    message(STATUS "  BUILD_RPATH: ${QT_LIB_DIR}")
 
     set(APP_ICON ${CMAKE_CURRENT_SOURCE_DIR}/logo.icns)
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")

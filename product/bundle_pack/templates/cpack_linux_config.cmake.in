@@ -11,7 +11,10 @@
 # ==========================================
 
 # ── Common ────────────────────────────────────────────────────────────────
-set(CPACK_PACKAGE_NAME          "@PRODUCT_NAME@")
+# DEB/RPM package names must be lowercase with no spaces (e.g. "template-factory")
+string(TOLOWER "@PRODUCT_NAME@" _CPACK_PKG_NAME)
+string(REPLACE " " "-" _CPACK_PKG_NAME "${_CPACK_PKG_NAME}")
+set(CPACK_PACKAGE_NAME          "${_CPACK_PKG_NAME}")
 set(CPACK_PACKAGE_VERSION       "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@")
 set(CPACK_PACKAGE_CONTACT       "@COMPANY_NAME@")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "@PRODUCT_DESCRIPTION@")
