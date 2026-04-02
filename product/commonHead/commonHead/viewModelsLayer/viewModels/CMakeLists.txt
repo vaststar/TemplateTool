@@ -109,6 +109,8 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ScreenRecordingUtils
     ScreenRecordingAgent
     ImageProcessUtils
+    CompressionUtils
+    ThreadPoolUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

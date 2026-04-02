@@ -8,9 +8,15 @@ include(GenerateAppInfoFiles)
 # Generates platform-specific CPack config from templates using the same
 # GenerateAppInfoFiles pipeline as RC/PList/.desktop generation.
 #
+# The generated config is read by cpack at packaging time via
+# CPACK_PROJECT_CONFIG_FILE, not at configure time. This avoids the
+# chicken-and-egg problem where version_meta.json is only available
+# after the first build.
+#
 # Usage:
 #   BuildCPackModule(
-#       TEMPLATE  /path/to/cpack_xxx_config.cmake.in
+#       TEMPLATE         /path/to/cpack_xxx_config.cmake.in
+#       PRE_BUILD_SCRIPT /path/to/cpack_pre_build.cmake  (optional)
 #       OUTPUT_CONFIG_VAR  MY_VAR
 #   )
 # ==========================================
@@ -18,7 +24,7 @@ function(BuildCPackModule)
     message(STATUS "====Start Build CPack Config Module====")
 
     set(options)
-    set(oneValueArg TEMPLATE OUTPUT_CONFIG_VAR)
+    set(oneValueArg TEMPLATE OUTPUT_CONFIG_VAR PRE_BUILD_SCRIPT)
     set(multiValueArgs)
     cmake_parse_arguments(MODULE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
 
@@ -38,8 +44,7 @@ function(BuildCPackModule)
     message(STATUS "  Template : ${MODULE_TEMPLATE}")
     message(STATUS "  Output   : ${CPACK_CONFIG_PATH}")
 
-    message(STATUS "***generate ${TEMPLATE_NAME}.cmake***")
-
+    # Build-time generation via add_custom_command
     generate_app_info_files(
         INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
         INPUT_JSON_TARGET ${GLOBAL_APP_VERSION_JSON_TARGET}
@@ -51,7 +56,17 @@ function(BuildCPackModule)
         OUTPUT_TARGET_VAR CPACK_CONFIG_TARGET
     )
 
-    # Export the generated config path to caller
+    # Tell CPack to read this file at cpack runtime (not configure time)
+    set(CPACK_PROJECT_CONFIG_FILE "${CPACK_CONFIG_PATH}" PARENT_SCOPE)
+    message(STATUS "  CPACK_PROJECT_CONFIG_FILE: ${CPACK_CONFIG_PATH}")
+
+    # Set pre-build script to strip dev files before packaging
+    if(MODULE_PRE_BUILD_SCRIPT AND EXISTS "${MODULE_PRE_BUILD_SCRIPT}")
+        set(CPACK_PRE_BUILD_SCRIPTS "${MODULE_PRE_BUILD_SCRIPT}" PARENT_SCOPE)
+        message(STATUS "  Pre-build: ${MODULE_PRE_BUILD_SCRIPT}")
+    endif()
+
+    # Export path for reference
     if(MODULE_OUTPUT_CONFIG_VAR)
         set(${MODULE_OUTPUT_CONFIG_VAR} ${CPACK_CONFIG_PATH} PARENT_SCOPE)
     endif()

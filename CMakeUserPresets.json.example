@@ -126,7 +126,7 @@
     {
       "name": "local-linux-release",
       "configurePreset": "local-linux-release",
-      "generators": ["TGZ", "DEB", "RPM"]
+      "generators": ["TGZ", "DEB"]
     },
     {
       "name": "local-linux-debug",

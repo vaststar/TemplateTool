@@ -36,13 +36,11 @@
   "buildPresets": [
     {
       "name": "linux-debug",
-      "configurePreset": "linux-debug",
-      "targets": ["mainEntry"]
+      "configurePreset": "linux-debug"
     },
     {
       "name": "linux-release",
-      "configurePreset": "linux-release",
-      "targets": ["mainEntry"]
+      "configurePreset": "linux-release"
     }
   ],
   "packagePresets": [
@@ -54,7 +52,7 @@
     {
       "name": "linux-release",
       "configurePreset": "linux-release",
-      "generators": ["TGZ", "DEB", "RPM"]
+      "generators": ["TGZ", "DEB"]
     }
   ],
   "testPresets": [

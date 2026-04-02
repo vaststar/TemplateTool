@@ -36,13 +36,11 @@
   "buildPresets": [
     {
       "name": "macos-debug",
-      "configurePreset": "macos-debug",
-      "targets": ["mainEntry"]
+      "configurePreset": "macos-debug"
     },
     {
       "name": "macos-release",
-      "configurePreset": "macos-release",
-      "targets": ["mainEntry"]
+      "configurePreset": "macos-release"
     }
   ],
   "packagePresets": [

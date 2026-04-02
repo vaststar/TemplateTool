@@ -15,26 +15,32 @@
 string(TOLOWER "@PRODUCT_NAME@" _CPACK_PKG_NAME)
 string(REPLACE " " "-" _CPACK_PKG_NAME "${_CPACK_PKG_NAME}")
 set(CPACK_PACKAGE_NAME          "${_CPACK_PKG_NAME}")
-set(CPACK_PACKAGE_VERSION       "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@")
+set(CPACK_PACKAGE_VERSION       "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@.@VERSION_BUILD@")
+set(CPACK_PACKAGE_FILE_NAME     "${_CPACK_PKG_NAME}-@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@.@VERSION_BUILD@-Linux")
 set(CPACK_PACKAGE_CONTACT       "@COMPANY_NAME@")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "@PRODUCT_DESCRIPTION@")
 set(CPACK_PACKAGE_VENDOR        "@COMPANY_NAME@")
 
-# ── Generators ────────────────────────────────────────────────────────────
-set(CPACK_GENERATOR "TGZ;DEB;RPM")
+# ── Install prefix ────────────────────────────────────────────────────────
+# Ensure files end up under /usr inside the package regardless of
+# CMAKE_INSTALL_PREFIX used for local development.
+set(CPACK_SET_DESTDIR ON)
+set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
 
 # ── DEB ───────────────────────────────────────────────────────────────────
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER  "@COMPANY_NAME@ <@COMPANY_NAME@>")
 set(CPACK_DEBIAN_PACKAGE_SECTION     "devel")
-set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "@PRODUCT_NAME@ @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@ - @PRODUCT_DESCRIPTION@")
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "@PRODUCT_NAME@ @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@.@VERSION_BUILD@ - @PRODUCT_DESCRIPTION@")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE    "https://github.com/user/@PRODUCT_NAME@")
-# Let dpkg-shlibdeps auto-detect .so dependencies when available;
-# fall back to an empty depends list on build machines without dpkg.
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS   ON)
+# Let dpkg-shlibdeps auto-detect .so dependencies when available.
+# Disabled: the app bundles its own shared libs, so system-level dependency
+# tracking is not meaningful and may fail on minimal build machines.
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS   OFF)
 
 # ── RPM ───────────────────────────────────────────────────────────────────
 set(CPACK_RPM_PACKAGE_LICENSE   "Proprietary")
 set(CPACK_RPM_PACKAGE_GROUP     "Development/Tools")
-set(CPACK_RPM_PACKAGE_DESCRIPTION "@PRODUCT_NAME@ @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@ - @PRODUCT_DESCRIPTION@")
+set(CPACK_RPM_PACKAGE_DESCRIPTION "@PRODUCT_NAME@ @VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@.@VERSION_BUILD@ - @PRODUCT_DESCRIPTION@")
 set(CPACK_RPM_PACKAGE_URL       "https://github.com/user/@PRODUCT_NAME@")
+set(CPACK_RPM_PACKAGE_RELOCATABLE OFF)
 # RPM auto-detects shared library dependencies by default.

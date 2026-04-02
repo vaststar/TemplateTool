@@ -49,24 +49,20 @@
     {
       "name": "windows-msvc-debug",
       "configurePreset": "windows-msvc-debug",
-      "configuration": "Debug",
-      "targets": ["mainEntry"]
+      "configuration": "Debug"
     },
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
-      "configuration": "Release",
-      "targets": ["mainEntry"]
+      "configuration": "Release"
     },
     {
       "name": "windows-mingw-debug",
-      "configurePreset": "windows-mingw-debug",
-      "targets": ["mainEntry"]
+      "configurePreset": "windows-mingw-debug"
     },
     {
       "name": "windows-mingw-release",
-      "configurePreset": "windows-mingw-release",
-      "targets": ["mainEntry"]
+      "configurePreset": "windows-mingw-release"
     }
   ],
   "packagePresets": [
