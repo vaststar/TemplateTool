@@ -3,9 +3,8 @@
 # ==========================================
 # Runs inside CPack's staging directory before the final archive.
 # Responsibilities:
-#   1. Strip development-only files (headers, cmake exports)
-#   2. (Linux) Relocate .desktop / icons to /usr/share/
-#   3. (Linux) Create /usr/bin wrapper script
+#   1. (Linux) Relocate .desktop / icons to /usr/share/
+#   2. (Linux) Create /usr/bin wrapper script
 # ==========================================
 
 set(STAGING_DIR "${CPACK_TEMPORARY_INSTALL_DIRECTORY}")
@@ -13,21 +12,7 @@ set(_prefix "${CPACK_PACKAGING_INSTALL_PREFIX}")
 set(_prefix_in_staging "${STAGING_DIR}${_prefix}")
 
 # ==========================================
-# 1. Strip development files (headers, cmake exports)
-# ==========================================
-# Explicitly target known dev directories rather than glob-recursing,
-# which would follow the bin/lib -> ../lib symlink and accidentally
-# act on lib/cmake/ through the symlink path.
-foreach(_dev_dir "include" "cmake" "lib/cmake")
-    set(_target "${_prefix_in_staging}/${_dev_dir}")
-    if(EXISTS "${_target}")
-        file(REMOVE_RECURSE "${_target}")
-        message(STATUS "[cpack_pre_build] Removed: ${_target}")
-    endif()
-endforeach()
-
-# ==========================================
-# 2. Relocate .desktop and icons to /usr/share/
+# 1. Relocate .desktop and icons to /usr/share/
 # ==========================================
 # When the prefix is outside /usr (e.g. /opt/...), .desktop and icon
 # files land under <prefix>/share/ which desktop environments don't
@@ -71,7 +56,7 @@ if(EXISTS "${_pkg_share}")
 endif()
 
 # ==========================================
-# 3. Create /usr/bin wrapper script
+# 2. Create /usr/bin wrapper script
 # ==========================================
 # A thin shell wrapper that exec's the real binary, allowing the app
 # to live in a private prefix while remaining accessible via PATH.
