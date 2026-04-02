@@ -29,7 +29,10 @@ function(BuildLinuxDesktopModule)
     )
     add_dependencies(${MODULE_MODULE_NAME} ${DESKTOP_FILE_TARGET})
 
-    # Install .desktop file to standard XDG location
+    # Install .desktop and icon relative to CMAKE_INSTALL_PREFIX.
+    # For local dev installs this goes to <prefix>/share/applications/.
+    # For DEB packaging, cpack_pre_build.cmake relocates them to /usr/share/
+    # so GNOME/KDE can discover them regardless of CPACK_PACKAGING_INSTALL_PREFIX.
     install(FILES ${DESKTOP_FILE_PATH}
         DESTINATION share/applications
     )

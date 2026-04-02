@@ -57,6 +57,15 @@ else()
     message(STATUS "  Platform: Linux")
     add_executable(${MAIN_ENTRY} main.cpp)
 
+    # Set RPATH so the binary finds .so libs without LD_LIBRARY_PATH
+    # $ORIGIN     = same dir as binary (bin/)
+    # $ORIGIN/../lib = sibling lib/ dir
+    set_target_properties(${MAIN_ENTRY} PROPERTIES
+        INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
+        BUILD_WITH_INSTALL_RPATH OFF
+    )
+    message(STATUS "  INSTALL_RPATH: $ORIGIN;$ORIGIN/../lib")
+
     BuildLinuxDesktopModule(
         MODULE_NAME ${MAIN_ENTRY}
         FILE_DESCRIPTION "TemplateTool Application Executable"
@@ -113,6 +122,7 @@ else()
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
+
     install(CODE "
         set(APP_NAME \"${MAIN_ENTRY}\")
         set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")

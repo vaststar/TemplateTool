@@ -23,6 +23,16 @@ elseif(UNIX)
         PRE_BUILD_SCRIPT "${CPACK_PRE_BUILD}"
         OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
     )
+    # Install to private /opt directory to avoid polluting /usr/bin with
+    # plugins, qml files, etc.  .desktop and icons are installed to
+    # /usr/share/ via absolute paths in BuildLinuxDesktopModule.
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/template-factory")
+
+    # DEB postinst/postrm: run ldconfig so the dynamic linker finds
+    # our libs in /opt/template-factory/lib/
+    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+        "${CMAKE_CURRENT_SOURCE_DIR}/deb/postinst;${CMAKE_CURRENT_SOURCE_DIR}/deb/postrm"
+    )
 endif()
 
 # include CPack 必须在最后

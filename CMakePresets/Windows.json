@@ -74,7 +74,7 @@
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
-      "generators": ["ZIP", "NSIS"]
+      "generators": ["ZIP"]
     },
     {
       "name": "windows-mingw-debug",
@@ -84,7 +84,7 @@
     {
       "name": "windows-mingw-release",
       "configurePreset": "windows-mingw-release",
-      "generators": ["ZIP", "NSIS"]
+      "generators": ["ZIP"]
     }
   ],
   "testPresets": [

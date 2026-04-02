@@ -21,12 +21,6 @@ set(CPACK_PACKAGE_CONTACT       "@COMPANY_NAME@")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "@PRODUCT_DESCRIPTION@")
 set(CPACK_PACKAGE_VENDOR        "@COMPANY_NAME@")
 
-# ── Install prefix ────────────────────────────────────────────────────────
-# Ensure files end up under /usr inside the package regardless of
-# CMAKE_INSTALL_PREFIX used for local development.
-set(CPACK_SET_DESTDIR ON)
-set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
-
 # ── DEB ───────────────────────────────────────────────────────────────────
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER  "@COMPANY_NAME@ <@COMPANY_NAME@>")
 set(CPACK_DEBIAN_PACKAGE_SECTION     "devel")

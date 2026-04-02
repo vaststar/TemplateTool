@@ -300,29 +300,6 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Step 4: Create launcher script
-# ==========================================
-message(STATUS "[4/4] Creating launcher script...")
-
-# Create a wrapper script that sets LD_LIBRARY_PATH
-set(LAUNCHER_SCRIPT "${INSTALL_PREFIX}/${APP_NAME}.sh")
-file(WRITE "${LAUNCHER_SCRIPT}"
-"#!/bin/bash
-# Auto-generated launcher for ${APP_NAME}
-# Sets up library paths for proper .so resolution
-
-SCRIPT_DIR=\"$(cd \"$(dirname \"$0\")\" && pwd)\"
-export LD_LIBRARY_PATH=\"$SCRIPT_DIR/lib:$SCRIPT_DIR/bin:$LD_LIBRARY_PATH\"
-export QT_PLUGIN_PATH=\"$SCRIPT_DIR/bin:$QT_PLUGIN_PATH\"
-export QML2_IMPORT_PATH=\"$SCRIPT_DIR/bin/qml:$QML2_IMPORT_PATH\"
-
-exec \"$SCRIPT_DIR/bin/${APP_NAME}\" \"$@\"
-")
-
-execute_process(COMMAND chmod +x "${LAUNCHER_SCRIPT}" ERROR_QUIET)
-message(STATUS "  Created launcher: ${APP_NAME}.sh")
-
-# ==========================================
 # Checking deployment results
 # ==========================================
 message(STATUS "")
@@ -365,5 +342,4 @@ message(STATUS "========================================")
 message(STATUS " Post-install completed!")
 message(STATUS " Binary  : ${BIN_DIR}/${APP_NAME}")
 message(STATUS " Libs    : ${LIB_DIR}")
-message(STATUS " Launcher: ${LAUNCHER_SCRIPT}")
 message(STATUS "========================================")

@@ -10,22 +10,89 @@
 # CPack populates CPACK_TEMPORARY_INSTALL_DIRECTORY before calling this script
 set(STAGING_DIR "${CPACK_TEMPORARY_INSTALL_DIRECTORY}")
 
-# Find the actual content root (may be nested under ALL_COMPONENTS_IN_ONE or directly)
-if(EXISTS "${STAGING_DIR}/ALL_COMPONENTS_IN_ONE")
-    set(CONTENT_ROOT "${STAGING_DIR}/ALL_COMPONENTS_IN_ONE")
-else()
-    set(CONTENT_ROOT "${STAGING_DIR}")
-endif()
-
-# Remove development files that should not be in runtime packages
-set(DEV_DIRS
-    "${CONTENT_ROOT}/include"
-    "${CONTENT_ROOT}/cmake"
-)
-
-foreach(dev_dir ${DEV_DIRS})
-    if(EXISTS "${dev_dir}")
-        file(REMOVE_RECURSE "${dev_dir}")
-        message(STATUS "[cpack_pre_build] Removed: ${dev_dir}")
+# Remove development files (headers, cmake exports) from all possible locations.
+# The actual layout depends on CPACK_PACKAGING_INSTALL_PREFIX:
+#   - Without prefix: STAGING_DIR/include/, STAGING_DIR/cmake/
+#   - With /usr prefix: STAGING_DIR/usr/include/, STAGING_DIR/usr/cmake/
+#   - With COMPONENTS: STAGING_DIR/ALL_COMPONENTS_IN_ONE/usr/include/, ...
+file(GLOB_RECURSE _all_dirs LIST_DIRECTORIES true "${STAGING_DIR}/*")
+foreach(_path ${_all_dirs})
+    if(IS_DIRECTORY "${_path}")
+        get_filename_component(_name "${_path}" NAME)
+        # Only remove top-level include/ and cmake/ directories
+        # (not nested ones inside bin/qml/ etc.)
+        get_filename_component(_parent "${_path}" DIRECTORY)
+        get_filename_component(_parent_name "${_parent}" NAME)
+        if((_name STREQUAL "include" OR _name STREQUAL "cmake") AND NOT _parent_name STREQUAL "bin")
+            if(EXISTS "${_path}")
+                file(REMOVE_RECURSE "${_path}")
+                message(STATUS "[cpack_pre_build] Removed: ${_path}")
+            endif()
+        endif()
     endif()
 endforeach()
+
+# ==========================================
+# Relocate .desktop and icons to /usr/share/ for GNOME/KDE discovery.
+# When the prefix is /opt/template-factory, these files end up under
+# /opt/template-factory/share/ which desktop environments don't search.
+# Move them to /usr/share/ inside the staging tree so the DEB installs
+# them to the correct system-wide location.
+# ==========================================
+set(_opt_share "${STAGING_DIR}/opt/template-factory/share")
+set(_usr_share "${STAGING_DIR}/usr/share")
+
+# Relocate .desktop files
+if(EXISTS "${_opt_share}/applications")
+    file(MAKE_DIRECTORY "${_usr_share}/applications")
+    file(GLOB _desktop_files "${_opt_share}/applications/*.desktop")
+    foreach(_f ${_desktop_files})
+        get_filename_component(_fname "${_f}" NAME)
+        file(RENAME "${_f}" "${_usr_share}/applications/${_fname}")
+        message(STATUS "[cpack_pre_build] Relocated: ${_fname} -> /usr/share/applications/")
+    endforeach()
+    file(REMOVE_RECURSE "${_opt_share}/applications")
+endif()
+
+# Relocate icons
+if(EXISTS "${_opt_share}/icons")
+    file(MAKE_DIRECTORY "${_usr_share}/icons")
+    file(GLOB_RECURSE _icon_files "${_opt_share}/icons/*")
+    foreach(_f ${_icon_files})
+        if(NOT IS_DIRECTORY "${_f}")
+            file(RELATIVE_PATH _rel "${_opt_share}/icons" "${_f}")
+            get_filename_component(_rel_dir "${_rel}" DIRECTORY)
+            file(MAKE_DIRECTORY "${_usr_share}/icons/${_rel_dir}")
+            file(RENAME "${_f}" "${_usr_share}/icons/${_rel}")
+            message(STATUS "[cpack_pre_build] Relocated: icons/${_rel} -> /usr/share/icons/${_rel}")
+        endif()
+    endforeach()
+    file(REMOVE_RECURSE "${_opt_share}/icons")
+endif()
+
+# Remove empty share/ dir under /opt if nothing left
+if(EXISTS "${_opt_share}")
+    file(GLOB _remaining "${_opt_share}/*")
+    if(NOT _remaining)
+        file(REMOVE_RECURSE "${_opt_share}")
+    endif()
+endif()
+
+# Create /usr/bin symlink for PATH accessibility
+set(_symlink_dir "${STAGING_DIR}/usr/bin")
+set(_symlink "${_symlink_dir}/mainEntry")
+set(_target "/opt/template-factory/bin/mainEntry")
+file(MAKE_DIRECTORY "${_symlink_dir}")
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "${_target}" "${_symlink}")
+message(STATUS "[cpack_pre_build] Symlink: /usr/bin/mainEntry -> ${_target}")
+
+# ==========================================
+# Add ldconfig configuration so the dynamic linker can find our libs
+# in /opt/template-factory/lib/. This is the standard approach for
+# applications installed outside /usr/lib (Chrome, VSCode, etc.).
+# The DEB postinst/postrm scripts run ldconfig to update the cache.
+# ==========================================
+set(_ldconf_dir "${STAGING_DIR}/etc/ld.so.conf.d")
+file(MAKE_DIRECTORY "${_ldconf_dir}")
+file(WRITE "${_ldconf_dir}/template-factory.conf" "/opt/template-factory/lib\n")
+message(STATUS "[cpack_pre_build] Created: /etc/ld.so.conf.d/template-factory.conf")

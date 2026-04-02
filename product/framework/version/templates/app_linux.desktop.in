@@ -1,10 +1,11 @@
 [Desktop Entry]
+Version=1.1
 Type=Application
 Name=@PRODUCT_NAME@
 GenericName=@FILE_DESCRIPTION@
 Comment=@PRODUCT_DESCRIPTION@
-Exec=@INTERNAL_NAME@
+Exec=/opt/template-factory/bin/@INTERNAL_NAME@
 Icon=@INTERNAL_NAME@
 Terminal=false
-Categories=Development;Utility;
-Version=@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@
+Categories=Development;
+StartupWMClass=@INTERNAL_NAME@
