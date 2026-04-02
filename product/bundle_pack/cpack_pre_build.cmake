@@ -78,21 +78,14 @@ if(EXISTS "${_opt_share}")
     endif()
 endif()
 
-# Create /usr/bin symlink for PATH accessibility
-set(_symlink_dir "${STAGING_DIR}/usr/bin")
-set(_symlink "${_symlink_dir}/mainEntry")
-set(_target "/opt/template-factory/bin/mainEntry")
-file(MAKE_DIRECTORY "${_symlink_dir}")
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "${_target}" "${_symlink}")
-message(STATUS "[cpack_pre_build] Symlink: /usr/bin/mainEntry -> ${_target}")
-
-# ==========================================
-# Add ldconfig configuration so the dynamic linker can find our libs
-# in /opt/template-factory/lib/. This is the standard approach for
-# applications installed outside /usr/lib (Chrome, VSCode, etc.).
-# The DEB postinst/postrm scripts run ldconfig to update the cache.
-# ==========================================
-set(_ldconf_dir "${STAGING_DIR}/etc/ld.so.conf.d")
-file(MAKE_DIRECTORY "${_ldconf_dir}")
-file(WRITE "${_ldconf_dir}/template-factory.conf" "/opt/template-factory/lib\n")
-message(STATUS "[cpack_pre_build] Created: /etc/ld.so.conf.d/template-factory.conf")
+# Create /usr/bin/mainEntry wrapper script.
+# Simply exec's the real binary — no environment hacks needed.
+# The bin/lib -> ../lib symlink handles library resolution via RUNPATH.
+set(_wrapper_dir "${STAGING_DIR}/usr/bin")
+file(MAKE_DIRECTORY "${_wrapper_dir}")
+file(WRITE "${_wrapper_dir}/mainEntry"
+"#!/bin/sh\n\
+exec /opt/template-factory/bin/mainEntry \"$@\"\n"
+)
+execute_process(COMMAND chmod 755 "${_wrapper_dir}/mainEntry")
+message(STATUS "[cpack_pre_build] Created: /usr/bin/mainEntry (wrapper script)")

@@ -337,6 +337,22 @@ foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
     endif()
 endforeach()
 
+# ==========================================
+# Step 4: Create bin/lib -> ../lib symlink
+# ==========================================
+# Qt QML plugins have RUNPATH = $ORIGIN/../../../lib which resolves
+# relative to the plugin location (e.g. bin/qml/QtQuick/Controls/).
+# This lands at bin/lib/ instead of the actual lib/ directory.
+# A symlink bridges this gap without patching every plugin.
+message(STATUS "[4/4] Creating lib symlink...")
+set(_bin_lib_link "${BIN_DIR}/lib")
+if(NOT EXISTS "${_bin_lib_link}")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink "../lib" "${_bin_lib_link}")
+    message(STATUS "  Created: bin/lib -> ../lib")
+else()
+    message(STATUS "  bin/lib already exists, skipping")
+endif()
+
 message(STATUS "")
 message(STATUS "========================================")
 message(STATUS " Post-install completed!")
