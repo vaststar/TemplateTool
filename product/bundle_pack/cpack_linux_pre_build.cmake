@@ -1,5 +1,5 @@
 # ==========================================
-# CPack Pre-Build Script (all platforms)
+# CPack Pre-Build Script (Linux only)
 # ==========================================
 # Runs inside CPack's staging directory before the final archive.
 # Responsibilities:
