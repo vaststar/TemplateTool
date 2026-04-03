@@ -11,6 +11,7 @@
 #include <ucf/Services/StabilityService/IStabilityService.h>
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/Services/UpgradeService/IUpgradeService.h>
 #include "ServiceFactoryLogger.h"
 
 namespace ucf::service{
@@ -78,5 +79,10 @@ std::shared_ptr<ucf::service::IPerformanceService> ServiceFactory::createPerform
 std::shared_ptr<ucf::service::IFeatureSettingsService> ServiceFactory::createFeatureSettingsService()
 {
     return ucf::service::IFeatureSettingsService::createInstance(mCoreFrameworkWPtr.lock());
+}
+
+std::shared_ptr<ucf::service::IUpgradeService> ServiceFactory::createUpgradeService()
+{
+    return ucf::service::IUpgradeService::createInstance(mCoreFrameworkWPtr.lock());
 }
 }

@@ -24,6 +24,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceFactory
+    UpgradeService
     ImageService
     DataWarehouseService
     ContactService
