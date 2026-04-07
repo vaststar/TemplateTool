@@ -1280,12 +1280,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="244"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="254"/>
         <source>Recordings folder not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="262"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="272"/>
         <source>File not found: %1</source>
         <translation type="unfinished"></translation>
     </message>

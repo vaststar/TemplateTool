@@ -100,6 +100,16 @@ bool RecordingController::isRecording() const { return m_isRecording; }
 int RecordingController::recordingDuration() const { return m_recordingDuration; }
 bool RecordingController::isPaused() const { return m_isPaused; }
 QString RecordingController::outputDirectory() const { return m_outputDirectory; }
+
+QString RecordingController::recordingsFolderUrl() const
+{
+    return QUrl::fromLocalFile(
+        (!m_outputDirectory.isEmpty() && QDir(m_outputDirectory).exists())
+            ? m_outputDirectory
+            : QStandardPaths::writableLocation(QStandardPaths::MoviesLocation)
+    ).toString();
+}
+
 QString RecordingController::videoFormat() const { return m_videoFormat; }
 int RecordingController::fps() const { return m_fps; }
 

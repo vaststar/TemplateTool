@@ -29,7 +29,7 @@ FocusScope {
         interval: 100
         repeat: false
         onTriggered: {
-            folderModel.folder = "file://" + controller.getDefaultSavePath()
+            folderModel.folder = controller.recordingsFolderUrl
         }
     }
 

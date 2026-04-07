@@ -33,6 +33,7 @@ class RecordingController : public UIViewController
 
     // Settings
     Q_PROPERTY(QString outputDirectory READ outputDirectory WRITE setOutputDirectory NOTIFY settingsChanged)
+    Q_PROPERTY(QString recordingsFolderUrl READ recordingsFolderUrl NOTIFY settingsChanged)
     Q_PROPERTY(QString videoFormat READ videoFormat WRITE setVideoFormat NOTIFY settingsChanged)
     Q_PROPERTY(int fps READ fps WRITE setFps NOTIFY settingsChanged)
 
@@ -49,6 +50,7 @@ public:
     int recordingDuration() const;
     bool isPaused() const;
     QString outputDirectory() const;
+    QString recordingsFolderUrl() const;
     QString videoFormat() const;
     int fps() const;
 

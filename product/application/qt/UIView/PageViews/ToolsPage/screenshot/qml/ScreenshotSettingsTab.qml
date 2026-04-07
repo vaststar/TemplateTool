@@ -169,7 +169,7 @@ Item {
     FolderDialog {
         id: folderDialog
         title: qsTr("Select Output Directory")
-        currentFolder: "file://" + (controller.outputDirectory || controller.getDefaultSavePath())
+        currentFolder: controller.screenshotsFolderUrl
         onAccepted: {
             controller.outputDirectory = selectedFolder
             outputDirField.text = controller.outputDirectory
