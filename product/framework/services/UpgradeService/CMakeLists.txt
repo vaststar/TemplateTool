@@ -19,8 +19,10 @@ set(MODULE_SOURCE_PRIVATE
     src/UpgradeManager.h
     src/UpgradeManager.cpp
     # FSM
+    src/fsm/UpgradeContext.h
     src/fsm/UpgradeEvents.h
     src/fsm/UpgradeStates.h
+    src/fsm/UpgradeTransitions.inl
     # Sub-managers
     src/check/UpgradeCheckManager.h
     src/check/UpgradeCheckManager.cpp

@@ -250,4 +250,19 @@ void UpgradeInstallManager::reset()
     UPGRADE_LOG_DEBUG("UpgradeInstallManager reset");
 }
 
+std::filesystem::path UpgradeInstallManager::getUpdaterSourcePath() const
+{
+    auto execPath = getCurrentExecutablePath();
+#if defined(__APPLE__)
+    // macOS: updater is at .app/Contents/MacOS/updater (same dir as main exe)
+    return execPath.parent_path() / "updater";
+#elif defined(_WIN32)
+    // Windows: updater.exe alongside the main executable
+    return execPath.parent_path() / "updater.exe";
+#else
+    // Linux: updater alongside the main executable
+    return execPath.parent_path() / "updater";
+#endif
+}
+
 } // namespace ucf::service

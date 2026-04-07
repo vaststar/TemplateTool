@@ -69,6 +69,9 @@ private:
     /// Get the temp directory used for upgrade operations
     [[nodiscard]] std::filesystem::path getTempDirectory() const;
 
+    /// Get the path to the installed updater binary (platform-aware)
+    [[nodiscard]] std::filesystem::path getUpdaterSourcePath() const;
+
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
 };

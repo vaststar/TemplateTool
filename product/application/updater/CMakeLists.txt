@@ -28,7 +28,13 @@ add_executable(updater
 target_compile_features(updater PRIVATE cxx_std_20)
 target_include_directories(updater PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Install alongside the main binary
-install(TARGETS updater RUNTIME DESTINATION bin)
+# Install the updater binary
+if(APPLE)
+    # macOS: install into the .app bundle so it's included in DMG
+    install(TARGETS updater RUNTIME DESTINATION bin/mainEntry.app/Contents/MacOS)
+else()
+    # Windows/Linux: install alongside the main binary
+    install(TARGETS updater RUNTIME DESTINATION bin)
+endif()
 
 message(STATUS "  updater target configured (standalone, no library deps)")
