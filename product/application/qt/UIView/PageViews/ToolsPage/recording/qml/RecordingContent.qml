@@ -22,6 +22,7 @@ FocusScope {
     property int selectedIndex: -1
     property string selectedFilePath: ""
     property bool isGridView: true
+    property bool _scrollToLatestPending: false
 
     // Timer-based refresh
     Timer {
@@ -43,6 +44,19 @@ FocusScope {
         selectedFilePath = ""
     }
 
+    function scrollToLatest() {
+        if (folderModel.count > 0) {
+            var lastIndex = folderModel.count - 1
+            selectedIndex = lastIndex
+            selectedFilePath = folderModel.get(lastIndex, "filePath")
+            if (isGridView) {
+                gridView.positionViewAtIndex(lastIndex, GridView.End)
+            } else {
+                listView.positionViewAtIndex(lastIndex, ListView.End)
+            }
+        }
+    }
+
     function formatDuration(seconds) {
         var h = Math.floor(seconds / 3600)
         var m = Math.floor((seconds % 3600) / 60)
@@ -62,8 +76,8 @@ FocusScope {
         target: controller
 
         function onRecordingCompleted(filePath) {
+            _scrollToLatestPending = true
             refreshGallery()
-            scrollToLatestTimer.restart()
         }
 
         function onErrorOccurred(message) {
@@ -93,16 +107,13 @@ FocusScope {
         }
     }
 
-    Timer {
-        id: scrollToLatestTimer
-        interval: 300
-        repeat: false
-        onTriggered: {
-            if (folderModel.count > 0) {
-                selectedIndex = 0
-                selectedFilePath = folderModel.get(0, "filePath")
-                if (isGridView) gridView.positionViewAtBeginning()
-                else listView.positionViewAtBeginning()
+    // Scroll to newest item when FolderListModel finishes loading
+    Connections {
+        target: folderModel
+        function onStatusChanged() {
+            if (_scrollToLatestPending && folderModel.status === FolderListModel.Ready) {
+                _scrollToLatestPending = false
+                Qt.callLater(scrollToLatest)
             }
         }
     }
@@ -463,7 +474,7 @@ FocusScope {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: UTScrollBar {
                     id: gridScrollBar
                 }
             }
@@ -608,7 +619,7 @@ FocusScope {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: UTScrollBar {
                     id: listScrollBar
                 }
             }

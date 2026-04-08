@@ -58,6 +58,7 @@ set(MODULE_QML_TARGET_FILES
     UTLabel/UTLabel.qml
     UTTabBar/UTTabBar.qml
     UTTabButton/UTTabButton.qml
+    UTScrollBar/UTScrollBar.qml
     UTText/UTText.qml
     UTToolButton/UTToolButton.qml
     UTToolTip/UTToolTip.qml

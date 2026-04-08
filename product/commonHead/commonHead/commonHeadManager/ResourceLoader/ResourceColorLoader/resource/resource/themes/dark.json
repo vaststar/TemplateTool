@@ -316,6 +316,27 @@
       "color": {
         "normal": "neutral-50"
       }
+    },
+    {
+      "token": "scrollbar-track",
+      "color": {
+        "normal": "neutral-800"
+      }
+    },
+    {
+      "token": "scrollbar-thumb",
+      "color": {
+        "normal": "neutral-500",
+        "hovered": "neutral-400",
+        "pressed": "neutral-300"
+      }
+    },
+    {
+      "token": "scrollbar-arrow",
+      "color": {
+        "normal": "neutral-500",
+        "hovered": "neutral-200"
+      }
     }
   ]
 }

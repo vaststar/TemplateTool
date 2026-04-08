@@ -316,6 +316,27 @@
       "color": {
         "normal": "gray-900"
       }
+    },
+    {
+      "token": "scrollbar-track",
+      "color": {
+        "normal": "gray-200"
+      }
+    },
+    {
+      "token": "scrollbar-thumb",
+      "color": {
+        "normal": "gray-400",
+        "hovered": "gray-500",
+        "pressed": "gray-600"
+      }
+    },
+    {
+      "token": "scrollbar-arrow",
+      "color": {
+        "normal": "gray-500",
+        "hovered": "gray-800"
+      }
     }
   ]
 }

@@ -24,6 +24,7 @@ FocusScope {
     property int selectedIndex: -1
     property string selectedFilePath: ""
     property bool isGridView: true   // true = grid (tile), false = list
+    property bool _scrollToLatestPending: false
 
     // Timer-based refresh
     Timer {
@@ -45,6 +46,19 @@ FocusScope {
         selectedFilePath = ""
     }
 
+    function scrollToLatest() {
+        if (folderModel.count > 0) {
+            var lastIndex = folderModel.count - 1
+            selectedIndex = lastIndex
+            selectedFilePath = folderModel.get(lastIndex, "filePath")
+            if (isGridView) {
+                gridView.positionViewAtIndex(lastIndex, GridView.End)
+            } else {
+                listView.positionViewAtIndex(lastIndex, ListView.End)
+            }
+        }
+    }
+
     Component.onCompleted: {
         refreshGallery()
     }
@@ -56,26 +70,18 @@ FocusScope {
     Connections {
         target: controller
         function onCaptureCompleted(filePath) {
+            _scrollToLatestPending = true
             refreshGallery()
-            // Auto-select and scroll to the newest item after model refreshes
-            scrollToLatestTimer.restart()
         }
     }
 
-    // Delayed scroll-to-top after model refresh (FolderListModel updates async)
-    Timer {
-        id: scrollToLatestTimer
-        interval: 200
-        repeat: false
-        onTriggered: {
-            if (folderModel.count > 0) {
-                selectedIndex = 0
-                selectedFilePath = folderModel.get(0, "filePath")
-                if (isGridView) {
-                    gridView.positionViewAtBeginning()
-                } else {
-                    listView.positionViewAtBeginning()
-                }
+    // Scroll to newest item when FolderListModel finishes loading
+    Connections {
+        target: folderModel
+        function onStatusChanged() {
+            if (_scrollToLatestPending && folderModel.status === FolderListModel.Ready) {
+                _scrollToLatestPending = false
+                Qt.callLater(scrollToLatest)
             }
         }
     }
@@ -384,7 +390,7 @@ FocusScope {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: UTScrollBar {
                     id: gridScrollBar
                 }
             }
@@ -561,7 +567,7 @@ FocusScope {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: UTScrollBar {
                     id: listScrollBar
                 }
             }
@@ -907,7 +913,7 @@ FocusScope {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar { }
+                ScrollBar.vertical: UTScrollBar { }
             }
 
             // Empty state
