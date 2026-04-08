@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import UTComponent
+import UTComposite
 import UIResourceLoader 1.0
 
 /**

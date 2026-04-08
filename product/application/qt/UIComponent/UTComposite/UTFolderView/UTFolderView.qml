@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import UIComponentBase 1.0
 import UTComponent 1.0
+import UTComposite 1.0
 import UIResourceLoader 1.0
 
 /**
@@ -109,16 +110,26 @@ BaseFolderView {
 
     function _doScrollToLatest() {
         if (folderModel.count <= 0) return
-        var lastIndex = folderModel.count - 1
-        _selectedIndex = lastIndex
-        _selectedFilePath = folderModel.get(lastIndex, "filePath")
+        // Find the item with the latest modification time,
+        // since sort order may not place the newest file last.
+        var latestIndex = 0
+        var latestTime = folderModel.get(0, "fileModified")
+        for (var i = 1; i < folderModel.count; i++) {
+            var t = folderModel.get(i, "fileModified")
+            if (t > latestTime) {
+                latestTime = t
+                latestIndex = i
+            }
+        }
+        _selectedIndex = latestIndex
+        _selectedFilePath = folderModel.get(latestIndex, "filePath")
         fileSelected(_selectedFilePath)
         if (_viewMode === "grid") {
-            _gridView.positionViewAtIndex(lastIndex, GridView.End)
+            _gridView.positionViewAtIndex(latestIndex, GridView.Contain)
         } else if (_viewMode === "list") {
-            _listView.positionViewAtIndex(lastIndex, ListView.End)
+            _listView.positionViewAtIndex(latestIndex, ListView.Contain)
         } else {
-            _detailView.positionViewAtIndex(lastIndex, ListView.End)
+            _detailView.positionViewAtIndex(latestIndex, ListView.Contain)
         }
     }
 

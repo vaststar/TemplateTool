@@ -10,6 +10,7 @@
 
 #include <TranslatorManager/UILanguage.h>
 #include <UTComponent/UTComponent.h>
+#include <UTComposite/UTComposite.h>
 
 #include "LoggerDefine/LoggerDefine.h"
 // #include "UIViewBase/include/UIViewControllerInitializer.h"
@@ -57,6 +58,7 @@ void AppUIManager::Impl::registerQmlTypes()
     UIVMSignalEmitter::registerAllViewModelMetaTypes();
     UILanguage::registerMetaObject();
     UTComponent::registerUTComponent();
+    UTComposite::registerUTComposite();
     // mQmlEngine->rootContext()->setContextProperty("ControllerInitializer", mControllerInitializer.get());
     UIVIEW_LOG_DEBUG("done");
 }

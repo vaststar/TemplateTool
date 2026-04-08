@@ -1,27 +1,23 @@
 include(BuildQtModule)
 
 if (WIN32)
-    set(ADD_DEFINITIONS UTCOMPONENT_DLL) #UTComponent_DLL UTCOMPONENT_LIB
+    set(ADD_DEFINITIONS UTCOMPOSITE_DLL)
 else()
     set(ADD_DEFINITIONS)
 endif()
 
-set(MODULE_MODULE_NAME UTComponent)
+set(MODULE_MODULE_NAME UTComposite)
 set(MODULE_IDE_FOLDER UI)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/UTComponent/UTComponentExport.h
-    include/UTComponent/UTComponent.h
-    UTMenu/MenuItemModel.h
-    UTQRCode/UTQRCodeLevel.h
+    include/UTComposite/UTCompositeExport.h
+    include/UTComposite/UTComposite.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
-    src/UTComponent.cpp
-    UTMenu/MenuItemModel.cpp
-    UTQRCode/UTQRCodeLevel.cpp
+    src/UTComposite.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -32,6 +28,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
     UIResourceLoader
     UIComponentBase
+    UTComponent
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -42,27 +39,11 @@ set(MODULE_QML_TARGET_URI
     ${MODULE_MODULE_NAME}
 )
 set(MODULE_QML_TARGET_FILES
-    UTWindow/UTDialog.qml
-    UTWindow/UTWindow.qml
-    UTWindow/UTTest.qml
-    UTMenu/UTMenu.qml
-    UTMenu/UTMenuItem.qml
-    UTMenu/CreateMenus.js
-    UTButton/UTButton.qml
-    UTButton/UTImageButton.qml
-    UTComboBox/UTComboBox.qml
-    UTFocusItem/UTFocusItem.qml
-    UTComponentUtil/UTComponentUtil.js
-    UTQRCode/UTQRCode.qml
-    UTImage/UTIconImage.qml
-    UTLabel/UTLabel.qml
-    UTTabBar/UTTabBar.qml
-    UTTabButton/UTTabButton.qml
-    UTScrollBar/UTScrollBar.qml
-    UTText/UTText.qml
-    UTToolButton/UTToolButton.qml
-    UTToolTip/UTToolTip.qml
-    UTTreeView/UTTreeView.qml
+    UTFolderView/UTFolderView.qml
+    UTFolderView/UTFolderViewHeader.qml
+    UTFolderView/UTFolderGridDelegate.qml
+    UTFolderView/UTFolderListDelegate.qml
+    UTFolderView/UTFolderDetailDelegate.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

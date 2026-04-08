@@ -113,6 +113,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIPlatformUtils
     UIIPCChannel
     UTComponent
+    UTComposite
     AppContext
     UIResourceAssetRCCInterface #for asset resource
     UIResourcecTranslation #for translation
