@@ -58,6 +58,11 @@ set(MODULE_QML_TARGET_FILES
     UTLabel/UTLabel.qml
     UTTabBar/UTTabBar.qml
     UTTabButton/UTTabButton.qml
+    UTFolderView/UTFolderView.qml
+    UTFolderView/UTFolderViewHeader.qml
+    UTFolderView/UTFolderGridDelegate.qml
+    UTFolderView/UTFolderListDelegate.qml
+    UTFolderView/UTFolderDetailDelegate.qml
     UTScrollBar/UTScrollBar.qml
     UTText/UTText.qml
     UTToolButton/UTToolButton.qml

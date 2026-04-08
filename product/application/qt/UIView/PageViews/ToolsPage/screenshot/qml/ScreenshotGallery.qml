@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
-import QtQuick.Window
 import Qt.labs.folderlistmodel
 import UTComponent
 import UIResourceLoader 1.0
@@ -10,81 +8,15 @@ import UIResourceLoader 1.0
 /**
  * Screenshot Gallery - Browse screenshots folder and capture new screenshots
  *
- * Features:
- * - Grid (tile) / List view toggle
- * - Click-based selection with highlight border
- * - Capture Region / Full Screen / Window buttons
+ * Uses UTFolderView for file browsing with grid/list/detail views.
  */
 FocusScope {
     id: root
 
     required property var controller
 
-    // === State ===
-    property int selectedIndex: -1
-    property string selectedFilePath: ""
-    property bool isGridView: true   // true = grid (tile), false = list
-    property bool _scrollToLatestPending: false
-
-    // Timer-based refresh
-    Timer {
-        id: refreshTimer
-        interval: 100
-        repeat: false
-        onTriggered: {
-            folderModel.folder = controller.screenshotsFolderUrl
-        }
-    }
-
-    function refreshGallery() {
-        folderModel.folder = ""
-        refreshTimer.restart()
-    }
-
-    function clearSelection() {
-        selectedIndex = -1
-        selectedFilePath = ""
-    }
-
-    function scrollToLatest() {
-        if (folderModel.count > 0) {
-            var lastIndex = folderModel.count - 1
-            selectedIndex = lastIndex
-            selectedFilePath = folderModel.get(lastIndex, "filePath")
-            if (isGridView) {
-                gridView.positionViewAtIndex(lastIndex, GridView.End)
-            } else {
-                listView.positionViewAtIndex(lastIndex, ListView.End)
-            }
-        }
-    }
-
-    Component.onCompleted: {
-        refreshGallery()
-    }
-
-    onVisibleChanged: {
-        if (visible) refreshGallery()
-    }
-
-    Connections {
-        target: controller
-        function onCaptureCompleted(filePath) {
-            _scrollToLatestPending = true
-            refreshGallery()
-        }
-    }
-
-    // Scroll to newest item when FolderListModel finishes loading
-    Connections {
-        target: folderModel
-        function onStatusChanged() {
-            if (_scrollToLatestPending && folderModel.status === FolderListModel.Ready) {
-                _scrollToLatestPending = false
-                Qt.callLater(scrollToLatest)
-            }
-        }
-    }
+    Component.onCompleted: folderView.refresh()
+    onVisibleChanged: { if (visible) folderView.refresh() }
 
     // Screenshot overlay component
     Component {
@@ -94,14 +26,30 @@ FocusScope {
         }
     }
 
-    // Shared folder model
-    FolderListModel {
-        id: folderModel
-        folder: controller.screenshotsFolderUrl
-        nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif"]
-        showDirs: false
-        sortField: FolderListModel.Time
-        sortReversed: true
+    Connections {
+        target: controller
+
+        function onCaptureCompleted(filePath) {
+            console.log("Screenshot saved:", filePath)
+            folderView.scrollToLatest()
+        }
+
+        function onOverlayScreenshotReady(base64, width, height) {
+            var overlay = overlayComponent.createObject(null, {
+                initialScreenshot: base64,
+                imgWidth: width,
+                imgHeight: height
+            })
+            overlay.show()
+        }
+
+        function onScreenshotChanged() {
+            folderView.refresh()
+        }
+
+        function onErrorOccurred(message) {
+            console.error("Screenshot error:", message)
+        }
     }
 
     ColumnLayout {
@@ -115,21 +63,8 @@ FocusScope {
 
             UTButton {
                 text: qsTr("\ud83d\udcf7 Capture Region")
-                focus: true  // first tab stop in gallery
+                focus: true
                 onClicked: controller.grabScreenForOverlay()
-            }
-
-            // Open overlay when the async capture is ready
-            Connections {
-                target: controller
-                function onOverlayScreenshotReady(base64, width, height) {
-                    var overlay = overlayComponent.createObject(null, {
-                        initialScreenshot: base64,
-                        imgWidth: width,
-                        imgHeight: height
-                    })
-                    overlay.show()
-                }
             }
 
             UTButton {
@@ -144,501 +79,30 @@ FocusScope {
             }
 
             Item { Layout.fillWidth: true }
-
-            // View toggle: grid / list
-            RowLayout {
-                spacing: 2
-
-                ToolButton {
-                    id: gridBtn
-                    checked: isGridView
-                    onClicked: isGridView = true
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Grid View")
-
-                    UTFocusItem {
-                        target: gridBtn
-                        focusRadius: 4
-                    }
-
-                    contentItem: Text {
-                        text: "\u25a6"
-                        font.pixelSize: 16
-                        color: isGridView ? "#FFFFFF" : "#888888"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    background: Rectangle {
-                        implicitWidth: 32
-                        implicitHeight: 32
-                        radius: 4
-                        color: isGridView ? "#4488FF" : (parent.hovered ? "#3A3A3A" : "transparent")
-                    }
-                }
-
-                ToolButton {
-                    id: listBtn
-                    checked: !isGridView
-                    onClicked: isGridView = false
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("List View")
-
-                    UTFocusItem {
-                        target: listBtn
-                        focusRadius: 4
-                    }
-
-                    contentItem: Text {
-                        text: "\u2630"
-                        font.pixelSize: 16
-                        color: !isGridView ? "#FFFFFF" : "#888888"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    background: Rectangle {
-                        implicitWidth: 32
-                        implicitHeight: 32
-                        radius: 4
-                        color: !isGridView ? "#4488FF" : (parent.hovered ? "#3A3A3A" : "transparent")
-                    }
-                }
-            }
         }
 
-        // === Gallery Container ===
-        Rectangle {
+        // === Folder View ===
+        UTFolderView {
+            id: folderView
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#1E1E1E"
-            radius: 8
 
-            // Empty state
-            ColumnLayout {
-                anchors.centerIn: parent
-                visible: folderModel.count === 0
-                spacing: 16
+            folderUrl: controller.screenshotsFolderUrl
+            nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif"]
+            initialSortField: FolderListModel.Time
+            initialSortAscending: true
 
-                UTText {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "\ud83d\udcf7"
-                    font.pixelSize: 48
-                }
+            emptyIcon: "\ud83d\udcf7"
+            emptyTitle: qsTr("No screenshots yet")
+            emptyHint: qsTr("Click 'Capture Region' or 'Full Screen' to take a screenshot")
+            statusTemplate: qsTr("%1 screenshots")
+            deleteDialogTitle: qsTr("Delete Screenshot")
+            deleteDialogMessage: qsTr("Are you sure you want to delete this screenshot?")
 
-                UTText {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("No screenshots yet")
-                    fontEnum: UIFontToken.Body_Text
-                    colorEnum: UIColorToken.Content_Secondary_Text
-                }
-
-                UTText {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Click \u0027Capture Region\u0027 or \u0027Full Screen\u0027 to take a screenshot")
-                    fontEnum: UIFontToken.Caption_Text
-                    colorEnum: UIColorToken.Content_Secondary_Text
-                }
-            }
-
-            // === Grid View ===
-            GridView {
-                id: gridView
-                anchors.fill: parent
-                anchors.margins: 8
-                cellWidth: 180
-                cellHeight: 160
-                clip: true
-                visible: isGridView && folderModel.count > 0
-                model: folderModel
-                currentIndex: -1
-                highlight: Item {}
-                highlightFollowsCurrentItem: true
-                keyNavigationEnabled: true
-                interactive: true
-                activeFocusOnTab: true
-
-                // Initialize keyboard navigation only when focus enters without a current item
-                onActiveFocusChanged: {
-                    if (activeFocus && count > 0 && currentIndex < 0) {
-                        currentIndex = selectedIndex >= 0 ? selectedIndex : 0
-                    } else if (!activeFocus) {
-                        currentIndex = -1
-                    }
-                }
-
-                // Space key: select/deselect current item
-                Keys.onSpacePressed: {
-                    if (currentIndex >= 0 && currentIndex < count) {
-                        if (selectedIndex === currentIndex) {
-                            clearSelection()
-                        } else {
-                            selectedIndex = currentIndex
-                            selectedFilePath = folderModel.get(currentIndex, "filePath")
-                        }
-                    }
-                }
-
-                // Enter/Return key: show context menu at the current item
-                Keys.onReturnPressed: { gridView.openMenuAtCurrentItem() }
-                Keys.onEnterPressed:  { gridView.openMenuAtCurrentItem() }
-
-                function openMenuAtCurrentItem() {
-                    if (currentIndex < 0 || currentIndex >= count) return
-                    selectedIndex = currentIndex
-                    selectedFilePath = folderModel.get(currentIndex, "filePath")
-                    contextMenu.currentFilePath = selectedFilePath
-                    // Position menu next to the current delegate item
-                    var item = gridView.itemAtIndex(currentIndex)
-                    if (item) {
-                        var pos = item.mapToItem(root, item.width, 0)
-                        contextMenu.popup(root, pos)
-                    } else {
-                        contextMenu.popup()
-                    }
-                }
-
-                delegate: Item {
-                    width: gridView.cellWidth - (gridScrollBar.visible ? gridScrollBar.width / Math.floor(gridView.width / gridView.cellWidth) : 0)
-                    height: gridView.cellHeight
-
-                    Rectangle {
-                        id: gridCard
-                        anchors.fill: parent
-                        anchors.margins: 4
-                        radius: 8
-                        color: isSelected ? "#2A3A5A" : (gridMouseArea.containsMouse ? "#333333" : "#2A2A2A")
-                        border.width: 0
-
-                        property bool isSelected: selectedIndex === index
-
-                        UTFocusItem {
-                            delegateFocused: gridCard.parent.GridView.isCurrentItem
-                            focusRadius: gridCard.radius
-                        }
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            spacing: 4
-
-                            Image {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                source: fileUrl
-                                fillMode: Image.PreserveAspectFit
-                                asynchronous: true
-                                cache: true
-                                smooth: true
-                                mipmap: true
-
-                                BusyIndicator {
-                                    anchors.centerIn: parent
-                                    running: parent.status === Image.Loading
-                                    visible: running
-                                }
-                            }
-
-                            UTText {
-                                Layout.fillWidth: true
-                                text: fileName
-                                font.pixelSize: 11
-                                color: gridCard.isSelected ? "#FFFFFF" : "#CCCCCC"
-                                elide: Text.ElideMiddle
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            UTText {
-                                Layout.fillWidth: true
-                                text: Qt.formatDateTime(fileModified, "yyyy-MM-dd hh:mm")
-                                font.pixelSize: 10
-                                color: gridCard.isSelected ? "#BBBBBB" : "#888888"
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-
-                        MouseArea {
-                            id: gridMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                            onClicked: function(mouse) {
-                                if (mouse.button === Qt.RightButton) {
-                                    selectedIndex = index
-                                    selectedFilePath = filePath
-                                    gridView.currentIndex = index
-                                    gridView.forceActiveFocus()
-                                    contextMenu.currentFilePath = filePath
-                                    contextMenu.popup()
-                                } else {
-                                    if (selectedIndex === index) {
-                                        gridView.currentIndex = index
-                                        gridView.forceActiveFocus()
-                                        clearSelection()
-                                    } else {
-                                        selectedIndex = index
-                                        selectedFilePath = filePath
-                                        gridView.currentIndex = index
-                                        gridView.forceActiveFocus()
-                                    }
-                                }
-                            }
-
-                            onDoubleClicked: controller.openFile(filePath)
-                        }
-                    }
-                }
-
-                ScrollBar.vertical: UTScrollBar {
-                    id: gridScrollBar
-                }
-            }
-
-            // === List View ===
-            ListView {
-                id: listView
-                anchors.fill: parent
-                anchors.margins: 8
-                clip: true
-                spacing: 2
-                visible: !isGridView && folderModel.count > 0
-                model: folderModel
-                currentIndex: -1
-                highlight: Item {}
-                highlightFollowsCurrentItem: true
-                keyNavigationEnabled: true
-                interactive: true
-                activeFocusOnTab: true
-
-                // Initialize keyboard navigation only when focus enters without a current item
-                onActiveFocusChanged: {
-                    if (activeFocus && count > 0 && currentIndex < 0) {
-                        currentIndex = selectedIndex >= 0 ? selectedIndex : 0
-                    } else if (!activeFocus) {
-                        currentIndex = -1
-                    }
-                }
-
-                // Space key: select/deselect current item
-                Keys.onSpacePressed: {
-                    if (currentIndex >= 0 && currentIndex < count) {
-                        if (selectedIndex === currentIndex) {
-                            clearSelection()
-                        } else {
-                            selectedIndex = currentIndex
-                            selectedFilePath = folderModel.get(currentIndex, "filePath")
-                        }
-                    }
-                }
-
-                // Enter/Return key: show context menu at the current item
-                Keys.onReturnPressed: { listView.openMenuAtCurrentItem() }
-                Keys.onEnterPressed:  { listView.openMenuAtCurrentItem() }
-
-                function openMenuAtCurrentItem() {
-                    if (currentIndex < 0 || currentIndex >= count) return
-                    selectedIndex = currentIndex
-                    selectedFilePath = folderModel.get(currentIndex, "filePath")
-                    contextMenu.currentFilePath = selectedFilePath
-                    // Position menu next to the current delegate item
-                    var item = listView.itemAtIndex(currentIndex)
-                    if (item) {
-                        var pos = item.mapToItem(root, item.width, 0)
-                        contextMenu.popup(root, pos)
-                    } else {
-                        contextMenu.popup()
-                    }
-                }
-
-                delegate: Rectangle {
-                    id: listCard
-                    width: listView.width - 8 - (listScrollBar.visible ? listScrollBar.width : 0)
-                    anchors.horizontalCenter: parent ? parent.horizontalCenter : undefined
-                    height: 56
-                    radius: 6
-                    color: isSelected ? "#2A3A5A" : (listMouseArea.containsMouse ? "#333333" : "transparent")
-                    border.width: 0
-
-                    property bool isSelected: selectedIndex === index
-
-                    UTFocusItem {
-                        delegateFocused: listCard.ListView.isCurrentItem
-                        focusRadius: listCard.radius
-                    }
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 8
-                        anchors.rightMargin: 12
-                        spacing: 12
-
-                        // Thumbnail
-                        Rectangle {
-                            width: 44
-                            height: 44
-                            radius: 4
-                            color: "#2A2A2A"
-
-                            Image {
-                                anchors.fill: parent
-                                anchors.margins: 2
-                                source: fileUrl
-                                fillMode: Image.PreserveAspectFit
-                                asynchronous: true
-                                cache: true
-                                smooth: true
-                                mipmap: true
-
-                                BusyIndicator {
-                                    anchors.centerIn: parent
-                                    running: parent.status === Image.Loading
-                                    visible: running
-                                    width: 20
-                                    height: 20
-                                }
-                            }
-                        }
-
-                        // File info
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 2
-
-                            UTText {
-                                text: fileName
-                                font.pixelSize: 13
-                                color: listCard.isSelected ? "#FFFFFF" : "#DDDDDD"
-                                elide: Text.ElideMiddle
-                                Layout.fillWidth: true
-                            }
-
-                            UTText {
-                                text: Qt.formatDateTime(fileModified, "yyyy-MM-dd hh:mm:ss")
-                                font.pixelSize: 11
-                                color: listCard.isSelected ? "#BBBBBB" : "#888888"
-                            }
-                        }
-
-                        // File size
-                        UTText {
-                            text: {
-                                var s = fileSize
-                                if (s === undefined || s === 0) return ""
-                                if (s > 1048576) return (s / 1048576).toFixed(1) + " MB"
-                                return (s / 1024).toFixed(0) + " KB"
-                            }
-                            font.pixelSize: 11
-                            color: "#888888"
-                            Layout.preferredWidth: 60
-                            horizontalAlignment: Text.AlignRight
-                        }
-                    }
-
-                    MouseArea {
-                        id: listMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-                        onClicked: function(mouse) {
-                            if (mouse.button === Qt.RightButton) {
-                                selectedIndex = index
-                                selectedFilePath = filePath
-                                    listView.currentIndex = index
-                                    listView.forceActiveFocus()
-                                contextMenu.currentFilePath = filePath
-                                contextMenu.popup()
-                            } else {
-                                if (selectedIndex === index) {
-                                        listView.currentIndex = index
-                                        listView.forceActiveFocus()
-                                    clearSelection()
-                                } else {
-                                    selectedIndex = index
-                                    selectedFilePath = filePath
-                                        listView.currentIndex = index
-                                        listView.forceActiveFocus()
-                                }
-                            }
-                        }
-
-                        onDoubleClicked: controller.openFile(filePath)
-                    }
-                }
-
-                ScrollBar.vertical: UTScrollBar {
-                    id: listScrollBar
-                }
-            }
-        }
-
-        // === Status Bar ===
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 12
-
-            UTText {
-                text: qsTr("%1 screenshots").arg(folderModel.count)
-                fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Content_Secondary_Text
-            }
-
-            Item { Layout.fillWidth: true }
-        }
-    }
-
-    // === Context Menu ===
-    Menu {
-        id: contextMenu
-        property string currentFilePath: ""
-
-        MenuItem {
-            text: qsTr("Open")
-            onTriggered: controller.openFile(contextMenu.currentFilePath)
-        }
-
-        MenuItem {
-            text: qsTr("Copy to Clipboard")
-            onTriggered: controller.copyFileToClipboard(contextMenu.currentFilePath)
-        }
-
-        MenuItem {
-            text: qsTr("Show in Finder")
-            onTriggered: controller.revealInFinder(contextMenu.currentFilePath)
-        }
-
-        MenuSeparator {}
-
-        MenuItem {
-            text: qsTr("Delete")
-            onTriggered: {
-                deleteConfirmDialog.targetFilePath = contextMenu.currentFilePath
-                deleteConfirmDialog.open()
-            }
-        }
-    }
-
-    // === Delete Confirmation Dialog ===
-    Dialog {
-        id: deleteConfirmDialog
-        property string targetFilePath: ""
-        title: qsTr("Delete Screenshot")
-        modal: true
-        parent: Overlay.overlay
-        anchors.centerIn: parent
-        width: Math.min(400, root.width * 0.8)
-        standardButtons: Dialog.Yes | Dialog.No
-
-        contentItem: UTText {
-            text: qsTr("Are you sure you want to delete this screenshot?")
-            fontEnum: UIFontToken.Body_Text
-        }
-
-        onAccepted: {
-            controller.deleteFile(targetFilePath)
-            clearSelection()
-            refreshGallery()
+            onFileOpenRequested: (fp) => controller.openFile(fp)
+            onFileCopyRequested: (fp) => controller.copyFileToClipboard(fp)
+            onFileRevealRequested: (fp) => controller.revealInFinder(fp)
+            onFileDeleteRequested: (fp) => controller.deleteFile(fp)
         }
     }
 
@@ -974,24 +438,6 @@ FocusScope {
                     Keys.onEnterPressed: windowPicker.close()
                 }
             }
-        }
-    }
-
-    // === Signal Connections ===
-    Connections {
-        target: controller
-
-        function onScreenshotChanged() {
-            refreshGallery()
-        }
-
-        function onCaptureCompleted(filePath) {
-            console.log("Screenshot saved:", filePath)
-            refreshGallery()
-        }
-
-        function onErrorOccurred(message) {
-            console.error("Screenshot error:", message)
         }
     }
 }
