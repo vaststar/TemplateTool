@@ -1196,87 +1196,87 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="169"/>
         <source>🎬 Start Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>🎬 開始錄製</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="194"/>
         <source>Full Screen</source>
-        <translation type="unfinished"></translation>
+        <translation>全螢幕</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="195"/>
         <source>Select Region</source>
-        <translation type="unfinished"></translation>
+        <translation>選擇區域</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="207"/>
         <source>⚠ FFmpeg not found</source>
-        <translation type="unfinished"></translation>
+        <translation>⚠ 未找到 FFmpeg</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="215"/>
         <source>📂 Open Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>📂 開啟資料夾</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="228"/>
         <source>Grid View</source>
-        <translation type="unfinished"></translation>
+        <translation>格狀檢視</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="251"/>
         <source>List View</source>
-        <translation type="unfinished"></translation>
+        <translation>列表檢視</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="302"/>
         <source>No recordings yet</source>
-        <translation type="unfinished"></translation>
+        <translation>尚無錄製</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="309"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
-        <translation type="unfinished"></translation>
+        <translation>點擊「開始錄製」來錄製螢幕</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="623"/>
         <source>%1 recordings</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 個錄製</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="633"/>
         <source>▶ Open</source>
-        <translation type="unfinished"></translation>
+        <translation>▶ 開啟</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="639"/>
         <source>🗑 Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>🗑 刪除</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="654"/>
         <source>Open</source>
-        <translation type="unfinished">開啟</translation>
+        <translation>開啟</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="659"/>
         <source>Show in Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>在檔案總管中顯示</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="666"/>
         <source>Delete</source>
-        <translation type="unfinished">刪除</translation>
+        <translation>刪除</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="678"/>
         <source>Delete Recording</source>
-        <translation type="unfinished"></translation>
+        <translation>刪除錄製</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="686"/>
         <source>Are you sure you want to delete this recording?</source>
-        <translation type="unfinished"></translation>
+        <translation>確定要刪除此錄製嗎？</translation>
     </message>
 </context>
 <context>
@@ -1297,22 +1297,22 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="102"/>
         <source>Resume</source>
-        <translation type="unfinished"></translation>
+        <translation>繼續</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="102"/>
         <source>Pause</source>
-        <translation type="unfinished"></translation>
+        <translation>暫停</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="114"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>停止錄製</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="121"/>
         <source>Abort recording</source>
-        <translation type="unfinished"></translation>
+        <translation>取消錄製</translation>
     </message>
 </context>
 <context>
@@ -1320,7 +1320,7 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="26"/>
         <source>🎬 Gallery</source>
-        <translation type="unfinished"></translation>
+        <translation>🎬 圖庫</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="30"/>
@@ -1333,43 +1333,44 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="262"/>
         <source>Start recording this region</source>
-        <translation type="unfinished"></translation>
+        <translation>開始錄製此區域</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="278"/>
         <source>Draw a new selection</source>
-        <translation type="unfinished"></translation>
+        <translation>重新選擇區域</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="291"/>
         <source>Cancel</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="312"/>
         <source>Click and drag to select recording region
 Press ESC to cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>點擊並拖曳以選擇錄製區域
+按 ESC 取消</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="418"/>
         <source>Resume</source>
-        <translation type="unfinished"></translation>
+        <translation>繼續</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="418"/>
         <source>Pause</source>
-        <translation type="unfinished"></translation>
+        <translation>暫停</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="430"/>
         <source>Stop recording</source>
-        <translation type="unfinished"></translation>
+        <translation>停止錄製</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="437"/>
         <source>Abort recording</source>
-        <translation type="unfinished"></translation>
+        <translation>取消錄製</translation>
     </message>
 </context>
 <context>
@@ -1422,12 +1423,12 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="169"/>
         <source>Audio:</source>
-        <translation type="unfinished"></translation>
+        <translation>音訊:</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="175"/>
         <source>Coming soon</source>
-        <translation type="unfinished"></translation>
+        <translation>即將推出</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="188"/>
