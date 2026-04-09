@@ -17,6 +17,14 @@ Item {
     property bool isSelected: false
     property bool isCurrent: false
 
+    // ── Theme colors ──
+    readonly property color _bgNormal:   UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Normal)
+    readonly property color _bgHovered:  UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Hovered)
+    readonly property color _bgSelected: UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected)
+    readonly property color _textNormal:   UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Text, UIColorState.Normal)
+    readonly property color _textSelected: UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Text, UIColorState.Selected)
+    readonly property color _secondaryText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal)
+
     signal clicked(int mouseButton)
     signal doubleClicked()
 
@@ -25,7 +33,7 @@ Item {
         anchors.fill: parent
         anchors.margins: 4
         radius: 8
-        color: root.isSelected ? "#2A3A5A" : (_mouseArea.containsMouse ? "#333333" : "#2A2A2A")
+        color: root.isSelected ? root._bgSelected : (_mouseArea.containsMouse ? root._bgHovered : root._bgNormal)
         border.width: 0
 
         UTFocusItem {
@@ -53,7 +61,7 @@ Item {
                 Layout.fillWidth: true
                 text: model.fileName
                 font.pixelSize: 11
-                color: root.isSelected ? "#FFFFFF" : "#CCCCCC"
+                color: root.isSelected ? root._textSelected : root._textNormal
                 elide: Text.ElideMiddle
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -62,7 +70,7 @@ Item {
                 Layout.fillWidth: true
                 text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm")
                 font.pixelSize: 10
-                color: root.isSelected ? "#BBBBBB" : "#888888"
+                color: root.isSelected ? root._textNormal : root._secondaryText
                 horizontalAlignment: Text.AlignHCenter
             }
         }

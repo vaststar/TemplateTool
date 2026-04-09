@@ -50,7 +50,7 @@ Item {
         }
         model: controller.orgTreeModel
 
-        onItemActivated: function(idx) {
+        onItemInvoked: function(idx) {
             var contactId = treeView.model.data(idx, Qt.UserRole + 1);
             if (contactId) controller.selectContact(contactId);
         }

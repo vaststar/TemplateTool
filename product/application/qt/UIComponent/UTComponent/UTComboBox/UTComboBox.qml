@@ -106,7 +106,9 @@ BaseComboBox {
 
         contentItem: UTText {
             leftPadding: 12
-            text: delegateItem.modelData
+            text: control.textRole
+                  ? (delegateItem.modelData[control.textRole] ?? delegateItem.modelData)
+                  : delegateItem.modelData
             fontEnum: UIFontToken.Combobox_Text
             color: control.textColor
             verticalAlignment: Text.AlignVCenter

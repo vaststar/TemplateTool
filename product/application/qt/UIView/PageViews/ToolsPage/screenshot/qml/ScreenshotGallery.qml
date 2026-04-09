@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt.labs.folderlistmodel
 import UTComponent
 import UTComposite
 import UIResourceLoader 1.0
@@ -90,8 +89,6 @@ FocusScope {
 
             folderUrl: controller.screenshotsFolderUrl
             nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif"]
-            initialSortField: FolderListModel.Time
-            initialSortAscending: true
 
             emptyIcon: "\ud83d\udcf7"
             emptyTitle: qsTr("No screenshots yet")

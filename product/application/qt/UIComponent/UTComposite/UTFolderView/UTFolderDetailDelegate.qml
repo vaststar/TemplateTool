@@ -10,24 +10,39 @@ import UIResourceLoader 1.0
  * Compact row showing icon, name, date, size, and type.
  * Column widths match UTFolderViewHeader detail columns.
  */
-Rectangle {
+Item {
     id: root
 
     height: 28
-    radius: 3
-    color: root.isSelected ? "#2A3A5A" : (_mouseArea.containsMouse ? "#2A2A2A" : "transparent")
-    border.width: 0
+    z: root.isCurrent ? 1 : 0
 
     property Component iconComponent: null
     property bool isSelected: false
     property bool isCurrent: false
 
+    // ── Theme colors ──
+    readonly property color _bgNormal:   UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Normal)
+    readonly property color _bgHovered:  UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Hovered)
+    readonly property color _bgSelected: UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected)
+    readonly property color _textNormal:   UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Text, UIColorState.Normal)
+    readonly property color _textSelected: UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Text, UIColorState.Selected)
+    readonly property color _secondaryText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal)
+
     signal clicked(int mouseButton)
     signal doubleClicked()
 
+    Rectangle {
+        id: bg
+        anchors.fill: parent
+        anchors.leftMargin: 4
+        anchors.rightMargin: 4
+        radius: 3
+        color: root.isSelected ? root._bgSelected : (_mouseArea.containsMouse ? root._bgHovered : "transparent")
+        border.width: 0
+
     UTFocusItem {
         delegateFocused: root.isCurrent
-        focusRadius: root.radius
+        focusRadius: bg.radius
     }
 
     RowLayout {
@@ -55,7 +70,7 @@ Rectangle {
                 Layout.fillWidth: true
                 text: model.fileName
                 font.pixelSize: 12
-                color: root.isSelected ? "#FFFFFF" : "#DDDDDD"
+                color: root.isSelected ? root._textSelected : root._textNormal
                 elide: Text.ElideRight
             }
         }
@@ -65,7 +80,7 @@ Rectangle {
             Layout.preferredWidth: 160
             text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm:ss")
             font.pixelSize: 11
-            color: root.isSelected ? "#BBBBBB" : "#888888"
+            color: root.isSelected ? root._textNormal : root._secondaryText
             leftPadding: 8
         }
 
@@ -80,7 +95,7 @@ Rectangle {
                 return s + " B"
             }
             font.pixelSize: 11
-            color: "#888888"
+            color: root._secondaryText
             horizontalAlignment: Text.AlignRight
             leftPadding: 8
         }
@@ -93,7 +108,7 @@ Rectangle {
                 return ext ? ext.toUpperCase() : ""
             }
             font.pixelSize: 11
-            color: "#888888"
+            color: root._secondaryText
             leftPadding: 8
         }
     }
@@ -107,6 +122,8 @@ Rectangle {
         onClicked: function(mouse) { root.clicked(mouse.button) }
         onDoubleClicked: root.doubleClicked()
     }
+
+    } // end bg Rectangle
 
     // Default icon
     Component {

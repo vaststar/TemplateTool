@@ -32,7 +32,7 @@ Item {
         model: controller ? controller.treeModel : null
         expandAll: true
 
-        onItemActivated: function(idx) {
+        onItemInvoked: function(idx) {
             var nodeId = treeView.model.data(idx, Qt.UserRole + 1);
             if (nodeId) controller.selectNode(nodeId);
         }

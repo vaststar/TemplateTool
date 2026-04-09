@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt.labs.folderlistmodel
 import UTComponent
 import UTComposite
 import UIResourceLoader 1.0
@@ -134,21 +133,6 @@ FocusScope {
         }
     }
 
-    // Custom video thumbnail for list view
-    Component {
-        id: videoListThumbnail
-        Rectangle {
-            color: "#2A2A2A"
-            radius: 4
-
-            Text {
-                anchors.centerIn: parent
-                text: "🎥"
-                font.pixelSize: 20
-            }
-        }
-    }
-
     // Custom video icon for detail view
     Component {
         id: videoDetailIcon
@@ -190,7 +174,7 @@ FocusScope {
                 }
             }
 
-            ComboBox {
+            UTComboBox {
                 id: modeCombo
                 model: [
                     { text: qsTr("Full Screen"), value: "fullscreen" },
@@ -236,11 +220,8 @@ FocusScope {
 
             folderUrl: controller.recordingsFolderUrl
             nameFilters: ["*.mp4", "*.webm", "*.mov", "*.mkv", "*.avi"]
-            initialSortField: FolderListModel.Time
-            initialSortAscending: true
 
             gridThumbnail: videoGridThumbnail
-            listThumbnail: videoListThumbnail
             detailIcon: videoDetailIcon
 
             emptyIcon: "🎬"

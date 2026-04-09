@@ -57,7 +57,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        TextField {
+                        UTTextField {
                             id: outputDirField
                             Layout.fillWidth: true
                             text: controller.outputDirectory || controller.getDefaultSavePath()
@@ -81,7 +81,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        ComboBox {
+                        UTComboBox {
                             id: videoFormatCombo
                             model: ["mp4", "webm", "mov", "gif"]
                             currentIndex: model.indexOf(controller.videoFormat)
@@ -136,7 +136,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        ComboBox {
+                        UTComboBox {
                             id: fpsCombo
                             model: [
                                 { text: qsTr("15 fps (small size)"), value: 15 },
@@ -213,9 +213,6 @@ Item {
                     color: root._sectionTitle
                 }
             }
-
-            // Spacer
-            Item { Layout.fillHeight: true; Layout.minimumHeight: 20 }
         }
     }
 

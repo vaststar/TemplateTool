@@ -41,7 +41,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        TextField {
+                        UTTextField {
                             id: outputDirField
                             Layout.fillWidth: true
                             text: controller.outputDirectory || controller.getDefaultSavePath()
@@ -65,7 +65,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        ComboBox {
+                        UTComboBox {
                             id: imageFormatCombo
                             model: ["png", "jpg", "bmp"]
                             currentIndex: model.indexOf(controller.imageFormat)
@@ -106,7 +106,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        ComboBox {
+                        UTComboBox {
                             id: delayCombo
                             model: [
                                 { text: qsTr("None"), value: 0 },

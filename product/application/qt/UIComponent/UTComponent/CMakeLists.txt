@@ -63,6 +63,9 @@ set(MODULE_QML_TARGET_FILES
     UTToolButton/UTToolButton.qml
     UTToolTip/UTToolTip.qml
     UTTreeView/UTTreeView.qml
+    UTListView/UTListView.qml
+    UTGridView/UTGridView.qml
+    UTTextField/UTTextField.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

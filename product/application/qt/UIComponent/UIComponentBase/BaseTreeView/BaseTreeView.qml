@@ -8,7 +8,7 @@ FocusScope {
     property alias delegate: treeView.delegate
     property alias treeView: treeView
     property bool expandAll: false
-    signal itemActivated(var modelIndex)
+    signal itemInvoked(var modelIndex)
 
     clip: true
     activeFocusOnTab: true
@@ -61,7 +61,7 @@ FocusScope {
 
         function _emitActivated() {
             if (currentRow >= 0) {
-                root.itemActivated(index(currentRow, 0));
+                root.itemInvoked(index(currentRow, 0));
             }
         }
     }

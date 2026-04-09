@@ -42,7 +42,6 @@ set(MODULE_QML_TARGET_FILES
     UTFolderView/UTFolderView.qml
     UTFolderView/UTFolderViewHeader.qml
     UTFolderView/UTFolderGridDelegate.qml
-    UTFolderView/UTFolderListDelegate.qml
     UTFolderView/UTFolderDetailDelegate.qml
 )
 BuildQtModule(

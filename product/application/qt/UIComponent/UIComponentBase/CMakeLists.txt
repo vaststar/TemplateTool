@@ -54,6 +54,9 @@ set(MODULE_QML_TARGET_FILES
     BaseToolButton/BaseToolButton.qml
     BaseToolTip/BaseToolTip.qml
     BaseTreeView/BaseTreeView.qml
+    BaseListView/BaseListView.qml
+    BaseGridView/BaseGridView.qml
+    BaseTextField/BaseTextField.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

@@ -337,6 +337,22 @@
         "normal": "gray-500",
         "hovered": "gray-800"
       }
+    },
+    {
+      "token": "listview-item-background",
+      "color": {
+        "normal": "gray-50",
+        "hovered": "gray-100",
+        "pressed": "gray-200",
+        "selected": "blue-50"
+      }
+    },
+    {
+      "token": "listview-item-text",
+      "color": {
+        "normal": "gray-700",
+        "selected": "gray-900"
+      }
     }
   ]
 }
