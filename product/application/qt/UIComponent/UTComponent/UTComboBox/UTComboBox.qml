@@ -63,32 +63,12 @@ BaseComboBox {
         layer.enabled: true
     }
 
-    popup.contentItem: ListView {
-        id: popupListView
-        implicitHeight: contentHeight
-        model: control.popup.visible ? control.delegateModel : null
-        clip: true
+    popup.contentItem: Column {
         spacing: 2
-        boundsBehavior: Flickable.StopAtBounds
-        ScrollIndicator.vertical: ScrollIndicator {}
-
-        // Reset scroll position when popup opens
-        Connections {
-            target: control.popup
-            function onOpened() {
-                popupListView.positionViewAtBeginning()
-            }
+        Repeater {
+            model: control.popup.visible ? control.delegateModel : null
         }
-
-        // Scroll to focused item when navigating with keyboard
-        Connections {
-            target: control
-            function onFocusedItemIndexChanged() {
-                if (control.popupIsOpen && control.focusedItemIndex >= 0) {
-                    popupListView.positionViewAtIndex(control.focusedItemIndex, ListView.Contain)
-                }
-            }
-        }
+        Item { width: 1; height: 3 }
     }
 
     // === Delegate with focus ring ===
