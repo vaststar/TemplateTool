@@ -22,7 +22,7 @@ Item {
     readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
     readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
     readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
     readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
     readonly property color _headerHover:     Qt.darker(_sectionBg, 1.15)
     readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
@@ -258,7 +258,7 @@ Item {
                                     id: filterInput
                                     width: parent.width - 40; height: 22; anchors.verticalCenter: parent.verticalCenter
                                     placeholderText: qsTr("Filter..."); placeholderTextColor: root._inputPlaceholder
-                                    font: Qt.font({family: "Consolas", pixelSize: root._inputFont.pixelSize - 2}); color: root._inputText
+                                    font: root._monoFont; color: root._inputText
                                     leftPadding: 4; rightPadding: 4; topPadding: 2; bottomPadding: 2
                                     background: Rectangle { color: root._inputBg; border.color: filterInput.activeFocus ? root._accentColor : root._inputBorder; border.width: 1; radius: 3 }
                                 }
@@ -385,30 +385,30 @@ Item {
                             UTText {
                                 width: root.colStatusW; anchors.verticalCenter: parent.verticalCenter
                                 text: model.statusCode > 0 ? model.statusCode.toString() : "⋯"
-                                fontEnum: UIFontToken.Body_Text; font.family: "Consolas"
+                                fontEnum: UIFontToken.Monospace_Text
                                 color: { var c = model.statusCode||0; if(c>=200&&c<300) return "#4CAF50"; if(c>=300&&c<400) return "#FF9800"; if(c>=400) return "#F44336"; return root._inputText }
                             }
                             UTText {
                                 width: parent.width - root.colMethodW - root.colStatusW - root.colTimeW - root.colSizeW - root.colProcessW - 5*5
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: (model.isHttps ? "🔒 " : "") + (model.host||"") + (model.path||"")
-                                fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight; font.family: "Consolas"
+                                fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight
                             }
                             UTText {
                                 width: root.colTimeW; anchors.verticalCenter: parent.verticalCenter
-                                horizontalAlignment: Text.AlignRight; font.family: "Consolas"
+                                horizontalAlignment: Text.AlignRight; font: root._monoFont
                                 fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
                                 text: { var d=model.duration||0; if(d<=0) return "⋯"; if(d<1) return (d*1000).toFixed(0)+" ms"; return d.toFixed(2)+" s" }
                             }
                             UTText {
                                 width: root.colSizeW; anchors.verticalCenter: parent.verticalCenter
-                                horizontalAlignment: Text.AlignRight; font.family: "Consolas"
+                                horizontalAlignment: Text.AlignRight; font: root._monoFont
                                 fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
                                 text: { var l=model.contentLength||0; if(l<=0) return "⋯"; if(l<1024) return l+" B"; if(l<1048576) return (l/1024).toFixed(1)+" KB"; return (l/1048576).toFixed(1)+" MB" }
                             }
                             UTText {
                                 width: root.colProcessW; anchors.verticalCenter: parent.verticalCenter
-                                horizontalAlignment: Text.AlignLeft; font.family: "Consolas"
+                                horizontalAlignment: Text.AlignLeft; font: root._monoFont
                                 fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
                                 text: model.processName || ""; elide: Text.ElideRight
                             }

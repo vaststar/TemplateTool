@@ -16,7 +16,7 @@ Dialog {
     readonly property color _inputText:       UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,         UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
     readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     property var ruleData: ({})
 
@@ -43,13 +43,13 @@ Dialog {
         GridLayout {
             columns: 2; columnSpacing: 10; rowSpacing: 6; Layout.fillWidth: true
             UTText { text: qsTr("URL Pattern:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
-            UTText { text: root.ruleData.url_pattern || ""; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.family: "Consolas"; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true }
+            UTText { text: root.ruleData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true }
             UTText { text: qsTr("Status Code:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
             UTText { text: String(root.ruleData.status_code || 200); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
             UTText { text: qsTr("Content-Type:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
             UTText { text: root.ruleData.content_type || "application/json"; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
             UTText { text: qsTr("Headers:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
-            UTText { text: root.ruleData.headers || "(none)"; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.family: "Consolas"; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true }
+            UTText { text: root.ruleData.headers || "(none)"; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true }
         }
         UTText { text: qsTr("Response Body:"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Text }
         Rectangle {

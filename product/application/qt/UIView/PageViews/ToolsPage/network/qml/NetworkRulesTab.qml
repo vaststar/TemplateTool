@@ -37,7 +37,7 @@ Item {
     readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
     readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
     readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     component ThemedInput : TextField {
         font: root._monoFont; color: root._inputText
@@ -143,7 +143,7 @@ Item {
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     Rectangle { width: 40; height: 18; radius: 3; color: root._accentColor; UTText { anchors.centerIn: parent; text: modelData.status_code || "200"; fontEnum: UIFontToken.Caption_Text; color: "white" } }
-                                    UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight; font.family: "Consolas" }
+                                    UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12; ToolTip.text: qsTr("Has custom headers"); ToolTip.visible: false }
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() } }
                                 }
@@ -189,7 +189,7 @@ Item {
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     Rectangle { width: 44; height: 18; radius: 3; color: "#9C27B0"; UTText { anchors.centerIn: parent; text: modelData.method || "ANY"; fontEnum: UIFontToken.Caption_Text; color: "white" } }
-                                    UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight; font.family: "Consolas" }
+                                    UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBreakpointRule(index); bpListView.model = root.controller.rulesManager.getBreakpointRules() } }
                                 }
                             }
@@ -222,7 +222,7 @@ Item {
                                         color: { switch(model.method) { case "GET": return "#4CAF50"; case "POST": return "#2196F3"; case "PUT": return "#FF9800"; case "DELETE": return "#F44336"; default: return "#757575" } }
                                         UTText { anchors.centerIn: parent; text: model.method; fontEnum: UIFontToken.Caption_Text; color: "white"; font.bold: true }
                                     }
-                                    UTText { Layout.fillWidth: true; text: model.url; fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideMiddle; font.family: "Consolas" }
+                                    UTText { Layout.fillWidth: true; text: model.url; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideMiddle }
                                     UTButton {
                                         text: qsTr("▶ Forward"); implicitHeight: 24
                                         onClicked: { root.controller.resumeRequest(model.flowId); root.interceptedFlowsModel.remove(index) }
@@ -292,7 +292,7 @@ Item {
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     Rectangle { width: 14; height: 14; radius: 7; color: "#F44336"; anchors.verticalCenter: parent.verticalCenter }
-                                    UTText { Layout.fillWidth: true; text: modelData.url_pattern || modelData; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight; font.family: "Consolas" }
+                                    UTText { Layout.fillWidth: true; text: modelData.url_pattern || modelData; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBlacklistRule(index); blListView.model = root.controller.rulesManager.getBlacklistRules() } }
                                 }
                             }
@@ -322,7 +322,7 @@ Item {
                                 width: mlListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    UTText { Layout.fillWidth: true; text: (modelData.url_pattern||"") + " → " + (modelData.local_path||""); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight; font.family: "Consolas" }
+                                    UTText { Layout.fillWidth: true; text: (modelData.url_pattern||"") + " → " + (modelData.local_path||""); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapLocalRule(index); mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
                                 }
                             }
@@ -352,7 +352,7 @@ Item {
                                 width: mrListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    UTText { Layout.fillWidth: true; text: (modelData.src_pattern||"") + " → " + (modelData.dest_url||""); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight; font.family: "Consolas" }
+                                    UTText { Layout.fillWidth: true; text: (modelData.src_pattern||"") + " → " + (modelData.dest_url||""); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapRemoteRule(index); mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
                                 }
                             }

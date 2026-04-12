@@ -20,7 +20,7 @@ Item {
     readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
     readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
     readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     component ThemedInput : TextField {
         font: root._monoFont; color: root._inputText
@@ -190,7 +190,7 @@ Item {
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
                         UTText { text: qsTr("Path:"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text }
-                        UTText { text: root.controller.caCertPath; fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; font.family: "Consolas"; elide: Text.ElideMiddle; Layout.fillWidth: true }
+                        UTText { text: root.controller.caCertPath; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideMiddle; Layout.fillWidth: true }
                     }
 
                     RowLayout {
@@ -217,7 +217,7 @@ Item {
                     UTText { text: qsTr("Communication:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     UTText { text: qsTr("TCP socket, newline-delimited JSON"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     UTText { text: qsTr("Proxy Address:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                    UTText { text: qsTr("127.0.0.1:%1").arg(root.controller.proxyPort); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.family: "Consolas" }
+                    UTText { text: qsTr("127.0.0.1:%1").arg(root.controller.proxyPort); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text }
                 }
             }
             Item { Layout.fillHeight: true }

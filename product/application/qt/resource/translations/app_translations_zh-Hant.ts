@@ -101,22 +101,22 @@
 <context>
     <name>JsonPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="26"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="27"/>
         <source>JSON Formatter</source>
         <translation>JSON 格式化</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="36"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="37"/>
         <source>Indent spaces:</source>
         <translation>縮排空格數：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="58"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="59"/>
         <source>Input JSON</source>
         <translation>輸入 JSON</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="71"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="72"/>
         <source>Enter JSON here...</source>
         <translation>在此輸入 JSON...</translation>
     </message>
@@ -1194,87 +1194,62 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingContent</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="169"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="158"/>
         <source>🎬 Start Recording</source>
         <translation>🎬 開始錄製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="194"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="180"/>
         <source>Full Screen</source>
         <translation>全螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="195"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="181"/>
         <source>Select Region</source>
         <translation>選擇區域</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="207"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="192"/>
         <source>⚠ FFmpeg not found</source>
         <translation>⚠ 未找到 FFmpeg</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="215"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="200"/>
         <source>📂 Open Folder</source>
         <translation>📂 開啟資料夾</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="228"/>
-        <source>Grid View</source>
-        <translation>格狀檢視</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="251"/>
-        <source>List View</source>
-        <translation>列表檢視</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="302"/>
         <source>No recordings yet</source>
         <translation>尚無錄製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="309"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="229"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation>點擊「開始錄製」來錄製螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="623"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="230"/>
         <source>%1 recordings</source>
         <translation>%1 個錄製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="633"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="244"/>
         <source>▶ Open</source>
         <translation>▶ 開啟</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="639"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="250"/>
         <source>🗑 Delete</source>
         <translation>🗑 刪除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="654"/>
-        <source>Open</source>
-        <translation>開啟</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="659"/>
-        <source>Show in Explorer</source>
-        <translation>在檔案總管中顯示</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="666"/>
-        <source>Delete</source>
-        <translation>刪除</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="678"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="231"/>
         <source>Delete Recording</source>
         <translation>刪除錄製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="686"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="232"/>
         <source>Are you sure you want to delete this recording?</source>
         <translation>確定要刪除此錄製嗎？</translation>
     </message>
@@ -1295,22 +1270,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingFloatingBar</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="103"/>
         <source>Resume</source>
         <translation>繼續</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="103"/>
         <source>Pause</source>
         <translation>暫停</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="114"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="115"/>
         <source>Stop recording</source>
         <translation>停止錄製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="121"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingFloatingBar.qml" line="122"/>
         <source>Abort recording</source>
         <translation>取消錄製</translation>
     </message>
@@ -1331,44 +1306,44 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingRegionSelector</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="262"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="263"/>
         <source>Start recording this region</source>
         <translation>開始錄製此區域</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="278"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="279"/>
         <source>Draw a new selection</source>
         <translation>重新選擇區域</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="291"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="292"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="312"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="313"/>
         <source>Click and drag to select recording region
 Press ESC to cancel</source>
         <translation>點擊並拖曳以選擇錄製區域
 按 ESC 取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="418"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="419"/>
         <source>Resume</source>
         <translation>繼續</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="418"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="419"/>
         <source>Pause</source>
         <translation>暫停</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="430"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="431"/>
         <source>Stop recording</source>
         <translation>停止錄製</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="437"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="438"/>
         <source>Abort recording</source>
         <translation>取消錄製</translation>
     </message>
@@ -1441,7 +1416,7 @@ Press ESC to cancel</source>
         <translation>未找到</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="224"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="221"/>
         <source>Select Output Directory</source>
         <translation>選擇輸出目錄</translation>
     </message>
@@ -1474,107 +1449,77 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotGallery</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="111"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="65"/>
         <source>📷 Capture Region</source>
         <translation>📷 區域截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="130"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="71"/>
         <source>🖥 Full Screen</source>
         <translation>🖥 全螢幕截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="136"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="77"/>
         <source>🪟 Window</source>
         <translation>🪟 視窗截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="151"/>
-        <source>Grid View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="179"/>
-        <source>List View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="225"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
         <source>No screenshots yet</source>
         <translation>暫無截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="232"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="95"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>點選「區域截圖」或「全螢幕截圖」來擷取螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="576"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
         <source>%1 screenshots</source>
         <translation>%1 張截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="591"/>
-        <source>Open</source>
-        <translation>開啟</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="596"/>
-        <source>Copy to Clipboard</source>
-        <translation>複製到剪貼簿</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="601"/>
-        <source>Show in Finder</source>
-        <translation type="unfinished">在 Finder 中顯示</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="608"/>
-        <source>Delete</source>
-        <translation>刪除</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="620"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="97"/>
         <source>Delete Screenshot</source>
         <translation>刪除截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="628"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="98"/>
         <source>Are you sure you want to delete this screenshot?</source>
         <translation>確定要刪除這張截圖嗎？</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="686"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="154"/>
         <source>Select a Window to Capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="692"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="160"/>
         <source>%1 windows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="857"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="325"/>
         <source>Click to Capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="868"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="336"/>
         <source>Unnamed Window</source>
         <translation>未命名視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="930"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="398"/>
         <source>No windows found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="952"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="420"/>
         <source>Hover to preview, click to capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="960"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="428"/>
         <source>Cancel</source>
         <translation type="unfinished">取消</translation>
     </message>
@@ -1819,6 +1764,82 @@ Press ESC to cancel</source>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/src/TimestampToolController.cpp" line="225"/>
         <source>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</source>
         <translation>無法解析日期時間，支援格式: YYYY-MM-DD HH:MM:SS</translation>
+    </message>
+</context>
+<context>
+    <name>UTFolderView</name>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="39"/>
+        <source>No files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="41"/>
+        <source>%1 files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="42"/>
+        <source>Delete File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="43"/>
+        <source>Are you sure you want to delete this file?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="297"/>
+        <source>Open</source>
+        <translation type="unfinished">開啟</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="301"/>
+        <source>Copy to Clipboard</source>
+        <translation type="unfinished">複製到剪貼簿</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="305"/>
+        <source>Show in Explorer</source>
+        <translation type="unfinished">在檔案總管中顯示</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="321"/>
+        <source>Delete</source>
+        <translation type="unfinished">刪除</translation>
+    </message>
+</context>
+<context>
+    <name>UTFolderViewHeader</name>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="37"/>
+        <source>Grid View</source>
+        <translation type="unfinished">格狀檢視</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="45"/>
+        <source>Detail View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="65"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="72"/>
+        <source>Date Modified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="80"/>
+        <source>Size</source>
+        <translation type="unfinished">大小</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="88"/>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

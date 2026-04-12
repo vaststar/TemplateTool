@@ -15,6 +15,7 @@ Item {
     readonly property color _inputBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Normal)
     readonly property color _inputPlaceholder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder, UIColorState.Normal)
     readonly property font _inputFont: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
+    readonly property font _monoFont: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     ColumnLayout {
         anchors.fill: parent
@@ -71,8 +72,7 @@ Item {
                     placeholderText: qsTr("Enter JSON here...")
                     placeholderTextColor: jsonPanel._inputPlaceholder
                     wrapMode: TextArea.Wrap
-                    font.family: "Consolas"
-                    font.pixelSize: jsonPanel._inputFont.pixelSize
+                    font: jsonPanel._monoFont
                     color: jsonPanel._inputText
                     background: Rectangle {
                         color: jsonPanel._inputBg
@@ -144,8 +144,7 @@ Item {
                     text: controller.outputText
                     readOnly: true
                     wrapMode: TextArea.Wrap
-                    font.family: "Consolas"
-                    font.pixelSize: jsonPanel._inputFont.pixelSize
+                    font: jsonPanel._monoFont
                     color: jsonPanel._inputText
                     background: Rectangle {
                         color: jsonPanel._inputBg

@@ -117,6 +117,15 @@
         "fontWeight": "Normal",
         "italic": false
       }
+    },
+    {
+      "token": "monospace-text",
+      "font": {
+        "fontType": "Monospace",
+        "fontSize": "Body",
+        "fontWeight": "Normal",
+        "italic": false
+      }
     }
   ]
 }

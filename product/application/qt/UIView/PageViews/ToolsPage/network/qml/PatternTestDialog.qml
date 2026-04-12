@@ -21,7 +21,7 @@ Dialog {
     readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
     readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
     readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     component ThemedInput : TextField {
         font: root._monoFont; color: root._inputText
@@ -74,7 +74,7 @@ Dialog {
             border.width: 1
             UTText {
                 id: ptResult; anchors.centerIn: parent
-                fontEnum: UIFontToken.Body_Text; font.family: "Consolas"
+                fontEnum: UIFontToken.Monospace_Text
                 color: text.indexOf("✓") >= 0 ? "#4CAF50" : "#F44336"
                 wrapMode: Text.WordWrap; width: parent.width - 16
                 horizontalAlignment: Text.AlignHCenter

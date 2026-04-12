@@ -12,7 +12,7 @@ Item {
 
     // ── Theme helpers (shared by control bar & status) ──
     readonly property font  _inputFont:  UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:   Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font  _monoFont:   UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
     readonly property color _inputBg:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background, UIColorState.Normal)
     readonly property color _inputText:  UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text, UIColorState.Normal)
     readonly property color _inputBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Normal)

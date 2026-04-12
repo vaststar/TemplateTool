@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
+import UIResourceLoader 1.0
 
 /**
  * RecordingFloatingBar - Small always-on-top control bar for fullscreen recording.
@@ -91,7 +92,7 @@ Window {
                 text: formatDuration(controller.recordingDuration)
                 color: "#FFFFFF"
                 font.pixelSize: 13
-                font.family: "Consolas"
+                font.family: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text).family
             }
 
             Rectangle { width: 1; height: 24; color: "#555555" }

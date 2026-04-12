@@ -18,7 +18,7 @@ Item {
     readonly property color _sectionBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
     readonly property color _sectionTitle: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title, UIColorState.Normal)
     readonly property font _inputFont: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font _monoFont: Qt.font({family: "Consolas", pixelSize: _inputFont.pixelSize})
+    readonly property font _monoFont: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     ColumnLayout {
         anchors.fill: parent
@@ -207,9 +207,8 @@ Item {
                                 anchors.leftMargin: 8
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: modelData
-                                fontEnum: UIFontToken.Body_Text
+                                fontEnum: UIFontToken.Monospace_Text
                                 colorEnum: UIColorToken.Content_Text
-                                font.family: "Consolas"
                             }
                         }
                     }
