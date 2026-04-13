@@ -14,6 +14,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <initguid.h>
 #include <tlhelp32.h>
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
