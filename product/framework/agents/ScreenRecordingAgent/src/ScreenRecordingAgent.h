@@ -34,6 +34,9 @@ public:
     [[nodiscard]] bool isRecording() const override;
     [[nodiscard]] bool isPaused() const override;
     [[nodiscard]] int duration() const override;
+    [[nodiscard]] std::vector<AudioDeviceInfo> getAudioDevices() const override;
+    [[nodiscard]] bool hasMicrophonePermission() const override;
+    void requestMicrophonePermission(std::function<void(bool)> callback) override;
 
 private:
     /// Internal state machine.

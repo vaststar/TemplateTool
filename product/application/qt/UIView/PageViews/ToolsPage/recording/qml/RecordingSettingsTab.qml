@@ -160,23 +160,102 @@ Item {
                         }
                     }
 
-                    // Audio (placeholder)
+                    // Microphone enable + device selection
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 12
 
                         UTText {
-                            text: qsTr("Audio:")
+                            text: qsTr("Microphone:")
                             fontEnum: UIFontToken.Body_Text
                             Layout.preferredWidth: 120
                         }
 
-                        UTText {
-                            text: qsTr("Coming soon")
-                            fontEnum: UIFontToken.Caption_Text
-                            colorEnum: UIColorToken.Content_Secondary_Text
-                            font.italic: true
+                        CheckBox {
+                            id: micCheckBox
+                            checked: controller.enableMicrophone
+                            onToggled: controller.enableMicrophone = checked
                         }
+
+                        UTComboBox {
+                            id: micDeviceCombo
+                            visible: controller.enableMicrophone
+                            enabled: controller.enableMicrophone
+                            model: controller.micDevices
+                            textRole: "displayName"
+                            valueRole: "id"
+                            currentIndex: {
+                                for (var i = 0; i < controller.micDevices.length; i++) {
+                                    if (controller.micDevices[i].id === controller.selectedMicDevice) return i
+                                }
+                                return 0
+                            }
+                            onCurrentValueChanged: {
+                                if (currentValue && currentValue !== controller.selectedMicDevice) {
+                                    controller.selectedMicDevice = currentValue
+                                }
+                            }
+                            implicitWidth: 250
+                        }
+                    }
+
+                    // Microphone permission warning (macOS)
+                    UTText {
+                        visible: controller.enableMicrophone && !controller.micPermissionGranted
+                        text: qsTr("⚠ Microphone permission required. Go to System Settings > Privacy & Security > Microphone.")
+                        fontEnum: UIFontToken.Caption_Text
+                        colorEnum: UIColorToken.Content_Error_Text
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+
+                    // System audio enable + device selection
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 12
+
+                        UTText {
+                            text: qsTr("System Audio:")
+                            fontEnum: UIFontToken.Body_Text
+                            Layout.preferredWidth: 120
+                        }
+
+                        CheckBox {
+                            id: sysAudioCheckBox
+                            checked: controller.enableSystemAudio
+                            onToggled: controller.enableSystemAudio = checked
+                        }
+
+                        UTComboBox {
+                            id: sysAudioDeviceCombo
+                            visible: controller.enableSystemAudio
+                            enabled: controller.enableSystemAudio
+                            model: controller.systemAudioDevices
+                            textRole: "displayName"
+                            valueRole: "id"
+                            currentIndex: {
+                                for (var i = 0; i < controller.systemAudioDevices.length; i++) {
+                                    if (controller.systemAudioDevices[i].id === controller.selectedSystemAudioDevice) return i
+                                }
+                                return 0
+                            }
+                            onCurrentValueChanged: {
+                                if (currentValue && currentValue !== controller.selectedSystemAudioDevice) {
+                                    controller.selectedSystemAudioDevice = currentValue
+                                }
+                            }
+                            implicitWidth: 250
+                        }
+                    }
+
+                    // System audio device warning
+                    UTText {
+                        visible: controller.enableSystemAudio && controller.systemAudioDevices.length === 0
+                        text: qsTr("⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).")
+                        fontEnum: UIFontToken.Caption_Text
+                        colorEnum: UIColorToken.Content_Error_Text
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
                     }
 
                     // FFmpeg path info

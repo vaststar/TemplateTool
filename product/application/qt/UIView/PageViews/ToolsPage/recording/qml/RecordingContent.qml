@@ -157,7 +157,7 @@ FocusScope {
                 id: startBtn
                 text: qsTr("🎬 Start Recording")
                 focus: true
-                enabled: controller.ffmpegAvailable && !controller.isRecording
+                enabled: controller.ffmpegAvailable && !controller.isRecording && controller.screenRecordingPermissionGranted
 
                 onClicked: {
                     if (modeCombo.currentValue === "region") {
@@ -200,6 +200,16 @@ FocusScope {
                 text: qsTr("📂 Open Folder")
                 onClicked: controller.openRecordingsFolder()
             }
+        }
+
+        // === Screen Recording Permission Warning ===
+        UTText {
+            visible: !controller.screenRecordingPermissionGranted
+            text: qsTr("⚠ Screen recording permission required. Go to System Settings > Privacy & Security > Screen Recording to enable.")
+            fontEnum: UIFontToken.Caption_Text
+            color: "#FF6B6B"
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
         }
 
         // === Error Banner ===

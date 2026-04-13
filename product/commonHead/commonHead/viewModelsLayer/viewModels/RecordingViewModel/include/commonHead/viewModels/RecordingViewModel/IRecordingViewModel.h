@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -82,6 +83,11 @@ public:
     // === Settings ===
     [[nodiscard]] virtual model::RecordingSettings getSettings() const = 0;
     virtual void updateSettings(const model::RecordingSettings& settings) = 0;
+
+    // === Audio ===
+    [[nodiscard]] virtual std::vector<model::AudioDeviceInfo> getAudioDevices() const = 0;
+    [[nodiscard]] virtual bool hasMicrophonePermission() const = 0;
+    virtual void requestMicrophonePermission(std::function<void(bool)> callback) = 0;
 
     // === Factory ===
     static std::shared_ptr<IRecordingViewModel> createInstance(

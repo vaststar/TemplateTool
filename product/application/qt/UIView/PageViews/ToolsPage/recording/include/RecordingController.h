@@ -37,6 +37,16 @@ class RecordingController : public UIViewController
     Q_PROPERTY(QString videoFormat READ videoFormat WRITE setVideoFormat NOTIFY settingsChanged)
     Q_PROPERTY(int fps READ fps WRITE setFps NOTIFY settingsChanged)
 
+    // Audio
+    Q_PROPERTY(bool enableMicrophone READ enableMicrophone WRITE setEnableMicrophone NOTIFY settingsChanged)
+    Q_PROPERTY(bool enableSystemAudio READ enableSystemAudio WRITE setEnableSystemAudio NOTIFY settingsChanged)
+    Q_PROPERTY(QString selectedMicDevice READ selectedMicDevice WRITE setSelectedMicDevice NOTIFY settingsChanged)
+    Q_PROPERTY(QString selectedSystemAudioDevice READ selectedSystemAudioDevice WRITE setSelectedSystemAudioDevice NOTIFY settingsChanged)
+    Q_PROPERTY(QVariantList micDevices READ micDevices NOTIFY audioDevicesChanged)
+    Q_PROPERTY(QVariantList systemAudioDevices READ systemAudioDevices NOTIFY audioDevicesChanged)
+    Q_PROPERTY(bool micPermissionGranted READ micPermissionGranted NOTIFY micPermissionChanged)
+    Q_PROPERTY(bool screenRecordingPermissionGranted READ screenRecordingPermissionGranted NOTIFY screenRecordingPermissionChanged)
+
     // FFmpeg status (reactive properties for QML binding)
     Q_PROPERTY(bool ffmpegAvailable READ isFFmpegAvailable NOTIFY ffmpegStatusChanged)
     Q_PROPERTY(QString ffmpegPath READ getFFmpegPath NOTIFY ffmpegStatusChanged)
@@ -54,10 +64,24 @@ public:
     QString videoFormat() const;
     int fps() const;
 
+    // Audio property getters
+    bool enableMicrophone() const;
+    bool enableSystemAudio() const;
+    QString selectedMicDevice() const;
+    QString selectedSystemAudioDevice() const;
+    QVariantList micDevices() const;
+    QVariantList systemAudioDevices() const;
+    bool micPermissionGranted() const;
+    bool screenRecordingPermissionGranted() const;
+
     // Property setters
     void setOutputDirectory(const QString& path);
     void setVideoFormat(const QString& format);
     void setFps(int fps);
+    void setEnableMicrophone(bool enable);
+    void setEnableSystemAudio(bool enable);
+    void setSelectedMicDevice(const QString& deviceId);
+    void setSelectedSystemAudioDevice(const QString& deviceId);
 
     // === Recording Methods (delegate to ViewModel) ===
     Q_INVOKABLE void startRecording(const QString& mode = "fullscreen");
@@ -76,6 +100,8 @@ public:
     Q_INVOKABLE void openRecordingsFolder();
     Q_INVOKABLE void openFile(const QString& filePath);
     Q_INVOKABLE QString getDefaultSavePath();
+    Q_INVOKABLE void refreshAudioDevices();
+    Q_INVOKABLE void requestMicrophonePermission();
 
 protected:
     void init() override;
@@ -87,6 +113,9 @@ signals:
     void recordingCompleted(const QString& filePath);
     void errorOccurred(const QString& message);
     void ffmpegStatusChanged();
+    void audioDevicesChanged();
+    void micPermissionChanged();
+    void screenRecordingPermissionChanged();
 
 private slots:
     // ── ViewModel emitter slots ──
@@ -110,4 +139,12 @@ private:
     QString m_outputDirectory;
     QString m_videoFormat = "mp4";
     int m_fps = 30;
+    bool m_enableMicrophone = false;
+    bool m_enableSystemAudio = false;
+    QString m_selectedMicDevice;
+    QString m_selectedSystemAudioDevice;
+
+    // Cached audio device lists
+    QVariantList m_micDevices;
+    QVariantList m_systemAudioDevices;
 };

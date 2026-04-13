@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <numeric>
 #include <mutex>
+#include <set>
 
 #include <sqlite3.h>
 
@@ -385,6 +386,50 @@ void SqliteDatabaseWrapper::createTables(const DatabaseSchemas& tableSchemas)
     {
         std::string createStatement = "CREATE TABLE IF NOT EXISTS " + tableInfo.tableName() + tableInfo.schema();
         mDataPrivate->execute(createStatement);
+
+        // Reconcile columns: add any new columns that are missing in existing tables.
+        reconcileColumns(tableInfo);
+    }
+}
+
+void SqliteDatabaseWrapper::reconcileColumns(const DatabaseSchema& tableSchema)
+{
+    // Query existing columns via PRAGMA table_info
+    std::string pragmaStmt = "PRAGMA table_info(" + tableSchema.tableName() + ")";
+    sqlite3_stmt* stmt = nullptr;
+    if (!mDataPrivate->prepareStatement(pragmaStmt, &stmt))
+    {
+        return;
+    }
+
+    std::set<std::string> existingColumns;
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        // PRAGMA table_info column index 1 = column name
+        const char* colName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        if (colName)
+        {
+            existingColumns.insert(colName);
+        }
+    }
+    sqlite3_finalize(stmt);
+
+    if (existingColumns.empty())
+    {
+        return;
+    }
+
+    // Add any columns present in the schema but missing from the table
+    for (const auto& col : tableSchema.columns())
+    {
+        if (existingColumns.find(col.mName) == existingColumns.end())
+        {
+            std::string alterStmt = "ALTER TABLE " + tableSchema.tableName()
+                + " ADD COLUMN " + col.mName + " " + col.mAttributes;
+            DBAGENT_LOG_INFO("Schema migration: adding column "
+                << col.mName << " to table " << tableSchema.tableName());
+            mDataPrivate->execute(alterStmt);
+        }
     }
 }
 

@@ -48,5 +48,9 @@ struct SERVICE_EXPORT RecordingSettingsTable: public ucf::service::model::DBTabl
     static constexpr auto OutputDirectoryField = "OUTPUT_DIRECTORY";
     static constexpr auto VideoFormatField = "VIDEO_FORMAT";
     static constexpr auto FramesPerSecondField = "FRAMES_PER_SECOND";
+    static constexpr auto EnableMicrophoneField = "ENABLE_MICROPHONE";
+    static constexpr auto EnableSystemAudioField = "ENABLE_SYSTEM_AUDIO";
+    static constexpr auto MicDeviceIdField = "MIC_DEVICE_ID";
+    static constexpr auto SystemAudioDeviceIdField = "SYSTEM_AUDIO_DEVICE_ID";
 };
 }

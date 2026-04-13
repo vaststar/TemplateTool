@@ -17,6 +17,10 @@ struct SERVICE_EXPORT RecordingFeatureSettings {
     std::string outputDirectory;
     std::string videoFormat = "mp4";     ///< mp4 / webm / mov
     int framesPerSecond = 30;            ///< 15 / 30 / 60
+    bool enableMicrophone = false;       ///< Record microphone audio
+    bool enableSystemAudio = false;      ///< Record system/desktop audio
+    std::string micDeviceId;             ///< Selected microphone device ID
+    std::string systemAudioDeviceId;     ///< Selected system audio device ID
 };
 
 } // namespace ucf::service::model

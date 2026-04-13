@@ -15,6 +15,8 @@
 #endif
 #include <windows.h>
 #include <tlhelp32.h>
+#include <mmdeviceapi.h>
+#include <functiondiscoverykeys_devpkey.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -27,6 +29,23 @@ namespace ucf::utilities::screenrecording {
 static inline int alignToEven(int v)
 {
     return (std::max)(2, v & ~1);
+}
+
+/// Escape special characters in a DirectShow device name for FFmpeg.
+/// FFmpeg's option parser treats \, ', ;, =, : as special characters.
+static std::string escapeDshowDeviceName(const std::string& name)
+{
+    std::string escaped;
+    escaped.reserve(name.size() + 8);
+    for (char c : name)
+    {
+        if (c == '\\' || c == '\'' || c == ';' || c == '=' || c == ':')
+        {
+            escaped += '\\';
+        }
+        escaped += c;
+    }
+    return escaped;
 }
 
 /// Search the PATH environment variable for an executable by name.
@@ -120,6 +139,99 @@ std::string ScreenRecordingUtils_Win::findFFmpegPath(const std::string& appDir)
 }
 
 // ============================================================================
+// Audio Device Enumeration
+// ============================================================================
+
+std::vector<AudioDeviceInfo> ScreenRecordingUtils_Win::enumerateAudioDevices()
+{
+    std::vector<AudioDeviceInfo> devices;
+
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    bool needUninit = SUCCEEDED(hr);
+
+    IMMDeviceEnumerator* pEnumerator = nullptr;
+    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+                          CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                          reinterpret_cast<void**>(&pEnumerator));
+    if (FAILED(hr) || !pEnumerator)
+    {
+        if (needUninit) CoUninitialize();
+        return devices;
+    }
+
+    // Only enumerate eCapture — physical speakers (eRender) cannot be used
+    // as DirectShow audio input.  Loopback sources like "Stereo Mix" appear
+    // as eCapture devices and are classified by their endpoint form factor.
+    IMMDeviceCollection* pCollection = nullptr;
+    hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCollection);
+    if (SUCCEEDED(hr) && pCollection)
+    {
+        UINT count = 0;
+        pCollection->GetCount(&count);
+        for (UINT i = 0; i < count; i++)
+        {
+            IMMDevice* pDevice = nullptr;
+            if (SUCCEEDED(pCollection->Item(i, &pDevice)) && pDevice)
+            {
+                LPWSTR pwszId = nullptr;
+                pDevice->GetId(&pwszId);
+
+                IPropertyStore* pProps = nullptr;
+                pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                if (pProps)
+                {
+                    PROPVARIANT varName;
+                    PropVariantInit(&varName);
+                    pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+
+                    // Check endpoint form factor to classify as mic vs loopback.
+                    // Microphone (4), Headset (5), Handset (6) are real mic inputs.
+                    // Everything else (LineLevel, UnknownFormFactor, etc.) is a
+                    // loopback / system audio source like "Stereo Mix".
+                    PROPVARIANT varFormFactor;
+                    PropVariantInit(&varFormFactor);
+                    pProps->GetValue(PKEY_AudioEndpoint_FormFactor, &varFormFactor);
+                    UINT formFactor = varFormFactor.uintVal;
+                    PropVariantClear(&varFormFactor);
+
+                    bool isMic = (formFactor == Microphone ||
+                                  formFactor == Headset ||
+                                  formFactor == Handset);
+
+                    AudioDeviceInfo info;
+                    if (pwszId)
+                    {
+                        int len = WideCharToMultiByte(CP_UTF8, 0, pwszId, -1, nullptr, 0, nullptr, nullptr);
+                        std::string id(len - 1, '\0');
+                        WideCharToMultiByte(CP_UTF8, 0, pwszId, -1, id.data(), len, nullptr, nullptr);
+                        info.id = id;
+                    }
+                    if (varName.vt == VT_LPWSTR)
+                    {
+                        int len = WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1, nullptr, 0, nullptr, nullptr);
+                        std::string name(len - 1, '\0');
+                        WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1, name.data(), len, nullptr, nullptr);
+                        info.displayName = name;
+                    }
+                    info.isInput = isMic;
+                    devices.push_back(std::move(info));
+
+                    PropVariantClear(&varName);
+                    pProps->Release();
+                }
+                if (pwszId) CoTaskMemFree(pwszId);
+                pDevice->Release();
+            }
+        }
+        pCollection->Release();
+    }
+    pEnumerator->Release();
+
+    if (needUninit) CoUninitialize();
+    return devices;
+}
+
+// ============================================================================
 // Recording — start
 // ============================================================================
 
@@ -156,6 +268,8 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
     std::ostringstream cmdLine;
     cmdLine << "\"" << config.ffmpegPath << "\""
             << " -y"
+            << " -thread_queue_size 512"
+            << " -probesize 5M"
             << " -f gdigrab"
             << " -framerate " << config.fps
             << " -draw_mouse 1";
@@ -171,6 +285,39 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
 
     cmdLine << " -i desktop";
 
+    // Audio input(s) via DirectShow
+    bool hasAudio = (config.audioMode != AudioCaptureMode::None);
+    bool needAudioMix = false;
+
+    if (config.audioMode == AudioCaptureMode::Microphone || config.audioMode == AudioCaptureMode::MicAndSystem)
+    {
+        std::string micName = config.micDevice.empty() ? "Microphone" : escapeDshowDeviceName(config.micDevice);
+        cmdLine << " -thread_queue_size 512 -f dshow -i audio=\"" << micName << "\"";
+    }
+    if (config.audioMode == AudioCaptureMode::SystemAudio)
+    {
+        std::string sysName = config.systemAudioDevice.empty() ? "Stereo Mix" : escapeDshowDeviceName(config.systemAudioDevice);
+        cmdLine << " -thread_queue_size 512 -f dshow -i audio=\"" << sysName << "\"";
+    }
+    if (config.audioMode == AudioCaptureMode::MicAndSystem)
+    {
+        std::string sysName = config.systemAudioDevice.empty() ? "Stereo Mix" : escapeDshowDeviceName(config.systemAudioDevice);
+        cmdLine << " -thread_queue_size 512 -f dshow -i audio=\"" << sysName << "\"";
+        needAudioMix = true;
+    }
+
+    // Audio mixing filter for MicAndSystem mode
+    if (needAudioMix)
+    {
+        // Resample both audio streams to 48kHz stereo before mixing to
+        // prevent stuttering from sample rate mismatch.
+        cmdLine << " -filter_complex \""
+                   "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a0];"
+                   "[2:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a1];"
+                   "[a0][a1]amix=inputs=2:duration=first:normalize=0[aout]\""
+                   " -map 0:v -map \"[aout]\"";
+    }
+
     // Output codec settings
     if (config.videoFormat == "webm")
     {
@@ -180,6 +327,22 @@ RecordingSession ScreenRecordingUtils_Win::startRecording(const RecordingConfig&
     {
         // -pix_fmt yuv420p requires even width & height (handled above for region)
         cmdLine << " -c:v libx264 -preset ultrafast -pix_fmt yuv420p";
+    }
+
+    // Audio codec
+    if (hasAudio)
+    {
+        // Ensure consistent output sample rate
+        cmdLine << " -ar 48000 -ac 2";
+
+        if (config.videoFormat == "webm")
+        {
+            cmdLine << " -c:a libopus -b:a 128k";
+        }
+        else
+        {
+            cmdLine << " -c:a aac -b:a 128k";
+        }
     }
 
     cmdLine << " \"" << config.outputPath << "\"";

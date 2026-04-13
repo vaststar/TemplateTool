@@ -60,6 +60,10 @@ void RecordingViewModel::init()
                 m_settings.outputDirectory = serviceSettings.outputDirectory;
                 m_settings.videoFormat = serviceSettings.videoFormat;
                 m_settings.framesPerSecond = serviceSettings.framesPerSecond;
+                m_settings.enableMicrophone = serviceSettings.enableMicrophone;
+                m_settings.enableSystemAudio = serviceSettings.enableSystemAudio;
+                m_settings.micDeviceId = serviceSettings.micDeviceId;
+                m_settings.systemAudioDeviceId = serviceSettings.systemAudioDeviceId;
             }
         }
     }
@@ -125,6 +129,10 @@ void RecordingViewModel::startRecording(int displayIndex)
         config.fps = m_settings.framesPerSecond;
         config.displayIndex = displayIndex;
         config.isRegion = false;
+        bool micEffective = m_settings.enableMicrophone && m_agent->hasMicrophonePermission();
+        config.audioMode = deriveAudioMode(micEffective, m_settings.enableSystemAudio);
+        config.micDevice = m_settings.micDeviceId;
+        config.systemAudioDevice = m_settings.systemAudioDeviceId;
     }
     m_agent->start(config);
 }
@@ -148,6 +156,10 @@ void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
         config.regionY = y;
         config.regionW = w;
         config.regionH = h;
+        bool micEffective = m_settings.enableMicrophone && m_agent->hasMicrophonePermission();
+        config.audioMode = deriveAudioMode(micEffective, m_settings.enableSystemAudio);
+        config.micDevice = m_settings.micDeviceId;
+        config.systemAudioDevice = m_settings.systemAudioDeviceId;
     }
     m_agent->start(config);
 }
@@ -223,6 +235,10 @@ void RecordingViewModel::updateSettings(const model::RecordingSettings& settings
                 serviceSettings.outputDirectory = settings.outputDirectory;
                 serviceSettings.videoFormat = settings.videoFormat;
                 serviceSettings.framesPerSecond = settings.framesPerSecond;
+                serviceSettings.enableMicrophone = settings.enableMicrophone;
+                serviceSettings.enableSystemAudio = settings.enableSystemAudio;
+                serviceSettings.micDeviceId = settings.micDeviceId;
+                serviceSettings.systemAudioDeviceId = settings.systemAudioDeviceId;
                 featureSettingsService->updateRecordingSettings(serviceSettings);
             }
         }
@@ -296,6 +312,36 @@ std::string RecordingViewModel::generateOutputPath() const
     fs::create_directories(dir, ec);
 
     return (fs::path(dir) / filename).string();
+}
+
+ucf::agents::AudioCaptureMode RecordingViewModel::deriveAudioMode(bool mic, bool sys)
+{
+    if (mic && sys)  return ucf::agents::AudioCaptureMode::MicAndSystem;
+    if (mic)         return ucf::agents::AudioCaptureMode::Microphone;
+    if (sys)         return ucf::agents::AudioCaptureMode::SystemAudio;
+    return ucf::agents::AudioCaptureMode::None;
+}
+
+std::vector<model::AudioDeviceInfo> RecordingViewModel::getAudioDevices() const
+{
+    auto agentDevices = m_agent->getAudioDevices();
+    std::vector<model::AudioDeviceInfo> result;
+    result.reserve(agentDevices.size());
+    for (const auto& dev : agentDevices)
+    {
+        result.push_back({dev.id, dev.displayName, dev.isInput});
+    }
+    return result;
+}
+
+bool RecordingViewModel::hasMicrophonePermission() const
+{
+    return m_agent->hasMicrophonePermission();
+}
+
+void RecordingViewModel::requestMicrophonePermission(std::function<void(bool)> callback)
+{
+    m_agent->requestMicrophonePermission(std::move(callback));
 }
 
 } // namespace commonHead::viewModels

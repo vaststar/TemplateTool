@@ -53,6 +53,11 @@ public:
     model::RecordingSettings getSettings() const override;
     void updateSettings(const model::RecordingSettings& settings) override;
 
+    // === Audio ===
+    std::vector<model::AudioDeviceInfo> getAudioDevices() const override;
+    bool hasMicrophonePermission() const override;
+    void requestMicrophonePermission(std::function<void(bool)> callback) override;
+
 protected:
     void init() override;
 
@@ -69,6 +74,9 @@ private:
 
     // ── Helpers ──
     std::string generateOutputPath() const;
+
+    /// Derive AudioCaptureMode from the two enable flags.
+    static ucf::agents::AudioCaptureMode deriveAudioMode(bool mic, bool sys);
 
 private:
     mutable std::mutex m_mutex;

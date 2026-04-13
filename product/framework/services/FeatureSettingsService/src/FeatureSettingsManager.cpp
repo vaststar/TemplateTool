@@ -199,7 +199,11 @@ void FeatureSettingsManager::loadRecordingSettingsFromDatabase()
             db::schema::RecordingSettingsTable::SettingsIdentifierField,
             db::schema::RecordingSettingsTable::OutputDirectoryField,
             db::schema::RecordingSettingsTable::VideoFormatField,
-            db::schema::RecordingSettingsTable::FramesPerSecondField
+            db::schema::RecordingSettingsTable::FramesPerSecondField,
+            db::schema::RecordingSettingsTable::EnableMicrophoneField,
+            db::schema::RecordingSettingsTable::EnableSystemAudioField,
+            db::schema::RecordingSettingsTable::MicDeviceIdField,
+            db::schema::RecordingSettingsTable::SystemAudioDeviceIdField
         },
         {
             {db::schema::RecordingSettingsTable::SettingsIdentifierField, "default", ucf::service::model::DBOperatorType::Equal}
@@ -221,6 +225,18 @@ void FeatureSettingsManager::loadRecordingSettingsFromDatabase()
 
             auto framesPerSecondValue = record.getColumnData(db::schema::RecordingSettingsTable::FramesPerSecondField);
             mRecordingSettings.framesPerSecond = framesPerSecondValue.getIntValue();
+
+            auto enableMicValue = record.getColumnData(db::schema::RecordingSettingsTable::EnableMicrophoneField);
+            mRecordingSettings.enableMicrophone = (enableMicValue.getIntValue() != 0);
+
+            auto enableSysValue = record.getColumnData(db::schema::RecordingSettingsTable::EnableSystemAudioField);
+            mRecordingSettings.enableSystemAudio = (enableSysValue.getIntValue() != 0);
+
+            auto micDeviceIdValue = record.getColumnData(db::schema::RecordingSettingsTable::MicDeviceIdField);
+            mRecordingSettings.micDeviceId = micDeviceIdValue.getStringValue();
+
+            auto systemAudioDeviceIdValue = record.getColumnData(db::schema::RecordingSettingsTable::SystemAudioDeviceIdField);
+            mRecordingSettings.systemAudioDeviceId = systemAudioDeviceIdValue.getStringValue();
 
             SERVICE_LOG_DEBUG("Loaded recording settings from database:"
                 << " outputDirectory=" << mRecordingSettings.outputDirectory
@@ -254,7 +270,11 @@ void FeatureSettingsManager::saveRecordingSettingsToDatabase()
         std::string("default"),
         settingsCopy.outputDirectory,
         settingsCopy.videoFormat,
-        settingsCopy.framesPerSecond
+        settingsCopy.framesPerSecond,
+        static_cast<int>(settingsCopy.enableMicrophone),
+        static_cast<int>(settingsCopy.enableSystemAudio),
+        settingsCopy.micDeviceId,
+        settingsCopy.systemAudioDeviceId
     });
 
     dataWarehouseService->insertIntoDatabase(
@@ -264,7 +284,11 @@ void FeatureSettingsManager::saveRecordingSettingsToDatabase()
             db::schema::RecordingSettingsTable::SettingsIdentifierField,
             db::schema::RecordingSettingsTable::OutputDirectoryField,
             db::schema::RecordingSettingsTable::VideoFormatField,
-            db::schema::RecordingSettingsTable::FramesPerSecondField
+            db::schema::RecordingSettingsTable::FramesPerSecondField,
+            db::schema::RecordingSettingsTable::EnableMicrophoneField,
+            db::schema::RecordingSettingsTable::EnableSystemAudioField,
+            db::schema::RecordingSettingsTable::MicDeviceIdField,
+            db::schema::RecordingSettingsTable::SystemAudioDeviceIdField
         },
         databaseValues
     );
@@ -272,7 +296,9 @@ void FeatureSettingsManager::saveRecordingSettingsToDatabase()
     SERVICE_LOG_DEBUG("Saved recording settings to database:"
         << " outputDirectory=" << settingsCopy.outputDirectory
         << " videoFormat=" << settingsCopy.videoFormat
-        << " framesPerSecond=" << settingsCopy.framesPerSecond);
+        << " framesPerSecond=" << settingsCopy.framesPerSecond
+        << " enableMicrophone=" << settingsCopy.enableMicrophone
+        << " enableSystemAudio=" << settingsCopy.enableSystemAudio);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

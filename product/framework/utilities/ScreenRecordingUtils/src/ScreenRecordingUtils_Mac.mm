@@ -19,6 +19,8 @@
 #include <unistd.h>
 
 #include <CoreGraphics/CGDirectDisplay.h>
+#include <CoreAudio/CoreAudio.h>
+#include <AVFoundation/AVFoundation.h>
 
 extern char** environ;
 
@@ -171,15 +173,151 @@ std::string ScreenRecordingUtils_Mac::findFFmpegPath(const std::string& appDir)
 
 bool ScreenRecordingUtils_Mac::hasScreenRecordingPermission()
 {
-    // CGPreflightScreenCaptureAccess() is available on macOS 10.15+.
-    // Returns true if the app already has screen recording permission.
-    // Does NOT trigger the system permission dialog.
     if (__builtin_available(macOS 10.15, *))
     {
         return CGPreflightScreenCaptureAccess();
     }
     // Before macOS 10.15, no permission was required.
     return true;
+}
+
+// ============================================================================
+// Microphone Permission
+// ============================================================================
+
+bool ScreenRecordingUtils_Mac::hasMicrophonePermission()
+{
+    if (@available(macOS 10.14, *))
+    {
+        return [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio]
+               == AVAuthorizationStatusAuthorized;
+    }
+    return true;
+}
+
+void ScreenRecordingUtils_Mac::requestMicrophonePermission(std::function<void(bool)> callback)
+{
+    if (@available(macOS 10.14, *))
+    {
+        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+        if (status == AVAuthorizationStatusAuthorized)
+        {
+            if (callback) callback(true);
+            return;
+        }
+        if (status == AVAuthorizationStatusNotDetermined)
+        {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
+                if (callback) callback(granted);
+            }];
+            return;
+        }
+        // Denied or Restricted
+        if (callback) callback(false);
+        return;
+    }
+    if (callback) callback(true);
+}
+
+// ============================================================================
+// Audio Device Enumeration
+// ============================================================================
+
+std::vector<AudioDeviceInfo> ScreenRecordingUtils_Mac::enumerateAudioDevices()
+{
+    std::vector<AudioDeviceInfo> devices;
+
+    // Get all audio devices
+    AudioObjectPropertyAddress propAddr = {
+        kAudioHardwarePropertyDevices,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMain
+    };
+
+    UInt32 dataSize = 0;
+    OSStatus status = AudioObjectGetPropertyDataSize(
+        kAudioObjectSystemObject, &propAddr, 0, nullptr, &dataSize);
+    if (status != noErr || dataSize == 0)
+    {
+        return devices;
+    }
+
+    UInt32 deviceCount = dataSize / sizeof(AudioDeviceID);
+    std::vector<AudioDeviceID> deviceIDs(deviceCount);
+    status = AudioObjectGetPropertyData(
+        kAudioObjectSystemObject, &propAddr, 0, nullptr, &dataSize, deviceIDs.data());
+    if (status != noErr)
+    {
+        return devices;
+    }
+
+    for (AudioDeviceID devId : deviceIDs)
+    {
+        // Check if device has input streams
+        AudioObjectPropertyAddress inputAddr = {
+            kAudioDevicePropertyStreams,
+            kAudioDevicePropertyScopeInput,
+            kAudioObjectPropertyElementMain
+        };
+        UInt32 inputSize = 0;
+        AudioObjectGetPropertyDataSize(devId, &inputAddr, 0, nullptr, &inputSize);
+        bool hasInput = (inputSize > 0);
+
+        // avfoundation can only capture from devices with input streams.
+        // Physical speakers (output-only) are NOT capturable.
+        // Virtual loopback devices (BlackHole, Soundflower) have input streams.
+        if (!hasInput)
+        {
+            continue;
+        }
+
+        // Check if device also has output streams — devices with both are
+        // virtual loopback devices suitable for system audio capture.
+        AudioObjectPropertyAddress outputAddr = {
+            kAudioDevicePropertyStreams,
+            kAudioDevicePropertyScopeOutput,
+            kAudioObjectPropertyElementMain
+        };
+        UInt32 outputSize = 0;
+        AudioObjectGetPropertyDataSize(devId, &outputAddr, 0, nullptr, &outputSize);
+        bool hasOutput = (outputSize > 0);
+
+        // Get device name
+        AudioObjectPropertyAddress nameAddr = {
+            kAudioObjectPropertyName,
+            kAudioObjectPropertyScopeGlobal,
+            kAudioObjectPropertyElementMain
+        };
+        CFStringRef cfName = nullptr;
+        UInt32 nameSize = sizeof(CFStringRef);
+        status = AudioObjectGetPropertyData(devId, &nameAddr, 0, nullptr, &nameSize, &cfName);
+        if (status != noErr || !cfName)
+        {
+            continue;
+        }
+
+        char nameBuf[256];
+        CFStringGetCString(cfName, nameBuf, sizeof(nameBuf), kCFStringEncodingUTF8);
+        CFRelease(cfName);
+
+        std::string name(nameBuf);
+
+        // Use the device name as the id because FFmpeg avfoundation
+        // identifies audio devices by name (not CoreAudio UID).
+        if (hasInput && hasOutput)
+        {
+            // Virtual loopback device (e.g. BlackHole, Soundflower) — usable
+            // for system audio capture.
+            devices.push_back({name, name, false});
+        }
+        else
+        {
+            // Input-only device — microphone.
+            devices.push_back({name, name, true});
+        }
+    }
+
+    return devices;
 }
 
 // ============================================================================
@@ -220,15 +358,49 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     fcntl(stdinPipe[1], F_SETNOSIGPIPE, 1);
 
     // Build FFmpeg command-line arguments
-    // macOS screen capture: -f avfoundation -i "Capture screen <N>:none"
+    // macOS screen capture: -f avfoundation -i "Capture screen <N>:<audio_device>"
     // We use the screen device name instead of a raw numeric index because
     // avfoundation lists cameras before screens (e.g. index 0 = FaceTime camera,
     // index 1 = Capture screen 0). Using the name avoids mis-targeting the camera.
-    std::string inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":none";
+
+    // Determine audio portion of the input spec
+    // For MicAndSystem mode, we need two separate avfoundation inputs
+    std::string audioInputName = "none";
+    bool needSecondInput = false;
+    std::string secondAudioInputName;
+
+    switch (config.audioMode)
+    {
+    case AudioCaptureMode::None:
+        audioInputName = "none";
+        break;
+    case AudioCaptureMode::Microphone:
+        audioInputName = config.micDevice.empty() ? "default" : config.micDevice;
+        break;
+    case AudioCaptureMode::SystemAudio:
+        audioInputName = config.systemAudioDevice.empty() ? "none" : config.systemAudioDevice;
+        break;
+    case AudioCaptureMode::MicAndSystem:
+        // Primary input captures screen + microphone
+        audioInputName = config.micDevice.empty() ? "default" : config.micDevice;
+        // Second input captures system audio (requires a loopback device like BlackHole)
+        if (!config.systemAudioDevice.empty())
+        {
+            needSecondInput = true;
+            secondAudioInputName = config.systemAudioDevice;
+        }
+        break;
+    }
+
+    std::string inputSpec = "Capture screen " + std::to_string(config.displayIndex) + ":" + audioInputName;
 
     std::vector<std::string> args;
     args.push_back(config.ffmpegPath);
     args.push_back("-y");                          // overwrite output
+
+    // Increase thread queue to prevent "Thread message queue blocking" drops
+    args.push_back("-thread_queue_size");
+    args.push_back("512");
     args.push_back("-f");
     args.push_back("avfoundation");
     args.push_back("-framerate");
@@ -239,24 +411,74 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
     // Use wallclock timestamps to avoid huge duplicate-frame bursts.
     args.push_back("-use_wallclock_as_timestamps");
     args.push_back("1");
+    args.push_back("-probesize");
+    args.push_back("5M");
     args.push_back("-i");
     args.push_back(inputSpec);
+
+    // Second avfoundation input for system audio (MicAndSystem mode)
+    if (needSecondInput)
+    {
+        args.push_back("-thread_queue_size");
+        args.push_back("512");
+        args.push_back("-f");
+        args.push_back("avfoundation");
+        args.push_back("-i");
+        args.push_back("none:" + secondAudioInputName);
+    }
 
     // Do not synthesize CFR by duplicating frames from unstable input timestamps.
     args.push_back("-vsync");
     args.push_back("0");
 
-    // Region crop filter
+    // Region crop filter and audio mixing filter
+    std::string videoFilter;
     if (config.isRegion && config.regionW > 0 && config.regionH > 0)
     {
         int w = alignToEven(config.regionW);
         int h = alignToEven(config.regionH);
-        std::string cropFilter = "crop=" + std::to_string(w) + ":"
-                                + std::to_string(h) + ":"
-                                + std::to_string(config.regionX) + ":"
-                                + std::to_string(config.regionY);
+        videoFilter = "crop=" + std::to_string(w) + ":"
+                    + std::to_string(h) + ":"
+                    + std::to_string(config.regionX) + ":"
+                    + std::to_string(config.regionY);
+    }
+
+    if (needSecondInput)
+    {
+        // Use filter_complex to resample both audio streams to 48kHz stereo
+        // before mixing — prevents stuttering from sample rate mismatch.
+        std::string filterComplex;
+        if (!videoFilter.empty())
+        {
+            filterComplex = "[0:v]" + videoFilter + "[vout];"
+                "[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a0];"
+                "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a1];"
+                "[a0][a1]amix=inputs=2:duration=first:normalize=0[aout]";
+            args.push_back("-filter_complex");
+            args.push_back(filterComplex);
+            args.push_back("-map");
+            args.push_back("[vout]");
+            args.push_back("-map");
+            args.push_back("[aout]");
+        }
+        else
+        {
+            filterComplex =
+                "[0:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a0];"
+                "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo[a1];"
+                "[a0][a1]amix=inputs=2:duration=first:normalize=0[aout]";
+            args.push_back("-filter_complex");
+            args.push_back(filterComplex);
+            args.push_back("-map");
+            args.push_back("0:v");
+            args.push_back("-map");
+            args.push_back("[aout]");
+        }
+    }
+    else if (!videoFilter.empty())
+    {
         args.push_back("-vf");
-        args.push_back(cropFilter);
+        args.push_back(videoFilter);
     }
 
     // Output codec settings
@@ -280,6 +502,30 @@ RecordingSession ScreenRecordingUtils_Mac::startRecording(const RecordingConfig&
         {
             args.push_back("-video_track_timescale");
             args.push_back("600");
+        }
+    }
+
+    // Audio codec settings (only when audio is enabled)
+    if (config.audioMode != AudioCaptureMode::None)
+    {
+        // Ensure consistent output sample rate
+        args.push_back("-ar");
+        args.push_back("48000");
+        args.push_back("-ac");
+        args.push_back("2");
+
+        args.push_back("-c:a");
+        if (config.videoFormat == "webm")
+        {
+            args.push_back("libopus");
+            args.push_back("-b:a");
+            args.push_back("128k");
+        }
+        else
+        {
+            args.push_back("aac");
+            args.push_back("-b:a");
+            args.push_back("128k");
         }
     }
 

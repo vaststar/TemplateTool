@@ -33,4 +33,9 @@ std::string DatabaseSchema::tableName() const
 {
     return mTableName;
 }
+
+const std::vector<DatabaseSchema::Column>& DatabaseSchema::columns() const
+{
+    return mColumns;
+}
 }

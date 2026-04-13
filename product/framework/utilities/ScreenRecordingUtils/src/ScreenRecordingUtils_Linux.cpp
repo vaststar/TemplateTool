@@ -240,7 +240,8 @@ Portal ScreenCast recorder.
 Uses xdg-desktop-portal ScreenCast D-Bus API to acquire a PipeWire stream,
 then records via gst-launch-1.0.
 
-Usage: portal_recorder.py <output_path> <fps> [<crop_x> <crop_y> <crop_w> <crop_h>]
+Usage: portal_recorder.py <output_path> <fps> <audio_mode> [<mic_device>] [<sys_device>]
+  audio_mode: none / microphone / system / mic_and_system
 
 Protocol (stdout):
   RECORDING         – pipeline is running, recording started
@@ -259,6 +260,9 @@ DBusGMainLoop(set_as_default=True)
 
 output_path = sys.argv[1]
 fps = int(sys.argv[2])
+audio_mode = sys.argv[3] if len(sys.argv) > 3 else 'none'
+mic_device = sys.argv[4] if len(sys.argv) > 4 else ''
+sys_device = sys.argv[5] if len(sys.argv) > 5 else ''
 
 # Token persistence file (persist_mode=2 lets portal skip the dialog)
 TOKEN_FILE = os.path.expanduser('~/.cache/portal_screencast_token')
@@ -327,16 +331,41 @@ def launch_gstreamer():
     # Always record full screen; region cropping is done via FFmpeg after recording.
     # Build encode pipeline based on target format
     if ext == '.webm':
-        encode = 'videoconvert ! vp8enc deadline=1 cpu-used=4 min_quantizer=10 max_quantizer=50 ! webmmux'
+        vencode = 'videoconvert ! vp8enc deadline=1 cpu-used=4 min_quantizer=10 max_quantizer=50'
+        mux = 'webmmux'
+        aencode = 'audioconvert ! opusenc'
     elif ext in ('.mp4', '.mov'):
-        encode = 'videoconvert ! x264enc tune=zerolatency speed-preset=ultrafast ! mp4mux'
+        vencode = 'videoconvert ! x264enc tune=zerolatency speed-preset=ultrafast'
+        mux = 'mp4mux'
+        aencode = 'audioconvert ! avenc_aac'
     else:
-        encode = 'videoconvert ! vp8enc deadline=1 cpu-used=4 ! webmmux'
+        vencode = 'videoconvert ! vp8enc deadline=1 cpu-used=4'
+        mux = 'webmmux'
+        aencode = 'audioconvert ! opusenc'
+
+    # Build audio source elements based on audio_mode
+    audio_pipeline = ''
+    if audio_mode == 'microphone':
+        src = f'pulsesrc device={mic_device}' if mic_device else 'pulsesrc'
+        audio_pipeline = f'{src} ! {aencode} ! queue ! mux.'
+    elif audio_mode == 'system':
+        src = f'pulsesrc device={sys_device}' if sys_device else 'pulsesrc device=auto_default.monitor'
+        audio_pipeline = f'{src} ! {aencode} ! queue ! mux.'
+    elif audio_mode == 'mic_and_system':
+        mic_src = f'pulsesrc device={mic_device}' if mic_device else 'pulsesrc'
+        sys_src = f'pulsesrc device={sys_device}' if sys_device else 'pulsesrc device=auto_default.monitor'
+        audio_pipeline = (
+            f'{mic_src} ! audioconvert ! audioresample ! queue ! mix. '
+            f'{sys_src} ! audioconvert ! audioresample ! queue ! mix. '
+            f'audiomixer name=mix ! {aencode} ! queue ! mux.'
+        )
 
     pipeline = (
         f'pipewiresrc path={pw_node_id} do-timestamp=true keepalive-time=1000 ! '
         f'videorate ! video/x-raw,framerate={fps}/1 ! '
-        f'{encode} ! filesink location={output_path}'
+        f'{vencode} ! queue ! mux. '
+        f'{mux} name=mux ! filesink location={output_path} '
+        f'{audio_pipeline}'
     )
 
     try:
@@ -497,6 +526,84 @@ std::string ScreenRecordingUtils_Linux::findFFmpegPath(const std::string& appDir
 }
 
 // ============================================================================
+// Audio Device Enumeration
+// ============================================================================
+
+std::vector<AudioDeviceInfo> ScreenRecordingUtils_Linux::enumerateAudioDevices()
+{
+    std::vector<AudioDeviceInfo> devices;
+
+    // Enumerate PulseAudio sources (microphones) and monitors (loopback) via pactl
+    auto parseDevices = [&](bool isInput) {
+        int pfd[2];
+        if (pipe(pfd) != 0) return;
+
+        pid_t pid = fork();
+        if (pid < 0)
+        {
+            close(pfd[0]);
+            close(pfd[1]);
+            return;
+        }
+        if (pid == 0)
+        {
+            close(pfd[0]);
+            dup2(pfd[1], STDOUT_FILENO);
+            close(pfd[1]);
+            int devNull = open("/dev/null", O_WRONLY);
+            if (devNull >= 0) { dup2(devNull, STDERR_FILENO); close(devNull); }
+
+            if (isInput)
+                execlp("pactl", "pactl", "list", "sources", "short", nullptr);
+            else
+                execlp("pactl", "pactl", "list", "sinks", "short", nullptr);
+            _exit(1);
+        }
+        close(pfd[1]);
+
+        // Read output
+        std::string output;
+        char buf[1024];
+        ssize_t n;
+        while ((n = read(pfd[0], buf, sizeof(buf) - 1)) > 0)
+        {
+            buf[n] = '\0';
+            output += buf;
+        }
+        close(pfd[0]);
+        waitpid(pid, nullptr, 0);
+
+        // Parse tab-separated lines: index\tname\tmodule\tsample_spec\tstate
+        std::istringstream stream(output);
+        std::string line;
+        while (std::getline(stream, line))
+        {
+            if (line.empty()) continue;
+            auto tabPos = line.find('\t');
+            if (tabPos == std::string::npos) continue;
+            auto nameStart = tabPos + 1;
+            auto nameEnd = line.find('\t', nameStart);
+            if (nameEnd == std::string::npos) nameEnd = line.size();
+
+            std::string name = line.substr(nameStart, nameEnd - nameStart);
+            if (name.empty()) continue;
+
+            // For input sources, skip monitor sources (they are for loopback)
+            if (isInput && name.find(".monitor") != std::string::npos) continue;
+            // For output "loopback", show monitor sources
+            if (!isInput && name.find(".monitor") == std::string::npos) continue;
+
+            devices.push_back({name, name, isInput});
+        }
+    };
+
+    parseDevices(true);    // Microphones
+    parseDevices(false);   // Monitor/loopback
+
+    return devices;
+}
+
+// ============================================================================
 // Recording control — Wayland (xdg-desktop-portal ScreenCast + GStreamer)
 // ============================================================================
 
@@ -551,6 +658,16 @@ RecordingSession ScreenRecordingUtils_Linux::startRecording(const RecordingConfi
 
     std::string fpsStr = std::to_string(config.fps);
 
+    // Map audio mode to string for the Python script
+    std::string audioModeStr = "none";
+    switch (config.audioMode)
+    {
+    case AudioCaptureMode::None:         audioModeStr = "none"; break;
+    case AudioCaptureMode::Microphone:   audioModeStr = "microphone"; break;
+    case AudioCaptureMode::SystemAudio:  audioModeStr = "system"; break;
+    case AudioCaptureMode::MicAndSystem: audioModeStr = "mic_and_system"; break;
+    }
+
     // posix_spawn file actions: redirect stdout to pipe, stderr to /dev/null
     posix_spawn_file_actions_t fileActions;
     posix_spawn_file_actions_init(&fileActions);
@@ -565,6 +682,9 @@ RecordingSession ScreenRecordingUtils_Linux::startRecording(const RecordingConfi
         const_cast<char*>(scriptPath.c_str()),
         const_cast<char*>(tempWebm.c_str()),
         const_cast<char*>(fpsStr.c_str()),
+        const_cast<char*>(audioModeStr.c_str()),
+        const_cast<char*>(config.micDevice.c_str()),
+        const_cast<char*>(config.systemAudioDevice.c_str()),
         nullptr
     };
 

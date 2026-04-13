@@ -14,6 +14,27 @@ namespace ucf::utilities::screenrecording {
 // ============================================================================
 
 /**
+ * @brief Audio capture mode for screen recording
+ */
+enum class AudioCaptureMode
+{
+    None,           ///< No audio (current default)
+    Microphone,     ///< Microphone input only
+    SystemAudio,    ///< System/desktop audio only (loopback)
+    MicAndSystem    ///< Mix microphone + system audio
+};
+
+/**
+ * @brief Information about an available audio device
+ */
+struct Utilities_EXPORT AudioDeviceInfo
+{
+    std::string id;           ///< Platform-specific device identifier
+    std::string displayName;  ///< User-friendly display name
+    bool isInput = true;      ///< true = microphone/input, false = output/loopback
+};
+
+/**
  * @brief Configuration for starting a recording session
  */
 struct Utilities_EXPORT RecordingConfig
@@ -27,6 +48,10 @@ struct Utilities_EXPORT RecordingConfig
     int regionX = 0, regionY = 0;
     int regionW = 0, regionH = 0;
     bool isRegion = false;              ///< true = region capture, false = fullscreen
+    // Audio capture
+    AudioCaptureMode audioMode = AudioCaptureMode::None;
+    std::string micDevice;              ///< Microphone device id (empty = system default)
+    std::string systemAudioDevice;      ///< System audio device id (e.g. BlackHole, Stereo Mix)
 };
 
 /**
@@ -92,6 +117,22 @@ public:
     /// On Windows and Linux, always returns true.
     /// Does NOT trigger a system permission dialog.
     static bool hasScreenRecordingPermission();
+
+    /// Check if the application has microphone permission (macOS 10.14+).
+    /// On Windows and Linux, always returns true.
+    /// Pure query — does NOT trigger a system permission dialog.
+    static bool hasMicrophonePermission();
+
+    /// Request microphone permission (macOS 10.14+).
+    /// Triggers the system permission dialog if status is undetermined.
+    /// No-op on Windows and Linux (callback receives true immediately).
+    /// @param callback  Called asynchronously with the granted result.
+    static void requestMicrophonePermission(std::function<void(bool granted)> callback);
+
+    // === Audio Device Enumeration ===
+
+    /// Enumerate available audio input (microphone) and output (loopback) devices.
+    static std::vector<AudioDeviceInfo> enumerateAudioDevices();
 
     // === Recording Control ===
 

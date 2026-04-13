@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <ucf/Agents/AgentsCommonFile/AgentsExport.h>
+#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
 namespace ucf::agents {
 
@@ -16,6 +18,10 @@ enum class RecordingAgentState
     Stopping     ///< FFmpeg shutting down
 };
 
+/// Re-export audio types from utilities layer for convenience.
+using AudioCaptureMode = ucf::utilities::screenrecording::AudioCaptureMode;
+using AudioDeviceInfo = ucf::utilities::screenrecording::AudioDeviceInfo;
+
 /// Configuration for starting a screen recording session.
 struct Agents_EXPORT RecordingAgentConfig
 {
@@ -28,6 +34,10 @@ struct Agents_EXPORT RecordingAgentConfig
     int regionX = 0, regionY = 0;
     int regionW = 0, regionH = 0;
     bool isRegion = false;              ///< true = region capture, false = fullscreen
+    // Audio capture
+    AudioCaptureMode audioMode = AudioCaptureMode::None;
+    std::string micDevice;              ///< Microphone device id (empty = system default)
+    std::string systemAudioDevice;      ///< System audio device id
 };
 
 } // namespace ucf::agents

@@ -63,6 +63,18 @@ public:
     /// Current recording duration in seconds.
     [[nodiscard]] virtual int duration() const = 0;
 
+    // ── Audio ──
+
+    /// Enumerate available audio devices (microphones and loopback sources).
+    [[nodiscard]] virtual std::vector<AudioDeviceInfo> getAudioDevices() const = 0;
+
+    /// Check if microphone permission is granted (macOS). Always true on other platforms.
+    [[nodiscard]] virtual bool hasMicrophonePermission() const = 0;
+
+    /// Request microphone permission. Triggers system dialog on macOS if undetermined.
+    /// @param callback  Called asynchronously with the granted result.
+    virtual void requestMicrophonePermission(std::function<void(bool)> callback) = 0;
+
     // ── Factory ──
 
     /// Create a ScreenRecordingAgent instance.

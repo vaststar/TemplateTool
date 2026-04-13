@@ -42,6 +42,42 @@ bool ScreenRecordingUtils::hasScreenRecordingPermission()
 #endif
 }
 
+bool ScreenRecordingUtils::hasMicrophonePermission()
+{
+#if defined(_WIN32)
+    return ScreenRecordingUtils_Win::hasMicrophonePermission();
+#elif defined(__APPLE__)
+    return ScreenRecordingUtils_Mac::hasMicrophonePermission();
+#elif defined(__linux__)
+    return ScreenRecordingUtils_Linux::hasMicrophonePermission();
+#else
+    return true;
+#endif
+}
+
+void ScreenRecordingUtils::requestMicrophonePermission(std::function<void(bool granted)> callback)
+{
+#if defined(__APPLE__)
+    ScreenRecordingUtils_Mac::requestMicrophonePermission(std::move(callback));
+#else
+    // Windows / Linux: no permission needed
+    if (callback) callback(true);
+#endif
+}
+
+std::vector<AudioDeviceInfo> ScreenRecordingUtils::enumerateAudioDevices()
+{
+#if defined(_WIN32)
+    return ScreenRecordingUtils_Win::enumerateAudioDevices();
+#elif defined(__APPLE__)
+    return ScreenRecordingUtils_Mac::enumerateAudioDevices();
+#elif defined(__linux__)
+    return ScreenRecordingUtils_Linux::enumerateAudioDevices();
+#else
+    return {};
+#endif
+}
+
 RecordingSession ScreenRecordingUtils::startRecording(const RecordingConfig& config)
 {
 #if defined(_WIN32)

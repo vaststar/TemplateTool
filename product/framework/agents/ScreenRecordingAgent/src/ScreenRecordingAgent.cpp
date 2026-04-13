@@ -398,6 +398,21 @@ int ScreenRecordingAgent::duration() const
     return m_duration.load(std::memory_order_relaxed);
 }
 
+std::vector<AudioDeviceInfo> ScreenRecordingAgent::getAudioDevices() const
+{
+    return ScreenRecordingUtils::enumerateAudioDevices();
+}
+
+bool ScreenRecordingAgent::hasMicrophonePermission() const
+{
+    return ScreenRecordingUtils::hasMicrophonePermission();
+}
+
+void ScreenRecordingAgent::requestMicrophonePermission(std::function<void(bool)> callback)
+{
+    ScreenRecordingUtils::requestMicrophonePermission(std::move(callback));
+}
+
 // ============================================================================
 // Duration Timer
 // ============================================================================
@@ -472,6 +487,9 @@ ucf::utilities::screenrecording::RecordingConfig ScreenRecordingAgent::toRecordi
     rc.regionW = cfg.regionW;
     rc.regionH = cfg.regionH;
     rc.isRegion = cfg.isRegion;
+    rc.audioMode = cfg.audioMode;
+    rc.micDevice = cfg.micDevice;
+    rc.systemAudioDevice = cfg.systemAudioDevice;
     return rc;
 }
 

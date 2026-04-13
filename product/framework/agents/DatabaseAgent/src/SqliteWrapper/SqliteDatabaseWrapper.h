@@ -3,6 +3,7 @@
 #include <memory>
 #include <ucf/Agents/DatabaseAgent/IDatabaseWrapper.h>
 #include <ucf/Agents/DatabaseAgent/DatabaseConfig.h>
+#include <ucf/Agents/DatabaseAgent/DatabaseSchema.h>
 
 namespace ucf::agents::database{
 
@@ -40,6 +41,8 @@ private:
     std::string generateUpdateStatement(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& conditions) const;
     std::string generateDeleteStatement(const std::string& tableName, const ListsOfWhereCondition& conditions) const;
     std::string createWhereCondition(const ListsOfWhereCondition& arguments) const;
+
+    void reconcileColumns(const DatabaseSchema& tableSchema);
 
 private:
     class DataPrivate;

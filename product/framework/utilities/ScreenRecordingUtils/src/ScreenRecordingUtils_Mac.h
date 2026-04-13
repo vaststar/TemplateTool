@@ -9,6 +9,9 @@ class ScreenRecordingUtils_Mac final
 public:
     static std::string findFFmpegPath(const std::string& appDir);
     static bool hasScreenRecordingPermission();
+    static bool hasMicrophonePermission();
+    static void requestMicrophonePermission(std::function<void(bool)> callback);
+    static std::vector<AudioDeviceInfo> enumerateAudioDevices();
     static RecordingSession startRecording(const RecordingConfig& config);
     static RecordingResult stopRecording(RecordingSession& session);
     static bool pauseRecording(const RecordingSession& session);

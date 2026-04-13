@@ -19,6 +19,7 @@ public:
 
     std::string schema() const;
     std::string tableName() const;
+    const std::vector<Column>& columns() const;
 private:
     std::string mTableName;
     std::vector<Column> mColumns;

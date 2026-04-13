@@ -43,7 +43,11 @@ RecordingSettingsTable::RecordingSettingsTable()
         {SettingsIdentifierField, "TEXT UNIQUE NOT NULL"},
         {OutputDirectoryField, "TEXT"},
         {VideoFormatField, "TEXT"},
-        {FramesPerSecondField, "INTEGER"}
+        {FramesPerSecondField, "INTEGER"},
+        {EnableMicrophoneField, "INTEGER"},
+        {EnableSystemAudioField, "INTEGER"},
+        {MicDeviceIdField, "TEXT"},
+        {SystemAudioDeviceIdField, "TEXT"}
     })
 {
 }

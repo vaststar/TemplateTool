@@ -75,6 +75,10 @@ void RecordingController::init()
     m_outputDirectory = QString::fromStdString(settings.outputDirectory);
     m_videoFormat = QString::fromStdString(settings.videoFormat);
     m_fps = settings.framesPerSecond;
+    m_enableMicrophone = settings.enableMicrophone;
+    m_enableSystemAudio = settings.enableSystemAudio;
+    m_selectedMicDevice = QString::fromStdString(settings.micDeviceId);
+    m_selectedSystemAudioDevice = QString::fromStdString(settings.systemAudioDeviceId);
 
     // If outputDirectory is not set, use a sensible default
     if (m_outputDirectory.isEmpty()) {
@@ -90,6 +94,10 @@ void RecordingController::init()
 
     // Notify QML that settings properties are now loaded.
     emit settingsChanged();
+    emit screenRecordingPermissionChanged();
+
+    // Enumerate audio devices (deferred to avoid blocking init)
+    QMetaObject::invokeMethod(this, &RecordingController::refreshAudioDevices, Qt::QueuedConnection);
 }
 
 // ============================================================================
@@ -113,6 +121,29 @@ QString RecordingController::recordingsFolderUrl() const
 QString RecordingController::videoFormat() const { return m_videoFormat; }
 int RecordingController::fps() const { return m_fps; }
 
+// Audio property getters
+bool RecordingController::enableMicrophone() const { return m_enableMicrophone; }
+bool RecordingController::enableSystemAudio() const { return m_enableSystemAudio; }
+QString RecordingController::selectedMicDevice() const { return m_selectedMicDevice; }
+QString RecordingController::selectedSystemAudioDevice() const { return m_selectedSystemAudioDevice; }
+QVariantList RecordingController::micDevices() const { return m_micDevices; }
+QVariantList RecordingController::systemAudioDevices() const { return m_systemAudioDevices; }
+bool RecordingController::micPermissionGranted() const
+{
+    if (m_viewModel) {
+        return m_viewModel->hasMicrophonePermission();
+    }
+    return false;
+}
+
+bool RecordingController::screenRecordingPermissionGranted() const
+{
+    if (m_viewModel) {
+        return m_viewModel->hasScreenRecordingPermission();
+    }
+    return false;
+}
+
 // ============================================================================
 // Property Setters — push to ViewModel
 // ============================================================================
@@ -132,6 +163,7 @@ void RecordingController::setOutputDirectory(const QString& path)
             s.outputDirectory = localPath.toStdString();
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
     }
 }
 
@@ -144,6 +176,7 @@ void RecordingController::setVideoFormat(const QString& format)
             s.videoFormat = format.toStdString();
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
     }
 }
 
@@ -157,6 +190,65 @@ void RecordingController::setFps(int fps)
             s.framesPerSecond = bounded;
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
+    }
+}
+
+void RecordingController::setEnableMicrophone(bool enable)
+{
+    if (m_enableMicrophone != enable) {
+        m_enableMicrophone = enable;
+        if (m_viewModel) {
+            auto s = m_viewModel->getSettings();
+            s.enableMicrophone = enable;
+            m_viewModel->updateSettings(s);
+        }
+        emit settingsChanged();
+        // When enabling, request permission if not yet granted
+        if (enable) {
+            requestMicrophonePermission();
+        } else {
+            emit micPermissionChanged();
+        }
+    }
+}
+
+void RecordingController::setEnableSystemAudio(bool enable)
+{
+    if (m_enableSystemAudio != enable) {
+        m_enableSystemAudio = enable;
+        if (m_viewModel) {
+            auto s = m_viewModel->getSettings();
+            s.enableSystemAudio = enable;
+            m_viewModel->updateSettings(s);
+        }
+        emit settingsChanged();
+    }
+}
+
+void RecordingController::setSelectedMicDevice(const QString& deviceId)
+{
+    if (m_selectedMicDevice != deviceId) {
+        m_selectedMicDevice = deviceId;
+        if (m_viewModel) {
+            auto s = m_viewModel->getSettings();
+            s.micDeviceId = deviceId.toStdString();
+            m_viewModel->updateSettings(s);
+        }
+        emit settingsChanged();
+    }
+}
+
+void RecordingController::setSelectedSystemAudioDevice(const QString& deviceId)
+{
+    if (m_selectedSystemAudioDevice != deviceId) {
+        m_selectedSystemAudioDevice = deviceId;
+        if (m_viewModel) {
+            auto s = m_viewModel->getSettings();
+            s.systemAudioDeviceId = deviceId.toStdString();
+            m_viewModel->updateSettings(s);
+        }
+        emit settingsChanged();
     }
 }
 
@@ -240,6 +332,44 @@ QString RecordingController::getDefaultSavePath()
         return m_outputDirectory;
     }
     return QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+}
+
+void RecordingController::refreshAudioDevices()
+{
+    if (!m_viewModel) return;
+
+    auto devices = m_viewModel->getAudioDevices();
+
+    m_micDevices.clear();
+    m_systemAudioDevices.clear();
+
+    for (const auto& dev : devices) {
+        QVariantMap item;
+        item["id"] = QString::fromStdString(dev.id);
+        item["displayName"] = QString::fromStdString(dev.displayName);
+        if (dev.isInput) {
+            m_micDevices.append(item);
+        } else {
+            m_systemAudioDevices.append(item);
+        }
+    }
+
+    emit audioDevicesChanged();
+    emit micPermissionChanged();
+}
+
+void RecordingController::requestMicrophonePermission()
+{
+    if (!m_viewModel) return;
+
+    m_viewModel->requestMicrophonePermission([this](bool /*granted*/) {
+        // Callback may come from a background thread — emit signal
+        // to update QML on whatever thread receives it.
+        // Qt queued connections handle cross-thread safety.
+        QMetaObject::invokeMethod(this, [this]() {
+            emit micPermissionChanged();
+        }, Qt::QueuedConnection);
+    });
 }
 
 // ============================================================================
@@ -327,6 +457,12 @@ void RecordingController::onVMSettingsChanged(const RecordingSettings& settings)
     if (m_outputDirectory != newDir) { m_outputDirectory = newDir; changed = true; }
     if (m_videoFormat != newFmt) { m_videoFormat = newFmt; changed = true; }
     if (m_fps != settings.framesPerSecond) { m_fps = settings.framesPerSecond; changed = true; }
+    if (m_enableMicrophone != settings.enableMicrophone) { m_enableMicrophone = settings.enableMicrophone; changed = true; }
+    if (m_enableSystemAudio != settings.enableSystemAudio) { m_enableSystemAudio = settings.enableSystemAudio; changed = true; }
+    QString newMicDev = QString::fromStdString(settings.micDeviceId);
+    if (m_selectedMicDevice != newMicDev) { m_selectedMicDevice = newMicDev; changed = true; }
+    QString newSysDev = QString::fromStdString(settings.systemAudioDeviceId);
+    if (m_selectedSystemAudioDevice != newSysDev) { m_selectedSystemAudioDevice = newSysDev; changed = true; }
 
     if (changed) {
         emit settingsChanged();
