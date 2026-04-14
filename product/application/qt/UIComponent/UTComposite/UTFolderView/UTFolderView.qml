@@ -340,24 +340,24 @@ BaseFolderView {
     }
 
     // ─── Context Menu ───
-    Menu {
+    UTMenu {
         id: _contextMenu
         property string currentFilePath: ""
 
-        MenuItem {
+        UTMenuItem {
             text: qsTr("Open")
             onTriggered: control.fileOpenRequested(_contextMenu.currentFilePath)
         }
-        MenuItem {
+        UTMenuItem {
             text: qsTr("Copy to Clipboard")
             onTriggered: control.fileCopyRequested(_contextMenu.currentFilePath)
         }
-        MenuItem {
+        UTMenuItem {
             text: qsTr("Show in Explorer")
             onTriggered: control.fileRevealRequested(_contextMenu.currentFilePath)
         }
 
-        MenuSeparator {
+        UTMenuSeparator {
             visible: _extraMenuLoader.item !== null
         }
         Loader {
@@ -366,9 +366,9 @@ BaseFolderView {
             sourceComponent: control.extraMenuItems
         }
 
-        MenuSeparator {}
+        UTMenuSeparator {}
 
-        MenuItem {
+        UTMenuItem {
             text: qsTr("Delete")
             onTriggered: {
                 _deleteDialog.targetFilePath = _contextMenu.currentFilePath

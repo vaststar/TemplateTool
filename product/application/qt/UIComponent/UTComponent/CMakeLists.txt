@@ -14,13 +14,11 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(MODULE_HEADER_FILES #for include and install header
     include/UTComponent/UTComponentExport.h
     include/UTComponent/UTComponent.h
-    UTMenu/MenuItemModel.h
     UTQRCode/UTQRCodeLevel.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
     src/UTComponent.cpp
-    UTMenu/MenuItemModel.cpp
     UTQRCode/UTQRCodeLevel.cpp
 )
 
@@ -47,7 +45,8 @@ set(MODULE_QML_TARGET_FILES
     UTWindow/UTTest.qml
     UTMenu/UTMenu.qml
     UTMenu/UTMenuItem.qml
-    UTMenu/CreateMenus.js
+    UTMenu/UTMenuSeparator.qml
+    UTMenu/UTDynamicMenu.qml
     UTButton/UTButton.qml
     UTButton/UTImageButton.qml
     UTComboBox/UTComboBox.qml

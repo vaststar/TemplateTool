@@ -353,6 +353,46 @@
         "normal": "gray-700",
         "selected": "gray-900"
       }
+    },
+    {
+      "token": "menu-background",
+      "color": {
+        "normal": "gray-50"
+      }
+    },
+    {
+      "token": "menu-border",
+      "color": {
+        "normal": "gray-200"
+      }
+    },
+    {
+      "token": "menu-text",
+      "color": {
+        "normal": "gray-700",
+        "hovered": "gray-900",
+        "disabled": "gray-400"
+      }
+    },
+    {
+      "token": "menu-item-background",
+      "color": {
+        "normal": "gray-50",
+        "hovered": "gray-100",
+        "pressed": "gray-200"
+      }
+    },
+    {
+      "token": "menu-separator",
+      "color": {
+        "normal": "gray-200"
+      }
+    },
+    {
+      "token": "menu-shortcut-text",
+      "color": {
+        "normal": "gray-400"
+      }
     }
   ]
 }

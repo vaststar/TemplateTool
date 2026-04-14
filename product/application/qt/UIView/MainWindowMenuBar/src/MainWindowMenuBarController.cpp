@@ -24,7 +24,7 @@ void MainWindowMenuBarController::init()
 
     auto clientInfoVM = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
     auto res = clientInfoVM->getSupportedLanguages();
-    createMenu();
+    buildMenuModel();
     emit controllerInitialized();
 }
 
@@ -33,43 +33,38 @@ void MainWindowMenuBarController::switchLanguage(UILanguage::LanguageType langua
     getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
 }
 
-void MainWindowMenuBarController::createMenu()
+void MainWindowMenuBarController::buildMenuModel()
 {
-    // 创建顶级菜单
-    mRootMenu = new MenuItemModel("Main Menu", "Root action", this);
+    QVariantList fileItems;
+    fileItems.append(QVariantMap{{"text", "Open"}, {"action", "file_open"}});
+    fileItems.append(QVariantMap{{"text", "Save"}, {"action", "file_save"}});
 
-    // 创建子菜单项
-    auto fileMenu = new MenuItemModel("File", "File operations", mRootMenu);
-    auto fileMenu_openFileItem = new MenuItemModel("Open", "Open a file", fileMenu);
-    auto fileMenu_saveItem = new MenuItemModel("Save", "Save the file", fileMenu);
-    fileMenu->addSubItem(fileMenu_openFileItem);
-    fileMenu->addSubItem(fileMenu_saveItem);
+    QVariantList editItems;
+    editItems.append(QVariantMap{{"text", "Cut"},   {"action", "edit_cut"}});
+    editItems.append(QVariantMap{{"text", "Copy"},  {"action", "edit_copy"}});
+    editItems.append(QVariantMap{{"text", "Paste"}, {"action", "edit_paste"}});
 
-
-    auto editMenu = new MenuItemModel("Edit", "Edit operations", mRootMenu);
-    auto editMenu_cutItem = new MenuItemModel("Cut", "Cut the selection", editMenu);
-    auto editMenu_copyItem = new MenuItemModel("Copy", "Copy the selection", editMenu);
-    auto editMenu_pasteItem = new MenuItemModel("Paste", "Paste from clipboard", editMenu);
-
-    editMenu->addSubItem(editMenu_cutItem);
-    editMenu->addSubItem(editMenu_copyItem);
-    editMenu->addSubItem(editMenu_pasteItem);
-
-    // 添加子菜单到顶级菜单
-    mRootMenu->addSubItem(fileMenu);
-    mRootMenu->addSubItem(editMenu);
-
-    QObject::connect(fileMenu_openFileItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 0));
-    QObject::connect(fileMenu_saveItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 1));
-    QObject::connect(editMenu_cutItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 2));
-    QObject::connect(editMenu_copyItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 3));
-    QObject::connect(editMenu_pasteItem, &MenuItemModel::triggered, std::bind(&MainWindowMenuBarController::onMenuItemTriggered, this, 4));
-
+    m_menuModel.clear();
+    m_menuModel.append(QVariantMap{{"text", "File"}, {"children", fileItems}});
+    m_menuModel.append(QVariantMap{{"text", "Edit"}, {"children", editItems}});
+    emit menuModelChanged();
 }
 
-void MainWindowMenuBarController::onMenuItemTriggered(int itemIndex)
+void MainWindowMenuBarController::handleMenuAction(const QString& action)
 {
-    UIVIEW_LOG_DEBUG("item clicked:" << itemIndex);
-    switchLanguage(UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED);
+    UIVIEW_LOG_DEBUG("menu action: " << action.toStdString());
 
+    if (action == "file_open") {
+        // TODO: open file
+    } else if (action == "file_save") {
+        // TODO: save file
+    } else if (action == "edit_cut") {
+        // TODO: cut
+    } else if (action == "edit_copy") {
+        // TODO: copy
+    } else if (action == "edit_paste") {
+        // TODO: paste
+    }
+
+    switchLanguage(UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED);
 }

@@ -45,6 +45,7 @@ bool KeyboardFocusTracker::eventFilter(QObject* watched, QEvent* event)
         break;
     }
     case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
         setKeyboardNavigating(false);
         break;
     default:

@@ -1,8 +1,5 @@
 import QtQuick
-import QtQuick.Controls 
-import QtQuick.Layouts
-import QtQml.Models
-import QtQml
+import QtQuick.Controls
 import UIView 1.0
 import UTComponent 1.0
 
@@ -14,11 +11,23 @@ MenuBar {
         target: controller
         function onControllerInitialized() { createMenuItems() }
     }
-    
-    function createMenuItems(){
-        console.log("listlength:" + controller.listMenu.length)
-        for (let index = 0; index < controller.rootMenu.subItems.length; index++) {
-            CreateMenus.createMenu(root, controller.rootMenu.subItems[index])
+
+    function createMenuItems() {
+        for (let i = 0; i < controller.menuModel.length; i++) {
+            var entry = controller.menuModel[i]
+            var menu = _menuComponent.createObject(root, {
+                title: entry.text,
+                model: entry.children || []
+            })
+            menu.itemTriggered.connect(function(action) {
+                controller.handleMenuAction(action)
+            })
+            root.addMenu(menu)
         }
+    }
+
+    Component {
+        id: _menuComponent
+        UTDynamicMenu {}
     }
 }

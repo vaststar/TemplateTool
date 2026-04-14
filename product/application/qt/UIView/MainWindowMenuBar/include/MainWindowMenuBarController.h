@@ -3,8 +3,7 @@
 #include <QString>
 #include <QObject>
 #include <QtQml>
-
-#include <UTMenu/MenuItemModel.h>
+#include <QVariantList>
 
 #include "UIViewBase/include/UIViewController.h"
 
@@ -24,25 +23,25 @@ class AppContext;
 class MainWindowMenuBarController : public UIViewController
 {
     Q_OBJECT
-    Q_PROPERTY(MenuItemModel* rootMenu READ rootMenu CONSTANT)
-    Q_PROPERTY(QList<MenuItemModel*> listMenu READ listMenu CONSTANT)
+    Q_PROPERTY(QVariantList menuModel READ menuModel NOTIFY menuModelChanged)
     QML_ELEMENT
 public:
     MainWindowMenuBarController(QObject* parent = nullptr);
 
-    void createMenu();
-    MenuItemModel* rootMenu() const{return mRootMenu;}
-    QList<MenuItemModel*> listMenu() const {return mRootMenu->subItems();}
+    QVariantList menuModel() const { return m_menuModel; }
+
+    Q_INVOKABLE void handleMenuAction(const QString& action);
+
 signals:
     void titleChanged();
     void controllerInitialized();
+    void menuModelChanged();
 public slots:
     void switchLanguage(UILanguage::LanguageType languageType);
-private slots:
-    void onMenuItemTriggered(int itemIndex);
 protected:
     virtual void init() override;
 private:
+    void buildMenuModel();
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
-    MenuItemModel* mRootMenu{nullptr};
+    QVariantList m_menuModel;
 };
