@@ -1800,22 +1800,22 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="297"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="348"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="301"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="352"/>
         <source>Copy to Clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="305"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="356"/>
         <source>Show in Explorer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="321"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="372"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>

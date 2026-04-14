@@ -31,7 +31,7 @@ FocusScope {
 
         function onCaptureCompleted(filePath) {
             console.log("Screenshot saved:", filePath)
-            folderView.scrollToLatest()
+            folderView.scrollToFile(filePath)
         }
 
         function onOverlayScreenshotReady(base64, width, height) {

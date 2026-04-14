@@ -34,7 +34,7 @@ FocusScope {
         target: controller
 
         function onRecordingCompleted(filePath) {
-            folderView.scrollToLatest()
+            folderView.scrollToFile(filePath)
         }
 
         function onErrorOccurred(message) {
@@ -74,7 +74,7 @@ FocusScope {
             controller: root.controller
             onRecordingFinished: function(filePath) {
                 root.activeRegionSelector = null
-                folderView.scrollToLatest()
+                folderView.scrollToFile(filePath)
             }
             Component.onDestruction: {
                 if (root.activeRegionSelector === this)

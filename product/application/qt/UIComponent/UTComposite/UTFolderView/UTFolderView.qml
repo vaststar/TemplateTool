@@ -29,7 +29,7 @@ BaseFolderView {
     id: control
 
     // ─── Required ───
-    property url folderUrl
+    required property url folderUrl
     property var nameFilters: []
 
     // ─── Configuration ───
@@ -68,8 +68,15 @@ BaseFolderView {
         _refreshTimer.restart()
     }
 
+    function scrollToFile(filePath) {
+        _pendingFilePath = filePath
+        _pendingLatest = false
+        refresh()
+    }
+
     function scrollToLatest() {
-        _scrollPending = true
+        _pendingLatest = true
+        _pendingFilePath = ""
         refresh()
     }
 
@@ -83,7 +90,8 @@ BaseFolderView {
     property string _viewMode: initialViewMode
     property int _selectedIndex: -1
     property string _selectedFilePath: ""
-    property bool _scrollPending: false
+    property string _pendingFilePath: ""
+    property bool   _pendingLatest: false
 
     Timer {
         id: _refreshTimer
@@ -95,9 +103,9 @@ BaseFolderView {
     Connections {
         target: folderModel
         function onStatusChanged() {
-            if (control._scrollPending && folderModel.status === FolderListModel.Ready) {
-                control._scrollPending = false
-                Qt.callLater(_doScrollToLatest)
+            if ((control._pendingFilePath !== "" || control._pendingLatest)
+                && folderModel.status === FolderListModel.Ready) {
+                Qt.callLater(_doScrollPending)
             }
         }
     }
@@ -120,15 +128,58 @@ BaseFolderView {
         }
     }
 
-    function _doScrollToLatest() {
+    function _doScrollPending() {
         if (folderModel.count <= 0) return
-        // Sorted by date descending, so newest is at index 0
-        _selectItem(0)
-        if (_viewMode === "grid") {
-            _gridView.gridView.positionViewAtIndex(0, GridView.Beginning)
-        } else {
-            _detailContainer.listView.positionViewAtIndex(0, ListView.Beginning)
+
+        var targetIndex = -1
+
+        if (_pendingFilePath !== "") {
+            targetIndex = _findIndexByFilePath(_pendingFilePath)
+            _pendingFilePath = ""
+        } else if (_pendingLatest) {
+            targetIndex = _findLatestIndex()
+            _pendingLatest = false
         }
+
+        if (targetIndex < 0) return
+        _selectItem(targetIndex)
+        _scrollViewToIndex(targetIndex)
+    }
+
+    function _findIndexByFilePath(path) {
+        var needle = _toLocalPath(path)
+        for (var i = 0; i < folderModel.count; i++) {
+            if (_toLocalPath(folderModel.get(i, "filePath")) === needle)
+                return i
+        }
+        return -1
+    }
+
+    // Strip file:// scheme, decode percent-encoding, normalise slashes & case
+    function _toLocalPath(p) {
+        var s = decodeURIComponent(String(p))
+        if (s.startsWith("file:///"))
+            s = s.substring(8)          // file:///C:/foo → C:/foo
+        else if (s.startsWith("file://"))
+            s = s.substring(7)          // file:///foo (Unix) → /foo
+        return s.replace(/\\/g, "/").toLowerCase()
+    }
+
+    function _findLatestIndex() {
+        var best = 0
+        var bestTime = folderModel.get(0, "fileModified")
+        for (var i = 1; i < folderModel.count; i++) {
+            var t = folderModel.get(i, "fileModified")
+            if (t > bestTime) { bestTime = t; best = i }
+        }
+        return best
+    }
+
+    function _scrollViewToIndex(index) {
+        if (_viewMode === "grid")
+            _gridView.gridView.positionViewAtIndex(index, GridView.Beginning)
+        else
+            _detailContainer.listView.positionViewAtIndex(index, ListView.Beginning)
     }
 
     function _handleItemClick(index, mouseButton) {
@@ -149,7 +200,7 @@ BaseFolderView {
         nameFilters: control.nameFilters
         showDirs: false
         sortField: FolderListModel.Time
-        sortReversed: true   // newest first
+        sortReversed: false   // newest first
     }
 
     // ─── Layout ───
