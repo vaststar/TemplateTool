@@ -49,6 +49,7 @@ set(MODULE_QML_TARGET_FILES
     UTMenu/UTDynamicMenu.qml
     UTButton/UTButton.qml
     UTButton/UTImageButton.qml
+    UTCheckBox/UTCheckBox.qml
     UTComboBox/UTComboBox.qml
     UTFocusItem/UTFocusItem.qml
     UTComponentUtil/UTComponentUtil.js
@@ -58,6 +59,8 @@ set(MODULE_QML_TARGET_FILES
     UTTabBar/UTTabBar.qml
     UTTabButton/UTTabButton.qml
     UTScrollBar/UTScrollBar.qml
+    UTSpinBox/UTSpinBox.qml
+    UTSwitch/UTSwitch.qml
     UTText/UTText.qml
     UTToolButton/UTToolButton.qml
     UTToolTip/UTToolTip.qml

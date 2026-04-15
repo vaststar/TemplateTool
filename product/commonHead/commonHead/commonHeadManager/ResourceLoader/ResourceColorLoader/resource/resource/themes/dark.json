@@ -393,6 +393,69 @@
       "color": {
         "normal": "neutral-500"
       }
+    },
+    {
+      "token": "switch-track",
+      "color": {
+        "normal": "neutral-600",
+        "hovered": "neutral-500",
+        "pressed": "neutral-400",
+        "disabled": "neutral-700",
+        "checked": "blue-500"
+      }
+    },
+    {
+      "token": "switch-thumb",
+      "color": {
+        "normal": "neutral-200",
+        "disabled": "neutral-500"
+      }
+    },
+    {
+      "token": "checkbox-box",
+      "color": {
+        "normal": "neutral-800",
+        "hovered": "neutral-700",
+        "pressed": "neutral-600",
+        "disabled": "neutral-700",
+        "checked": "blue-500"
+      }
+    },
+    {
+      "token": "checkbox-check",
+      "color": {
+        "normal": "neutral-50"
+      }
+    },
+    {
+      "token": "checkbox-text",
+      "color": {
+        "normal": "neutral-200",
+        "disabled": "neutral-500"
+      }
+    },
+    {
+      "token": "spinbox-background",
+      "color": {
+        "normal": "neutral-900",
+        "disabled": "neutral-700"
+      }
+    },
+    {
+      "token": "spinbox-text",
+      "color": {
+        "normal": "neutral-100",
+        "disabled": "neutral-500"
+      }
+    },
+    {
+      "token": "spinbox-button",
+      "color": {
+        "normal": "neutral-700",
+        "hovered": "neutral-600",
+        "pressed": "neutral-500",
+        "disabled": "neutral-700"
+      }
     }
   ]
 }

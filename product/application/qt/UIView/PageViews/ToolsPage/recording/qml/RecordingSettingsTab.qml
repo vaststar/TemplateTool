@@ -21,6 +21,7 @@ Item {
     ScrollView {
         anchors.fill: parent
         contentWidth: availableWidth
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         ColumnLayout {
             width: parent.width
@@ -171,7 +172,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        CheckBox {
+                        UTCheckBox {
                             id: micCheckBox
                             checked: controller.enableMicrophone
                             onToggled: controller.enableMicrophone = checked
@@ -220,7 +221,7 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        CheckBox {
+                        UTCheckBox {
                             id: sysAudioCheckBox
                             checked: controller.enableSystemAudio
                             onToggled: controller.enableSystemAudio = checked

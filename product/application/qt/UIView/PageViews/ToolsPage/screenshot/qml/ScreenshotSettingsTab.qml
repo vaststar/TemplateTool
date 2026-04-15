@@ -13,21 +13,38 @@ Item {
 
     required property var controller
 
+    // Section style helpers
+    readonly property color _sectionBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
+    readonly property color _sectionBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
+    readonly property color _sectionTitle: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title, UIColorState.Normal)
+
     ScrollView {
         anchors.fill: parent
         contentWidth: availableWidth
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         ColumnLayout {
             width: parent.width
             spacing: 24
 
-            // === Output Settings ===
-            GroupBox {
+            // === Output Settings Section ===
+            Rectangle {
                 Layout.fillWidth: true
-                title: qsTr("Output Settings")
+                implicitHeight: outputCol.implicitHeight + 52
+                color: root._sectionBg
+                border.color: root._sectionBorder
+                border.width: 1
+                radius: 4
 
                 ColumnLayout {
-                    anchors.fill: parent
+                    id: outputCol
+                    anchors {
+                        fill: parent
+                        topMargin: 36
+                        leftMargin: 16
+                        rightMargin: 16
+                        bottomMargin: 16
+                    }
                     spacing: 16
 
                     // Output directory
@@ -84,15 +101,35 @@ Item {
                         }
                     }
                 }
+
+                // Section title
+                UTText {
+                    x: 12
+                    y: 10
+                    text: qsTr("Output Settings")
+                    fontEnum: UIFontToken.Body_Text_Medium
+                    color: root._sectionTitle
+                }
             }
 
-            // === Capture Settings ===
-            GroupBox {
+            // === Capture Settings Section ===
+            Rectangle {
                 Layout.fillWidth: true
-                title: qsTr("Capture Settings")
+                implicitHeight: captureCol.implicitHeight + 52
+                color: root._sectionBg
+                border.color: root._sectionBorder
+                border.width: 1
+                radius: 4
 
                 ColumnLayout {
-                    anchors.fill: parent
+                    id: captureCol
+                    anchors {
+                        fill: parent
+                        topMargin: 36
+                        leftMargin: 16
+                        rightMargin: 16
+                        bottomMargin: 16
+                    }
                     spacing: 16
 
                     // Delay
@@ -142,14 +179,10 @@ Item {
                             Layout.preferredWidth: 120
                         }
 
-                        Switch {
+                        UTSwitch {
                             id: timestampSwitch
                             checked: controller.includeTimestamp
-                            onCheckedChanged: {
-                                if (checked !== controller.includeTimestamp) {
-                                    controller.includeTimestamp = checked
-                                }
-                            }
+                            onToggled: controller.includeTimestamp = checked
                         }
 
                         UTText {
@@ -159,10 +192,16 @@ Item {
                         }
                     }
                 }
-            }
 
-            // Spacer
-            Item { Layout.fillHeight: true; Layout.minimumHeight: 20 }
+                // Section title
+                UTText {
+                    x: 12
+                    y: 10
+                    text: qsTr("Capture Settings")
+                    fontEnum: UIFontToken.Body_Text_Medium
+                    color: root._sectionTitle
+                }
+            }
         }
     }
 

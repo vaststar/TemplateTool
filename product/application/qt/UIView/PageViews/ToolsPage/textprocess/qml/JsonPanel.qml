@@ -39,14 +39,12 @@ Item {
                 colorEnum: UIColorToken.Content_Text
             }
 
-            SpinBox {
+            UTSpinBox {
                 id: indentSpinBox
                 from: 0
                 to: 8
                 value: controller.indentSize
                 onValueChanged: controller.indentSize = value
-                font: jsonPanel._inputFont
-                palette.buttonText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
             }
         }
 

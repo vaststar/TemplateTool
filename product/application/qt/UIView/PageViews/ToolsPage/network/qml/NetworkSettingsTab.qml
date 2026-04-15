@@ -28,20 +28,6 @@ Item {
         background: Rectangle { color: root._inputBg; border.color: parent.activeFocus ? root._accentColor : root._inputBorder; border.width: 1; radius: 4 }
     }
 
-    component ThemedCheckBox : CheckBox {
-        font: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-        indicator: Rectangle {
-            implicitWidth: 18; implicitHeight: 18; x: 2; y: parent.height / 2 - height / 2; radius: 3
-            color: parent.checked ? root._accentColor : root._inputBg
-            border.color: parent.checked ? root._accentColor : root._inputBorder; border.width: 1
-            Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 13; font.bold: true; color: "white"; visible: parent.parent.checked }
-        }
-        contentItem: UTText {
-            text: parent.text; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text
-            leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
-        }
-    }
-
     ScrollView {
         anchors.fill: parent; clip: true
 
@@ -72,14 +58,14 @@ Item {
                     }
 
                     UTText { text: qsTr("System Proxy:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                    ThemedCheckBox {
+                    UTCheckBox {
                         text: qsTr("Automatically configure system proxy on start/stop")
                         checked: root.controller.autoSystemProxy
                         onToggled: root.controller.autoSystemProxy = checked
                     }
 
                     UTText { text: qsTr("Intercept:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                    ThemedCheckBox {
+                    UTCheckBox {
                         text: qsTr("Enable request interception (requires breakpoint rules)")
                         checked: root.controller.interceptEnabled
                         onToggled: root.controller.interceptEnabled = checked

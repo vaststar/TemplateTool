@@ -33,6 +33,7 @@ BaseScrollBar {
 
     implicitWidth: control.horizontal ? 200 : control.scrollBarWidth
     implicitHeight: control.horizontal ? control.scrollBarWidth : 200
+    visible: control.size < 1.0
 
     // No padding — arrows are drawn inside the background, not via ScrollBar padding.
     // ScrollBar.padding shifts the contentItem (thumb) area, which causes misalignment.
@@ -52,7 +53,6 @@ BaseScrollBar {
 
         radius: control.thumbWidth / 2
         color: UTComponentUtil.getItemUIColor(control, control.thumbColorEnum)
-        visible: control.size < 1.0
 
         Behavior on color {
             ColorAnimation { duration: 120 }

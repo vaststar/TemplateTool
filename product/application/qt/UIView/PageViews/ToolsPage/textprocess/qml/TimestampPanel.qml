@@ -146,12 +146,10 @@ Item {
                             }
                         }
 
-                        CheckBox {
+                        UTCheckBox {
                             text: qsTr("Milliseconds")
                             checked: controller.isMilliseconds
-                            onCheckedChanged: controller.isMilliseconds = checked
-                            font: root._inputFont
-                            palette.windowText: root._textColor
+                            onToggled: controller.isMilliseconds = checked
                         }
 
                         UTButton {

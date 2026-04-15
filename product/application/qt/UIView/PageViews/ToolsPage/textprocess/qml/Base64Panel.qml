@@ -32,13 +32,11 @@ Item {
         RowLayout {
             spacing: 16
 
-            CheckBox {
+            UTCheckBox {
                 id: urlSafeCheck
                 text: qsTr("URL Safe Mode")
                 checked: controller.urlSafe
-                onCheckedChanged: controller.urlSafe = checked
-                font: base64Panel._inputFont
-                palette.windowText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
+                onToggled: controller.urlSafe = checked
             }
         }
 

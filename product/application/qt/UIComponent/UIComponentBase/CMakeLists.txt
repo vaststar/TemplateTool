@@ -41,6 +41,7 @@ set(MODULE_QML_TARGET_URI
 )
 set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
+    BaseCheckBox/BaseCheckBox.qml
     BaseComboBox/BaseComboBox.qml
     BaseFocusItem/BaseFocusItem.qml
     BaseLabel/BaseLabel.qml
@@ -51,6 +52,8 @@ set(MODULE_QML_TARGET_FILES
     BaseText/BaseText.qml
     BaseFolderView/BaseFolderView.qml
     BaseScrollBar/BaseScrollBar.qml
+    BaseSpinBox/BaseSpinBox.qml
+    BaseSwitch/BaseSwitch.qml
     BaseToolButton/BaseToolButton.qml
     BaseToolTip/BaseToolTip.qml
     BaseTreeView/BaseTreeView.qml

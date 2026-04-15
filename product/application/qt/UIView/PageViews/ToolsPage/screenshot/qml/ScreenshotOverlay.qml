@@ -472,12 +472,11 @@ Window {
                     placeholderText: qsTr("Enter text...")
                 }
 
-                SpinBox {
+                UTSpinBox {
                     id: fontSizeBox
                     from: 8
                     to: 72
                     value: 16
-                    editable: true
                 }
             }
 
