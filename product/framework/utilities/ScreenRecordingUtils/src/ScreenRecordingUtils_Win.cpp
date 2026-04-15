@@ -200,13 +200,6 @@ std::vector<AudioDeviceInfo> ScreenRecordingUtils_Win::enumerateAudioDevices()
                                   formFactor == Handset);
 
                     AudioDeviceInfo info;
-                    if (pwszId)
-                    {
-                        int len = WideCharToMultiByte(CP_UTF8, 0, pwszId, -1, nullptr, 0, nullptr, nullptr);
-                        std::string id(len - 1, '\0');
-                        WideCharToMultiByte(CP_UTF8, 0, pwszId, -1, id.data(), len, nullptr, nullptr);
-                        info.id = id;
-                    }
                     if (varName.vt == VT_LPWSTR)
                     {
                         int len = WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1, nullptr, 0, nullptr, nullptr);
@@ -214,6 +207,10 @@ std::vector<AudioDeviceInfo> ScreenRecordingUtils_Win::enumerateAudioDevices()
                         WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1, name.data(), len, nullptr, nullptr);
                         info.displayName = name;
                     }
+                    // Use displayName as the id because FFmpeg's DirectShow
+                    // input (`-f dshow`) matches devices by friendly name,
+                    // not by the WASAPI endpoint id returned by GetId().
+                    info.id = info.displayName;
                     info.isInput = isMic;
                     devices.push_back(std::move(info));
 
