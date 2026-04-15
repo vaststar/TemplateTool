@@ -321,7 +321,9 @@ BaseFolderView {
         // Status bar
         RowLayout {
             Layout.fillWidth: true
-            Layout.topMargin: 4
+            Layout.topMargin: 6
+            Layout.bottomMargin: 4
+            Layout.rightMargin: 4
             spacing: 12
 
             UTText {
