@@ -13,11 +13,6 @@ Item {
 
     required property var controller
 
-    // Section style helpers
-    readonly property color _sectionBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
-    readonly property color _sectionBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
-    readonly property color _sectionTitle: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title, UIColorState.Normal)
-
     ScrollView {
         anchors.fill: parent
         contentWidth: availableWidth
@@ -28,23 +23,12 @@ Item {
             spacing: 24
 
             // === Output Settings Section ===
-            Rectangle {
+            UTGroupBox {
                 Layout.fillWidth: true
-                implicitHeight: outputCol.implicitHeight + 52
-                color: root._sectionBg
-                border.color: root._sectionBorder
-                border.width: 1
-                radius: 4
+                title: qsTr("Output Settings")
 
                 ColumnLayout {
-                    id: outputCol
-                    anchors {
-                        fill: parent
-                        topMargin: 36
-                        leftMargin: 16
-                        rightMargin: 16
-                        bottomMargin: 16
-                    }
+                    width: parent.width
                     spacing: 16
 
                     // Output directory
@@ -101,35 +85,15 @@ Item {
                         }
                     }
                 }
-
-                // Section title
-                UTText {
-                    x: 12
-                    y: 10
-                    text: qsTr("Output Settings")
-                    fontEnum: UIFontToken.Body_Text_Medium
-                    color: root._sectionTitle
-                }
             }
 
             // === Capture Settings Section ===
-            Rectangle {
+            UTGroupBox {
                 Layout.fillWidth: true
-                implicitHeight: captureCol.implicitHeight + 52
-                color: root._sectionBg
-                border.color: root._sectionBorder
-                border.width: 1
-                radius: 4
+                title: qsTr("Capture Settings")
 
                 ColumnLayout {
-                    id: captureCol
-                    anchors {
-                        fill: parent
-                        topMargin: 36
-                        leftMargin: 16
-                        rightMargin: 16
-                        bottomMargin: 16
-                    }
+                    width: parent.width
                     spacing: 16
 
                     // Delay
@@ -191,15 +155,6 @@ Item {
                             colorEnum: UIColorToken.Content_Secondary_Text
                         }
                     }
-                }
-
-                // Section title
-                UTText {
-                    x: 12
-                    y: 10
-                    text: qsTr("Capture Settings")
-                    fontEnum: UIFontToken.Body_Text_Medium
-                    color: root._sectionTitle
                 }
             }
         }

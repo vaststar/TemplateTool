@@ -1353,82 +1353,82 @@ Press ESC to cancel</source>
 <context>
     <name>RecordingSettingsTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="103"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="28"/>
         <source>Output Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="56"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="40"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="69"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="53"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="64"/>
         <source>Video format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="206"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="170"/>
         <source>⚠ Microphone permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Microphone.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="219"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="183"/>
         <source>System Audio:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="291"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="87"/>
         <source>Recording Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="135"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="99"/>
         <source>Frame rate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="143"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="107"/>
         <source>15 fps (small size)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="144"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="108"/>
         <source>30 fps (standard)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="145"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="109"/>
         <source>60 fps (smooth)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="170"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="134"/>
         <source>Microphone:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="255"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="219"/>
         <source>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="268"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="232"/>
         <source>FFmpeg:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="276"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="240"/>
         <source>Not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="301"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="256"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1611,72 +1611,72 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotSettingsTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="109"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="28"/>
         <source>Output Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="56"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="40"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="69"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="53"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="64"/>
         <source>Image format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="98"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="82"/>
         <source>PNG for quality, JPG for smaller size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="200"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="93"/>
         <source>Capture Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="141"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="105"/>
         <source>Default delay:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="149"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="113"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="150"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="114"/>
         <source>3 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="151"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="115"/>
         <source>5 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="152"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="116"/>
         <source>10 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="177"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="141"/>
         <source>Include timestamp:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="189"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="153"/>
         <source>Add date/time watermark to screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="210"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="165"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>
