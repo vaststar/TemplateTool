@@ -465,7 +465,7 @@ Window {
             contentItem: ColumnLayout {
                 spacing: 12
 
-                TextField {
+                UTTextField {
                     id: textField
                     Layout.fillWidth: true
                     Layout.preferredWidth: 200

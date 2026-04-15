@@ -15,19 +15,6 @@ Dialog {
     readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
     readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
     readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
-    readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
-    readonly property color _inputText:       UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,         UIColorState.Normal)
-    readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
-    readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
-    readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
-    readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
-
-    component ThemedInput : TextField {
-        font: root._monoFont; color: root._inputText
-        placeholderTextColor: root._inputPlaceholder
-        background: Rectangle { color: root._inputBg; border.color: parent.activeFocus ? root._accentColor : root._inputBorder; border.width: 1; radius: 4 }
-    }
 
     function openWithPattern(pattern) {
         ptPattern.text = pattern
@@ -50,9 +37,9 @@ Dialog {
         GridLayout {
             columns: 2; columnSpacing: 10; rowSpacing: 8; Layout.fillWidth: true
             UTText { text: qsTr("Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-            ThemedInput { id: ptPattern; Layout.fillWidth: true; placeholderText: qsTr("Regex pattern (e.g. /api/user.*)") }
+            UTTextField { id: ptPattern; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Regex pattern (e.g. /api/user.*)") }
             UTText { text: qsTr("Test URL:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-            ThemedInput { id: ptTestUrl; Layout.fillWidth: true; placeholderText: qsTr("https://example.com/api/user/123") }
+            UTTextField { id: ptTestUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("https://example.com/api/user/123") }
         }
         RowLayout {
             spacing: 8; Layout.alignment: Qt.AlignHCenter

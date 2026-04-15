@@ -55,23 +55,11 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 120
 
-                TextArea {
+                UTTextArea {
                     id: inputArea
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
                     placeholderText: qsTr("Enter text here...")
-                    placeholderTextColor: base64Panel._inputPlaceholder
-                    wrapMode: TextArea.Wrap
-                    color: base64Panel._inputText
-                    font: base64Panel._inputFont
-                    background: Rectangle {
-                        color: base64Panel._inputBg
-                        border.color: inputArea.activeFocus
-                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-                            : base64Panel._inputBorder
-                        border.width: 1
-                        radius: 4
-                    }
                 }
             }
         }
@@ -129,21 +117,10 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                TextArea {
+                UTTextArea {
                     id: outputArea
                     text: controller.outputText
                     readOnly: true
-                    wrapMode: TextArea.Wrap
-                    color: base64Panel._inputText
-                    font: base64Panel._inputFont
-                    background: Rectangle {
-                        color: base64Panel._inputBg
-                        border.color: outputArea.activeFocus
-                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-                            : base64Panel._inputBorder
-                        border.width: 1
-                        radius: 4
-                    }
                 }
             }
         }

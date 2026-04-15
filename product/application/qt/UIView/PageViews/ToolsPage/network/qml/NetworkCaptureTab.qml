@@ -17,11 +17,9 @@ Item {
     readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
     readonly property color _inputText:       UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,         UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
-    readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
     readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
     readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
     readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
-    readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
     readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
     readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
     readonly property color _headerHover:     Qt.darker(_sectionBg, 1.15)
@@ -254,13 +252,12 @@ Item {
                             Row {
                                 anchors.fill: parent; spacing: 4; anchors.verticalCenter: parent.verticalCenter
                                 UTText { text: qsTr("URL"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title; anchors.verticalCenter: parent.verticalCenter }
-                                TextField {
+                                UTTextField {
                                     id: filterInput
-                                    width: parent.width - 40; height: 22; anchors.verticalCenter: parent.verticalCenter
-                                    placeholderText: qsTr("Filter..."); placeholderTextColor: root._inputPlaceholder
-                                    font: root._monoFont; color: root._inputText
+                                    width: parent.width - 40; fieldHeight: 22; anchors.verticalCenter: parent.verticalCenter
+                                    placeholderText: qsTr("Filter...")
+                                    fontEnum: UIFontToken.Monospace_Text
                                     leftPadding: 4; rightPadding: 4; topPadding: 2; bottomPadding: 2
-                                    background: Rectangle { color: root._inputBg; border.color: filterInput.activeFocus ? root._accentColor : root._inputBorder; border.width: 1; radius: 3 }
                                 }
                             }
                         }
@@ -459,10 +456,9 @@ Item {
                     ScrollView {
                         Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                        TextArea {
+                        UTTextArea {
                             text: root.controller.requestDetailText; readOnly: true
-                            wrapMode: TextEdit.Wrap; font: root._monoFont; color: root._inputText; padding: 6
-                            background: Rectangle { color: root._inputBg; radius: 2 }
+                            padding: 6; borderRadius: 2
                         }
                     }
                 }
@@ -497,10 +493,9 @@ Item {
                     ScrollView {
                         Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                        TextArea {
+                        UTTextArea {
                             text: root.controller.responseDetailText; readOnly: true
-                            wrapMode: TextEdit.Wrap; font: root._monoFont; color: root._inputText; padding: 6
-                            background: Rectangle { color: root._inputBg; radius: 2 }
+                            padding: 6; borderRadius: 2
                         }
                     }
                 }

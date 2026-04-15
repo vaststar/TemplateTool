@@ -61,6 +61,8 @@ set(MODULE_QML_TARGET_FILES
     UTScrollBar/UTScrollBar.qml
     UTSpinBox/UTSpinBox.qml
     UTSwitch/UTSwitch.qml
+    UTTextArea/UTTextArea.qml
+    UTGroupBox/UTGroupBox.qml
     UTText/UTText.qml
     UTToolButton/UTToolButton.qml
     UTToolTip/UTToolTip.qml

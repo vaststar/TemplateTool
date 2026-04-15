@@ -63,23 +63,11 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 150
 
-                TextArea {
+                UTTextArea {
                     id: inputArea
                     text: controller.inputText
                     onTextChanged: controller.inputText = text
                     placeholderText: qsTr("Enter JSON here...")
-                    placeholderTextColor: jsonPanel._inputPlaceholder
-                    wrapMode: TextArea.Wrap
-                    font: jsonPanel._monoFont
-                    color: jsonPanel._inputText
-                    background: Rectangle {
-                        color: jsonPanel._inputBg
-                        border.color: inputArea.activeFocus
-                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-                            : jsonPanel._inputBorder
-                        border.width: 1
-                        radius: 4
-                    }
                 }
             }
         }
@@ -137,21 +125,10 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                TextArea {
+                UTTextArea {
                     id: outputArea
                     text: controller.outputText
                     readOnly: true
-                    wrapMode: TextArea.Wrap
-                    font: jsonPanel._monoFont
-                    color: jsonPanel._inputText
-                    background: Rectangle {
-                        color: jsonPanel._inputBg
-                        border.color: outputArea.activeFocus
-                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-                            : jsonPanel._inputBorder
-                        border.width: 1
-                        radius: 4
-                    }
                 }
             }
         }

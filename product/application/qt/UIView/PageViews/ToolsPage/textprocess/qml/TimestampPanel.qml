@@ -9,29 +9,6 @@ Item {
     id: root
     property TimestampToolController controller: TimestampToolController {}
 
-    // ── shared style helpers ──
-    readonly property color _inputBg:          UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,  UIColorState.Normal)
-    readonly property color _inputText:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,        UIColorState.Normal)
-    readonly property color _inputBorder:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,      UIColorState.Normal)
-    readonly property color _inputBorderFocus: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,      UIColorState.Focused)
-    readonly property color _inputPlaceholder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder, UIColorState.Normal)
-    readonly property color _sectionBg:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
-    readonly property color _sectionBorder:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,    UIColorState.Normal)
-    readonly property color _sectionTitle:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,     UIColorState.Normal)
-    readonly property color _textColor:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text,              UIColorState.Normal)
-    readonly property font  _inputFont:        UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-
-    // ── reusable section background ──
-    component SectionBackground: Rectangle {
-        y:      parent.topPadding - parent.bottomPadding
-        width:  parent.width
-        height: parent.height - parent.topPadding + parent.bottomPadding
-        color:  root._sectionBg
-        border.color: root._sectionBorder
-        border.width: 1
-        radius: 4
-    }
-
     // ── reusable read-only result row: label  value  [copy] ──
     component ResultRow: RowLayout {
         property string label
@@ -81,12 +58,9 @@ Item {
             // ────────────────────────────────────────────
             // Section 1: Live Clock
             // ────────────────────────────────────────────
-            GroupBox {
+            UTGroupBox {
                 Layout.fillWidth: true
                 title: qsTr("Current Time")
-                font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-                palette.windowText: root._sectionTitle
-                background: SectionBackground {}
 
                 ColumnLayout {
                     width: parent.width
@@ -115,12 +89,9 @@ Item {
             // ────────────────────────────────────────────
             // Section 2: Timestamp → DateTime
             // ────────────────────────────────────────────
-            GroupBox {
+            UTGroupBox {
                 Layout.fillWidth: true
                 title: qsTr("Timestamp → DateTime")
-                font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-                palette.windowText: root._sectionTitle
-                background: SectionBackground {}
 
                 ColumnLayout {
                     width: parent.width
@@ -130,20 +101,12 @@ Item {
                     RowLayout {
                         spacing: 8
 
-                        TextField {
+                        UTTextField {
                             id: tsInput
                             Layout.fillWidth: true
                             placeholderText: qsTr("Enter timestamp...")
-                            placeholderTextColor: root._inputPlaceholder
                             text: controller.timestampInput
                             onTextChanged: controller.timestampInput = text
-                            color: root._inputText
-                            font:  root._inputFont
-                            background: Rectangle {
-                                color: root._inputBg
-                                border.color: tsInput.activeFocus ? root._inputBorderFocus : root._inputBorder
-                                border.width: 1; radius: 4
-                            }
                         }
 
                         UTCheckBox {
@@ -168,12 +131,9 @@ Item {
             // ────────────────────────────────────────────
             // Section 3: DateTime → Timestamp
             // ────────────────────────────────────────────
-            GroupBox {
+            UTGroupBox {
                 Layout.fillWidth: true
                 title: qsTr("DateTime → Timestamp")
-                font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-                palette.windowText: root._sectionTitle
-                background: SectionBackground {}
 
                 ColumnLayout {
                     width: parent.width
@@ -183,20 +143,12 @@ Item {
                     RowLayout {
                         spacing: 8
 
-                        TextField {
+                        UTTextField {
                             id: dtInput
                             Layout.fillWidth: true
                             placeholderText: qsTr("Format: YYYY-MM-DD HH:MM:SS")
-                            placeholderTextColor: root._inputPlaceholder
                             text: controller.dateTimeInput
                             onTextChanged: controller.dateTimeInput = text
-                            color: root._inputText
-                            font:  root._inputFont
-                            background: Rectangle {
-                                color: root._inputBg
-                                border.color: dtInput.activeFocus ? root._inputBorderFocus : root._inputBorder
-                                border.width: 1; radius: 4
-                            }
                         }
 
                         UTComboBox {

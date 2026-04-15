@@ -54,6 +54,8 @@ set(MODULE_QML_TARGET_FILES
     BaseScrollBar/BaseScrollBar.qml
     BaseSpinBox/BaseSpinBox.qml
     BaseSwitch/BaseSwitch.qml
+    BaseTextArea/BaseTextArea.qml
+    BaseGroupBox/BaseGroupBox.qml
     BaseToolButton/BaseToolButton.qml
     BaseToolTip/BaseToolTip.qml
     BaseTreeView/BaseTreeView.qml

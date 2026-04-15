@@ -32,32 +32,8 @@ Item {
     readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
     readonly property color _headerHover:     Qt.darker(_sectionBg, 1.15)
     readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
-    readonly property color _inputText:       UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,         UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
-    readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
     readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
-    readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
-
-    component ThemedInput : TextField {
-        font: root._monoFont; color: root._inputText
-        placeholderTextColor: root._inputPlaceholder
-        background: Rectangle { color: root._inputBg; border.color: parent.activeFocus ? root._accentColor : root._inputBorder; border.width: 1; radius: 4 }
-    }
-
-    component ThemedCheckBox : CheckBox {
-        font: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-        indicator: Rectangle {
-            implicitWidth: 18; implicitHeight: 18; x: 2; y: parent.height / 2 - height / 2; radius: 3
-            color: parent.checked ? root._accentColor : root._inputBg
-            border.color: parent.checked ? root._accentColor : root._inputBorder; border.width: 1
-            Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 13; font.bold: true; color: "white"; visible: parent.parent.checked }
-        }
-        contentItem: UTText {
-            text: parent.text; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text
-            leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
-        }
-    }
 
     RowLayout {
         anchors.fill: parent; spacing: 0
@@ -110,16 +86,16 @@ Item {
                     GridLayout {
                         columns: 4; columnSpacing: 8; rowSpacing: 6; Layout.fillWidth: true
                         UTText { text: qsTr("URL Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        ThemedInput { id: mockUrl; Layout.fillWidth: true; Layout.columnSpan: 2; placeholderText: qsTr("e.g. /api/user.*") }
+                        UTTextField { id: mockUrl; Layout.fillWidth: true; Layout.columnSpan: 2; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("e.g. /api/user.*") }
                         UTButton { text: qsTr("🧪 Test"); onClicked: root.testPattern(mockUrl.text) }
                         UTText { text: qsTr("Status:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        ThemedInput { id: mockStatus; implicitWidth: 70; placeholderText: "200"; validator: IntValidator { bottom: 100; top: 599 } }
+                        UTTextField { id: mockStatus; implicitWidth: 70; fontEnum: UIFontToken.Monospace_Text; placeholderText: "200"; validator: IntValidator { bottom: 100; top: 599 } }
                         UTText { text: qsTr("Content-Type:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        ThemedInput { id: mockCt; implicitWidth: 180; placeholderText: "application/json"; text: "application/json" }
+                        UTTextField { id: mockCt; implicitWidth: 180; fontEnum: UIFontToken.Monospace_Text; placeholderText: "application/json"; text: "application/json" }
                         UTText { text: qsTr("Headers:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        ThemedInput { id: mockHeaders; Layout.fillWidth: true; Layout.columnSpan: 3; placeholderText: qsTr("X-Custom: value  (one per line or comma-separated)") }
+                        UTTextField { id: mockHeaders; Layout.fillWidth: true; Layout.columnSpan: 3; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("X-Custom: value  (one per line or comma-separated)") }
                         UTText { text: qsTr("Body:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        ThemedInput { id: mockBody; Layout.fillWidth: true; Layout.columnSpan: 3; placeholderText: qsTr("{\"message\": \"mocked\"}") }
+                        UTTextField { id: mockBody; Layout.fillWidth: true; Layout.columnSpan: 3; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("{\"message\": \"mocked\"}") }
                     }
                     RowLayout {
                         spacing: 8
@@ -171,7 +147,7 @@ Item {
 
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        ThemedInput { id: bpUrl; Layout.fillWidth: true; placeholderText: qsTr("URL pattern (regex)") }
+                        UTTextField { id: bpUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
                         ComboBox { id: bpMethod; model: ["ANY","GET","POST","PUT","DELETE"]; implicitWidth: 100 }
                         UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBreakpointRule(bpUrl.text, bpMethod.currentText); bpUrl.text=""; bpListView.model = root.controller.rulesManager.getBreakpointRules(); if (!root.controller.interceptEnabled) root.controller.interceptEnabled = true } }
                         UTButton { text: qsTr("🧪 Test"); onClicked: root.testPattern(bpUrl.text) }
@@ -278,7 +254,7 @@ Item {
                     UTText { text: qsTr("Block matching requests entirely. They will receive a 403 response."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        ThemedInput { id: blUrl; Layout.fillWidth: true; placeholderText: qsTr("URL pattern to block (regex)") }
+                        UTTextField { id: blUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern to block (regex)") }
                         UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBlacklistRule(blUrl.text); blUrl.text=""; blListView.model = root.controller.rulesManager.getBlacklistRules() } }
                     }
                     Rectangle {
@@ -308,8 +284,8 @@ Item {
                     UTText { text: qsTr("Serve a local file instead of the remote response for matching URLs."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        ThemedInput { id: mlUrl; Layout.fillWidth: true; placeholderText: qsTr("URL pattern (regex)") }
-                        ThemedInput { id: mlPath; Layout.fillWidth: true; placeholderText: qsTr("Local file path") }
+                        UTTextField { id: mlUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
+                        UTTextField { id: mlPath; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Local file path") }
                         UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapLocalRule(mlUrl.text, mlPath.text); mlUrl.text=""; mlPath.text=""; mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
                     }
                     Rectangle {
@@ -338,8 +314,8 @@ Item {
                     UTText { text: qsTr("Redirect matching requests to a different URL."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
-                        ThemedInput { id: mrSrc; Layout.fillWidth: true; placeholderText: qsTr("Source URL pattern (regex)") }
-                        ThemedInput { id: mrDest; Layout.fillWidth: true; placeholderText: qsTr("Destination URL") }
+                        UTTextField { id: mrSrc; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Source URL pattern (regex)") }
+                        UTTextField { id: mrDest; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Destination URL") }
                         UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapRemoteRule(mrSrc.text, mrDest.text); mrSrc.text=""; mrDest.text=""; mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
                     }
                     Rectangle {
@@ -367,7 +343,7 @@ Item {
                     UTText { text: qsTr("Bandwidth Throttle"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
                     UTText { text: qsTr("Simulate slow network conditions by limiting bandwidth."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
 
-                    ThemedCheckBox { id: throttleEnabled; text: qsTr("Enable Throttle") }
+                    UTCheckBox { id: throttleEnabled; text: qsTr("Enable Throttle") }
 
                     GridLayout {
                         columns: 3; columnSpacing: 12; rowSpacing: 8; Layout.fillWidth: true

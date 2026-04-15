@@ -57,9 +57,9 @@ Dialog {
             color: root._inputBg; border.color: root._inputBorder; border.width: 1
             ScrollView {
                 anchors.fill: parent; clip: true
-                TextArea {
+                UTTextArea {
                     id: mdBody; readOnly: true; text: root.ruleData.body || ""
-                    font: root._monoFont; color: root._inputText; padding: 6; wrapMode: TextEdit.Wrap
+                    padding: 6
                     background: null
                 }
             }

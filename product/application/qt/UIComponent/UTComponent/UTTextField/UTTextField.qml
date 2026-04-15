@@ -11,6 +11,9 @@ import UIResourceLoader 1.0
 BaseTextField {
     id: control
 
+    // === Configurable font ===
+    property var fontEnum: UIFontToken.Body_Text
+
     // === Theme colors ===
     readonly property color bgColor:           UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,  UIColorState.Normal)
     readonly property color textColor:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,        UIColorState.Normal)
@@ -20,7 +23,7 @@ BaseTextField {
 
     color: control.textColor
     placeholderTextColor: control.placeholderColor
-    font: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
+    font: UTComponentUtil.getUIFont(control.fontEnum)
 
     background: Rectangle {
         radius: control.borderRadius

@@ -9,17 +9,6 @@ Item {
     id: uuidPanel
     property UuidToolController controller: UuidToolController {}
 
-    // Shared style helpers
-    readonly property color _inputBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background, UIColorState.Normal)
-    readonly property color _inputText: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text, UIColorState.Normal)
-    readonly property color _inputBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Normal)
-    readonly property color _inputPlaceholder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder, UIColorState.Normal)
-    readonly property color _sectionBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
-    readonly property color _sectionBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
-    readonly property color _sectionTitle: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title, UIColorState.Normal)
-    readonly property font _inputFont: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font _monoFont: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
@@ -33,20 +22,9 @@ Item {
         }
 
         // Generate section
-        GroupBox {
+        UTGroupBox {
             Layout.fillWidth: true
             title: qsTr("Generate UUID")
-            font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-            palette.windowText: uuidPanel._sectionTitle
-            background: Rectangle {
-                y: parent.topPadding - parent.bottomPadding
-                width: parent.width
-                height: parent.height - parent.topPadding + parent.bottomPadding
-                color: uuidPanel._sectionBg
-                border.color: uuidPanel._sectionBorder
-                border.width: 1
-                radius: 4
-            }
 
             ColumnLayout {
                 width: parent.width
@@ -69,21 +47,12 @@ Item {
                 RowLayout {
                     spacing: 8
 
-                    TextField {
+                    UTTextField {
                         id: uuidOutput
                         Layout.fillWidth: true
                         text: controller.generatedUuid
                         readOnly: true
-                        font: uuidPanel._monoFont
-                        color: uuidPanel._inputText
-                        background: Rectangle {
-                            color: uuidPanel._inputBg
-                            border.color: uuidOutput.activeFocus
-                                ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-                                : uuidPanel._inputBorder
-                            border.width: 1
-                            radius: 4
-                        }
+                        fontEnum: UIFontToken.Monospace_Text
                     }
 
                     UTButton {
@@ -96,20 +65,9 @@ Item {
         }
 
         // Validate section
-        GroupBox {
+        UTGroupBox {
             Layout.fillWidth: true
             title: qsTr("Validate UUID")
-            font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-            palette.windowText: uuidPanel._sectionTitle
-            background: Rectangle {
-                y: parent.topPadding - parent.bottomPadding
-                width: parent.width
-                height: parent.height - parent.topPadding + parent.bottomPadding
-                color: uuidPanel._sectionBg
-                border.color: uuidPanel._sectionBorder
-                border.width: 1
-                radius: 4
-            }
 
             ColumnLayout {
                 width: parent.width
@@ -118,23 +76,13 @@ Item {
                 RowLayout {
                     spacing: 8
 
-                    TextField {
+                    UTTextField {
                         id: validateInput
                         Layout.fillWidth: true
                         placeholderText: qsTr("Enter UUID to validate...")
-                        placeholderTextColor: uuidPanel._inputPlaceholder
                         text: controller.validateInput
                         onTextChanged: controller.validateInput = text
-                        font: uuidPanel._monoFont
-                        color: uuidPanel._inputText
-                        background: Rectangle {
-                            color: uuidPanel._inputBg
-                            border.color: validateInput.activeFocus
-                                ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-                                : uuidPanel._inputBorder
-                            border.width: 1
-                            radius: 4
-                        }
+                        fontEnum: UIFontToken.Monospace_Text
                     }
 
                     UTButton {
@@ -153,21 +101,10 @@ Item {
         }
 
         // History section
-        GroupBox {
+        UTGroupBox {
             Layout.fillWidth: true
             Layout.fillHeight: true
             title: qsTr("Generation History")
-            font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-            palette.windowText: uuidPanel._sectionTitle
-            background: Rectangle {
-                y: parent.topPadding - parent.bottomPadding
-                width: parent.width
-                height: parent.height - parent.topPadding + parent.bottomPadding
-                color: uuidPanel._sectionBg
-                border.color: uuidPanel._sectionBorder
-                border.width: 1
-                radius: 4
-            }
 
             ColumnLayout {
                 width: parent.width

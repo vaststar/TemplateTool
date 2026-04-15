@@ -10,14 +10,6 @@ Item {
     id: proxyPanel
     property NetworkProxyController controller: NetworkProxyController {}
 
-    // ── Theme helpers (shared by control bar & status) ──
-    readonly property font  _inputFont:  UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:   UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
-    readonly property color _inputBg:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background, UIColorState.Normal)
-    readonly property color _inputText:  UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text, UIColorState.Normal)
-    readonly property color _inputBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Normal)
-    readonly property color _accentColor: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-
     // ── Intercepted (paused) flows model (shared by Capture + Rules tabs) ──
     ListModel { id: interceptedFlowsModel }
 
@@ -49,18 +41,13 @@ Item {
             }
 
             UTText { text: qsTr("Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-            TextField {
+            UTTextField {
                 id: proxyPortInput; implicitWidth: 60
+                fontEnum: UIFontToken.Monospace_Text
                 text: controller.proxyPort.toString()
                 enabled: !controller.proxyRunning
                 validator: IntValidator { bottom: 1024; top: 65535 }
                 onEditingFinished: controller.proxyPort = parseInt(text)
-                font: proxyPanel._monoFont; color: proxyPanel._inputText
-                background: Rectangle {
-                    color: proxyPanel._inputBg
-                    border.color: proxyPortInput.activeFocus ? proxyPanel._accentColor : proxyPanel._inputBorder
-                    border.width: 1; radius: 3
-                }
             }
 
             Rectangle { width: 10; height: 10; radius: 5; color: controller.addonConnected ? "#4CAF50" : "#9E9E9E" }

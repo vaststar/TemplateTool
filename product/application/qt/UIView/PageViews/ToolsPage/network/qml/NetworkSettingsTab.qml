@@ -11,22 +11,8 @@ Item {
     required property NetworkProxyController controller
 
     // ── Theme ──
-    readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
-    readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
-    readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
     readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
-    readonly property color _inputText:       UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,         UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
-    readonly property color _inputPlaceholder:UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Placeholder,  UIColorState.Normal)
-    readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
-    readonly property font  _inputFont:       UTComponentUtil.getUIFont(UIFontToken.Body_Text)
-    readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
-
-    component ThemedInput : TextField {
-        font: root._monoFont; color: root._inputText
-        placeholderTextColor: root._inputPlaceholder
-        background: Rectangle { color: root._inputBg; border.color: parent.activeFocus ? root._accentColor : root._inputBorder; border.width: 1; radius: 4 }
-    }
 
     ScrollView {
         anchors.fill: parent; clip: true
@@ -35,12 +21,9 @@ Item {
             width: parent.width; spacing: 16
 
             // ── Proxy Settings ──
-            GroupBox {
+            UTGroupBox {
                 Layout.fillWidth: true
                 title: qsTr("Proxy Settings")
-                font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-                palette.windowText: root._sectionTitle
-                background: Rectangle { y: parent.topPadding - parent.bottomPadding; width: parent.width; height: parent.height - parent.topPadding + parent.bottomPadding; color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 4 }
 
                 GridLayout {
                     columns: 2; columnSpacing: 16; rowSpacing: 10; width: parent.width
@@ -48,8 +31,9 @@ Item {
                     UTText { text: qsTr("Proxy Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     RowLayout {
                         spacing: 8
-                        ThemedInput {
+                        UTTextField {
                             id: settingsPort; implicitWidth: 80
+                            fontEnum: UIFontToken.Monospace_Text
                             text: root.controller.proxyPort.toString()
                             validator: IntValidator { bottom: 1024; top: 65535 }
                             onEditingFinished: root.controller.proxyPort = parseInt(text)
@@ -74,12 +58,9 @@ Item {
             }
 
             // ── Certificate ──
-            GroupBox {
+            UTGroupBox {
                 Layout.fillWidth: true
                 title: qsTr("HTTPS Certificate")
-                font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-                palette.windowText: root._sectionTitle
-                background: Rectangle { y: parent.topPadding - parent.bottomPadding; width: parent.width; height: parent.height - parent.topPadding + parent.bottomPadding; color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 4 }
 
                 ColumnLayout {
                     width: parent.width; spacing: 12
@@ -189,12 +170,9 @@ Item {
             }
 
             // ── About ──
-            GroupBox {
+            UTGroupBox {
                 Layout.fillWidth: true
                 title: qsTr("About")
-                font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
-                palette.windowText: root._sectionTitle
-                background: Rectangle { y: parent.topPadding - parent.bottomPadding; width: parent.width; height: parent.height - parent.topPadding + parent.bottomPadding; color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 4 }
 
                 GridLayout {
                     columns: 2; columnSpacing: 16; rowSpacing: 6; width: parent.width
