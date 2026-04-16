@@ -65,6 +65,9 @@ set(MODULE_QML_TARGET_FILES
     BaseMenu/BaseMenu.qml
     BaseMenu/BaseMenuItem.qml
     BaseMenu/BaseMenuSeparator.qml
+    BasePopup/BasePopup.qml
+    BaseScrollView/BaseScrollView.qml
+    BaseSlider/BaseSlider.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

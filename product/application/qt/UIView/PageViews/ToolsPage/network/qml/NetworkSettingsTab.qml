@@ -14,8 +14,8 @@ Item {
     readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
 
-    ScrollView {
-        anchors.fill: parent; clip: true
+    UTScrollView {
+        anchors.fill: parent
 
         ColumnLayout {
             width: parent.width; spacing: 16

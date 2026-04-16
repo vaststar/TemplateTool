@@ -248,113 +248,113 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="161"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="216"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="313"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="162"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="218"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="316"/>
         <source>ALL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="199"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="200"/>
         <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="254"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="452"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="256"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="455"/>
         <source>URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="258"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="260"/>
         <source>Filter...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="269"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="271"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="276"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="278"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="286"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="288"/>
         <source>Process</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="341"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="344"/>
         <source>No processes captured</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="417"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="420"/>
         <source>Waiting for requests...
 Proxy: 127.0.0.1:%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="417"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="420"/>
         <source>Click ▶ Start to begin capturing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="440"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="443"/>
         <source>Request</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="443"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="481"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="446"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="484"/>
         <source>Headers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="443"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="481"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="446"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="484"/>
         <source>Body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="443"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="446"/>
         <source>Params</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="452"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="455"/>
         <source>Copy URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="453"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="456"/>
         <source>cURL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="453"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="456"/>
         <source>Copy as cURL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="478"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="481"/>
         <source>Response</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="481"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="484"/>
         <source>Summary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="490"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="493"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="490"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkCaptureTab.qml" line="493"/>
         <source>Copy response body</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1260,12 +1260,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="384"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="385"/>
         <source>Recordings folder not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="402"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="403"/>
         <source>File not found: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1353,82 +1353,82 @@ Press ESC to cancel</source>
 <context>
     <name>RecordingSettingsTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="28"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="26"/>
         <source>Output Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="40"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="38"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="51"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="64"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="62"/>
         <source>Video format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="170"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="168"/>
         <source>⚠ Microphone permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Microphone.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="183"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="181"/>
         <source>System Audio:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="87"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="85"/>
         <source>Recording Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="99"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="97"/>
         <source>Frame rate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="105"/>
         <source>15 fps (small size)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="108"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="106"/>
         <source>30 fps (standard)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="109"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="107"/>
         <source>60 fps (smooth)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="134"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="132"/>
         <source>Microphone:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="219"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="217"/>
         <source>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="232"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="230"/>
         <source>FFmpeg:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="240"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="238"/>
         <source>Not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="256"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="254"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1501,37 +1501,37 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="154"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="147"/>
         <source>Select a Window to Capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="160"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="153"/>
         <source>%1 windows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="325"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="318"/>
         <source>Click to Capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="336"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="329"/>
         <source>Unnamed Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="398"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="391"/>
         <source>No windows found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="420"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="413"/>
         <source>Hover to preview, click to capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="428"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="421"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1611,72 +1611,72 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotSettingsTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="28"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="26"/>
         <source>Output Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="40"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="38"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="51"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="64"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="62"/>
         <source>Image format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="82"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="80"/>
         <source>PNG for quality, JPG for smaller size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="93"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="91"/>
         <source>Capture Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="105"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="103"/>
         <source>Default delay:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="111"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="114"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="112"/>
         <source>3 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="115"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="113"/>
         <source>5 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="116"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="114"/>
         <source>10 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="141"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="139"/>
         <source>Include timestamp:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="153"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="151"/>
         <source>Add date/time watermark to screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="165"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="163"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>

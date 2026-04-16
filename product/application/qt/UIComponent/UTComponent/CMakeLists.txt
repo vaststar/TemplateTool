@@ -70,6 +70,9 @@ set(MODULE_QML_TARGET_FILES
     UTListView/UTListView.qml
     UTGridView/UTGridView.qml
     UTTextField/UTTextField.qml
+    UTPopup/UTPopup.qml
+    UTScrollView/UTScrollView.qml
+    UTSlider/UTSlider.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

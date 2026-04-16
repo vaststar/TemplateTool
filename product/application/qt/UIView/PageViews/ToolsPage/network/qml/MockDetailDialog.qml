@@ -55,8 +55,8 @@ Dialog {
         Rectangle {
             Layout.fillWidth: true; implicitHeight: Math.max(80, mdBody.implicitHeight + 12); radius: 4
             color: root._inputBg; border.color: root._inputBorder; border.width: 1
-            ScrollView {
-                anchors.fill: parent; clip: true
+            UTScrollView {
+                anchors.fill: parent
                 UTTextArea {
                     id: mdBody; readOnly: true; text: root.ruleData.body || ""
                     padding: 6

@@ -350,11 +350,11 @@ Item {
                         enabled: throttleEnabled.checked; opacity: throttleEnabled.checked ? 1.0 : 0.5
 
                         UTText { text: qsTr("Download:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        Slider { id: dlSlider; from: 0; to: 10000; stepSize: 50; value: 0; Layout.fillWidth: true }
+                        UTSlider { id: dlSlider; from: 0; to: 10000; stepSize: 50; value: 0; Layout.fillWidth: true }
                         UTText { text: dlSlider.value > 0 ? qsTr("%1 KB/s").arg(dlSlider.value) : qsTr("Unlimited"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; Layout.preferredWidth: 100 }
 
                         UTText { text: qsTr("Upload:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        Slider { id: ulSlider; from: 0; to: 10000; stepSize: 50; value: 0; Layout.fillWidth: true }
+                        UTSlider { id: ulSlider; from: 0; to: 10000; stepSize: 50; value: 0; Layout.fillWidth: true }
                         UTText { text: ulSlider.value > 0 ? qsTr("%1 KB/s").arg(ulSlider.value) : qsTr("Unlimited"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; Layout.preferredWidth: 100 }
                     }
 

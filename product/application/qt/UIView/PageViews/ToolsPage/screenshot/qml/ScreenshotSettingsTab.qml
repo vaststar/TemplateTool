@@ -13,10 +13,8 @@ Item {
 
     required property var controller
 
-    ScrollView {
+    UTScrollView {
         anchors.fill: parent
-        contentWidth: availableWidth
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         ColumnLayout {
             width: parent.width

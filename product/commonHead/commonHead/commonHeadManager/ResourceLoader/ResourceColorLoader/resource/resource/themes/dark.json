@@ -456,6 +456,40 @@
         "pressed": "neutral-500",
         "disabled": "neutral-700"
       }
+    },
+    {
+      "token": "slider-track",
+      "color": {
+        "normal": "neutral-600"
+      }
+    },
+    {
+      "token": "slider-progress",
+      "color": {
+        "normal": "blue-500",
+        "disabled": "neutral-600"
+      }
+    },
+    {
+      "token": "slider-handle",
+      "color": {
+        "normal": "neutral-200",
+        "hovered": "neutral-100",
+        "pressed": "neutral-50",
+        "disabled": "neutral-500"
+      }
+    },
+    {
+      "token": "popup-background",
+      "color": {
+        "normal": "neutral-800"
+      }
+    },
+    {
+      "token": "popup-border",
+      "color": {
+        "normal": "neutral-700"
+      }
     }
   ]
 }

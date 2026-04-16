@@ -347,9 +347,10 @@ void RecordingController::refreshAudioDevices()
         QVariantMap item;
         item["id"] = QString::fromStdString(dev.id);
         item["displayName"] = QString::fromStdString(dev.displayName);
-        if (dev.isInput) {
+        if (dev.deviceType == AudioDeviceType::Microphone) {
             m_micDevices.append(item);
         } else {
+            // LoopbackCapture + OutputDevice both go into system audio list
             m_systemAudioDevices.append(item);
         }
     }

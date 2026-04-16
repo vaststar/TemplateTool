@@ -148,9 +148,10 @@ Item {
                                 }
                             }
                             MouseArea { id: methodHeaderMa; anchors.fill: parent; hoverEnabled: true; onClicked: methodPopup.open() }
-                            Popup {
+                            UTPopup {
                                 id: methodPopup; y: parent.height + 2; width: 160; padding: 4
-                                background: Rectangle { color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 4 }
+                                backgroundColorEnum: UIColorToken.Content_Section_Background
+                                borderColorEnum: UIColorToken.Content_Section_Border
                                 Column {
                                     width: parent.width; spacing: 1
                                     Rectangle {
@@ -203,9 +204,10 @@ Item {
                                 }
                             }
                             MouseArea { id: statusHeaderMa; anchors.fill: parent; hoverEnabled: true; onClicked: statusPopup.open() }
-                            Popup {
+                            UTPopup {
                                 id: statusPopup; y: parent.height + 2; width: 130; padding: 4
-                                background: Rectangle { color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 4 }
+                                backgroundColorEnum: UIColorToken.Content_Section_Background
+                                borderColorEnum: UIColorToken.Content_Section_Border
                                 Column {
                                     width: parent.width; spacing: 1
                                     Rectangle {
@@ -300,9 +302,10 @@ Item {
                                 }
                             }
 
-                            Popup {
+                            UTPopup {
                                 id: processPopup; y: parent.height + 2; width: 200; padding: 4
-                                background: Rectangle { color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 4 }
+                                backgroundColorEnum: UIColorToken.Content_Section_Background
+                                borderColorEnum: UIColorToken.Content_Section_Border
                                 Column {
                                     width: parent.width; spacing: 1
                                     Rectangle {
@@ -453,8 +456,8 @@ Item {
                             UTButton { text: qsTr("cURL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestCurl(); implicitHeight: 24; ToolTip.text: qsTr("Copy as cURL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
                         }
                     }
-                    ScrollView {
-                        Layout.fillWidth: true; Layout.fillHeight: true; clip: true
+                    UTScrollView {
+                        Layout.fillWidth: true; Layout.fillHeight: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         UTTextArea {
                             text: root.controller.requestDetailText; readOnly: true
@@ -490,8 +493,8 @@ Item {
                             UTButton { text: qsTr("Copy"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyResponseBody(); implicitHeight: 24; ToolTip.text: qsTr("Copy response body"); ToolTip.visible: hovered; ToolTip.delay: 500 }
                         }
                     }
-                    ScrollView {
-                        Layout.fillWidth: true; Layout.fillHeight: true; clip: true
+                    UTScrollView {
+                        Layout.fillWidth: true; Layout.fillHeight: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         UTTextArea {
                             text: root.controller.responseDetailText; readOnly: true

@@ -59,7 +59,7 @@ Item {
                 colorEnum: UIColorToken.Content_Secondary_Text
             }
 
-            ScrollView {
+            UTScrollView {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 150
 
@@ -121,7 +121,7 @@ Item {
                 }
             }
 
-            ScrollView {
+            UTScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 

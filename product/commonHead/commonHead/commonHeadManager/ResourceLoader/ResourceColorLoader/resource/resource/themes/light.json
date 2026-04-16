@@ -456,6 +456,40 @@
         "pressed": "gray-300",
         "disabled": "gray-100"
       }
+    },
+    {
+      "token": "slider-track",
+      "color": {
+        "normal": "gray-200"
+      }
+    },
+    {
+      "token": "slider-progress",
+      "color": {
+        "normal": "blue-600",
+        "disabled": "gray-300"
+      }
+    },
+    {
+      "token": "slider-handle",
+      "color": {
+        "normal": "gray-50",
+        "hovered": "gray-100",
+        "pressed": "gray-200",
+        "disabled": "gray-300"
+      }
+    },
+    {
+      "token": "popup-background",
+      "color": {
+        "normal": "gray-50"
+      }
+    },
+    {
+      "token": "popup-border",
+      "color": {
+        "normal": "gray-200"
+      }
     }
   ]
 }

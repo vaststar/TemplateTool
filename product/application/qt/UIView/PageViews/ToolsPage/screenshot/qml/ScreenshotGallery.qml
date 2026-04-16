@@ -105,14 +105,14 @@ FocusScope {
     }
 
     // === Window Picker Popup ===
-    Popup {
+    UTPopup {
         id: windowPicker
         anchors.centerIn: parent
         width: Math.min(540, root.width * 0.85)
         height: Math.min(520, root.height * 0.85)
         modal: true
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         padding: 0
+        borderRadius: 12
 
         property var windowModel: []
         // Cache of loaded thumbnail base64 strings keyed by windowId
@@ -129,13 +129,6 @@ FocusScope {
             thumbnailCache = {}
             // Return focus to the window capture button
             windowCaptureBtn.forceActiveFocus()
-        }
-
-        background: Rectangle {
-            radius: 12
-            color: "#1E1E1E"
-            border.color: "#3A3A3A"
-            border.width: 1
         }
 
         contentItem: ColumnLayout {

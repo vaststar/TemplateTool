@@ -124,7 +124,7 @@ Item {
                     }
                 }
 
-                ScrollView {
+                UTScrollView {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
