@@ -11,5 +11,5 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
 add_subdirectory(version)
 add_subdirectory(thirdparty)
 add_subdirectory(utilities)
-add_subdirectory(agents)
+add_subdirectory(infrastructure)
 add_subdirectory(services)
