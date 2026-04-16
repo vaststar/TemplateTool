@@ -162,10 +162,9 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
     std::ostringstream cmdLine;
     cmdLine << "\"" << config.ffmpegPath << "\""
             << " -y"
-            << " -thread_queue_size 64"
-            << " -probesize 32"
+            << " -thread_queue_size 512"
+            << " -probesize 5M"
             << " -f gdigrab"
-            << " -rtbufsize 0"
             << " -framerate " << config.fps
             << " -draw_mouse 1";
 
@@ -262,7 +261,6 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
     }
 
-    cmdLine << " -max_interleave_delta 0";
     cmdLine << " -flush_packets 1";
     cmdLine << " \"" << config.outputPath << "\"";
 
