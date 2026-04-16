@@ -290,12 +290,12 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Mac::enumerateAudioDevices()
         {
             // Virtual loopback device (e.g. BlackHole, Soundflower) — usable
             // for system audio capture.
-            devices.push_back({name, name, false});
+            devices.push_back({name, name, false, AudioDeviceType::LoopbackCapture});
         }
         else
         {
             // Input-only device — microphone.
-            devices.push_back({name, name, true});
+            devices.push_back({name, name, true, AudioDeviceType::Microphone});
         }
     }
 

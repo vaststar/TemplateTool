@@ -246,7 +246,8 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Linux::enumerateAudioDevices()
             // For output "loopback", show monitor sources
             if (!isInput && name.find(".monitor") == std::string::npos) continue;
 
-            devices.push_back({name, name, isInput});
+            AudioDeviceType devType = isInput ? AudioDeviceType::Microphone : AudioDeviceType::LoopbackCapture;
+            devices.push_back({name, name, isInput, devType});
         }
     };
 
