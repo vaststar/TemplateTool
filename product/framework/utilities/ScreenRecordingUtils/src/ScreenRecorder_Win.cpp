@@ -5,10 +5,12 @@
 #include "LoggerDefine.h"
 #include "WasapiLoopbackCapture.h"
 
-#include <cstdlib>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+
+#include <chrono>
 #include <filesystem>
-#include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -45,20 +47,37 @@ static std::string escapeDshowDeviceName(const std::string& name)
     return escaped;
 }
 
-/// Wait for a process with timeout, then force-terminate if still running.
-static bool waitForProcessWithTimeout(HANDLE hProcess, DWORD timeoutMs, std::string& errorMsg)
+// ============================================================================
+// ProcessBridge callback — logs FFmpeg stderr and exit status
+// ============================================================================
+
+class FFmpegProcessCallback final : public ucf::utilities::IProcessBridgeCallback
 {
-    DWORD waitResult = WaitForSingleObject(hProcess, timeoutMs);
-    if (waitResult == WAIT_TIMEOUT)
+public:
+    void onProcessStarted(int64_t pid) override
     {
-        SRU_LOG_WARN("Process did not exit in " << timeoutMs << "ms, force terminating");
-        TerminateProcess(hProcess, 1);
-        WaitForSingleObject(hProcess, 5000);
-        errorMsg = "FFmpeg did not exit in time, force killed";
-        return false;
+        SRU_LOG_INFO("FFmpeg started, pid=" << pid);
     }
-    return true;
-}
+    void onProcessStopped(int exitCode, bool crashed) override
+    {
+        if (exitCode == 0 && !crashed)
+        {
+            SRU_LOG_INFO("FFmpeg exited normally");
+        }
+        else
+        {
+            SRU_LOG_WARN("FFmpeg exited: code=" << exitCode << " crashed=" << crashed);
+        }
+    }
+    void onProcessError(const std::string& msg) override
+    {
+        SRU_LOG_ERROR("FFmpeg process error: " << msg);
+    }
+    void onStderr(const std::string& data) override
+    {
+        SRU_LOG_DEBUG("FFmpeg stderr: " << data);
+    }
+};
 
 // ============================================================================
 // Construction / Destruction
@@ -94,21 +113,6 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         return false;
     }
 
-    // Create a pipe for FFmpeg's stdin so we can send 'q' to stop it.
-    SECURITY_ATTRIBUTES sa{};
-    sa.nLength = sizeof(sa);
-    sa.bInheritHandle = TRUE;
-    sa.lpSecurityDescriptor = nullptr;
-
-    HANDLE hStdinRead  = nullptr;
-    HANDLE hStdinWrite = nullptr;
-    if (!CreatePipe(&hStdinRead, &hStdinWrite, &sa, 0))
-    {
-        SRU_LOG_ERROR("start: CreatePipe (stdin) failed, error=" << GetLastError());
-        return false;
-    }
-    SetHandleInformation(hStdinWrite, HANDLE_FLAG_INHERIT, 0);
-
     // ── WASAPI loopback pipe (if system audio via OutputDevice) ──
     bool useWasapiLoopback = false;
     std::string namedPipePath;
@@ -119,38 +123,26 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
 
     if (needSystemAudio && config.systemAudioDeviceType == AudioDeviceType::OutputDevice)
     {
-        // Create a named pipe for WASAPI loopback → FFmpeg.
-        // FFmpeg on Windows can open named pipes as file paths (unlike pipe:N FDs).
         namedPipePath = "\\\\.\\pipe\\sru_loopback_" + std::to_string(GetCurrentProcessId())
                       + "_" + std::to_string(GetTickCount64());
 
         hNamedPipeServer = CreateNamedPipeA(
             namedPipePath.c_str(),
-            PIPE_ACCESS_OUTBOUND,
+            PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
             PIPE_TYPE_BYTE | PIPE_WAIT,
-            1,       // max instances
-            65536,   // out buffer size
-            0,       // in buffer size (not used for outbound)
-            0,       // default timeout
-            nullptr);
+            1, 65536, 0, 0, nullptr);
 
         if (hNamedPipeServer == INVALID_HANDLE_VALUE)
         {
             SRU_LOG_ERROR("start: CreateNamedPipe failed, error=" << GetLastError());
-            CloseHandle(hStdinRead);
-            CloseHandle(hStdinWrite);
             return false;
         }
 
-        // Probe the device format BEFORE starting capture, so we can put
-        // -ar/-ac on the FFmpeg command line.
         m_loopbackCapture = std::make_unique<WasapiLoopbackCapture>();
         if (!m_loopbackCapture->probeFormat(config.systemAudioDevice))
         {
             SRU_LOG_ERROR("start: WasapiLoopbackCapture failed to probe device format");
             CloseHandle(hNamedPipeServer);
-            CloseHandle(hStdinRead);
-            CloseHandle(hStdinWrite);
             m_loopbackCapture.reset();
             return false;
         }
@@ -158,64 +150,62 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         useWasapiLoopback = true;
     }
 
-    // ── Build FFmpeg command line ──
-    std::ostringstream cmdLine;
-    cmdLine << "\"" << config.ffmpegPath << "\""
-            << " -y"
-            << " -thread_queue_size 512"
-            << " -probesize 5M"
-            << " -f gdigrab"
-            << " -framerate " << config.fps
-            << " -draw_mouse 1";
+    // ── Build FFmpeg arguments ──
+    std::vector<std::string> args;
+    args.insert(args.end(), {"-y",
+        "-thread_queue_size", "512",
+        "-probesize", "5M",
+        "-f", "gdigrab",
+        "-framerate", std::to_string(config.fps),
+        "-draw_mouse", "1"});
 
     if (config.isRegion && config.regionW > 0 && config.regionH > 0)
     {
         int w = alignToEven(config.regionW);
         int h = alignToEven(config.regionH);
-        cmdLine << " -offset_x " << config.regionX
-                << " -offset_y " << config.regionY
-                << " -video_size " << w << "x" << h;
+        args.insert(args.end(), {
+            "-offset_x", std::to_string(config.regionX),
+            "-offset_y", std::to_string(config.regionY),
+            "-video_size", std::to_string(w) + "x" + std::to_string(h)});
     }
 
-    cmdLine << " -i desktop";
+    args.insert(args.end(), {"-i", "desktop"});
 
     // ── Audio inputs ──
     bool hasAudio = (config.audioMode != AudioCaptureMode::None);
     bool needAudioMix = false;
 
-    // Microphone input (always via DirectShow)
     if (config.audioMode == AudioCaptureMode::Microphone ||
         config.audioMode == AudioCaptureMode::MicAndSystem)
     {
         std::string micName = config.micDevice.empty()
             ? "Microphone" : escapeDshowDeviceName(config.micDevice);
-        cmdLine << " -thread_queue_size 512 -f dshow -i audio=\"" << micName << "\"";
+        args.insert(args.end(), {
+            "-thread_queue_size", "512",
+            "-f", "dshow",
+            "-i", "audio=" + micName});
     }
 
-    // System audio input
     if (needSystemAudio)
     {
         if (useWasapiLoopback)
         {
-            // WASAPI loopback PCM data comes from a named pipe.
-            // -use_wallclock_as_timestamps 1 is critical: without it, FFmpeg
-            // assigns byte-offset-based timestamps starting at 0 for the raw
-            // s16le stream. The other inputs (gdigrab, dshow) use wall-clock
-            // timestamps. The amix filter would try to sync them, waiting
-            // forever for the pipe stream to "catch up" → deadlock, 0 frames.
-            cmdLine << " -use_wallclock_as_timestamps 1"
-                    << " -thread_queue_size 512"
-                    << " -f s16le"
-                    << " -ar " << m_loopbackCapture->sampleRate()
-                    << " -ac " << m_loopbackCapture->channels()
-                    << " -i \"" << namedPipePath << "\"";
+            args.insert(args.end(), {
+                "-use_wallclock_as_timestamps", "1",
+                "-thread_queue_size", "512",
+                "-f", "s16le",
+                "-ar", std::to_string(m_loopbackCapture->sampleRate()),
+                "-ac", std::to_string(m_loopbackCapture->channels()),
+                "-i", namedPipePath});
         }
         else
         {
-            // Traditional DirectShow loopback (Stereo Mix etc.)
             std::string sysName = config.systemAudioDevice.empty()
                 ? "Stereo Mix" : escapeDshowDeviceName(config.systemAudioDevice);
-            cmdLine << " -thread_queue_size 512 -f dshow -i audio=\"" << sysName << "\"";
+            args.insert(args.end(), {
+                "-thread_queue_size", "512",
+                "-f", "dshow",
+                "-i", "audio=" + sysName});
         }
 
         if (config.audioMode == AudioCaptureMode::MicAndSystem)
@@ -224,107 +214,126 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
     }
 
-    // Audio mixing filter for MicAndSystem mode.
-    // asetpts=PTS-STARTPTS resets each audio stream's timestamps to start at 0.
-    // Without this, dshow uses the DirectShow reference clock (~system uptime)
-    // while the WASAPI named pipe uses wall-clock timestamps (Unix epoch).
-    // The ~56-year gap causes amix to deadlock waiting to align them.
     if (needAudioMix)
     {
-        cmdLine << " -filter_complex \""
-                   "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,asetpts=PTS-STARTPTS[a0];"
-                   "[2:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,asetpts=PTS-STARTPTS[a1];"
-                   "[a0][a1]amix=inputs=2:duration=first:normalize=0[aout]\""
-                   " -map 0:v -map \"[aout]\"";
+        args.insert(args.end(), {
+            "-filter_complex",
+            "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,asetpts=PTS-STARTPTS[a0];"
+            "[2:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,asetpts=PTS-STARTPTS[a1];"
+            "[a0][a1]amix=inputs=2:duration=first:normalize=0[aout]",
+            "-map", "0:v", "-map", "[aout]"});
     }
 
     // Output codec settings
     if (config.videoFormat == "webm")
     {
-        cmdLine << " -c:v libvpx-vp9 -b:v 2M";
+        args.insert(args.end(), {"-c:v", "libvpx-vp9", "-b:v", "2M"});
     }
     else
     {
-        cmdLine << " -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p";
+        args.insert(args.end(), {"-c:v", "libx264", "-preset", "ultrafast",
+                                 "-tune", "zerolatency", "-pix_fmt", "yuv420p"});
     }
 
     if (hasAudio)
     {
-        cmdLine << " -ar 48000 -ac 2";
+        args.insert(args.end(), {"-ar", "48000", "-ac", "2"});
         if (config.videoFormat == "webm")
         {
-            cmdLine << " -c:a libopus -b:a 128k";
+            args.insert(args.end(), {"-c:a", "libopus", "-b:a", "128k"});
         }
         else
         {
-            cmdLine << " -c:a aac -b:a 128k";
+            args.insert(args.end(), {"-c:a", "aac", "-b:a", "128k"});
         }
     }
 
-    cmdLine << " -flush_packets 1";
-    cmdLine << " \"" << config.outputPath << "\"";
+    args.insert(args.end(), {"-flush_packets", "1", config.outputPath});
 
-    std::string cmdStr = cmdLine.str();
-    std::vector<char> cmdBuf(cmdStr.begin(), cmdStr.end());
-    cmdBuf.push_back('\0');
-
-    // Redirect FFmpeg's stderr to a log file
-    std::string logPath = config.outputPath + ".ffmpeg.log";
-    HANDLE hLogFile = CreateFileA(
-        logPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ, &sa,
-        CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-
-    STARTUPINFOA si{};
-    si.cb = sizeof(si);
-    si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-    si.hStdInput  = hStdinRead;
-    si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    si.hStdError  = (hLogFile != INVALID_HANDLE_VALUE) ? hLogFile
-                                                        : GetStdHandle(STD_ERROR_HANDLE);
-    si.wShowWindow = SW_HIDE;
-
-    PROCESS_INFORMATION pi{};
-    BOOL ok = CreateProcessA(
-        nullptr, cmdBuf.data(), nullptr, nullptr,
-        TRUE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi);
-
-    CloseHandle(hStdinRead);
-    if (hLogFile != INVALID_HANDLE_VALUE) CloseHandle(hLogFile);
-
-    if (!ok)
+    // Log the full argument list for debugging
     {
-        SRU_LOG_ERROR("start: CreateProcess failed, error=" << GetLastError());
-        CloseHandle(hStdinWrite);
+        std::string cmdDebug = config.ffmpegPath;
+        for (const auto& a : args) { cmdDebug += " [" + a + "]"; }
+        SRU_LOG_DEBUG("start: FFmpeg command: " << cmdDebug);
+    }
+
+    // ── Launch FFmpeg via ProcessBridge ──
+    ucf::utilities::ProcessBridgeConfig pbConfig;
+    pbConfig.executablePath = config.ffmpegPath;
+    pbConfig.arguments = std::move(args);
+    pbConfig.pipeStdin = true;
+    pbConfig.captureStdout = false;
+    pbConfig.captureStderr = true;
+    pbConfig.stopTimeoutMs = 10000;
+
+    m_process = ucf::utilities::IProcessBridge::create();
+    m_process->registerCallback(std::make_shared<FFmpegProcessCallback>());
+    if (!m_process->start(pbConfig))
+    {
+        SRU_LOG_ERROR("start: ProcessBridge failed to launch FFmpeg");
+        m_process.reset();
         if (hNamedPipeServer != INVALID_HANDLE_VALUE) CloseHandle(hNamedPipeServer);
         m_loopbackCapture.reset();
         return false;
     }
 
-    CloseHandle(pi.hThread);
-
-    m_hProcess = reinterpret_cast<intptr_t>(pi.hProcess);
-    m_hStdinWrite = reinterpret_cast<intptr_t>(hStdinWrite);
     m_active.store(true);
 
     // Start WASAPI loopback: wait for FFmpeg to connect to the named pipe,
     // then begin writing captured PCM data into it.
+    // Uses overlapped ConnectNamedPipe so we can abort if FFmpeg exits early.
     if (useWasapiLoopback && hNamedPipeServer != INVALID_HANDLE_VALUE)
     {
-        // ConnectNamedPipe blocks until FFmpeg opens the pipe path during
-        // its input probing. FFmpeg probes inputs sequentially (gdigrab,
-        // dshow mic, then named pipe), so this may block for a few seconds.
-        BOOL connected = ConnectNamedPipe(hNamedPipeServer, nullptr);
+        OVERLAPPED ov{};
+        ov.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+
+        bool pipeConnected = false;
+        BOOL connResult = ConnectNamedPipe(hNamedPipeServer, &ov);
         DWORD connectErr = GetLastError();
 
-        if (!connected && connectErr != ERROR_PIPE_CONNECTED)
+        if (connResult || connectErr == ERROR_PIPE_CONNECTED)
         {
-            SRU_LOG_ERROR("start: FFmpeg did not connect to named pipe, error=" << connectErr);
+            pipeConnected = true;
+        }
+        else if (connectErr == ERROR_IO_PENDING)
+        {
+            // Poll: wait for pipe connection OR FFmpeg exit (30s timeout)
+            constexpr DWORD kPollMs = 500;
+            constexpr int kMaxIter = 60;
+            for (int i = 0; i < kMaxIter; ++i)
+            {
+                if (WaitForSingleObject(ov.hEvent, kPollMs) == WAIT_OBJECT_0)
+                {
+                    pipeConnected = true;
+                    break;
+                }
+                if (!m_process || !m_process->isRunning())
+                {
+                    SRU_LOG_ERROR("start: FFmpeg exited before connecting to named pipe");
+                    CancelIoEx(hNamedPipeServer, &ov);
+                    break;
+                }
+            }
+            if (!pipeConnected)
+            {
+                SRU_LOG_WARN("start: timed out waiting for FFmpeg to connect to named pipe");
+                CancelIoEx(hNamedPipeServer, &ov);
+            }
+        }
+        else
+        {
+            SRU_LOG_ERROR("start: ConnectNamedPipe failed, error=" << connectErr);
+        }
+
+        if (ov.hEvent) CloseHandle(ov.hEvent);
+
+        if (!pipeConnected)
+        {
             CloseHandle(hNamedPipeServer);
             m_loopbackCapture.reset();
         }
         else
         {
-            // Start the WASAPI capture thread, writing PCM to the pipe
             if (!m_loopbackCapture->start(config.systemAudioDevice, hNamedPipeServer))
             {
                 SRU_LOG_ERROR("start: WasapiLoopbackCapture failed to start");
@@ -338,7 +347,7 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
     }
 
-    SRU_LOG_INFO("start: started ffmpeg pid=" << pi.dwProcessId
+    SRU_LOG_INFO("start: started ffmpeg pid=" << m_process->processPid()
                  << " output=" << config.outputPath);
     return true;
 }
@@ -358,23 +367,12 @@ RecordingResult ScreenRecorder_Win::stop()
         return result;
     }
 
-    HANDLE hProcess = reinterpret_cast<HANDLE>(m_hProcess);
-    HANDLE hStdinWrite = reinterpret_cast<HANDLE>(m_hStdinWrite);
-
-    // Send 'q\n' to FFmpeg's stdin FIRST — this triggers a graceful shutdown
-    // where FFmpeg flushes its encoders and writes the container trailer.
-    // We must send 'q' BEFORE closing the loopback pipe, otherwise FFmpeg
-    // may abort with an I/O error on the pipe input instead of flushing.
-    if (hStdinWrite)
+    // Send 'q' to FFmpeg's stdin for graceful shutdown (flush + trailer).
+    // Must happen BEFORE closing the loopback pipe to avoid I/O error.
+    if (m_process)
     {
-        const char quitCmd[] = "q\n";
-        DWORD written = 0;
-        if (!WriteFile(hStdinWrite, quitCmd, sizeof(quitCmd) - 1, &written, nullptr))
-        {
-            SRU_LOG_WARN("stop: WriteFile to stdin pipe failed, error=" << GetLastError());
-        }
-        CloseHandle(hStdinWrite);
-        m_hStdinWrite = 0;
+        m_process->writeToStdin("q\n");
+        m_process->closeStdin();
     }
 
     // Stop WASAPI loopback capture thread (stops writing PCM data)
@@ -390,16 +388,30 @@ RecordingResult ScreenRecorder_Win::stop()
         m_hLoopbackRead = 0;
     }
 
-    // Wait for process to exit (up to 10 seconds)
-    std::string killError;
-    waitForProcessWithTimeout(hProcess, 10000, killError);
-    if (!killError.empty())
+    // Wait for FFmpeg to exit naturally after receiving 'q'.
+    // FFmpeg needs time to flush encoders and write container trailer.
+    if (m_process)
     {
-        result.errorMessage = killError;
+        constexpr int kTimeoutMs = 10000;
+        constexpr int kPollMs    = 100;
+        int waited = 0;
+        while (m_process->isRunning() && waited < kTimeoutMs)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(kPollMs));
+            waited += kPollMs;
+        }
+
+        if (m_process->isRunning())
+        {
+            SRU_LOG_WARN("stop: FFmpeg did not exit within "
+                         << kTimeoutMs << "ms, force-killing");
+            m_process->stop();
+            result.errorMessage = "FFmpeg did not exit in time, force killed";
+        }
+
+        m_process.reset();
     }
 
-    CloseHandle(hProcess);
-    m_hProcess = 0;
     m_active.store(false);
 
     // Check if output file exists
@@ -426,19 +438,18 @@ RecordingResult ScreenRecorder_Win::stop()
 
 bool ScreenRecorder_Win::pause()
 {
-    if (!m_active.load())
+    if (!m_active.load() || !m_process)
     {
         return false;
     }
 
-    HANDLE hProcess = reinterpret_cast<HANDLE>(m_hProcess);
+    DWORD processId = static_cast<DWORD>(m_process->processPid());
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     if (hSnapshot == INVALID_HANDLE_VALUE)
     {
         return false;
     }
 
-    DWORD processId = GetProcessId(hProcess);
     THREADENTRY32 te{};
     te.dwSize = sizeof(te);
 
@@ -466,19 +477,18 @@ bool ScreenRecorder_Win::pause()
 
 bool ScreenRecorder_Win::resume()
 {
-    if (!m_active.load())
+    if (!m_active.load() || !m_process)
     {
         return false;
     }
 
-    HANDLE hProcess = reinterpret_cast<HANDLE>(m_hProcess);
+    DWORD processId = static_cast<DWORD>(m_process->processPid());
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     if (hSnapshot == INVALID_HANDLE_VALUE)
     {
         return false;
     }
 
-    DWORD processId = GetProcessId(hProcess);
     THREADENTRY32 te{};
     te.dwSize = sizeof(te);
 

@@ -5,15 +5,17 @@
 #ifdef __APPLE__
 
 #include <atomic>
-#include <cstdint>
+#include <memory>
 #include <string>
+
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 namespace ucf::utilities::screenrecording {
 
 /**
  * @brief macOS implementation of IScreenRecorder.
  *
- * Owns the FFmpeg child process and stdin pipe. All resources are RAII-managed.
+ * Owns the FFmpeg child process via ProcessBridge. All resources are RAII-managed.
  */
 class ScreenRecorder_Mac final : public IScreenRecorder
 {
@@ -43,8 +45,7 @@ public:
 private:
     std::atomic<bool> m_active{false};
     std::string m_outputPath;
-    int64_t m_pid = -1;
-    int m_stdinFd = -1;
+    std::unique_ptr<ucf::utilities::IProcessBridge> m_process;
 };
 
 } // namespace ucf::utilities::screenrecording

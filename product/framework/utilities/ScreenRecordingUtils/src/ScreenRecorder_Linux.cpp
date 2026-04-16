@@ -21,6 +21,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+
 extern char** environ;
 
 namespace ucf::utilities::screenrecording {
@@ -86,49 +88,6 @@ static bool waitForChildWithTimeout(pid_t pid, int& status, int timeoutMs, std::
     return false;
 }
 
-/// Spawn FFmpeg (or any executable) with args, wait with timeout.
-/// stdout/stderr are redirected to /dev/null.
-/// Returns true if the process exited with code 0.
-static bool spawnAndWait(const std::string& executable,
-                         const std::vector<std::string>& args,
-                         int timeoutMs)
-{
-    std::vector<char*> argv;
-    argv.reserve(args.size() + 1);
-    for (const auto& a : args)
-    {
-        argv.push_back(const_cast<char*>(a.c_str()));
-    }
-    argv.push_back(nullptr);
-
-    posix_spawn_file_actions_t actions;
-    posix_spawn_file_actions_init(&actions);
-    posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO, "/dev/null", O_WRONLY, 0);
-    posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
-
-    pid_t pid = -1;
-    int rc = posix_spawn(&pid, executable.c_str(), &actions, nullptr,
-                         argv.data(), environ);
-    posix_spawn_file_actions_destroy(&actions);
-
-    if (rc != 0)
-    {
-        SRU_LOG_ERROR("posix_spawn failed for " << executable << ": " << std::strerror(rc));
-        return false;
-    }
-
-    int status = 0;
-    std::string killMsg;
-    waitForChildWithTimeout(pid, status, timeoutMs, killMsg);
-
-    if (!killMsg.empty())
-    {
-        SRU_LOG_WARN(killMsg);
-        return false;
-    }
-    return WIFEXITED(status) && WEXITSTATUS(status) == 0;
-}
-
 /// Convert a video file to a different container/codec using FFmpeg.
 /// Optionally crops to region (x, y, w, h) if cropW > 0.
 static bool convertVideoFormat(const std::string& ffmpegPath,
@@ -152,8 +111,8 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
 
     std::string ext = std::filesystem::path(outputPath).extension().string();
 
-    // Build FFmpeg argv
-    std::vector<std::string> args = {ffmpegPath, "-y", "-i", inputPath};
+    // Build FFmpeg arguments
+    std::vector<std::string> args = {"-y", "-i", inputPath};
 
     int cw = alignToEven(cropW);
     int ch = alignToEven(cropH);
@@ -190,11 +149,22 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
     args.push_back(outputPath);
 
     SRU_LOG_INFO("convertVideoFormat: " << inputPath << " -> " << outputPath);
-    constexpr int kConvertTimeoutMs = 120000;
-    bool ok = spawnAndWait(ffmpegPath, args, kConvertTimeoutMs);
+
+    ucf::utilities::ProcessBridgeConfig pbConfig;
+    pbConfig.executablePath = ffmpegPath;
+    pbConfig.arguments = std::move(args);
+    pbConfig.stopTimeoutMs = 120000;
+
+    auto result = ucf::utilities::IProcessBridge::run(pbConfig);
+
+    if (result.timedOut)
+    {
+        SRU_LOG_WARN("convertVideoFormat: FFmpeg timed out");
+        return false;
+    }
 
     auto sz = std::filesystem::file_size(outputPath, ec);
-    return ok && !ec && sz > 0;
+    return result.exitCode == 0 && !ec && sz > 0;
 }
 
 // ============================================================================

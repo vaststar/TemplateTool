@@ -4,25 +4,16 @@
 
 #include "LoggerDefine.h"
 
-#include <cerrno>
 #include <cstdlib>
-#include <cstring>
 #include <filesystem>
-#include <sstream>
 #include <string>
 #include <vector>
 
-#include <fcntl.h>
-#include <signal.h>
-#include <spawn.h>
-#include <sys/wait.h>
-#include <unistd.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 #include <CoreGraphics/CGDirectDisplay.h>
 #include <CoreAudio/CoreAudio.h>
 #include <AVFoundation/AVFoundation.h>
-
-extern char** environ;
 
 namespace ucf::utilities::screenrecording {
 
@@ -67,49 +58,6 @@ static std::string findInPath(const std::string& name)
         start = end + 1;
     }
     return {};
-}
-
-/// Wait for a child process with timeout, escalating from SIGINT to SIGKILL.
-static bool waitForChildWithTimeout(pid_t pid, int& status, int timeoutMs, std::string& errorMsg)
-{
-    constexpr int pollIntervalMs = 100;
-
-    // Phase 1: wait for voluntary exit
-    int elapsed = 0;
-    while (elapsed < timeoutMs)
-    {
-        pid_t wpid = waitpid(pid, &status, WNOHANG);
-        if (wpid != 0)
-        {
-            return true;
-        }
-        usleep(pollIntervalMs * 1000);
-        elapsed += pollIntervalMs;
-    }
-
-    // Phase 2: SIGINT for graceful muxer finalization (5 seconds)
-    SRU_LOG_WARN("Child process " << pid << " did not exit in " << timeoutMs << "ms, sending SIGINT");
-    kill(pid, SIGINT);
-
-    constexpr int intTimeoutMs = 5000;
-    elapsed = 0;
-    while (elapsed < intTimeoutMs)
-    {
-        pid_t wpid = waitpid(pid, &status, WNOHANG);
-        if (wpid != 0)
-        {
-            return true;
-        }
-        usleep(pollIntervalMs * 1000);
-        elapsed += pollIntervalMs;
-    }
-
-    // Phase 3: SIGKILL as last resort
-    SRU_LOG_ERROR("Child process " << pid << " did not respond to SIGINT, sending SIGKILL");
-    kill(pid, SIGKILL);
-    waitpid(pid, &status, 0);
-    errorMsg = "FFmpeg did not exit in time, force killed";
-    return false;
 }
 
 // ============================================================================
@@ -317,62 +265,27 @@ bool ScreenRecorder_Mac::convertToGif(const std::string& ffmpegPath,
         return false;
     }
 
-    // Build palette + GIF two-pass command as a single filter_complex
     std::string filterComplex = "fps=" + std::to_string(fps)
         + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
 
-    // Build argv
-    std::vector<std::string> args = {
-        ffmpegPath, "-y", "-i", inputPath,
-        "-filter_complex", filterComplex,
-        outputPath
-    };
-    std::vector<char*> argv;
-    argv.reserve(args.size() + 1);
-    for (auto& a : args)
+    ucf::utilities::ProcessBridgeConfig config;
+    config.executablePath = ffmpegPath;
+    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filterComplex, outputPath};
+    config.stopTimeoutMs = 120000;
+
+    auto result = ucf::utilities::IProcessBridge::run(config);
+
+    if (result.timedOut)
     {
-        argv.push_back(a.data());
-    }
-    argv.push_back(nullptr);
-
-    // Set up file actions: redirect stdout and stderr to /dev/null
-    posix_spawn_file_actions_t fileActions;
-    posix_spawn_file_actions_init(&fileActions);
-    posix_spawn_file_actions_addopen(&fileActions, STDOUT_FILENO,
-                                     "/dev/null", O_WRONLY, 0);
-    posix_spawn_file_actions_addopen(&fileActions, STDERR_FILENO,
-                                     "/dev/null", O_WRONLY, 0);
-
-    pid_t pid = 0;
-    int spawnResult = posix_spawn(&pid, ffmpegPath.c_str(),
-                                  &fileActions, nullptr,
-                                  argv.data(), environ);
-    posix_spawn_file_actions_destroy(&fileActions);
-
-    if (spawnResult != 0)
-    {
-        SRU_LOG_ERROR("convertToGif: posix_spawn failed: " << strerror(spawnResult));
-        return false;
-    }
-
-    // Wait with timeout (120 seconds for potentially long GIF conversions)
-    int status = 0;
-    std::string killError;
-    bool exited = waitForChildWithTimeout(pid, status, 120000, killError);
-
-    if (!exited)
-    {
-        SRU_LOG_ERROR("convertToGif: " << killError);
+        SRU_LOG_ERROR("convertToGif: FFmpeg timed out");
         return false;
     }
 
     std::error_code ec;
-    bool ok = WIFEXITED(status) && WEXITSTATUS(status) == 0
-              && std::filesystem::is_regular_file(outputPath, ec);
+    bool ok = result.exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
     if (!ok)
     {
-        SRU_LOG_ERROR("convertToGif: ffmpeg exited with status "
-                      << (WIFEXITED(status) ? WEXITSTATUS(status) : -1));
+        SRU_LOG_ERROR("convertToGif: ffmpeg exited with status " << result.exitCode);
     }
     return ok;
 }

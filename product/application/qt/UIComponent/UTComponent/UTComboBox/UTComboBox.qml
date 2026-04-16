@@ -29,6 +29,7 @@ BaseComboBox {
 
     // === ComboBox text (using font token) ===
     contentItem: UTText {
+        id: contentText
         leftPadding: 12
         rightPadding: control.indicator.width + control.spacing
         text: control.displayText
@@ -36,6 +37,19 @@ BaseComboBox {
         color: control.textColor
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
+
+        HoverHandler {
+            id: contentHoverHandler
+        }
+
+        UTToolTip {
+            parent: contentText
+            text: control.displayText
+            visible: contentText.truncated && contentHoverHandler.hovered
+            delay: 500
+            cursorX: contentHoverHandler.point.position.x
+            cursorY: contentHoverHandler.point.position.y
+        }
     }
 
     // === Dropdown indicator ===
@@ -85,6 +99,7 @@ BaseComboBox {
         highlighted: isHighlighted
 
         contentItem: UTText {
+            id: delegateText
             leftPadding: 12
             text: control.textRole
                   ? (delegateItem.modelData[control.textRole] ?? delegateItem.modelData)
@@ -93,6 +108,19 @@ BaseComboBox {
             color: control.textColor
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
+
+            HoverHandler {
+                id: delegateHoverHandler
+            }
+
+            UTToolTip {
+                parent: delegateText
+                text: delegateText.text
+                visible: delegateText.truncated && delegateHoverHandler.hovered
+                delay: 500
+                cursorX: delegateHoverHandler.point.position.x
+                cursorY: delegateHoverHandler.point.position.y
+            }
         }
 
         background: Rectangle {

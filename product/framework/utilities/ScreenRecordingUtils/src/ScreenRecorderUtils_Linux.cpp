@@ -4,21 +4,15 @@
 
 #include "LoggerDefine.h"
 
-#include <cerrno>
 #include <cstdlib>
-#include <cstring>
 #include <filesystem>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include <fcntl.h>
-#include <signal.h>
-#include <spawn.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
-extern char** environ;
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -55,93 +49,6 @@ static std::string findInPath(const std::string& name)
         }
     }
     return {};
-}
-
-/// Wait for a child process with timeout, escalating from SIGINT to SIGKILL.
-/// Returns true if process exited normally, false if force-killed.
-static bool waitForChildWithTimeout(pid_t pid, int& status, int timeoutMs, std::string& errorMsg)
-{
-    constexpr int kPollMs = 100;
-
-    // Phase 1: wait for voluntary exit
-    int elapsed = 0;
-    while (elapsed < timeoutMs)
-    {
-        pid_t r = waitpid(pid, &status, WNOHANG);
-        if (r != 0)
-        {
-            return true;
-        }
-        usleep(kPollMs * 1000);
-        elapsed += kPollMs;
-    }
-
-    // Phase 2: SIGINT for graceful finalization (5 seconds)
-    SRU_LOG_WARN("Child process " << pid << " did not exit in " << timeoutMs << "ms, sending SIGINT");
-    kill(pid, SIGINT);
-
-    constexpr int kIntTimeoutMs = 5000;
-    elapsed = 0;
-    while (elapsed < kIntTimeoutMs)
-    {
-        pid_t r = waitpid(pid, &status, WNOHANG);
-        if (r != 0)
-        {
-            return true;
-        }
-        usleep(kPollMs * 1000);
-        elapsed += kPollMs;
-    }
-
-    // Phase 3: SIGKILL as last resort
-    SRU_LOG_ERROR("Child process " << pid << " did not respond to SIGINT, sending SIGKILL");
-    kill(pid, SIGKILL);
-    waitpid(pid, &status, 0);
-    errorMsg = "Process did not exit in time, force killed";
-    return false;
-}
-
-/// Spawn an executable with args, wait with timeout.
-/// stdout/stderr are redirected to /dev/null.
-/// Returns true if the process exited with code 0.
-static bool spawnAndWait(const std::string& executable,
-                         const std::vector<std::string>& args,
-                         int timeoutMs)
-{
-    std::vector<char*> argv;
-    argv.reserve(args.size() + 1);
-    for (const auto& a : args)
-    {
-        argv.push_back(const_cast<char*>(a.c_str()));
-    }
-    argv.push_back(nullptr);
-
-    posix_spawn_file_actions_t actions;
-    posix_spawn_file_actions_init(&actions);
-    posix_spawn_file_actions_addopen(&actions, STDOUT_FILENO, "/dev/null", O_WRONLY, 0);
-    posix_spawn_file_actions_addopen(&actions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
-
-    pid_t pid = -1;
-    int rc = posix_spawn(&pid, executable.c_str(), &actions, nullptr,
-                         argv.data(), environ);
-    posix_spawn_file_actions_destroy(&actions);
-
-    if (rc != 0)
-    {
-        SRU_LOG_ERROR("posix_spawn failed for " << executable << ": " << std::strerror(rc));
-        return false;
-    }
-
-    int status = 0;
-    std::string killMsg;
-    waitForChildWithTimeout(pid, status, timeoutMs, killMsg);
-
-    if (!killMsg.empty())
-    {
-        SRU_LOG_WARN(killMsg);
-        return false;
-    }
-    return WIFEXITED(status) && WEXITSTATUS(status) == 0;
 }
 
 // ============================================================================
@@ -275,19 +182,23 @@ bool ScreenRecorder_Linux::convertToGif(const std::string& ffmpegPath,
     std::string filterComplex = "fps=" + std::to_string(fps)
         + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
 
-    std::vector<std::string> args = {
-        ffmpegPath, "-y", "-i", inputPath,
-        "-filter_complex", filterComplex,
-        outputPath
-    };
+    ucf::utilities::ProcessBridgeConfig config;
+    config.executablePath = ffmpegPath;
+    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filterComplex, outputPath};
+    config.stopTimeoutMs = 120000;
 
     SRU_LOG_INFO("convertToGif: " << inputPath << " -> " << outputPath);
-    constexpr int kGifTimeoutMs = 120000;
-    bool ok = spawnAndWait(ffmpegPath, args, kGifTimeoutMs);
+    auto result = ucf::utilities::IProcessBridge::run(config);
+
+    if (result.timedOut)
+    {
+        SRU_LOG_ERROR("convertToGif: FFmpeg timed out");
+        return false;
+    }
 
     std::error_code ec;
     auto sz = std::filesystem::file_size(outputPath, ec);
-    if (!ok || ec || sz == 0)
+    if (result.exitCode != 0 || ec || sz == 0)
     {
         SRU_LOG_ERROR("convertToGif: failed or output empty");
         return false;

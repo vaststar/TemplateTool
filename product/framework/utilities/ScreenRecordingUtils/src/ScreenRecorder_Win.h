@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+
 // Forward declare to avoid pulling Windows.h into the header
 struct WasapiLoopbackCapture;
 
@@ -16,8 +18,8 @@ namespace ucf::utilities::screenrecording {
 /**
  * @brief Windows implementation of IScreenRecorder.
  *
- * Owns the FFmpeg child process, stdin pipe, and optional WASAPI loopback
- * capture thread. All resources are RAII-managed.
+ * Uses ProcessBridge for FFmpeg child process management, with optional
+ * WASAPI loopback capture for system audio.
  */
 class ScreenRecorder_Win final : public IScreenRecorder
 {
@@ -45,13 +47,12 @@ private:
     std::atomic<bool> m_active{false};
     std::string m_outputPath;
 
-    // FFmpeg child process handles (stored as intptr_t to avoid windows.h)
-    intptr_t m_hProcess = 0;
-    intptr_t m_hStdinWrite = 0;
+    // FFmpeg child process (managed by ProcessBridge)
+    std::unique_ptr<ucf::utilities::IProcessBridge> m_process;
 
     // WASAPI loopback capture (owned, heap-allocated to keep Windows API out of header)
     std::unique_ptr<WasapiLoopbackCapture> m_loopbackCapture;
-    intptr_t m_hLoopbackRead = 0;   // read-end of loopback pipe (inherited by FFmpeg)
+    intptr_t m_hLoopbackRead = 0;   // named pipe handle for loopback audio
 };
 
 } // namespace ucf::utilities::screenrecording

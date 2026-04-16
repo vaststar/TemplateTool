@@ -6,9 +6,10 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <sstream>
 #include <string>
 #include <vector>
+
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -61,21 +62,6 @@ static std::string findInPath(const std::string& name)
         start = end + 1;
     }
     return {};
-}
-
-/// Wait for a process with timeout, then force-terminate if still running.
-static bool waitForProcessWithTimeout(HANDLE hProcess, DWORD timeoutMs, std::string& errorMsg)
-{
-    DWORD waitResult = WaitForSingleObject(hProcess, timeoutMs);
-    if (waitResult == WAIT_TIMEOUT)
-    {
-        SRU_LOG_WARN("Process did not exit in " << timeoutMs << "ms, force terminating");
-        TerminateProcess(hProcess, 1);
-        WaitForSingleObject(hProcess, 5000);
-        errorMsg = "FFmpeg did not exit in time, force killed";
-        return false;
-    }
-    return true;
 }
 
 // ============================================================================
@@ -266,54 +252,26 @@ bool ScreenRecorder_Win::convertToGif(const std::string& ffmpegPath,
     std::string filterComplex = "fps=" + std::to_string(fps)
         + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
 
-    std::ostringstream cmdLine;
-    cmdLine << "\"" << ffmpegPath << "\""
-            << " -y -i \"" << inputPath << "\""
-            << " -filter_complex \"" << filterComplex << "\""
-            << " \"" << outputPath << "\"";
+    ucf::utilities::ProcessBridgeConfig config;
+    config.executablePath = ffmpegPath;
+    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filterComplex, outputPath};
+    config.stopTimeoutMs = 120000;
 
-    std::string cmdStr = cmdLine.str();
-    std::vector<char> cmdBuf(cmdStr.begin(), cmdStr.end());
-    cmdBuf.push_back('\0');
+    auto result = ucf::utilities::IProcessBridge::run(config);
 
-    STARTUPINFOA si{};
-    si.cb = sizeof(si);
-    si.dwFlags = STARTF_USESHOWWINDOW;
-    si.wShowWindow = SW_HIDE;
-
-    PROCESS_INFORMATION pi{};
-    BOOL ok = CreateProcessA(
-        nullptr, cmdBuf.data(), nullptr, nullptr,
-        FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi);
-
-    if (!ok)
+    if (result.timedOut)
     {
-        SRU_LOG_ERROR("convertToGif: CreateProcess failed, error=" << GetLastError());
-        return false;
-    }
-
-    CloseHandle(pi.hThread);
-
-    std::string killError;
-    bool exited = waitForProcessWithTimeout(pi.hProcess, 120000, killError);
-
-    DWORD exitCode = 1;
-    GetExitCodeProcess(pi.hProcess, &exitCode);
-    CloseHandle(pi.hProcess);
-
-    if (!exited)
-    {
-        SRU_LOG_ERROR("convertToGif: " << killError);
+        SRU_LOG_ERROR("convertToGif: FFmpeg timed out");
         return false;
     }
 
     std::error_code ec;
-    bool result = exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
-    if (!result)
+    bool ok = result.exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
+    if (!ok)
     {
-        SRU_LOG_ERROR("convertToGif: ffmpeg exited with code " << exitCode);
+        SRU_LOG_ERROR("convertToGif: ffmpeg exited with code " << result.exitCode);
     }
-    return result;
+    return ok;
 }
 
 } // namespace ucf::utilities::screenrecording

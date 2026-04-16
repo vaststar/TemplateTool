@@ -334,17 +334,19 @@ void ProcessBridge::monitorLoop()
 
 void ProcessBridge::readAndFirePipes()
 {
-    if (mConfig.captureStdout)
+    // Always drain pipes to prevent child from blocking on a full pipe buffer,
+    // but only fire callbacks when capture is enabled.
+    if (auto stdoutData = detail::ProcessLauncher::readStdout(mHandle); !stdoutData.empty())
     {
-        if (auto stdoutData = detail::ProcessLauncher::readStdout(mHandle); !stdoutData.empty())
+        if (mConfig.captureStdout)
         {
             fireNotification(&IProcessBridgeCallback::onStdout, stdoutData);
         }
     }
 
-    if (mConfig.captureStderr)
+    if (auto stderrData = detail::ProcessLauncher::readStderr(mHandle); !stderrData.empty())
     {
-        if (auto stderrData = detail::ProcessLauncher::readStderr(mHandle); !stderrData.empty())
+        if (mConfig.captureStderr)
         {
             fireNotification(&IProcessBridgeCallback::onStderr, stderrData);
         }
@@ -406,21 +408,14 @@ IProcessBridge::RunResult IProcessBridge::run(const ProcessBridgeConfig& config)
 
     while (std::chrono::steady_clock::now() < deadline)
     {
-        if (config.captureStdout)
+        // Always drain pipes to prevent child from blocking on a full pipe buffer.
+        if (auto stdoutChunk = detail::ProcessLauncher::readStdout(handle); !stdoutChunk.empty() && config.captureStdout)
         {
-            auto chunk = detail::ProcessLauncher::readStdout(handle);
-            if (!chunk.empty())
-            {
-                result.stdoutData += chunk;
-            }
+            result.stdoutData += stdoutChunk;
         }
-        if (config.captureStderr)
+        if (auto stderrChunk = detail::ProcessLauncher::readStderr(handle); !stderrChunk.empty() && config.captureStderr)
         {
-            auto chunk = detail::ProcessLauncher::readStderr(handle);
-            if (!chunk.empty())
-            {
-                result.stderrData += chunk;
-            }
+            result.stderrData += stderrChunk;
         }
 
         if (!detail::ProcessLauncher::isAlive(handle))
@@ -432,15 +427,13 @@ IProcessBridge::RunResult IProcessBridge::run(const ProcessBridgeConfig& config)
     }
 
     // Drain remaining output
-    if (config.captureStdout)
+    if (auto finalStdout = detail::ProcessLauncher::readStdout(handle); !finalStdout.empty() && config.captureStdout)
     {
-        auto chunk = detail::ProcessLauncher::readStdout(handle);
-        if (!chunk.empty()) result.stdoutData += chunk;
+        result.stdoutData += finalStdout;
     }
-    if (config.captureStderr)
+    if (auto finalStderr = detail::ProcessLauncher::readStderr(handle); !finalStderr.empty() && config.captureStderr)
     {
-        auto chunk = detail::ProcessLauncher::readStderr(handle);
-        if (!chunk.empty()) result.stderrData += chunk;
+        result.stderrData += finalStderr;
     }
 
     if (detail::ProcessLauncher::isAlive(handle))

@@ -36,6 +36,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 
 set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
+    ProcessBridgeUtils
 )
 
 if (WIN32)
