@@ -162,9 +162,10 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
     std::ostringstream cmdLine;
     cmdLine << "\"" << config.ffmpegPath << "\""
             << " -y"
-            << " -thread_queue_size 512"
-            << " -probesize 5M"
+            << " -thread_queue_size 64"
+            << " -probesize 32"
             << " -f gdigrab"
+            << " -rtbufsize 0"
             << " -framerate " << config.fps
             << " -draw_mouse 1";
 
@@ -245,7 +246,7 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
     }
     else
     {
-        cmdLine << " -c:v libx264 -preset ultrafast -pix_fmt yuv420p";
+        cmdLine << " -c:v libx264 -preset ultrafast -tune zerolatency -pix_fmt yuv420p";
     }
 
     if (hasAudio)
@@ -261,6 +262,8 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
     }
 
+    cmdLine << " -max_interleave_delta 0";
+    cmdLine << " -flush_packets 1";
     cmdLine << " \"" << config.outputPath << "\"";
 
     std::string cmdStr = cmdLine.str();

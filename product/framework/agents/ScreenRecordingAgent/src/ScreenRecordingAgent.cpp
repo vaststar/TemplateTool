@@ -238,6 +238,14 @@ void ScreenRecordingAgent::stop()
     // Run heavy FFmpeg teardown on a background thread
     m_stopThread = std::thread([this, wasPaused]()
     {
+        // Grace period: let FFmpeg continue capturing for a short time after
+        // the user clicks stop.  This compensates for the inherent latency
+        // between the button press and the point where `q` reaches FFmpeg's
+        // stdin.  Without this the final ~0.5 s of content is lost because
+        // gdigrab's capture loop and the encoding pipeline have already moved
+        // past the "present moment" by the time FFmpeg processes the quit.
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
         stopDurationTimer();
 
         RecordingResult result;

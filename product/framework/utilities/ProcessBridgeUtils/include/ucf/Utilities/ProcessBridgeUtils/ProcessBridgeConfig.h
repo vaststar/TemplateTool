@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
@@ -37,6 +38,15 @@ struct ProcessBridgeConfig {
 
     /// Whether to capture the child's stderr and fire onStderr callbacks.
     bool captureStderr = true;
+
+    /// Whether to create a stdin pipe so the parent can write to the child's stdin.
+    /// If false (default), the child inherits the parent's stdin.
+    bool pipeStdin = false;
+
+    /// Optional environment variables for the child process.
+    /// Each pair is {key, value}. These are merged with (and override)
+    /// the parent's environment. If empty, the child inherits as-is.
+    std::vector<std::pair<std::string, std::string>> environment;
 };
 
 } // namespace ucf::utilities

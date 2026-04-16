@@ -141,7 +141,9 @@ bool ProcessBridge::start(const ProcessBridgeConfig& config)
         auto handle = detail::ProcessLauncher::launch(
             config.executablePath,
             config.arguments,
-            config.workingDirectory);
+            config.workingDirectory,
+            config.pipeStdin,
+            config.environment);
 
         if (!handle.valid)
         {
@@ -253,6 +255,25 @@ int64_t ProcessBridge::processPid() const
 }
 
 // ════════════════════════════════════════════════════════════
+//  Stdin
+// ════════════════════════════════════════════════════════════
+
+bool ProcessBridge::writeToStdin(const std::string& data)
+{
+    if (!isRunning() || !mHandle.valid)
+    {
+        PB_LOG_WARN("writeToStdin: process not running");
+        return false;
+    }
+    return detail::ProcessLauncher::writeStdin(mHandle, data);
+}
+
+void ProcessBridge::closeStdin()
+{
+    detail::ProcessLauncher::closeStdin(mHandle);
+}
+
+// ════════════════════════════════════════════════════════════
 //  Monitor thread
 // ════════════════════════════════════════════════════════════
 
@@ -353,6 +374,95 @@ void ProcessBridge::finalizeStop(int exitCode, bool crashed)
 
     PB_LOG_INFO("Process finalized, exitCode=" << exitCode << ", crashed=" << crashed);
     fireNotification(&IProcessBridgeCallback::onProcessStopped, exitCode, crashed);
+}
+
+// ════════════════════════════════════════════════════════════
+//  Static synchronous run
+// ════════════════════════════════════════════════════════════
+
+IProcessBridge::RunResult IProcessBridge::run(const ProcessBridgeConfig& config)
+{
+    RunResult result;
+
+    auto handle = detail::ProcessLauncher::launch(
+        config.executablePath,
+        config.arguments,
+        config.workingDirectory,
+        config.pipeStdin,
+        config.environment);
+
+    if (!handle.valid)
+    {
+        result.exitCode = -1;
+        result.stderrData = handle.errorMessage;
+        return result;
+    }
+
+    // Poll for output and process exit
+    int timeoutMs = config.stopTimeoutMs > 0 ? config.stopTimeoutMs : 30000;
+    auto deadline = std::chrono::steady_clock::now()
+                  + std::chrono::milliseconds(timeoutMs);
+    constexpr auto pollInterval = std::chrono::milliseconds(50);
+
+    while (std::chrono::steady_clock::now() < deadline)
+    {
+        if (config.captureStdout)
+        {
+            auto chunk = detail::ProcessLauncher::readStdout(handle);
+            if (!chunk.empty())
+            {
+                result.stdoutData += chunk;
+            }
+        }
+        if (config.captureStderr)
+        {
+            auto chunk = detail::ProcessLauncher::readStderr(handle);
+            if (!chunk.empty())
+            {
+                result.stderrData += chunk;
+            }
+        }
+
+        if (!detail::ProcessLauncher::isAlive(handle))
+        {
+            break;
+        }
+
+        std::this_thread::sleep_for(pollInterval);
+    }
+
+    // Drain remaining output
+    if (config.captureStdout)
+    {
+        auto chunk = detail::ProcessLauncher::readStdout(handle);
+        if (!chunk.empty()) result.stdoutData += chunk;
+    }
+    if (config.captureStderr)
+    {
+        auto chunk = detail::ProcessLauncher::readStderr(handle);
+        if (!chunk.empty()) result.stderrData += chunk;
+    }
+
+    if (detail::ProcessLauncher::isAlive(handle))
+    {
+        // Timed out — force kill
+        result.timedOut = true;
+        detail::ProcessLauncher::terminate(handle);
+        int code = detail::ProcessLauncher::waitForExit(handle, 3000);
+        if (code == -1 && detail::ProcessLauncher::isAlive(handle))
+        {
+            detail::ProcessLauncher::kill(handle);
+            code = detail::ProcessLauncher::waitForExit(handle, 2000);
+        }
+        result.exitCode = code;
+    }
+    else
+    {
+        result.exitCode = detail::ProcessLauncher::waitForExit(handle, 0);
+    }
+
+    detail::ProcessLauncher::closeHandles(handle);
+    return result;
 }
 
 } // namespace ucf::utilities

@@ -205,7 +205,7 @@ bool ScreenRecorder_Mac::start(const RecordingConfig& config)
     args.push_back("-use_wallclock_as_timestamps");
     args.push_back("1");
     args.push_back("-probesize");
-    args.push_back("5M");
+    args.push_back("32");
     args.push_back("-i");
     args.push_back(inputSpec);
 
@@ -287,6 +287,8 @@ bool ScreenRecorder_Mac::start(const RecordingConfig& config)
         args.push_back("libx264");
         args.push_back("-preset");
         args.push_back("ultrafast");
+        args.push_back("-tune");
+        args.push_back("zerolatency");
         args.push_back("-pix_fmt");
         args.push_back("yuv420p");
 

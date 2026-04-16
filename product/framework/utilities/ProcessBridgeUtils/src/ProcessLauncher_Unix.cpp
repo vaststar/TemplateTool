@@ -6,6 +6,7 @@
 #include <chrono>
 #include <csignal>
 #include <cstring>
+#include <cstdlib>
 #include <sstream>
 #include <thread>
 
@@ -14,18 +15,23 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+extern char** environ;
+
 namespace ucf::utilities::detail {
 
 ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     const std::string& executable,
     const std::vector<std::string>& args,
-    const std::string& workingDir)
+    const std::string& workingDir,
+    bool pipeStdin,
+    const std::vector<std::pair<std::string, std::string>>& environment)
 {
     ProcessHandle handle;
 
     // ── Create pipes ──
     int stdoutPipe[2] = {-1, -1};
     int stderrPipe[2] = {-1, -1};
+    int stdinPipe[2]  = {-1, -1};
 
     if (pipe(stdoutPipe) != 0)
     {
@@ -39,6 +45,18 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
         close(stdoutPipe[1]);
         return handle;
     }
+    if (pipeStdin)
+    {
+        if (pipe(stdinPipe) != 0)
+        {
+            handle.errorMessage = std::string("Failed to create stdin pipe: ") + strerror(errno);
+            close(stdoutPipe[0]);
+            close(stdoutPipe[1]);
+            close(stderrPipe[0]);
+            close(stderrPipe[1]);
+            return handle;
+        }
+    }
 
     // ── Build argv ──
     std::vector<const char*> argv;
@@ -49,6 +67,50 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     }
     argv.push_back(nullptr);
 
+    // ── Build environment (if custom variables provided) ──
+    // Merge parent environ with user overrides
+    std::vector<std::string> envStorage;
+    std::vector<char*> envp;
+    char** childEnv = environ;
+
+    if (!environment.empty())
+    {
+        // Copy current environment
+        if (environ)
+        {
+            for (char** e = environ; *e; ++e)
+            {
+                envStorage.emplace_back(*e);
+            }
+        }
+        // Append/override with user-specified variables
+        for (const auto& [key, value] : environment)
+        {
+            std::string prefix = key + "=";
+            bool replaced = false;
+            for (auto& existing : envStorage)
+            {
+                if (existing.compare(0, prefix.size(), prefix) == 0)
+                {
+                    existing = prefix + value;
+                    replaced = true;
+                    break;
+                }
+            }
+            if (!replaced)
+            {
+                envStorage.push_back(prefix + value);
+            }
+        }
+        envp.reserve(envStorage.size() + 1);
+        for (auto& s : envStorage)
+        {
+            envp.push_back(s.data());
+        }
+        envp.push_back(nullptr);
+        childEnv = envp.data();
+    }
+
     // ── Fork ──
     pid_t pid = fork();
     if (pid < 0)
@@ -58,6 +120,7 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
         close(stdoutPipe[1]);
         close(stderrPipe[0]);
         close(stderrPipe[1]);
+        if (pipeStdin) { close(stdinPipe[0]); close(stdinPipe[1]); }
         return handle;
     }
 
@@ -76,6 +139,13 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
         dup2(stderrPipe[1], STDERR_FILENO);
         close(stderrPipe[1]);
 
+        if (pipeStdin)
+        {
+            close(stdinPipe[1]);  // close write end in child
+            dup2(stdinPipe[0], STDIN_FILENO);
+            close(stdinPipe[0]);
+        }
+
         if (!workingDir.empty())
         {
             if (chdir(workingDir.c_str()) != 0)
@@ -84,15 +154,26 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
             }
         }
 
-        execvp(executable.c_str(), const_cast<char* const*>(argv.data()));
-        // If execvp returns, it failed
+        if (!environment.empty())
+        {
+            execve(executable.c_str(), const_cast<char* const*>(argv.data()), childEnv);
+        }
+        else
+        {
+            execvp(executable.c_str(), const_cast<char* const*>(argv.data()));
+        }
+        // If exec returns, it failed
         _exit(127);
     }
 
     // ── Parent process ──
-    // Close write ends
+    // Close child-side pipe ends
     close(stdoutPipe[1]);
     close(stderrPipe[1]);
+    if (pipeStdin)
+    {
+        close(stdinPipe[0]);  // close read end in parent
+    }
 
     // Set read ends to non-blocking
     int flags = fcntl(stdoutPipe[0], F_GETFL, 0);
@@ -106,6 +187,7 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     handle.childPid = pid;
     handle.stdoutFd = stdoutPipe[0];
     handle.stderrFd = stderrPipe[0];
+    handle.stdinFd  = pipeStdin ? stdinPipe[1] : -1;
     return handle;
 }
 
@@ -247,8 +329,49 @@ std::string ProcessLauncher::readStderr(ProcessHandle& handle)
     return readFd(handle.stderrFd);
 }
 
+bool ProcessLauncher::writeStdin(ProcessHandle& handle, const std::string& data)
+{
+    if (!handle.valid || handle.stdinFd < 0 || data.empty())
+    {
+        return false;
+    }
+
+    const char* ptr = data.data();
+    size_t remaining = data.size();
+
+    while (remaining > 0)
+    {
+        ssize_t written = write(handle.stdinFd, ptr, remaining);
+        if (written < 0)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            return false;
+        }
+        ptr += written;
+        remaining -= static_cast<size_t>(written);
+    }
+    return true;
+}
+
+void ProcessLauncher::closeStdin(ProcessHandle& handle)
+{
+    if (handle.stdinFd >= 0)
+    {
+        close(handle.stdinFd);
+        handle.stdinFd = -1;
+    }
+}
+
 void ProcessLauncher::closeHandles(ProcessHandle& handle)
 {
+    if (handle.stdinFd >= 0)
+    {
+        close(handle.stdinFd);
+        handle.stdinFd = -1;
+    }
     if (handle.stdoutFd >= 0)
     {
         close(handle.stdoutFd);

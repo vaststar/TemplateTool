@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #ifdef _WIN32
@@ -27,10 +28,12 @@ public:
         HANDLE hThread  = nullptr;
         HANDLE hStdoutRead = nullptr;
         HANDLE hStderrRead = nullptr;
+        HANDLE hStdinWrite = nullptr;  ///< Write end of stdin pipe (parent keeps this)
 #else
         int childPid = -1;
         int stdoutFd = -1;
         int stderrFd = -1;
+        int stdinFd  = -1;        ///< Write end of stdin pipe (parent keeps this)
         int cachedExitCode = -1;  ///< exit code set once waitpid reaps the child
         bool exited = false;     ///< true once waitpid has reaped the child
 #endif
@@ -40,11 +43,16 @@ public:
     /// @param executable    Path to the executable
     /// @param args          Command-line arguments
     /// @param workingDir    Working directory (empty = inherit)
+    /// @param pipeStdin     If true, create a stdin pipe so the parent can write to the child's stdin
+    /// @param environment   Optional environment variables for the child process.
+    ///                      If empty, the child inherits the parent's environment.
     /// @return Handle with process info; check handle.valid
     static ProcessHandle launch(
         const std::string& executable,
         const std::vector<std::string>& args,
-        const std::string& workingDir);
+        const std::string& workingDir,
+        bool pipeStdin = false,
+        const std::vector<std::pair<std::string, std::string>>& environment = {});
 
     /// Send terminate signal (SIGTERM / TerminateProcess).
     static bool terminate(const ProcessHandle& handle);
@@ -67,6 +75,13 @@ public:
     /// Read available data from stderr pipe (non-blocking).
     /// @return data read, empty if nothing available
     static std::string readStderr(ProcessHandle& handle);
+
+    /// Write data to the child's stdin pipe.
+    /// @return true if all bytes were written successfully
+    static bool writeStdin(ProcessHandle& handle, const std::string& data);
+
+    /// Close the stdin pipe (child sees EOF on its stdin).
+    static void closeStdin(ProcessHandle& handle);
 
     /// Clean up all handles/file descriptors.
     static void closeHandles(ProcessHandle& handle);

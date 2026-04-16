@@ -30,8 +30,8 @@ public:
     void stop() override;
     ProcessState state() const override;
     bool isRunning() const override;
-    int64_t processPid() const override;
-
+    int64_t processPid() const override;    bool writeToStdin(const std::string& data) override;
+    void closeStdin() override;
 private:
     // â”€â”€ State machine â”€â”€
 

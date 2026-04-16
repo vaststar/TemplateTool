@@ -3,6 +3,7 @@
 #include "ProcessLauncher.h"
 
 #include <sstream>
+#include <algorithm>
 
 namespace ucf::utilities::detail {
 
@@ -49,7 +50,9 @@ static std::string escapeArgument(const std::string& arg)
 ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     const std::string& executable,
     const std::vector<std::string>& args,
-    const std::string& workingDir)
+    const std::string& workingDir,
+    bool pipeStdin,
+    const std::vector<std::pair<std::string, std::string>>& environment)
 {
     ProcessHandle handle;
 
@@ -103,16 +106,69 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     }
     SetHandleInformation(hStderrReadTmp, HANDLE_FLAG_INHERIT, 0);
 
+    // ── Create stdin pipe (optional) ──
+    HANDLE hStdinRead = nullptr;
+    HANDLE hStdinWriteTmp = nullptr;
+    if (pipeStdin)
+    {
+        if (!CreatePipe(&hStdinRead, &hStdinWriteTmp, &sa, 0))
+        {
+            handle.errorMessage = "Failed to create stdin pipe";
+            CloseHandle(hStdoutReadTmp);
+            CloseHandle(hStdoutWrite);
+            CloseHandle(hStderrReadTmp);
+            CloseHandle(hStderrWrite);
+            return handle;
+        }
+        // Parent keeps the write end; it must NOT be inherited by the child
+        SetHandleInformation(hStdinWriteTmp, HANDLE_FLAG_INHERIT, 0);
+    }
+
+    // ── Build environment block (optional) ──
+    std::wstring envBlock;
+    LPVOID pEnv = nullptr;
+    DWORD envFlags = 0;
+    if (!environment.empty())
+    {
+        // Start with the current environment, then overlay custom variables
+        LPWCH currentEnv = GetEnvironmentStringsW();
+        if (currentEnv)
+        {
+            // Copy existing environment strings into a vector for merging
+            const wchar_t* p = currentEnv;
+            while (*p)
+            {
+                size_t len = wcslen(p) + 1;
+                envBlock.append(p, len);
+                p += len;
+            }
+            FreeEnvironmentStringsW(currentEnv);
+        }
+
+        // Append/override with user-specified variables
+        for (const auto& [key, value] : environment)
+        {
+            std::string entry = key + "=" + value;
+            int wLen = MultiByteToWideChar(CP_UTF8, 0, entry.c_str(), -1, nullptr, 0);
+            std::wstring wEntry(static_cast<size_t>(wLen), L'\0');
+            MultiByteToWideChar(CP_UTF8, 0, entry.c_str(), -1, wEntry.data(), wLen);
+            envBlock.append(wEntry);
+        }
+        envBlock.push_back(L'\0'); // double-null terminator
+        pEnv = envBlock.data();
+        envFlags = CREATE_UNICODE_ENVIRONMENT;
+    }
+
     // ── Launch process ──
     STARTUPINFOW si{};
     si.cb = sizeof(STARTUPINFOW);
     si.dwFlags = STARTF_USESTDHANDLES;
-    si.hStdInput  = GetStdHandle(STD_INPUT_HANDLE);
+    si.hStdInput  = pipeStdin ? hStdinRead : GetStdHandle(STD_INPUT_HANDLE);
     si.hStdOutput = hStdoutWrite;
     si.hStdError  = hStderrWrite;
 
     PROCESS_INFORMATION pi{};
-    DWORD creationFlags = CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP;
+    DWORD creationFlags = CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP | envFlags;
 
     BOOL ok = CreateProcessW(
         nullptr,
@@ -120,7 +176,7 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
         nullptr, nullptr,
         TRUE,  // inherit handles
         creationFlags,
-        nullptr,
+        pEnv,
         pWorkDir,
         &si,
         &pi);
@@ -128,6 +184,11 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     // Close the write ends — child has inherited them
     CloseHandle(hStdoutWrite);
     CloseHandle(hStderrWrite);
+    // Close the read end of stdin — child has inherited it
+    if (hStdinRead)
+    {
+        CloseHandle(hStdinRead);
+    }
 
     if (!ok)
     {
@@ -135,6 +196,7 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
         handle.errorMessage = "CreateProcess failed, error code: " + std::to_string(err);
         CloseHandle(hStdoutReadTmp);
         CloseHandle(hStderrReadTmp);
+        if (hStdinWriteTmp) CloseHandle(hStdinWriteTmp);
         return handle;
     }
 
@@ -144,6 +206,7 @@ ProcessLauncher::ProcessHandle ProcessLauncher::launch(
     handle.hThread  = pi.hThread;
     handle.hStdoutRead = hStdoutReadTmp;
     handle.hStderrRead = hStderrReadTmp;
+    handle.hStdinWrite = hStdinWriteTmp;
     return handle;
 }
 
@@ -237,8 +300,45 @@ std::string ProcessLauncher::readStderr(ProcessHandle& handle)
     return readPipe(handle.hStderrRead);
 }
 
+bool ProcessLauncher::writeStdin(ProcessHandle& handle, const std::string& data)
+{
+    if (!handle.valid || !handle.hStdinWrite || data.empty())
+    {
+        return false;
+    }
+
+    const char* ptr = data.data();
+    DWORD remaining = static_cast<DWORD>(data.size());
+
+    while (remaining > 0)
+    {
+        DWORD written = 0;
+        if (!WriteFile(handle.hStdinWrite, ptr, remaining, &written, nullptr))
+        {
+            return false;
+        }
+        ptr += written;
+        remaining -= written;
+    }
+    return true;
+}
+
+void ProcessLauncher::closeStdin(ProcessHandle& handle)
+{
+    if (handle.hStdinWrite)
+    {
+        CloseHandle(handle.hStdinWrite);
+        handle.hStdinWrite = nullptr;
+    }
+}
+
 void ProcessLauncher::closeHandles(ProcessHandle& handle)
 {
+    if (handle.hStdinWrite)
+    {
+        CloseHandle(handle.hStdinWrite);
+        handle.hStdinWrite = nullptr;
+    }
     if (handle.hStdoutRead)
     {
         CloseHandle(handle.hStdoutRead);

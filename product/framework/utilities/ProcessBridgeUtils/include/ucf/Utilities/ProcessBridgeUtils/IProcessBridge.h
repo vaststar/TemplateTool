@@ -60,8 +60,34 @@ public:
     /// Get the child process PID. Returns 0 if not running.
     virtual int64_t processPid() const = 0;
 
+    /// Write data to the child process's stdin pipe.
+    /// Requires config.pipeStdin = true when starting.
+    /// @return true if all bytes were written successfully
+    virtual bool writeToStdin(const std::string& data) = 0;
+
+    /// Close the stdin pipe (child will see EOF on its stdin).
+    /// Useful for signaling "no more input" without stopping the process.
+    virtual void closeStdin() = 0;
+
     /// Create a ProcessBridge instance.
     static std::unique_ptr<IProcessBridge> create();
+
+    // === Static utilities ===
+
+    /// Result of a synchronous process run.
+    struct RunResult {
+        int exitCode = -1;
+        std::string stdoutData;
+        std::string stderrData;
+        bool timedOut = false;
+    };
+
+    /// Run a process synchronously: launch, collect output, wait for exit.
+    /// This is a convenience for "fire-and-forget" commands (e.g. ffmpeg convert).
+    /// Blocks the calling thread until the process exits or times out.
+    /// @param config  Process configuration (stopTimeoutMs used as overall timeout)
+    /// @return RunResult with exit code and captured output
+    static RunResult run(const ProcessBridgeConfig& config);
 };
 
 } // namespace ucf::utilities
