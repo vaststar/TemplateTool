@@ -78,6 +78,9 @@ private:
     /// Derive AudioCaptureMode from the two enable flags.
     static ucf::agents::AudioCaptureMode deriveAudioMode(bool mic, bool sys);
 
+    /// Look up the AudioDeviceType for a system audio device ID.
+    ucf::agents::AudioDeviceType resolveSystemAudioDeviceType(const std::string& deviceId) const;
+
 private:
     mutable std::mutex m_mutex;
     model::RecordingSettings m_settings;

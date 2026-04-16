@@ -39,10 +39,11 @@ ScreenRecordingAgent::~ScreenRecordingAgent()
     // If still recording, force stop
     {
         std::lock_guard lock(m_sessionMutex);
-        if (m_session.isValid())
+        if (m_recorder && m_recorder->isActive())
         {
-            ScreenRecordingUtils::stopRecording(m_session);
+            m_recorder->stop();
         }
+        m_recorder.reset();
     }
 }
 
@@ -141,7 +142,7 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
     auto lowLevelConfig = toRecordingConfig(config);
 
     // Pre-check screen recording permission to fail fast with a clear error
-    if (!ScreenRecordingUtils::hasScreenRecordingPermission())
+    if (!IScreenRecorder::hasScreenRecordingPermission())
     {
         m_state.store(State::Idle, std::memory_order_release);
         fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
@@ -163,23 +164,21 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
         lowLevelConfig.outputPath = config.outputPath + ".tmp.mp4";
     }
 
-    auto session = ScreenRecordingUtils::startRecording(lowLevelConfig);
-
-    if (!session.isValid())
-    {
-        m_isGifMode = false;
-        // Revert state
-        m_state.store(State::Idle, std::memory_order_release);
-        fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
-                         RecordingAgentState::Idle);
-        fireNotification(&IScreenRecordingAgentCallback::onError,
-                         std::string("Failed to start FFmpeg recording process"));
-        return false;
-    }
-
     {
         std::lock_guard lock(m_sessionMutex);
-        m_session = session;
+        m_recorder = IScreenRecorder::create();
+        if (!m_recorder || !m_recorder->start(lowLevelConfig))
+        {
+            m_recorder.reset();
+            m_isGifMode = false;
+            // Revert state
+            m_state.store(State::Idle, std::memory_order_release);
+            fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
+                             RecordingAgentState::Idle);
+            fireNotification(&IScreenRecordingAgentCallback::onError,
+                             std::string("Failed to start FFmpeg recording process"));
+            return false;
+        }
     }
 
     if (!tryTransition(State::Recording))
@@ -187,7 +186,8 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
         // Shouldn't happen given we just set Starting, but guard anyway
         m_isGifMode = false;
         std::lock_guard lock(m_sessionMutex);
-        ScreenRecordingUtils::stopRecording(m_session);
+        if (m_recorder) m_recorder->stop();
+        m_recorder.reset();
         m_state.store(State::Idle, std::memory_order_release);
         fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
                          RecordingAgentState::Idle);
@@ -243,14 +243,15 @@ void ScreenRecordingAgent::stop()
         RecordingResult result;
         {
             std::lock_guard lock(m_sessionMutex);
-            if (m_session.isValid())
+            if (m_recorder && m_recorder->isActive())
             {
                 if (wasPaused)
                 {
-                    ScreenRecordingUtils::resumeRecording(m_session);
+                    m_recorder->resume();
                 }
-                result = ScreenRecordingUtils::stopRecording(m_session);
+                result = m_recorder->stop();
             }
+            m_recorder.reset();
         }
 
         // GIF post-conversion
@@ -263,7 +264,7 @@ void ScreenRecordingAgent::stop()
         if (isGif && result.success)
         {
             SRA_LOG_INFO("Converting recording to GIF: " << gifOutputPath);
-            bool gifOk = ScreenRecordingUtils::convertToGif(
+            bool gifOk = IScreenRecorder::convertToGif(
                 ffmpegPath, result.outputPath, gifOutputPath, gifFps);
 
             // Delete temporary mp4
@@ -333,7 +334,7 @@ void ScreenRecordingAgent::pause()
     }
 
     std::lock_guard lock(m_sessionMutex);
-    if (ScreenRecordingUtils::pauseRecording(m_session))
+    if (m_recorder && m_recorder->pause())
     {
         if (tryTransition(State::Paused))
         {
@@ -357,7 +358,7 @@ void ScreenRecordingAgent::resume()
     }
 
     std::lock_guard lock(m_sessionMutex);
-    if (ScreenRecordingUtils::resumeRecording(m_session))
+    if (m_recorder && m_recorder->resume())
     {
         if (tryTransition(State::Recording))
         {
@@ -400,17 +401,17 @@ int ScreenRecordingAgent::duration() const
 
 std::vector<AudioDeviceInfo> ScreenRecordingAgent::getAudioDevices() const
 {
-    return ScreenRecordingUtils::enumerateAudioDevices();
+    return IScreenRecorder::enumerateAudioDevices();
 }
 
 bool ScreenRecordingAgent::hasMicrophonePermission() const
 {
-    return ScreenRecordingUtils::hasMicrophonePermission();
+    return IScreenRecorder::hasMicrophonePermission();
 }
 
 void ScreenRecordingAgent::requestMicrophonePermission(std::function<void(bool)> callback)
 {
-    ScreenRecordingUtils::requestMicrophonePermission(std::move(callback));
+    IScreenRecorder::requestMicrophonePermission(std::move(callback));
 }
 
 // ============================================================================
@@ -490,6 +491,7 @@ ucf::utilities::screenrecording::RecordingConfig ScreenRecordingAgent::toRecordi
     rc.audioMode = cfg.audioMode;
     rc.micDevice = cfg.micDevice;
     rc.systemAudioDevice = cfg.systemAudioDevice;
+    rc.systemAudioDeviceType = cfg.systemAudioDeviceType;
     return rc;
 }
 

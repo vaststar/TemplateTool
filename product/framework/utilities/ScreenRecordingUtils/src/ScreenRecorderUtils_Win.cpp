@@ -1,0 +1,321 @@
+#include "ScreenRecorder_Win.h"
+
+#ifdef _WIN32
+
+#include "LoggerDefine.h"
+
+#include <cstdlib>
+#include <filesystem>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <initguid.h>
+#include <mmdeviceapi.h>
+#include <functiondiscoverykeys_devpkey.h>
+
+namespace ucf::utilities::screenrecording {
+
+// ============================================================================
+// Helpers (file-local)
+// ============================================================================
+
+/// Search the PATH environment variable for an executable by name.
+static std::string findInPath(const std::string& name)
+{
+    const char* pathEnv = std::getenv("PATH");
+    if (!pathEnv)
+    {
+        return {};
+    }
+
+    std::string pathStr(pathEnv);
+    std::string::size_type start = 0;
+
+    while (start < pathStr.size())
+    {
+        auto end = pathStr.find(';', start);
+        if (end == std::string::npos)
+        {
+            end = pathStr.size();
+        }
+
+        std::string dir = pathStr.substr(start, end - start);
+        if (!dir.empty())
+        {
+            std::filesystem::path candidate = std::filesystem::path(dir) / name;
+            std::error_code ec;
+            if (std::filesystem::is_regular_file(candidate, ec))
+            {
+                auto canonical = std::filesystem::canonical(candidate, ec);
+                if (!ec)
+                {
+                    return canonical.string();
+                }
+            }
+        }
+        start = end + 1;
+    }
+    return {};
+}
+
+/// Wait for a process with timeout, then force-terminate if still running.
+static bool waitForProcessWithTimeout(HANDLE hProcess, DWORD timeoutMs, std::string& errorMsg)
+{
+    DWORD waitResult = WaitForSingleObject(hProcess, timeoutMs);
+    if (waitResult == WAIT_TIMEOUT)
+    {
+        SRU_LOG_WARN("Process did not exit in " << timeoutMs << "ms, force terminating");
+        TerminateProcess(hProcess, 1);
+        WaitForSingleObject(hProcess, 5000);
+        errorMsg = "FFmpeg did not exit in time, force killed";
+        return false;
+    }
+    return true;
+}
+
+// ============================================================================
+// FFmpeg discovery
+// ============================================================================
+
+std::string ScreenRecorder_Win::findFFmpegPath(const std::string& appDir)
+{
+    std::vector<std::string> candidates = {
+        appDir + "/ffmpeg.exe",
+        appDir + "/ffmpeg/ffmpeg.exe"
+    };
+
+    for (const auto& candidate : candidates)
+    {
+        std::error_code ec;
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec))
+        {
+            return canonical.string();
+        }
+    }
+
+    std::string pathResult = findInPath("ffmpeg.exe");
+    if (!pathResult.empty())
+    {
+        return pathResult;
+    }
+
+    SRU_LOG_WARN("FFmpeg not found in candidates or PATH");
+    return {};
+}
+
+// ============================================================================
+// Audio Device Enumeration
+// ============================================================================
+
+std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
+{
+    std::vector<AudioDeviceInfo> devices;
+
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    bool needUninit = SUCCEEDED(hr);
+
+    IMMDeviceEnumerator* pEnumerator = nullptr;
+    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+                          CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                          reinterpret_cast<void**>(&pEnumerator));
+    if (FAILED(hr) || !pEnumerator)
+    {
+        if (needUninit) CoUninitialize();
+        return devices;
+    }
+
+    // Helper lambda to convert wide device name to UTF-8
+    auto getDeviceName = [](IPropertyStore* pProps) -> std::string {
+        PROPVARIANT varName;
+        PropVariantInit(&varName);
+        pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+        std::string name;
+        if (varName.vt == VT_LPWSTR)
+        {
+            int len = WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1,
+                                           nullptr, 0, nullptr, nullptr);
+            name.resize(len - 1);
+            WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1,
+                                name.data(), len, nullptr, nullptr);
+        }
+        PropVariantClear(&varName);
+        return name;
+    };
+
+    // Helper lambda to get WASAPI endpoint ID as UTF-8
+    auto getEndpointId = [](IMMDevice* pDevice) -> std::string {
+        LPWSTR pwszId = nullptr;
+        pDevice->GetId(&pwszId);
+        std::string id;
+        if (pwszId)
+        {
+            int len = WideCharToMultiByte(CP_UTF8, 0, pwszId, -1,
+                                           nullptr, 0, nullptr, nullptr);
+            id.resize(len - 1);
+            WideCharToMultiByte(CP_UTF8, 0, pwszId, -1,
+                                id.data(), len, nullptr, nullptr);
+            CoTaskMemFree(pwszId);
+        }
+        return id;
+    };
+
+    // ── 1) eCapture: Microphones + traditional loopback devices (Stereo Mix) ──
+    IMMDeviceCollection* pCaptureCollection = nullptr;
+    hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCaptureCollection);
+    if (SUCCEEDED(hr) && pCaptureCollection)
+    {
+        UINT count = 0;
+        pCaptureCollection->GetCount(&count);
+        for (UINT i = 0; i < count; i++)
+        {
+            IMMDevice* pDevice = nullptr;
+            if (SUCCEEDED(pCaptureCollection->Item(i, &pDevice)) && pDevice)
+            {
+                IPropertyStore* pProps = nullptr;
+                pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                if (pProps)
+                {
+                    std::string name = getDeviceName(pProps);
+
+                    PROPVARIANT varFormFactor;
+                    PropVariantInit(&varFormFactor);
+                    pProps->GetValue(PKEY_AudioEndpoint_FormFactor, &varFormFactor);
+                    UINT formFactor = varFormFactor.uintVal;
+                    PropVariantClear(&varFormFactor);
+
+                    bool isMic = (formFactor == Microphone ||
+                                  formFactor == Headset ||
+                                  formFactor == Handset);
+
+                    AudioDeviceInfo info;
+                    info.displayName = name;
+                    info.id = name;
+                    info.isInput = isMic;
+                    info.deviceType = isMic ? AudioDeviceType::Microphone
+                                            : AudioDeviceType::LoopbackCapture;
+                    devices.push_back(std::move(info));
+
+                    pProps->Release();
+                }
+                pDevice->Release();
+            }
+        }
+        pCaptureCollection->Release();
+    }
+
+    // ── 2) eRender: Output devices usable via WASAPI loopback ──
+    IMMDeviceCollection* pRenderCollection = nullptr;
+    hr = pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pRenderCollection);
+    if (SUCCEEDED(hr) && pRenderCollection)
+    {
+        UINT count = 0;
+        pRenderCollection->GetCount(&count);
+        for (UINT i = 0; i < count; i++)
+        {
+            IMMDevice* pDevice = nullptr;
+            if (SUCCEEDED(pRenderCollection->Item(i, &pDevice)) && pDevice)
+            {
+                IPropertyStore* pProps = nullptr;
+                pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                if (pProps)
+                {
+                    std::string name = getDeviceName(pProps);
+                    std::string endpointId = getEndpointId(pDevice);
+
+                    AudioDeviceInfo info;
+                    info.displayName = name;
+                    info.id = endpointId;
+                    info.isInput = false;
+                    info.deviceType = AudioDeviceType::OutputDevice;
+                    devices.push_back(std::move(info));
+
+                    pProps->Release();
+                }
+                pDevice->Release();
+            }
+        }
+        pRenderCollection->Release();
+    }
+
+    pEnumerator->Release();
+    if (needUninit) CoUninitialize();
+    return devices;
+}
+
+// ============================================================================
+// GIF Conversion
+// ============================================================================
+
+bool ScreenRecorder_Win::convertToGif(const std::string& ffmpegPath,
+                                      const std::string& inputPath,
+                                      const std::string& outputPath,
+                                      int fps)
+{
+    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
+    {
+        SRU_LOG_ERROR("convertToGif: empty path argument");
+        return false;
+    }
+
+    std::string filterComplex = "fps=" + std::to_string(fps)
+        + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
+
+    std::ostringstream cmdLine;
+    cmdLine << "\"" << ffmpegPath << "\""
+            << " -y -i \"" << inputPath << "\""
+            << " -filter_complex \"" << filterComplex << "\""
+            << " \"" << outputPath << "\"";
+
+    std::string cmdStr = cmdLine.str();
+    std::vector<char> cmdBuf(cmdStr.begin(), cmdStr.end());
+    cmdBuf.push_back('\0');
+
+    STARTUPINFOA si{};
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
+
+    PROCESS_INFORMATION pi{};
+    BOOL ok = CreateProcessA(
+        nullptr, cmdBuf.data(), nullptr, nullptr,
+        FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi);
+
+    if (!ok)
+    {
+        SRU_LOG_ERROR("convertToGif: CreateProcess failed, error=" << GetLastError());
+        return false;
+    }
+
+    CloseHandle(pi.hThread);
+
+    std::string killError;
+    bool exited = waitForProcessWithTimeout(pi.hProcess, 120000, killError);
+
+    DWORD exitCode = 1;
+    GetExitCodeProcess(pi.hProcess, &exitCode);
+    CloseHandle(pi.hProcess);
+
+    if (!exited)
+    {
+        SRU_LOG_ERROR("convertToGif: " << killError);
+        return false;
+    }
+
+    std::error_code ec;
+    bool result = exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
+    if (!result)
+    {
+        SRU_LOG_ERROR("convertToGif: ffmpeg exited with code " << exitCode);
+    }
+    return result;
+}
+
+} // namespace ucf::utilities::screenrecording
+
+#endif // _WIN32

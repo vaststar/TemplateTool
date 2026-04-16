@@ -20,10 +20,18 @@ enum class RecordingState {
 // Audio Device Info (ViewModel-layer mirror of utilities::AudioDeviceInfo)
 // ============================================================================
 
+/// Classification of audio devices by type (mirrors utilities layer).
+enum class AudioDeviceType {
+    Microphone,       ///< Physical mic / headset input
+    LoopbackCapture,  ///< Virtual loopback (Stereo Mix, BlackHole, .monitor)
+    OutputDevice      ///< Physical output — usable via WASAPI loopback
+};
+
 struct COMMONHEAD_EXPORT AudioDeviceInfo {
     std::string id;           ///< Platform-specific device identifier
     std::string displayName;  ///< User-friendly display name
     bool isInput = true;      ///< true = microphone/input, false = output/loopback
+    AudioDeviceType deviceType = AudioDeviceType::Microphone;
 };
 
 // ============================================================================

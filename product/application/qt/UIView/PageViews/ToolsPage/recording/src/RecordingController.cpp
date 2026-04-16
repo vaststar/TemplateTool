@@ -228,6 +228,7 @@ void RecordingController::setEnableSystemAudio(bool enable)
 
 void RecordingController::setSelectedMicDevice(const QString& deviceId)
 {
+    if (m_refreshingDevices) return;
     if (m_selectedMicDevice != deviceId) {
         m_selectedMicDevice = deviceId;
         if (m_viewModel) {
@@ -241,6 +242,7 @@ void RecordingController::setSelectedMicDevice(const QString& deviceId)
 
 void RecordingController::setSelectedSystemAudioDevice(const QString& deviceId)
 {
+    if (m_refreshingDevices) return;
     if (m_selectedSystemAudioDevice != deviceId) {
         m_selectedSystemAudioDevice = deviceId;
         if (m_viewModel) {
@@ -355,7 +357,16 @@ void RecordingController::refreshAudioDevices()
         }
     }
 
+    // Block device-selection setters while emitting — ComboBox resets
+    // currentIndex to 0 when its model changes, which triggers
+    // onCurrentValueChanged and would overwrite the saved selection.
+    m_refreshingDevices = true;
     emit audioDevicesChanged();
+    m_refreshingDevices = false;
+
+    // Re-emit settingsChanged so the currentIndex binding re-evaluates
+    // with the (still correct) saved device IDs.
+    emit settingsChanged();
     emit micPermissionChanged();
 }
 

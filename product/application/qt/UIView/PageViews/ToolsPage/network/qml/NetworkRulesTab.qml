@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls.Basic
 import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
@@ -120,7 +119,7 @@ Item {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     Rectangle { width: 40; height: 18; radius: 3; color: root._accentColor; UTText { anchors.centerIn: parent; text: modelData.status_code || "200"; fontEnum: UIFontToken.Caption_Text; color: "white" } }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12; ToolTip.text: qsTr("Has custom headers"); ToolTip.visible: false }
+                                    UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12 }
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() } }
                                 }
                             }
@@ -148,7 +147,7 @@ Item {
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
                         UTTextField { id: bpUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
-                        ComboBox { id: bpMethod; model: ["ANY","GET","POST","PUT","DELETE"]; implicitWidth: 100 }
+                        UTComboBox { id: bpMethod; model: ["ANY","GET","POST","PUT","DELETE"]; implicitWidth: 100 }
                         UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBreakpointRule(bpUrl.text, bpMethod.currentText); bpUrl.text=""; bpListView.model = root.controller.rulesManager.getBreakpointRules(); if (!root.controller.interceptEnabled) root.controller.interceptEnabled = true } }
                         UTButton { text: qsTr("🧪 Test"); onClicked: root.testPattern(bpUrl.text) }
                         Item { Layout.fillWidth: true }

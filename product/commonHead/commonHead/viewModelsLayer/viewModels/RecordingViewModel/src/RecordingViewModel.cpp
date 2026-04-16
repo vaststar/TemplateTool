@@ -101,12 +101,12 @@ void RecordingViewModel::setAppDir(const std::string& appDir)
 {
     std::lock_guard lock(m_mutex);
     m_appDir = appDir;
-    m_ffmpegPath = ScreenRecordingUtils::findFFmpegPath(appDir);
+    m_ffmpegPath = IScreenRecorder::findFFmpegPath(appDir);
 }
 
 bool RecordingViewModel::hasScreenRecordingPermission() const
 {
-    return ScreenRecordingUtils::hasScreenRecordingPermission();
+    return IScreenRecorder::hasScreenRecordingPermission();
 }
 
 // ============================================================================
@@ -133,6 +133,7 @@ void RecordingViewModel::startRecording(int displayIndex)
         config.audioMode = deriveAudioMode(micEffective, m_settings.enableSystemAudio);
         config.micDevice = m_settings.micDeviceId;
         config.systemAudioDevice = m_settings.systemAudioDeviceId;
+        config.systemAudioDeviceType = resolveSystemAudioDeviceType(m_settings.systemAudioDeviceId);
     }
     m_agent->start(config);
 }
@@ -160,6 +161,7 @@ void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
         config.audioMode = deriveAudioMode(micEffective, m_settings.enableSystemAudio);
         config.micDevice = m_settings.micDeviceId;
         config.systemAudioDevice = m_settings.systemAudioDeviceId;
+        config.systemAudioDeviceType = resolveSystemAudioDeviceType(m_settings.systemAudioDeviceId);
     }
     m_agent->start(config);
 }
@@ -199,7 +201,7 @@ void RecordingViewModel::convertToGif(const std::string& inputPath, const std::s
         outPath = p.string();
     }
 
-    bool ok = ScreenRecordingUtils::convertToGif(ffmpeg, inputPath, outPath, 10);
+    bool ok = IScreenRecorder::convertToGif(ffmpeg, inputPath, outPath, 10);
     if (ok) {
         fireNotification(&IRecordingViewModelCallback::onRecordingCompleted, outPath);
     } else {
@@ -322,6 +324,24 @@ ucf::agents::AudioCaptureMode RecordingViewModel::deriveAudioMode(bool mic, bool
     return ucf::agents::AudioCaptureMode::None;
 }
 
+ucf::agents::AudioDeviceType RecordingViewModel::resolveSystemAudioDeviceType(
+    const std::string& deviceId) const
+{
+    if (deviceId.empty())
+    {
+        return ucf::agents::AudioDeviceType::LoopbackCapture;
+    }
+    auto agentDevices = m_agent->getAudioDevices();
+    for (const auto& dev : agentDevices)
+    {
+        if (dev.id == deviceId)
+        {
+            return static_cast<ucf::agents::AudioDeviceType>(dev.deviceType);
+        }
+    }
+    return ucf::agents::AudioDeviceType::LoopbackCapture;
+}
+
 std::vector<model::AudioDeviceInfo> RecordingViewModel::getAudioDevices() const
 {
     auto agentDevices = m_agent->getAudioDevices();
@@ -329,7 +349,12 @@ std::vector<model::AudioDeviceInfo> RecordingViewModel::getAudioDevices() const
     result.reserve(agentDevices.size());
     for (const auto& dev : agentDevices)
     {
-        result.push_back({dev.id, dev.displayName, dev.isInput});
+        model::AudioDeviceInfo info;
+        info.id = dev.id;
+        info.displayName = dev.displayName;
+        info.isInput = dev.isInput;
+        info.deviceType = static_cast<model::AudioDeviceType>(dev.deviceType);
+        result.push_back(std::move(info));
     }
     return result;
 }

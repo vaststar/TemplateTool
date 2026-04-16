@@ -65,9 +65,9 @@ private:
 private:
     std::atomic<State> m_state{State::Idle};
 
-    // Active FFmpeg session
+    // Active recording session
     mutable std::mutex m_sessionMutex;
-    ucf::utilities::screenrecording::RecordingSession m_session;
+    std::unique_ptr<ucf::utilities::screenrecording::IScreenRecorder> m_recorder;
 
     // Duration timer
     std::atomic<int> m_duration{0};

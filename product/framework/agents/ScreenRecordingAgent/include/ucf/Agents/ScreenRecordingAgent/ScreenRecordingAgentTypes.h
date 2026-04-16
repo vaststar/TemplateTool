@@ -21,6 +21,7 @@ enum class RecordingAgentState
 /// Re-export audio types from utilities layer for convenience.
 using AudioCaptureMode = ucf::utilities::screenrecording::AudioCaptureMode;
 using AudioDeviceInfo = ucf::utilities::screenrecording::AudioDeviceInfo;
+using AudioDeviceType = ucf::utilities::screenrecording::AudioDeviceType;
 
 /// Configuration for starting a screen recording session.
 struct Agents_EXPORT RecordingAgentConfig
@@ -38,6 +39,7 @@ struct Agents_EXPORT RecordingAgentConfig
     AudioCaptureMode audioMode = AudioCaptureMode::None;
     std::string micDevice;              ///< Microphone device id (empty = system default)
     std::string systemAudioDevice;      ///< System audio device id
+    AudioDeviceType systemAudioDeviceType = AudioDeviceType::LoopbackCapture;
 };
 
 } // namespace ucf::agents

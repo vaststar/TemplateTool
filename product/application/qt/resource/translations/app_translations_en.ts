@@ -190,37 +190,42 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="45"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="42"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="53"/>
         <source>URL Pattern:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="47"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="55"/>
         <source>Status Code:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="49"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="57"/>
         <source>Content-Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="59"/>
         <source>Headers:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="54"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="62"/>
         <source>Response Body:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="70"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="78"/>
         <source>Edit (load into form)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="74"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="82"/>
         <source>🧪 Test Pattern</source>
         <translation type="unfinished"></translation>
     </message>
@@ -443,316 +448,311 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkRulesTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="50"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="49"/>
         <source>Mock Response</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="50"/>
         <source>Breakpoints</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="52"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="51"/>
         <source>Blacklist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="52"/>
         <source>Map Local</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="54"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="53"/>
         <source>Map Remote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="55"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="54"/>
         <source>Throttle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="84"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="83"/>
         <source>Mock Response Rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="84"/>
         <source>Match requests by URL pattern and return a custom response. Mocked requests will appear in Capture with a &quot;MOCK&quot; tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="87"/>
         <source>URL Pattern:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="89"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="88"/>
         <source>e.g. /api/user.*</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="90"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="153"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="89"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="152"/>
         <source>🧪 Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="91"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="90"/>
         <source>Status:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="93"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="92"/>
         <source>Content-Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="95"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="94"/>
         <source>Headers:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="95"/>
         <source>X-Custom: value  (one per line or comma-separated)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="97"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
         <source>Body:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="98"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="97"/>
         <source>{&quot;message&quot;: &quot;mocked&quot;}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="101"/>
         <source>+ Add Rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="104"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="155"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="103"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="154"/>
         <source>Clear All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="123"/>
-        <source>Has custom headers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="127"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="126"/>
         <source>No mock rules. Add one above.
 Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="135"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="134"/>
         <source>Breakpoint Rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="136"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="135"/>
         <source>Pause matching requests so you can inspect or modify them before forwarding.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="143"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="142"/>
         <source>⚠️ Interception is OFF — breakpoints won&apos;t take effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="144"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="143"/>
         <source>Enable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="150"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="287"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="149"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="286"/>
         <source>URL pattern (regex)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="152"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="258"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="289"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="319"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="151"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="257"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="288"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="318"/>
         <source>+ Add</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="172"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="171"/>
         <source>No breakpoint rules.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="178"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="177"/>
         <source>Paused Requests (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="203"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="202"/>
         <source>▶ Forward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="207"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="206"/>
         <source>✕ Drop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="217"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="216"/>
         <source>▶ Forward All (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="225"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="224"/>
         <source>✕ Drop All (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="240"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="239"/>
         <source>How to use Breakpoints:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="241"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="240"/>
         <source>1. Add a URL pattern rule above (regex)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="242"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="241"/>
         <source>2. Interception is auto-enabled when you add a rule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="243"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="242"/>
         <source>3. When a matching request arrives, it pauses and appears in &quot;Paused Requests&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="244"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="243"/>
         <source>4. Click &quot;▶ Forward&quot; to let it through, or &quot;✕ Drop&quot; to block it (returns 502)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="245"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="244"/>
         <source>5. Paused requests auto-forward after 5 minutes timeout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="253"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="252"/>
         <source>Blacklist Rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="254"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="253"/>
         <source>Block matching requests entirely. They will receive a 403 response.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="257"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="256"/>
         <source>URL pattern to block (regex)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="275"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="274"/>
         <source>No blacklist rules.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="283"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="282"/>
         <source>Map Local Rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="284"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="283"/>
         <source>Serve a local file instead of the remote response for matching URLs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="288"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="287"/>
         <source>Local file path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="305"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="304"/>
         <source>No map local rules.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="313"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="312"/>
         <source>Map Remote Rules</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="314"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="313"/>
         <source>Redirect matching requests to a different URL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="317"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="316"/>
         <source>Source URL pattern (regex)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="318"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="317"/>
         <source>Destination URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="335"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
         <source>No map remote rules.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="343"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="342"/>
         <source>Bandwidth Throttle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="344"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="343"/>
         <source>Simulate slow network conditions by limiting bandwidth.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="346"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="345"/>
         <source>Enable Throttle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="352"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="351"/>
         <source>Download:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="354"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="358"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="353"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
         <source>%1 KB/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="354"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="358"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="353"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
         <source>Unlimited</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="356"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="355"/>
         <source>Upload:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="363"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="362"/>
         <source>Presets:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="377"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="376"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
@@ -908,37 +908,42 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="39"/>
-        <source>Pattern:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="40"/>
-        <source>Regex pattern (e.g. /api/user.*)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="41"/>
-        <source>Test URL:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="42"/>
-        <source>https://example.com/api/user/123</source>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="36"/>
+        <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="47"/>
+        <source>Pattern:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="48"/>
+        <source>Regex pattern (e.g. /api/user.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="49"/>
+        <source>Test URL:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="50"/>
+        <source>https://example.com/api/user/123</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="55"/>
         <source>▶ Run Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="52"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="60"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="71"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/PatternTestDialog.qml" line="79"/>
         <source>Tip: Pattern uses Python-style regex (re.search). It matches anywhere in the URL, not just from the start.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1260,12 +1265,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="385"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="396"/>
         <source>Recordings folder not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="403"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="414"/>
         <source>File not found: %1</source>
         <translation type="unfinished"></translation>
     </message>

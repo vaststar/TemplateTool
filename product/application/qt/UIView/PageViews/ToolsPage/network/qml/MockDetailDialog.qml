@@ -30,11 +30,19 @@ Dialog {
 
     title: qsTr("Mock Rule Detail")
     anchors.centerIn: parent; width: 540; implicitHeight: mdDialogCol.implicitHeight + 100
-    modal: true; standardButtons: Dialog.Close
+    modal: true
     background: Rectangle { color: root._sectionBg; border.color: root._sectionBorder; border.width: 1; radius: 8 }
     header: Rectangle {
         width: parent.width; height: 40; color: root._headerBg; radius: 8
         UTText { anchors.centerIn: parent; text: qsTr("🎭 Mock Rule Detail"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
+    }
+    footer: Item {
+        implicitHeight: 48
+        UTButton {
+            text: qsTr("Close")
+            anchors.centerIn: parent
+            onClicked: root.close()
+        }
     }
 
     ColumnLayout {

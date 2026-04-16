@@ -1,150 +1,114 @@
 #include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
 #if defined(_WIN32)
-#include "ScreenRecordingUtils_Win.h"
+#include "ScreenRecorder_Win.h"
 #elif defined(__APPLE__)
-#include "ScreenRecordingUtils_Mac.h"
+#include "ScreenRecorder_Mac.h"
 #elif defined(__linux__)
-#include "ScreenRecordingUtils_Linux.h"
+#include "ScreenRecorder_Linux.h"
 #endif
 
 namespace ucf::utilities::screenrecording {
 
-std::string ScreenRecordingUtils::findFFmpegPath(const std::string& appDir)
+// ============================================================================
+// IScreenRecorder factory
+// ============================================================================
+
+std::unique_ptr<IScreenRecorder> IScreenRecorder::create()
 {
 #if defined(_WIN32)
-    return ScreenRecordingUtils_Win::findFFmpegPath(appDir);
+    return std::make_unique<ScreenRecorder_Win>();
 #elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::findFFmpegPath(appDir);
+    return std::make_unique<ScreenRecorder_Mac>();
 #elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::findFFmpegPath(appDir);
+    return std::make_unique<ScreenRecorder_Linux>();
+#else
+    return nullptr;
+#endif
+}
+
+// ============================================================================
+// IScreenRecorder — static utilities
+// ============================================================================
+
+std::string IScreenRecorder::findFFmpegPath(const std::string& appDir)
+{
+#if defined(_WIN32)
+    return ScreenRecorder_Win::findFFmpegPath(appDir);
+#elif defined(__APPLE__)
+    return ScreenRecorder_Mac::findFFmpegPath(appDir);
+#elif defined(__linux__)
+    return ScreenRecorder_Linux::findFFmpegPath(appDir);
 #else
     (void)appDir;
     return {};
 #endif
 }
 
-bool ScreenRecordingUtils::isFFmpegAvailable(const std::string& appDir)
+bool IScreenRecorder::isFFmpegAvailable(const std::string& appDir)
 {
     return !findFFmpegPath(appDir).empty();
 }
 
-bool ScreenRecordingUtils::hasScreenRecordingPermission()
+bool IScreenRecorder::hasScreenRecordingPermission()
 {
 #if defined(_WIN32)
-    return ScreenRecordingUtils_Win::hasScreenRecordingPermission();
+    return true;
 #elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::hasScreenRecordingPermission();
+    return ScreenRecorder_Mac::hasScreenRecordingPermission();
 #elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::hasScreenRecordingPermission();
+    return true;
 #else
     return true;
 #endif
 }
 
-bool ScreenRecordingUtils::hasMicrophonePermission()
+bool IScreenRecorder::hasMicrophonePermission()
 {
 #if defined(_WIN32)
-    return ScreenRecordingUtils_Win::hasMicrophonePermission();
+    return true;
 #elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::hasMicrophonePermission();
+    return ScreenRecorder_Mac::hasMicrophonePermission();
 #elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::hasMicrophonePermission();
+    return true;
 #else
     return true;
 #endif
 }
 
-void ScreenRecordingUtils::requestMicrophonePermission(std::function<void(bool granted)> callback)
+void IScreenRecorder::requestMicrophonePermission(std::function<void(bool granted)> callback)
 {
 #if defined(__APPLE__)
-    ScreenRecordingUtils_Mac::requestMicrophonePermission(std::move(callback));
+    ScreenRecorder_Mac::requestMicrophonePermission(std::move(callback));
 #else
-    // Windows / Linux: no permission needed
     if (callback) callback(true);
 #endif
 }
 
-std::vector<AudioDeviceInfo> ScreenRecordingUtils::enumerateAudioDevices()
+std::vector<AudioDeviceInfo> IScreenRecorder::enumerateAudioDevices()
 {
 #if defined(_WIN32)
-    return ScreenRecordingUtils_Win::enumerateAudioDevices();
+    return ScreenRecorder_Win::enumerateAudioDevices();
 #elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::enumerateAudioDevices();
+    return ScreenRecorder_Mac::enumerateAudioDevices();
 #elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::enumerateAudioDevices();
+    return ScreenRecorder_Linux::enumerateAudioDevices();
 #else
     return {};
 #endif
 }
 
-RecordingSession ScreenRecordingUtils::startRecording(const RecordingConfig& config)
+bool IScreenRecorder::convertToGif(const std::string& ffmpegPath,
+                                   const std::string& inputPath,
+                                   const std::string& outputPath,
+                                   int fps)
 {
 #if defined(_WIN32)
-    return ScreenRecordingUtils_Win::startRecording(config);
+    return ScreenRecorder_Win::convertToGif(ffmpegPath, inputPath, outputPath, fps);
 #elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::startRecording(config);
+    return ScreenRecorder_Mac::convertToGif(ffmpegPath, inputPath, outputPath, fps);
 #elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::startRecording(config);
-#else
-    (void)config;
-    return {};
-#endif
-}
-
-RecordingResult ScreenRecordingUtils::stopRecording(RecordingSession& session)
-{
-#if defined(_WIN32)
-    return ScreenRecordingUtils_Win::stopRecording(session);
-#elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::stopRecording(session);
-#elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::stopRecording(session);
-#else
-    (void)session;
-    return {false, {}, "Platform not supported"};
-#endif
-}
-
-bool ScreenRecordingUtils::pauseRecording(const RecordingSession& session)
-{
-#if defined(_WIN32)
-    return ScreenRecordingUtils_Win::pauseRecording(session);
-#elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::pauseRecording(session);
-#elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::pauseRecording(session);
-#else
-    (void)session;
-    return false;
-#endif
-}
-
-bool ScreenRecordingUtils::resumeRecording(const RecordingSession& session)
-{
-#if defined(_WIN32)
-    return ScreenRecordingUtils_Win::resumeRecording(session);
-#elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::resumeRecording(session);
-#elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::resumeRecording(session);
-#else
-    (void)session;
-    return false;
-#endif
-}
-
-bool ScreenRecordingUtils::convertToGif(const std::string& ffmpegPath,
-                                        const std::string& inputPath,
-                                        const std::string& outputPath,
-                                        int fps)
-{
-#if defined(_WIN32)
-    return ScreenRecordingUtils_Win::convertToGif(ffmpegPath, inputPath, outputPath, fps);
-#elif defined(__APPLE__)
-    return ScreenRecordingUtils_Mac::convertToGif(ffmpegPath, inputPath, outputPath, fps);
-#elif defined(__linux__)
-    return ScreenRecordingUtils_Linux::convertToGif(ffmpegPath, inputPath, outputPath, fps);
+    return ScreenRecorder_Linux::convertToGif(ffmpegPath, inputPath, outputPath, fps);
 #else
     (void)ffmpegPath; (void)inputPath; (void)outputPath; (void)fps;
     return false;

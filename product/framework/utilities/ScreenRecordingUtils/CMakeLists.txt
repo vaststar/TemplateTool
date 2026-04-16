@@ -13,16 +13,21 @@ set(MODULE_SOURCE_PRIVATE
 )
 if (WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenRecordingUtils_Win.h
-    src/ScreenRecordingUtils_Win.cpp)
+    src/ScreenRecorder_Win.h
+    src/ScreenRecorder_Win.cpp
+    src/ScreenRecorderUtils_Win.cpp
+    src/WasapiLoopbackCapture.h
+    src/WasapiLoopbackCapture.cpp)
 elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenRecordingUtils_Mac.h
-    src/ScreenRecordingUtils_Mac.mm)
+    src/ScreenRecorder_Mac.h
+    src/ScreenRecorder_Mac.mm
+    src/ScreenRecorderUtils_Mac.mm)
 elseif (UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenRecordingUtils_Linux.h
-    src/ScreenRecordingUtils_Linux.cpp)
+    src/ScreenRecorder_Linux.h
+    src/ScreenRecorder_Linux.cpp
+    src/ScreenRecorderUtils_Linux.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -33,7 +38,12 @@ set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
 )
 
-if (APPLE)
+if (WIN32)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE
+        ole32
+        uuid
+    )
+elseif (APPLE)
     find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
     find_library(COREAUDIO_FRAMEWORK CoreAudio)
     find_library(AVFOUNDATION_FRAMEWORK AVFoundation)

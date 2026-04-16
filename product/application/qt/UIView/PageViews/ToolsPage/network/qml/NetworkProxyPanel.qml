@@ -77,11 +77,11 @@ Item {
         // ════════════════════════════════════════════
         // TabBar
         // ════════════════════════════════════════════
-        TabBar {
+        UTTabBar {
             id: mainTabBar; Layout.fillWidth: true
-            TabButton { text: qsTr("📡 Capture") }
-            TabButton { text: qsTr("📋 Rules") }
-            TabButton { text: qsTr("⚙ Settings") }
+            UTTabButton { text: qsTr("📡 Capture") }
+            UTTabButton { text: qsTr("📋 Rules") }
+            UTTabButton { text: qsTr("⚙ Settings") }
         }
 
         StackLayout {

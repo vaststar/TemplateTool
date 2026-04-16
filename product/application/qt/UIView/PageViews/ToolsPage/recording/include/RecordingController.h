@@ -147,4 +147,8 @@ private:
     // Cached audio device lists
     QVariantList m_micDevices;
     QVariantList m_systemAudioDevices;
+
+    // Guard: when true, device-selection setters are blocked to prevent
+    // ComboBox model-change from overwriting saved selections.
+    bool m_refreshingDevices = false;
 };
