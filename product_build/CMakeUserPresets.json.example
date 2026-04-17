@@ -53,52 +53,64 @@
   "buildPresets": [
     {
       "name": "local-macos-release",
+      "inherits": "macos-release",
       "configurePreset": "local-macos-release"
     },
     {
       "name": "local-macos-debug",
+      "inherits": "macos-debug",
       "configurePreset": "local-macos-debug"
     },
     {
       "name": "local-windows-msvc-release",
+      "inherits": "windows-msvc-release",
       "configurePreset": "local-windows-msvc-release"
     },
     {
       "name": "local-windows-msvc-debug",
+      "inherits": "windows-msvc-debug",
       "configurePreset": "local-windows-msvc-debug"
     },
     {
       "name": "local-linux-release",
+      "inherits": "linux-release",
       "configurePreset": "local-linux-release"
     },
     {
       "name": "local-linux-debug",
+      "inherits": "linux-debug",
       "configurePreset": "local-linux-debug"
     }
   ],
   "testPresets": [
     {
       "name": "local-macos-release",
+      "inherits": "macos-release",
       "configurePreset": "local-macos-release"
     },
     {
       "name": "local-macos-debug",
+      "inherits": "macos-debug",
       "configurePreset": "local-macos-debug"
     },
     {
       "name": "local-windows-msvc-release",
+      "inherits": "windows-msvc-release",
       "configurePreset": "local-windows-msvc-release"
     },
     {
       "name": "local-windows-msvc-debug",
+      "inherits": "windows-msvc-debug",
       "configurePreset": "local-windows-msvc-debug"
     },
     {
       "name": "local-linux-release",
+      "inherits": "linux-release",
       "configurePreset": "local-linux-release"
     },
     {
       "name": "local-linux-debug",
+      "inherits": "linux-debug",
       "configurePreset": "local-linux-debug"
     }
   ],
