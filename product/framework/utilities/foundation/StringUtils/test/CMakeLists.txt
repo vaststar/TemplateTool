@@ -8,7 +8,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 BuildUnitTestModule(
-    MODULE_NAME 
+    MODULE_NAME
         StringUtilsTests
     TARGET_SOURCE
         ${TARGET_SOURCE_FILES_PRIVATE}
@@ -18,5 +18,5 @@ BuildUnitTestModule(
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
-        framework/Utilities/unit-test
+        framework/utilities/unit-test
 )

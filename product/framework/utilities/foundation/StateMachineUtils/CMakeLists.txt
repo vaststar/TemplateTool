@@ -4,7 +4,7 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 BuildInterface(
     MODULE_NAME StateMachineUtils
-    IDE_FOLDER framework/Utilities
+    IDE_FOLDER framework/utilities
     TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
     TARGET_SOURCE_PUBLIC_HEADER
         ${MODULE_HEADER_BASE_DIR}/ucf/Utilities/StateMachineUtils/StateMachine.h

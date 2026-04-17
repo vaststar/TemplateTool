@@ -17,5 +17,5 @@ BuildUnitTestModule(
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
-        framework/Utilities/unit-test
+        framework/utilities/unit-test
 )
