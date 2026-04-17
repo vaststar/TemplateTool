@@ -5,12 +5,12 @@
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Utilities/TimeUtils/TimeUtils.h>
+#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
 
 #include <chrono>
 #include <filesystem>
 #include <sstream>
 
-namespace fs = std::filesystem;
 using namespace ucf::utilities::screenrecording;
 
 namespace commonHead::viewModels {
@@ -198,9 +198,9 @@ void RecordingViewModel::convertToGif(const std::string& inputPath, const std::s
 
     std::string outPath = outputPath;
     if (outPath.empty()) {
-        auto p = fs::path(inputPath);
+        auto p = ucf::utilities::FilePathUtils::pathFromUtf8(inputPath);
         p.replace_extension(".gif");
-        outPath = p.string();
+        outPath = ucf::utilities::FilePathUtils::utf8FromPath(p);
     }
 
     bool ok = IScreenRecorder::convertToGif(ffmpeg, inputPath, outPath, 10);
@@ -298,7 +298,8 @@ std::string RecordingViewModel::getThumbnailPath(const std::string& inputPath) c
         if (found != m_thumbnailCache.end())
         {
             std::error_code ec;
-            auto size = fs::file_size(found->second, ec);
+            auto size = std::filesystem::file_size(
+                ucf::utilities::FilePathUtils::pathFromUtf8(found->second), ec);
             if (!ec && size > 0)
             {
                 return found->second;
@@ -308,7 +309,8 @@ std::string RecordingViewModel::getThumbnailPath(const std::string& inputPath) c
 
     auto outputPath = buildThumbnailPath(inputPath);
     std::error_code ec;
-    auto size = fs::file_size(outputPath, ec);
+    auto size = std::filesystem::file_size(
+        ucf::utilities::FilePathUtils::pathFromUtf8(outputPath), ec);
     if (!ec && size > 0)
     {
         return outputPath;
@@ -417,9 +419,9 @@ std::string RecordingViewModel::generateOutputPath() const
     }
 
     std::error_code ec;
-    fs::create_directories(dir, ec);
+    std::filesystem::create_directories(ucf::utilities::FilePathUtils::pathFromUtf8(dir), ec);
 
-    return (fs::path(dir) / filename).string();
+    return ucf::utilities::FilePathUtils::utf8FromPath(ucf::utilities::FilePathUtils::pathFromUtf8(dir) / filename);
 }
 
 ucf::agents::AudioCaptureMode RecordingViewModel::deriveAudioMode(bool mic, bool sys)
@@ -483,38 +485,42 @@ std::string RecordingViewModel::getThumbnailCacheRoot() const
         {
             if (auto clientInfoService = serviceLocator->getClientInfoService().lock())
             {
-                return (fs::path(clientInfoService->getAppCacheStoragePath()) / "recording_thumbnails").string();
+                return ucf::utilities::FilePathUtils::utf8FromPath(
+                    ucf::utilities::FilePathUtils::pathFromUtf8(clientInfoService->getAppCacheStoragePath()) / "recording_thumbnails");
             }
         }
     }
 
     if (!m_settings.outputDirectory.empty())
     {
-        return (fs::path(m_settings.outputDirectory) / ".thumbnail_cache").string();
+        return ucf::utilities::FilePathUtils::utf8FromPath(
+            ucf::utilities::FilePathUtils::pathFromUtf8(m_settings.outputDirectory) / ".thumbnail_cache");
     }
 
-    return (fs::temp_directory_path() / "TemplateTool" / "recording_thumbnails").string();
+    return ucf::utilities::FilePathUtils::utf8FromPath(
+        std::filesystem::temp_directory_path() / "TemplateTool" / "recording_thumbnails");
 }
 
 std::string RecordingViewModel::buildThumbnailPath(const std::string& inputPath) const
 {
-    const auto cacheRoot = fs::path(getThumbnailCacheRoot());
+    const auto cacheRoot = ucf::utilities::FilePathUtils::pathFromUtf8(getThumbnailCacheRoot());
     std::error_code ec;
-    fs::create_directories(cacheRoot, ec);
-    return (cacheRoot / (buildThumbnailCacheKey(inputPath) + ".png")).string();
+    std::filesystem::create_directories(cacheRoot, ec);
+    return ucf::utilities::FilePathUtils::utf8FromPath(cacheRoot / (buildThumbnailCacheKey(inputPath) + ".png"));
 }
 
 std::string RecordingViewModel::buildThumbnailCacheKey(const std::string& inputPath)
 {
     std::error_code ec;
-    const auto filePath = fs::path(inputPath);
-    const auto normalized = fs::absolute(filePath, ec).lexically_normal().string();
+    const auto filePath = ucf::utilities::FilePathUtils::pathFromUtf8(inputPath);
+    const auto normalized = ucf::utilities::FilePathUtils::utf8FromPath(
+        std::filesystem::absolute(filePath, ec).lexically_normal());
 
     std::ostringstream keyStream;
     keyStream << normalized;
 
     ec.clear();
-    const auto lastWrite = fs::last_write_time(filePath, ec);
+    const auto lastWrite = std::filesystem::last_write_time(filePath, ec);
     if (!ec)
     {
         const auto lastWriteMs = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -523,7 +529,7 @@ std::string RecordingViewModel::buildThumbnailCacheKey(const std::string& inputP
     }
 
     ec.clear();
-    const auto fileSize = fs::file_size(filePath, ec);
+    const auto fileSize = std::filesystem::file_size(filePath, ec);
     if (!ec)
     {
         keyStream << '|' << fileSize;

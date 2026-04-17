@@ -3,6 +3,7 @@
 #include <mutex>
 
 #include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/Utilities/SystemUtils/SystemUtils.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceFactory/IServiceFactory.h>
@@ -156,13 +157,13 @@ void ApplicationRunner::DataPrivate::createApplicationConfig()
     std::filesystem::path logDirPath;
 #if defined(_DEBUG) || !defined(NDEBUG)
     logDirPath = ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME_DEBUG,
         APP_LOG_FOLDER_NAME
     );
 #else
     logDirPath = ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_LOG_FOLDER_NAME
     );

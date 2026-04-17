@@ -8,7 +8,6 @@ namespace updater {
 
 int performUpgrade(const UpdaterConfig& config)
 {
-    namespace fs = std::filesystem;
     std::error_code ec;
 
     UPDATER_LOG("Starting upgrade");
@@ -16,7 +15,7 @@ int performUpgrade(const UpdaterConfig& config)
     UPDATER_LOG("  target:  " << config.targetDir.string());
 
     // 1. Validate inputs
-    if (!fs::exists(config.packagePath)) {
+    if (!std::filesystem::exists(config.packagePath)) {
         UPDATER_ERR("Package not found: " << config.packagePath);
         return 1;
     }
@@ -29,19 +28,19 @@ int performUpgrade(const UpdaterConfig& config)
     platform::waitForProcessExit(config.parentPid);
 
     // 3. Backup current installation
-    fs::path backupDir = config.targetDir;
+    std::filesystem::path backupDir = config.targetDir;
     backupDir += ".bak";
 
-    if (fs::exists(backupDir)) {
-        fs::remove_all(backupDir, ec);
+    if (std::filesystem::exists(backupDir)) {
+        std::filesystem::remove_all(backupDir, ec);
         if (ec) {
             UPDATER_WARN("Failed to remove old backup: " << ec.message());
         }
     }
 
-    if (fs::exists(config.targetDir)) {
+    if (std::filesystem::exists(config.targetDir)) {
         UPDATER_LOG("Backing up: " << config.targetDir.string() << " -> " << backupDir.string());
-        fs::rename(config.targetDir, backupDir, ec);
+        std::filesystem::rename(config.targetDir, backupDir, ec);
         if (ec) {
             UPDATER_ERR("Failed to backup: " << ec.message());
             return 2;
@@ -54,19 +53,19 @@ int performUpgrade(const UpdaterConfig& config)
     int extractResult = platform::extractZipPackage(config.packagePath, parentDir.string());
     if (extractResult != 0) {
         UPDATER_ERR("Extraction failed (exit code " << extractResult << ")");
-        if (fs::exists(backupDir)) {
+        if (std::filesystem::exists(backupDir)) {
             UPDATER_LOG("Rolling back...");
-            fs::rename(backupDir, config.targetDir, ec);
+            std::filesystem::rename(backupDir, config.targetDir, ec);
         }
         return 3;
     }
 
     // 5. Verify extraction
-    if (!fs::exists(config.targetDir) || fs::is_empty(config.targetDir)) {
+    if (!std::filesystem::exists(config.targetDir) || std::filesystem::is_empty(config.targetDir)) {
         UPDATER_ERR("Extraction produced empty target");
-        if (fs::exists(backupDir)) {
+        if (std::filesystem::exists(backupDir)) {
             UPDATER_LOG("Rolling back...");
-            fs::rename(backupDir, config.targetDir, ec);
+            std::filesystem::rename(backupDir, config.targetDir, ec);
         }
         return 4;
     }
@@ -84,15 +83,15 @@ int performUpgrade(const UpdaterConfig& config)
 
     // 8. Cleanup
     UPDATER_LOG("Cleaning up...");
-    if (fs::exists(backupDir)) {
-        fs::remove_all(backupDir, ec);
+    if (std::filesystem::exists(backupDir)) {
+        std::filesystem::remove_all(backupDir, ec);
     }
-    if (fs::exists(config.packagePath)) {
-        fs::remove(config.packagePath, ec);
+    if (std::filesystem::exists(config.packagePath)) {
+        std::filesystem::remove(config.packagePath, ec);
     }
-    auto markerPath = fs::temp_directory_path() / "template-factory-upgrade" / "upgrade_in_progress";
-    if (fs::exists(markerPath)) {
-        fs::remove(markerPath, ec);
+    auto markerPath = std::filesystem::temp_directory_path() / "template-factory-upgrade" / "upgrade_in_progress";
+    if (std::filesystem::exists(markerPath)) {
+        std::filesystem::remove(markerPath, ec);
     }
 
     UPDATER_LOG("Upgrade complete!");

@@ -1,3 +1,4 @@
+add_subdirectory(ArchiveUtils)
 add_subdirectory(QRCodeUtils)
 add_subdirectory(ImageProcessUtils)
 add_subdirectory(ScreenCaptureUtils)

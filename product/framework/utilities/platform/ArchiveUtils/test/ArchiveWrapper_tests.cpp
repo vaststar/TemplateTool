@@ -7,7 +7,6 @@
 #include <thread>
 #include <chrono>
 
-namespace fs = std::filesystem;
 using namespace ucf::utilities;
 
 //============================================
@@ -18,8 +17,8 @@ public:
     TestFixture() {
         // Create unique test directory
         auto timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-        testDir = fs::temp_directory_path() / ("archive_test_" + std::to_string(timestamp));
-        fs::create_directories(testDir);
+        testDir = std::filesystem::temp_directory_path() / ("archive_test_" + std::to_string(timestamp));
+        std::filesystem::create_directories(testDir);
         
         // Create test files
         createFile(testDir / "file1.txt", "Hello World");
@@ -27,12 +26,12 @@ public:
         createFile(testDir / "empty.txt", "");
         
         // Create subdirectory with files
-        fs::create_directories(testDir / "subdir");
+        std::filesystem::create_directories(testDir / "subdir");
         createFile(testDir / "subdir" / "nested1.txt", "Nested File Content");
         createFile(testDir / "subdir" / "nested2.txt", "Another Nested File");
         
         // Create deeper nested structure
-        fs::create_directories(testDir / "subdir" / "deep");
+        std::filesystem::create_directories(testDir / "subdir" / "deep");
         createFile(testDir / "subdir" / "deep" / "deep_file.txt", "Deep nested content");
         
         // Create binary file
@@ -44,15 +43,15 @@ public:
     
     ~TestFixture() {
         std::error_code ec;
-        fs::remove_all(testDir, ec);
+        std::filesystem::remove_all(testDir, ec);
     }
     
-    void createFile(const fs::path& path, const std::string& content) {
+    void createFile(const std::filesystem::path& path, const std::string& content) {
         std::ofstream ofs(path, std::ios::binary);
         ofs << content;
     }
     
-    void createBinaryFile(const fs::path& path, size_t size) {
+    void createBinaryFile(const std::filesystem::path& path, size_t size) {
         std::vector<uint8_t> data(size);
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -64,19 +63,19 @@ public:
         ofs.write(reinterpret_cast<const char*>(data.data()), data.size());
     }
     
-    void createLargeFile(const fs::path& path, size_t size) {
+    void createLargeFile(const std::filesystem::path& path, size_t size) {
         std::string content(size, 'A');
         std::ofstream ofs(path, std::ios::binary);
         ofs << content;
     }
     
-    std::string readFile(const fs::path& path) {
+    std::string readFile(const std::filesystem::path& path) {
         std::ifstream ifs(path, std::ios::binary);
         return std::string(std::istreambuf_iterator<char>(ifs),
                           std::istreambuf_iterator<char>());
     }
     
-    fs::path testDir;
+    std::filesystem::path testDir;
 };
 
 //============================================
@@ -94,8 +93,8 @@ TEST_CASE("ArchiveWrapper - Create archive with single file", "[ArchiveUtils][Cr
     auto error = archiver.create(zipPath.string(), files);
     
     REQUIRE(error == ArchiveError::Success);
-    REQUIRE(fs::exists(zipPath));
-    REQUIRE(fs::file_size(zipPath) > 0);
+    REQUIRE(std::filesystem::exists(zipPath));
+    REQUIRE(std::filesystem::file_size(zipPath) > 0);
 }
 
 TEST_CASE("ArchiveWrapper - Create archive with multiple files", "[ArchiveUtils][Create]") {
@@ -219,7 +218,7 @@ TEST_CASE("ArchiveWrapper - Create archive with compression levels", "[ArchiveUt
     archiver.create(zipPathBest.string(), files);
     
     // Best compression should produce smaller file
-    REQUIRE(fs::file_size(zipPathBest) <= fs::file_size(zipPathFast));
+    REQUIRE(std::filesystem::file_size(zipPathBest) <= std::filesystem::file_size(zipPathFast));
 }
 
 //============================================
@@ -242,8 +241,8 @@ TEST_CASE("ArchiveWrapper - Extract all entries", "[ArchiveUtils][Extract]") {
     auto error = archiver.extractAll(zipPath.string(), extractDir.string());
     
     REQUIRE(error == ArchiveError::Success);
-    REQUIRE(fs::exists(extractDir / "file1.txt"));
-    REQUIRE(fs::exists(extractDir / "file2.txt"));
+    REQUIRE(std::filesystem::exists(extractDir / "file1.txt"));
+    REQUIRE(std::filesystem::exists(extractDir / "file2.txt"));
     
     // Verify content
     REQUIRE(fixture.readFile(extractDir / "file1.txt") == "Hello World");
@@ -267,7 +266,7 @@ TEST_CASE("ArchiveWrapper - Extract single entry", "[ArchiveUtils][Extract]") {
     auto error = archiver.extractEntry(zipPath.string(), "file1.txt", destPath.string());
     
     REQUIRE(error == ArchiveError::Success);
-    REQUIRE(fs::exists(destPath));
+    REQUIRE(std::filesystem::exists(destPath));
     REQUIRE(fixture.readFile(destPath) == "Hello World");
 }
 
@@ -331,7 +330,7 @@ TEST_CASE("ArchiveWrapper - Extract to non-existent directory", "[ArchiveUtils][
     auto error = archiver.extractAll(zipPath.string(), extractDir.string());
     
     REQUIRE(error == ArchiveError::Success);
-    REQUIRE(fs::exists(extractDir / "file1.txt"));
+    REQUIRE(std::filesystem::exists(extractDir / "file1.txt"));
 }
 
 //============================================
@@ -607,8 +606,8 @@ TEST_CASE("Convenience functions", "[ArchiveUtils][Convenience]") {
     auto extractError = extractZipArchive(zipPath.string(), extractDir.string());
     REQUIRE(extractError == ArchiveError::Success);
     
-    REQUIRE(fs::exists(extractDir / "file1.txt"));
-    REQUIRE(fs::exists(extractDir / "file2.txt"));
+    REQUIRE(std::filesystem::exists(extractDir / "file1.txt"));
+    REQUIRE(std::filesystem::exists(extractDir / "file2.txt"));
 }
 
 //============================================

@@ -39,9 +39,8 @@ bool waitForProcessExit(int pid, int timeoutSec)
 
 int extractZipPackage(const std::string& zipPath, const std::string& destDir)
 {
-    namespace fs = std::filesystem;
     std::error_code ec;
-    fs::create_directories(destDir, ec);
+    std::filesystem::create_directories(destDir, ec);
 
     // unzip: -o = overwrite, -q = quiet
     std::ostringstream cmd;
@@ -78,16 +77,15 @@ bool launchApplication(const std::filesystem::path& targetDir)
 
 void fixPermissions(const std::filesystem::path& targetDir)
 {
-    namespace fs = std::filesystem;
     std::error_code ec;
 
-    for (auto& entry : fs::recursive_directory_iterator(targetDir)) {
+    for (auto& entry : std::filesystem::recursive_directory_iterator(targetDir)) {
         if (entry.is_regular_file()) {
             auto ext = entry.path().extension().string();
             if (ext.empty() || ext == ".sh" || ext == ".so" || ext == ".dylib") {
-                fs::permissions(entry.path(),
-                    fs::perms::owner_exec | fs::perms::group_exec,
-                    fs::perm_options::add, ec);
+                std::filesystem::permissions(entry.path(),
+                    std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec,
+                    std::filesystem::perm_options::add, ec);
             }
         }
     }

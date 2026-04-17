@@ -20,15 +20,32 @@ concept StringLike =
 
 class Utilities_EXPORT FilePathUtils {
 public:
-    // Windows: %LOCALAPPDATA%
-    // macOS:   ~/Library/Application Support
-    // Linux:   $XDG_DATA_HOME or ~/.local/share
-    static std::filesystem::path getBaseStorageDir();
+    // === Encoding-safe path construction (UTF-8 ↔ fs::path) ===
 
-    // Windows: %LOCALAPPDATA%
-    // macOS:   ~/Library/Caches
-    // Linux:   $XDG_CACHE_HOME or ~/.cache
-    static std::filesystem::path getBaseCacheDir();
+    /// Construct a filesystem path from a UTF-8 encoded string.
+    /// On Windows, converts to wide string first to avoid codepage issues.
+    /// On Unix, passes through directly (locale is assumed UTF-8).
+    [[nodiscard]] static std::filesystem::path pathFromUtf8(std::string_view utf8);
+
+    /// Extract a UTF-8 encoded string from a filesystem path.
+    /// On Windows, converts from wide string. On Unix, returns .string() directly.
+    [[nodiscard]] static std::string utf8FromPath(const std::filesystem::path& p);
+
+    // === Convenience wrappers (accept UTF-8, return path or UTF-8) ===
+
+    /// fs::canonical on a UTF-8 path string. Returns empty path on error.
+    [[nodiscard]] static std::filesystem::path canonicalUtf8(std::string_view utf8);
+
+    /// fs::absolute on a UTF-8 path string. Returns empty path on error.
+    [[nodiscard]] static std::filesystem::path absoluteUtf8(std::string_view utf8);
+
+    /// fs::exists on a UTF-8 path string.
+    [[nodiscard]] static bool existsUtf8(std::string_view utf8);
+
+    /// fs::create_directories on a UTF-8 path string.
+    [[nodiscard]] static bool createDirectoriesUtf8(std::string_view utf8);
+
+    // === Directory utilities ===
 
     static bool EnsureDirectoryExists(const std::filesystem::path& path);
 

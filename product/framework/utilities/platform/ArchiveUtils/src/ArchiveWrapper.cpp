@@ -1,6 +1,8 @@
 #include <ucf/Utilities/ArchiveUtils/ArchiveWrapper.h>
 #include "ArchiveUtilsLogger.h"
 
+#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+
 #include <mz.h>
 #include <mz_os.h>
 #include <mz_strm.h>
@@ -10,9 +12,10 @@
 #include <filesystem>
 #include <fstream>
 
-namespace fs = std::filesystem;
 
 namespace ucf::utilities {
+
+using FilePathUtils = ucf::utilities::FilePathUtils;
 
 //============================================
 // Impl - PIMPL implementation
@@ -31,10 +34,10 @@ public:
 
     void setOptions(const ArchiveOptions& options) { mOptions = options; }
     ArchiveOptions getOptions() const { return mOptions; }
-    
-    void setProgressCallback(ArchiveProgressCallback callback) 
-    { 
-        mProgressCallback = std::move(callback); 
+
+    void setProgressCallback(ArchiveProgressCallback callback)
+    {
+        mProgressCallback = std::move(callback);
     }
 
     ArchiveError create(const std::string& archivePath,
@@ -75,7 +78,7 @@ public:
         size_t currentFile = 0;
 
         for (const auto& filePath : filePaths) {
-            if (!fs::exists(filePath)) {
+            if (!FilePathUtils::existsUtf8(filePath)) {
                 ARCHIVE_LOG_WARNING("File not found, skipping: " << filePath);
                 continue;
             }
@@ -89,7 +92,7 @@ public:
                     entryName = entryName.substr(1);
                 }
             } else {
-                entryName = fs::path(filePath).filename().string();
+                entryName = FilePathUtils::utf8FromPath(FilePathUtils::pathFromUtf8(filePath).filename());
             }
 
             // Progress callback
@@ -102,7 +105,7 @@ public:
                 }
             }
 
-            if (fs::is_directory(filePath)) {
+            if (std::filesystem::is_directory(FilePathUtils::pathFromUtf8(filePath))) {
                 err = mz_zip_writer_add_path(zipWriter, filePath.c_str(), nullptr, 1, 1);
             } else {
                 err = mz_zip_writer_add_file(zipWriter, filePath.c_str(), entryName.c_str());
@@ -126,17 +129,17 @@ public:
                                       const std::string& directoryPath,
                                       bool includeRootDir)
     {
-        if (!fs::is_directory(directoryPath)) {
+        if (!std::filesystem::is_directory(FilePathUtils::pathFromUtf8(directoryPath))) {
             return ArchiveError::InvalidPath;
         }
 
         std::vector<std::string> files;
-        for (const auto& entry : fs::recursive_directory_iterator(directoryPath)) {
-            files.push_back(entry.path().string());
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(FilePathUtils::pathFromUtf8(directoryPath))) {
+            files.push_back(FilePathUtils::utf8FromPath(entry.path()));
         }
 
-        std::string basePath = includeRootDir 
-            ? fs::path(directoryPath).parent_path().string()
+        std::string basePath = includeRootDir
+            ? FilePathUtils::utf8FromPath(FilePathUtils::pathFromUtf8(directoryPath).parent_path())
             : directoryPath;
 
         return create(archivePath, files, basePath);
@@ -163,8 +166,8 @@ public:
         mz_zip_writer_set_compress_level(zipWriter, mOptions.compressionLevel);
 
         // Append mode if file exists
-        int8_t appendMode = fs::exists(archivePath) ? 1 : 0;
-        
+        int8_t appendMode = FilePathUtils::existsUtf8(archivePath) ? 1 : 0;
+
         int32_t err = mz_zip_writer_open_file(zipWriter, archivePath.c_str(), 0, appendMode);
         if (err != MZ_OK) {
             mz_zip_writer_delete(&zipWriter);
@@ -177,8 +180,8 @@ public:
         fileInfo.compression_method = MZ_COMPRESS_METHOD_DEFLATE;
         fileInfo.uncompressed_size = static_cast<int64_t>(dataSize);
 
-        err = mz_zip_writer_add_buffer(zipWriter, 
-                                        const_cast<uint8_t*>(data), 
+        err = mz_zip_writer_add_buffer(zipWriter,
+                                        const_cast<uint8_t*>(data),
                                         static_cast<int32_t>(dataSize),
                                         &fileInfo);
 
@@ -196,7 +199,7 @@ public:
     ArchiveError extractAll(const std::string& archivePath,
                             const std::string& destDir)
     {
-        if (!fs::exists(archivePath)) {
+        if (!FilePathUtils::existsUtf8(archivePath)) {
             return ArchiveError::FileNotFound;
         }
 
@@ -217,10 +220,10 @@ public:
         }
 
         // Create destination directory if not exists
-        fs::create_directories(destDir);
+        FilePathUtils::createDirectoriesUtf8(destDir);
 
         err = mz_zip_reader_save_all(zipReader, destDir.c_str());
-        
+
         mz_zip_reader_close(zipReader);
         mz_zip_reader_delete(&zipReader);
 
@@ -237,7 +240,7 @@ public:
                                const std::string& entryName,
                                const std::string& destPath)
     {
-        if (!fs::exists(archivePath)) {
+        if (!FilePathUtils::existsUtf8(archivePath)) {
             return ArchiveError::FileNotFound;
         }
 
@@ -264,7 +267,7 @@ public:
         }
 
         // Create parent directories
-        fs::create_directories(fs::path(destPath).parent_path());
+        std::filesystem::create_directories(FilePathUtils::pathFromUtf8(destPath).parent_path());
 
         err = mz_zip_reader_entry_save_file(zipReader, destPath.c_str());
 
@@ -282,7 +285,7 @@ public:
                                   const std::string& entryName,
                                   std::vector<uint8_t>& data)
     {
-        if (!fs::exists(archivePath)) {
+        if (!FilePathUtils::existsUtf8(archivePath)) {
             return ArchiveError::FileNotFound;
         }
 
@@ -318,7 +321,7 @@ public:
 
         data.resize(static_cast<size_t>(fileInfo->uncompressed_size));
 
-        err = mz_zip_reader_entry_save_buffer(zipReader, data.data(), 
+        err = mz_zip_reader_entry_save_buffer(zipReader, data.data(),
                                                static_cast<int32_t>(data.size()));
 
         mz_zip_reader_close(zipReader);
@@ -336,7 +339,7 @@ public:
     {
         std::vector<ArchiveEntry> entries;
 
-        if (!fs::exists(archivePath)) {
+        if (!FilePathUtils::existsUtf8(archivePath)) {
             return entries;
         }
 
@@ -379,7 +382,7 @@ public:
 
     bool hasEntry(const std::string& archivePath, const std::string& entryName)
     {
-        if (!fs::exists(archivePath)) {
+        if (!FilePathUtils::existsUtf8(archivePath)) {
             return false;
         }
 
@@ -395,7 +398,7 @@ public:
         }
 
         err = mz_zip_reader_locate_entry(zipReader, entryName.c_str(), 0);
-        
+
         mz_zip_reader_close(zipReader);
         mz_zip_reader_delete(&zipReader);
 
@@ -406,7 +409,7 @@ public:
                                const std::string& entryName,
                                ArchiveEntry& entry)
     {
-        if (!fs::exists(archivePath)) {
+        if (!FilePathUtils::existsUtf8(archivePath)) {
             return ArchiveError::FileNotFound;
         }
 
@@ -544,7 +547,7 @@ ArchiveError ArchiveWrapper::getEntryInfo(const std::string& archivePath,
 
 bool ArchiveWrapper::isValidArchive(const std::string& filePath)
 {
-    if (!fs::exists(filePath)) {
+    if (!FilePathUtils::existsUtf8(filePath)) {
         return false;
     }
 

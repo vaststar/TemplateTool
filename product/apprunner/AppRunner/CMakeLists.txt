@@ -37,6 +37,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     FeatureSettingsService
     CoreFramework
     FilePathUtils
+    SystemUtils
     LoggerUtils
 )
 

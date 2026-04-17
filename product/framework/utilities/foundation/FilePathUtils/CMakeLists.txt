@@ -11,33 +11,13 @@ set(MODULE_HEADER_FILES #for include and install header
 set(MODULE_SOURCE_PRIVATE
     src/FilePathUtils.cpp
 )
-if (WIN32)
-    list(APPEND MODULE_SOURCE_PRIVATE 
-    src/FilePathUtils_Win.h
-    src/FilePathUtils_Win.cpp)
-elseif (APPLE)
-    list(APPEND MODULE_SOURCE_PRIVATE 
-    src/FilePathUtils_Mac.h
-    src/FilePathUtils_Mac.cpp)
-elseif (UNIX)
-    list(APPEND MODULE_SOURCE_PRIVATE 
-    src/FilePathUtils_Linux.h
-    src/FilePathUtils_Linux.cpp)
-endif()
+
 set(MODULE_DEPENDENCIES_PUBLIC
     UtilitiesCommonFile
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
 )
-if (APPLE)
-    find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
-    find_library(IOKIT_FRAMEWORK IOKit)
-    list(APPEND MODULE_DEPENDENCIES_PRIVATE 
-        ${COREFOUNDATION_FRAMEWORK}
-        ${IOKIT_FRAMEWORK}
-    )
-endif()
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

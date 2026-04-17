@@ -34,6 +34,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     StringUtils
     UUIDUtils
     FilePathUtils
+    SystemUtils
     magic_enum
 )
 

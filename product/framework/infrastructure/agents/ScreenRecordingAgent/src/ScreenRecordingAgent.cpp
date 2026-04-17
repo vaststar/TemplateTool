@@ -1,11 +1,12 @@
 #include "ScreenRecordingAgent.h"
 #include "LoggerDefine.h"
 
+#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+
 #include <filesystem>
 
 #include <magic_enum/magic_enum.hpp>
 
-namespace fs = std::filesystem;
 using namespace ucf::utilities::screenrecording;
 
 namespace ucf::agents {
@@ -277,7 +278,7 @@ void ScreenRecordingAgent::stop()
 
             // Delete temporary mp4
             std::error_code ec;
-            fs::remove(result.outputPath, ec);
+            std::filesystem::remove(ucf::utilities::FilePathUtils::pathFromUtf8(result.outputPath), ec);
 
             if (gifOk)
             {
@@ -301,13 +302,13 @@ void ScreenRecordingAgent::stop()
             if (!result.outputPath.empty())
             {
                 std::error_code ec;
-                fs::remove(result.outputPath, ec);
+                std::filesystem::remove(ucf::utilities::FilePathUtils::pathFromUtf8(result.outputPath), ec);
             }
             // Also delete gif output if it was created
             if (isGif && !gifOutputPath.empty())
             {
                 std::error_code ec;
-                fs::remove(gifOutputPath, ec);
+                std::filesystem::remove(ucf::utilities::FilePathUtils::pathFromUtf8(gifOutputPath), ec);
             }
             SRA_LOG_INFO("Recording aborted, file deleted");
             fireNotification(&IScreenRecordingAgentCallback::onRecordingAborted);

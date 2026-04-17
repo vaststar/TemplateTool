@@ -23,4 +23,28 @@ SystemColorScheme SystemUtils::getSystemColorScheme()
 #endif
 }
 
+std::filesystem::path SystemUtils::getBaseStorageDir()
+{
+#if defined(_WIN32)
+    return SystemUtils_Win::getBaseStorageDir();
+#elif defined(__APPLE__)
+    return SystemUtils_Mac::getBaseStorageDir();
+#elif defined(__linux__)
+    return SystemUtils_Linux::getBaseStorageDir();
+#endif
+    return {};
+}
+
+std::filesystem::path SystemUtils::getBaseCacheDir()
+{
+#if defined(_WIN32)
+    return SystemUtils_Win::getBaseCacheDir();
+#elif defined(__APPLE__)
+    return SystemUtils_Mac::getBaseCacheDir();
+#elif defined(__linux__)
+    return SystemUtils_Linux::getBaseCacheDir();
+#endif
+    return {};
+}
+
 }

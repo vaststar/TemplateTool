@@ -24,6 +24,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ScreenRecordingUtils
     LoggerUtils
     magic_enum
+    FilePathUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

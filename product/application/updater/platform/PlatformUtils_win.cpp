@@ -42,9 +42,8 @@ bool waitForProcessExit(int pid, int timeoutSec)
 
 int extractZipPackage(const std::string& zipPath, const std::string& destDir)
 {
-    namespace fs = std::filesystem;
     std::error_code ec;
-    fs::create_directories(destDir, ec);
+    std::filesystem::create_directories(destDir, ec);
 
     // Windows: use PowerShell Expand-Archive
     std::ostringstream cmd;

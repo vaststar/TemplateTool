@@ -1,7 +1,7 @@
 include(BuildModule)
 
 set(MODULE_MODULE_NAME ArchiveUtils)
-set(MODULE_IDE_FOLDER framework/utilities/foundation)
+set(MODULE_IDE_FOLDER framework/utilities/platform)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -18,6 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     archive::zip
     LoggerUtils
+    FilePathUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

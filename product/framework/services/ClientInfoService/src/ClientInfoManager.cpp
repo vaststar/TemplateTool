@@ -11,6 +11,7 @@
 
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 #include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/Utilities/SystemUtils/SystemUtils.h>
 #include "ClientInfoServiceLogger.h"
 
 namespace ucf::service{
@@ -178,13 +179,13 @@ std::string ClientInfoManager::getDataStoragePath() const
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME_DEBUG,
         APP_DATA_FOLDER_NAME
     ).string();
 #else
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_DATA_FOLDER_NAME
     ).string();
@@ -196,13 +197,13 @@ std::string ClientInfoManager::getLogStoragePath() const
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME_DEBUG,
         APP_LOG_FOLDER_NAME
     ).string();
 #else
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_LOG_FOLDER_NAME
     ).string();
@@ -214,13 +215,13 @@ std::string ClientInfoManager::getCrashStoragePath() const
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME_DEBUG,
         APP_CRASH_FOLDER_NAME
     ).string();
 #else
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_CRASH_FOLDER_NAME
     ).string();
@@ -232,13 +233,13 @@ std::string ClientInfoManager::getHangStoragePath() const
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME_DEBUG,
         APP_HANG_FOLDER_NAME
     ).string();
 #else
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseStorageDir(),
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_HANG_FOLDER_NAME
     ).string();
@@ -250,12 +251,12 @@ std::string ClientInfoManager::getCacheStoragePath() const
 {
 #if defined(_DEBUG) || !defined(NDEBUG)
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseCacheDir(),
+        ucf::utilities::SystemUtils::getBaseCacheDir(),
         APP_INTERNAL_NAME_DEBUG
     ).string();
 #else
     return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::FilePathUtils::getBaseCacheDir(),
+        ucf::utilities::SystemUtils::getBaseCacheDir(),
         APP_INTERNAL_NAME
     ).string();
 #endif
