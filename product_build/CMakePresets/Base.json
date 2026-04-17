@@ -77,6 +77,13 @@
       }
     }
   ],
+  "buildPresets": [
+    {
+      "name": "build-base",
+      "hidden": true,
+      "jobs": 0
+    }
+  ],
   "testPresets": [
     {
       "name": "test-base",

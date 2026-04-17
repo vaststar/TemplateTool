@@ -48,20 +48,24 @@
   "buildPresets": [
     {
       "name": "windows-msvc-debug",
+      "inherits": "build-base",
       "configurePreset": "windows-msvc-debug",
       "configuration": "Debug"
     },
     {
       "name": "windows-msvc-release",
+      "inherits": "build-base",
       "configurePreset": "windows-msvc-release",
       "configuration": "Release"
     },
     {
       "name": "windows-mingw-debug",
+      "inherits": "build-base",
       "configurePreset": "windows-mingw-debug"
     },
     {
       "name": "windows-mingw-release",
+      "inherits": "build-base",
       "configurePreset": "windows-mingw-release"
     }
   ],

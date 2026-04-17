@@ -36,10 +36,12 @@
   "buildPresets": [
     {
       "name": "macos-debug",
+      "inherits": "build-base",
       "configurePreset": "macos-debug"
     },
     {
       "name": "macos-release",
+      "inherits": "build-base",
       "configurePreset": "macos-release"
     }
   ],

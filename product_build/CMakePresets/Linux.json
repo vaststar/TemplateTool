@@ -36,10 +36,12 @@
   "buildPresets": [
     {
       "name": "linux-debug",
+      "inherits": "build-base",
       "configurePreset": "linux-debug"
     },
     {
       "name": "linux-release",
+      "inherits": "build-base",
       "configurePreset": "linux-release"
     }
   ],
