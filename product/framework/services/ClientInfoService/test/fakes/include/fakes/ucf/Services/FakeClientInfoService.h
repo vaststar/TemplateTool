@@ -50,6 +50,7 @@ public:
     MAKE_CONST_MOCK0(getAppLogStoragePath, std::string(), override);
     MAKE_CONST_MOCK0(getAppCrashStoragePath, std::string(), override);
     MAKE_CONST_MOCK0(getAppHangStoragePath, std::string(), override);
+    MAKE_CONST_MOCK0(getAppCacheStoragePath, std::string(), override);
 
 protected:
     void initService() override {}
