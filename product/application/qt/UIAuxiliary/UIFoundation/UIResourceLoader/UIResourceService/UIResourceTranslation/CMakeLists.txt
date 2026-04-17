@@ -18,7 +18,7 @@ else()
     message(STATUS "[I18N] Using default translation dir: ${Translation_DIR}")
 endif()
 set(Translation_LIB UIResourcecTranslation)
-set(Translation_TS_FILES        
+set(Translation_TS_FILES
     ${Translation_DIR}/app_translations_en.ts
     ${Translation_DIR}/app_translations_zh-Hans.ts
     ${Translation_DIR}/app_translations_zh-Hant.ts
@@ -27,7 +27,7 @@ set(Translation_TS_FILES
 add_library(${Translation_LIB} OBJECT)
 
 qt_add_translations(
-    ${Translation_LIB}  
+    ${Translation_LIB}
     RESOURCE_PREFIX "/i18n"
     TS_FILE_BASE app_translations
     TS_FILE_DIR ${Translation_DIR}
@@ -111,5 +111,5 @@ SetIDEFolder(
         release_translations
         ${UPDATE_Translation_ALL}
     FOLDER_NAME
-        UI/translations
+        UI/UIAuxiliary/UIFoundation/translations
 )

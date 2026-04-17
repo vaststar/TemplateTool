@@ -7,7 +7,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME UICore)
-set(MODULE_IDE_FOLDER UI)
+set(MODULE_IDE_FOLDER UI/UIAuxiliary/UIFoundation)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -18,7 +18,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UICore/CoreController.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
+    src/LoggerDefine.h
     src/CoreApplication.cpp
     src/CoreQmlEngine.cpp
     src/CoreController.cpp

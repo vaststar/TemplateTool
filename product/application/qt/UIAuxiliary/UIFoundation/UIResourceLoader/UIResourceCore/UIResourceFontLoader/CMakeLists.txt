@@ -34,7 +34,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME UIResourceFontLoader)
-set(MODULE_IDE_FOLDER UI/ResourceLoader)
+set(MODULE_IDE_FOLDER UI/UIAuxiliary/UIFoundation/ResourceLoader)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include ${RESOURCE_OUT_PUT_DIR})
 

@@ -7,7 +7,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME TranslatorManager)
-set(MODULE_IDE_FOLDER UI)
+set(MODULE_IDE_FOLDER UI/UIAuxiliary/UIFoundation/UIBusiness)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

@@ -7,7 +7,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME UIResourceLoaderManager)
-set(MODULE_IDE_FOLDER UI/ResourceLoader)
+set(MODULE_IDE_FOLDER UI/UIAuxiliary/UIFoundation/ResourceLoader)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -16,7 +16,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UIResourceLoaderManager/IUIResourceLoaderManager.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
+    src/LoggerDefine.h
     src/UIResourceLoaderManager.h
     src/UIResourceLoaderManager.cpp
 )

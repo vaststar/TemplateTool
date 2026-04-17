@@ -7,7 +7,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME UIFabrication)
-set(MODULE_IDE_FOLDER UI)
+set(MODULE_IDE_FOLDER UI/UIAuxiliary/UIFoundation/UIBusiness)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -16,7 +16,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UIFabrication/IUIViewFactory.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h 
+    src/LoggerDefine.h
     src/UIViewFactory.h
     src/UIViewFactory.cpp
 )

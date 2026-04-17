@@ -7,7 +7,7 @@ else()
 endif()
 
 set(MODULE_MODULE_NAME UTComposite)
-set(MODULE_IDE_FOLDER UI)
+set(MODULE_IDE_FOLDER UI/UIComponent/UTComposite)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
