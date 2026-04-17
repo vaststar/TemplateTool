@@ -228,6 +228,11 @@ std::string ClientInfoService::getAppHangStoragePath() const
     return mDataPrivate->getClientInfoManager().getHangStoragePath();
 }
 
+std::string ClientInfoService::getAppCacheStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager().getCacheStoragePath();
+}
+
 void ClientInfoService::initializeAppClient()
 {
     mDataPrivate->getClientInfoManager().initializeAppClient();

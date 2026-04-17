@@ -35,6 +35,7 @@ FocusScope {
 
         function onRecordingCompleted(filePath) {
             folderView.scrollToFile(filePath)
+            controller.requestThumbnail(filePath)
         }
 
         function onErrorOccurred(message) {
@@ -94,15 +95,77 @@ FocusScope {
     property var activeFloatingBar: null
     property var activeRegionSelector: null
     property bool pendingFullscreenBar: false
+    property var thumbnailCache: ({})
 
     // Custom video thumbnail for grid view
     Component {
         id: videoGridThumbnail
         Rectangle {
+            id: thumbnailRoot
             color: "#222222"
             radius: 4
 
+            property string currentFilePath: (typeof filePath !== "undefined" && filePath) ? filePath : ""
+            property string thumbnailUrl: ""
+
+            function refreshThumbnail() {
+                if (!currentFilePath || currentFilePath.length === 0)
+                    return
+
+                var cached = root.thumbnailCache[currentFilePath]
+                if (cached && cached.length > 0) {
+                    thumbnailUrl = cached
+                    return
+                }
+
+                var readyUrl = controller.getThumbnailUrl(currentFilePath)
+                if (readyUrl && readyUrl.length > 0) {
+                    var newCache = root.thumbnailCache
+                    newCache[currentFilePath] = readyUrl
+                    root.thumbnailCache = newCache
+                    thumbnailUrl = readyUrl
+                    return
+                }
+
+                thumbnailUrl = ""
+                loadTimer.restart()
+            }
+
+            Component.onCompleted: refreshThumbnail()
+            onCurrentFilePathChanged: refreshThumbnail()
+
+            Connections {
+                target: controller
+
+                function onThumbnailReady(videoPath, readyUrl) {
+                    if (videoPath === thumbnailRoot.currentFilePath) {
+                        var newCache = root.thumbnailCache
+                        newCache[thumbnailRoot.currentFilePath] = readyUrl
+                        root.thumbnailCache = newCache
+                        thumbnailRoot.thumbnailUrl = readyUrl
+                    }
+                }
+            }
+
+            Timer {
+                id: loadTimer
+                interval: 30
+                repeat: false
+                onTriggered: controller.requestThumbnail(thumbnailRoot.currentFilePath)
+            }
+
+            Image {
+                anchors.fill: parent
+                source: thumbnailRoot.thumbnailUrl
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                cache: true
+                smooth: true
+                visible: source.toString().length > 0
+            }
+
             Text {
+                visible: thumbnailRoot.thumbnailUrl.length === 0
                 anchors.centerIn: parent
                 text: "🎥"
                 font.pixelSize: 32
@@ -136,11 +199,80 @@ FocusScope {
     // Custom video icon for detail view
     Component {
         id: videoDetailIcon
-        Text {
-            text: "🎥"
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+        Rectangle {
+            id: detailRoot
+            width: 18
+            height: 18
+            radius: 3
+            color: "#222222"
+
+            property string currentFilePath: (typeof filePath !== "undefined" && filePath) ? filePath : ""
+            property string thumbnailUrl: ""
+
+            function refreshThumbnail() {
+                if (!currentFilePath || currentFilePath.length === 0)
+                    return
+
+                var cached = root.thumbnailCache[currentFilePath]
+                if (cached && cached.length > 0) {
+                    thumbnailUrl = cached
+                    return
+                }
+
+                var readyUrl = controller.getThumbnailUrl(currentFilePath)
+                if (readyUrl && readyUrl.length > 0) {
+                    var newCache = root.thumbnailCache
+                    newCache[currentFilePath] = readyUrl
+                    root.thumbnailCache = newCache
+                    thumbnailUrl = readyUrl
+                    return
+                }
+
+                thumbnailUrl = ""
+                detailLoadTimer.restart()
+            }
+
+            Component.onCompleted: refreshThumbnail()
+            onCurrentFilePathChanged: refreshThumbnail()
+
+            Connections {
+                target: controller
+
+                function onThumbnailReady(videoPath, readyUrl) {
+                    if (videoPath === detailRoot.currentFilePath) {
+                        var newCache = root.thumbnailCache
+                        newCache[detailRoot.currentFilePath] = readyUrl
+                        root.thumbnailCache = newCache
+                        detailRoot.thumbnailUrl = readyUrl
+                    }
+                }
+            }
+
+            Timer {
+                id: detailLoadTimer
+                interval: 30
+                repeat: false
+                onTriggered: controller.requestThumbnail(detailRoot.currentFilePath)
+            }
+
+            Image {
+                anchors.fill: parent
+                source: detailRoot.thumbnailUrl
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                cache: true
+                smooth: true
+                visible: source.toString().length > 0
+            }
+
+            Text {
+                visible: detailRoot.thumbnailUrl.length === 0
+                anchors.centerIn: parent
+                text: "🎥"
+                font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 

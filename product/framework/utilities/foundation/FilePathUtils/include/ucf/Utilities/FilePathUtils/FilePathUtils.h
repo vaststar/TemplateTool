@@ -25,6 +25,11 @@ public:
     // Linux:   $XDG_DATA_HOME or ~/.local/share
     static std::filesystem::path getBaseStorageDir();
 
+    // Windows: %LOCALAPPDATA%
+    // macOS:   ~/Library/Caches
+    // Linux:   $XDG_CACHE_HOME or ~/.cache
+    static std::filesystem::path getBaseCacheDir();
+
     static bool EnsureDirectoryExists(const std::filesystem::path& path);
 
 

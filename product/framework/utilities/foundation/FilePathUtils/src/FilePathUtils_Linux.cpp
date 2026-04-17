@@ -36,4 +36,19 @@ std::filesystem::path FilePathUtils_Linux::getBaseStorageDir()
     return {};
 }
 
+std::filesystem::path FilePathUtils_Linux::getBaseCacheDir()
+{
+    if (auto base = getEnv("XDG_CACHE_HOME"); !base.empty())
+    {
+        return base;
+    }
+
+    if (auto home = getHome(); !home.empty())
+    {
+        return FilePathUtils::joinPaths(home, ".cache");
+    }
+
+    return {};
+}
+
 } // namespace ucf::utilities

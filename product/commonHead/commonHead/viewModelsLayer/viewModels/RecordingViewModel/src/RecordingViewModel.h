@@ -6,16 +6,19 @@
 #include <ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgent.h>
 #include <ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgentCallback.h>
 #include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/Utilities/ThreadPoolUtils/ThreadPoolWrapper.h>
 
 #include <memory>
 #include <mutex>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace commonHead::viewModels {
 
 /// Thin ViewModel that delegates recording lifecycle to ScreenRecordingAgent.
 ///
 /// Responsibilities kept here:
-///   - FFmpeg discovery (setAppDir / getFFmpegPath)
+///   - FFmpeg discovery (auto-located on init)
 ///   - Settings management (load/persist via FeatureSettingsService)
 ///   - Output-path generation
 ///   - GIF conversion (one-shot, no state)
@@ -40,6 +43,8 @@ public:
     void pauseRecording() override;
     void resumeRecording() override;
     void convertToGif(const std::string& inputPath, const std::string& outputPath) override;
+    void requestThumbnail(const std::string& inputPath) override;
+    std::string getThumbnailPath(const std::string& inputPath) const override;
 
     // === State Query ===
     model::RecordingState getState() const override;
@@ -47,7 +52,7 @@ public:
     bool isFFmpegAvailable() const override;
     std::string getFFmpegPath() const override;
     bool hasScreenRecordingPermission() const override;
-    void setAppDir(const std::string& appDir) override;
+
 
     // === Settings ===
     model::RecordingSettings getSettings() const override;
@@ -81,11 +86,18 @@ private:
     /// Look up the AudioDeviceType for a system audio device ID.
     ucf::agents::AudioDeviceType resolveSystemAudioDeviceType(const std::string& deviceId) const;
 
+    std::string getThumbnailCacheRoot() const;
+    std::string buildThumbnailPath(const std::string& inputPath) const;
+    static std::string buildThumbnailCacheKey(const std::string& inputPath);
+
 private:
     mutable std::mutex m_mutex;
     model::RecordingSettings m_settings;
     std::string m_ffmpegPath;
-    std::string m_appDir;
+
+    std::unordered_map<std::string, std::string> m_thumbnailCache;
+    std::unordered_set<std::string> m_pendingThumbnailRequests;
+    ucf::utilities::ThreadPoolWrapper m_thumbnailThreadPool{2, "RecordingThumbnailPool"};
 
     std::shared_ptr<ucf::agents::IScreenRecordingAgent> m_agent;
 };

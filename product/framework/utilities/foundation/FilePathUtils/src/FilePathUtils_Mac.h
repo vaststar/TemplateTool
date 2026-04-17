@@ -7,8 +7,11 @@ namespace ucf::utilities{
 class FilePathUtils_Mac final
 {
 public:
-    // Windows: %LOCALAPPDATA%
+    // macOS: ~/Library/Application Support
     static std::filesystem::path getBaseStorageDir();
+
+    // macOS: ~/Library/Caches
+    static std::filesystem::path getBaseCacheDir();
 private:
     static std::filesystem::path getHome();
 };

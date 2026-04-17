@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 
+#include <dlfcn.h>
+#include <climits>
+#include <unistd.h>
+
 #include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 #include <CoreGraphics/CGDirectDisplay.h>
@@ -61,8 +65,84 @@ static std::string findInPath(const std::string& name)
 }
 
 // ============================================================================
+// Library Self-Location
+// ============================================================================
+
+std::string ScreenRecorder_Mac::getLibraryDirectory()
+{
+    Dl_info info{};
+    if (dladdr(reinterpret_cast<void*>(&ScreenRecorder_Mac::getLibraryDirectory), &info) == 0
+        || info.dli_fname == nullptr)
+    {
+        SRU_LOG_ERROR("dladdr failed for ScreenRecorder_Mac");
+        return {};
+    }
+
+    std::string fullPath = info.dli_fname;
+    if (!fullPath.empty() && fullPath[0] != '/')
+    {
+        char resolved[PATH_MAX] = {};
+        if (realpath(fullPath.c_str(), resolved))
+        {
+            fullPath = resolved;
+        }
+    }
+
+    auto lastSep = fullPath.rfind('/');
+    if (lastSep == std::string::npos)
+    {
+        return ".";
+    }
+    return fullPath.substr(0, lastSep);
+}
+
+// ============================================================================
 // FFmpeg Discovery
 // ============================================================================
+
+std::string ScreenRecorder_Mac::findFFmpegPath()
+{
+    std::string libDir = getLibraryDirectory();
+    if (libDir.empty())
+    {
+        SRU_LOG_WARN("Cannot determine library directory for FFmpeg auto-discovery");
+        return findInPath("ffmpeg");
+    }
+
+    // Typical layouts:
+    //   Build:   <build>/bin/libScreenRecordingUtils.dylib  →  ffmpeg at <build>/bin/ffmpeg
+    //   Bundle:  .../mainEntry.app/Contents/Frameworks/libScreenRecordingUtils.dylib
+    //            →  ffmpeg at .../mainEntry.app/Contents/MacOS/ffmpeg
+    //            or .../mainEntry.app/bin/ffmpeg
+    std::vector<std::string> candidates = {
+        libDir + "/ffmpeg",                     // same dir (build output: bin/)
+        libDir + "/../MacOS/ffmpeg",            // inside .app bundle
+        libDir + "/../Resources/ffmpeg",        // .app Resources
+        libDir + "/../../bin/ffmpeg",           // one level up
+        "/opt/homebrew/bin/ffmpeg",
+        "/usr/local/bin/ffmpeg"
+    };
+
+    for (const auto& candidate : candidates)
+    {
+        std::error_code ec;
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec) && access(canonical.c_str(), X_OK) == 0)
+        {
+            SRU_LOG_INFO("FFmpeg auto-discovered at: " << canonical.string());
+            return canonical.string();
+        }
+    }
+
+    std::string pathResult = findInPath("ffmpeg");
+    if (!pathResult.empty())
+    {
+        return pathResult;
+    }
+
+    SRU_LOG_WARN("FFmpeg not found via auto-discovery");
+    return {};
+}
 
 std::string ScreenRecorder_Mac::findFFmpegPath(const std::string& appDir)
 {

@@ -51,6 +51,10 @@ void RecordingController::init()
             this, &RecordingController::onVMDurationChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onRecordingCompleted,
             this, &RecordingController::onVMRecordingCompleted);
+        connect(m_viewModelEmitter.get(), &Emitter::signals_onThumbnailReady,
+            this, &RecordingController::onVMThumbnailReady);
+        connect(m_viewModelEmitter.get(), &Emitter::signals_onThumbnailFailed,
+            this, &RecordingController::onVMThumbnailFailed);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onSettingsChanged,
             this, &RecordingController::onVMSettingsChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onError,
@@ -62,10 +66,6 @@ void RecordingController::init()
 
     // Phase 3: Register emitter as callback
     m_viewModel->registerCallback(m_viewModelEmitter);
-
-    // Phase 4: Provide appDir to ViewModel for FFmpeg discovery
-    std::string appDir = QCoreApplication::applicationDirPath().toStdString();
-    m_viewModel->setAppDir(appDir);
 
     // Notify QML that FFmpeg status is now resolved
     emit ffmpegStatusChanged();
@@ -308,6 +308,24 @@ void RecordingController::convertToGif(const QString& inputPath, const QString& 
     }
 }
 
+void RecordingController::requestThumbnail(const QString& filePath)
+{
+    if (m_viewModel && !filePath.isEmpty()) {
+        m_viewModel->requestThumbnail(filePath.toStdString());
+    }
+}
+
+QString RecordingController::getThumbnailUrl(const QString& filePath) const
+{
+    if (m_viewModel && !filePath.isEmpty()) {
+        const auto thumbnailPath = m_viewModel->getThumbnailPath(filePath.toStdString());
+        if (!thumbnailPath.empty()) {
+            return QUrl::fromLocalFile(QString::fromStdString(thumbnailPath)).toString();
+        }
+    }
+    return {};
+}
+
 // ============================================================================
 // Utility — delegate to ViewModel
 // ============================================================================
@@ -458,6 +476,16 @@ void RecordingController::onVMRecordingCompleted(const QString& filePath)
 {
     UIVIEW_LOG_DEBUG("onVMRecordingCompleted: " << filePath.toStdString());
     emit recordingCompleted(filePath);
+}
+
+void RecordingController::onVMThumbnailReady(const QString& videoPath, const QString& thumbnailPath)
+{
+    emit thumbnailReady(videoPath, QUrl::fromLocalFile(thumbnailPath).toString());
+}
+
+void RecordingController::onVMThumbnailFailed(const QString& videoPath, const QString& errorMessage)
+{
+    emit thumbnailFailed(videoPath, errorMessage);
 }
 
 void RecordingController::onVMSettingsChanged(const RecordingSettings& settings)

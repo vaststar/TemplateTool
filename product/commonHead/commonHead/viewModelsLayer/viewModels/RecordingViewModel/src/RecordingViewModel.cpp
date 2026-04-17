@@ -3,9 +3,12 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Utilities/TimeUtils/TimeUtils.h>
 
+#include <chrono>
 #include <filesystem>
+#include <sstream>
 
 namespace fs = std::filesystem;
 using namespace ucf::utilities::screenrecording;
@@ -49,6 +52,12 @@ void RecordingViewModel::init()
 {
     m_agent->registerCallback(shared_from_this());
 
+    // Auto-discover FFmpeg at startup
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_ffmpegPath = IScreenRecorder::findFFmpegPath();
+    }
+
     // Load settings from FeatureSettingsService if available
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
@@ -87,21 +96,14 @@ int RecordingViewModel::getDuration() const
 
 bool RecordingViewModel::isFFmpegAvailable() const
 {
-    std::lock_guard lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     return !m_ffmpegPath.empty();
 }
 
 std::string RecordingViewModel::getFFmpegPath() const
 {
-    std::lock_guard lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     return m_ffmpegPath;
-}
-
-void RecordingViewModel::setAppDir(const std::string& appDir)
-{
-    std::lock_guard lock(m_mutex);
-    m_appDir = appDir;
-    m_ffmpegPath = IScreenRecorder::findFFmpegPath(appDir);
 }
 
 bool RecordingViewModel::hasScreenRecordingPermission() const
@@ -117,7 +119,7 @@ void RecordingViewModel::startRecording(int displayIndex)
 {
     ucf::agents::RecordingAgentConfig config;
     {
-        std::lock_guard lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
         if (m_ffmpegPath.empty()) {
             fireNotification(&IRecordingViewModelCallback::onError,
                              std::string("FFmpeg not found. Please install FFmpeg to use recording features."));
@@ -142,7 +144,7 @@ void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
 {
     ucf::agents::RecordingAgentConfig config;
     {
-        std::lock_guard lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
         if (m_ffmpegPath.empty()) {
             fireNotification(&IRecordingViewModelCallback::onError,
                              std::string("FFmpeg not found."));
@@ -190,7 +192,7 @@ void RecordingViewModel::convertToGif(const std::string& inputPath, const std::s
 {
     std::string ffmpeg;
     {
-        std::lock_guard lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
         ffmpeg = m_ffmpegPath;
     }
 
@@ -210,20 +212,124 @@ void RecordingViewModel::convertToGif(const std::string& inputPath, const std::s
     }
 }
 
+void RecordingViewModel::requestThumbnail(const std::string& inputPath)
+{
+    if (inputPath.empty())
+    {
+        return;
+    }
+
+    const auto readyPath = getThumbnailPath(inputPath);
+    if (!readyPath.empty())
+    {
+        fireNotification(&IRecordingViewModelCallback::onThumbnailReady, inputPath, readyPath);
+        return;
+    }
+
+    std::string ffmpegPath;
+    std::string outputPath;
+    {
+        std::lock_guard lock(m_mutex);
+        if (m_ffmpegPath.empty())
+        {
+            fireNotification(&IRecordingViewModelCallback::onThumbnailFailed,
+                             inputPath,
+                             std::string("FFmpeg not found."));
+            return;
+        }
+
+        if (!m_pendingThumbnailRequests.insert(inputPath).second)
+        {
+            return;
+        }
+
+        ffmpegPath = m_ffmpegPath;
+        outputPath = buildThumbnailPath(inputPath);
+    }
+
+    std::weak_ptr<RecordingViewModel> weakSelf =
+        std::static_pointer_cast<RecordingViewModel>(shared_from_this());
+    m_thumbnailThreadPool.submit([weakSelf, inputPath, ffmpegPath, outputPath]() {
+        const bool ok = IScreenRecorder::extractThumbnail(
+            ffmpegPath,
+            inputPath,
+            outputPath,
+            0.2,
+            320,
+            180);
+
+        if (auto self = weakSelf.lock())
+        {
+            {
+                std::lock_guard<std::mutex> lock(self->m_mutex);
+                self->m_pendingThumbnailRequests.erase(inputPath);
+                if (ok)
+                {
+                    self->m_thumbnailCache[inputPath] = outputPath;
+                }
+            }
+
+            if (ok)
+            {
+                self->fireNotification(&IRecordingViewModelCallback::onThumbnailReady,
+                                       inputPath,
+                                       outputPath);
+            }
+            else
+            {
+                self->fireNotification(&IRecordingViewModelCallback::onThumbnailFailed,
+                                       inputPath,
+                                       std::string("Thumbnail extraction failed"));
+            }
+        }
+    }, ucf::utilities::TaskPriority::Low, "recording-thumbnail");
+}
+
+std::string RecordingViewModel::getThumbnailPath(const std::string& inputPath) const
+{
+    if (inputPath.empty())
+    {
+        return {};
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        auto found = m_thumbnailCache.find(inputPath);
+        if (found != m_thumbnailCache.end())
+        {
+            std::error_code ec;
+            auto size = fs::file_size(found->second, ec);
+            if (!ec && size > 0)
+            {
+                return found->second;
+            }
+        }
+    }
+
+    auto outputPath = buildThumbnailPath(inputPath);
+    std::error_code ec;
+    auto size = fs::file_size(outputPath, ec);
+    if (!ec && size > 0)
+    {
+        return outputPath;
+    }
+    return {};
+}
+
 // ============================================================================
 // Settings
 // ============================================================================
 
 model::RecordingSettings RecordingViewModel::getSettings() const
 {
-    std::lock_guard lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     return m_settings;
 }
 
 void RecordingViewModel::updateSettings(const model::RecordingSettings& settings)
 {
     {
-        std::lock_guard lock(m_mutex);
+        std::lock_guard<std::mutex> lock(m_mutex);
         m_settings = settings;
     }
     // Persist to FeatureSettingsService
@@ -367,6 +473,65 @@ bool RecordingViewModel::hasMicrophonePermission() const
 void RecordingViewModel::requestMicrophonePermission(std::function<void(bool)> callback)
 {
     m_agent->requestMicrophonePermission(std::move(callback));
+}
+
+std::string RecordingViewModel::getThumbnailCacheRoot() const
+{
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto clientInfoService = serviceLocator->getClientInfoService().lock())
+            {
+                return (fs::path(clientInfoService->getAppCacheStoragePath()) / "recording_thumbnails").string();
+            }
+        }
+    }
+
+    if (!m_settings.outputDirectory.empty())
+    {
+        return (fs::path(m_settings.outputDirectory) / ".thumbnail_cache").string();
+    }
+
+    return (fs::temp_directory_path() / "TemplateTool" / "recording_thumbnails").string();
+}
+
+std::string RecordingViewModel::buildThumbnailPath(const std::string& inputPath) const
+{
+    const auto cacheRoot = fs::path(getThumbnailCacheRoot());
+    std::error_code ec;
+    fs::create_directories(cacheRoot, ec);
+    return (cacheRoot / (buildThumbnailCacheKey(inputPath) + ".png")).string();
+}
+
+std::string RecordingViewModel::buildThumbnailCacheKey(const std::string& inputPath)
+{
+    std::error_code ec;
+    const auto filePath = fs::path(inputPath);
+    const auto normalized = fs::absolute(filePath, ec).lexically_normal().string();
+
+    std::ostringstream keyStream;
+    keyStream << normalized;
+
+    ec.clear();
+    const auto lastWrite = fs::last_write_time(filePath, ec);
+    if (!ec)
+    {
+        const auto lastWriteMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+            lastWrite.time_since_epoch()).count();
+        keyStream << '|' << lastWriteMs;
+    }
+
+    ec.clear();
+    const auto fileSize = fs::file_size(filePath, ec);
+    if (!ec)
+    {
+        keyStream << '|' << fileSize;
+    }
+
+    std::ostringstream hashed;
+    hashed << std::hex << std::hash<std::string>{}(keyStream.str());
+    return hashed.str();
 }
 
 } // namespace commonHead::viewModels

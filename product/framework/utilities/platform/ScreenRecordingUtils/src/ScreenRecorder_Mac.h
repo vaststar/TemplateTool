@@ -32,6 +32,8 @@ public:
     [[nodiscard]] std::string outputPath() const override;
 
     // ── Static utilities (called from ScreenRecordingUtils) ──
+    static std::string getLibraryDirectory();
+    static std::string findFFmpegPath();
     static std::string findFFmpegPath(const std::string& appDir);
     static bool hasScreenRecordingPermission();
     static bool hasMicrophonePermission();

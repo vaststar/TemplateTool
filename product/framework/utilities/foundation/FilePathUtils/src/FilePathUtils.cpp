@@ -23,6 +23,18 @@ std::filesystem::path FilePathUtils::getBaseStorageDir()
         return {};
 }
 
+std::filesystem::path FilePathUtils::getBaseCacheDir()
+{
+#if defined(_WIN32)
+    return FilePathUtils_Win::getBaseCacheDir();
+#elif defined(__APPLE__)
+    return FilePathUtils_Mac::getBaseCacheDir();
+#elif defined(__linux__)
+    return FilePathUtils_Linux::getBaseCacheDir();
+#endif
+    return {};
+}
+
 bool FilePathUtils::EnsureDirectoryExists(const std::filesystem::path& path)
 {
     std::filesystem::path dir;

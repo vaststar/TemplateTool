@@ -33,6 +33,20 @@ public:
         emit signals_onRecordingCompleted(QString::fromStdString(filePath));
     }
 
+    void onThumbnailReady(const std::string& videoPath,
+                          const std::string& thumbnailPath) override
+    {
+        emit signals_onThumbnailReady(QString::fromStdString(videoPath),
+                                      QString::fromStdString(thumbnailPath));
+    }
+
+    void onThumbnailFailed(const std::string& videoPath,
+                           const std::string& errorMessage) override
+    {
+        emit signals_onThumbnailFailed(QString::fromStdString(videoPath),
+                                       QString::fromStdString(errorMessage));
+    }
+
     void onSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings) override
     {
         emit signals_onSettingsChanged(settings);
@@ -47,6 +61,8 @@ signals:
     void signals_onStateChanged(int state);
     void signals_onDurationChanged(int seconds);
     void signals_onRecordingCompleted(const QString& filePath);
+    void signals_onThumbnailReady(const QString& videoPath, const QString& thumbnailPath);
+    void signals_onThumbnailFailed(const QString& videoPath, const QString& errorMessage);
     void signals_onSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
     void signals_onError(const QString& message);
 };

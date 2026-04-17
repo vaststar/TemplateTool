@@ -1,5 +1,10 @@
 #include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
+#include <algorithm>
+#include <filesystem>
+
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+
 #if defined(_WIN32)
 #include "ScreenRecorder_Win.h"
 #elif defined(__APPLE__)
@@ -31,6 +36,19 @@ std::unique_ptr<IScreenRecorder> IScreenRecorder::create()
 // IScreenRecorder — static utilities
 // ============================================================================
 
+std::string IScreenRecorder::findFFmpegPath()
+{
+#if defined(_WIN32)
+    return ScreenRecorder_Win::findFFmpegPath();
+#elif defined(__APPLE__)
+    return ScreenRecorder_Mac::findFFmpegPath();
+#elif defined(__linux__)
+    return ScreenRecorder_Linux::findFFmpegPath();
+#else
+    return {};
+#endif
+}
+
 std::string IScreenRecorder::findFFmpegPath(const std::string& appDir)
 {
 #if defined(_WIN32)
@@ -43,6 +61,11 @@ std::string IScreenRecorder::findFFmpegPath(const std::string& appDir)
     (void)appDir;
     return {};
 #endif
+}
+
+bool IScreenRecorder::isFFmpegAvailable()
+{
+    return !findFFmpegPath().empty();
 }
 
 bool IScreenRecorder::isFFmpegAvailable(const std::string& appDir)
@@ -113,6 +136,62 @@ bool IScreenRecorder::convertToGif(const std::string& ffmpegPath,
     (void)ffmpegPath; (void)inputPath; (void)outputPath; (void)fps;
     return false;
 #endif
+}
+
+bool IScreenRecorder::extractThumbnail(const std::string& ffmpegPath,
+                                       const std::string& inputPath,
+                                       const std::string& outputPath,
+                                       double timeSeconds,
+                                       int maxWidth,
+                                       int maxHeight)
+{
+    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
+    {
+        return false;
+    }
+
+    maxWidth = std::max(1, maxWidth);
+    maxHeight = std::max(1, maxHeight);
+    if (timeSeconds < 0.0)
+    {
+        timeSeconds = 0.0;
+    }
+
+    std::error_code ec;
+    auto output = std::filesystem::path(outputPath);
+    if (!output.parent_path().empty())
+    {
+        std::filesystem::create_directories(output.parent_path(), ec);
+        if (ec)
+        {
+            return false;
+        }
+    }
+
+    std::string scaleFilter = "scale=w=" + std::to_string(maxWidth)
+        + ":h=" + std::to_string(maxHeight)
+        + ":force_original_aspect_ratio=decrease";
+
+    ucf::utilities::ProcessBridgeConfig config;
+    config.executablePath = ffmpegPath;
+    config.arguments = {
+        "-y",
+        "-ss", std::to_string(timeSeconds),
+        "-i", inputPath,
+        "-frames:v", "1",
+        "-vf", scaleFilter,
+        outputPath
+    };
+    config.stopTimeoutMs = 30000;
+
+    auto result = ucf::utilities::IProcessBridge::run(config);
+    if (result.timedOut || result.exitCode != 0)
+    {
+        return false;
+    }
+
+    auto size = std::filesystem::file_size(output, ec);
+    return !ec && size > 0;
 }
 
 } // namespace ucf::utilities::screenrecording

@@ -91,6 +91,8 @@ public:
     Q_INVOKABLE void pauseRecording();
     Q_INVOKABLE void resumeRecording();
     Q_INVOKABLE void convertToGif(const QString& inputPath, const QString& outputPath = QString());
+    Q_INVOKABLE void requestThumbnail(const QString& filePath);
+    Q_INVOKABLE QString getThumbnailUrl(const QString& filePath) const;
 
     // === Utility (delegate to ViewModel) ===
     Q_INVOKABLE QString getFFmpegPath();
@@ -111,6 +113,8 @@ signals:
     void recordingDurationChanged();
     void settingsChanged();
     void recordingCompleted(const QString& filePath);
+    void thumbnailReady(const QString& videoPath, const QString& thumbnailUrl);
+    void thumbnailFailed(const QString& videoPath, const QString& errorMessage);
     void errorOccurred(const QString& message);
     void ffmpegStatusChanged();
     void audioDevicesChanged();
@@ -122,6 +126,8 @@ private slots:
     void onVMStateChanged(int state);
     void onVMDurationChanged(int seconds);
     void onVMRecordingCompleted(const QString& filePath);
+    void onVMThumbnailReady(const QString& videoPath, const QString& thumbnailPath);
+    void onVMThumbnailFailed(const QString& videoPath, const QString& errorMessage);
     void onVMSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
     void onVMError(const QString& message);
 

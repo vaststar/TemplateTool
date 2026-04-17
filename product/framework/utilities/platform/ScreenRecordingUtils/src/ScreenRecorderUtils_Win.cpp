@@ -65,8 +65,81 @@ static std::string findInPath(const std::string& name)
 }
 
 // ============================================================================
+// Library Self-Location
+// ============================================================================
+
+static void dummyForModuleHandle_SRU() {}
+
+std::string ScreenRecorder_Win::getLibraryDirectory()
+{
+    HMODULE hModule = nullptr;
+    if (!GetModuleHandleExA(
+            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCSTR>(&dummyForModuleHandle_SRU),
+            &hModule))
+    {
+        SRU_LOG_ERROR("GetModuleHandleExA failed, error=" << GetLastError());
+        return {};
+    }
+
+    char path[MAX_PATH] = {};
+    DWORD len = GetModuleFileNameA(hModule, path, MAX_PATH);
+    if (len == 0 || len >= MAX_PATH)
+    {
+        SRU_LOG_ERROR("GetModuleFileNameA failed, error=" << GetLastError());
+        return {};
+    }
+
+    std::string fullPath(path, len);
+    auto lastSep = fullPath.find_last_of("\\/");
+    if (lastSep == std::string::npos)
+    {
+        return ".";
+    }
+    return fullPath.substr(0, lastSep);
+}
+
+// ============================================================================
 // FFmpeg discovery
 // ============================================================================
+
+std::string ScreenRecorder_Win::findFFmpegPath()
+{
+    std::string libDir = getLibraryDirectory();
+    if (libDir.empty())
+    {
+        SRU_LOG_WARN("Cannot determine library directory for FFmpeg auto-discovery");
+        return findInPath("ffmpeg.exe");
+    }
+
+    // Typical layouts:
+    //   Build:  <build>/bin/ScreenRecordingUtils.dll  →  ffmpeg.exe at <build>/bin/
+    std::vector<std::string> candidates = {
+        libDir + "/ffmpeg.exe",           // same dir
+        libDir + "/../bin/ffmpeg.exe",    // sibling bin/
+        libDir + "/ffmpeg/ffmpeg.exe"     // ffmpeg subfolder
+    };
+
+    for (const auto& candidate : candidates)
+    {
+        std::error_code ec;
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec))
+        {
+            SRU_LOG_INFO("FFmpeg auto-discovered at: " << canonical.string());
+            return canonical.string();
+        }
+    }
+
+    std::string pathResult = findInPath("ffmpeg.exe");
+    if (!pathResult.empty())
+    {
+        return pathResult;
+    }
+
+    SRU_LOG_WARN("FFmpeg not found via auto-discovery");
+    return {};
+}
 
 std::string ScreenRecorder_Win::findFFmpegPath(const std::string& appDir)
 {

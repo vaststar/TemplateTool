@@ -125,10 +125,16 @@ public:
 
     // === Static utilities (platform-dispatched) ===
 
+    /// Auto-discover FFmpeg by locating the library and probing relative paths.
+    static std::string findFFmpegPath();
+
     /// Search platform-specific candidate paths relative to appDir.
     static std::string findFFmpegPath(const std::string& appDir);
 
-    /// Convenience wrapper around findFFmpegPath.
+    /// Convenience wrapper around findFFmpegPath().
+    static bool isFFmpegAvailable();
+
+    /// Convenience wrapper around findFFmpegPath(appDir).
     static bool isFFmpegAvailable(const std::string& appDir);
 
     /// Check if the application has screen recording permission (macOS 10.15+).
@@ -151,6 +157,14 @@ public:
                              const std::string& inputPath,
                              const std::string& outputPath,
                              int fps = 10);
+
+    /// Extract a representative thumbnail frame from a video using FFmpeg.
+    static bool extractThumbnail(const std::string& ffmpegPath,
+                                 const std::string& inputPath,
+                                 const std::string& outputPath,
+                                 double timeSeconds = 0.2,
+                                 int maxWidth = 320,
+                                 int maxHeight = 180);
 };
 
 } // namespace ucf::utilities::screenrecording

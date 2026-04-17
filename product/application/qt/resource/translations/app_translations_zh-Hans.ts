@@ -1199,67 +1199,67 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingContent</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="158"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="290"/>
         <source>🎬 Start Recording</source>
         <translation>🎬 开始录制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="180"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="312"/>
         <source>Full Screen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="181"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="313"/>
         <source>Select Region</source>
         <translation>选择区域</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="192"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="324"/>
         <source>⚠ FFmpeg not found</source>
         <translation>⚠ 未找到 FFmpeg</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="200"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="332"/>
         <source>📂 Open Folder</source>
         <translation>📂 打开文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="208"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="340"/>
         <source>⚠ Screen recording permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Screen Recording to enable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="238"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="370"/>
         <source>No recordings yet</source>
         <translation>暂无录制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="239"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="371"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation>点击&quot;开始录制&quot;来录制屏幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="240"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="372"/>
         <source>%1 recordings</source>
         <translation>%1 个录制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="254"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="386"/>
         <source>▶ Open</source>
         <translation>▶ 打开</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="260"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="392"/>
         <source>🗑 Delete</source>
         <translation>🗑 删除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="241"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="373"/>
         <source>Delete Recording</source>
         <translation>删除录制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="242"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="374"/>
         <source>Are you sure you want to delete this recording?</source>
         <translation>确定要删除此录制吗？</translation>
     </message>
@@ -1267,12 +1267,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="396"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="414"/>
         <source>Recordings folder not set</source>
         <translation>未设置录制文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="414"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="432"/>
         <source>File not found: %1</source>
         <translation>文件未找到: %1</translation>
     </message>

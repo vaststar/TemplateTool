@@ -14,7 +14,7 @@ std::filesystem::path FilePathUtils_Win::getEnv(const std::string& name)
 
 std::filesystem::path FilePathUtils_Win::getBaseStorageDir()
 {
-    
+
     if (auto base = getEnv("LOCALAPPDATA"); !base.empty())
     {
         return base;
@@ -24,7 +24,24 @@ std::filesystem::path FilePathUtils_Win::getBaseStorageDir()
     {
         return profile;
     }
-    
+
+    return {};
+}
+
+std::filesystem::path FilePathUtils_Win::getBaseCacheDir()
+{
+    // Windows has no separate cache root convention;
+    // %LOCALAPPDATA% is the standard location for app-specific cache data.
+    if (auto base = getEnv("LOCALAPPDATA"); !base.empty())
+    {
+        return base;
+    }
+
+    if (auto profile = getEnv("USERPROFILE"); !profile.empty())
+    {
+        return profile;
+    }
+
     return {};
 }
 

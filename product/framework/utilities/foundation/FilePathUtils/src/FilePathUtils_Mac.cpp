@@ -21,4 +21,13 @@ std::filesystem::path FilePathUtils_Mac::getBaseStorageDir()
     return {};
 }
 
+std::filesystem::path FilePathUtils_Mac::getBaseCacheDir()
+{
+    if (auto home = getHome(); !home.empty())
+    {
+        return FilePathUtils::joinPaths(home, "Library", "Caches");
+    }
+    return {};
+}
+
 } // namespace ucf::utilities

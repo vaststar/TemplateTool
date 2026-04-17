@@ -38,6 +38,14 @@ public:
     /// Recording completed — output file path
     virtual void onRecordingCompleted(const std::string& filePath) = 0;
 
+    /// Thumbnail extracted and ready for display.
+    virtual void onThumbnailReady(const std::string& videoPath,
+                                  const std::string& thumbnailPath) = 0;
+
+    /// Thumbnail extraction failed.
+    virtual void onThumbnailFailed(const std::string& videoPath,
+                                   const std::string& errorMessage) = 0;
+
     /// Settings updated (e.g. from another source or DB load)
     virtual void onSettingsChanged(const model::RecordingSettings& settings) = 0;
 
@@ -65,6 +73,8 @@ public:
     virtual void pauseRecording() = 0;
     virtual void resumeRecording() = 0;
     virtual void convertToGif(const std::string& inputPath, const std::string& outputPath) = 0;
+    virtual void requestThumbnail(const std::string& inputPath) = 0;
+    [[nodiscard]] virtual std::string getThumbnailPath(const std::string& inputPath) const = 0;
 
     // === State Query ===
     [[nodiscard]] virtual model::RecordingState getState() const = 0;
@@ -75,10 +85,6 @@ public:
     /// Check if the application has screen recording permission (macOS).
     /// Always returns true on Windows and Linux.
     [[nodiscard]] virtual bool hasScreenRecordingPermission() const = 0;
-
-    /// Set the application binary directory for FFmpeg discovery.
-    /// Must be called after initViewModel() and before startRecording().
-    virtual void setAppDir(const std::string& appDir) = 0;
 
     // === Settings ===
     [[nodiscard]] virtual model::RecordingSettings getSettings() const = 0;

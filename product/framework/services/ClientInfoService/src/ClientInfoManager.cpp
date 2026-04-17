@@ -245,6 +245,22 @@ std::string ClientInfoManager::getHangStoragePath() const
 #endif
     return {};
 }
+
+std::string ClientInfoManager::getCacheStoragePath() const
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseCacheDir(),
+        APP_INTERNAL_NAME_DEBUG
+    ).string();
+#else
+    return ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::getBaseCacheDir(),
+        APP_INTERNAL_NAME
+    ).string();
+#endif
+    return {};
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start ClientInfoManager Logic//////////////////////////////////////////
