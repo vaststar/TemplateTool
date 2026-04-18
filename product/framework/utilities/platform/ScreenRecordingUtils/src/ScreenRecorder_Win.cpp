@@ -421,13 +421,12 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
         return id;
     };
 
-    // Microphones from DirectShow — use friendly names as device IDs.
-    // FFmpeg dshow matches devices by friendly name, and Chinese characters
-    // survive the UTF-8 → UTF-16 (CreateProcessW) → ACP (CRT) conversion
-    // chain on Chinese Windows.
+    // Microphones from DirectShow — use moniker as unique device ID.
+    // formatDShowAudioInput() converts moniker → friendly name when building
+    // the FFmpeg command line, since FFmpeg dshow matches by friendly name.
     auto dshowDevices = enumerateDShowCaptureDevices();
     for (const auto& dev : dshowDevices)
-        devices.push_back({dev.friendlyName, dev.friendlyName, true, AudioDeviceType::Microphone});
+        devices.push_back({dev.monikerName, dev.friendlyName, true, AudioDeviceType::Microphone});
 
     // Non-mic capture devices (Stereo Mix etc.) from WASAPI
     IMMDeviceCollection* pCapture = nullptr;
@@ -457,9 +456,15 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
 
                 if (!isMic)
                 {
-                    // Use the WASAPI friendly name directly as device ID.
-                    // FFmpeg dshow matches by friendly name.
-                    devices.push_back({wasapiName, wasapiName, false, AudioDeviceType::LoopbackCapture});
+                    // Find the matching DShow moniker for this WASAPI device
+                    std::string deviceId = wasapiName;
+                    for (const auto& dev : dshowDevices)
+                        if (dev.friendlyName == wasapiName ||
+                            dev.friendlyName.find(wasapiName) != std::string::npos ||
+                            wasapiName.find(dev.friendlyName) != std::string::npos)
+                        { deviceId = dev.monikerName; break; }
+
+                    devices.push_back({deviceId, wasapiName, false, AudioDeviceType::LoopbackCapture});
                 }
                 pProps->Release();
             }
