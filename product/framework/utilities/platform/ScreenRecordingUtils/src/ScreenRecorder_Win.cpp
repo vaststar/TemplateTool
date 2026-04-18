@@ -306,7 +306,7 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
             "-filter_complex",
             "[1:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,asetpts=PTS-STARTPTS[a0];"
             "[2:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,asetpts=PTS-STARTPTS[a1];"
-            "[a0][a1]amix=inputs=2:duration=first:normalize=0[aout]",
+            "[a0][a1]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[aout]",
             "-map", "0:v", "-map", "[aout]"});
     }
 
