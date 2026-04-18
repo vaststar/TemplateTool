@@ -47,60 +47,37 @@ static std::string escapeDshowDeviceName(const std::string& name)
     return escaped;
 }
 
-/// Returns true if the device ID looks like a WASAPI endpoint ID
-/// (e.g. "{0.0.1.00000000}.{GUID}") rather than a DShow moniker (@device:...).
-static bool isWasapiEndpointId(const std::string& id)
+/// Returns true if the device ID is a valid DShow-compatible identifier:
+/// either a DShow moniker (@device:...) or a plain friendly name.
+/// Returns false for WASAPI endpoint IDs ({0.0.1.00000000}.{GUID}) which
+/// cannot be used with FFmpeg -f dshow.
+static bool isDShowCompatible(const std::string& id)
 {
-    // WASAPI endpoint IDs start with '{' and contain '}.{'
-    return !id.empty() && id.front() == '{' && id.find("}.{") != std::string::npos;
+    if (id.empty()) return true;
+    // DShow monikers always start with @device
+    if (id.rfind("@device", 0) == 0) return true;
+    // WASAPI endpoint IDs look like "{0.0.1.00000000}.{GUID}"
+    if (id.front() == '{' && id.find("}.") != std::string::npos) return false;
+    // Anything else is treated as a friendly name
+    return true;
 }
 
-/// Resolve a mic device identifier to a DShow-compatible name for FFmpeg.
-/// If the ID is already a DShow moniker (@device:...) it is returned as-is.
-/// If it looks like a WASAPI endpoint ID, we look up the WASAPI friendly name
-/// then find the matching DShow moniker so FFmpeg can bind the device properly.
-static std::string resolveMicDeviceForDShow(const std::string& deviceId)
+/// Validate a DShow device identifier for FFmpeg.
+/// - DShow moniker (@device:...) -> returned as-is
+/// - Plain friendly name -> returned as-is (will be escaped by caller)
+/// - WASAPI endpoint ID -> cleared (caller should use default device)
+///
+/// Returns empty string if the ID is not DShow-compatible, which signals
+/// the caller to fall back to the default device name.
+static std::string validateDShowDeviceId(const std::string& deviceId, const char* label)
 {
-    if (deviceId.empty() || deviceId.rfind("@device", 0) == 0)
+    if (isDShowCompatible(deviceId))
     {
-        return deviceId;  // already a DShow moniker or empty
+        return deviceId;
     }
-
-    if (!isWasapiEndpointId(deviceId))
-    {
-        return deviceId;  // treat as a DShow friendly name
-    }
-
-    SRU_LOG_WARN("Mic device looks like a WASAPI endpoint ID, resolving to DShow: " << deviceId);
-
-    // Look up the matching DShow moniker via the unified enumerator which
-    // already maps DShow monikers ↔ WASAPI endpoints.
-    auto allDevices = ScreenRecorder_Win::enumerateAudioDevices();
-    for (const auto& dev : allDevices)
-    {
-        if (dev.deviceType != AudioDeviceType::Microphone)
-            continue;
-        // The enumerator stores the WASAPI endpoint-based friendly name in
-        // displayName and the DShow moniker in id for Microphone devices.
-        // We cannot match by id (that's the DShow moniker); we need to match
-        // the WASAPI endpoint. Unfortunately the micro enumerator doesn't
-        // store the WASAPI endpoint for mic devices, so we fall back to
-        // returning the first available mic's DShow moniker.
-    }
-
-    // Fallback: pick the first Microphone-type device's DShow moniker.
-    for (const auto& dev : allDevices)
-    {
-        if (dev.deviceType == AudioDeviceType::Microphone && !dev.id.empty())
-        {
-            SRU_LOG_WARN("Falling back to first available mic device: "
-                         << dev.displayName << " (" << dev.id << ")");
-            return dev.id;
-        }
-    }
-
-    SRU_LOG_ERROR("No DShow microphone device found to replace WASAPI endpoint ID");
-    return deviceId;  // return original, will likely fail
+    SRU_LOG_WARN(label << " device has a WASAPI endpoint ID that is not "
+                 "compatible with FFmpeg dshow, falling back to default: " << deviceId);
+    return {};  // empty -> caller uses default
 }
 
 // ============================================================================
@@ -234,12 +211,11 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
     if (config.audioMode == AudioCaptureMode::Microphone ||
         config.audioMode == AudioCaptureMode::MicAndSystem)
     {
-        // Resolve the mic device to a DShow-compatible identifier.
-        // The saved device ID may be a WASAPI endpoint ID from an older
-        // version or a stale setting — convert it to a DShow moniker first.
-        std::string resolvedMic = resolveMicDeviceForDShow(config.micDevice);
+        // Validate the mic device ID — reject WASAPI endpoint IDs that
+        // cannot be used with FFmpeg dshow.
+        std::string resolvedMic = validateDShowDeviceId(config.micDevice, "Microphone");
 
-        // Moniker names (@device_cm_...) are passed as-is — FFmpeg resolves
+        // Moniker names (@device:cm:...) are passed as-is — FFmpeg resolves
         // them via MkParseDisplayName and they must not be escaped.
         // Friendly names need escaping for dshow special characters.
         std::string micName;
@@ -275,18 +251,21 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
         else
         {
+            // Validate the system audio device ID — same rules as mic.
+            std::string resolvedSys = validateDShowDeviceId(config.systemAudioDevice, "SystemAudio");
+
             std::string sysName;
-            if (config.systemAudioDevice.empty())
+            if (resolvedSys.empty())
             {
                 sysName = "Stereo Mix";
             }
-            else if (config.systemAudioDevice.rfind("@device", 0) == 0)
+            else if (resolvedSys.rfind("@device", 0) == 0)
             {
-                sysName = config.systemAudioDevice;
+                sysName = resolvedSys;
             }
             else
             {
-                sysName = escapeDshowDeviceName(config.systemAudioDevice);
+                sysName = escapeDshowDeviceName(resolvedSys);
             }
             args.insert(args.end(), {
                 "-thread_queue_size", "512",
@@ -437,8 +416,14 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
                  << " output=" << config.outputPath);
 
     // Brief sanity check: if FFmpeg fails immediately (e.g. dshow device not found),
-    // it exits within the first ~500ms. Detect that early instead of silently failing.
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    // it exits within the first ~500ms. Poll in short intervals instead of
+    // sleeping the full 500ms to return as soon as failure is detected.
+    for (int i = 0; i < 10; ++i)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        if (m_process && !m_process->isRunning())
+            break;
+    }
     if (m_process && !m_process->isRunning())
     {
         SRU_LOG_ERROR("start: FFmpeg exited immediately after launch — "
