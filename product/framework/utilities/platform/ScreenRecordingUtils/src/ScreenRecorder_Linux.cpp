@@ -4,15 +4,19 @@
 
 #include "LoggerDefine.h"
 
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+
 #include <cerrno>
-#include <cstring>
 #include <climits>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include <dlfcn.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
@@ -21,75 +25,78 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
-
 extern char** environ;
 
 namespace ucf::utilities::screenrecording {
 
 // ============================================================================
-// Static helpers
+// Helpers
 // ============================================================================
 
-/// Round a dimension down to the nearest even number (minimum 2).
-/// libx264 + yuv420p requires even width and height.
 static inline int alignToEven(int v)
 {
     return std::max(2, v & ~1);
 }
 
-/// Set close-on-exec flag on a file descriptor.
 static inline void setCloseOnExec(int fd)
 {
     fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 }
 
-/// Wait for a child process with timeout, escalating from SIGINT to SIGKILL.
-/// Returns true if process exited normally, false if force-killed.
+static std::string findInPath(const std::string& name)
+{
+    const char* pathEnv = std::getenv("PATH");
+    if (!pathEnv) return {};
+
+    std::istringstream stream(pathEnv);
+    std::string dir;
+    while (std::getline(stream, dir, ':'))
+    {
+        if (dir.empty()) continue;
+        auto candidate = std::filesystem::path(dir) / name;
+        std::error_code ec;
+        if (std::filesystem::is_regular_file(candidate, ec) && access(candidate.c_str(), X_OK) == 0)
+        {
+            auto canonical = std::filesystem::canonical(candidate, ec);
+            if (!ec) return canonical.string();
+        }
+    }
+    return {};
+}
+
+/// Wait for child process with timeout, escalating SIGINT → SIGKILL.
 static bool waitForChildWithTimeout(pid_t pid, int& status, int timeoutMs, std::string& errorMsg)
 {
     constexpr int kPollMs = 100;
 
-    // Phase 1: wait for voluntary exit
     int elapsed = 0;
     while (elapsed < timeoutMs)
     {
-        pid_t r = waitpid(pid, &status, WNOHANG);
-        if (r != 0)
-        {
-            return true;
-        }
+        if (waitpid(pid, &status, WNOHANG) != 0) return true;
         usleep(kPollMs * 1000);
         elapsed += kPollMs;
     }
 
-    // Phase 2: SIGINT for graceful finalization (5 seconds)
-    SRU_LOG_WARN("Child process " << pid << " did not exit in " << timeoutMs << "ms, sending SIGINT");
+    SRU_LOG_WARN("Child " << pid << " did not exit in " << timeoutMs << "ms, sending SIGINT");
     kill(pid, SIGINT);
 
     constexpr int kIntTimeoutMs = 5000;
     elapsed = 0;
     while (elapsed < kIntTimeoutMs)
     {
-        pid_t r = waitpid(pid, &status, WNOHANG);
-        if (r != 0)
-        {
-            return true;
-        }
+        if (waitpid(pid, &status, WNOHANG) != 0) return true;
         usleep(kPollMs * 1000);
         elapsed += kPollMs;
     }
 
-    // Phase 3: SIGKILL as last resort
-    SRU_LOG_ERROR("Child process " << pid << " did not respond to SIGINT, sending SIGKILL");
+    SRU_LOG_ERROR("Child " << pid << " did not respond to SIGINT, sending SIGKILL");
     kill(pid, SIGKILL);
     waitpid(pid, &status, 0);
     errorMsg = "Process did not exit in time, force killed";
     return false;
 }
 
-/// Convert a video file to a different container/codec using FFmpeg.
-/// Optionally crops to region (x, y, w, h) if cropW > 0.
+/// Convert video format via FFmpeg, optionally cropping to region.
 static bool convertVideoFormat(const std::string& ffmpegPath,
                                const std::string& inputPath,
                                const std::string& outputPath,
@@ -97,34 +104,25 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
                                int cropW = 0, int cropH = 0)
 {
     if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
-    {
-        SRU_LOG_ERROR("convertVideoFormat: empty path argument");
         return false;
-    }
 
     std::error_code ec;
     if (!std::filesystem::is_regular_file(inputPath, ec))
-    {
-        SRU_LOG_ERROR("convertVideoFormat: input file does not exist: " << inputPath);
         return false;
-    }
 
     std::string ext = std::filesystem::path(outputPath).extension().string();
-
-    // Build FFmpeg arguments
     std::vector<std::string> args = {"-y", "-i", inputPath};
 
-    int cw = alignToEven(cropW);
-    int ch = alignToEven(cropH);
+    int cw = alignToEven(cropW), ch = alignToEven(cropH);
 
     if (ext == ".mp4" || ext == ".mov")
     {
         if (cropW > 0 && cropH > 0)
         {
-            std::string cropFilter = "crop=" + std::to_string(cw) + ":"
-                                   + std::to_string(ch) + ":" + std::to_string(cropX)
-                                   + ":" + std::to_string(cropY) + ",format=yuv420p";
-            args.insert(args.end(), {"-vf", cropFilter});
+            std::string crop = "crop=" + std::to_string(cw) + ":" + std::to_string(ch)
+                             + ":" + std::to_string(cropX) + ":" + std::to_string(cropY)
+                             + ",format=yuv420p";
+            args.insert(args.end(), {"-vf", crop});
         }
         else
         {
@@ -136,9 +134,9 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
     {
         if (cropW > 0 && cropH > 0)
         {
-            std::string cropFilter = "crop=" + std::to_string(cw) + ":" + std::to_string(ch)
-                                   + ":" + std::to_string(cropX) + ":" + std::to_string(cropY);
-            args.insert(args.end(), {"-vf", cropFilter, "-c:v", "libvpx", "-b:v", "2M"});
+            std::string crop = "crop=" + std::to_string(cw) + ":" + std::to_string(ch)
+                             + ":" + std::to_string(cropX) + ":" + std::to_string(cropY);
+            args.insert(args.end(), {"-vf", crop, "-c:v", "libvpx", "-b:v", "2M"});
         }
         else
         {
@@ -156,12 +154,7 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
     pbConfig.stopTimeoutMs = 120000;
 
     auto result = ucf::utilities::IProcessBridge::run(pbConfig);
-
-    if (result.timedOut)
-    {
-        SRU_LOG_WARN("convertVideoFormat: FFmpeg timed out");
-        return false;
-    }
+    if (result.timedOut) return false;
 
     auto sz = std::filesystem::file_size(outputPath, ec);
     return result.exitCode == 0 && !ec && sz > 0;
@@ -173,19 +166,12 @@ static bool convertVideoFormat(const std::string& ffmpegPath,
 
 static constexpr const char* kPortalRecorderScript = R"PYTHON(#!/usr/bin/env python3
 """
-Portal ScreenCast recorder.
-
-Uses xdg-desktop-portal ScreenCast D-Bus API to acquire a PipeWire stream,
-then records via gst-launch-1.0.
+Portal ScreenCast recorder — xdg-desktop-portal D-Bus API + GStreamer.
 
 Usage: portal_recorder.py <output_path> <fps> <audio_mode> [<mic_device>] [<sys_device>]
   audio_mode: none / microphone / system / mic_and_system
 
-Protocol (stdout):
-  RECORDING         – pipeline is running, recording started
-  ERROR:<message>   – fatal error, script will exit
-  STOPPED           – recording stopped gracefully
-
+Protocol (stdout): RECORDING | ERROR:<message> | STOPPED
 Stops on SIGTERM or SIGINT.
 """
 import sys, os, signal, subprocess, time
@@ -202,7 +188,6 @@ audio_mode = sys.argv[3] if len(sys.argv) > 3 else 'none'
 mic_device = sys.argv[4] if len(sys.argv) > 4 else ''
 sys_device = sys.argv[5] if len(sys.argv) > 5 else ''
 
-# Token persistence file (persist_mode=2 lets portal skip the dialog)
 TOKEN_FILE = os.path.expanduser('~/.cache/portal_screencast_token')
 
 def load_restore_token():
@@ -250,7 +235,6 @@ def on_start_response(response, results):
         emit_error(f'Start rejected (response={response})')
         return
 
-    # Save restore_token for next run (skip dialog next time)
     restore_token = str(results.get('restore_token', ''))
     if restore_token:
         save_restore_token(restore_token)
@@ -266,8 +250,6 @@ def launch_gstreamer():
     global gst_proc
     ext = os.path.splitext(output_path)[1].lower()
 
-    # Always record full screen; region cropping is done via FFmpeg after recording.
-    # Build encode pipeline based on target format
     if ext == '.webm':
         vencode = 'videoconvert ! vp8enc deadline=1 cpu-used=4 min_quantizer=10 max_quantizer=50'
         mux = 'webmmux'
@@ -281,7 +263,6 @@ def launch_gstreamer():
         mux = 'webmmux'
         aencode = 'audioconvert ! opusenc'
 
-    # Build audio source elements based on audio_mode
     audio_pipeline = ''
     if audio_mode == 'microphone':
         src = f'pulsesrc device={mic_device}' if mic_device else 'pulsesrc'
@@ -317,7 +298,6 @@ def launch_gstreamer():
         emit_error(f'Failed to launch gst-launch-1.0: {e}')
         return
 
-    # Give GStreamer a moment to start, verify it's still alive
     time.sleep(0.3)
     if gst_proc.poll() is not None:
         emit_error(f'gst-launch-1.0 exited immediately (rc={gst_proc.returncode})')
@@ -329,7 +309,6 @@ def on_select_sources_response(response, results):
     if response != 0:
         emit_error(f'SelectSources rejected (response={response})')
         return
-    # Step 3: Start — this triggers the system permission dialog (or auto-grants with token)
     token = new_request_token()
     req_path = f'/org/freedesktop/portal/desktop/request/{bus.get_unique_name()[1:].replace(".",  "_")}/{token}'
     bus.add_signal_receiver(
@@ -352,7 +331,6 @@ def on_create_session_response(response, results):
     if not session_path:
         emit_error('No session_handle returned')
         return
-    # Step 2: SelectSources with persist_mode + restore_token
     token = new_request_token()
     req_path = f'/org/freedesktop/portal/desktop/request/{bus.get_unique_name()[1:].replace(".", "_")}/{token}'
     bus.add_signal_receiver(
@@ -363,11 +341,10 @@ def on_create_session_response(response, results):
     )
     select_opts = {
         'handle_token': token,
-        'types': dbus.UInt32(1),       # MONITOR
-        'cursor_mode': dbus.UInt32(2),  # EMBEDDED in stream
-        'persist_mode': dbus.UInt32(2), # Persist until explicitly revoked
+        'types': dbus.UInt32(1),
+        'cursor_mode': dbus.UInt32(2),
+        'persist_mode': dbus.UInt32(2),
     }
-    # Restore previous session token to skip permission dialog
     saved_token = load_restore_token()
     if saved_token:
         select_opts['restore_token'] = saved_token
@@ -379,7 +356,7 @@ def on_create_session_response(response, results):
 
 def stop_recording(signum=None, frame=None):
     if gst_proc and gst_proc.poll() is None:
-        gst_proc.send_signal(signal.SIGINT)  # -e flag → EOS → clean close
+        gst_proc.send_signal(signal.SIGINT)
         try:
             gst_proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
@@ -391,7 +368,6 @@ def stop_recording(signum=None, frame=None):
 signal.signal(signal.SIGTERM, stop_recording)
 signal.signal(signal.SIGINT, stop_recording)
 
-# Step 1: CreateSession
 token = new_request_token()
 session_token = new_session_token()
 req_path = f'/org/freedesktop/portal/desktop/request/{bus.get_unique_name()[1:].replace(".", "_")}/{token}'
@@ -411,18 +387,11 @@ screencast_iface.CreateSession(
 loop.run()
 )PYTHON";
 
-/// Write the portal recorder script to a temp file and return its path.
 static std::string ensureRecorderScript()
 {
     std::string scriptPath = "/tmp/portal_recorder_" + std::to_string(getuid()) + ".py";
-
-    // Always overwrite to ensure latest version
     std::ofstream ofs(scriptPath, std::ios::trunc);
-    if (!ofs.is_open())
-    {
-        SRU_LOG_ERROR("ensureRecorderScript: failed to write " << scriptPath);
-        return {};
-    }
+    if (!ofs.is_open()) return {};
     ofs << kPortalRecorderScript;
     ofs.close();
     chmod(scriptPath.c_str(), 0700);
@@ -430,87 +399,217 @@ static std::string ensureRecorderScript()
 }
 
 // ============================================================================
-// Constructor / Destructor / Queries
+// Library self-location
+// ============================================================================
+
+std::string ScreenRecorder_Linux::getLibraryDirectory()
+{
+    Dl_info info{};
+    if (dladdr(reinterpret_cast<void*>(&ScreenRecorder_Linux::getLibraryDirectory), &info) == 0
+        || info.dli_fname == nullptr)
+        return {};
+
+    std::string fullPath = info.dli_fname;
+    if (!fullPath.empty() && fullPath[0] != '/')
+    {
+        char resolved[PATH_MAX] = {};
+        if (realpath(fullPath.c_str(), resolved))
+            fullPath = resolved;
+    }
+
+    auto lastSep = fullPath.rfind('/');
+    return (lastSep != std::string::npos) ? fullPath.substr(0, lastSep) : ".";
+}
+
+// ============================================================================
+// FFmpeg discovery
+// ============================================================================
+
+std::string ScreenRecorder_Linux::findFFmpegPath()
+{
+    std::string libDir = getLibraryDirectory();
+    if (libDir.empty())
+        return findInPath("ffmpeg");
+
+    for (const auto& candidate : {
+        libDir + "/ffmpeg",
+        libDir + "/../bin/ffmpeg",
+        libDir + "/../lib/ffmpeg",
+        std::string("/usr/bin/ffmpeg"),
+        std::string("/usr/local/bin/ffmpeg")})
+    {
+        std::error_code ec;
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec) && access(canonical.c_str(), X_OK) == 0)
+        {
+            SRU_LOG_INFO("FFmpeg auto-discovered at: " << canonical.string());
+            return canonical.string();
+        }
+    }
+    return findInPath("ffmpeg");
+}
+
+std::string ScreenRecorder_Linux::findFFmpegPath(const std::string& appDir)
+{
+    for (const auto& candidate : {
+        appDir + "/ffmpeg",
+        appDir + "/../lib/ffmpeg",
+        std::string("/usr/bin/ffmpeg"),
+        std::string("/usr/local/bin/ffmpeg")})
+    {
+        std::error_code ec;
+        auto canonical = std::filesystem::canonical(candidate, ec);
+        if (!ec && std::filesystem::is_regular_file(canonical, ec))
+            return canonical.string();
+    }
+    return findInPath("ffmpeg");
+}
+
+// ============================================================================
+// Audio device enumeration (PulseAudio via pactl)
+// ============================================================================
+
+std::vector<AudioDeviceInfo> ScreenRecorder_Linux::enumerateAudioDevices()
+{
+    std::vector<AudioDeviceInfo> devices;
+
+    auto parseDevices = [&](bool isInput) {
+        int pfd[2];
+        if (pipe(pfd) != 0) return;
+
+        pid_t pid = fork();
+        if (pid < 0) { close(pfd[0]); close(pfd[1]); return; }
+
+        if (pid == 0)
+        {
+            close(pfd[0]);
+            dup2(pfd[1], STDOUT_FILENO);
+            close(pfd[1]);
+            int devNull = open("/dev/null", O_WRONLY);
+            if (devNull >= 0) { dup2(devNull, STDERR_FILENO); close(devNull); }
+
+            if (isInput)
+                execlp("pactl", "pactl", "list", "sources", "short", nullptr);
+            else
+                execlp("pactl", "pactl", "list", "sinks", "short", nullptr);
+            _exit(1);
+        }
+        close(pfd[1]);
+
+        std::string output;
+        char buf[1024];
+        ssize_t n;
+        while ((n = read(pfd[0], buf, sizeof(buf) - 1)) > 0)
+        {
+            buf[n] = '\0';
+            output += buf;
+        }
+        close(pfd[0]);
+        waitpid(pid, nullptr, 0);
+
+        // Parse tab-separated: index\tname\tmodule\tsample_spec\tstate
+        std::istringstream stream(output);
+        std::string line;
+        while (std::getline(stream, line))
+        {
+            if (line.empty()) continue;
+            auto tabPos = line.find('\t');
+            if (tabPos == std::string::npos) continue;
+            auto nameStart = tabPos + 1;
+            auto nameEnd = line.find('\t', nameStart);
+            if (nameEnd == std::string::npos) nameEnd = line.size();
+
+            std::string name = line.substr(nameStart, nameEnd - nameStart);
+            if (name.empty()) continue;
+
+            if (isInput && name.find(".monitor") != std::string::npos) continue;
+            if (!isInput && name.find(".monitor") == std::string::npos) continue;
+
+            auto devType = isInput ? AudioDeviceType::Microphone : AudioDeviceType::LoopbackCapture;
+            devices.push_back({name, name, isInput, devType});
+        }
+    };
+
+    parseDevices(true);
+    parseDevices(false);
+    return devices;
+}
+
+// ============================================================================
+// GIF conversion
+// ============================================================================
+
+bool ScreenRecorder_Linux::convertToGif(const std::string& ffmpegPath,
+                                        const std::string& inputPath,
+                                        const std::string& outputPath,
+                                        int fps)
+{
+    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
+        return false;
+
+    std::string filter = "fps=" + std::to_string(fps)
+        + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
+
+    ucf::utilities::ProcessBridgeConfig config;
+    config.executablePath = ffmpegPath;
+    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filter, outputPath};
+    config.stopTimeoutMs = 120000;
+
+    auto result = ucf::utilities::IProcessBridge::run(config);
+    if (result.timedOut) { SRU_LOG_ERROR("convertToGif: timed out"); return false; }
+
+    std::error_code ec;
+    auto sz = std::filesystem::file_size(outputPath, ec);
+    return result.exitCode == 0 && !ec && sz > 0;
+}
+
+// ============================================================================
+// Construction / Destruction
 // ============================================================================
 
 ScreenRecorder_Linux::ScreenRecorder_Linux() = default;
 
 ScreenRecorder_Linux::~ScreenRecorder_Linux()
 {
-    if (m_active)
-    {
-        stop();
-    }
+    if (m_active) stop();
 }
 
-bool ScreenRecorder_Linux::isActive() const
-{
-    return m_active;
-}
-
-std::string ScreenRecorder_Linux::outputPath() const
-{
-    return m_outputPath;
-}
+bool ScreenRecorder_Linux::isActive() const { return m_active; }
+std::string ScreenRecorder_Linux::outputPath() const { return m_outputPath; }
 
 // ============================================================================
-// Recording control — Wayland (xdg-desktop-portal ScreenCast + GStreamer)
+// Recording — start (Wayland portal + GStreamer)
 // ============================================================================
 
 bool ScreenRecorder_Linux::start(const RecordingConfig& config)
 {
-    if (m_active)
-    {
-        SRU_LOG_WARN("start: already recording");
-        return false;
-    }
+    if (m_active) return false;
 
     m_outputPath = config.outputPath;
     m_ffmpegPath = config.ffmpegPath;
+    if (config.outputPath.empty()) return false;
 
-    if (config.outputPath.empty())
-    {
-        SRU_LOG_ERROR("start: outputPath is empty");
-        return false;
-    }
-
-    // Ensure output directory exists
     std::error_code ec;
     std::filesystem::create_directories(std::filesystem::path(config.outputPath).parent_path(), ec);
 
-    // Portal + GStreamer records into a temp .webm, then we convert to target format.
+    // Portal + GStreamer records into temp .webm, then convert to target format
     std::string tempWebm = std::filesystem::path(config.outputPath).parent_path()
         / ("portal_rec_" + std::to_string(getpid()) + ".webm");
     m_waylandTempPath = tempWebm;
 
-    // Write the Python portal recorder script
     std::string scriptPath = ensureRecorderScript();
-    if (scriptPath.empty())
-    {
-        SRU_LOG_ERROR("start: failed to write portal recorder script");
-        return false;
-    }
+    if (scriptPath.empty()) return false;
 
-    // Create a pipe for reading the child's stdout (protocol messages)
     int pipeFds[2];
-    if (pipe(pipeFds) != 0)
-    {
-        SRU_LOG_ERROR("start: pipe() failed: " << std::strerror(errno));
-        return false;
-    }
+    if (pipe(pipeFds) != 0) return false;
     setCloseOnExec(pipeFds[0]);
     setCloseOnExec(pipeFds[1]);
 
-    // Find python3 on PATH
     std::string python3Path = findInPath("python3");
-    if (python3Path.empty())
-    {
-        python3Path = "/usr/bin/python3";
-    }
+    if (python3Path.empty()) python3Path = "/usr/bin/python3";
 
     std::string fpsStr = std::to_string(config.fps);
 
-    // Map audio mode to string for the Python script
     std::string audioModeStr = "none";
     switch (config.audioMode)
     {
@@ -520,14 +619,12 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
     case AudioCaptureMode::MicAndSystem: audioModeStr = "mic_and_system"; break;
     }
 
-    // posix_spawn file actions: redirect stdout to pipe, stderr to /dev/null
     posix_spawn_file_actions_t fileActions;
     posix_spawn_file_actions_init(&fileActions);
     posix_spawn_file_actions_adddup2(&fileActions, pipeFds[1], STDOUT_FILENO);
     posix_spawn_file_actions_addclose(&fileActions, pipeFds[0]);
     posix_spawn_file_actions_addclose(&fileActions, pipeFds[1]);
-    posix_spawn_file_actions_addopen(&fileActions, STDERR_FILENO,
-                                     "/dev/null", O_WRONLY, 0);
+    posix_spawn_file_actions_addopen(&fileActions, STDERR_FILENO, "/dev/null", O_WRONLY, 0);
 
     std::vector<char*> argv = {
         const_cast<char*>(python3Path.c_str()),
@@ -542,16 +639,12 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
 
     pid_t pid = -1;
     int spawnRc = posix_spawn(&pid, python3Path.c_str(),
-                              &fileActions, nullptr,
-                              argv.data(), environ);
+                              &fileActions, nullptr, argv.data(), environ);
     posix_spawn_file_actions_destroy(&fileActions);
-
-    // Close write end in parent (read end kept for protocol messages)
     close(pipeFds[1]);
 
     if (spawnRc != 0)
     {
-        SRU_LOG_ERROR("start: posix_spawn failed: " << std::strerror(spawnRc));
         close(pipeFds[0]);
         return false;
     }
@@ -559,7 +652,6 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
     m_pid = pid;
     m_stdoutPipeFd = pipeFds[0];
 
-    // Store region info for post-recording FFmpeg crop
     if (config.isRegion && config.regionW > 0 && config.regionH > 0)
     {
         m_isRegion = true;
@@ -569,9 +661,9 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
         m_regionH = config.regionH;
     }
 
-    // Wait for "RECORDING" or "ERROR:" from the child (with timeout)
-    // The portal will show a permission dialog on first use, so give generous timeout.
+    // Wait for "RECORDING" or "ERROR:" (generous timeout for portal dialog)
     constexpr int kStartTimeoutMs = 30000;
+    constexpr int kPollChunkMs = 200;
 
     struct pollfd pfd{};
     pfd.fd = pipeFds[0];
@@ -580,7 +672,6 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
     std::string accumulated;
     bool started = false;
     int elapsed = 0;
-    constexpr int kPollChunkMs = 200;
 
     while (elapsed < kStartTimeoutMs)
     {
@@ -591,40 +682,19 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
         {
             char buf[256];
             ssize_t n = read(pipeFds[0], buf, sizeof(buf) - 1);
-            if (n > 0)
-            {
-                buf[n] = '\0';
-                accumulated += buf;
-            }
-            else if (n == 0)
-            {
-                // Pipe closed — child exited
-                break;
-            }
+            if (n > 0) { buf[n] = '\0'; accumulated += buf; }
+            else if (n == 0) break;
         }
         else if (ret > 0 && (pfd.revents & (POLLHUP | POLLERR)))
         {
             break;
         }
 
-        // Check for protocol messages
-        if (accumulated.find("RECORDING") != std::string::npos)
-        {
-            started = true;
-            break;
-        }
-        if (accumulated.find("ERROR:") != std::string::npos)
-        {
-            SRU_LOG_ERROR("start: portal script error: " << accumulated);
-            break;
-        }
+        if (accumulated.find("RECORDING") != std::string::npos) { started = true; break; }
+        if (accumulated.find("ERROR:") != std::string::npos) break;
 
-        // Check if child is still alive
         int status = 0;
-        if (waitpid(pid, &status, WNOHANG) != 0)
-        {
-            break;
-        }
+        if (waitpid(pid, &status, WNOHANG) != 0) break;
     }
 
     if (!started)
@@ -639,10 +709,13 @@ bool ScreenRecorder_Linux::start(const RecordingConfig& config)
     }
 
     m_active = true;
-    SRU_LOG_INFO("start: portal recorder started, pid=" << pid
-                 << " output=" << config.outputPath);
+    SRU_LOG_INFO("start: portal recorder pid=" << pid << " output=" << config.outputPath);
     return true;
 }
+
+// ============================================================================
+// Recording — stop
+// ============================================================================
 
 RecordingResult ScreenRecorder_Linux::stop()
 {
@@ -652,37 +725,22 @@ RecordingResult ScreenRecorder_Linux::stop()
     if (!m_active || m_pid <= 0)
     {
         result.errorMessage = "No active recording";
-        SRU_LOG_ERROR("stop: " << result.errorMessage);
         return result;
     }
 
-    // Send SIGTERM to the Python script; it will SIGINT gst-launch → EOS → clean file
-    SRU_LOG_INFO("stop: sending SIGTERM to pid " << m_pid);
     kill(static_cast<pid_t>(m_pid), SIGTERM);
 
-    // Wait for exit (max 8 seconds — GStreamer EOS finalization can take a moment)
     int status = 0;
     std::string killMsg;
     waitForChildWithTimeout(static_cast<pid_t>(m_pid), status, 8000, killMsg);
+    if (!killMsg.empty()) SRU_LOG_WARN("stop: " << killMsg);
 
-    if (!killMsg.empty())
-    {
-        SRU_LOG_WARN("stop: " << killMsg);
-    }
-
-    // Close the stdout pipe
-    if (m_stdoutPipeFd >= 0)
-    {
-        close(m_stdoutPipeFd);
-        m_stdoutPipeFd = -1;
-    }
-
+    if (m_stdoutPipeFd >= 0) { close(m_stdoutPipeFd); m_stdoutPipeFd = -1; }
     m_pid = -1;
     m_active = false;
 
     // Wait for file to stabilize (GStreamer may still be flushing)
-    constexpr int kMaxStabilizeMs = 3000;
-    constexpr int kPollIntervalMs = 200;
+    constexpr int kMaxStabilizeMs = 3000, kPollIntervalMs = 200;
     int waited = 0;
     std::uintmax_t lastSize = 0;
     int stableCount = 0;
@@ -690,25 +748,11 @@ RecordingResult ScreenRecorder_Linux::stop()
     {
         usleep(kPollIntervalMs * 1000);
         waited += kPollIntervalMs;
-
         std::error_code ec;
         auto sz = std::filesystem::file_size(m_waylandTempPath, ec);
-        if (ec)
-        {
-            continue;
-        }
-        if (sz > 0 && sz == lastSize)
-        {
-            ++stableCount;
-            if (stableCount >= 2)
-            {
-                break;
-            }
-        }
-        else
-        {
-            stableCount = 0;
-        }
+        if (ec) continue;
+        if (sz > 0 && sz == lastSize) { if (++stableCount >= 2) break; }
+        else stableCount = 0;
         lastSize = sz;
     }
 
@@ -716,24 +760,20 @@ RecordingResult ScreenRecorder_Linux::stop()
     if (!std::filesystem::is_regular_file(m_waylandTempPath, ec))
     {
         result.errorMessage = "Recording file not produced";
-        SRU_LOG_ERROR("stop: " << result.errorMessage);
         return result;
     }
 
-    // Verify the file has actual video content
     {
-        std::error_code ec2;
-        auto sz = std::filesystem::file_size(m_waylandTempPath, ec2);
-        if (ec2 || sz < 1024)
+        auto sz = std::filesystem::file_size(m_waylandTempPath, ec);
+        if (ec || sz < 1024)
         {
-            std::filesystem::remove(m_waylandTempPath, ec2);
+            std::filesystem::remove(m_waylandTempPath, ec);
             result.errorMessage = "Recording too short — no video frames captured";
-            SRU_LOG_ERROR("stop: " << result.errorMessage);
             return result;
         }
     }
 
-    // If the requested format is WebM and no region crop, just rename the temp file
+    // If target is .webm with no region crop, just rename
     std::string targetExt = std::filesystem::path(m_outputPath).extension().string();
     if (targetExt == ".webm" && !m_isRegion)
     {
@@ -747,65 +787,39 @@ RecordingResult ScreenRecorder_Linux::stop()
         if (std::filesystem::is_regular_file(m_outputPath, ec))
         {
             result.success = true;
-            SRU_LOG_INFO("stop: recording saved to " << m_outputPath);
             return result;
         }
         result.errorMessage = "Failed to move recording file";
-        SRU_LOG_ERROR("stop: " << result.errorMessage);
         return result;
     }
 
-    // Convert webm → target format (and apply region crop if needed)
+    // Convert webm → target format (with optional region crop)
     int cx = 0, cy = 0, cw = 0, ch = 0;
     if (m_isRegion && m_regionW > 0 && m_regionH > 0)
-    {
-        cx = m_regionX;
-        cy = m_regionY;
-        cw = m_regionW;
-        ch = m_regionH;
-    }
+    { cx = m_regionX; cy = m_regionY; cw = m_regionW; ch = m_regionH; }
 
-    bool ok = convertVideoFormat(m_ffmpegPath,
-                                 m_waylandTempPath,
-                                 m_outputPath,
-                                 cx, cy, cw, ch);
+    bool ok = convertVideoFormat(m_ffmpegPath, m_waylandTempPath, m_outputPath, cx, cy, cw, ch);
     std::filesystem::remove(m_waylandTempPath, ec);
 
-    if (ok)
-    {
-        result.success = true;
-        SRU_LOG_INFO("stop: recording converted and saved to " << m_outputPath);
-        return result;
-    }
+    if (ok) { result.success = true; return result; }
     result.errorMessage = "Format conversion from WebM failed";
-    SRU_LOG_ERROR("stop: " << result.errorMessage);
     return result;
 }
 
+// ============================================================================
+// Recording — pause / resume
+// ============================================================================
+
 bool ScreenRecorder_Linux::pause()
 {
-    // Pause GStreamer pipeline by sending SIGSTOP to the Python process group
-    if (m_pid > 0)
-    {
-        SRU_LOG_INFO("pause: sending SIGSTOP to pid " << m_pid);
-        kill(static_cast<pid_t>(m_pid), SIGSTOP);
-        return true;
-    }
-    SRU_LOG_WARN("pause: invalid pid");
-    return false;
+    if (m_pid <= 0) return false;
+    return kill(static_cast<pid_t>(m_pid), SIGSTOP) == 0;
 }
 
 bool ScreenRecorder_Linux::resume()
 {
-    // Resume GStreamer pipeline by sending SIGCONT
-    if (m_pid > 0)
-    {
-        SRU_LOG_INFO("resume: sending SIGCONT to pid " << m_pid);
-        kill(static_cast<pid_t>(m_pid), SIGCONT);
-        return true;
-    }
-    SRU_LOG_WARN("resume: invalid pid");
-    return false;
+    if (m_pid <= 0) return false;
+    return kill(static_cast<pid_t>(m_pid), SIGCONT) == 0;
 }
 
 } // namespace ucf::utilities::screenrecording

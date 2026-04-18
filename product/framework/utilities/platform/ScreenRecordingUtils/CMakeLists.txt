@@ -15,19 +15,16 @@ if (WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE
     src/ScreenRecorder_Win.h
     src/ScreenRecorder_Win.cpp
-    src/ScreenRecorderUtils_Win.cpp
     src/WasapiLoopbackCapture.h
     src/WasapiLoopbackCapture.cpp)
 elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
     src/ScreenRecorder_Mac.h
-    src/ScreenRecorder_Mac.mm
-    src/ScreenRecorderUtils_Mac.mm)
+    src/ScreenRecorder_Mac.mm)
 elseif (UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
     src/ScreenRecorder_Linux.h
-    src/ScreenRecorder_Linux.cpp
-    src/ScreenRecorderUtils_Linux.cpp)
+    src/ScreenRecorder_Linux.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
