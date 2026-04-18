@@ -276,10 +276,25 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
         return id;
     };
 
-    // ── 1) eCapture: Microphones + traditional loopback devices (Stereo Mix) ──
-    // Get DirectShow device names (these are what FFmpeg's dshow filter expects).
+    // ── 1a) Microphone devices directly from DirectShow ──
+    // FFmpeg uses -f dshow, so we MUST use DirectShow names.
+    // WASAPI and DirectShow can report completely different friendly names
+    // for the same hardware, so matching between them is unreliable.
     auto dshowNames = enumerateDShowCaptureDeviceNames();
+    for (const auto& dshowName : dshowNames)
+    {
+        AudioDeviceInfo info;
+        info.displayName = dshowName;
+        info.id = dshowName;
+        info.isInput = true;
+        info.deviceType = AudioDeviceType::Microphone;
+        devices.push_back(std::move(info));
+        SRU_LOG_DEBUG("DShow mic device: " << dshowName);
+    }
 
+    // ── 1b) eCapture: Non-mic capture devices only (Stereo Mix, loopback) ──
+    // These are used with dshow as well, but are enumerated via WASAPI
+    // because DirectShow lumps them together with mics.
     IMMDeviceCollection* pCaptureCollection = nullptr;
     hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCaptureCollection);
     if (SUCCEEDED(hr) && pCaptureCollection)
@@ -307,47 +322,30 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
                                   formFactor == Headset ||
                                   formFactor == Handset);
 
-                    // For mic devices, try to find the matching DirectShow name.
-                    // WASAPI and DirectShow may report different friendly names
-                    // for the same device (e.g. different driver strings).
-                    // FFmpeg -f dshow requires the DirectShow name.
-                    std::string deviceId = wasapiName;
-                    if (isMic)
+                    // Skip mic-type devices — already added from DirectShow above
+                    if (!isMic)
                     {
-                        for (const auto& dshowName : dshowNames)
+                        // For loopback capture devices (e.g. Stereo Mix), find
+                        // the matching DShow name since it may also differ.
+                        std::string deviceId = wasapiName;
+                        for (const auto& dn : dshowNames)
                         {
-                            // Heuristic: match by substring containment since names
-                            // typically share a common core but may differ in details.
-                            if (dshowName == wasapiName)
+                            if (dn == wasapiName ||
+                                dn.find(wasapiName) != std::string::npos ||
+                                wasapiName.find(dn) != std::string::npos)
                             {
-                                deviceId = dshowName;
+                                deviceId = dn;
                                 break;
                             }
                         }
-                        // If exact match not found, try substring matching
-                        if (deviceId == wasapiName)
-                        {
-                            for (const auto& dshowName : dshowNames)
-                            {
-                                if (dshowName.find(wasapiName) != std::string::npos ||
-                                    wasapiName.find(dshowName) != std::string::npos)
-                                {
-                                    deviceId = dshowName;
-                                    SRU_LOG_INFO("Matched WASAPI name '" << wasapiName
-                                                 << "' to DShow name '" << dshowName << "'");
-                                    break;
-                                }
-                            }
-                        }
-                    }
 
-                    AudioDeviceInfo info;
-                    info.displayName = wasapiName;
-                    info.id = deviceId;
-                    info.isInput = isMic;
-                    info.deviceType = isMic ? AudioDeviceType::Microphone
-                                            : AudioDeviceType::LoopbackCapture;
-                    devices.push_back(std::move(info));
+                        AudioDeviceInfo info;
+                        info.displayName = wasapiName;
+                        info.id = deviceId;
+                        info.isInput = false;
+                        info.deviceType = AudioDeviceType::LoopbackCapture;
+                        devices.push_back(std::move(info));
+                    }
 
                     pProps->Release();
                 }
