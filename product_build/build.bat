@@ -18,7 +18,7 @@ if /i "%PRESET%"=="-h" goto :help
 if /i "%PRESET%"=="/?" goto :help
 
 set "ROOT_DIR=%~dp0.."
-set "BUILD_DIR=%ROOT_DIR%build\%PRESET%"
+set "BUILD_DIR=%ROOT_DIR%\build\%PRESET%"
 set "GRAPHVIZ_DIR=%BUILD_DIR%\cmake_graph"
 set "GRAPHVIZ_FILE=%GRAPHVIZ_DIR%\cmake_graph.dot"
 
@@ -128,7 +128,7 @@ echo ----------------------------------------------------
 call :ensure_configured
 echo   Preset     : %PRESET%
 echo   Build Dir  : %BUILD_DIR%
-echo   Install to : %ROOT_DIR%install\%PRESET%
+echo   Install to : %ROOT_DIR%\install\%PRESET%
 echo.
 "%CMAKE%" --build --preset %PRESET% --target install
 set "EXIT_CODE=%errorlevel%"
@@ -145,7 +145,7 @@ if !errorlevel! neq 0 (
     goto :result
 )
 echo   Build Dir  : %BUILD_DIR%
-echo   Install to : %ROOT_DIR%install\%PRESET%
+echo   Install to : %ROOT_DIR%\install\%PRESET%
 echo.
 "%CMAKE%" --install "%BUILD_DIR%" --config Release
 set "EXIT_CODE=%errorlevel%"
@@ -323,7 +323,7 @@ if not "%EXIT_CODE%"=="0" (
     echo  Action    : %ACTION%
     echo  Build Dir : %BUILD_DIR%
     if /i "%ACTION%"=="install" (
-        echo  Installed : %ROOT_DIR%install\%PRESET%
+        echo  Installed : %ROOT_DIR%\install\%PRESET%
     )
     if /i "%ACTION%"=="package" (
         echo  Package   : %BUILD_DIR%

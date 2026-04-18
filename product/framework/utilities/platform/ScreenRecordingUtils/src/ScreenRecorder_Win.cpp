@@ -241,24 +241,52 @@ static std::string validateDShowDeviceId(const std::string& deviceId, const char
     return {};
 }
 
+/// Resolve a moniker name to its friendly name via DShow enumeration.
+/// FFmpeg dshow matches devices by friendly name; not all FFmpeg builds
+/// support moniker display names via MkParseDisplayName(), so we must
+/// pass the friendly name.  The CRT on Chinese Windows converts the
+/// wide command line to ACP (GBK) which preserves Chinese characters.
+static std::string monikerToFriendlyName(const std::string& moniker)
+{
+    auto devices = enumerateDShowCaptureDevices();
+    for (const auto& dev : devices)
+    {
+        if (dev.monikerName == moniker && !dev.friendlyName.empty())
+            return dev.friendlyName;
+    }
+    return {};
+}
+
 /// Format a device ID as an FFmpeg dshow audio input name.
-/// Falls back to the first available DShow device moniker if resolution fails.
+/// Always returns the escaped friendly name, because FFmpeg dshow
+/// matches by friendly name reliably across all versions.
 static std::string formatDShowAudioInput(const std::string& deviceId, const char* label)
 {
     std::string resolved = validateDShowDeviceId(deviceId, label);
     if (!resolved.empty())
     {
+        // If resolved to a moniker, look up the friendly name for FFmpeg
         if (resolved.rfind("@device", 0) == 0)
+        {
+            std::string friendly = monikerToFriendlyName(resolved);
+            if (!friendly.empty())
+            {
+                SRU_LOG_DEBUG(label << " moniker resolved to friendly name: " << friendly);
+                return escapeDshowDeviceName(friendly);
+            }
+            // Last resort: pass the moniker directly and hope FFmpeg supports it
+            SRU_LOG_WARN(label << " could not resolve moniker to friendly name, using raw moniker");
             return resolved;
+        }
         return escapeDshowDeviceName(resolved);
     }
 
-    // deviceId was empty or unresolvable â€” pick the first available DShow mic
+    // deviceId was empty or unresolvable - pick the first available DShow device
     auto devices = enumerateDShowCaptureDevices();
     if (!devices.empty())
     {
         SRU_LOG_INFO(label << " fallback to first DShow device: " << devices[0].friendlyName);
-        return devices[0].monikerName;
+        return escapeDshowDeviceName(devices[0].friendlyName);
     }
 
     SRU_LOG_WARN(label << " no DShow capture devices found");
@@ -393,10 +421,13 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
         return id;
     };
 
-    // Microphones from DirectShow (moniker names avoid non-ASCII encoding issues)
+    // Microphones from DirectShow — use friendly names as device IDs.
+    // FFmpeg dshow matches devices by friendly name, and Chinese characters
+    // survive the UTF-8 → UTF-16 (CreateProcessW) → ACP (CRT) conversion
+    // chain on Chinese Windows.
     auto dshowDevices = enumerateDShowCaptureDevices();
     for (const auto& dev : dshowDevices)
-        devices.push_back({dev.monikerName, dev.friendlyName, true, AudioDeviceType::Microphone});
+        devices.push_back({dev.friendlyName, dev.friendlyName, true, AudioDeviceType::Microphone});
 
     // Non-mic capture devices (Stereo Mix etc.) from WASAPI
     IMMDeviceCollection* pCapture = nullptr;
@@ -426,14 +457,9 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
 
                 if (!isMic)
                 {
-                    std::string deviceId = wasapiName;
-                    for (const auto& dev : dshowDevices)
-                        if (dev.friendlyName == wasapiName ||
-                            dev.friendlyName.find(wasapiName) != std::string::npos ||
-                            wasapiName.find(dev.friendlyName) != std::string::npos)
-                        { deviceId = dev.monikerName; break; }
-
-                    devices.push_back({deviceId, wasapiName, false, AudioDeviceType::LoopbackCapture});
+                    // Use the WASAPI friendly name directly as device ID.
+                    // FFmpeg dshow matches by friendly name.
+                    devices.push_back({wasapiName, wasapiName, false, AudioDeviceType::LoopbackCapture});
                 }
                 pProps->Release();
             }
