@@ -47,7 +47,7 @@ void UpgradeManager::initialize(Listener* listener)
     });
 
     // 4. Start auto-check timer
-    startAutoCheckTimer();
+    //startAutoCheckTimer();
 
     UPGRADE_LOG_INFO("UpgradeManager initialized");
 }

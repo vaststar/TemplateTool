@@ -242,14 +242,27 @@ static std::string validateDShowDeviceId(const std::string& deviceId, const char
 }
 
 /// Format a device ID as an FFmpeg dshow audio input name.
-static std::string formatDShowAudioInput(const std::string& deviceId, const char* defaultName)
+/// Falls back to the first available DShow device moniker if resolution fails.
+static std::string formatDShowAudioInput(const std::string& deviceId, const char* label)
 {
-    std::string resolved = validateDShowDeviceId(deviceId, defaultName);
-    if (resolved.empty())
-        return defaultName;
-    if (resolved.rfind("@device", 0) == 0)
-        return resolved;
-    return escapeDshowDeviceName(resolved);
+    std::string resolved = validateDShowDeviceId(deviceId, label);
+    if (!resolved.empty())
+    {
+        if (resolved.rfind("@device", 0) == 0)
+            return resolved;
+        return escapeDshowDeviceName(resolved);
+    }
+
+    // deviceId was empty or unresolvable — pick the first available DShow mic
+    auto devices = enumerateDShowCaptureDevices();
+    if (!devices.empty())
+    {
+        SRU_LOG_INFO(label << " fallback to first DShow device: " << devices[0].friendlyName);
+        return devices[0].monikerName;
+    }
+
+    SRU_LOG_WARN(label << " no DShow capture devices found");
+    return {};
 }
 
 // ============================================================================
@@ -560,6 +573,13 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         config.audioMode == AudioCaptureMode::MicAndSystem)
     {
         std::string micName = formatDShowAudioInput(config.micDevice, "Microphone");
+        if (micName.empty())
+        {
+            SRU_LOG_ERROR("start: no microphone device available");
+            if (hPipe != INVALID_HANDLE_VALUE) CloseHandle(hPipe);
+            m_loopbackCapture.reset();
+            return false;
+        }
         args.insert(args.end(), {"-thread_queue_size", "512", "-f", "dshow",
                                  "-i", "audio=" + micName});
     }
@@ -569,7 +589,6 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         if (useWasapiLoopback)
         {
             args.insert(args.end(), {
-                "-use_wallclock_as_timestamps", "1",
                 "-thread_queue_size", "512", "-f", "s16le",
                 "-ar", std::to_string(m_loopbackCapture->sampleRate()),
                 "-ac", std::to_string(m_loopbackCapture->channels()),
@@ -577,9 +596,16 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
         else
         {
-            std::string sysName = formatDShowAudioInput(config.systemAudioDevice, "Stereo Mix");
-            args.insert(args.end(), {"-thread_queue_size", "512", "-f", "dshow",
-                                     "-i", "audio=" + sysName});
+            std::string sysName = formatDShowAudioInput(config.systemAudioDevice, "SystemAudio");
+            if (sysName.empty())
+            {
+                SRU_LOG_WARN("start: no system audio DShow device, skipping system audio");
+            }
+            else
+            {
+                args.insert(args.end(), {"-thread_queue_size", "512", "-f", "dshow",
+                                         "-i", "audio=" + sysName});
+            }
         }
         if (config.audioMode == AudioCaptureMode::MicAndSystem)
             needMix = true;
