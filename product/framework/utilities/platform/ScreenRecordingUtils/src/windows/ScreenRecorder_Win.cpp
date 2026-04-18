@@ -1,9 +1,11 @@
-#include "ScreenRecorder_Win.h"
+﻿#include "ScreenRecorder_Win.h"
 
 #ifdef _WIN32
 
+#include "DShowDeviceHelper.h"
 #include "LoggerDefine.h"
 #include "WasapiLoopbackCapture.h"
+#include "WinEncodingUtils.h"
 
 #include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 #include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
@@ -20,10 +22,8 @@
 #endif
 #include <windows.h>
 #include <tlhelp32.h>
-#include <initguid.h>
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
-#include <dshow.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -34,37 +34,6 @@ namespace ucf::utilities::screenrecording {
 static inline int alignToEven(int v)
 {
     return (std::max)(2, v & ~1);
-}
-
-static std::string escapeDshowDeviceName(const std::string& name)
-{
-    std::string escaped;
-    escaped.reserve(name.size() + 8);
-    for (char c : name)
-    {
-        if (c == '\\' || c == '\'' || c == ';' || c == '=' || c == ':')
-            escaped += '\\';
-        escaped += c;
-    }
-    return escaped;
-}
-
-static std::string wideToUtf8(const wchar_t* wstr)
-{
-    if (!wstr) return {};
-    int len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
-    if (len <= 0) return {};
-    std::string result(len - 1, '\0');
-    WideCharToMultiByte(CP_UTF8, 0, wstr, -1, result.data(), len, nullptr, nullptr);
-    return result;
-}
-
-static std::vector<wchar_t> utf8ToWide(const std::string& str)
-{
-    int len = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-    std::vector<wchar_t> wide(len);
-    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, wide.data(), len);
-    return wide;
 }
 
 static std::string findInPath(const std::string& name)
@@ -89,207 +58,6 @@ static std::string findInPath(const std::string& name)
         }
         start = end + 1;
     }
-    return {};
-}
-
-// ============================================================================
-// DShow device enumeration (file-local)
-// ============================================================================
-
-struct DShowDeviceEntry
-{
-    std::string friendlyName;   // Human-readable (may contain non-ASCII)
-    std::string monikerName;    // @device:cm:{...}\... â€” used by FFmpeg
-};
-
-static std::vector<DShowDeviceEntry> enumerateDShowCaptureDevices()
-{
-    std::vector<DShowDeviceEntry> entries;
-
-    ICreateDevEnum* pDevEnum = nullptr;
-    HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC_SERVER,
-                                  IID_ICreateDevEnum, reinterpret_cast<void**>(&pDevEnum));
-    if (FAILED(hr) || !pDevEnum) return entries;
-
-    IEnumMoniker* pEnum = nullptr;
-    hr = pDevEnum->CreateClassEnumerator(CLSID_AudioInputDeviceCategory, &pEnum, 0);
-    if (hr == S_OK && pEnum)
-    {
-        IMoniker* pMoniker = nullptr;
-        while (pEnum->Next(1, &pMoniker, nullptr) == S_OK)
-        {
-            DShowDeviceEntry entry;
-
-            IPropertyBag* pPropBag = nullptr;
-            if (SUCCEEDED(pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag,
-                                                   reinterpret_cast<void**>(&pPropBag))))
-            {
-                VARIANT var;
-                VariantInit(&var);
-                if (SUCCEEDED(pPropBag->Read(L"FriendlyName", &var, nullptr))
-                    && var.vt == VT_BSTR && var.bstrVal)
-                    entry.friendlyName = wideToUtf8(var.bstrVal);
-                VariantClear(&var);
-                pPropBag->Release();
-            }
-
-            IBindCtx* pBindCtx = nullptr;
-            if (SUCCEEDED(CreateBindCtx(0, &pBindCtx)))
-            {
-                LPOLESTR pDisplayName = nullptr;
-                if (SUCCEEDED(pMoniker->GetDisplayName(pBindCtx, nullptr, &pDisplayName))
-                    && pDisplayName)
-                {
-                    entry.monikerName = wideToUtf8(pDisplayName);
-                    CoTaskMemFree(pDisplayName);
-                }
-                pBindCtx->Release();
-            }
-
-            if (entry.monikerName.empty())
-                entry.monikerName = entry.friendlyName;
-
-            if (!entry.friendlyName.empty())
-            {
-                SRU_LOG_DEBUG("DShow device: friendly='" << entry.friendlyName
-                              << "' moniker='" << entry.monikerName << "'");
-                entries.push_back(std::move(entry));
-            }
-            pMoniker->Release();
-        }
-        pEnum->Release();
-    }
-    pDevEnum->Release();
-    return entries;
-}
-
-// ============================================================================
-// DShow device ID validation (WASAPI endpoint â†’ DShow moniker)
-// ============================================================================
-
-/// Returns true for DShow-compatible identifiers (monikers or friendly names).
-/// Returns false for WASAPI endpoint IDs ({0.0.1.00000000}.{GUID}).
-static bool isDShowCompatible(const std::string& id)
-{
-    if (id.empty()) return true;
-    if (id.rfind("@device", 0) == 0) return true;
-    if (id.front() == '{' && id.find("}.") != std::string::npos) return false;
-    return true;
-}
-
-/// Resolve WASAPI endpoint ID to friendly name via IMMDevice.
-static std::string getWasapiFriendlyName(const std::string& endpointId)
-{
-    IMMDeviceEnumerator* pEnumerator = nullptr;
-    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
-                                  CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
-                                  reinterpret_cast<void**>(&pEnumerator));
-    if (FAILED(hr) || !pEnumerator) return {};
-
-    auto wideId = utf8ToWide(endpointId);
-    IMMDevice* pDevice = nullptr;
-    hr = pEnumerator->GetDevice(wideId.data(), &pDevice);
-    if (FAILED(hr) || !pDevice) { pEnumerator->Release(); return {}; }
-
-    std::string name;
-    IPropertyStore* pProps = nullptr;
-    if (SUCCEEDED(pDevice->OpenPropertyStore(STGM_READ, &pProps)) && pProps)
-    {
-        PROPVARIANT varName;
-        PropVariantInit(&varName);
-        if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName))
-            && varName.vt == VT_LPWSTR)
-            name = wideToUtf8(varName.pwszVal);
-        PropVariantClear(&varName);
-        pProps->Release();
-    }
-    pDevice->Release();
-    pEnumerator->Release();
-    return name;
-}
-
-/// Validate device ID for FFmpeg dshow. WASAPI endpoint IDs are resolved
-/// to matching DShow monikers; returns empty string if no match found.
-static std::string validateDShowDeviceId(const std::string& deviceId, const char* label)
-{
-    if (isDShowCompatible(deviceId))
-        return deviceId;
-
-    SRU_LOG_WARN(label << " device is a WASAPI endpoint ID: " << deviceId);
-
-    std::string wasapiName = getWasapiFriendlyName(deviceId);
-    if (wasapiName.empty())
-    {
-        SRU_LOG_WARN(label << " could not resolve WASAPI endpoint to friendly name");
-        return {};
-    }
-    SRU_LOG_INFO(label << " WASAPI endpoint resolves to: " << wasapiName);
-
-    auto dshowDevices = enumerateDShowCaptureDevices();
-
-    for (const auto& dev : dshowDevices)
-        if (dev.friendlyName == wasapiName && !dev.monikerName.empty())
-            return dev.monikerName;
-
-    for (const auto& dev : dshowDevices)
-        if (!dev.friendlyName.empty() && !dev.monikerName.empty() &&
-            (dev.friendlyName.find(wasapiName) != std::string::npos ||
-             wasapiName.find(dev.friendlyName) != std::string::npos))
-            return dev.monikerName;
-
-    SRU_LOG_WARN(label << " no DShow device matches '" << wasapiName << "'");
-    return {};
-}
-
-/// Resolve a moniker name to its friendly name via DShow enumeration.
-/// FFmpeg dshow matches devices by friendly name; not all FFmpeg builds
-/// support moniker display names via MkParseDisplayName(), so we must
-/// pass the friendly name.  The CRT on Chinese Windows converts the
-/// wide command line to ACP (GBK) which preserves Chinese characters.
-static std::string monikerToFriendlyName(const std::string& moniker)
-{
-    auto devices = enumerateDShowCaptureDevices();
-    for (const auto& dev : devices)
-    {
-        if (dev.monikerName == moniker && !dev.friendlyName.empty())
-            return dev.friendlyName;
-    }
-    return {};
-}
-
-/// Format a device ID as an FFmpeg dshow audio input name.
-/// Always returns the escaped friendly name, because FFmpeg dshow
-/// matches by friendly name reliably across all versions.
-static std::string formatDShowAudioInput(const std::string& deviceId, const char* label)
-{
-    std::string resolved = validateDShowDeviceId(deviceId, label);
-    if (!resolved.empty())
-    {
-        // If resolved to a moniker, look up the friendly name for FFmpeg
-        if (resolved.rfind("@device", 0) == 0)
-        {
-            std::string friendly = monikerToFriendlyName(resolved);
-            if (!friendly.empty())
-            {
-                SRU_LOG_DEBUG(label << " moniker resolved to friendly name: " << friendly);
-                return escapeDshowDeviceName(friendly);
-            }
-            // Last resort: pass the moniker directly and hope FFmpeg supports it
-            SRU_LOG_WARN(label << " could not resolve moniker to friendly name, using raw moniker");
-            return resolved;
-        }
-        return escapeDshowDeviceName(resolved);
-    }
-
-    // deviceId was empty or unresolvable - pick the first available DShow device
-    auto devices = enumerateDShowCaptureDevices();
-    if (!devices.empty())
-    {
-        SRU_LOG_INFO(label << " fallback to first DShow device: " << devices[0].friendlyName);
-        return escapeDshowDeviceName(devices[0].friendlyName);
-    }
-
-    SRU_LOG_WARN(label << " no DShow capture devices found");
     return {};
 }
 
@@ -421,9 +189,7 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
         return id;
     };
 
-    // Microphones from DirectShow — use moniker as unique device ID.
-    // formatDShowAudioInput() converts moniker → friendly name when building
-    // the FFmpeg command line, since FFmpeg dshow matches by friendly name.
+    // Microphones from DirectShow
     auto dshowDevices = enumerateDShowCaptureDevices();
     for (const auto& dev : dshowDevices)
         devices.push_back({dev.monikerName, dev.friendlyName, true, AudioDeviceType::Microphone});
@@ -456,14 +222,14 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
 
                 if (!isMic)
                 {
-                    // Find the matching DShow moniker for this WASAPI device
                     std::string deviceId = wasapiName;
                     for (const auto& dev : dshowDevices)
+                    {
                         if (dev.friendlyName == wasapiName ||
                             dev.friendlyName.find(wasapiName) != std::string::npos ||
                             wasapiName.find(dev.friendlyName) != std::string::npos)
                         { deviceId = dev.monikerName; break; }
-
+                    }
                     devices.push_back({deviceId, wasapiName, false, AudioDeviceType::LoopbackCapture});
                 }
                 pProps->Release();
@@ -542,47 +308,42 @@ ScreenRecorder_Win::~ScreenRecorder_Win()
 }
 
 // ============================================================================
-// Recording â€” start
+// Recording helpers (file-local)
 // ============================================================================
 
-bool ScreenRecorder_Win::start(const RecordingConfig& config)
+/// Set up the WASAPI loopback named pipe and probe the device format.
+/// On success, populates namedPipePath / hPipe and creates the loopback capture.
+static bool setupWasapiPipe(const RecordingConfig& config,
+                            std::unique_ptr<WasapiLoopbackCapture>& capture,
+                            std::string& namedPipePath,
+                            HANDLE& hPipe)
 {
-    if (m_active.load())
-        return false;
+    namedPipePath = "\\\\.\\pipe\\sru_loopback_" + std::to_string(GetCurrentProcessId())
+                  + "_" + std::to_string(GetTickCount64());
 
-    m_outputPath = config.outputPath;
-    if (config.ffmpegPath.empty() || config.outputPath.empty())
-        return false;
+    hPipe = CreateNamedPipeA(namedPipePath.c_str(),
+        PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
+        PIPE_TYPE_BYTE | PIPE_WAIT, 1, 65536, 0, 0, nullptr);
+    if (hPipe == INVALID_HANDLE_VALUE) return false;
 
-    // WASAPI loopback pipe (system audio via OutputDevice)
-    bool useWasapiLoopback = false;
-    std::string namedPipePath;
-    HANDLE hPipe = INVALID_HANDLE_VALUE;
-
-    bool needSystemAudio = (config.audioMode == AudioCaptureMode::SystemAudio ||
-                            config.audioMode == AudioCaptureMode::MicAndSystem);
-
-    if (needSystemAudio && config.systemAudioDeviceType == AudioDeviceType::OutputDevice)
+    capture = std::make_unique<WasapiLoopbackCapture>();
+    if (!capture->probeFormat(config.systemAudioDevice))
     {
-        namedPipePath = "\\\\.\\pipe\\sru_loopback_" + std::to_string(GetCurrentProcessId())
-                      + "_" + std::to_string(GetTickCount64());
-
-        hPipe = CreateNamedPipeA(namedPipePath.c_str(),
-            PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
-            PIPE_TYPE_BYTE | PIPE_WAIT, 1, 65536, 0, 0, nullptr);
-        if (hPipe == INVALID_HANDLE_VALUE) return false;
-
-        m_loopbackCapture = std::make_unique<WasapiLoopbackCapture>();
-        if (!m_loopbackCapture->probeFormat(config.systemAudioDevice))
-        {
-            CloseHandle(hPipe);
-            m_loopbackCapture.reset();
-            return false;
-        }
-        useWasapiLoopback = true;
+        CloseHandle(hPipe);
+        hPipe = INVALID_HANDLE_VALUE;
+        capture.reset();
+        return false;
     }
+    return true;
+}
 
-    // Build FFmpeg arguments
+/// Build the complete FFmpeg argument list from recording config.
+static std::vector<std::string> buildFFmpegArgs(
+    const RecordingConfig& config,
+    bool useWasapiLoopback,
+    const std::string& namedPipePath,
+    WasapiLoopbackCapture* loopback)
+{
     std::vector<std::string> args = {"-y",
         "-thread_queue_size", "512", "-probesize", "5M",
         "-f", "gdigrab", "-framerate", std::to_string(config.fps), "-draw_mouse", "1"};
@@ -599,6 +360,8 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
 
     // Audio inputs
     bool hasAudio = (config.audioMode != AudioCaptureMode::None);
+    bool needSystemAudio = (config.audioMode == AudioCaptureMode::SystemAudio ||
+                            config.audioMode == AudioCaptureMode::MicAndSystem);
     bool needMix = false;
 
     if (config.audioMode == AudioCaptureMode::Microphone ||
@@ -607,10 +370,8 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         std::string micName = formatDShowAudioInput(config.micDevice, "Microphone");
         if (micName.empty())
         {
-            SRU_LOG_ERROR("start: no microphone device available");
-            if (hPipe != INVALID_HANDLE_VALUE) CloseHandle(hPipe);
-            m_loopbackCapture.reset();
-            return false;
+            SRU_LOG_ERROR("buildFFmpegArgs: no microphone device available");
+            return {};
         }
         args.insert(args.end(), {"-thread_queue_size", "512", "-f", "dshow",
                                  "-i", "audio=" + micName});
@@ -618,12 +379,12 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
 
     if (needSystemAudio)
     {
-        if (useWasapiLoopback)
+        if (useWasapiLoopback && loopback)
         {
             args.insert(args.end(), {
                 "-thread_queue_size", "512", "-f", "s16le",
-                "-ar", std::to_string(m_loopbackCapture->sampleRate()),
-                "-ac", std::to_string(m_loopbackCapture->channels()),
+                "-ar", std::to_string(loopback->sampleRate()),
+                "-ac", std::to_string(loopback->channels()),
                 "-i", namedPipePath});
         }
         else
@@ -631,7 +392,7 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
             std::string sysName = formatDShowAudioInput(config.systemAudioDevice, "SystemAudio");
             if (sysName.empty())
             {
-                SRU_LOG_WARN("start: no system audio DShow device, skipping system audio");
+                SRU_LOG_WARN("buildFFmpegArgs: no system audio DShow device, skipping");
             }
             else
             {
@@ -668,6 +429,96 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
             args.insert(args.end(), {"-c:a", "aac", "-b:a", "128k"});
     }
     args.insert(args.end(), {"-flush_packets", "1", config.outputPath});
+    return args;
+}
+
+/// Wait for FFmpeg to connect to the loopback named pipe, then start capture.
+/// Returns true if the pipe was connected and capture started successfully.
+static bool connectLoopbackPipe(const RecordingConfig& config,
+                                HANDLE hPipe,
+                                ucf::utilities::IProcessBridge* process,
+                                std::unique_ptr<WasapiLoopbackCapture>& capture,
+                                intptr_t& hLoopbackRead)
+{
+    OVERLAPPED ov{};
+    ov.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+
+    bool connected = false;
+    BOOL connRes = ConnectNamedPipe(hPipe, &ov);
+    DWORD err = GetLastError();
+
+    if (connRes || err == ERROR_PIPE_CONNECTED)
+    {
+        connected = true;
+    }
+    else if (err == ERROR_IO_PENDING)
+    {
+        for (int i = 0; i < 60; ++i)
+        {
+            if (WaitForSingleObject(ov.hEvent, 500) == WAIT_OBJECT_0)
+            { connected = true; break; }
+            if (!process || !process->isRunning())
+            { CancelIoEx(hPipe, &ov); break; }
+        }
+        if (!connected) CancelIoEx(hPipe, &ov);
+    }
+
+    if (ov.hEvent) CloseHandle(ov.hEvent);
+
+    if (!connected)
+    {
+        CloseHandle(hPipe);
+        capture.reset();
+        return false;
+    }
+
+    if (!capture->start(config.systemAudioDevice, hPipe))
+    {
+        CloseHandle(hPipe);
+        capture.reset();
+        return false;
+    }
+
+    hLoopbackRead = reinterpret_cast<intptr_t>(hPipe);
+    return true;
+}
+
+// ============================================================================
+// Recording -- start
+// ============================================================================
+
+bool ScreenRecorder_Win::start(const RecordingConfig& config)
+{
+    if (m_active.load())
+        return false;
+
+    m_outputPath = config.outputPath;
+    if (config.ffmpegPath.empty() || config.outputPath.empty())
+        return false;
+
+    // WASAPI loopback pipe (system audio via OutputDevice)
+    bool useWasapiLoopback = false;
+    std::string namedPipePath;
+    HANDLE hPipe = INVALID_HANDLE_VALUE;
+
+    bool needSystemAudio = (config.audioMode == AudioCaptureMode::SystemAudio ||
+                            config.audioMode == AudioCaptureMode::MicAndSystem);
+
+    if (needSystemAudio && config.systemAudioDeviceType == AudioDeviceType::OutputDevice)
+    {
+        if (!setupWasapiPipe(config, m_loopbackCapture, namedPipePath, hPipe))
+            return false;
+        useWasapiLoopback = true;
+    }
+
+    // Build FFmpeg arguments
+    auto args = buildFFmpegArgs(config, useWasapiLoopback, namedPipePath, m_loopbackCapture.get());
+    if (args.empty())
+    {
+        if (hPipe != INVALID_HANDLE_VALUE) CloseHandle(hPipe);
+        m_loopbackCapture.reset();
+        return false;
+    }
 
     { // Log full command
         std::string cmd = config.ffmpegPath;
@@ -696,54 +547,14 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
 
     m_active.store(true);
 
-    // Wait for FFmpeg to connect to the named pipe (WASAPI loopback)
+    // Connect loopback pipe
     if (useWasapiLoopback && hPipe != INVALID_HANDLE_VALUE)
-    {
-        OVERLAPPED ov{};
-        ov.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-
-        bool connected = false;
-        BOOL connRes = ConnectNamedPipe(hPipe, &ov);
-        DWORD err = GetLastError();
-
-        if (connRes || err == ERROR_PIPE_CONNECTED)
-        {
-            connected = true;
-        }
-        else if (err == ERROR_IO_PENDING)
-        {
-            for (int i = 0; i < 60; ++i)
-            {
-                if (WaitForSingleObject(ov.hEvent, 500) == WAIT_OBJECT_0)
-                { connected = true; break; }
-                if (!m_process || !m_process->isRunning())
-                { CancelIoEx(hPipe, &ov); break; }
-            }
-            if (!connected) CancelIoEx(hPipe, &ov);
-        }
-
-        if (ov.hEvent) CloseHandle(ov.hEvent);
-
-        if (!connected)
-        {
-            CloseHandle(hPipe);
-            m_loopbackCapture.reset();
-        }
-        else if (!m_loopbackCapture->start(config.systemAudioDevice, hPipe))
-        {
-            CloseHandle(hPipe);
-            m_loopbackCapture.reset();
-        }
-        else
-        {
-            m_hLoopbackRead = reinterpret_cast<intptr_t>(hPipe);
-        }
-    }
+        connectLoopbackPipe(config, hPipe, m_process.get(), m_loopbackCapture, m_hLoopbackRead);
 
     SRU_LOG_INFO("start: ffmpeg pid=" << m_process->processPid()
                  << " output=" << config.outputPath);
 
-    // Quick sanity check â€” detect immediate FFmpeg failure
+    // Quick sanity check -- detect immediate FFmpeg failure
     for (int i = 0; i < 10; ++i)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -762,7 +573,7 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
 }
 
 // ============================================================================
-// Recording â€” stop
+// Recording -- stop
 // ============================================================================
 
 RecordingResult ScreenRecorder_Win::stop()
@@ -815,7 +626,7 @@ RecordingResult ScreenRecorder_Win::stop()
 }
 
 // ============================================================================
-// Recording â€” pause / resume
+// Recording -- pause / resume
 // ============================================================================
 
 static bool toggleFFmpegThreads(DWORD processId, bool suspend)

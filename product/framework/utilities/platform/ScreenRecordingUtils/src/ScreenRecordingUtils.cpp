@@ -6,11 +6,11 @@
 #include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 #if defined(_WIN32)
-#include "ScreenRecorder_Win.h"
+#include "windows/ScreenRecorder_Win.h"
 #elif defined(__APPLE__)
-#include "ScreenRecorder_Mac.h"
+#include "macos/ScreenRecorder_Mac.h"
 #elif defined(__linux__)
-#include "ScreenRecorder_Linux.h"
+#include "linux/ScreenRecorder_Linux.h"
 #endif
 
 namespace ucf::utilities::screenrecording {

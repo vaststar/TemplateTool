@@ -13,18 +13,21 @@ set(MODULE_SOURCE_PRIVATE
 )
 if (WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenRecorder_Win.h
-    src/ScreenRecorder_Win.cpp
-    src/WasapiLoopbackCapture.h
-    src/WasapiLoopbackCapture.cpp)
+    src/windows/ScreenRecorder_Win.h
+    src/windows/ScreenRecorder_Win.cpp
+    src/windows/WasapiLoopbackCapture.h
+    src/windows/WasapiLoopbackCapture.cpp
+    src/windows/WinEncodingUtils.h
+    src/windows/DShowDeviceHelper.h
+    src/windows/DShowDeviceHelper.cpp)
 elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenRecorder_Mac.h
-    src/ScreenRecorder_Mac.mm)
+    src/macos/ScreenRecorder_Mac.h
+    src/macos/ScreenRecorder_Mac.mm)
 elseif (UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenRecorder_Linux.h
-    src/ScreenRecorder_Linux.cpp)
+    src/linux/ScreenRecorder_Linux.h
+    src/linux/ScreenRecorder_Linux.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -61,6 +64,13 @@ set(MODULE_NON_LINK_DEPENDENCIES FFmpegRuntime)
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_BUILD_PRIVATE_DIR src)
+if (WIN32)
+    list(APPEND MODULE_BUILD_PRIVATE_DIR src/windows)
+elseif (APPLE)
+    list(APPEND MODULE_BUILD_PRIVATE_DIR src/macos)
+elseif (UNIX)
+    list(APPEND MODULE_BUILD_PRIVATE_DIR src/linux)
+endif()
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
