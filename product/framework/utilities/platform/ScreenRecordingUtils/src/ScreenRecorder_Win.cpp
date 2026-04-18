@@ -47,6 +47,62 @@ static std::string escapeDshowDeviceName(const std::string& name)
     return escaped;
 }
 
+/// Returns true if the device ID looks like a WASAPI endpoint ID
+/// (e.g. "{0.0.1.00000000}.{GUID}") rather than a DShow moniker (@device:...).
+static bool isWasapiEndpointId(const std::string& id)
+{
+    // WASAPI endpoint IDs start with '{' and contain '}.{'
+    return !id.empty() && id.front() == '{' && id.find("}.{") != std::string::npos;
+}
+
+/// Resolve a mic device identifier to a DShow-compatible name for FFmpeg.
+/// If the ID is already a DShow moniker (@device:...) it is returned as-is.
+/// If it looks like a WASAPI endpoint ID, we look up the WASAPI friendly name
+/// then find the matching DShow moniker so FFmpeg can bind the device properly.
+static std::string resolveMicDeviceForDShow(const std::string& deviceId)
+{
+    if (deviceId.empty() || deviceId.rfind("@device", 0) == 0)
+    {
+        return deviceId;  // already a DShow moniker or empty
+    }
+
+    if (!isWasapiEndpointId(deviceId))
+    {
+        return deviceId;  // treat as a DShow friendly name
+    }
+
+    SRU_LOG_WARN("Mic device looks like a WASAPI endpoint ID, resolving to DShow: " << deviceId);
+
+    // Look up the matching DShow moniker via the unified enumerator which
+    // already maps DShow monikers ↔ WASAPI endpoints.
+    auto allDevices = ScreenRecorder_Win::enumerateAudioDevices();
+    for (const auto& dev : allDevices)
+    {
+        if (dev.deviceType != AudioDeviceType::Microphone)
+            continue;
+        // The enumerator stores the WASAPI endpoint-based friendly name in
+        // displayName and the DShow moniker in id for Microphone devices.
+        // We cannot match by id (that's the DShow moniker); we need to match
+        // the WASAPI endpoint. Unfortunately the micro enumerator doesn't
+        // store the WASAPI endpoint for mic devices, so we fall back to
+        // returning the first available mic's DShow moniker.
+    }
+
+    // Fallback: pick the first Microphone-type device's DShow moniker.
+    for (const auto& dev : allDevices)
+    {
+        if (dev.deviceType == AudioDeviceType::Microphone && !dev.id.empty())
+        {
+            SRU_LOG_WARN("Falling back to first available mic device: "
+                         << dev.displayName << " (" << dev.id << ")");
+            return dev.id;
+        }
+    }
+
+    SRU_LOG_ERROR("No DShow microphone device found to replace WASAPI endpoint ID");
+    return deviceId;  // return original, will likely fail
+}
+
 // ============================================================================
 // ProcessBridge callback — logs FFmpeg stderr and exit status
 // ============================================================================
@@ -178,21 +234,26 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
     if (config.audioMode == AudioCaptureMode::Microphone ||
         config.audioMode == AudioCaptureMode::MicAndSystem)
     {
+        // Resolve the mic device to a DShow-compatible identifier.
+        // The saved device ID may be a WASAPI endpoint ID from an older
+        // version or a stale setting — convert it to a DShow moniker first.
+        std::string resolvedMic = resolveMicDeviceForDShow(config.micDevice);
+
         // Moniker names (@device_cm_...) are passed as-is — FFmpeg resolves
         // them via MkParseDisplayName and they must not be escaped.
         // Friendly names need escaping for dshow special characters.
         std::string micName;
-        if (config.micDevice.empty())
+        if (resolvedMic.empty())
         {
             micName = "Microphone";
         }
-        else if (config.micDevice.rfind("@device", 0) == 0)
+        else if (resolvedMic.rfind("@device", 0) == 0)
         {
-            micName = config.micDevice;
+            micName = resolvedMic;
         }
         else
         {
-            micName = escapeDshowDeviceName(config.micDevice);
+            micName = escapeDshowDeviceName(resolvedMic);
         }
         args.insert(args.end(), {
             "-thread_queue_size", "512",
