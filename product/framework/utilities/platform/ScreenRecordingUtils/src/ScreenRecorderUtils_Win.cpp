@@ -173,18 +173,27 @@ std::string ScreenRecorder_Win::findFFmpegPath(const std::string& appDir)
 // Audio Device Enumeration
 // ============================================================================
 
-/// Enumerate DirectShow audio capture device friendly names.
-/// These names match what FFmpeg's dshow filter expects.
-static std::vector<std::string> enumerateDShowCaptureDeviceNames()
+/// A DShow device entry with both friendly name (for UI) and moniker name (for FFmpeg).
+struct DShowDeviceEntry
 {
-    std::vector<std::string> names;
+    std::string friendlyName;   ///< Human-readable (may contain non-ASCII)
+    std::string monikerName;    ///< @device_cm_{...}\... — used by FFmpeg directly via MkParseDisplayName
+};
+
+/// Enumerate DirectShow audio capture devices.
+/// Returns both the friendly name (for display) and the moniker display name
+/// (for passing to FFmpeg). Using the moniker name avoids encoding issues when
+/// the friendly name contains non-ASCII characters (e.g. Chinese "麦克风").
+static std::vector<DShowDeviceEntry> enumerateDShowCaptureDevices()
+{
+    std::vector<DShowDeviceEntry> entries;
 
     ICreateDevEnum* pDevEnum = nullptr;
     HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC_SERVER,
                                   IID_ICreateDevEnum, reinterpret_cast<void**>(&pDevEnum));
     if (FAILED(hr) || !pDevEnum)
     {
-        return names;
+        return entries;
     }
 
     IEnumMoniker* pEnum = nullptr;
@@ -194,6 +203,9 @@ static std::vector<std::string> enumerateDShowCaptureDeviceNames()
         IMoniker* pMoniker = nullptr;
         while (pEnum->Next(1, &pMoniker, nullptr) == S_OK)
         {
+            DShowDeviceEntry entry;
+
+            // Get friendly name from property bag
             IPropertyBag* pPropBag = nullptr;
             if (SUCCEEDED(pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag,
                                                    reinterpret_cast<void**>(&pPropBag))))
@@ -206,22 +218,55 @@ static std::vector<std::string> enumerateDShowCaptureDeviceNames()
                     {
                         int len = WideCharToMultiByte(CP_UTF8, 0, var.bstrVal, -1,
                                                        nullptr, 0, nullptr, nullptr);
-                        std::string name(len - 1, '\0');
+                        entry.friendlyName.resize(len - 1);
                         WideCharToMultiByte(CP_UTF8, 0, var.bstrVal, -1,
-                                            name.data(), len, nullptr, nullptr);
-                        names.push_back(std::move(name));
+                                            entry.friendlyName.data(), len, nullptr, nullptr);
                     }
                 }
                 VariantClear(&var);
                 pPropBag->Release();
             }
+
+            // Get moniker display name — this is the canonical device identifier
+            // that FFmpeg resolves via MkParseDisplayName(), bypassing locale-
+            // dependent friendly-name matching entirely.
+            IBindCtx* pBindCtx = nullptr;
+            if (SUCCEEDED(CreateBindCtx(0, &pBindCtx)))
+            {
+                LPOLESTR pDisplayName = nullptr;
+                if (SUCCEEDED(pMoniker->GetDisplayName(pBindCtx, nullptr, &pDisplayName))
+                    && pDisplayName)
+                {
+                    int len = WideCharToMultiByte(CP_UTF8, 0, pDisplayName, -1,
+                                                   nullptr, 0, nullptr, nullptr);
+                    entry.monikerName.resize(len - 1);
+                    WideCharToMultiByte(CP_UTF8, 0, pDisplayName, -1,
+                                        entry.monikerName.data(), len, nullptr, nullptr);
+                    CoTaskMemFree(pDisplayName);
+                }
+                pBindCtx->Release();
+            }
+
+            // Fallback: if moniker display name failed, use friendly name
+            if (entry.monikerName.empty())
+            {
+                entry.monikerName = entry.friendlyName;
+            }
+
+            if (!entry.friendlyName.empty())
+            {
+                SRU_LOG_DEBUG("DShow device: friendly='" << entry.friendlyName
+                              << "' moniker='" << entry.monikerName << "'");
+                entries.push_back(std::move(entry));
+            }
+
             pMoniker->Release();
         }
         pEnum->Release();
     }
 
     pDevEnum->Release();
-    return names;
+    return entries;
 }
 
 std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
@@ -277,19 +322,22 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
     };
 
     // ── 1a) Microphone devices directly from DirectShow ──
-    // FFmpeg uses -f dshow, so we MUST use DirectShow names.
-    // WASAPI and DirectShow can report completely different friendly names
-    // for the same hardware, so matching between them is unreliable.
-    auto dshowNames = enumerateDShowCaptureDeviceNames();
-    for (const auto& dshowName : dshowNames)
+    // Use the moniker display name as the device ID. FFmpeg resolves
+    // @device_cm_... names via MkParseDisplayName() — direct COM binding
+    // that bypasses locale-dependent friendly-name string matching.
+    // This avoids encoding issues when the friendly name contains non-ASCII
+    // characters (e.g. Chinese "麦克风"), which get corrupted when FFmpeg's
+    // CRT converts the command line from wide to narrow using the system ACP
+    // (GBK on Chinese Windows) instead of UTF-8.
+    auto dshowDevices = enumerateDShowCaptureDevices();
+    for (const auto& dev : dshowDevices)
     {
         AudioDeviceInfo info;
-        info.displayName = dshowName;
-        info.id = dshowName;
+        info.displayName = dev.friendlyName;
+        info.id = dev.monikerName;
         info.isInput = true;
         info.deviceType = AudioDeviceType::Microphone;
         devices.push_back(std::move(info));
-        SRU_LOG_DEBUG("DShow mic device: " << dshowName);
     }
 
     // ── 1b) eCapture: Non-mic capture devices only (Stereo Mix, loopback) ──
@@ -326,15 +374,15 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
                     if (!isMic)
                     {
                         // For loopback capture devices (e.g. Stereo Mix), find
-                        // the matching DShow name since it may also differ.
+                        // the matching DShow moniker name for encoding safety.
                         std::string deviceId = wasapiName;
-                        for (const auto& dn : dshowNames)
+                        for (const auto& dev : dshowDevices)
                         {
-                            if (dn == wasapiName ||
-                                dn.find(wasapiName) != std::string::npos ||
-                                wasapiName.find(dn) != std::string::npos)
+                            if (dev.friendlyName == wasapiName ||
+                                dev.friendlyName.find(wasapiName) != std::string::npos ||
+                                wasapiName.find(dev.friendlyName) != std::string::npos)
                             {
-                                deviceId = dn;
+                                deviceId = dev.monikerName;
                                 break;
                             }
                         }

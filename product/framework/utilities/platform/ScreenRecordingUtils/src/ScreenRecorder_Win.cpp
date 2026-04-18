@@ -178,8 +178,22 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
     if (config.audioMode == AudioCaptureMode::Microphone ||
         config.audioMode == AudioCaptureMode::MicAndSystem)
     {
-        std::string micName = config.micDevice.empty()
-            ? "Microphone" : escapeDshowDeviceName(config.micDevice);
+        // Moniker names (@device_cm_...) are passed as-is — FFmpeg resolves
+        // them via MkParseDisplayName and they must not be escaped.
+        // Friendly names need escaping for dshow special characters.
+        std::string micName;
+        if (config.micDevice.empty())
+        {
+            micName = "Microphone";
+        }
+        else if (config.micDevice.rfind("@device", 0) == 0)
+        {
+            micName = config.micDevice;
+        }
+        else
+        {
+            micName = escapeDshowDeviceName(config.micDevice);
+        }
         args.insert(args.end(), {
             "-thread_queue_size", "512",
             "-f", "dshow",
@@ -200,8 +214,19 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
         }
         else
         {
-            std::string sysName = config.systemAudioDevice.empty()
-                ? "Stereo Mix" : escapeDshowDeviceName(config.systemAudioDevice);
+            std::string sysName;
+            if (config.systemAudioDevice.empty())
+            {
+                sysName = "Stereo Mix";
+            }
+            else if (config.systemAudioDevice.rfind("@device", 0) == 0)
+            {
+                sysName = config.systemAudioDevice;
+            }
+            else
+            {
+                sysName = escapeDshowDeviceName(config.systemAudioDevice);
+            }
             args.insert(args.end(), {
                 "-thread_queue_size", "512",
                 "-f", "dshow",
