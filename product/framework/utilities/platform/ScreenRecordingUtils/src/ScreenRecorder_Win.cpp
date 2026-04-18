@@ -349,6 +349,29 @@ bool ScreenRecorder_Win::start(const RecordingConfig& config)
 
     SRU_LOG_INFO("start: started ffmpeg pid=" << m_process->processPid()
                  << " output=" << config.outputPath);
+
+    // Brief sanity check: if FFmpeg fails immediately (e.g. dshow device not found),
+    // it exits within the first ~500ms. Detect that early instead of silently failing.
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (m_process && !m_process->isRunning())
+    {
+        SRU_LOG_ERROR("start: FFmpeg exited immediately after launch — "
+                      "audio device may not exist or name may not match DirectShow");
+        m_active.store(false);
+        m_process.reset();
+        if (m_loopbackCapture)
+        {
+            m_loopbackCapture->stop();
+            m_loopbackCapture.reset();
+        }
+        if (m_hLoopbackRead)
+        {
+            CloseHandle(reinterpret_cast<HANDLE>(m_hLoopbackRead));
+            m_hLoopbackRead = 0;
+        }
+        return false;
+    }
+
     return true;
 }
 

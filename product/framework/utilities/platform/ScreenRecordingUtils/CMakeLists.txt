@@ -43,6 +43,7 @@ if (WIN32)
     list(APPEND MODULE_DEPENDENCIES_PRIVATE
         ole32
         uuid
+        strmiids
     )
 elseif (APPLE)
     find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)

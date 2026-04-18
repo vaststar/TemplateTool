@@ -18,6 +18,7 @@
 #include <initguid.h>
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
+#include <dshow.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -172,6 +173,57 @@ std::string ScreenRecorder_Win::findFFmpegPath(const std::string& appDir)
 // Audio Device Enumeration
 // ============================================================================
 
+/// Enumerate DirectShow audio capture device friendly names.
+/// These names match what FFmpeg's dshow filter expects.
+static std::vector<std::string> enumerateDShowCaptureDeviceNames()
+{
+    std::vector<std::string> names;
+
+    ICreateDevEnum* pDevEnum = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC_SERVER,
+                                  IID_ICreateDevEnum, reinterpret_cast<void**>(&pDevEnum));
+    if (FAILED(hr) || !pDevEnum)
+    {
+        return names;
+    }
+
+    IEnumMoniker* pEnum = nullptr;
+    hr = pDevEnum->CreateClassEnumerator(CLSID_AudioInputDeviceCategory, &pEnum, 0);
+    if (hr == S_OK && pEnum)
+    {
+        IMoniker* pMoniker = nullptr;
+        while (pEnum->Next(1, &pMoniker, nullptr) == S_OK)
+        {
+            IPropertyBag* pPropBag = nullptr;
+            if (SUCCEEDED(pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag,
+                                                   reinterpret_cast<void**>(&pPropBag))))
+            {
+                VARIANT var;
+                VariantInit(&var);
+                if (SUCCEEDED(pPropBag->Read(L"FriendlyName", &var, nullptr)))
+                {
+                    if (var.vt == VT_BSTR && var.bstrVal)
+                    {
+                        int len = WideCharToMultiByte(CP_UTF8, 0, var.bstrVal, -1,
+                                                       nullptr, 0, nullptr, nullptr);
+                        std::string name(len - 1, '\0');
+                        WideCharToMultiByte(CP_UTF8, 0, var.bstrVal, -1,
+                                            name.data(), len, nullptr, nullptr);
+                        names.push_back(std::move(name));
+                    }
+                }
+                VariantClear(&var);
+                pPropBag->Release();
+            }
+            pMoniker->Release();
+        }
+        pEnum->Release();
+    }
+
+    pDevEnum->Release();
+    return names;
+}
+
 std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
 {
     std::vector<AudioDeviceInfo> devices;
@@ -225,6 +277,9 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
     };
 
     // ── 1) eCapture: Microphones + traditional loopback devices (Stereo Mix) ──
+    // Get DirectShow device names (these are what FFmpeg's dshow filter expects).
+    auto dshowNames = enumerateDShowCaptureDeviceNames();
+
     IMMDeviceCollection* pCaptureCollection = nullptr;
     hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCaptureCollection);
     if (SUCCEEDED(hr) && pCaptureCollection)
@@ -240,7 +295,7 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
                 pDevice->OpenPropertyStore(STGM_READ, &pProps);
                 if (pProps)
                 {
-                    std::string name = getDeviceName(pProps);
+                    std::string wasapiName = getDeviceName(pProps);
 
                     PROPVARIANT varFormFactor;
                     PropVariantInit(&varFormFactor);
@@ -252,9 +307,43 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
                                   formFactor == Headset ||
                                   formFactor == Handset);
 
+                    // For mic devices, try to find the matching DirectShow name.
+                    // WASAPI and DirectShow may report different friendly names
+                    // for the same device (e.g. different driver strings).
+                    // FFmpeg -f dshow requires the DirectShow name.
+                    std::string deviceId = wasapiName;
+                    if (isMic)
+                    {
+                        for (const auto& dshowName : dshowNames)
+                        {
+                            // Heuristic: match by substring containment since names
+                            // typically share a common core but may differ in details.
+                            if (dshowName == wasapiName)
+                            {
+                                deviceId = dshowName;
+                                break;
+                            }
+                        }
+                        // If exact match not found, try substring matching
+                        if (deviceId == wasapiName)
+                        {
+                            for (const auto& dshowName : dshowNames)
+                            {
+                                if (dshowName.find(wasapiName) != std::string::npos ||
+                                    wasapiName.find(dshowName) != std::string::npos)
+                                {
+                                    deviceId = dshowName;
+                                    SRU_LOG_INFO("Matched WASAPI name '" << wasapiName
+                                                 << "' to DShow name '" << dshowName << "'");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     AudioDeviceInfo info;
-                    info.displayName = name;
-                    info.id = name;
+                    info.displayName = wasapiName;
+                    info.id = deviceId;
                     info.isInput = isMic;
                     info.deviceType = isMic ? AudioDeviceType::Microphone
                                             : AudioDeviceType::LoopbackCapture;
