@@ -35,10 +35,18 @@ public:
     [[nodiscard]] bool isActive() const override;
     [[nodiscard]] std::string outputPath() const override;
 
+    /// A DShow device entry with both friendly name (for UI) and moniker name (for FFmpeg).
+    struct DShowDeviceEntry
+    {
+        std::string friendlyName;   ///< Human-readable (may contain non-ASCII)
+        std::string monikerName;    ///< @device:cm:{...}\... — used by FFmpeg via MkParseDisplayName
+    };
+
     // ── Static utilities (called from ScreenRecordingUtils) ──
     static std::string getLibraryDirectory();
     static std::string findFFmpegPath();
     static std::string findFFmpegPath(const std::string& appDir);
+    static std::vector<DShowDeviceEntry> enumerateDShowCaptureDevices();
     static std::vector<AudioDeviceInfo> enumerateAudioDevices();
     static bool convertToGif(const std::string& ffmpegPath,
                              const std::string& inputPath,

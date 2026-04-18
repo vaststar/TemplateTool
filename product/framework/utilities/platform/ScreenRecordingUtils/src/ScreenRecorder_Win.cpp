@@ -18,6 +18,8 @@
 #endif
 #include <windows.h>
 #include <tlhelp32.h>
+#include <mmdeviceapi.h>
+#include <functiondiscoverykeys_devpkey.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -62,22 +64,105 @@ static bool isDShowCompatible(const std::string& id)
     return true;
 }
 
-/// Validate a DShow device identifier for FFmpeg.
+/// Look up the WASAPI friendly name for an endpoint ID via IMMDevice.
+/// Returns empty string on failure.
+static std::string getWasapiFriendlyName(const std::string& endpointId)
+{
+    IMMDeviceEnumerator* pEnumerator = nullptr;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+                                  CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                                  reinterpret_cast<void**>(&pEnumerator));
+    if (FAILED(hr) || !pEnumerator) return {};
+
+    // Convert UTF-8 endpoint ID to wide string
+    int wideLen = MultiByteToWideChar(CP_UTF8, 0, endpointId.c_str(), -1, nullptr, 0);
+    std::vector<wchar_t> wideId(wideLen);
+    MultiByteToWideChar(CP_UTF8, 0, endpointId.c_str(), -1, wideId.data(), wideLen);
+
+    IMMDevice* pDevice = nullptr;
+    hr = pEnumerator->GetDevice(wideId.data(), &pDevice);
+    if (FAILED(hr) || !pDevice)
+    {
+        pEnumerator->Release();
+        return {};
+    }
+
+    IPropertyStore* pProps = nullptr;
+    std::string name;
+    if (SUCCEEDED(pDevice->OpenPropertyStore(STGM_READ, &pProps)) && pProps)
+    {
+        PROPVARIANT varName;
+        PropVariantInit(&varName);
+        if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName))
+            && varName.vt == VT_LPWSTR)
+        {
+            int len = WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1,
+                                           nullptr, 0, nullptr, nullptr);
+            name.resize(len - 1);
+            WideCharToMultiByte(CP_UTF8, 0, varName.pwszVal, -1,
+                                name.data(), len, nullptr, nullptr);
+        }
+        PropVariantClear(&varName);
+        pProps->Release();
+    }
+
+    pDevice->Release();
+    pEnumerator->Release();
+    return name;
+}
+
+/// Validate and resolve a DShow device identifier for FFmpeg.
 /// - DShow moniker (@device:...) -> returned as-is
 /// - Plain friendly name -> returned as-is (will be escaped by caller)
-/// - WASAPI endpoint ID -> cleared (caller should use default device)
-///
-/// Returns empty string if the ID is not DShow-compatible, which signals
-/// the caller to fall back to the default device name.
+/// - WASAPI endpoint ID -> resolved to the matching DShow moniker via
+///   WASAPI friendly name cross-reference; empty if no match found.
 static std::string validateDShowDeviceId(const std::string& deviceId, const char* label)
 {
     if (isDShowCompatible(deviceId))
     {
         return deviceId;
     }
-    SRU_LOG_WARN(label << " device has a WASAPI endpoint ID that is not "
-                 "compatible with FFmpeg dshow, falling back to default: " << deviceId);
-    return {};  // empty -> caller uses default
+
+    SRU_LOG_WARN(label << " device is a WASAPI endpoint ID (not DShow-compatible): "
+                 << deviceId);
+
+    // Step 1: Resolve WASAPI endpoint ID -> friendly name
+    std::string wasapiName = getWasapiFriendlyName(deviceId);
+    if (wasapiName.empty())
+    {
+        SRU_LOG_WARN(label << " could not resolve WASAPI endpoint to friendly name");
+        return {};  // caller will use default
+    }
+
+    SRU_LOG_INFO(label << " WASAPI endpoint resolves to: " << wasapiName);
+
+    // Step 2: Find matching DShow device by friendly name -> return moniker
+    auto dshowDevices = ScreenRecorder_Win::enumerateDShowCaptureDevices();
+    for (const auto& dev : dshowDevices)
+    {
+        if (dev.friendlyName == wasapiName && !dev.monikerName.empty())
+        {
+            SRU_LOG_INFO(label << " matched DShow moniker: " << dev.monikerName);
+            return dev.monikerName;
+        }
+    }
+
+    // Step 3: Substring match as fallback (names may differ slightly)
+    for (const auto& dev : dshowDevices)
+    {
+        if (!dev.friendlyName.empty() && !dev.monikerName.empty() &&
+            (dev.friendlyName.find(wasapiName) != std::string::npos ||
+             wasapiName.find(dev.friendlyName) != std::string::npos))
+        {
+            SRU_LOG_INFO(label << " fuzzy-matched DShow moniker: " << dev.monikerName
+                         << " (DShow name: " << dev.friendlyName << ")");
+            return dev.monikerName;
+        }
+    }
+
+    SRU_LOG_WARN(label << " no DShow device matches WASAPI name '" << wasapiName
+                 << "', falling back to default");
+    return {};  // caller will use default
 }
 
 // ============================================================================

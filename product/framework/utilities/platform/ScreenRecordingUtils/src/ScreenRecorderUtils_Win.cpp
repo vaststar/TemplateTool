@@ -173,20 +173,13 @@ std::string ScreenRecorder_Win::findFFmpegPath(const std::string& appDir)
 // Audio Device Enumeration
 // ============================================================================
 
-/// A DShow device entry with both friendly name (for UI) and moniker name (for FFmpeg).
-struct DShowDeviceEntry
-{
-    std::string friendlyName;   ///< Human-readable (may contain non-ASCII)
-    std::string monikerName;    ///< @device_cm_{...}\... — used by FFmpeg directly via MkParseDisplayName
-};
-
 /// Enumerate DirectShow audio capture devices.
 /// Returns both the friendly name (for display) and the moniker display name
 /// (for passing to FFmpeg). Using the moniker name avoids encoding issues when
 /// the friendly name contains non-ASCII characters (e.g. Chinese "麦克风").
-static std::vector<DShowDeviceEntry> enumerateDShowCaptureDevices()
+std::vector<ScreenRecorder_Win::DShowDeviceEntry> ScreenRecorder_Win::enumerateDShowCaptureDevices()
 {
-    std::vector<DShowDeviceEntry> entries;
+    std::vector<ScreenRecorder_Win::DShowDeviceEntry> entries;
 
     ICreateDevEnum* pDevEnum = nullptr;
     HRESULT hr = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC_SERVER,
@@ -203,7 +196,7 @@ static std::vector<DShowDeviceEntry> enumerateDShowCaptureDevices()
         IMoniker* pMoniker = nullptr;
         while (pEnum->Next(1, &pMoniker, nullptr) == S_OK)
         {
-            DShowDeviceEntry entry;
+            ScreenRecorder_Win::DShowDeviceEntry entry;
 
             // Get friendly name from property bag
             IPropertyBag* pPropBag = nullptr;
