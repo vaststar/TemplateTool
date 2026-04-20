@@ -149,30 +149,25 @@ Item {
                 border.width: 1
                 radius: 4
 
-                TreeView {
+                UTTreeView {
                     id: jsonTreeView
                     anchors.fill: parent
-                    anchors.margins: 4
                     model: controller.treeModel
-                    clip: true
-                    selectionModel: ItemSelectionModel {}
+
+                    delegate: JsonTreeDelegate {
+                        treeView: jsonTreeView.treeView
+                    }
 
                     property bool _initialExpanded: false
 
-                    delegate: JsonTreeDelegate {
-                        treeView: jsonTreeView
-                    }
-
-                    // Expand root + first level only on initial load
-                    onRowsChanged: {
-                        if (!_initialExpanded && rows > 0) {
+                    treeView.onRowsChanged: {
+                        if (!_initialExpanded && treeView.rows > 0) {
                             _initialExpanded = true
-                            expandRecursively(0, 2)
+                            treeView.expandRecursively(0, 2)
                         }
                     }
 
-                    // Reset flag when model changes (new JSON parsed)
-                    onModelChanged: {
+                    treeView.onModelChanged: {
                         _initialExpanded = false
                     }
                 }
