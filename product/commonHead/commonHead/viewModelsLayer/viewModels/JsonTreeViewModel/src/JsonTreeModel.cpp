@@ -2,6 +2,7 @@
 
 #include <ucf/Utilities/JsonUtils/JsonValue.h>
 
+#include <functional>
 #include <sstream>
 
 namespace commonHead::viewModels::model {
