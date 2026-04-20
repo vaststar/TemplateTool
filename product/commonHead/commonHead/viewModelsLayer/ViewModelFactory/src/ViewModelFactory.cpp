@@ -10,6 +10,7 @@
 #include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
 #include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
+#include <commonHead/viewModels/JsonTreeViewModel/IJsonTreeViewModel.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 #include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
@@ -80,6 +81,11 @@ std::shared_ptr<commonHead::viewModels::IStabilityViewModel> ViewModelFactory::c
 std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::createToolsViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IToolsViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> ViewModelFactory::createJsonTreeViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IJsonTreeViewModel>();
 }
 
 std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory::createNetworkProxyViewModelInstance() const

@@ -54,6 +54,7 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/common/include/ToolsTreeModel.h
     PageViews/ToolsPage/textprocess/include/Base64ToolController.h
     PageViews/ToolsPage/textprocess/include/JsonToolController.h
+    PageViews/ToolsPage/textprocess/include/JsonTreeItemModel.h
     PageViews/ToolsPage/textprocess/include/TimestampToolController.h
     PageViews/ToolsPage/generators/include/UuidToolController.h
     PageViews/ToolsPage/network/include/NetworkProxyController.h
@@ -63,6 +64,7 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/common/src/ToolsTreeModel.cpp
     PageViews/ToolsPage/textprocess/src/Base64ToolController.cpp
     PageViews/ToolsPage/textprocess/src/JsonToolController.cpp
+    PageViews/ToolsPage/textprocess/src/JsonTreeItemModel.cpp
     PageViews/ToolsPage/textprocess/src/TimestampToolController.cpp
     PageViews/ToolsPage/generators/src/UuidToolController.cpp
     PageViews/ToolsPage/network/src/NetworkProxyController.cpp
@@ -148,6 +150,7 @@ set(MODULE_QML_TARGET_FILES
     PageViews/ToolsPage/common/qml/ToolsNavPanel.qml
     PageViews/ToolsPage/textprocess/qml/Base64Panel.qml
     PageViews/ToolsPage/textprocess/qml/JsonPanel.qml
+    PageViews/ToolsPage/textprocess/qml/JsonTreeDelegate.qml
     PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml
     PageViews/ToolsPage/generators/qml/UuidPanel.qml
     PageViews/ToolsPage/network/qml/NetworkProxyPanel.qml

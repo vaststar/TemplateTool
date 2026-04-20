@@ -137,16 +137,22 @@
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="92"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
+        <source>Tree View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="96"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="119"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="124"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>

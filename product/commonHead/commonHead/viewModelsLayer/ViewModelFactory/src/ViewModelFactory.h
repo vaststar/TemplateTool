@@ -30,6 +30,7 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> createJsonTreeViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> createNetworkProxyViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> createScreenshotViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const override;

@@ -89,6 +89,10 @@ Item {
                 onClicked: controller.validate()
             }
             UTButton {
+                text: qsTr("Tree View")
+                onClicked: controller.parseTree()
+            }
+            UTButton {
                 text: qsTr("Clear")
                 onClicked: controller.clearAll()
             }
@@ -110,25 +114,67 @@ Item {
 
             RowLayout {
                 UTText {
-                    text: qsTr("Output")
+                    text: controller.treeViewMode ? qsTr("Tree View") : qsTr("Output")
                     fontEnum: UIFontToken.Body_Text
                     colorEnum: UIColorToken.Content_Secondary_Text
                 }
                 Item { Layout.fillWidth: true }
                 UTButton {
+                    visible: !controller.treeViewMode
                     text: qsTr("Copy")
                     onClicked: controller.copyOutput()
                 }
             }
 
+            // Text output (format/minify/validate results)
             UTScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                visible: !controller.treeViewMode
 
                 UTTextArea {
                     id: outputArea
                     text: controller.outputText
                     readOnly: true
+                }
+            }
+
+            // Tree view output
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: controller.treeViewMode
+                color: jsonPanel._inputBg
+                border.color: jsonPanel._inputBorder
+                border.width: 1
+                radius: 4
+
+                TreeView {
+                    id: jsonTreeView
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    model: controller.treeModel
+                    clip: true
+                    selectionModel: ItemSelectionModel {}
+
+                    property bool _initialExpanded: false
+
+                    delegate: JsonTreeDelegate {
+                        treeView: jsonTreeView
+                    }
+
+                    // Expand root + first level only on initial load
+                    onRowsChanged: {
+                        if (!_initialExpanded && rows > 0) {
+                            _initialExpanded = true
+                            expandRecursively(0, 2)
+                        }
+                    }
+
+                    // Reset flag when model changes (new JSON parsed)
+                    onModelChanged: {
+                        _initialExpanded = false
+                    }
                 }
             }
         }

@@ -103,52 +103,58 @@
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="27"/>
         <source>JSON Formatter</source>
-        <translation>JSON 格式化</translation>
+        <translation type="unfinished">JSON 格式化</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="37"/>
         <source>Indent spaces:</source>
-        <translation>缩进空格数：</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="57"/>
         <source>Input JSON</source>
-        <translation>输入 JSON</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="70"/>
         <source>Enter JSON here...</source>
-        <translation>在此输入 JSON...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="80"/>
         <source>Format</source>
-        <translation>格式化</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="84"/>
         <source>Minify</source>
-        <translation>压缩</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="88"/>
         <source>Validate</source>
-        <translation>校验</translation>
+        <translation type="unfinished">校验</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="92"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
+        <source>Tree View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="96"/>
         <source>Clear</source>
-        <translation>清空</translation>
+        <translation type="unfinished">清空</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
         <source>Output</source>
-        <translation>输出</translation>
+        <translation type="unfinished">输出</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="119"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="124"/>
         <source>Copy</source>
-        <translation>复制</translation>
+        <translation type="unfinished">复制</translation>
     </message>
 </context>
 <context>

@@ -16,6 +16,7 @@ set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/JsonTreeViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/RecordingViewModel/include
@@ -39,6 +40,8 @@ set(MODULE_HEADER_FILES #for include and install header
     StabilityViewModel/include/commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h
     ToolsViewModel/include/commonHead/viewModels/ToolsViewModel/IToolsModel.h
     ToolsViewModel/include/commonHead/viewModels/ToolsViewModel/IToolsViewModel.h
+    JsonTreeViewModel/include/commonHead/viewModels/JsonTreeViewModel/IJsonTreeModel.h
+    JsonTreeViewModel/include/commonHead/viewModels/JsonTreeViewModel/IJsonTreeViewModel.h
     NetworkProxyViewModel/include/commonHead/viewModels/NetworkProxyViewModel/NetworkProxyTypes.h
     NetworkProxyViewModel/include/commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h
     ScreenshotViewModel/include/commonHead/viewModels/ScreenshotViewModel/IScreenshotModel.h
@@ -75,6 +78,10 @@ set(MODULE_SOURCE_PRIVATE
     ToolsViewModel/src/ToolsModel.cpp
     ToolsViewModel/src/ToolsViewModel.h
     ToolsViewModel/src/ToolsViewModel.cpp
+    JsonTreeViewModel/src/JsonTreeModel.h
+    JsonTreeViewModel/src/JsonTreeModel.cpp
+    JsonTreeViewModel/src/JsonTreeViewModel.h
+    JsonTreeViewModel/src/JsonTreeViewModel.cpp
     NetworkProxyViewModel/src/NetworkProxyViewModel.h
     NetworkProxyViewModel/src/NetworkProxyViewModel.cpp
     ScreenshotViewModel/src/ScreenshotViewModel.h
@@ -128,6 +135,7 @@ set(MODULE_BUILD_PRIVATE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/JsonTreeViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/RecordingViewModel/src
