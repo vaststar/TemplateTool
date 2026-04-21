@@ -8,7 +8,6 @@ set(CMAKE_IMPORT_FILE_VERSION 1)
 # Import target "opencv_world" for configuration "Release"
 set_property(TARGET opencv_world APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(opencv_world PROPERTIES
-  IMPORTED_LINK_DEPENDENT_LIBRARIES_RELEASE "openjp2"
   IMPORTED_LOCATION_RELEASE "${_IMPORT_PREFIX}/lib/libopencv_world.so.4.13.0"
   IMPORTED_SONAME_RELEASE "libopencv_world.so.413"
   )

@@ -249,14 +249,13 @@ jobs:
         run: |
           mkdir -p merged
 
-          # Windows
+          # Windows — artifact contains windows/x64/{ffmpeg.exe,ffprobe.exe}
           if [ -d "downloads/ffmpeg-windows-x64" ]; then
-            mkdir -p merged/windows/x64
-            cp -r downloads/ffmpeg-windows-x64/* merged/windows/x64/
+            cp -r downloads/ffmpeg-windows-x64/windows merged/
             echo "✓ Windows x64"
           fi
 
-          # macOS
+          # macOS — artifacts are flat (ffmpeg, ffprobe) without subdirs
           for dir in intel arm; do
             if [ -d "downloads/ffmpeg-macos-$dir" ]; then
               mkdir -p merged/macosx/$dir
@@ -265,7 +264,7 @@ jobs:
             fi
           done
 
-          # Linux
+          # Linux — artifact contains linux/x64/{ffmpeg,ffprobe}
           if [ -d "downloads/ffmpeg-linux-x64" ]; then
             cp -r downloads/ffmpeg-linux-x64/linux merged/
             echo "✓ Linux x64"

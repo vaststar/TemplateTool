@@ -10,12 +10,12 @@ These pre-built libraries are automatically compiled via GitHub Actions:
 
 - **Workflow file**: `.github/workflows/build-libcurl-all-platforms.yml`
 - **Source code**: https://github.com/curl/curl
-- **Default version**: 8.18.0
+- **Default version**: 8.19.0
 
 ### Triggering a Build
 
 On the GitHub repository page, go to **Actions** → **Build libcurl All Platforms** → **Run workflow**, where you can specify:
-- `curl_version`: Version to build (e.g., 8.18.0)
+- `curl_version`: Version to build (e.g., 8.19.0)
 - `platforms`: Platforms to build (windows,macos,ios,android,linux)
 
 ## Supported Platforms
@@ -127,7 +127,7 @@ Use the XCFramework. Drag it into your Xcode project and it will automatically h
 
 | Version | Build Date | Notes |
 |---------|------------|-------|
-| 8.18.0 | - | Current version |
+| 8.19.0 | - | Current version |
 
 ## Related Links
 

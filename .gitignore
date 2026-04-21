@@ -18,3 +18,5 @@ product/framework/thirdparty/opencv/opencv/windows/*/vc17/bin/opencv_world4130d.
 !product/framework/thirdparty/opencv/opencv/windows/*/vc17/bin/opencv_world4130d.dll.zip
 product/framework/thirdparty/ffmpeg/ffmpeg/windows/x64/ffmpeg.exe
 product/framework/thirdparty/ffmpeg/ffmpeg/windows/x64/ffprobe.exe
+product/framework/thirdparty/ffmpeg/ffmpeg/linux/x64/ffmpeg
+product/framework/thirdparty/ffmpeg/ffmpeg/linux/x64/ffprobe
