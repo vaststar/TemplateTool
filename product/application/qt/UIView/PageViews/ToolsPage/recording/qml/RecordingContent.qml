@@ -361,7 +361,7 @@ FocusScope {
             Layout.fillHeight: true
 
             folderUrl: controller.recordingsFolderUrl
-            nameFilters: ["*.mp4", "*.webm", "*.mov", "*.mkv", "*.avi"]
+            nameFilters: ["*.mp4", "*.webm", "*.mov", "*.mkv", "*.avi", "*.gif"]
 
             gridThumbnail: videoGridThumbnail
             detailIcon: videoDetailIcon

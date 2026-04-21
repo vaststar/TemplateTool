@@ -1,0 +1,193 @@
+name: Release All Platforms
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v45.11.0). Leave empty to build without releasing.'
+        required: false
+        type: string
+
+env:
+  QT_VERSION: '6.8.3'
+
+jobs:
+  # ============================================================================
+  # Build & Package — one job per platform
+  # ============================================================================
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            preset: windows-msvc-release
+            platform_label: Windows
+            build_cmd: build.bat
+            qt_modules: 'qtmultimedia'
+          - os: ubuntu-latest
+            preset: linux-release
+            platform_label: Linux
+            build_cmd: ./build.sh
+            qt_modules: 'qtmultimedia'
+          - os: macos-latest
+            preset: macos-release
+            platform_label: macOS
+            build_cmd: ./build.sh
+            qt_modules: 'qtmultimedia'
+
+    runs-on: ${{ matrix.os }}
+    name: Build (${{ matrix.platform_label }})
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ── Install Qt ────────────────────────────────────────────────────────
+      - name: Install Qt ${{ env.QT_VERSION }}
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          modules: ${{ matrix.qt_modules }}
+          cache: true
+
+      # ── Platform-specific toolchain setup ─────────────────────────────────
+      - name: Setup MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Install Ninja (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y \
+            libgl1-mesa-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-0 \
+            libxcb-xinerama0 \
+            libxcb-cursor0
+
+      # ── Build & Package ───────────────────────────────────────────────────
+      - name: Build & Package
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cmd //c "build.bat ${{ matrix.preset }} package"
+          else
+            chmod +x build.sh
+            ./build.sh ${{ matrix.preset }} package
+          fi
+
+      # ── Run Tests ─────────────────────────────────────────────────────────
+      - name: Run Tests
+        shell: bash
+        run: |
+          cd build/${{ matrix.preset }}
+          ctest --preset ${{ matrix.preset }} || true
+
+      # ── Locate packages & compute SHA-256 ─────────────────────────────────
+      - name: Locate packages and compute checksums
+        id: pkg
+        shell: bash
+        run: |
+          BUILD_DIR="build/${{ matrix.preset }}"
+
+          # Collect all package files (zip, tar.gz, deb, dmg)
+          PACKAGES=$(find "$BUILD_DIR" -maxdepth 1 \
+            \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.dmg" \) \
+            ! -name "*.sha256" | sort)
+
+          if [[ -z "$PACKAGES" ]]; then
+            echo "::error::No package files found in $BUILD_DIR"
+            exit 1
+          fi
+
+          echo "=== Found packages ==="
+          echo "$PACKAGES"
+
+          # Compute SHA-256 for each package
+          UPLOAD_FILES=""
+          while IFS= read -r PKG; do
+            if [[ "${{ runner.os }}" == "macOS" ]]; then
+              shasum -a 256 "$PKG" | awk '{print $1}' > "${PKG}.sha256"
+            else
+              sha256sum "$PKG" | awk '{print $1}' > "${PKG}.sha256"
+            fi
+            echo "  $(basename "$PKG"): $(cat "${PKG}.sha256")"
+            UPLOAD_FILES="${UPLOAD_FILES}${PKG}"$'\n'"${PKG}.sha256"$'\n'
+          done <<< "$PACKAGES"
+
+          # Write file list for upload
+          echo "$UPLOAD_FILES" > /tmp/upload_files.txt
+          echo "build_dir=$BUILD_DIR" >> "$GITHUB_OUTPUT"
+
+      # ── Upload as build artifact ──────────────────────────────────────────
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.platform_label }}
+          path: |
+            build/${{ matrix.preset }}/*.zip
+            build/${{ matrix.preset }}/*.zip.sha256
+            build/${{ matrix.preset }}/*.tar.gz
+            build/${{ matrix.preset }}/*.tar.gz.sha256
+            build/${{ matrix.preset }}/*.deb
+            build/${{ matrix.preset }}/*.deb.sha256
+            build/${{ matrix.preset }}/*.dmg
+            build/${{ matrix.preset }}/*.dmg.sha256
+          if-no-files-found: error
+          retention-days: 30
+
+  # ============================================================================
+  # Create GitHub Release (only on tag push)
+  # ============================================================================
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    name: Create Release
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout (for release notes context)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List release files
+        run: |
+          echo "=== Release artifacts ==="
+          find artifacts -type f | sort
+          echo ""
+          echo "=== SHA-256 checksums ==="
+          for f in artifacts/*.sha256; do
+            echo "$(cat "$f")  $(basename "${f%.sha256}")"
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
