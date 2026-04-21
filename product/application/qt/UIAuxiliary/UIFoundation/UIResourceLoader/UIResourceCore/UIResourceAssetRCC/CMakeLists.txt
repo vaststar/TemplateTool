@@ -24,7 +24,7 @@ foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
 endforeach()
 
 set(Resource_RCC_Target ResourceRCC)
-add_library(${Resource_RCC_Target} OBJECT)
+add_library(${Resource_RCC_Target} STATIC)
 set_target_properties(${Resource_RCC_Target} PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   AUTORCC ON
@@ -36,11 +36,10 @@ target_link_libraries(${Resource_RCC_Target} PRIVATE Qt6::Core)
 target_sources(${Resource_RCC_Target} PRIVATE ${RCC_FILES})
 add_dependencies(${Resource_RCC_Target} ${RCC_TARGETS})
 
-# INTERFACE library wraps the OBJECT RCC lib so consumers only need to know
-# about UIResourceAssetRCCInterface.
-# Linking an OBJECT library via target_link_libraries (CMake 3.12+)
-# automatically propagates the .obj files AND creates a proper build
-# dependency — no MSBuild race condition, no stripped resource initializers.
+# STATIC library avoids OBJECT-library MSBuild race conditions on Windows.
+# WHOLE_ARCHIVE forces the linker to include all symbols from the static lib,
+# preventing Qt resource initializers (qInitResources) from being stripped.
 add_library(UIResourceAssetRCCInterface INTERFACE)
-target_link_libraries(UIResourceAssetRCCInterface INTERFACE ${Resource_RCC_Target})
+target_link_libraries(UIResourceAssetRCCInterface INTERFACE
+    $<LINK_LIBRARY:WHOLE_ARCHIVE,${Resource_RCC_Target}>)
 
