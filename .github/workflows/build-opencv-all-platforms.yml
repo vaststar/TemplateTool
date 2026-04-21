@@ -37,25 +37,25 @@ jobs:
           # - arch: arm64
           #   cmake_arch: ARM64
           #   msvc_arch: amd64_arm64
-    
+
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.msvc_arch }}
-      
+
       - name: Download OpenCV source
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://github.com/opencv/opencv/archive/refs/tags/${{ env.OPENCV_VERSION }}.zip" -OutFile opencv.zip
           Expand-Archive -Path opencv.zip -DestinationPath .
           Rename-Item -Path "opencv-${{ env.OPENCV_VERSION }}" -NewName "opencv_src"
-      
+
       - name: Configure OpenCV
         shell: cmd
         run: |
@@ -77,55 +77,55 @@ jobs:
             -DWITH_FFMPEG=ON ^
             -DWITH_CUDA=OFF ^
             -DOPENCV_ENABLE_NONFREE=OFF
-      
+
       - name: Build OpenCV (Release)
         run: cmake --build opencv_build --config Release --parallel
-      
+
       - name: Build OpenCV (Debug)
         run: cmake --build opencv_build --config Debug --parallel
-      
+
       - name: Install OpenCV (Release)
         run: cmake --install opencv_build --config Release
-      
+
       - name: Install OpenCV (Debug)
         run: cmake --install opencv_build --config Debug
-      
+
       - name: Prepare artifact
         shell: pwsh
         run: |
           $arch = "${{ matrix.arch }}"
-          
+
           # Create directory structure with independent headers per architecture
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/vc17/bin"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/vc17/lib"
-          
+
           # Find and copy headers to architecture-specific directory
           $includeDir = Get-ChildItem -Path opencv_install -Recurse -Directory -Filter "opencv2" | Select-Object -First 1
           if ($includeDir) {
             Copy-Item -Recurse -Force $includeDir.FullName artifact/windows/$arch/include/
           }
-          
+
           # Copy binaries (DLL, PDB)
           Get-ChildItem -Path opencv_install -Recurse -Include "*.dll","*.pdb" | ForEach-Object {
             Copy-Item $_.FullName artifact/windows/$arch/vc17/bin/ -ErrorAction SilentlyContinue
           }
-          
+
           # Copy libraries (LIB)
           Get-ChildItem -Path opencv_install -Recurse -Include "*.lib" | ForEach-Object {
             Copy-Item $_.FullName artifact/windows/$arch/vc17/lib/ -ErrorAction SilentlyContinue
           }
-          
+
           # Copy CMake config
           $cmakeDir = Get-ChildItem -Path opencv_install -Recurse -Directory -Filter "opencv4" | Where-Object { $_.FullName -like "*cmake*" } | Select-Object -First 1
           if ($cmakeDir) {
             New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/vc17/lib/cmake/opencv4"
             Copy-Item -Recurse -Force "$($cmakeDir.FullName)/*" artifact/windows/$arch/vc17/lib/cmake/opencv4/
           }
-          
+
           Write-Host "=== Built files ==="
           Get-ChildItem -Recurse artifact -File | Select-Object FullName
-      
+
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
@@ -158,22 +158,22 @@ jobs:
           - os: macos-15
             arch: arm64
             platform_name: arm
-    
+
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Install dependencies
         run: brew install cmake ninja
-      
+
       - name: Download OpenCV source
         run: |
           curl -L -o opencv.zip https://github.com/opencv/opencv/archive/refs/tags/${{ env.OPENCV_VERSION }}.zip
           unzip opencv.zip
           mv opencv-${{ env.OPENCV_VERSION }} opencv_src
-      
+
       - name: Configure OpenCV
         run: |
           mkdir -p opencv_build
@@ -183,7 +183,7 @@ jobs:
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
             EXTRA_FLAGS="-DWITH_KLEIDICV=OFF"
           fi
-          
+
           cmake ../opencv_src \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
@@ -204,32 +204,32 @@ jobs:
             -DWITH_OPENCL=ON \
             -DOPENCV_ENABLE_NONFREE=OFF \
             $EXTRA_FLAGS
-      
+
       - name: Build OpenCV
         run: cmake --build opencv_build --parallel $(sysctl -n hw.ncpu)
-      
+
       - name: Install OpenCV
         run: cmake --install opencv_build
-      
+
       - name: Prepare artifact
         run: |
           # Create directory structure with independent headers per platform
           mkdir -p artifact/macosx/${{ matrix.platform_name }}/include
           mkdir -p artifact/macosx/${{ matrix.platform_name }}/lib
-          
+
           # Copy headers to platform-specific directory
           cp -r opencv_install/include/opencv4/opencv2 artifact/macosx/${{ matrix.platform_name }}/include/
-          
+
           # Copy libraries
           cp opencv_install/lib/*.dylib artifact/macosx/${{ matrix.platform_name }}/lib/
-          
+
           # Copy cmake config
           mkdir -p artifact/macosx/${{ matrix.platform_name }}/lib/cmake/opencv4
           cp -r opencv_install/lib/cmake/opencv4/* artifact/macosx/${{ matrix.platform_name }}/lib/cmake/opencv4/
-          
+
           echo "=== Built files ==="
           find artifact -type f
-      
+
       - name: Fix macOS RPATH
         uses: ./.github/actions/fix-macos-rpath
         with:
@@ -242,7 +242,7 @@ jobs:
           platform: macos
           library-name: opencv
           expect-shared-libs: '1'    # libopencv_*.dylib
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -256,20 +256,20 @@ jobs:
   build-ios:
     if: contains(github.event.inputs.platforms, 'ios')
     runs-on: macos-14
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Install dependencies
         run: brew install cmake
-      
+
       - name: Download OpenCV source
         run: |
           curl -L -o opencv.zip https://github.com/opencv/opencv/archive/refs/tags/${{ env.OPENCV_VERSION }}.zip
           unzip opencv.zip
           mv opencv-${{ env.OPENCV_VERSION }} opencv_src
-      
+
       - name: Build iOS Device (arm64)
         run: |
           mkdir -p build_ios_device
@@ -303,7 +303,7 @@ jobs:
             -DCPU_DISPATCH=NEON
           cmake --build . --config Release -- -quiet
           cmake --install . --config Release
-      
+
       - name: Build iOS Simulator (arm64)
         run: |
           mkdir -p build_ios_sim_arm64
@@ -333,7 +333,7 @@ jobs:
             -DWITH_QUIRC=OFF
           cmake --build . --config Release -- -quiet
           cmake --install . --config Release
-      
+
       - name: Build iOS Simulator (x86_64)
         run: |
           mkdir -p build_ios_sim_x64
@@ -363,26 +363,26 @@ jobs:
             -DWITH_QUIRC=OFF
           cmake --build . --config Release -- -quiet
           cmake --install . --config Release
-      
+
       - name: Create XCFramework
         run: |
           # Find the static libraries
           DEVICE_LIB=$(find install_ios_device -name "libopencv_world.a" 2>/dev/null | head -1)
           SIM_ARM64_LIB=$(find install_ios_sim_arm64 -name "libopencv_world.a" 2>/dev/null | head -1)
           SIM_X64_LIB=$(find install_ios_sim_x64 -name "libopencv_world.a" 2>/dev/null | head -1)
-          
+
           echo "Device lib: $DEVICE_LIB"
           echo "Sim ARM64 lib: $SIM_ARM64_LIB"
           echo "Sim x64 lib: $SIM_X64_LIB"
-          
+
           mkdir -p artifact/ios/include
-          
+
           # Copy headers
           HEADER_DIR=$(find install_ios_device -type d -name "opencv2" | head -1)
           if [ -n "$HEADER_DIR" ]; then
             cp -r "$HEADER_DIR" artifact/ios/include/
           fi
-          
+
           # Create fat library for simulator (combine arm64 and x86_64)
           if [ -n "$SIM_ARM64_LIB" ] && [ -n "$SIM_X64_LIB" ]; then
             mkdir -p install_ios_sim_fat/lib
@@ -391,7 +391,7 @@ jobs:
           elif [ -n "$SIM_ARM64_LIB" ]; then
             SIM_FAT_LIB="$SIM_ARM64_LIB"
           fi
-          
+
           # Create xcframework
           HEADER_INCLUDE_DIR=$(find install_ios_device -type d -name "include" | head -1)
           if [ -n "$DEVICE_LIB" ] && [ -n "$SIM_FAT_LIB" ] && [ -n "$HEADER_INCLUDE_DIR" ]; then
@@ -411,10 +411,10 @@ jobs:
             mkdir -p artifact/ios/lib
             cp "$DEVICE_LIB" artifact/ios/lib/
           fi
-          
+
           echo "=== XCFramework structure ==="
           find artifact -type f | head -50
-      
+
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
@@ -436,35 +436,35 @@ jobs:
   build-android:
     if: contains(github.event.inputs.platforms, 'android')
     runs-on: ubuntu-latest
-    
+
     strategy:
       fail-fast: false
       matrix:
         abi: [arm64-v8a, armeabi-v7a, x86_64, x86]
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Android NDK
         uses: android-actions/setup-android@v3
-      
+
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build patchelf
-      
+
       - name: Download OpenCV source
         run: |
           curl -L -o opencv.zip https://github.com/opencv/opencv/archive/refs/tags/${{ env.OPENCV_VERSION }}.zip
           unzip opencv.zip
           mv opencv-${{ env.OPENCV_VERSION }} opencv_src
-      
+
       - name: Configure and Build OpenCV
         run: |
           mkdir -p opencv_build
           cd opencv_build
-          
+
           cmake ../opencv_src \
             -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
@@ -486,33 +486,33 @@ jobs:
             -DWITH_FFMPEG=OFF \
             -DWITH_CUDA=OFF \
             -DOPENCV_ENABLE_NONFREE=OFF
-          
+
           cmake --build . --parallel $(nproc)
           cmake --install .
-      
+
       - name: Prepare artifact
         run: |
           ABI=${{ matrix.abi }}
           # Create directory structure with independent headers per ABI
           mkdir -p artifact/android/$ABI/include
           mkdir -p artifact/android/$ABI/libs
-          
+
           # Copy headers to ABI-specific directory
           HEADER_DIR=$(find opencv_install -type d -name "opencv2" | head -1)
           if [ -n "$HEADER_DIR" ]; then
             cp -r "$HEADER_DIR" artifact/android/$ABI/include/
           fi
-          
+
           # Copy native libraries (.so files)
           find opencv_install -name "*.so" -exec cp {} artifact/android/$ABI/libs/ \;
-          
+
           # Copy Java libraries if exist (keep at android/ level for shared access)
           find opencv_install -name "*.jar" -exec cp {} artifact/android/ \; 2>/dev/null || true
           find opencv_install -name "*.aar" -exec cp {} artifact/android/ \; 2>/dev/null || true
-          
+
           echo "=== Built files ==="
           find artifact -type f
-      
+
       - name: Fix Android RPATH
         uses: ./.github/actions/fix-android-rpath
         with:
@@ -525,7 +525,7 @@ jobs:
           platform: android
           library-name: opencv
           expect-shared-libs: '1'    # libopencv_java4.so
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -538,12 +538,12 @@ jobs:
   # ============================================================================
   build-linux:
     if: contains(github.event.inputs.platforms, 'linux')
-    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 for better runner availability
-    
+    runs-on: ubuntu-24.04
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -553,18 +553,18 @@ jobs:
             libavcodec-dev libavformat-dev libswscale-dev \
             libjpeg-dev libpng-dev libtiff-dev \
             libv4l-dev libxvidcore-dev libx264-dev
-      
+
       - name: Download OpenCV source
         run: |
           curl -L -o opencv.zip https://github.com/opencv/opencv/archive/refs/tags/${{ env.OPENCV_VERSION }}.zip
           unzip opencv.zip
           mv opencv-${{ env.OPENCV_VERSION }} opencv_src
-      
+
       - name: Configure and Build OpenCV
         run: |
           mkdir -p opencv_build
           cd opencv_build
-          
+
           cmake ../opencv_src \
             -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
@@ -582,21 +582,21 @@ jobs:
             -DWITH_CUDA=OFF \
             -DWITH_GTK=ON \
             -DOPENCV_ENABLE_NONFREE=OFF
-          
+
           cmake --build . --parallel $(nproc)
           cmake --install .
-      
+
       - name: Prepare artifact
         run: |
           mkdir -p artifact/linux/x64/include
           mkdir -p artifact/linux/x64/lib
-          
+
           # Copy headers
           cp -r opencv_install/include/opencv4/opencv2 artifact/linux/x64/include/
-          
+
           # Copy libraries
           cp opencv_install/lib/*.so* artifact/linux/x64/lib/
-          
+
           # Copy cmake config (check multiple possible locations)
           mkdir -p artifact/linux/x64/lib/cmake/opencv4
           if [ -d "opencv_install/lib/cmake/opencv4" ]; then
@@ -609,10 +609,10 @@ jobs:
             echo "Warning: Could not find OpenCV cmake config, listing install directories:"
             find opencv_install -name "*.cmake" 2>/dev/null | head -10 || true
           fi
-          
+
           echo "=== Built files ==="
           find artifact -type f
-      
+
       - name: Fix Linux RPATH
         uses: ./.github/actions/fix-linux-rpath
         with:
@@ -640,7 +640,7 @@ jobs:
     needs: [build-windows, build-macos, build-ios, build-android, build-linux]
     if: always() && !cancelled()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

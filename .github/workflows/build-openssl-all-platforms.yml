@@ -36,28 +36,28 @@ jobs:
           - arch: arm64
             openssl_target: VC-WIN64-ARM
             msvc_arch: amd64_arm64
-    
+
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.msvc_arch }}
-      
+
       - name: Install NASM
         run: |
           choco install nasm -y
           echo "C:\Program Files\NASM" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      
+
       - name: Install Strawberry Perl
         run: |
           choco install strawberryperl -y
           echo "C:\Strawberry\perl\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      
+
       - name: Download OpenSSL source
         shell: pwsh
         run: |
@@ -65,7 +65,7 @@ jobs:
           Invoke-WebRequest -Uri "https://www.openssl.org/source/openssl-${version}.tar.gz" -OutFile openssl.tar.gz
           tar -xzf openssl.tar.gz
           Rename-Item -Path "openssl-${version}" -NewName "openssl_src"
-      
+
       - name: Configure OpenSSL
         shell: cmd
         run: |
@@ -75,19 +75,19 @@ jobs:
             --openssldir=%CD%\..\openssl_install\ssl ^
             no-shared ^
             no-tests
-      
+
       - name: Build OpenSSL
         shell: cmd
         run: |
           cd openssl_src
           nmake
-      
+
       - name: Install OpenSSL
         shell: cmd
         run: |
           cd openssl_src
           nmake install_sw
-      
+
       - name: Build shared libraries
         shell: cmd
         run: |
@@ -100,32 +100,32 @@ jobs:
             no-tests
           nmake
           nmake install_sw
-      
+
       - name: Prepare artifact
         shell: pwsh
         run: |
           $arch = "${{ matrix.arch }}"
-          
+
           # Create directory structure
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/lib"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/bin"
           New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/static"
-          
+
           # Copy headers
           Copy-Item -Recurse -Force "openssl_install/include/openssl" "artifact/windows/$arch/include/"
-          
+
           # Copy static libraries
           Copy-Item "openssl_install/lib/*.lib" "artifact/windows/$arch/static/" -ErrorAction SilentlyContinue
-          
+
           # Copy shared libraries
           Copy-Item "openssl_install_shared/lib/*.lib" "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
           Copy-Item "openssl_install_shared/bin/*.dll" "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
           Copy-Item "openssl_install_shared/bin/*.exe" "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
-          
+
           Write-Host "=== Built files ==="
           Get-ChildItem -Recurse artifact -File | Select-Object FullName
-      
+
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
@@ -161,29 +161,29 @@ jobs:
             openssl_target: darwin64-arm64-cc
             platform_name: arm
             cross_compile: false
-    
+
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Download OpenSSL source
         run: |
           curl -L -o openssl.tar.gz https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz
           tar -xzf openssl.tar.gz
           mv openssl-${{ env.OPENSSL_VERSION }} openssl_src
-      
+
       - name: Build static library
         run: |
           cd openssl_src
-          
+
           # For x86_64 cross-compilation on arm64 macOS
           if [ "${{ matrix.cross_compile }}" = "true" ]; then
             export CFLAGS="-arch x86_64"
             export LDFLAGS="-arch x86_64"
           fi
-          
+
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install_static \
             --openssldir=$PWD/../openssl_install_static/ssl \
@@ -192,18 +192,18 @@ jobs:
             no-tests
           make -j$(sysctl -n hw.ncpu)
           make install_sw
-      
+
       - name: Build shared library
         run: |
           cd openssl_src
           make clean
-          
+
           # For x86_64 cross-compilation on arm64 macOS
           if [ "${{ matrix.cross_compile }}" = "true" ]; then
             export CFLAGS="-arch x86_64"
             export LDFLAGS="-arch x86_64"
           fi
-          
+
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install_shared \
             --openssldir=$PWD/../openssl_install_shared/ssl \
@@ -212,7 +212,7 @@ jobs:
             no-tests
           make -j$(sysctl -n hw.ncpu)
           make install_sw
-      
+
       - name: Prepare artifact
         run: |
           PLATFORM="${{ matrix.platform_name }}"
@@ -220,19 +220,19 @@ jobs:
           mkdir -p artifact/macosx/$PLATFORM/lib
           mkdir -p artifact/macosx/$PLATFORM/bin
           mkdir -p artifact/macosx/$PLATFORM/static
-          
+
           # Copy headers
           cp -r openssl_install_static/include/openssl artifact/macosx/$PLATFORM/include/
-          
+
           # Copy static libraries
           cp openssl_install_static/lib/*.a artifact/macosx/$PLATFORM/static/
-          
+
           # Copy shared libraries
           cp openssl_install_shared/lib/*.dylib artifact/macosx/$PLATFORM/lib/
-          
+
           # Copy binaries
           cp openssl_install_shared/bin/openssl artifact/macosx/$PLATFORM/bin/ 2>/dev/null || true
-      
+
       - name: Fix macOS RPATH
         uses: ./.github/actions/fix-macos-rpath
         with:
@@ -247,7 +247,7 @@ jobs:
           library-name: openssl
           expect-shared-libs: '2'    # libssl.dylib, libcrypto.dylib
           expect-static-libs: '2'    # libssl.a, libcrypto.a
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -261,7 +261,7 @@ jobs:
   build-ios:
     if: contains(github.event.inputs.platforms, 'ios')
     runs-on: macos-14
-    
+
     strategy:
       fail-fast: false
       matrix:
@@ -278,27 +278,27 @@ jobs:
             arch: x86_64
             openssl_target: iossimulator-x86_64-xcrun
             min_version: "13.0"
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Download OpenSSL source
         run: |
           curl -L -o openssl.tar.gz https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz
           tar -xzf openssl.tar.gz
           mv openssl-${{ env.OPENSSL_VERSION }} openssl_src
-      
+
       - name: Configure and Build
         run: |
           cd openssl_src
-          
+
           # Set SDK path
           SDK_PATH=$(xcrun --sdk ${{ matrix.platform }} --show-sdk-path)
-          
+
           export CROSS_TOP=$(xcode-select --print-path)/Platforms/${{ matrix.platform == 'iphoneos' && 'iPhoneOS' || 'iPhoneSimulator' }}.platform/Developer
           export CROSS_SDK=${{ matrix.platform == 'iphoneos' && 'iPhoneOS' || 'iPhoneSimulator' }}.sdk
-          
+
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install \
             --openssldir=$PWD/../openssl_install/ssl \
@@ -306,26 +306,26 @@ jobs:
             no-shared \
             no-tests \
             no-ui-console
-          
+
           make -j$(sysctl -n hw.ncpu)
           make install_sw
-      
+
       - name: Prepare artifact
         run: |
           PLATFORM="${{ matrix.platform }}"
           ARCH="${{ matrix.arch }}"
           mkdir -p artifact/ios/$PLATFORM-$ARCH/include
           mkdir -p artifact/ios/$PLATFORM-$ARCH/lib
-          
+
           # Copy headers
           cp -r openssl_install/include/openssl artifact/ios/$PLATFORM-$ARCH/include/
-          
+
           # Copy static libraries
           cp openssl_install/lib/*.a artifact/ios/$PLATFORM-$ARCH/lib/
-          
+
           echo "=== Built files ==="
           find artifact -type f
-      
+
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
@@ -346,7 +346,7 @@ jobs:
     needs: build-ios
     if: contains(github.event.inputs.platforms, 'ios')
     runs-on: macos-14
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -356,31 +356,31 @@ jobs:
         with:
           pattern: openssl-ios-*
           path: downloads/
-      
+
       - name: Create XCFramework
         run: |
           mkdir -p artifact/ios/include
-          
+
           # Copy headers from device build
           cp -r downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64/include/openssl artifact/ios/include/
-          
+
           # Define library paths
           DEVICE_ARM64="downloads/openssl-ios-iphoneos-arm64/ios/iphoneos-arm64"
           SIM_ARM64="downloads/openssl-ios-iphonesimulator-arm64/ios/iphonesimulator-arm64"
           SIM_X64="downloads/openssl-ios-iphonesimulator-x86_64/ios/iphonesimulator-x86_64"
-          
+
           echo "=== Library info ==="
           lipo -info "$DEVICE_ARM64/lib/libssl.a"
           lipo -info "$SIM_ARM64/lib/libssl.a"
           lipo -info "$SIM_X64/lib/libssl.a"
-          
+
           # Strategy: Create xcframework with 3 separate library slices
           # - ios-arm64 (device)
-          # - ios-arm64-simulator 
+          # - ios-arm64-simulator
           # - ios-x86_64-simulator
-          # 
+          #
           # xcodebuild will use the directory structure to determine platform
-          
+
           # Prepare separate directories with platform-specific structure
           mkdir -p xcf_inputs/device xcf_inputs/sim_arm64 xcf_inputs/sim_x64
           cp "$DEVICE_ARM64/lib/libssl.a" xcf_inputs/device/
@@ -389,12 +389,12 @@ jobs:
           cp "$SIM_ARM64/lib/libcrypto.a" xcf_inputs/sim_arm64/
           cp "$SIM_X64/lib/libssl.a" xcf_inputs/sim_x64/
           cp "$SIM_X64/lib/libcrypto.a" xcf_inputs/sim_x64/
-          
+
           # Copy headers
           cp -r "$DEVICE_ARM64/include" xcf_inputs/device/
           cp -r "$SIM_ARM64/include" xcf_inputs/sim_arm64/
           cp -r "$SIM_X64/include" xcf_inputs/sim_x64/
-          
+
           # Create XCFrameworks using libtool to merge simulator architectures first
           # This is the proper way: create a fat library for simulators only (same platform)
           echo "=== Creating fat simulator libraries ==="
@@ -402,7 +402,7 @@ jobs:
           lipo -create xcf_inputs/sim_arm64/libssl.a xcf_inputs/sim_x64/libssl.a -output xcf_inputs/sim_fat/libssl.a
           lipo -create xcf_inputs/sim_arm64/libcrypto.a xcf_inputs/sim_x64/libcrypto.a -output xcf_inputs/sim_fat/libcrypto.a
           cp -r xcf_inputs/sim_arm64/include xcf_inputs/sim_fat/
-          
+
           echo "=== Creating libssl.xcframework ==="
           # Use -library with explicit platform specification via directory naming
           xcodebuild -create-xcframework \
@@ -416,13 +416,13 @@ jobs:
               # Fallback: Create xcframework with only simulator arm64 (for Apple Silicon Macs)
               # Use libtool to create a proper library with platform info
               mkdir -p xcf_final/device xcf_final/simulator
-              
+
               # Extract and re-archive with platform info using ar
               cp xcf_inputs/device/libssl.a xcf_final/device/libssl.a
               cp xcf_inputs/sim_arm64/libssl.a xcf_final/simulator/libssl.a
               cp -r xcf_inputs/device/include xcf_final/device/
               cp -r xcf_inputs/sim_arm64/include xcf_final/simulator/
-              
+
               # Create xcframework manually by specifying the libraries
               # The key is that we need different directories for device vs simulator
               xcodebuild -create-xcframework \
@@ -439,7 +439,7 @@ jobs:
                   cp xcf_inputs/sim_arm64/libssl.a artifact/ios/libssl.xcframework/ios-arm64-simulator/
                   cp -r xcf_inputs/device/include artifact/ios/libssl.xcframework/ios-arm64/Headers
                   cp -r xcf_inputs/sim_arm64/include artifact/ios/libssl.xcframework/ios-arm64-simulator/Headers
-                  
+
                   # Create Info.plist
                   cat > artifact/ios/libssl.xcframework/Info.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
@@ -488,7 +488,7 @@ jobs:
           PLIST
                 }
             }
-          
+
           echo "=== Creating libcrypto.xcframework ==="
           xcodebuild -create-xcframework \
             -library xcf_inputs/device/libcrypto.a \
@@ -498,7 +498,7 @@ jobs:
             -output artifact/ios/libcrypto.xcframework 2>&1 || {
               echo "=== Fat simulator failed, using arm64 simulator only ==="
               rm -rf artifact/ios/libcrypto.xcframework
-              
+
               xcodebuild -create-xcframework \
                 -library xcf_inputs/device/libcrypto.a \
                 -headers xcf_inputs/device/include \
@@ -512,7 +512,7 @@ jobs:
                   cp xcf_inputs/sim_arm64/libcrypto.a artifact/ios/libcrypto.xcframework/ios-arm64-simulator/
                   cp -r xcf_inputs/device/include artifact/ios/libcrypto.xcframework/ios-arm64/Headers
                   cp -r xcf_inputs/sim_arm64/include artifact/ios/libcrypto.xcframework/ios-arm64-simulator/Headers
-                  
+
                   cat > artifact/ios/libcrypto.xcframework/Info.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -560,11 +560,11 @@ jobs:
           PLIST
                 }
             }
-          
+
           echo "=== XCFramework structure ==="
           find artifact -type d
           find artifact -name "Info.plist" -exec echo "--- {} ---" \; -exec cat {} \;
-      
+
       - name: Verify artifact
         uses: ./.github/actions/verify-artifact
         with:
@@ -586,7 +586,7 @@ jobs:
   build-android:
     if: contains(github.event.inputs.platforms, 'android')
     runs-on: ubuntu-latest
-    
+
     strategy:
       fail-fast: false
       matrix:
@@ -603,32 +603,32 @@ jobs:
           - abi: x86
             openssl_target: android-x86
             arch: i686
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Android NDK
         uses: android-actions/setup-android@v3
-      
+
       - name: Install patchelf
         run: |
           sudo apt-get update
           sudo apt-get install -y patchelf
-      
+
       - name: Download OpenSSL source
         run: |
           curl -L -o openssl.tar.gz https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz
           tar -xzf openssl.tar.gz
           mv openssl-${{ env.OPENSSL_VERSION }} openssl_src
-      
+
       - name: Build static library
         run: |
           cd openssl_src
-          
+
           export ANDROID_NDK_HOME=$ANDROID_NDK_ROOT
           export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-          
+
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install_static \
             --openssldir=$PWD/../openssl_install_static/ssl \
@@ -636,18 +636,18 @@ jobs:
             no-shared \
             no-tests \
             no-ui-console
-          
+
           make -j$(nproc)
           make install_sw
-      
+
       - name: Build shared library
         run: |
           cd openssl_src
           make clean
-          
+
           export ANDROID_NDK_HOME=$ANDROID_NDK_ROOT
           export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-          
+
           ./Configure ${{ matrix.openssl_target }} \
             --prefix=$PWD/../openssl_install_shared \
             --openssldir=$PWD/../openssl_install_shared/ssl \
@@ -655,29 +655,29 @@ jobs:
             shared \
             no-tests \
             no-ui-console
-          
+
           make -j$(nproc)
           make install_sw
-      
+
       - name: Prepare artifact
         run: |
           ABI="${{ matrix.abi }}"
           mkdir -p artifact/android/$ABI/include
           mkdir -p artifact/android/$ABI/lib
           mkdir -p artifact/android/$ABI/static
-          
+
           # Copy headers
           cp -r openssl_install_static/include/openssl artifact/android/$ABI/include/
-          
+
           # Copy static libraries
           cp openssl_install_static/lib/*.a artifact/android/$ABI/static/
-          
+
           # Copy shared libraries
           cp openssl_install_shared/lib/*.so* artifact/android/$ABI/lib/ 2>/dev/null || true
-          
+
           echo "=== Built files ==="
           find artifact -type f
-      
+
       - name: Fix Android RPATH
         uses: ./.github/actions/fix-android-rpath
         with:
@@ -691,7 +691,7 @@ jobs:
           library-name: openssl
           expect-shared-libs: '2'    # libssl.so, libcrypto.so
           expect-static-libs: '2'    # libssl.a, libcrypto.a
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -704,23 +704,23 @@ jobs:
   # ============================================================================
   build-linux:
     if: contains(github.event.inputs.platforms, 'linux')
-    runs-on: ubuntu-22.04
-    
+    runs-on: ubuntu-24.04
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential patchelf
-      
+
       - name: Download OpenSSL source
         run: |
           curl -L -o openssl.tar.gz https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz
           tar -xzf openssl.tar.gz
           mv openssl-${{ env.OPENSSL_VERSION }} openssl_src
-      
+
       - name: Build static library
         run: |
           cd openssl_src
@@ -731,7 +731,7 @@ jobs:
             no-tests
           make -j$(nproc)
           make install_sw
-      
+
       - name: Build shared library
         run: |
           cd openssl_src
@@ -743,37 +743,37 @@ jobs:
             no-tests
           make -j$(nproc)
           make install_sw
-      
+
       - name: Prepare artifact
         run: |
           mkdir -p artifact/linux/x64/include
           mkdir -p artifact/linux/x64/lib
           mkdir -p artifact/linux/x64/static
           mkdir -p artifact/linux/x64/bin
-          
+
           # Copy headers
           cp -r openssl_install_static/include/openssl artifact/linux/x64/include/
-          
+
           # Copy static libraries (check both lib and lib64)
           if [ -d "openssl_install_static/lib64" ]; then
             cp openssl_install_static/lib64/*.a artifact/linux/x64/static/
           else
             cp openssl_install_static/lib/*.a artifact/linux/x64/static/
           fi
-          
+
           # Copy shared libraries (check both lib and lib64)
           if [ -d "openssl_install_shared/lib64" ]; then
             cp openssl_install_shared/lib64/*.so* artifact/linux/x64/lib/
           else
             cp openssl_install_shared/lib/*.so* artifact/linux/x64/lib/
           fi
-          
+
           # Copy binary
           cp openssl_install_shared/bin/openssl artifact/linux/x64/bin/
-          
+
           echo "=== Built files ==="
           find artifact -type f
-      
+
       - name: Fix Linux RPATH
         uses: ./.github/actions/fix-linux-rpath
         with:
@@ -788,7 +788,7 @@ jobs:
           library-name: openssl
           expect-shared-libs: '2'    # libssl.so, libcrypto.so
           expect-static-libs: '2'    # libssl.a, libcrypto.a
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -803,11 +803,11 @@ jobs:
     needs: [build-windows, build-macos, build-ios-xcframework, build-android, build-linux]
     if: always() && !cancelled()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Merge all platform artifacts
         uses: ./.github/actions/merge-artifacts
         with:

@@ -33,7 +33,7 @@ jobs:
             platform_key: windows-x64
             build_cmd: build.bat
             qt_modules: 'qtmultimedia'
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             preset: linux-release
             platform_label: Linux
             platform_key: linux-x64
@@ -78,14 +78,12 @@ jobs:
         with:
           arch: amd64
 
-      - name: Install Ninja (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
-
-      - name: Install system dependencies (Linux)
+      - name: Install build tools & system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
+          sudo apt-get update
           sudo apt-get install -y \
+            ninja-build \
             libgl1-mesa-dev \
             libxkbcommon-dev \
             libxkbcommon-x11-0 \
