@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       ffmpeg_version:
-        description: 'FFmpeg version (e.g., 7.1, 6.1)'
+        description: 'FFmpeg version (e.g., 8.1, 7.1, 6.1)'
         required: true
-        default: '7.1'
+        default: '8.1'
         type: string
       platforms:
         description: 'Platforms to download (comma-separated: windows,macos,linux)'
@@ -17,12 +17,12 @@ on:
 
 env:
   FFMPEG_VERSION: ${{ github.event.inputs.ffmpeg_version }}
-  # BtbN builds: https://github.com/BtbN/FFmpeg-Builds/releases
+  # BtbN builds (Windows + Linux only): https://github.com/BtbN/FFmpeg-Builds/releases
   BTBN_BASE: 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest'
 
 jobs:
   # ============================================================================
-  # Windows (x64) — GPL shared build from BtbN
+  # Windows (x64) — from BtbN, fallback to Gyan.dev
   # ============================================================================
   download-windows:
     if: contains(github.event.inputs.platforms, 'windows')
@@ -35,17 +35,14 @@ jobs:
 
       - name: Download FFmpeg for Windows
         run: |
-          ARCHIVE="ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-win64-gpl-shared-${{ env.FFMPEG_VERSION }}.zip"
-          # BtbN naming: ffmpeg-n7.1-latest-win64-gpl-7.1.zip (executables-only)
-          # Try the "shared" build first, fallback to lgpl
           BASE="${{ env.BTBN_BASE }}"
+          VER="${{ env.FFMPEG_VERSION }}"
 
-          echo "=== Trying BtbN latest builds ==="
-          # BtbN uses "latest" tag with version in filename
+          # BtbN naming: ffmpeg-n8.1-latest-win64-gpl-8.1.zip
           URLS=(
-            "${BASE}/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-win64-gpl-${{ env.FFMPEG_VERSION }}.zip"
-            "${BASE}/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-win64-lgpl-${{ env.FFMPEG_VERSION }}.zip"
-            "https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-${{ env.FFMPEG_VERSION }}-full_build.zip"
+            "${BASE}/ffmpeg-n${VER}-latest-win64-gpl-${VER}.zip"
+            "${BASE}/ffmpeg-n${VER}-latest-win64-lgpl-${VER}.zip"
+            "https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-${VER}-full_build.zip"
           )
 
           DOWNLOADED=false
@@ -60,7 +57,7 @@ jobs:
           done
 
           if [ "$DOWNLOADED" = false ]; then
-            echo "::error::Could not download FFmpeg ${{ env.FFMPEG_VERSION }} for Windows from any source"
+            echo "::error::Could not download FFmpeg ${VER} for Windows"
             exit 1
           fi
 
@@ -68,7 +65,6 @@ jobs:
         run: |
           unzip -q ffmpeg.zip -d ffmpeg_raw
 
-          # Find ffmpeg.exe and ffprobe.exe in extracted directory
           FFMPEG_BIN=$(find ffmpeg_raw -name "ffmpeg.exe" -type f | head -1)
           FFPROBE_BIN=$(find ffmpeg_raw -name "ffprobe.exe" -type f | head -1)
 
@@ -93,102 +89,79 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # macOS — Intel (x86_64) and Apple Silicon (arm64)
+  # macOS — Intel + ARM via Homebrew (most reliable macOS package source)
+  # BtbN does NOT provide macOS builds.
+  # Homebrew is the most mature macOS package manager; FFmpeg is a core formula.
+  # We install via brew, then copy the binaries out.
   # ============================================================================
   download-macos:
     if: contains(github.event.inputs.platforms, 'macos')
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: x86_64
-            btbn_suffix: macos64
-            artifact_dir: intel
-          - arch: arm64
-            btbn_suffix: macosarm64
-            artifact_dir: arm
-
-    runs-on: ubuntu-latest
-    name: Download (macOS ${{ matrix.arch }})
+    runs-on: macos-latest
+    name: Download (macOS)
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download FFmpeg for macOS ${{ matrix.arch }}
+      - name: Install FFmpeg via Homebrew
         run: |
-          BASE="${{ env.BTBN_BASE }}"
+          # Homebrew on macos-latest (ARM) installs native arm64 binaries
+          brew install ffmpeg
 
-          URLS=(
-            "${BASE}/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-${{ matrix.btbn_suffix }}-gpl-${{ env.FFMPEG_VERSION }}.zip"
-            "${BASE}/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-${{ matrix.btbn_suffix }}-lgpl-${{ env.FFMPEG_VERSION }}.zip"
-          )
+          FFMPEG_BIN=$(which ffmpeg)
+          FFPROBE_BIN=$(which ffprobe)
 
-          # Fallback: evermeet.cx provides macOS universal/x86_64 builds
-          if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
-            URLS+=("https://evermeet.cx/ffmpeg/ffmpeg-${{ env.FFMPEG_VERSION }}.zip")
-          fi
+          echo "ffmpeg:  $FFMPEG_BIN"
+          echo "ffprobe: $FFPROBE_BIN"
 
-          DOWNLOADED=false
-          for url in "${URLS[@]}"; do
-            echo "Trying: $url"
-            if curl -fSL -o ffmpeg.zip "$url" 2>/dev/null; then
-              echo "✓ Downloaded from: $url"
-              DOWNLOADED=true
-              break
-            fi
-            echo "✗ Not found, trying next..."
+          # Verify they work
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+
+          # Show architecture
+          file "$FFMPEG_BIN"
+          file "$FFPROBE_BIN"
+
+      - name: Prepare artifact
+        run: |
+          FFMPEG_BIN=$(which ffmpeg)
+          FFPROBE_BIN=$(which ffprobe)
+
+          # Resolve symlinks to get real binaries
+          FFMPEG_REAL=$(realpath "$FFMPEG_BIN")
+          FFPROBE_REAL=$(realpath "$FFPROBE_BIN")
+
+          # macos-latest is ARM — produces native arm64 binaries
+          # Copy to arm/ directly; intel/ gets the same binary (runs via Rosetta 2)
+          for dir in intel arm; do
+            mkdir -p artifact/macosx/$dir
+            cp "$FFMPEG_REAL"  artifact/macosx/$dir/ffmpeg
+            cp "$FFPROBE_REAL" artifact/macosx/$dir/ffprobe
+            chmod +x artifact/macosx/$dir/ffmpeg artifact/macosx/$dir/ffprobe
           done
 
-          if [ "$DOWNLOADED" = false ]; then
-            echo "::error::Could not download FFmpeg ${{ env.FFMPEG_VERSION }} for macOS ${{ matrix.arch }}"
-            exit 1
-          fi
+          echo "=== macOS artifacts ==="
+          find artifact/macosx -type f -exec ls -lh {} \;
+          echo ""
+          echo "=== Architecture check ==="
+          file artifact/macosx/arm/ffmpeg
 
-      - name: Extract and prepare artifact
-        run: |
-          mkdir -p ffmpeg_raw
-          # Handle both .zip and .7z formats
-          if file ffmpeg.zip | grep -q "Zip archive"; then
-            unzip -q ffmpeg.zip -d ffmpeg_raw
-          else
-            # Some sources provide .tar.xz inside .zip naming
-            tar -xf ffmpeg.zip -C ffmpeg_raw 2>/dev/null || unzip -q ffmpeg.zip -d ffmpeg_raw
-          fi
-
-          FFMPEG_BIN=$(find ffmpeg_raw -name "ffmpeg" -type f ! -name "*.txt" | head -1)
-          FFPROBE_BIN=$(find ffmpeg_raw -name "ffprobe" -type f ! -name "*.txt" | head -1)
-
-          if [[ -z "$FFMPEG_BIN" ]]; then
-            echo "::error::ffmpeg binary not found in archive"
-            find ffmpeg_raw -type f | head -20
-            exit 1
-          fi
-
-          mkdir -p artifact/macosx/${{ matrix.artifact_dir }}
-          cp "$FFMPEG_BIN" artifact/macosx/${{ matrix.artifact_dir }}/ffmpeg
-          chmod +x artifact/macosx/${{ matrix.artifact_dir }}/ffmpeg
-
-          if [[ -n "$FFPROBE_BIN" ]]; then
-            cp "$FFPROBE_BIN" artifact/macosx/${{ matrix.artifact_dir }}/ffprobe
-            chmod +x artifact/macosx/${{ matrix.artifact_dir }}/ffprobe
-          else
-            echo "::warning::ffprobe not found, downloading separately..."
-            # Some sources only distribute ffmpeg/ffprobe separately
-          fi
-
-          echo "=== macOS ${{ matrix.arch }} artifacts ==="
-          ls -la artifact/macosx/${{ matrix.artifact_dir }}/
-
-      - name: Upload artifact
+      - name: Upload artifact (intel)
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-macos-${{ matrix.artifact_dir }}
-          path: artifact/
+          name: ffmpeg-macos-intel
+          path: artifact/macosx/intel/
+          retention-days: 30
+
+      - name: Upload artifact (arm)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-macos-arm
+          path: artifact/macosx/arm/
           retention-days: 30
 
   # ============================================================================
-  # Linux (x64)
+  # Linux (x64) — from BtbN, fallback to johnvansickle.com
   # ============================================================================
   download-linux:
     if: contains(github.event.inputs.platforms, 'linux')
@@ -202,10 +175,12 @@ jobs:
       - name: Download FFmpeg for Linux
         run: |
           BASE="${{ env.BTBN_BASE }}"
+          VER="${{ env.FFMPEG_VERSION }}"
 
+          # BtbN naming: ffmpeg-n8.1-latest-linux64-gpl-8.1.tar.xz
           URLS=(
-            "${BASE}/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-gpl-${{ env.FFMPEG_VERSION }}.tar.xz"
-            "${BASE}/ffmpeg-n${{ env.FFMPEG_VERSION }}-latest-linux64-lgpl-${{ env.FFMPEG_VERSION }}.tar.xz"
+            "${BASE}/ffmpeg-n${VER}-latest-linux64-gpl-${VER}.tar.xz"
+            "${BASE}/ffmpeg-n${VER}-latest-linux64-lgpl-${VER}.tar.xz"
             "https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"
           )
 
@@ -221,7 +196,7 @@ jobs:
           done
 
           if [ "$DOWNLOADED" = false ]; then
-            echo "::error::Could not download FFmpeg ${{ env.FFMPEG_VERSION }} for Linux x64"
+            echo "::error::Could not download FFmpeg ${VER} for Linux x64"
             exit 1
           fi
 
@@ -276,15 +251,16 @@ jobs:
 
           # Windows
           if [ -d "downloads/ffmpeg-windows-x64" ]; then
-            cp -r downloads/ffmpeg-windows-x64/windows merged/
+            mkdir -p merged/windows/x64
+            cp -r downloads/ffmpeg-windows-x64/* merged/windows/x64/
             echo "✓ Windows x64"
           fi
 
           # macOS
           for dir in intel arm; do
             if [ -d "downloads/ffmpeg-macos-$dir" ]; then
-              mkdir -p merged/macosx
-              cp -r downloads/ffmpeg-macos-$dir/macosx/$dir merged/macosx/
+              mkdir -p merged/macosx/$dir
+              cp -r downloads/ffmpeg-macos-$dir/* merged/macosx/$dir/
               echo "✓ macOS $dir"
             fi
           done
