@@ -11,7 +11,7 @@ foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
   set(RCC_OUT_PUT_FILE UIAssetResource_${FILENAME_NO_EXT}.qrc)
   set(RCC_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${RCC_OUT_PUT_FILE})
   set(RCC_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/UIAssetResource.qrc.j2)
-  
+
   generate_from_template(
       TEMPLATE_FILE ${RCC_TEMEPLATE_FILE}
       INPUT_FILE ${item}
@@ -23,19 +23,24 @@ foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
   list(APPEND RCC_TARGETS ${GFT_RCC_TARGET})
 endforeach()
 
-set(Resourrce_RCC_Target ResourrceRCC)
-add_library(${Resourrce_RCC_Target} OBJECT)
-set_target_properties(${Resourrce_RCC_Target} PROPERTIES
+set(Resource_RCC_Target ResourceRCC)
+add_library(${Resource_RCC_Target} OBJECT)
+set_target_properties(${Resource_RCC_Target} PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   AUTORCC ON
   AUTOMOC OFF
   AUTOUIC OFF
   FOLDER ${RESOURCE_IDE_FOLDER}
 )
-target_link_libraries(${Resourrce_RCC_Target} PRIVATE Qt6::Core)
-target_sources(${Resourrce_RCC_Target} PRIVATE ${RCC_FILES})
-add_dependencies(${Resourrce_RCC_Target} ${RCC_TARGETS})
+target_link_libraries(${Resource_RCC_Target} PRIVATE Qt6::Core)
+target_sources(${Resource_RCC_Target} PRIVATE ${RCC_FILES})
+add_dependencies(${Resource_RCC_Target} ${RCC_TARGETS})
 
 add_library(UIResourceAssetRCCInterface INTERFACE)
-target_sources(UIResourceAssetRCCInterface INTERFACE $<TARGET_OBJECTS:${Resourrce_RCC_Target}>)
+target_sources(UIResourceAssetRCCInterface INTERFACE $<TARGET_OBJECTS:${Resource_RCC_Target}>)
+# Ensure consumers wait for the OBJECT library to finish compiling.
+# Without this, the VS generator may link a dependent target before
+# the .obj files from ResourceRCC are ready (MSBuild race condition).
+set_property(TARGET UIResourceAssetRCCInterface PROPERTY INTERFACE_LINK_DEPENDS ${Resource_RCC_Target})
+add_dependencies(UIResourceAssetRCCInterface ${Resource_RCC_Target})
 

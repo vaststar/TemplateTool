@@ -43,9 +43,13 @@ jobs:
 
     steps:
       # ── Checkout ──────────────────────────────────────────────────────────
+      # fetch-depth: 0 is required — VERSION_BUILD is derived from
+      # `git rev-list --count HEAD` (commit depth).  A shallow clone
+      # would produce build number "1" instead of the real count.
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
 
       # ── Install Qt ────────────────────────────────────────────────────────
@@ -75,7 +79,13 @@ jobs:
             libxkbcommon-dev \
             libxkbcommon-x11-0 \
             libxcb-xinerama0 \
-            libxcb-cursor0
+            libxcb-cursor0 \
+            libtiff-dev \
+            libopenexr-dev \
+            libavcodec-dev \
+            libavformat-dev \
+            libavutil-dev \
+            libswscale-dev
 
       # ── Build & Package ───────────────────────────────────────────────────
       - name: Build & Package
