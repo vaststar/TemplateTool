@@ -46,9 +46,12 @@ jobs:
       # fetch-depth: 0 is required — VERSION_BUILD is derived from
       # `git rev-list --count HEAD` (commit depth).  A shallow clone
       # would produce build number "1" instead of the real count.
+      # ref: when manual dispatch specifies a tag, checkout that tag's commit
+      #      so the build matches the tagged version exactly.
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
           fetch-depth: 0
           submodules: recursive
 
@@ -159,21 +162,37 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # Create GitHub Release (only on tag push)
+  # Create GitHub Release (on tag push OR manual dispatch with tag input)
   # ============================================================================
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >-
+      startsWith(github.ref, 'refs/tags/v')
+      || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
     runs-on: ubuntu-latest
     name: Create Release
     permissions:
       contents: write
+
+    env:
+      RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.tag }}
 
     steps:
       - name: Checkout (for release notes context)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Create and push tag (manual dispatch only, skip if tag exists)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if git rev-parse "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Tag $RELEASE_TAG already exists, skipping creation."
+          else
+            echo "Creating tag $RELEASE_TAG on current HEAD..."
+            git tag "$RELEASE_TAG"
+            git push origin "$RELEASE_TAG"
+          fi
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -194,6 +213,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           files: |
             artifacts/*
           generate_release_notes: true
