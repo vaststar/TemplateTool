@@ -35,6 +35,8 @@ void MainWindowSideBarController::init()
             this, &MainWindowSideBarController::onCurrentPageChanged);
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemUpdated,
             this, &MainWindowSideBarController::onNavItemUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onSubMenuRequested,
+            this, &MainWindowSideBarController::onSubMenuRequested);
 
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init signals connected, creating ViewModel");
 
@@ -44,17 +46,17 @@ void MainWindowSideBarController::init()
         UIVIEW_LOG_ERROR("Failed to create SideBarViewModel!");
         return;
     }
-    
+
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init ViewModel created, initializing");
     m_sideBarViewModel->initViewModel();
-    
+
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init registering callback");
     m_sideBarViewModel->registerCallback(m_viewModelEmitter);
 
     // Load initial data
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init refreshing nav items");
     refreshNavItems();
-    
+
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init done");
 }
 
@@ -78,6 +80,15 @@ void MainWindowSideBarController::navigateTo(int pageId)
     if (m_sideBarViewModel)
     {
         m_sideBarViewModel->navigateTo(static_cast<commonHead::viewModels::model::PageId>(pageId));
+    }
+}
+
+void MainWindowSideBarController::handleSubMenuAction(int actionId)
+{
+    if (m_sideBarViewModel)
+    {
+        m_sideBarViewModel->handleSubMenuAction(
+            static_cast<commonHead::viewModels::model::MenuActionId>(actionId));
     }
 }
 
@@ -121,6 +132,20 @@ void MainWindowSideBarController::onNavItemUpdated(const commonHead::viewModels:
     {
         m_bottomNavItems->updateItem(item);
     }
+}
+
+void MainWindowSideBarController::onSubMenuRequested(
+    int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items)
+{
+    QVariantList menuItems;
+    for (const auto& item : items)
+    {
+        QVariantMap entry;
+        entry["actionId"] = static_cast<int>(item.actionId);
+        entry["text"] = QString::fromStdString(item.title);
+        menuItems.append(entry);
+    }
+    emit subMenuRequested(pageId, menuItems);
 }
 
 void MainWindowSideBarController::onLanguageChanged()

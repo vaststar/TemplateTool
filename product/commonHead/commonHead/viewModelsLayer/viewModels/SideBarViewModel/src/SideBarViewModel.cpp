@@ -49,7 +49,7 @@ void SideBarViewModel::init()
 void SideBarViewModel::initDefaultNavItems()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    
+
     auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
     m_navItems =
     {
@@ -109,7 +109,7 @@ void SideBarViewModel::initDefaultNavItems()
             model::NavItemPosition::Top,
             4
         },
-        
+
         // ========== Bottom navigation items ==========
         {
             model::PageId::Settings,
@@ -131,10 +131,17 @@ void SideBarViewModel::initDefaultNavItems()
             0,
             model::NavItemState::Normal,
             model::NavItemPosition::Bottom,
-            1
+            1,
+            // Submenu items
+            {
+                { model::MenuActionId::CheckUpgrade,
+                  resourceLoader->getLocalizedString(commonHead::model::LocalizedString::MenuCheckUpgrade) },
+                { model::MenuActionId::About,
+                  resourceLoader->getLocalizedString(commonHead::model::LocalizedString::MenuAbout) },
+            }
         },
     };
-    
+
     m_currentPageId = model::PageId::Home;
 }
 
@@ -158,7 +165,7 @@ std::optional<model::NavItemData> SideBarViewModel::findNavItem(model::PageId pa
 std::vector<model::NavItemData> SideBarViewModel::getTopNavItems() const
 {
     std::vector<model::NavItemData> result;
-    
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         for (const auto& item : m_navItems)
@@ -169,18 +176,18 @@ std::vector<model::NavItemData> SideBarViewModel::getTopNavItems() const
             }
         }
     }
-    
+
     // Sort outside of lock, result is a local copy
-    std::sort(result.begin(), result.end(), 
+    std::sort(result.begin(), result.end(),
         [](const auto& a, const auto& b) { return a.sortOrder < b.sortOrder; });
-    
+
     return result;
 }
 
 std::vector<model::NavItemData> SideBarViewModel::getBottomNavItems() const
 {
     std::vector<model::NavItemData> result;
-    
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         for (const auto& item : m_navItems)
@@ -191,11 +198,11 @@ std::vector<model::NavItemData> SideBarViewModel::getBottomNavItems() const
             }
         }
     }
-    
+
     // Sort outside of lock, result is a local copy
-    std::sort(result.begin(), result.end(), 
+    std::sort(result.begin(), result.end(),
         [](const auto& a, const auto& b) { return a.sortOrder < b.sortOrder; });
-    
+
     return result;
 }
 
@@ -219,51 +226,72 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
     {
         return false;
     }
-    
+
+    // Check if this nav item has a submenu — show popup instead of navigating
+    {
+        std::vector<model::SubMenuItem> subItems;
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
+                [pageId](const auto& item) { return item.pageId == pageId; });
+
+            if (it != m_navItems.end() && it->hasSubMenu())
+            {
+                subItems = it->subMenuItems;
+            }
+        }
+
+        if (!subItems.empty())
+        {
+            fireNotification(&ISideBarViewModelCallback::onSubMenuRequested, pageId, subItems);
+            return true;
+        }
+    }
+
     model::PageChangeEvent event;
-    
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        
+
         const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
             [pageId](const auto& item) { return item.pageId == pageId; });
-        
+
         if (it == m_navItems.end())
         {
             COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " not found");
             return false;
         }
-        
+
         if (!it->isEnabled())
         {
             COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is disabled");
             return false;
         }
-        
+
         if (!it->isVisible())
         {
             COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is hidden");
             return false;
         }
-        
+
         if (m_currentPageId == pageId)
         {
             return true;
         }
-        
+
         event.fromPageId = m_currentPageId;
         event.toPageId = pageId;
         event.isUserAction = isUserAction;
         m_currentPageId = pageId;
     }
-    
+
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onCurrentPageChanged, event);
-    
-    COMMONHEAD_LOG_DEBUG("Navigate: " << static_cast<int>(event.fromPageId) 
-        << " -> " << static_cast<int>(event.toPageId) 
+
+    COMMONHEAD_LOG_DEBUG("Navigate: " << static_cast<int>(event.fromPageId)
+        << " -> " << static_cast<int>(event.toPageId)
         << " (userAction=" << isUserAction << ")");
-    
+
     return true;
 }
 
@@ -271,10 +299,10 @@ void SideBarViewModel::updateBadge(model::PageId pageId, int32_t badge)
 {
     model::NavItemData updatedItem;
     bool found = false;
-    
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        
+
         // Find and update directly in the loop
         for (auto& item : m_navItems)
         {
@@ -290,14 +318,14 @@ void SideBarViewModel::updateBadge(model::PageId pageId, int32_t badge)
                 break;
             }
         }
-        
+
         if (!found)
         {
             COMMONHEAD_LOG_WARN("updateBadge: pageId " << static_cast<int>(pageId) << " not found");
             return;
         }
     }
-    
+
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onNavItemUpdated, updatedItem);
     COMMONHEAD_LOG_DEBUG("Badge updated: pageId=" << static_cast<int>(pageId) << ", badge=" << badge);
@@ -307,10 +335,10 @@ void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState
 {
     model::NavItemData updatedItem;
     bool found = false;
-    
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        
+
         // Find and update directly in the loop
         for (auto& item : m_navItems)
         {
@@ -326,32 +354,32 @@ void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState
                 break;
             }
         }
-        
+
         if (!found)
         {
             COMMONHEAD_LOG_WARN("setNavItemState: pageId " << static_cast<int>(pageId) << " not found");
             return;
         }
     }
-    
+
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onNavItemUpdated, updatedItem);
-    COMMONHEAD_LOG_DEBUG("NavItem state updated: pageId=" << static_cast<int>(pageId) 
+    COMMONHEAD_LOG_DEBUG("NavItem state updated: pageId=" << static_cast<int>(pageId)
         << ", state=" << static_cast<int>(state));
 }
 
 void SideBarViewModel::reloadNavConfig()
 {
     COMMONHEAD_LOG_DEBUG("reloadNavConfig");
-    
+
     model::PageId savedPageId;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         savedPageId = m_currentPageId;
     }
-    
+
     initDefaultNavItems();
-    
+
     std::vector<model::NavItemData> items;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
@@ -364,9 +392,27 @@ void SideBarViewModel::reloadNavConfig()
         }
         items = m_navItems;
     }
-    
+
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onNavItemsChanged, items);
+}
+
+void SideBarViewModel::handleSubMenuAction(model::MenuActionId actionId)
+{
+    COMMONHEAD_LOG_DEBUG("handleSubMenuAction: " << static_cast<int>(actionId));
+
+    switch (actionId)
+    {
+    case model::MenuActionId::CheckUpgrade:
+        // Delegate to upgrade service (caller / AppRunner will handle)
+        break;
+    case model::MenuActionId::About:
+        navigateTo(model::PageId::About, true);
+        break;
+    default:
+        COMMONHEAD_LOG_WARN("Unknown MenuActionId: " << static_cast<int>(actionId));
+        break;
+    }
 }
 
 } // namespace commonHead::viewModels

@@ -77,6 +77,21 @@ unsigned int OSUtils::getCPUCoreCount()
     return std::thread::hardware_concurrency();
 }
 
+std::string OSUtils::getCPUArch()
+{
+#if defined(__aarch64__) || defined(_M_ARM64)
+    return "arm64";
+#elif defined(__x86_64__) || defined(_M_X64)
+    return "x86_64";
+#elif defined(__i386__) || defined(_M_IX86)
+    return "x86";
+#elif defined(__arm__) || defined(_M_ARM)
+    return "arm";
+#else
+    return "unknown";
+#endif
+}
+
 std::string OSUtils::getCPUInfo()
 {
 #if defined(_WIN32)

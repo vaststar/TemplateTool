@@ -19,7 +19,8 @@ public:
         PositionRole,
         SortOrderRole,
         IsEnabledRole,
-        IsVisibleRole
+        IsVisibleRole,
+        HasSubMenuRole
     };
 
     explicit NavItemModel(QObject* parent = nullptr);

@@ -1061,111 +1061,121 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="28"/>
-        <source>Text Processing</source>
+        <source>Check for Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="29"/>
-        <source>Date &amp; Time</source>
+        <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="30"/>
-        <source>Generators</source>
+        <source>Text Processing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="31"/>
-        <source>Base64 Encode/Decode</source>
+        <source>Date &amp; Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="32"/>
-        <source>JSON Formatter</source>
+        <source>Generators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="33"/>
-        <source>Timestamp Converter</source>
+        <source>Base64 Encode/Decode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="34"/>
-        <source>UUID Generator</source>
+        <source>JSON Formatter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="35"/>
-        <source>Network</source>
+        <source>Timestamp Converter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
-        <source>Network Proxy</source>
+        <source>UUID Generator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
-        <source>Media</source>
+        <source>Network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
-        <source>Screen Capture</source>
+        <source>Network Proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
-        <source>Screenshot</source>
+        <source>Media</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
-        <source>Screen Recording</source>
+        <source>Screen Capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
-        <source>JSON is valid</source>
+        <source>Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
-        <source>Invalid timestamp</source>
+        <source>Screen Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
-        <source>DateTime format parse failed</source>
+        <source>JSON is valid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
-        <source>Invalid datetime</source>
+        <source>Invalid timestamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
-        <source>General</source>
+        <source>DateTime format parse failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
-        <source>Appearance</source>
+        <source>Invalid datetime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
+        <source>Appearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
         <source>{{0}} of {{1}} completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
         <source>test param {{0}}, only 1 param</source>
         <translation type="unfinished"></translation>
     </message>

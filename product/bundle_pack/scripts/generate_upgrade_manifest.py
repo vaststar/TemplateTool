@@ -32,19 +32,28 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-def find_primary_package(artifacts_dir: str, platform_key: str) -> Path | None:
-    """Find the primary package file for a platform.
+def find_primary_package(artifacts_dir: str, label: str) -> Path | None:
+    """Find the primary package file for a platform by matching the label in the filename.
 
-    Priority: .zip (Windows), .dmg (macOS), .tar.gz (Linux)
+    Package names follow: ProductName-Version-<Label>.ext
+    e.g. Template-Factory-2026.04.0.606-Windows.zip
     """
     for ext in ("*.zip", "*.dmg", "*.tar.gz"):
         matches = [
             p for p in Path(artifacts_dir).glob(ext)
-            if not p.name.endswith(".sha256")
+            if not p.name.endswith(".sha256") and label in p.name
         ]
         if matches:
             return matches[0]
     return None
+
+
+# Map CI platform labels (from artifact filename) to upgrade manifest keys
+PLATFORM_LABEL_TO_KEY = {
+    "Windows": "windows-x64",
+    "Linux":   "linux-x64",
+    "macOS":   "macos-arm64",
+}
 
 
 def read_sha256(package_path: Path) -> str:
@@ -93,10 +102,13 @@ def main():
     min_version = upgrade_cfg.get("minVersion", "")
     mandatory = args.mandatory or upgrade_cfg.get("mandatory", False)
 
-    # ── Collect per-platform package-info.json files ──
-    info_files = list(artifacts_dir.rglob("package-info.json"))
+    # ── Collect per-platform package-info-*.json files ──
+    info_files = list(artifacts_dir.rglob("package-info-*.json"))
     if not info_files:
-        print("Error: No package-info.json files found in", artifacts_dir)
+        # Fallback: try old name for backward compatibility
+        info_files = list(artifacts_dir.rglob("package-info.json"))
+    if not info_files:
+        print("Error: No package-info-*.json files found in", artifacts_dir)
         sys.exit(1)
 
     version = None
@@ -106,20 +118,22 @@ def main():
         with open(info_file) as f:
             info = json.load(f)
 
-        platform_key = info["platform"]
         pkg_version = info["version"]
+
+        # Derive platform key from filename: package-info-Windows.json → "Windows"
+        label = info_file.stem.replace("package-info-", "") or info_file.parent.name
+        platform_key = PLATFORM_LABEL_TO_KEY.get(label, label.lower())
 
         if version is None:
             version = pkg_version
         elif version != pkg_version:
             print(f"  Warning: version mismatch {version} vs {pkg_version} for {platform_key}")
 
-        # Find primary package file in same directory
-        pkg_dir = info_file.parent
-        pkg_path = find_primary_package(pkg_dir, platform_key)
+        # Find primary package file by matching platform label in filename
+        pkg_path = find_primary_package(info_file.parent, label)
         if pkg_path is None:
             # Try artifacts root (merge-multiple flattens)
-            pkg_path = find_primary_package(artifacts_dir, platform_key)
+            pkg_path = find_primary_package(artifacts_dir, label)
 
         if pkg_path is None:
             print(f"  Warning: no package file found for {platform_key}, skipping")

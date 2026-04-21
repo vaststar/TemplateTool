@@ -4,19 +4,6 @@
 include(BuildCPackModule)
 set(CPACK_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/templates")
 
-# ── Platform key for upgrade manifest (matches UpgradeCheckManager lookup) ──
-if(WIN32)
-    set(UPGRADE_PLATFORM_KEY "windows-x64" CACHE INTERNAL "")
-elseif(APPLE)
-    if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
-        set(UPGRADE_PLATFORM_KEY "macos-arm64" CACHE INTERNAL "")
-    else()
-        set(UPGRADE_PLATFORM_KEY "macos-x64" CACHE INTERNAL "")
-    endif()
-elseif(UNIX)
-    set(UPGRADE_PLATFORM_KEY "linux-x64" CACHE INTERNAL "")
-endif()
-
 if(WIN32)
     BuildCPackModule(
         TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_windows_config.cmake.in"

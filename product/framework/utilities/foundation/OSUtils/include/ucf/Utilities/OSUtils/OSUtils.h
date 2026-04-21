@@ -29,6 +29,7 @@ public:
     static std::string getOSTypeName();
     static std::string getOSVersion();
     static unsigned int getCPUCoreCount();
+    static std::string getCPUArch();
     static std::string getCPUInfo();
     static std::string getCompilerInfo();
     static MemoryInfo getMemoryInfo();

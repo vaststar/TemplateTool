@@ -45,6 +45,26 @@ enum class COMMONHEAD_EXPORT NavItemPosition : uint8_t
 };
 
 /**
+ * @brief Menu action ID for submenu items
+ */
+enum class COMMONHEAD_EXPORT MenuActionId : uint8_t
+{
+    Unknown = 0,
+    CheckUpgrade,
+    About
+};
+
+/**
+ * @brief Submenu item data
+ */
+struct COMMONHEAD_EXPORT SubMenuItem
+{
+    MenuActionId actionId = MenuActionId::Unknown;
+    std::string title;
+    commonHead::model::AssetImageToken icon = commonHead::model::AssetImageToken::None;
+};
+
+/**
  * @brief Navigation item data structure
  */
 struct COMMONHEAD_EXPORT NavItemData
@@ -58,30 +78,36 @@ struct COMMONHEAD_EXPORT NavItemData
     NavItemState state = NavItemState::Normal;
     NavItemPosition position = NavItemPosition::Top;
     int32_t sortOrder = 0;              // Sort weight (within same position)
-    
+    std::vector<SubMenuItem> subMenuItems;  // Popup submenu items (empty = normal nav)
+
     bool operator==(const NavItemData& other) const
     {
         return pageId == other.pageId;
     }
-    
+
     bool isEnabled() const
     {
         return state == NavItemState::Normal;
     }
-    
+
     bool isVisible() const
     {
         return state != NavItemState::Hidden;
     }
-    
+
     bool isTopItem() const
     {
         return position == NavItemPosition::Top;
     }
-    
+
     bool isBottomItem() const
     {
         return position == NavItemPosition::Bottom;
+    }
+
+    bool hasSubMenu() const
+    {
+        return !subMenuItems.empty();
     }
 };
 

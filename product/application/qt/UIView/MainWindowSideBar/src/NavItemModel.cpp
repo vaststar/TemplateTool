@@ -53,6 +53,8 @@ QVariant NavItemModel::data(const QModelIndex& index, int role) const
             return item.isEnabled();
         case IsVisibleRole:
             return item.isVisible();
+        case HasSubMenuRole:
+            return item.hasSubMenu();
         default:
             return {};
     }
@@ -71,7 +73,8 @@ QHash<int, QByteArray> NavItemModel::roleNames() const
         {PositionRole, "position"},
         {SortOrderRole, "sortOrder"},
         {IsEnabledRole, "isEnabled"},
-        {IsVisibleRole, "isVisible"}
+        {IsVisibleRole, "isVisible"},
+        {HasSubMenuRole, "hasSubMenu"}
     };
 }
 

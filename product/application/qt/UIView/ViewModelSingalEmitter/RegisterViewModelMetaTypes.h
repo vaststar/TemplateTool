@@ -10,6 +10,8 @@
 Q_DECLARE_METATYPE(commonHead::viewModels::model::NavItemData)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::PageChangeEvent)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::NavItemData>)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::SubMenuItem)
+Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::SubMenuItem>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::VideoFrame)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreePtr)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsTreePtr)
@@ -23,6 +25,8 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<commonHead::viewModels::model::NavItemData>();
     qRegisterMetaType<commonHead::viewModels::model::PageChangeEvent>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::NavItemData>>();
+    qRegisterMetaType<commonHead::viewModels::model::SubMenuItem>();
+    qRegisterMetaType<std::vector<commonHead::viewModels::model::SubMenuItem>>();
     qRegisterMetaType<commonHead::viewModels::model::VideoFrame>();
     qRegisterMetaType<commonHead::viewModels::model::ToolsTreePtr>();
     qRegisterMetaType<commonHead::viewModels::model::SettingsTreePtr>();

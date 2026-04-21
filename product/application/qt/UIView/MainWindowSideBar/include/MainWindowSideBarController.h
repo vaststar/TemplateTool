@@ -38,10 +38,12 @@ public:
     int currentPageId() const;
 
     Q_INVOKABLE void navigateTo(int pageId);
+    Q_INVOKABLE void handleSubMenuAction(int actionId);
 
 signals:
     void currentPageIdChanged(int pageId);
     void pageChanged(int fromPageId, int toPageId, bool isUserAction);
+    void subMenuRequested(int pageId, const QVariantList& menuItems);
 
 protected:
     void init() override;
@@ -51,6 +53,7 @@ private slots:
     void onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items);
     void onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event);
     void onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item);
+    void onSubMenuRequested(int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items);
 
 private:
     void refreshNavItems();

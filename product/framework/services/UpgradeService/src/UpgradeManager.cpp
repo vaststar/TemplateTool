@@ -6,6 +6,7 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/Utilities/OSUtils/OSUtils.h>
 
 namespace ucf::service {
 
@@ -264,24 +265,12 @@ std::string UpgradeManager::getCurrentVersionString() const
 
 std::string UpgradeManager::getCurrentPlatform() const
 {
-#if defined(__APPLE__)
-    return "macOS";
-#elif defined(_WIN32)
-    return "Windows";
-#else
-    return "Linux";
-#endif
+    return ucf::utilities::OSUtils::getOSTypeName();
 }
 
 std::string UpgradeManager::getCurrentArch() const
 {
-#if defined(__aarch64__) || defined(_M_ARM64)
-    return "arm64";
-#elif defined(__x86_64__) || defined(_M_X64)
-    return "x86_64";
-#else
-    return "unknown";
-#endif
+    return ucf::utilities::OSUtils::getCPUArch();
 }
 
 // ── Auto-check timer ──

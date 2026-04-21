@@ -167,9 +167,10 @@ jobs:
           # CMake generates it under product/bundle_pack/
           SRC=$(find "$BUILD_DIR" -path "*/bundle_pack/package-info.json" | head -1)
           if [[ -n "$SRC" ]]; then
-            cp "$SRC" "$BUILD_DIR/package-info.json"
-            echo "=== package-info.json ==="
-            cat "$BUILD_DIR/package-info.json"
+            # Rename with platform label to avoid overwrite when artifacts merge
+            cp "$SRC" "$BUILD_DIR/package-info-${{ matrix.platform_label }}.json"
+            echo "=== package-info-${{ matrix.platform_label }}.json ==="
+            cat "$BUILD_DIR/package-info-${{ matrix.platform_label }}.json"
           else
             echo "::error::package-info.json not found in build tree"
             exit 1
@@ -189,7 +190,7 @@ jobs:
             build/${{ matrix.preset }}/*.deb.sha256
             build/${{ matrix.preset }}/*.dmg
             build/${{ matrix.preset }}/*.dmg.sha256
-            build/${{ matrix.preset }}/package-info.json
+            build/${{ matrix.preset }}/package-info-*.json
           if-no-files-found: error
           retention-days: 30
 
@@ -266,8 +267,8 @@ jobs:
             --output artifacts/upgrade-manifest.json \
             $MANDATORY_FLAG
 
-          # Clean up package-info.json files (don't upload to release)
-          find artifacts -name "package-info.json" -delete
+          # Clean up package-info files (don't upload to release)
+          find artifacts -name "package-info*.json" -delete
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

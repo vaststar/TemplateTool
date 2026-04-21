@@ -135,5 +135,41 @@ Item {
             }
         }
     }
+    // Submenu popup for nav items (e.g. Help)
+    UTDynamicMenu {
+        id: _navSubMenu
+        property int targetPageId: 0
+        onItemTriggered: function(action) {
+            controller.handleSubMenuAction(parseInt(action))
+        }
+    }
+
+    Connections {
+        target: controller
+        function onSubMenuRequested(pageId, menuItems) {
+            var model = []
+            for (var i = 0; i < menuItems.length; ++i) {
+                model.push({ text: menuItems[i].text, action: String(menuItems[i].actionId) })
+            }
+            _navSubMenu.model = model
+            _navSubMenu.targetPageId = pageId
+
+            // Find the delegate that triggered it and popup near it
+            var delegateItem = null
+            for (var j = 0; j < bottomNavList.count; ++j) {
+                var item = bottomNavList.itemAtIndex(j)
+                if (item && item.pageId === pageId) {
+                    delegateItem = item
+                    break
+                }
+            }
+            if (delegateItem) {
+                var pos = delegateItem.mapToItem(root, delegateItem.width, 0)
+                _navSubMenu.popup(root, pos.x + 4, pos.y)
+            } else {
+                _navSubMenu.popup()
+            }
+        }
+    }
 
 }

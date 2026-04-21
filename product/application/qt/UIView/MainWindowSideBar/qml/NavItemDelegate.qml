@@ -26,6 +26,7 @@ Rectangle {
     required property int badge
     required property bool isEnabled
     required property bool isVisible
+    required property bool hasSubMenu
 
     property bool isSelected: false
     property bool showText: false

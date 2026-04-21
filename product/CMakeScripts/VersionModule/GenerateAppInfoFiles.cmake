@@ -14,7 +14,7 @@ if(CMAKE_SCRIPT_MODE_FILE)
     if(NOT DEFINED OUTPUT_H)
         message(FATAL_ERROR "[GenerateAppInfoFiles] OUTPUT_H variable not defined")
     endif()
-    
+
     # Validate input files exist
     if(NOT EXISTS "${INPUT_JSON_FILE}")
         message(FATAL_ERROR "[GenerateAppInfoFiles] Input JSON file not found: ${INPUT_JSON_FILE}")
@@ -24,13 +24,13 @@ if(CMAKE_SCRIPT_MODE_FILE)
     endif()
 
     file(READ "${INPUT_JSON_FILE}" json_content)
-    
+
     # Parse version info
     string(JSON VERSION_MAJOR GET "${json_content}" "VERSION" "VERSION_MAJOR")
     string(JSON VERSION_MINOR GET "${json_content}" "VERSION" "VERSION_MINOR")
     string(JSON VERSION_PATCH GET "${json_content}" "VERSION" "VERSION_PATCH")
     string(JSON VERSION_BUILD GET "${json_content}" "VERSION" "VERSION_BUILD")
-    
+
     # Parse compilation info
     string(JSON GIT_COMMIT_HASH GET "${json_content}" "COMPILATION" "GIT_COMMIT_HASH")
     string(JSON GIT_COMMIT_BRANCH GET "${json_content}" "COMPILATION" "GIT_COMMIT_BRANCH")
@@ -38,7 +38,7 @@ if(CMAKE_SCRIPT_MODE_FILE)
     # Parse company info
     string(JSON COMPANY_NAME GET "${json_content}" "COMPANY" "NAME")
     string(JSON COPYRIGHT GET "${json_content}" "COMPANY" "COPYRIGHT")
-    
+
     # Parse product info
     string(JSON PRODUCT_NAME GET "${json_content}" "PRODUCT" "NAME")
     string(JSON PRODUCT_DESCRIPTION GET "${json_content}" "PRODUCT" "DESCRIPTION")
@@ -99,11 +99,11 @@ function(generate_app_info_files)
         message(STATUS "  Original Name: ${ARG_ORIGINAL_FILENAME}")
     endif()
     message(STATUS "------------------------------------------------------------")
-   
+
     # Add custom command to generate resource file
     add_custom_command(
         OUTPUT ${ARG_OUTPUT_FILE}
-        COMMAND ${CMAKE_COMMAND} 
+        COMMAND ${CMAKE_COMMAND}
             -DINPUT_JSON_FILE=${ARG_INPUT_JSON_FILE}
             -DINPUT_TEMPLATE_FILE=${ARG_INPUT_VERSION_TEMPLATE}
             -DFILE_DESCRIPTION=${ARG_FILE_DESCRIPTION}
@@ -114,7 +114,7 @@ function(generate_app_info_files)
         DEPENDS ${ARG_INPUT_JSON_FILE} ${ARG_INPUT_VERSION_TEMPLATE}
         COMMENT "[GenerateAppInfoFiles] Generating ${ARG_OUTPUT_FILE}"
     )
-    
+
     # Create custom target
     add_custom_target(${TARGET_NAME} ALL DEPENDS ${ARG_OUTPUT_FILE})
     set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)

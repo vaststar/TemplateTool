@@ -37,6 +37,8 @@
     { "token": "NavToolbox", "value": "Toolbox", "conditions": [] },
     { "token": "NavSettings", "value": "Settings", "conditions": [] },
     { "token": "NavHelp", "value": "Help", "conditions": [] },
+    { "token": "MenuCheckUpgrade", "value": "Check for Updates", "conditions": [] },
+    { "token": "MenuAbout", "value": "About", "conditions": [] },
     { "token": "ToolsCategoryText", "value": "Text Processing", "conditions": [] },
     { "token": "ToolsCategoryTime", "value": "Date & Time", "conditions": [] },
     { "token": "ToolsCategoryGenerator", "value": "Generators", "conditions": [] },
