@@ -10,6 +10,8 @@
 #include <ucf/Utilities/JsonUtils/JsonValue.h>
 
 #include <format>
+#include <sstream>
+#include <vector>
 
 namespace ucf::service {
 
@@ -94,23 +96,24 @@ void UpgradeCheckManager::checkForUpgrade(
         return;
     }
 
-    // Build request URL with query params
-    std::string requestUrl = std::format(
-        "{}?version={}&platform={}&arch={}",
-        mCheckUrl, currentVersion, platform, arch);
-
-    UPGRADE_LOG_INFO("Checking for upgrade: " << requestUrl);
+    // The manifest URL points directly to upgrade-manifest.json in the
+    // latest GitHub Release.  No query params needed — the manifest contains
+    // all platforms; the client picks its own after download.
+    UPGRADE_LOG_INFO("Checking for upgrade: " << mCheckUrl);
 
     auto request = std::make_unique<network::http::HttpRestRequest>(
         network::http::HTTPMethod::GET,
-        requestUrl,
+        mCheckUrl,
         network::http::NetworkHttpHeaders{},
         "",
         30 // timeout seconds
     );
 
+    // Capture platform key for manifest lookup (e.g. "windows-x64")
+    std::string platformKey = platform + "-" + arch;
+
     httpManager->sendHttpRestRequest(*request,
-        [this, callback, currentVersion](const network::http::HttpRestResponse& response) {
+        [this, callback, currentVersion, platformKey](const network::http::HttpRestResponse& response) {
             auto errorData = response.getErrorData();
             if (errorData.has_value()) {
                 UPGRADE_LOG_ERROR("Check request failed: " << errorData->errorDescription);
@@ -127,7 +130,8 @@ void UpgradeCheckManager::checkForUpgrade(
             }
 
             try {
-                auto result = parseCheckResponse(response.getResponseBody());
+                auto result = parseCheckResponse(
+                    response.getResponseBody(), currentVersion, platformKey);
 
                 // Update cached state
                 mLastCheckTime = std::chrono::steady_clock::now();
@@ -144,7 +148,9 @@ void UpgradeCheckManager::checkForUpgrade(
 }
 
 model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
-    const std::string& jsonBody) const
+    const std::string& jsonBody,
+    const std::string& currentVersion,
+    const std::string& platformKey) const
 {
     model::UpgradeCheckResult result;
     auto json = ucf::utilities::JsonValue::parse(jsonBody);
@@ -152,34 +158,63 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
         throw std::runtime_error("Failed to parse JSON response");
     }
 
-    result.hasUpgrade = json.get("hasUpgrade").asBool().value_or(false);
+    auto& info = result.upgradeInfo;
+    info.version      = json.get("version").asString().value_or("");
+    info.releaseDate  = json.get("releaseDate").asString().value_or("");
+    info.releaseNotes = json.get("releaseNotes").asString().value_or("");
+    info.mandatory    = json.get("mandatory").asBool().value_or(false);
+    info.minVersion   = json.get("minVersion").asString().value_or("");
+
+    // Check if the manifest version is newer than current
+    result.hasUpgrade = isNewerVersion(currentVersion, info.version);
 
     if (result.hasUpgrade) {
-        auto latest = json.get("latest");
-        auto& info = result.upgradeInfo;
+        // Look up platform-specific package (e.g. "windows-x64")
+        auto packages = json.get("packages");
+        auto pkg = packages.get(platformKey);
 
-        info.version      = latest.get("version").asString().value_or("");
-        info.releaseDate  = latest.get("releaseDate").asString().value_or("");
-        info.releaseNotes = latest.get("releaseNotes").asString().value_or("");
-        info.mandatory    = latest.get("mandatory").asBool().value_or(false);
-        info.minVersion   = latest.get("minVersion").asString().value_or("");
+        if (pkg.isNull()) {
+            UPGRADE_LOG_WARN("No package found for platform: " << platformKey);
+            result.hasUpgrade = false;
+            return result;
+        }
 
-        // Parse platform-specific package
-        auto packages = latest.get("package");
-        info.package.downloadUrl = packages.get("url").asString().value_or("");
-        info.package.sha256      = packages.get("sha256").asString().value_or("");
-        info.package.sizeBytes   = packages.get("size").asInt64().value_or(0);
+        info.package.downloadUrl = pkg.get("url").asString().value_or("");
+        info.package.sha256      = pkg.get("sha256").asString().value_or("");
+        info.package.sizeBytes   = pkg.get("size").asInt64().value_or(0);
     }
 
     return result;
 }
 
 bool UpgradeCheckManager::isNewerVersion(
-    const std::string& /*current*/, const std::string& /*latest*/) const
+    const std::string& current, const std::string& latest) const
 {
-    // Server-side already handles version comparison via the hasUpgrade field.
-    // This method is reserved for optional client-side validation.
-    return true;
+    // Compare dot-separated numeric version strings (e.g. "2026.04.0.1523")
+    auto parseSegments = [](const std::string& v) -> std::vector<int> {
+        std::vector<int> segments;
+        std::istringstream ss(v);
+        std::string token;
+        while (std::getline(ss, token, '.')) {
+            try { segments.push_back(std::stoi(token)); }
+            catch (...) { segments.push_back(0); }
+        }
+        return segments;
+    };
+
+    auto cur = parseSegments(current);
+    auto lat = parseSegments(latest);
+
+    // Pad to same length
+    size_t maxLen = std::max(cur.size(), lat.size());
+    cur.resize(maxLen, 0);
+    lat.resize(maxLen, 0);
+
+    for (size_t i = 0; i < maxLen; ++i) {
+        if (lat[i] > cur[i]) return true;
+        if (lat[i] < cur[i]) return false;
+    }
+    return false; // equal
 }
 
 } // namespace ucf::service

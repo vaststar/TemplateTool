@@ -4,6 +4,7 @@
 #include <ucf/Services/UpgradeService/IUpgradeServiceCallback.h>
 #include "fsm/UpgradeStates.h"
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -96,7 +97,8 @@ private:
     std::unique_ptr<upgrade::UpgradeFSM> mFsm;
 
     // Auto-check timer
-    std::jthread mAutoCheckThread;
+    std::thread mAutoCheckThread;
+    std::atomic<bool> mStopRequested{false};
 };
 
 } // namespace ucf::service

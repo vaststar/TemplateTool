@@ -54,12 +54,15 @@ public:
     void reset();
 
 private:
-    model::UpgradeCheckResult parseCheckResponse(const std::string& jsonBody) const;
+    model::UpgradeCheckResult parseCheckResponse(
+        const std::string& jsonBody,
+        const std::string& currentVersion,
+        const std::string& platformKey) const;
     bool isNewerVersion(const std::string& current, const std::string& latest) const;
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
-    std::string mCheckUrl{"https://api.example.com/v1/upgrade/check"};
+    std::string mCheckUrl{"https://github.com/aspect-apps/TemplateTool/releases/latest/download/upgrade-manifest.json"};
     std::chrono::minutes mMinCheckInterval{5};
     std::chrono::steady_clock::time_point mLastCheckTime{};
     std::optional<model::UpgradeCheckResult> mCachedResult;

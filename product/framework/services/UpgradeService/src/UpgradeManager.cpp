@@ -288,18 +288,19 @@ std::string UpgradeManager::getCurrentArch() const
 
 void UpgradeManager::startAutoCheckTimer()
 {
-    mAutoCheckThread = std::jthread([this](std::stop_token stopToken) {
+    mStopRequested.store(false);
+    mAutoCheckThread = std::thread([this]() {
         // Initial delay: 30 seconds after startup
-        for (int i = 0; i < 30 && !stopToken.stop_requested(); ++i) {
+        for (int i = 0; i < 30 && !mStopRequested.load(); ++i) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        while (!stopToken.stop_requested()) {
+        while (!mStopRequested.load()) {
             UPGRADE_LOG_DEBUG("Auto-check timer triggered");
             checkForUpgrade(/*userTriggered=*/false);
 
             // Check every 4 hours
-            for (int i = 0; i < 4 * 3600 && !stopToken.stop_requested(); ++i) {
+            for (int i = 0; i < 4 * 3600 && !mStopRequested.load(); ++i) {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
@@ -308,8 +309,8 @@ void UpgradeManager::startAutoCheckTimer()
 
 void UpgradeManager::stopAutoCheckTimer()
 {
+    mStopRequested.store(true);
     if (mAutoCheckThread.joinable()) {
-        mAutoCheckThread.request_stop();
         mAutoCheckThread.join();
     }
 }

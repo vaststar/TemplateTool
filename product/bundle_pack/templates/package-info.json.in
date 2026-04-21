@@ -1,0 +1,4 @@
+{
+  "version": "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@.@VERSION_BUILD@",
+  "platform": "@UPGRADE_PLATFORM_KEY@"
+}

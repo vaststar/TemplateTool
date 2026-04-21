@@ -1,0 +1,6 @@
+{
+    "upgrade": {
+        "minVersion": "2026.04.0.0",
+        "mandatory": false
+    }
+}
