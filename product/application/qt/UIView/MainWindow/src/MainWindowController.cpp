@@ -22,6 +22,7 @@
 #include "PageViews/ContactsPage/include/ContactsPageController.h"
 #include "PageViews/HomePage/include/HomePageController.h"
 #include "PageViews/SettingsPage/include/SettingsPageController.h"
+#include "AppUpgrade/include/AppUpgradeController.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
@@ -49,6 +50,8 @@ void MainWindowController::init()
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onLogsPackComplete,
                 this, &MainWindowController::onLogsPackComplete);
     mMainViewModel->initViewModel();
+
+    createUpgradeController();
 }
 
 QString MainWindowController::getTitle() const
@@ -123,6 +126,16 @@ void MainWindowController::connectSignals(UIViewController* controller)
     else if (dynamic_cast<SettingsPageController*>(controller))
     {
         UIVIEW_LOG_DEBUG("connectSignals for SettingsPageController");
+    }
+}
+
+void MainWindowController::createUpgradeController()
+{
+    if (!m_upgradeController)
+    {
+        UIVIEW_LOG_DEBUG("Creating AppUpgradeController");
+        m_upgradeController = new AppUpgradeController(this);
+        setupController(m_upgradeController);
     }
 }
 

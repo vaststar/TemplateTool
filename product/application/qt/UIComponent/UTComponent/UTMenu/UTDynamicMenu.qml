@@ -29,33 +29,30 @@ UTMenu {
     property var model: []
     signal itemTriggered(string action)
 
-    Instantiator {
-        model: root.model
-        delegate: QtObject {
-            property var itemData: root.model[index]
+    onModelChanged: _rebuild()
 
-            Component.onCompleted: {
-                if (itemData.separator) {
-                    var sep = _sepComponent.createObject(root)
-                    root.addItem(sep)
-                } else if (itemData.children && itemData.children.length > 0) {
-                    var comp = Qt.createComponent("UTDynamicMenu.qml")
-                    var submenu = comp.createObject(root, {
-                        title: itemData.text,
-                        model: itemData.children
-                    })
-                    submenu.itemTriggered.connect(root.itemTriggered)
-                    root.addMenu(submenu)
-                } else {
-                    var item = _itemComponent.createObject(root, {
-                        text: itemData.text
-                    })
-                    var action = itemData.action
-                    item.triggered.connect(function() {
-                        root.itemTriggered(action)
-                    })
-                    root.addItem(item)
-                }
+    function _rebuild() {
+        // Remove all existing items (backwards to keep indices stable)
+        for (var i = root.count - 1; i >= 0; --i)
+            root.removeItem(root.itemAt(i))
+
+        // Create new items from model
+        for (var j = 0; j < model.length; ++j) {
+            var data = model[j]
+            if (data.separator) {
+                root.addItem(_sepComponent.createObject(null))
+            } else if (data.children && data.children.length > 0) {
+                var submenu = Qt.createComponent("UTDynamicMenu.qml")
+                    .createObject(root, { title: data.text, model: data.children })
+                submenu.itemTriggered.connect(root.itemTriggered)
+                root.addMenu(submenu)
+            } else {
+                var item = _itemComponent.createObject(null, { text: data.text })
+                var action = data.action
+                item.triggered.connect(function(a) {
+                    return function() { root.itemTriggered(a) }
+                }(action))
+                root.addItem(item)
             }
         }
     }

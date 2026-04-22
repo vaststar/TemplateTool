@@ -8,6 +8,8 @@
 #include "UIViewBase/include/UIViewController.h"
 #include "UIEvents/UIMainWindowEvent.h"
 
+class AppUpgradeController;
+
 namespace commonHead{
     class ICommonHeadFramework;
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
@@ -59,7 +61,9 @@ protected:
     bool event(QEvent* event) override;
 private:
     void connectSignals(UIViewController* controller);
+    void createUpgradeController();
 private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     std::shared_ptr<UIVMSignalEmitter::MainWindowViewModelEmitter> mMainViewModelEmitter;
+    AppUpgradeController* m_upgradeController = nullptr;
 };

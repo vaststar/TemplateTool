@@ -6,6 +6,7 @@
 #include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
 #include "ViewModelSingalEmitter/SideBarViewModelEmitter.h"
+#include "UIEvents/UIUpgradeEvent.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 // ==================== MainWindowSideBarController ====================
@@ -85,10 +86,14 @@ void MainWindowSideBarController::navigateTo(int pageId)
 
 void MainWindowSideBarController::handleSubMenuAction(int actionId)
 {
+    auto id = static_cast<commonHead::viewModels::model::MenuActionId>(actionId);
+    if (id == commonHead::viewModels::model::MenuActionId::CheckUpgrade) {
+        sendUIEvent<UIUpgradeEvent>(UIUpgradeEvent::Action::CheckForUpgrade);
+        return;
+    }
     if (m_sideBarViewModel)
     {
-        m_sideBarViewModel->handleSubMenuAction(
-            static_cast<commonHead::viewModels::model::MenuActionId>(actionId));
+        m_sideBarViewModel->handleSubMenuAction(id);
     }
 }
 

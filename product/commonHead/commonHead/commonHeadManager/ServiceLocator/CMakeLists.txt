@@ -27,6 +27,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     StabilityService
     PerformanceService
     FeatureSettingsService
+    UpgradeService
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

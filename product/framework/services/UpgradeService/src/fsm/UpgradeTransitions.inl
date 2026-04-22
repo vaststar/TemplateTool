@@ -146,6 +146,11 @@ inline auto Installing::onEvent(UpgradeContext&, const EvError& e)
 
 // ── Failed ──
 
+inline auto Failed::onEvent(UpgradeContext&, const EvCheckRequested& e)
+    -> fsm::TransitionTo<Checking> {
+    return fsm::TransitionTo<Checking>{Checking{.userTriggered = e.userTriggered}};
+}
+
 inline auto Failed::onEvent(UpgradeContext&, const EvReset&)
     -> fsm::TransitionTo<Idle> { return {}; }
 

@@ -93,6 +93,8 @@ struct Failed {
     model::UpgradeErrorCode errorCode{};
     std::string errorMessage;
     void onEnter(UpgradeContext& ctx);
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
+        -> fsm::TransitionTo<Checking>;
     auto onEvent(UpgradeContext& ctx, const EvReset&)
         -> fsm::TransitionTo<Idle>;
 };

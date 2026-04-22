@@ -34,6 +34,7 @@ set(MODULE_SOURCE_PRIVATE
     ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h
     ViewModelSingalEmitter/ScreenshotViewModelEmitter.h
     ViewModelSingalEmitter/RecordingViewModelEmitter.h
+    ViewModelSingalEmitter/UpgradeViewModelEmitter.h
 
     PageViews/ContactsPage/include/ContactListItemModel.h
     PageViews/ContactsPage/include/ContactsPageController.h
@@ -108,6 +109,11 @@ set(MODULE_SOURCE_PRIVATE
 
     UIEvents/UIMainWindowEvent.h
     UIEvents/UIMainWindowEvent.cpp
+    UIEvents/UIUpgradeEvent.h
+    UIEvents/UIUpgradeEvent.cpp
+
+    AppUpgrade/include/AppUpgradeController.h
+    AppUpgrade/src/AppUpgradeController.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )
@@ -179,6 +185,7 @@ set(MODULE_QML_TARGET_FILES
     MainWindow/qml/MainWindow.qml
     MainWindow/qml/WindowResizeHandler.qml
     AppSystemTray/qml/AppSystemTray.qml
+    AppUpgrade/qml/UpgradeDialog.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

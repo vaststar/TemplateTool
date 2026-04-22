@@ -14,6 +14,7 @@
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 #include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
+#include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
 
 namespace commonHead::viewModels{
 
@@ -101,5 +102,10 @@ std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> ViewModelFactory::
 std::shared_ptr<commonHead::viewModels::IRecordingViewModel> ViewModelFactory::createRecordingViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IRecordingViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> ViewModelFactory::createUpgradeViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IUpgradeViewModel>();
 }
 } // namespace commonHead::viewModels

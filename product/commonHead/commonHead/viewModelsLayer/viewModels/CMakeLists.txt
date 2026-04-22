@@ -20,6 +20,7 @@ set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/RecordingViewModel/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/UpgradeViewModel/include
     ${CMAKE_CURRENT_SOURCE_DIR}/shared
 )
 
@@ -48,6 +49,7 @@ set(MODULE_HEADER_FILES #for include and install header
     ScreenshotViewModel/include/commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h
     RecordingViewModel/include/commonHead/viewModels/RecordingViewModel/IRecordingModel.h
     RecordingViewModel/include/commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h
+    UpgradeViewModel/include/commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h
     shared/commonHead/viewModels/ViewModelDataDefine/VideoFrame.h
 )
 set(MODULE_SOURCE_PRIVATE
@@ -88,6 +90,8 @@ set(MODULE_SOURCE_PRIVATE
     ScreenshotViewModel/src/ScreenshotViewModel.cpp
     RecordingViewModel/src/RecordingViewModel.h
     RecordingViewModel/src/RecordingViewModel.cpp
+    UpgradeViewModel/src/UpgradeViewModel.h
+    UpgradeViewModel/src/UpgradeViewModel.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
@@ -106,6 +110,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     StabilityService
     PerformanceService
     FeatureSettingsService
+    UpgradeService
     Base64Utils
     JsonUtils
     TimeUtils
@@ -139,6 +144,7 @@ set(MODULE_BUILD_PRIVATE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModel/src
     ${CMAKE_CURRENT_SOURCE_DIR}/RecordingViewModel/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/UpgradeViewModel/src
 )
 
 BuildModule(

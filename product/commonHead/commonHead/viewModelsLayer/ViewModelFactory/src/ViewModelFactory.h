@@ -34,6 +34,7 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> createNetworkProxyViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> createScreenshotViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> createUpgradeViewModelInstance() const override;
 
 private:
     template <typename T, typename... Args>

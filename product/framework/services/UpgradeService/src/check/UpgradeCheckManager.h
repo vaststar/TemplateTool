@@ -62,7 +62,7 @@ private:
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
-    std::string mCheckUrl{"https://github.com/aspect-apps/TemplateTool/releases/latest/download/upgrade-manifest.json"};
+    std::string mCheckUrl{"https://github.com/vaststar/TemplateTool/releases/latest/download/upgrade-manifest.json"};
     std::chrono::minutes mMinCheckInterval{5};
     std::chrono::steady_clock::time_point mLastCheckTime{};
     std::optional<model::UpgradeCheckResult> mCachedResult;

@@ -34,12 +34,12 @@ BaseMenuItem {
               : UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Item_Background, UIColorState.Normal)
 
         Behavior on color { ColorAnimation { duration: 100 } }
-    }
 
-    UTFocusItem {
-        target: _bg
-        delegateFocused: control.highlighted
-        focusRadius: _bg.radius
-        focusMargin: -1
+        UTFocusItem {
+            target: _bg
+            delegateFocused: control.highlighted
+            focusRadius: _bg.radius
+            focusMargin: -1
+        }
     }
 }
