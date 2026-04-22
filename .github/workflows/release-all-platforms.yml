@@ -79,6 +79,10 @@ jobs:
         with:
           arch: amd64
 
+      - name: Install NSIS (Windows)
+        if: runner.os == 'Windows'
+        run: choco install nsis -y
+
       - name: Install build tools & system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |

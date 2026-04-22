@@ -63,7 +63,7 @@ int extractZipPackage(const std::string& zipPath, const std::string& destDir)
 
 bool launchApplication(const std::filesystem::path& targetDir)
 {
-    auto exePath = targetDir / "mainEntry.exe";
+    auto exePath = targetDir / "bin" / "mainEntry.exe";
     STARTUPINFOW si{};
     si.cb = sizeof(si);
     PROCESS_INFORMATION pi{};

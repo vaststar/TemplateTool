@@ -48,8 +48,9 @@ std::filesystem::path UpgradeInstallManager::getInstallDirectory() const
     // execPath = /path/to/mainEntry.app/Contents/MacOS/mainEntry
     return execPath.parent_path().parent_path().parent_path(); // → mainEntry.app
 #else
-    // Windows & Linux: executable's parent directory (e.g. bin/)
-    return execPath.parent_path();
+    // Windows & Linux: install root is parent of bin/
+    // execPath = /install-root/bin/mainEntry(.exe)
+    return execPath.parent_path().parent_path();
 #endif
 }
 
