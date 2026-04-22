@@ -24,7 +24,7 @@ UpgradeDownloadManager::UpgradeDownloadManager(ucf::framework::ICoreFrameworkWPt
     : mCoreFramework(coreFramework)
 {
     ensureDownloadDirectory();
-    UPGRADE_LOG_DEBUG("UpgradeDownloadManager created, dir=" << mDownloadDir.string());
+    UPGRADE_LOG_DEBUG("UpgradeDownloadManager created, dir=" << ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
 }
 
 UpgradeDownloadManager::~UpgradeDownloadManager()
@@ -38,13 +38,13 @@ void UpgradeDownloadManager::ensureDownloadDirectory()
     auto coreFramework = mCoreFramework.lock();
     if (coreFramework) {
         if (auto clientInfo = coreFramework->getService<IClientInfoService>().lock()) {
-            mDownloadDir = std::filesystem::path(clientInfo->getAppCacheStoragePath()) / upgrade::constants::kDownloadSubDir;
+            mDownloadDir = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getAppCacheStoragePath()) / upgrade::constants::kDownloadSubDir;
         }
     }
     if (mDownloadDir.empty()) {
         mDownloadDir = std::filesystem::temp_directory_path() / upgrade::constants::kTempFallbackAppName / upgrade::constants::kDownloadSubDir;
     }
-    std::filesystem::create_directories(mDownloadDir);
+    ucf::utilities::FilePathUtils::createDirectoriesUtf8(ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
 }
 
 std::filesystem::path UpgradeDownloadManager::getDownloadDirectory() const
@@ -55,6 +55,7 @@ std::filesystem::path UpgradeDownloadManager::getDownloadDirectory() const
 bool UpgradeDownloadManager::hasSufficientSpace(int64_t requiredBytes) const
 {
     try {
+        ucf::utilities::FilePathUtils::createDirectoriesUtf8(ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
         auto spaceInfo = std::filesystem::space(mDownloadDir);
         // Need ~3x: download + extraction buffer
         return spaceInfo.available > static_cast<std::uintmax_t>(requiredBytes * 3);
@@ -111,7 +112,7 @@ void UpgradeDownloadManager::attemptDownload(
     }
 
     // Determine download file path
-    auto fileName = std::filesystem::path(packageInfo.downloadUrl).filename().string();
+    auto fileName = ucf::utilities::FilePathUtils::pathFromUtf8(packageInfo.downloadUrl).filename().string();
     if (fileName.empty()) {
         fileName = upgrade::constants::kDefaultPackageFileName;
     }
@@ -127,13 +128,13 @@ void UpgradeDownloadManager::attemptDownload(
     mDownloading.store(true);
 
     UPGRADE_LOG_INFO("Starting download: " << packageInfo.downloadUrl
-                     << " → " << mPartialFilePath.string());
+                     << " → " << ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath));
 
     auto request = std::make_unique<network::http::HttpDownloadToFileRequest>(
         packageInfo.downloadUrl,
         headers,
         300, // 5 min timeout
-        mPartialFilePath.string()
+        ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath)
     );
 
     httpManager->downloadContentToFile(*request,
@@ -195,9 +196,9 @@ void UpgradeDownloadManager::attemptDownload(
                 return;
             }
 
-            UPGRADE_LOG_INFO("Download complete: " << mPartialFilePath.string());
+            UPGRADE_LOG_INFO("Download complete: " << ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath));
             mResumedBytes = 0;
-            completeCb(true, mPartialFilePath.string(), model::UpgradeErrorCode::None, "");
+            completeCb(true, ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath), model::UpgradeErrorCode::None, "");
         });
 }
 
@@ -218,12 +219,12 @@ void UpgradeDownloadManager::verifyPackage(
     // Run verification on a background thread to avoid blocking FSM
     std::thread([this, filePath, expectedSha256, callback]() {
         try {
-            if (!std::filesystem::exists(filePath)) {
+            if (!ucf::utilities::FilePathUtils::existsUtf8(filePath)) {
                 callback(false, model::UpgradeErrorCode::VerifyFailed, "File not found: " + filePath);
                 return;
             }
 
-            auto actualHash = computeSha256(std::filesystem::path(filePath));
+            auto actualHash = computeSha256(ucf::utilities::FilePathUtils::pathFromUtf8(filePath));
 
             if (expectedSha256.empty()) {
                 UPGRADE_LOG_WARN("No expected SHA-256 provided, skipping verification");
@@ -294,7 +295,7 @@ void UpgradeDownloadManager::hardReset()
     mResumedBytes = 0;
     if (!mPartialFilePath.empty() && std::filesystem::exists(mPartialFilePath)) {
         std::filesystem::remove(mPartialFilePath);
-        UPGRADE_LOG_DEBUG("Removed partial file: " << mPartialFilePath.string());
+        UPGRADE_LOG_DEBUG("Removed partial file: " << ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath));
     }
     mPartialFilePath.clear();
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager hard reset");

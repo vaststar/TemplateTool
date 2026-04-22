@@ -100,7 +100,7 @@ std::filesystem::path UpgradeInstallManager::extractUpdaterToTemp(
     const std::string& packagePath)
 {
     auto tempDir = getTempDirectory();
-    std::filesystem::create_directories(tempDir);
+    ucf::utilities::FilePathUtils::createDirectoriesUtf8(ucf::utilities::FilePathUtils::utf8FromPath(tempDir));
 
     ucf::utilities::ArchiveWrapper archiver;
     auto updaterName = getUpdaterEntryName();
@@ -127,9 +127,9 @@ std::filesystem::path UpgradeInstallManager::extractUpdaterToTemp(
     }
 
     UPGRADE_LOG_INFO("Extracting updater from " << packagePath
-                     << " entry=" << fullEntryPath << " → " << destPath.string());
+                     << " entry=" << fullEntryPath << " → " << ucf::utilities::FilePathUtils::utf8FromPath(destPath));
 
-    auto error = archiver.extractEntry(packagePath, fullEntryPath, destPath.string());
+    auto error = archiver.extractEntry(packagePath, fullEntryPath, ucf::utilities::FilePathUtils::utf8FromPath(destPath));
     if (error != ucf::utilities::ArchiveError::Success)
     {
         throw std::runtime_error(
@@ -155,7 +155,7 @@ std::vector<std::string> UpgradeInstallManager::buildUpdaterArgs(
     args.emplace_back("--package");
     args.emplace_back(packagePath);
     args.emplace_back("--target");
-    args.emplace_back(targetDir.string());
+    args.emplace_back(ucf::utilities::FilePathUtils::utf8FromPath(targetDir));
     args.emplace_back("--pid");
 #ifdef _WIN32
     args.emplace_back(std::to_string(GetCurrentProcessId()));
@@ -184,15 +184,15 @@ void UpgradeInstallManager::launchUpdaterAndExit(
         auto markerPath = getTempDirectory() / upgrade::constants::kUpgradeMarkerFileName;
         {
             std::ofstream marker(markerPath);
-            marker << packagePath << "\n" << targetDir.string() << "\n";
+            marker << packagePath << "\n" << ucf::utilities::FilePathUtils::utf8FromPath(targetDir) << "\n";
         }
 
         // 4. Launch the updater process (detached — outlives this app)
-        UPGRADE_LOG_INFO("Launching updater: " << updaterPath.string());
-        UPGRADE_LOG_INFO("  target: " << targetDir.string());
+        UPGRADE_LOG_INFO("Launching updater: " << ucf::utilities::FilePathUtils::utf8FromPath(updaterPath));
+        UPGRADE_LOG_INFO("  target: " << ucf::utilities::FilePathUtils::utf8FromPath(targetDir));
 
         ucf::utilities::ProcessBridgeConfig config;
-        config.executablePath = updaterPath.string();
+        config.executablePath = ucf::utilities::FilePathUtils::utf8FromPath(updaterPath);
         config.arguments = args;
 
         if (!ucf::utilities::IProcessBridge::launch(config)) {
@@ -229,7 +229,7 @@ void UpgradeInstallManager::cleanupTempFiles()
         if (ec) {
             UPGRADE_LOG_WARN("Failed to clean temp dir: " << ec.message());
         } else {
-            UPGRADE_LOG_DEBUG("Cleaned temp dir: " << tempDir.string());
+            UPGRADE_LOG_DEBUG("Cleaned temp dir: " << ucf::utilities::FilePathUtils::utf8FromPath(tempDir));
         }
     }
 }
