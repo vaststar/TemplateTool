@@ -22,10 +22,20 @@ UTDialog {
 
         // Header
         UTText {
-            text: dialog.controller.hasUpgrade
-                  ? qsTr("A new version is available!")
-                  : (dialog.controller.checking ? qsTr("Checking for updates...") : qsTr("Check for Updates"))
-            fontEnum: UIFontToken.Title_Text
+            text: {
+                if (dialog.controller.readyToInstall)
+                    return qsTr("Ready to install")
+                if (dialog.controller.verifying)
+                    return qsTr("Verifying package...")
+                if (dialog.controller.downloading)
+                    return qsTr("Downloading update...")
+                if (dialog.controller.hasUpgrade)
+                    return qsTr("A new version is available!")
+                if (dialog.controller.checking)
+                    return qsTr("Checking for updates...")
+                return qsTr("Check for Updates")
+            }
+            fontEnum: UIFontToken.Heading_Text
             Layout.fillWidth: true
         }
 
@@ -50,10 +60,10 @@ UTDialog {
             }
         }
 
-        // Checking spinner
+        // Checking / Verifying spinner
         BusyIndicator {
-            visible: dialog.controller.checking
-            running: dialog.controller.checking
+            visible: dialog.controller.checking || dialog.controller.verifying
+            running: visible
             Layout.alignment: Qt.AlignHCenter
             palette.dark: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
         }
@@ -90,6 +100,7 @@ UTDialog {
         // No update message
         UTText {
             visible: !dialog.controller.hasUpgrade && !dialog.controller.checking
+                     && !dialog.controller.verifying && !dialog.controller.readyToInstall
                      && dialog.controller.errorMessage.length === 0
             text: qsTr("You are using the latest version.")
             fontEnum: UIFontToken.Body_Text
@@ -113,17 +124,24 @@ UTDialog {
             }
 
             UTButton {
+                visible: dialog.controller.readyToInstall
+                text: qsTr("Install && Restart")
+                onClicked: dialog.controller.installAndRestart()
+            }
+
+            UTButton {
                 visible: dialog.controller.hasUpgrade && !dialog.controller.downloading
+                         && !dialog.controller.verifying && !dialog.controller.readyToInstall
                 text: qsTr("Download && Install")
                 onClicked: dialog.controller.downloadUpgrade()
             }
 
             UTButton {
-                visible: !dialog.controller.downloading
+                visible: !dialog.controller.downloading && !dialog.controller.verifying
                 text: dialog.controller.hasUpgrade ? qsTr("Later") : qsTr("Close")
-                fontColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Button_Secondary_Text : UIColorToken.Button_Primary_Text
-                backgroundColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Button_Secondary_Background : UIColorToken.Button_Primary_Background
-                borderColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Button_Secondary_Border : UIColorToken.Button_Primary_Border
+                fontColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Text : UIColorToken.Button_Primary_Text
+                backgroundColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Background : UIColorToken.Button_Primary_Background
+                borderColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Input_Border : UIColorToken.Button_Primary_Border
                 onClicked: dialog.close()
             }
         }

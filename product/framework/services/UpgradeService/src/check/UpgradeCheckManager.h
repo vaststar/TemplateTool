@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ucf/Services/UpgradeService/UpgradeModel.h>
+#include "../UpgradeConstants.h"
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -62,7 +63,7 @@ private:
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
-    std::string mCheckUrl{"https://github.com/vaststar/TemplateTool/releases/latest/download/upgrade-manifest.json"};
+    std::string mCheckUrl{upgrade::constants::kDefaultManifestUrl};
     std::chrono::minutes mMinCheckInterval{5};
     std::chrono::steady_clock::time_point mLastCheckTime{};
     std::optional<model::UpgradeCheckResult> mCachedResult;

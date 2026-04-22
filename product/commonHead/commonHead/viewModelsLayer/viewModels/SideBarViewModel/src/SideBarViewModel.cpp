@@ -407,7 +407,6 @@ void SideBarViewModel::handleSubMenuAction(model::MenuActionId actionId)
         // Delegate to upgrade service (caller / AppRunner will handle)
         break;
     case model::MenuActionId::About:
-        navigateTo(model::PageId::About, true);
         break;
     default:
         COMMONHEAD_LOG_WARN("Unknown MenuActionId: " << static_cast<int>(actionId));

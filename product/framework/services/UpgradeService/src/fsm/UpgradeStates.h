@@ -47,6 +47,8 @@ struct Checking {
 struct UpgradeAvailable {
     static constexpr std::string_view name() { return "UpgradeAvailable"; }
     void onEnter(UpgradeContext& ctx);
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested&)
+        -> fsm::Stay;
     auto onEvent(UpgradeContext& ctx, const EvDownloadStart&)
         -> fsm::TransitionTo<Downloading>;
     auto onEvent(UpgradeContext& ctx, const EvRemindLater&)

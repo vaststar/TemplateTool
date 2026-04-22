@@ -458,4 +458,28 @@ IProcessBridge::RunResult IProcessBridge::run(const ProcessBridgeConfig& config)
     return result;
 }
 
+// ════════════════════════════════════════════════════════════
+//  Static detached launch
+// ════════════════════════════════════════════════════════════
+
+bool IProcessBridge::launch(const ProcessBridgeConfig& config)
+{
+    auto handle = detail::ProcessLauncher::launch(
+        config.executablePath,
+        config.arguments,
+        config.workingDirectory,
+        false,  // no stdin pipe needed
+        config.environment);
+
+    if (!handle.valid)
+    {
+        PB_LOG_ERROR("Detached launch failed: " << handle.errorMessage);
+        return false;
+    }
+
+    PB_LOG_INFO("Detached process launched, PID=" << handle.pid);
+    detail::ProcessLauncher::closeHandles(handle);
+    return true;
+}
+
 } // namespace ucf::utilities

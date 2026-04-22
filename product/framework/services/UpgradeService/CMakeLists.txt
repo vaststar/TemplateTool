@@ -48,6 +48,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CompressionUtils
     StateMachineUtils
     NotificationHelper
+    ProcessBridgeUtils
     openssl
 )
 

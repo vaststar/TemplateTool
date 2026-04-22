@@ -88,6 +88,14 @@ public:
     /// @param config  Process configuration (stopTimeoutMs used as overall timeout)
     /// @return RunResult with exit code and captured output
     static RunResult run(const ProcessBridgeConfig& config);
+
+    /// Launch a detached process: start it and immediately release all handles.
+    /// The child process runs independently and is NOT monitored or stopped.
+    /// Use this when the child must outlive the parent (e.g. an updater).
+    /// @param config  Process configuration (only executablePath, arguments,
+    ///                workingDirectory, and environment are used)
+    /// @return true if the process was launched successfully
+    static bool launch(const ProcessBridgeConfig& config);
 };
 
 } // namespace ucf::utilities

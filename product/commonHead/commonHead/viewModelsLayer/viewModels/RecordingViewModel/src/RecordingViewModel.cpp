@@ -479,6 +479,8 @@ void RecordingViewModel::requestMicrophonePermission(std::function<void(bool)> c
 
 std::string RecordingViewModel::getThumbnailCacheRoot() const
 {
+    static constexpr auto kThumbnailCacheDir = ".recording_thumbnails_cache";
+
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -486,7 +488,7 @@ std::string RecordingViewModel::getThumbnailCacheRoot() const
             if (auto clientInfoService = serviceLocator->getClientInfoService().lock())
             {
                 return ucf::utilities::FilePathUtils::utf8FromPath(
-                    ucf::utilities::FilePathUtils::pathFromUtf8(clientInfoService->getAppCacheStoragePath()) / "recording_thumbnails");
+                    ucf::utilities::FilePathUtils::pathFromUtf8(clientInfoService->getAppCacheStoragePath()) / kThumbnailCacheDir);
             }
         }
     }
@@ -494,11 +496,11 @@ std::string RecordingViewModel::getThumbnailCacheRoot() const
     if (!m_settings.outputDirectory.empty())
     {
         return ucf::utilities::FilePathUtils::utf8FromPath(
-            ucf::utilities::FilePathUtils::pathFromUtf8(m_settings.outputDirectory) / ".thumbnail_cache");
+            ucf::utilities::FilePathUtils::pathFromUtf8(m_settings.outputDirectory) / kThumbnailCacheDir);
     }
 
     return ucf::utilities::FilePathUtils::utf8FromPath(
-        std::filesystem::temp_directory_path() / "TemplateTool" / "recording_thumbnails");
+        std::filesystem::temp_directory_path() / "TemplateTool" / kThumbnailCacheDir);
 }
 
 std::string RecordingViewModel::buildThumbnailPath(const std::string& inputPath) const

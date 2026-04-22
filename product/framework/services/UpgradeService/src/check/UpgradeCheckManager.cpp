@@ -152,6 +152,7 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     const std::string& currentVersion,
     const std::string& platformKey) const
 {
+    UPGRADE_LOG_DEBUG("parseCheckResponse jsonBody: " << jsonBody);
     model::UpgradeCheckResult result;
     auto json = ucf::utilities::JsonValue::parse(jsonBody);
     if (json.isNull()) {

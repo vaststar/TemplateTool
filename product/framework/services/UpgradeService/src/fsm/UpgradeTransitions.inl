@@ -90,6 +90,9 @@ inline auto Checking::onEvent(UpgradeContext&, const EvError& e)
 
 // ── UpgradeAvailable ──
 
+inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvCheckRequested&)
+    -> fsm::Stay { return {}; }
+
 inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvDownloadStart&)
     -> fsm::TransitionTo<Downloading> { return {}; }
 

@@ -985,7 +985,7 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="59"/>
+        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="63"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1882,52 +1882,72 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="26"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="27"/>
+        <source>Ready to install</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="29"/>
+        <source>Verifying package...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
+        <source>Downloading update...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
         <source>A new version is available!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="27"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
         <source>Checking for updates...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="27"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="36"/>
         <source>Check for Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="45"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="74"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="84"/>
         <source>%1%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="94"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="105"/>
         <source>You are using the latest version.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="111"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="122"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="117"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="128"/>
+        <source>Install &amp;&amp; Restart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="135"/>
         <source>Download &amp;&amp; Install</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="123"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="141"/>
         <source>Later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="123"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="141"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>

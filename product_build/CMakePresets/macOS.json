@@ -49,7 +49,7 @@
     {
       "name": "macos-debug",
       "configurePreset": "macos-debug",
-      "generators": ["TGZ"]
+      "generators": ["TGZ", "DragNDrop"]
     },
     {
       "name": "macos-release",

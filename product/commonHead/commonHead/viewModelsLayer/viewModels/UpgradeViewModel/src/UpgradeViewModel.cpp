@@ -103,7 +103,23 @@ void UpgradeViewModel::cancelDownload()
 
 void UpgradeViewModel::onUpgradeStateChanged(ucf::service::model::UpgradeState state)
 {
-    fireNotification(&IUpgradeViewModelCallback::onUpgradeStateChanged, static_cast<int>(state));
+    using S = ucf::service::model::UpgradeState;
+    using V = model::UpgradeViewState;
+    static const std::pair<S, V> mapping[] = {
+        {S::Idle,             V::Idle},
+        {S::Checking,         V::Checking},
+        {S::UpgradeAvailable, V::UpgradeAvailable},
+        {S::Downloading,      V::Downloading},
+        {S::Verifying,        V::Verifying},
+        {S::ReadyToInstall,   V::ReadyToInstall},
+        {S::Installing,       V::Installing},
+        {S::Failed,           V::Failed},
+    };
+    auto viewState = V::Idle;
+    for (const auto& [s, v] : mapping) {
+        if (s == state) { viewState = v; break; }
+    }
+    fireNotification(&IUpgradeViewModelCallback::onUpgradeStateChanged, viewState);
 }
 
 void UpgradeViewModel::onUpgradeCheckCompleted(const ucf::service::model::UpgradeCheckResult& result)

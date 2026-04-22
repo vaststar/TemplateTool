@@ -73,22 +73,22 @@
     {
       "name": "windows-msvc-debug",
       "configurePreset": "windows-msvc-debug",
-      "generators": ["ZIP"]
+      "generators": ["ZIP", "NSIS"]
     },
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
-      "generators": ["ZIP"]
+      "generators": ["ZIP", "NSIS"]
     },
     {
       "name": "windows-mingw-debug",
       "configurePreset": "windows-mingw-debug",
-      "generators": ["ZIP"]
+      "generators": ["ZIP", "NSIS"]
     },
     {
       "name": "windows-mingw-release",
       "configurePreset": "windows-mingw-release",
-      "generators": ["ZIP"]
+      "generators": ["ZIP", "NSIS"]
     }
   ],
   "testPresets": [

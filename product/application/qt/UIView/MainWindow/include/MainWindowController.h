@@ -7,6 +7,7 @@
 
 #include "UIViewBase/include/UIViewController.h"
 #include "UIEvents/UIMainWindowEvent.h"
+#include "MainWindow/include/MainWindowContentPageRegistry.h"
 
 class AppUpgradeController;
 
@@ -31,6 +32,7 @@ class MainWindowController : public UIViewController
     Q_OBJECT
     Q_PROPERTY(QString title READ getTitle NOTIFY titleChanged)
     Q_PROPERTY(bool visible READ isVisible NOTIFY visibleChanged)
+    Q_PROPERTY(MainWindowContentPageRegistry* pageRegistry READ pageRegistry CONSTANT)
     QML_ELEMENT
 public:
     MainWindowController(QObject* parent = nullptr);
@@ -40,8 +42,9 @@ public:
     bool isVisible() const;
 
     Q_INVOKABLE void componentCompleted();
-    Q_INVOKABLE int pageIdToIndex(int pageId) const;
     Q_INVOKABLE bool startSystemResize(QWindow *window, int edges);
+
+    MainWindowContentPageRegistry* pageRegistry() const;
 signals:
     void titleChanged();
     void visibleChanged();
@@ -62,8 +65,11 @@ protected:
 private:
     void connectSignals(UIViewController* controller);
     void createUpgradeController();
+    void registerPages();
+    void quitApplication();
 private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     std::shared_ptr<UIVMSignalEmitter::MainWindowViewModelEmitter> mMainViewModelEmitter;
     AppUpgradeController* m_upgradeController = nullptr;
+    MainWindowContentPageRegistry* m_pageRegistry = nullptr;
 };

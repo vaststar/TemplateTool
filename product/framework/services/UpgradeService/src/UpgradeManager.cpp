@@ -265,12 +265,20 @@ std::string UpgradeManager::getCurrentVersionString() const
 
 std::string UpgradeManager::getCurrentPlatform() const
 {
-    return ucf::utilities::OSUtils::getOSTypeName();
+    auto name = ucf::utilities::OSUtils::getOSTypeName();
+    // Manifest uses lowercase: "windows", "linux", "macos"
+    if (name == "Windows") { return "windows"; }
+    if (name == "Linux")   { return "linux"; }
+    if (name == "macOS")   { return "macos"; }
+    return name;
 }
 
 std::string UpgradeManager::getCurrentArch() const
 {
-    return ucf::utilities::OSUtils::getCPUArch();
+    auto arch = ucf::utilities::OSUtils::getCPUArch();
+    // Manifest uses "x64" instead of "x86_64"
+    if (arch == "x86_64") { return "x64"; }
+    return arch;
 }
 
 // ── Auto-check timer ──

@@ -86,14 +86,17 @@ void MainWindowSideBarController::navigateTo(int pageId)
 
 void MainWindowSideBarController::handleSubMenuAction(int actionId)
 {
-    auto id = static_cast<commonHead::viewModels::model::MenuActionId>(actionId);
-    if (id == commonHead::viewModels::model::MenuActionId::CheckUpgrade) {
-        sendUIEvent<UIUpgradeEvent>(UIUpgradeEvent::Action::CheckForUpgrade);
-        return;
-    }
-    if (m_sideBarViewModel)
+    switch (auto id = static_cast<commonHead::viewModels::model::MenuActionId>(actionId))
     {
-        m_sideBarViewModel->handleSubMenuAction(id);
+    case commonHead::viewModels::model::MenuActionId::CheckUpgrade:
+        sendUIEvent<UIUpgradeEvent>(UIUpgradeEvent::Action::CheckForUpgrade);
+        break;
+    default:
+        if (m_sideBarViewModel)
+        {
+            m_sideBarViewModel->handleSubMenuAction(id);
+        }
+        break;
     }
 }
 

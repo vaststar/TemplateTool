@@ -51,14 +51,55 @@ void AppUpgradeController::init()
 // Property Getters
 // ============================================================================
 
-bool AppUpgradeController::isChecking() const { return m_checking; }
-bool AppUpgradeController::hasUpgrade() const { return m_hasUpgrade; }
-bool AppUpgradeController::isDownloading() const { return m_downloading; }
-QString AppUpgradeController::version() const { return m_version; }
-QString AppUpgradeController::releaseNotes() const { return m_releaseNotes; }
-bool AppUpgradeController::isMandatory() const { return m_mandatory; }
-double AppUpgradeController::downloadProgress() const { return m_downloadProgress; }
-QString AppUpgradeController::errorMessage() const { return m_errorMessage; }
+bool AppUpgradeController::isChecking() const
+{
+    return m_checking;
+}
+
+bool AppUpgradeController::hasUpgrade() const
+{
+    return m_hasUpgrade;
+}
+
+bool AppUpgradeController::isDownloading() const
+{
+    return m_downloading;
+}
+
+bool AppUpgradeController::isVerifying() const
+{
+    return m_verifying;
+}
+
+bool AppUpgradeController::isReadyToInstall() const
+{
+    return m_readyToInstall;
+}
+
+QString AppUpgradeController::version() const
+{
+    return m_version;
+}
+
+QString AppUpgradeController::releaseNotes() const
+{
+    return m_releaseNotes;
+}
+
+bool AppUpgradeController::isMandatory() const
+{
+    return m_mandatory;
+}
+
+double AppUpgradeController::downloadProgress() const
+{
+    return m_downloadProgress;
+}
+
+QString AppUpgradeController::errorMessage() const
+{
+    return m_errorMessage;
+}
 
 // ============================================================================
 // Q_INVOKABLE Actions
@@ -66,30 +107,33 @@ QString AppUpgradeController::errorMessage() const { return m_errorMessage; }
 
 void AppUpgradeController::downloadUpgrade()
 {
-    if (m_viewModel) {
+    if (m_viewModel)
+    {
         m_viewModel->downloadUpgrade();
     }
 }
 
 void AppUpgradeController::installAndRestart()
 {
-    if (m_viewModel) {
+    if (m_viewModel)
+    {
         m_viewModel->installAndRestart();
     }
 }
 
 void AppUpgradeController::cancelDownload()
 {
-    if (m_viewModel) {
+    if (m_viewModel)
+    {
         m_viewModel->cancelDownload();
     }
 }
 
 void AppUpgradeController::dismiss()
 {
-    m_hasUpgrade = false;
+    m_dialogOpen = false;
     m_errorMessage.clear();
-    emit stateChanged();
+    emit errorChanged();
 }
 
 // ============================================================================
@@ -98,12 +142,20 @@ void AppUpgradeController::dismiss()
 
 bool AppUpgradeController::event(QEvent* e)
 {
-    if (e->type() == UIUpgradeEvent::type) {
+    if (e->type() == UIUpgradeEvent::type)
+    {
         auto* upgradeEvent = static_cast<UIUpgradeEvent*>(e);
-        switch (upgradeEvent->mAction) {
+        switch (upgradeEvent->mAction)
+        {
         case UIUpgradeEvent::Action::CheckForUpgrade:
             UIVIEW_LOG_DEBUG("UIUpgradeEvent::CheckForUpgrade");
-            if (m_viewModel && !m_checking) {
+            if (m_checking || m_downloading || m_verifying || m_readyToInstall || m_hasUpgrade)
+            {
+                // Operation already in progress or result pending — just reopen the dialog
+                showUpgradeDialog();
+            }
+            else if (m_viewModel)
+            {
                 m_checking = true;
                 m_errorMessage.clear();
                 emit stateChanged();
@@ -135,7 +187,8 @@ void AppUpgradeController::onCheckCompleted(bool hasUpgrade, const QString& vers
     emit stateChanged();
     emit upgradeInfoChanged();
 
-    if (hasUpgrade) {
+    if (hasUpgrade)
+    {
         showUpgradeDialog();
     }
 }
@@ -148,10 +201,19 @@ void AppUpgradeController::onDownloadProgress(int64_t currentBytes, int64_t tota
     emit progressChanged();
 }
 
-void AppUpgradeController::onUpgradeStateChanged(int state)
+void AppUpgradeController::onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state)
 {
-    Q_UNUSED(state)
+    using State = commonHead::viewModels::model::UpgradeViewState;
+    m_downloading    = (state == State::Downloading);
+    m_verifying      = (state == State::Verifying);
+    m_readyToInstall = (state == State::ReadyToInstall);
     emit stateChanged();
+
+    if (state == State::Installing)
+    {
+        UIVIEW_LOG_DEBUG("Updater launched, requesting app close");
+        emit quitRequested();
+    }
 }
 
 void AppUpgradeController::onUpgradeError(const QString& message)
@@ -170,7 +232,13 @@ void AppUpgradeController::onUpgradeError(const QString& message)
 
 void AppUpgradeController::showUpgradeDialog()
 {
+    if (m_dialogOpen)
+    {
+        UIVIEW_LOG_DEBUG("showUpgradeDialog skipped — already open");
+        return;
+    }
     UIVIEW_LOG_DEBUG("showUpgradeDialog");
+    m_dialogOpen = true;
     getAppContext()->getViewFactory()->loadQmlWindow(
         QStringLiteral("UIView/AppUpgrade/qml/UpgradeDialog.qml"), this);
 }

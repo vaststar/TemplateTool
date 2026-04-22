@@ -22,7 +22,6 @@ enum class COMMONHEAD_EXPORT PageId : uint8_t
     Toolbox,        // Toolbox
     Settings,       // Settings
     Help,           // Help
-    About           // About
 };
 
 /**

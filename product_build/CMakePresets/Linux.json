@@ -49,12 +49,12 @@
     {
       "name": "linux-debug",
       "configurePreset": "linux-debug",
-      "generators": ["TGZ"]
+      "generators": ["TGZ", "DEB", "RPM"]
     },
     {
       "name": "linux-release",
       "configurePreset": "linux-release",
-      "generators": ["TGZ", "DEB"]
+      "generators": ["TGZ", "DEB", "RPM"]
     }
   ],
   "testPresets": [

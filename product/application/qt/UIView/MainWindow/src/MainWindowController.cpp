@@ -1,8 +1,8 @@
 #include "MainWindow/include/MainWindowController.h"
+#include "MainWindow/include/MainWindowContentPageRegistry.h"
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
-#include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
 #include <TranslatorManager/UILanguage.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
@@ -15,6 +15,7 @@
 
 #include "LoggerDefine/LoggerDefine.h"
 
+#include <QCoreApplication>
 
 #include "MediaCameraView/include/MediaCameraViewController.h"
 #include "ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
@@ -49,6 +50,9 @@ void MainWindowController::init()
                 this, &MainWindowController::activateMainWindow);
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onLogsPackComplete,
                 this, &MainWindowController::onLogsPackComplete);
+
+    registerPages();
+
     mMainViewModel->initViewModel();
 
     createUpgradeController();
@@ -135,6 +139,8 @@ void MainWindowController::createUpgradeController()
     {
         UIVIEW_LOG_DEBUG("Creating AppUpgradeController");
         m_upgradeController = new AppUpgradeController(this);
+        connect(m_upgradeController, &AppUpgradeController::quitRequested,
+                this, &MainWindowController::quitApplication);
         setupController(m_upgradeController);
     }
 }
@@ -144,21 +150,17 @@ void MainWindowController::componentCompleted()
     emit visibleChanged();
 }
 
-int MainWindowController::pageIdToIndex(int pageId) const
+void MainWindowController::registerPages()
 {
-    using PageId = commonHead::viewModels::model::PageId;
-    switch (static_cast<PageId>(pageId))
+    if (!m_pageRegistry)
     {
-        case PageId::Home:        return 0;
-        case PageId::Contacts:    return 1;
-        case PageId::Tasks:       return 2;
-        case PageId::Credentials: return 3;
-        case PageId::Toolbox:     return 4;
-        case PageId::Settings:    return 5;
-        case PageId::Help:        return 6;
-        case PageId::About:       return 7;
-        default:                  return 0;
+        m_pageRegistry = new MainWindowContentPageRegistry(this);
     }
+}
+
+MainWindowContentPageRegistry* MainWindowController::pageRegistry() const
+{
+    return m_pageRegistry;
 }
 
 bool MainWindowController::startSystemResize(QWindow *window, int edges)
@@ -198,9 +200,16 @@ bool MainWindowController::event(QEvent* event)
             break;
         case UIMainWindowEvent::Action::Close:
             UIVIEW_LOG_DEBUG("UIMainWindowEvent::Close");
+            quitApplication();
             break;
         }
         return true;
     }
     return UIViewController::event(event);
+}
+
+void MainWindowController::quitApplication()
+{
+    UIVIEW_LOG_DEBUG("quitApplication");
+    QCoreApplication::quit();
 }

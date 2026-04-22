@@ -97,7 +97,9 @@ set(MODULE_SOURCE_PRIVATE
     MediaCameraView/src/MediaCameraViewController.cpp
 
     MainWindow/include/MainWindowController.h
+    MainWindow/include/MainWindowContentPageRegistry.h
     MainWindow/src/MainWindowController.cpp
+    MainWindow/src/MainWindowContentPageRegistry.cpp
 
     AppUIManager/src/AppUIManager.cpp
     AppUIManager/src/AppUIController.h

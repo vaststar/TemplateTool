@@ -1,4 +1,5 @@
 #include "UpgradeDownloadManager.h"
+#include "../UpgradeConstants.h"
 #include "../UpgradeServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -37,11 +38,11 @@ void UpgradeDownloadManager::ensureDownloadDirectory()
     auto coreFramework = mCoreFramework.lock();
     if (coreFramework) {
         if (auto clientInfo = coreFramework->getService<IClientInfoService>().lock()) {
-            mDownloadDir = std::filesystem::path(clientInfo->getAppDataStoragePath()) / "upgrade_downloads";
+            mDownloadDir = std::filesystem::path(clientInfo->getAppCacheStoragePath()) / upgrade::constants::kDownloadSubDir;
         }
     }
     if (mDownloadDir.empty()) {
-        mDownloadDir = std::filesystem::temp_directory_path() / "template-factory-upgrade";
+        mDownloadDir = std::filesystem::temp_directory_path() / upgrade::constants::kTempFallbackAppName / upgrade::constants::kDownloadSubDir;
     }
     std::filesystem::create_directories(mDownloadDir);
 }
@@ -112,7 +113,7 @@ void UpgradeDownloadManager::attemptDownload(
     // Determine download file path
     auto fileName = std::filesystem::path(packageInfo.downloadUrl).filename().string();
     if (fileName.empty()) {
-        fileName = "upgrade_package.zip";
+        fileName = upgrade::constants::kDefaultPackageFileName;
     }
     mPartialFilePath = mDownloadDir / fileName;
 

@@ -6,6 +6,8 @@
 
 #include "UIViewBase/include/UIViewController.h"
 
+#include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
+
 namespace commonHead::viewModels {
     class IUpgradeViewModel;
 }
@@ -20,6 +22,8 @@ class AppUpgradeController : public UIViewController
     Q_PROPERTY(bool checking READ isChecking NOTIFY stateChanged)
     Q_PROPERTY(bool hasUpgrade READ hasUpgrade NOTIFY stateChanged)
     Q_PROPERTY(bool downloading READ isDownloading NOTIFY stateChanged)
+    Q_PROPERTY(bool verifying READ isVerifying NOTIFY stateChanged)
+    Q_PROPERTY(bool readyToInstall READ isReadyToInstall NOTIFY stateChanged)
     Q_PROPERTY(QString version READ version NOTIFY upgradeInfoChanged)
     Q_PROPERTY(QString releaseNotes READ releaseNotes NOTIFY upgradeInfoChanged)
     Q_PROPERTY(bool mandatory READ isMandatory NOTIFY upgradeInfoChanged)
@@ -33,6 +37,8 @@ public:
     bool isChecking() const;
     bool hasUpgrade() const;
     bool isDownloading() const;
+    bool isVerifying() const;
+    bool isReadyToInstall() const;
     QString version() const;
     QString releaseNotes() const;
     bool isMandatory() const;
@@ -49,6 +55,7 @@ signals:
     void upgradeInfoChanged();
     void progressChanged();
     void errorChanged();
+    void quitRequested();
 
 protected:
     void init() override;
@@ -57,7 +64,7 @@ protected:
 private slots:
     void onCheckCompleted(bool hasUpgrade, const QString& version, const QString& releaseNotes, bool mandatory);
     void onDownloadProgress(int64_t currentBytes, int64_t totalBytes);
-    void onUpgradeStateChanged(int state);
+    void onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state);
     void onUpgradeError(const QString& message);
 
 private:
@@ -69,6 +76,9 @@ private:
     bool m_checking = false;
     bool m_hasUpgrade = false;
     bool m_downloading = false;
+    bool m_verifying = false;
+    bool m_readyToInstall = false;
+    bool m_dialogOpen = false;
     QString m_version;
     QString m_releaseNotes;
     bool m_mandatory = false;

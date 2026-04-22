@@ -1,10 +1,12 @@
 #include "UpgradeInstallManager.h"
+#include "../UpgradeConstants.h"
 #include "../UpgradeServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Utilities/ArchiveUtils/ArchiveWrapper.h>
 #include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 #include <csignal>
 #include <filesystem>
@@ -35,21 +37,19 @@ UpgradeInstallManager::~UpgradeInstallManager()
 
 std::filesystem::path UpgradeInstallManager::getTempDirectory() const
 {
-    return std::filesystem::temp_directory_path() / "template-factory-upgrade";
+    return std::filesystem::temp_directory_path() / upgrade::constants::kTempSubDir;
 }
 
 std::filesystem::path UpgradeInstallManager::getInstallDirectory() const
 {
+    auto execPath = getCurrentExecutablePath();
 #if defined(__APPLE__)
     // macOS: the .app bundle's parent directory
-    auto execPath = getCurrentExecutablePath();
     // execPath = /path/to/mainEntry.app/Contents/MacOS/mainEntry
     return execPath.parent_path().parent_path().parent_path(); // → mainEntry.app
-#elif defined(_WIN32)
-    auto execPath = getCurrentExecutablePath();
-    return execPath.parent_path(); // → bin/
 #else
-    return std::filesystem::path("/opt/template-factory");
+    // Windows & Linux: executable's parent directory (e.g. bin/)
+    return execPath.parent_path();
 #endif
 }
 
@@ -93,11 +93,7 @@ bool UpgradeInstallManager::hasSufficientDiskSpace(int64_t requiredBytes) const
 
 std::string UpgradeInstallManager::getUpdaterEntryName() const
 {
-#ifdef _WIN32
-    return "updater.exe";
-#else
-    return "updater";
-#endif
+    return upgrade::constants::kUpdaterBinaryName;
 }
 
 std::filesystem::path UpgradeInstallManager::extractUpdaterToTemp(
@@ -107,13 +103,35 @@ std::filesystem::path UpgradeInstallManager::extractUpdaterToTemp(
     std::filesystem::create_directories(tempDir);
 
     ucf::utilities::ArchiveWrapper archiver;
-    auto updaterEntry = getUpdaterEntryName();
-    auto destPath = tempDir / updaterEntry;
+    auto updaterName = getUpdaterEntryName();
+    auto destPath = tempDir / updaterName;
 
-    UPGRADE_LOG_INFO("Extracting updater from " << packagePath << " → " << destPath.string());
+    // CPack ZIPs nest files under a versioned prefix directory
+    // (e.g. "Template-Factory-x.y.z-Windows/bin/updater.exe").
+    // Find the actual entry path by suffix match.
+    std::string fullEntryPath;
+    auto entries = archiver.list(packagePath);
+    for (const auto& entry : entries)
+    {
+        auto entryPath = std::filesystem::path(entry.name);
+        if (entryPath.filename().string() == updaterName)
+        {
+            fullEntryPath = entry.name;
+            break;
+        }
+    }
 
-    auto error = archiver.extractEntry(packagePath, updaterEntry, destPath.string());
-    if (error != ucf::utilities::ArchiveError::Success) {
+    if (fullEntryPath.empty())
+    {
+        throw std::runtime_error("Updater binary '" + updaterName + "' not found in package");
+    }
+
+    UPGRADE_LOG_INFO("Extracting updater from " << packagePath
+                     << " entry=" << fullEntryPath << " → " << destPath.string());
+
+    auto error = archiver.extractEntry(packagePath, fullEntryPath, destPath.string());
+    if (error != ucf::utilities::ArchiveError::Success)
+    {
         throw std::runtime_error(
             std::string("Failed to extract updater: ") +
             ucf::utilities::ArchiveWrapper::errorToString(error));
@@ -163,51 +181,23 @@ void UpgradeInstallManager::launchUpdaterAndExit(
         auto args = buildUpdaterArgs(packagePath, targetDir);
 
         // 3. Write a marker file so we can detect interrupted upgrades on next start
-        auto markerPath = getTempDirectory() / "upgrade_in_progress";
+        auto markerPath = getTempDirectory() / upgrade::constants::kUpgradeMarkerFileName;
         {
             std::ofstream marker(markerPath);
             marker << packagePath << "\n" << targetDir.string() << "\n";
         }
 
-        // 4. Launch the updater process
+        // 4. Launch the updater process (detached — outlives this app)
         UPGRADE_LOG_INFO("Launching updater: " << updaterPath.string());
         UPGRADE_LOG_INFO("  target: " << targetDir.string());
 
-        // Use ProcessLauncher-style fork+exec / CreateProcess
-#ifdef _WIN32
-        std::string cmdLine = "\"" + updaterPath.string() + "\"";
-        for (const auto& arg : args) {
-            cmdLine += " \"" + arg + "\"";
-        }
+        ucf::utilities::ProcessBridgeConfig config;
+        config.executablePath = updaterPath.string();
+        config.arguments = args;
 
-        STARTUPINFOW si{};
-        si.cb = sizeof(si);
-        PROCESS_INFORMATION pi{};
-
-        auto wCmdLine = std::wstring(cmdLine.begin(), cmdLine.end());
-        if (!CreateProcessW(nullptr, wCmdLine.data(), nullptr, nullptr,
-                            FALSE, 0, nullptr, nullptr, &si, &pi)) {
-            throw std::runtime_error("CreateProcess failed: " + std::to_string(GetLastError()));
+        if (!ucf::utilities::IProcessBridge::launch(config)) {
+            throw std::runtime_error("Failed to launch updater process");
         }
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-#else
-        pid_t pid = fork();
-        if (pid < 0) {
-            throw std::runtime_error("fork() failed");
-        }
-        if (pid == 0) {
-            // Child process: exec the updater
-            std::vector<const char*> cArgs;
-            cArgs.push_back(updaterPath.c_str());
-            for (const auto& arg : args) {
-                cArgs.push_back(arg.c_str());
-            }
-            cArgs.push_back(nullptr);
-            execv(updaterPath.c_str(), const_cast<char* const*>(cArgs.data()));
-            _exit(1); // exec failed
-        }
-#endif
 
         UPGRADE_LOG_INFO("Updater launched successfully, app should exit now");
         callback(true, model::UpgradeErrorCode::None, "");
@@ -221,7 +211,7 @@ void UpgradeInstallManager::launchUpdaterAndExit(
 
 void UpgradeInstallManager::checkAndRecoverFromFailedUpgrade()
 {
-    auto markerPath = getTempDirectory() / "upgrade_in_progress";
+    auto markerPath = getTempDirectory() / upgrade::constants::kUpgradeMarkerFileName;
     if (std::filesystem::exists(markerPath)) {
         UPGRADE_LOG_WARN("Detected interrupted upgrade — previous upgrade may have failed");
         // Remove the marker; the old version is still running so we're okay
@@ -255,13 +245,10 @@ std::filesystem::path UpgradeInstallManager::getUpdaterSourcePath() const
     auto execPath = getCurrentExecutablePath();
 #if defined(__APPLE__)
     // macOS: updater is at .app/Contents/MacOS/updater (same dir as main exe)
-    return execPath.parent_path() / "updater";
-#elif defined(_WIN32)
-    // Windows: updater.exe alongside the main executable
-    return execPath.parent_path() / "updater.exe";
+    return execPath.parent_path() / upgrade::constants::kUpdaterBinaryName;
 #else
-    // Linux: updater alongside the main executable
-    return execPath.parent_path() / "updater";
+    // Windows & Linux: updater alongside the main executable
+    return execPath.parent_path() / upgrade::constants::kUpdaterBinaryName;
 #endif
 }
 

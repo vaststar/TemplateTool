@@ -32,16 +32,20 @@ Item {
             left: navigationBar.right
             right: parent.right
         }
-        currentIndex: controller.pageIdToIndex(navigationBar.controller.currentPageId)
+        currentIndex: controller.pageRegistry.indexOfPage(navigationBar.controller.currentPageId)
 
-        HomePage { id: homePage }                             // index 0
-        ContactsPage { id: contactsPage }                    // index 1
-        PlaceholderPage { pageTitle: "计划" }                 // index 2
-        PlaceholderPage { pageTitle: "证件" }                 // index 3
-        ToolsPage { id: toolsPage }                          // index 4
-        SettingsPage { id: settingsPage }                     // index 5
-        PlaceholderPage { pageTitle: "帮助" }                 // index 6
-        PlaceholderPage { pageTitle: "关于" }                 // index 7
+        Repeater {
+            model: controller.pageRegistry.entries
+            Loader {
+                required property string modelData
+                required property int index
+                source: modelData
+                onLoaded: {
+                    if (item && item.controller)
+                        mainWindowContent.controller.setupController(item.controller)
+                }
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -50,9 +54,5 @@ Item {
             return
         }
         controller.setupController(navigationBar.controller)
-        controller.setupController(homePage.controller)
-        controller.setupController(contactsPage.controller)
-        controller.setupController(toolsPage.controller)
-        controller.setupController(settingsPage.controller)
     }
 }

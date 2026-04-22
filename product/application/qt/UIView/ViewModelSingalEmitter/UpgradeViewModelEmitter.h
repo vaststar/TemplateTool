@@ -15,7 +15,7 @@ public:
     {
     }
 
-    virtual void onUpgradeStateChanged(int state) override
+    virtual void onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state) override
     {
         emit signals_onUpgradeStateChanged(state);
     };
@@ -38,7 +38,7 @@ public:
         emit signals_onUpgradeError(QString::fromStdString(message));
     };
 signals:
-    void signals_onUpgradeStateChanged(int state);
+    void signals_onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state);
     void signals_onCheckCompleted(bool hasUpgrade, const QString& version, const QString& releaseNotes, bool mandatory);
     void signals_onDownloadProgress(int64_t currentBytes, int64_t totalBytes);
     void signals_onUpgradeError(const QString& message);
