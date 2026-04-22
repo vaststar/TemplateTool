@@ -1,11 +1,28 @@
 #pragma once
 
 /// @file UpdaterLog.h
-/// @brief Lightweight header-only logging macros for the updater.
-///        No library dependencies — just stdout/stderr with a prefix.
+/// @brief Lightweight header-only logging for the updater.
+///        Writes to both stdout/stderr and a log file in the temp directory.
 
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 
-#define UPDATER_LOG(msg)  std::cout << "[updater] " << msg << std::endl
-#define UPDATER_ERR(msg)  std::cerr << "[updater] ERROR: " << msg << std::endl
-#define UPDATER_WARN(msg) std::cerr << "[updater] Warning: " << msg << std::endl
+namespace updater::detail {
+
+inline std::ofstream& logFile()
+{
+    static std::ofstream file(
+        (std::filesystem::temp_directory_path() / "template-factory-upgrade" / "updater.log").string(),
+        std::ios::app);
+    return file;
+}
+
+} // namespace updater::detail
+
+#define UPDATER_LOG(msg)  do { std::cout << "[updater] " << msg << std::endl; \
+    updater::detail::logFile() << "[updater] " << msg << std::endl; } while(0)
+#define UPDATER_ERR(msg)  do { std::cerr << "[updater] ERROR: " << msg << std::endl; \
+    updater::detail::logFile() << "[updater] ERROR: " << msg << std::endl; } while(0)
+#define UPDATER_WARN(msg) do { std::cerr << "[updater] Warning: " << msg << std::endl; \
+    updater::detail::logFile() << "[updater] Warning: " << msg << std::endl; } while(0)

@@ -60,6 +60,34 @@ int performUpgrade(const UpdaterConfig& config)
         return 3;
     }
 
+    // 4b. The ZIP may contain a top-level directory with a different version
+    //     number (e.g. "Template-Factory-2026.04.0.609-Windows") while
+    //     targetDir is "Template-Factory-2026.03.0.611-Windows".
+    //     If targetDir doesn't exist after extraction, find the newly-extracted
+    //     directory and rename it.
+    if (!std::filesystem::exists(config.targetDir)) {
+        std::filesystem::path extracted;
+        for (auto& entry : std::filesystem::directory_iterator(parentDir)) {
+            if (entry.is_directory() && entry.path() != backupDir) {
+                extracted = entry.path();
+                break;
+            }
+        }
+        if (!extracted.empty() && extracted != config.targetDir) {
+            UPDATER_LOG("Renaming extracted dir: " << extracted.string()
+                        << " -> " << config.targetDir.string());
+            std::filesystem::rename(extracted, config.targetDir, ec);
+            if (ec) {
+                UPDATER_ERR("Failed to rename extracted dir: " << ec.message());
+                if (std::filesystem::exists(backupDir)) {
+                    UPDATER_LOG("Rolling back...");
+                    std::filesystem::rename(backupDir, config.targetDir, ec);
+                }
+                return 3;
+            }
+        }
+    }
+
     // 5. Verify extraction
     if (!std::filesystem::exists(config.targetDir) || std::filesystem::is_empty(config.targetDir)) {
         UPDATER_ERR("Extraction produced empty target");
