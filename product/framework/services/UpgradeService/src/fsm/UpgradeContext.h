@@ -21,7 +21,8 @@ struct UpgradeContext {
     std::function<void(bool userTriggered)>      triggerCheckForUpgrade;
     std::function<void(const std::string& url)>  triggerDownload;
     std::function<void(const std::string& path)> triggerVerify;
-    std::function<void(const std::string& path)> triggerInstall;
+    std::function<void(const std::string& packagePath)> triggerExtract;
+    std::function<void(const std::string& stagingDir)>  triggerInstall;
     std::function<void()>                        triggerCancelDownload;
 
     // ── Reset triggers ──
@@ -31,6 +32,7 @@ struct UpgradeContext {
     // ── Shared data ──
     std::optional<model::UpgradeInfo> availableUpgrade;
     std::string downloadedFilePath;
+    std::string stagingDir;
     bool keepPartialDownload{false};
 };
 

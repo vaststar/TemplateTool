@@ -24,6 +24,7 @@ enum class UpgradeViewState : uint8_t {
     UpgradeAvailable,
     Downloading,
     Verifying,
+    Extracting,
     ReadyToInstall,
     Installing,
     Failed

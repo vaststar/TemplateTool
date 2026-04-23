@@ -55,6 +55,7 @@ UpgradeContext makeTestContext()
     ctx.triggerCheckForUpgrade = [](bool) {};
     ctx.triggerDownload     = [](const std::string&) {};
     ctx.triggerVerify       = [](const std::string&) {};
+    ctx.triggerExtract      = [](const std::string&) {};
     ctx.triggerInstall      = [](const std::string&) {};
     ctx.triggerCancelDownload  = []() {};
     ctx.triggerResetManagers   = []() {};
@@ -89,9 +90,10 @@ TEST_CASE("UpgradeModel enums have expected values", "[UpgradeService][Model]")
     REQUIRE(static_cast<int>(UpgradeState::UpgradeAvailable) == 2);
     REQUIRE(static_cast<int>(UpgradeState::Downloading) == 3);
     REQUIRE(static_cast<int>(UpgradeState::Verifying) == 4);
-    REQUIRE(static_cast<int>(UpgradeState::ReadyToInstall) == 5);
-    REQUIRE(static_cast<int>(UpgradeState::Installing) == 6);
-    REQUIRE(static_cast<int>(UpgradeState::Failed) == 7);
+    REQUIRE(static_cast<int>(UpgradeState::Extracting) == 5);
+    REQUIRE(static_cast<int>(UpgradeState::ReadyToInstall) == 6);
+    REQUIRE(static_cast<int>(UpgradeState::Installing) == 7);
+    REQUIRE(static_cast<int>(UpgradeState::Failed) == 8);
 }
 
 // ============================================================================

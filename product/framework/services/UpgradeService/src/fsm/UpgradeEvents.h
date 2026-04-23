@@ -25,6 +25,7 @@ struct EvCheckNoUpgrade   {};
 struct EvProgress         { int64_t current{0}; int64_t total{0}; };
 struct EvDownloadDone     { std::string filePath; };
 struct EvVerifyOk         {};
+struct EvExtractOk        { std::string stagingDir; };
 struct EvError            { model::UpgradeErrorCode code; std::string message; };
 
 } // namespace ucf::service::upgrade

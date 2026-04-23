@@ -123,8 +123,20 @@ void UpgradeManager::bindFsmCallbacks()
             });
     };
 
-    mFsmContext.triggerInstall = [this](const std::string& packagePath) {
-        mInstallManager->launchUpdaterAndExit(packagePath,
+    mFsmContext.triggerExtract = [this](const std::string& packagePath) {
+        mInstallManager->extractPackageToStaging(packagePath,
+            [this](bool success, const std::string& stagingDir,
+                   model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (success) {
+                    mFsm->processEvent(upgrade::EvExtractOk{stagingDir});
+                } else {
+                    mFsm->processEvent(upgrade::EvError{errCode, errMsg});
+                }
+            });
+    };
+
+    mFsmContext.triggerInstall = [this](const std::string& stagingDir) {
+        mInstallManager->launchUpdaterAndExit(stagingDir,
             [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
                 if (!success) {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
@@ -189,6 +201,7 @@ model::UpgradeState UpgradeManager::getUpgradeState() const
         if constexpr (std::is_same_v<S, upgrade::UpgradeAvailable>) return model::UpgradeState::UpgradeAvailable;
         if constexpr (std::is_same_v<S, upgrade::Downloading>)     return model::UpgradeState::Downloading;
         if constexpr (std::is_same_v<S, upgrade::Verifying>)       return model::UpgradeState::Verifying;
+        if constexpr (std::is_same_v<S, upgrade::Extracting>)      return model::UpgradeState::Extracting;
         if constexpr (std::is_same_v<S, upgrade::ReadyToInstall>)  return model::UpgradeState::ReadyToInstall;
         if constexpr (std::is_same_v<S, upgrade::Installing>)      return model::UpgradeState::Installing;
         if constexpr (std::is_same_v<S, upgrade::Failed>)          return model::UpgradeState::Failed;
@@ -240,6 +253,7 @@ void UpgradeManager::resetAllManagers()
     mInstallManager->reset();
     mFsmContext.availableUpgrade.reset();
     mFsmContext.downloadedFilePath.clear();
+    mFsmContext.stagingDir.clear();
 }
 
 void UpgradeManager::softResetManagers()

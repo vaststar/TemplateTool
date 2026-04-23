@@ -63,64 +63,104 @@ std::string UpgradeInstallManager::getUpdaterEntryName() const
     return upgrade::constants::kUpdaterBinaryName;
 }
 
-std::filesystem::path UpgradeInstallManager::extractUpdaterToTemp(
-    const std::string& packagePath)
+std::filesystem::path UpgradeInstallManager::getStagingDirectory() const
 {
-    auto tempDir = getTempDirectory();
-    ucf::utilities::FilePathUtils::createDirectoriesUtf8(ucf::utilities::FilePathUtils::utf8FromPath(tempDir));
-
-    ucf::utilities::ArchiveWrapper archiver;
-    auto updaterName = getUpdaterEntryName();
-    auto destPath = tempDir / updaterName;
-
-    // CPack ZIPs nest files under a versioned prefix directory
-    // (e.g. "Template-Factory-x.y.z-Windows/bin/updater.exe").
-    // Find the actual entry path by suffix match.
-    std::string fullEntryPath;
-    auto entries = archiver.list(packagePath);
-    for (const auto& entry : entries)
-    {
-        auto entryPath = std::filesystem::path(entry.name);
-        if (entryPath.filename().string() == updaterName)
-        {
-            fullEntryPath = entry.name;
-            break;
+    if (auto cf = mCoreFramework.lock()) {
+        if (auto clientInfo = cf->getService<IClientInfoService>().lock()) {
+            auto installDir = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getInstallDirectory());
+            auto staging = installDir;
+            staging += ".staging";
+            return staging;
         }
     }
+    return {};
+}
 
-    if (fullEntryPath.empty())
-    {
-        throw std::runtime_error("Updater binary '" + updaterName + "' not found in package");
+void UpgradeInstallManager::extractPackageToStaging(
+    const std::string& packagePath,
+    ExtractCallback callback)
+{
+    UPGRADE_LOG_INFO("Extracting package to staging directory...");
+
+    try {
+        auto stagingDir = getStagingDirectory();
+        if (stagingDir.empty()) {
+            throw std::runtime_error("Could not determine staging directory");
+        }
+
+        // Clean up any previous staging directory
+        std::error_code ec;
+        if (std::filesystem::exists(stagingDir)) {
+            std::filesystem::remove_all(stagingDir, ec);
+            if (ec) {
+                throw std::runtime_error("Failed to remove old staging dir: " + ec.message());
+            }
+        }
+        std::filesystem::create_directories(stagingDir, ec);
+        if (ec) {
+            throw std::runtime_error("Failed to create staging dir: " + ec.message());
+        }
+
+        // Extract the full ZIP into the staging directory
+        ucf::utilities::ArchiveWrapper archiver;
+        auto error = archiver.extractAll(packagePath,
+            ucf::utilities::FilePathUtils::utf8FromPath(stagingDir));
+        if (error != ucf::utilities::ArchiveError::Success) {
+            throw std::runtime_error(
+                std::string("Failed to extract package: ") +
+                ucf::utilities::ArchiveWrapper::errorToString(error));
+        }
+
+        // CPack ZIPs nest files under a versioned prefix directory
+        // (e.g. "Template-Factory-x.y.z-Windows/").  If the staging dir
+        // contains exactly one subdirectory, promote its contents up.
+        std::filesystem::path singleChild;
+        int childCount = 0;
+        for (auto& entry : std::filesystem::directory_iterator(stagingDir)) {
+            if (entry.is_directory()) {
+                singleChild = entry.path();
+            }
+            ++childCount;
+        }
+        if (childCount == 1 && !singleChild.empty()) {
+            UPGRADE_LOG_INFO("Promoting nested directory: "
+                             << ucf::utilities::FilePathUtils::utf8FromPath(singleChild));
+            // Move all children of the single subdirectory up to staging root
+            for (auto& entry : std::filesystem::directory_iterator(singleChild)) {
+                auto dest = stagingDir / entry.path().filename();
+                std::filesystem::rename(entry.path(), dest, ec);
+                if (ec) {
+                    throw std::runtime_error(
+                        "Failed to promote " + entry.path().filename().string() + ": " + ec.message());
+                }
+            }
+            std::filesystem::remove(singleChild, ec);
+        }
+
+        UPGRADE_LOG_INFO("Package extracted to staging: "
+                         << ucf::utilities::FilePathUtils::utf8FromPath(stagingDir));
+        callback(true, ucf::utilities::FilePathUtils::utf8FromPath(stagingDir),
+                 model::UpgradeErrorCode::None, "");
+
+    } catch (const std::exception& ex) {
+        UPGRADE_LOG_ERROR("Extract to staging failed: " << ex.what());
+        // Clean up failed staging
+        auto stagingDir = getStagingDirectory();
+        if (!stagingDir.empty() && std::filesystem::exists(stagingDir)) {
+            std::error_code ec;
+            std::filesystem::remove_all(stagingDir, ec);
+        }
+        callback(false, "", model::UpgradeErrorCode::ExtractFailed, ex.what());
     }
-
-    UPGRADE_LOG_INFO("Extracting updater from " << packagePath
-                     << " entry=" << fullEntryPath << " → " << ucf::utilities::FilePathUtils::utf8FromPath(destPath));
-
-    auto error = archiver.extractEntry(packagePath, fullEntryPath, ucf::utilities::FilePathUtils::utf8FromPath(destPath));
-    if (error != ucf::utilities::ArchiveError::Success)
-    {
-        throw std::runtime_error(
-            std::string("Failed to extract updater: ") +
-            ucf::utilities::ArchiveWrapper::errorToString(error));
-    }
-
-    // Set executable permission on macOS/Linux
-#ifndef _WIN32
-    std::filesystem::permissions(destPath,
-        std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec,
-        std::filesystem::perm_options::add);
-#endif
-
-    return destPath;
 }
 
 std::vector<std::string> UpgradeInstallManager::buildUpdaterArgs(
-    const std::string& packagePath,
+    const std::filesystem::path& stagingDir,
     const std::filesystem::path& targetDir) const
 {
     std::vector<std::string> args;
-    args.emplace_back("--package");
-    args.emplace_back(packagePath);
+    args.emplace_back("--staging");
+    args.emplace_back(ucf::utilities::FilePathUtils::utf8FromPath(stagingDir));
     args.emplace_back("--target");
     args.emplace_back(ucf::utilities::FilePathUtils::utf8FromPath(targetDir));
     args.emplace_back("--pid");
@@ -134,33 +174,58 @@ std::vector<std::string> UpgradeInstallManager::buildUpdaterArgs(
 }
 
 void UpgradeInstallManager::launchUpdaterAndExit(
-    const std::string& packagePath,
+    const std::string& stagingDir,
     InstallCallback callback)
 {
-    UPGRADE_LOG_INFO("Starting upgrade installation...");
+    UPGRADE_LOG_INFO("Starting upgrade installation from staging...");
 
     try {
-        // 1. Extract updater to temp directory (not the install dir — avoids self-update problem)
-        auto updaterPath = extractUpdaterToTemp(packagePath);
+        auto stagingPath = ucf::utilities::FilePathUtils::pathFromUtf8(stagingDir);
 
-        // 2. Build arguments
+        // 1. Locate updater binary inside staging dir (in bin/ subdirectory)
+        auto updaterName = getUpdaterEntryName();
+        auto updaterInStaging = stagingPath / "bin" / updaterName;
+        if (!std::filesystem::exists(updaterInStaging)) {
+            // Fallback: updater might be at staging root
+            updaterInStaging = stagingPath / updaterName;
+        }
+        if (!std::filesystem::exists(updaterInStaging)) {
+            throw std::runtime_error("Updater binary not found in staging directory");
+        }
+
+        // 2. Copy updater to temp dir (it can't run from staging since staging will be renamed)
+        auto tempDir = getTempDirectory();
+        ucf::utilities::FilePathUtils::createDirectoriesUtf8(
+            ucf::utilities::FilePathUtils::utf8FromPath(tempDir));
+        auto updaterPath = tempDir / updaterName;
+        std::filesystem::copy_file(updaterInStaging, updaterPath,
+            std::filesystem::copy_options::overwrite_existing);
+
+#ifndef _WIN32
+        std::filesystem::permissions(updaterPath,
+            std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec,
+            std::filesystem::perm_options::add);
+#endif
+
+        // 3. Build arguments
         auto cf = mCoreFramework.lock();
         if (!cf) throw std::runtime_error("CoreFramework unavailable");
         auto clientInfo = cf->getService<IClientInfoService>().lock();
         if (!clientInfo) throw std::runtime_error("ClientInfoService unavailable");
         auto targetDir = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getInstallDirectory());
-        auto args = buildUpdaterArgs(packagePath, targetDir);
+        auto args = buildUpdaterArgs(stagingPath, targetDir);
 
-        // 3. Write a marker file so we can detect interrupted upgrades on next start
-        auto markerPath = getTempDirectory() / upgrade::constants::kUpgradeMarkerFileName;
+        // 4. Write a marker file so we can detect interrupted upgrades on next start
+        auto markerPath = tempDir / upgrade::constants::kUpgradeMarkerFileName;
         {
             std::ofstream marker(markerPath);
-            marker << packagePath << "\n" << ucf::utilities::FilePathUtils::utf8FromPath(targetDir) << "\n";
+            marker << stagingDir << "\n" << ucf::utilities::FilePathUtils::utf8FromPath(targetDir) << "\n";
         }
 
-        // 4. Launch the updater process (detached — outlives this app)
+        // 5. Launch the updater process (detached — outlives this app)
         UPGRADE_LOG_INFO("Launching updater: " << ucf::utilities::FilePathUtils::utf8FromPath(updaterPath));
-        UPGRADE_LOG_INFO("  target: " << ucf::utilities::FilePathUtils::utf8FromPath(targetDir));
+        UPGRADE_LOG_INFO("  staging: " << stagingDir);
+        UPGRADE_LOG_INFO("  target:  " << ucf::utilities::FilePathUtils::utf8FromPath(targetDir));
 
         ucf::utilities::ProcessBridgeConfig config;
         config.executablePath = ucf::utilities::FilePathUtils::utf8FromPath(updaterPath);
@@ -172,7 +237,6 @@ void UpgradeInstallManager::launchUpdaterAndExit(
 
         UPGRADE_LOG_INFO("Updater launched successfully, app should exit now");
         callback(true, model::UpgradeErrorCode::None, "");
-        // Caller (FSM/Manager) will trigger QApplication::quit()
 
     } catch (const std::exception& ex) {
         UPGRADE_LOG_ERROR("Failed to launch updater: " << ex.what());
@@ -185,9 +249,14 @@ void UpgradeInstallManager::checkAndRecoverFromFailedUpgrade()
     auto markerPath = getTempDirectory() / upgrade::constants::kUpgradeMarkerFileName;
     if (std::filesystem::exists(markerPath)) {
         UPGRADE_LOG_WARN("Detected interrupted upgrade — previous upgrade may have failed");
-        // Remove the marker; the old version is still running so we're okay
         std::filesystem::remove(markerPath);
-        // Future: could trigger a notification to the user
+    }
+    // Clean up any leftover staging directory from a failed upgrade
+    auto stagingDir = getStagingDirectory();
+    if (!stagingDir.empty() && std::filesystem::exists(stagingDir)) {
+        UPGRADE_LOG_WARN("Cleaning up leftover staging directory");
+        std::error_code ec;
+        std::filesystem::remove_all(stagingDir, ec);
     }
 }
 
@@ -208,6 +277,15 @@ void UpgradeInstallManager::cleanupTempFiles()
 void UpgradeInstallManager::reset()
 {
     cleanupTempFiles();
+    // Also clean up any staging directory
+    auto stagingDir = getStagingDirectory();
+    if (!stagingDir.empty() && std::filesystem::exists(stagingDir)) {
+        std::error_code ec;
+        std::filesystem::remove_all(stagingDir, ec);
+        if (ec) {
+            UPGRADE_LOG_WARN("Failed to clean staging dir: " << ec.message());
+        }
+    }
     UPGRADE_LOG_DEBUG("UpgradeInstallManager reset");
 }
 

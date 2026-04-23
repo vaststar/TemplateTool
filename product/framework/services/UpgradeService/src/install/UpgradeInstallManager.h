@@ -31,9 +31,21 @@ public:
         model::UpgradeErrorCode errorCode,
         const std::string& errorMessage)>;
 
-    /// Extract updater from ZIP to a temp directory, launch it, then
+    /// Extract callback: delivers the staging directory path on success
+    using ExtractCallback = std::function<void(
+        bool success,
+        const std::string& stagingDir,
+        model::UpgradeErrorCode errorCode,
+        const std::string& errorMessage)>;
+
+    /// Extract the ZIP package into a staging directory (<installDir>.staging/).
+    /// The staging directory will contain the fully extracted new version.
+    void extractPackageToStaging(const std::string& packagePath,
+                                 ExtractCallback callback);
+
+    /// Launch updater with a pre-extracted staging directory, then
     /// the app should exit.  Calls back with success/failure.
-    void launchUpdaterAndExit(const std::string& packagePath,
+    void launchUpdaterAndExit(const std::string& stagingDir,
                               InstallCallback callback);
 
     /// Check for sufficient disk space (need ~2x package size for extraction)
@@ -49,15 +61,15 @@ public:
     void reset();
 
 private:
-    /// Extract the updater binary from the ZIP package to a temp directory
-    [[nodiscard]] std::filesystem::path extractUpdaterToTemp(const std::string& packagePath);
+    /// Get the staging directory path (<installDir>.staging)
+    [[nodiscard]] std::filesystem::path getStagingDirectory() const;
 
     /// Get the name of the updater entry inside the ZIP (platform-dependent)
     [[nodiscard]] std::string getUpdaterEntryName() const;
 
     /// Build command-line arguments for the updater process
     [[nodiscard]] std::vector<std::string> buildUpdaterArgs(
-        const std::string& packagePath,
+        const std::filesystem::path& stagingDir,
         const std::filesystem::path& targetDir) const;
 
     /// Get the temp directory used for upgrade operations

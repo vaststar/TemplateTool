@@ -17,6 +17,7 @@ struct Checking;
 struct UpgradeAvailable;
 struct Downloading;
 struct Verifying;
+struct Extracting;
 struct ReadyToInstall;
 struct Installing;
 struct Failed;
@@ -71,6 +72,15 @@ struct Verifying {
     static constexpr std::string_view name() { return "Verifying"; }
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvVerifyOk&)
+        -> fsm::TransitionTo<Extracting>;
+    auto onEvent(UpgradeContext& ctx, const EvError& e)
+        -> fsm::TransitionTo<Failed>;
+};
+
+struct Extracting {
+    static constexpr std::string_view name() { return "Extracting"; }
+    void onEnter(UpgradeContext& ctx);
+    auto onEvent(UpgradeContext& ctx, const EvExtractOk& e)
         -> fsm::TransitionTo<ReadyToInstall>;
     auto onEvent(UpgradeContext& ctx, const EvError& e)
         -> fsm::TransitionTo<Failed>;
@@ -107,7 +117,7 @@ struct Failed {
 using UpgradeFSM = fsm::StateMachine<
     UpgradeContext,
     Idle, Checking, UpgradeAvailable, Downloading,
-    Verifying, ReadyToInstall, Installing, Failed
+    Verifying, Extracting, ReadyToInstall, Installing, Failed
 >;
 
 } // namespace ucf::service::upgrade

@@ -111,6 +111,7 @@ void UpgradeViewModel::onUpgradeStateChanged(ucf::service::model::UpgradeState s
         {S::UpgradeAvailable, V::UpgradeAvailable},
         {S::Downloading,      V::Downloading},
         {S::Verifying,        V::Verifying},
+        {S::Extracting,       V::Extracting},
         {S::ReadyToInstall,   V::ReadyToInstall},
         {S::Installing,       V::Installing},
         {S::Failed,           V::Failed},

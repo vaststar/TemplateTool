@@ -205,7 +205,7 @@ void AppUpgradeController::onUpgradeStateChanged(commonHead::viewModels::model::
 {
     using State = commonHead::viewModels::model::UpgradeViewState;
     m_downloading    = (state == State::Downloading);
-    m_verifying      = (state == State::Verifying);
+    m_verifying      = (state == State::Verifying || state == State::Extracting);
     m_readyToInstall = (state == State::ReadyToInstall);
     emit stateChanged();
 

@@ -44,13 +44,18 @@ inline void Verifying::onEnter(UpgradeContext& ctx) {
     ctx.triggerVerify(ctx.downloadedFilePath);
 }
 
+inline void Extracting::onEnter(UpgradeContext& ctx) {
+    ctx.onStateChanged(model::UpgradeState::Extracting);
+    ctx.triggerExtract(ctx.downloadedFilePath);
+}
+
 inline void ReadyToInstall::onEnter(UpgradeContext& ctx) {
     ctx.onStateChanged(model::UpgradeState::ReadyToInstall);
 }
 
 inline void Installing::onEnter(UpgradeContext& ctx) {
     ctx.onStateChanged(model::UpgradeState::Installing);
-    ctx.triggerInstall(ctx.downloadedFilePath);
+    ctx.triggerInstall(ctx.stagingDir);
 }
 
 inline void Failed::onEnter(UpgradeContext& ctx) {
@@ -128,9 +133,22 @@ inline auto Downloading::onEvent(UpgradeContext&, const EvError& e)
 // ── Verifying ──
 
 inline auto Verifying::onEvent(UpgradeContext&, const EvVerifyOk&)
-    -> fsm::TransitionTo<ReadyToInstall> { return {}; }
+    -> fsm::TransitionTo<Extracting> { return {}; }
 
 inline auto Verifying::onEvent(UpgradeContext&, const EvError& e)
+    -> fsm::TransitionTo<Failed> {
+    return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
+}
+
+// ── Extracting ──
+
+inline auto Extracting::onEvent(UpgradeContext& ctx, const EvExtractOk& e)
+    -> fsm::TransitionTo<ReadyToInstall> {
+    ctx.stagingDir = e.stagingDir;
+    return {};
+}
+
+inline auto Extracting::onEvent(UpgradeContext&, const EvError& e)
     -> fsm::TransitionTo<Failed> {
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }

@@ -13,7 +13,8 @@ enum class UpgradeState {
     UpgradeAvailable,   ///< A newer version is available
     Downloading,        ///< Downloading upgrade package
     Verifying,          ///< Verifying package integrity (SHA-256)
-    ReadyToInstall,     ///< Package verified, ready to install
+    Extracting,         ///< Extracting package to staging directory
+    ReadyToInstall,     ///< Package extracted to staging, ready to install
     Installing,         ///< Launching updater process
     Failed              ///< An error occurred
 };
@@ -25,6 +26,7 @@ enum class UpgradeErrorCode {
     ParseError,             ///< Failed to parse server response
     DownloadFailed,         ///< Download failed after retries
     VerifyFailed,           ///< SHA-256 mismatch
+    ExtractFailed,          ///< Failed to extract package to staging
     DiskSpaceError,         ///< Insufficient disk space
     LaunchUpdaterFailed,    ///< Failed to launch updater process
     Cancelled               ///< User cancelled the operation
