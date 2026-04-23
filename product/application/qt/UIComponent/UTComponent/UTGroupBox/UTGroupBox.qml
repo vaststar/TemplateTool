@@ -11,7 +11,7 @@ import UIResourceLoader 1.0
  *   UTGroupBox {
  *       title: qsTr("Settings")
  *
- *       ColumnLayout {
+ *       contentItem: ColumnLayout {
  *           // content here
  *       }
  *   }

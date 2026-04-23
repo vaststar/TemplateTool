@@ -25,8 +25,8 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("Proxy Settings")
 
-                GridLayout {
-                    columns: 2; columnSpacing: 16; rowSpacing: 10; width: parent.width
+                contentItem: GridLayout {
+                    columns: 2; columnSpacing: 16; rowSpacing: 10
 
                     UTText { text: qsTr("Proxy Port:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     RowLayout {
@@ -62,8 +62,8 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("HTTPS Certificate")
 
-                ColumnLayout {
-                    width: parent.width; spacing: 12
+                contentItem: ColumnLayout {
+                    spacing: 12
 
                     // Status banner
                     Rectangle {
@@ -174,8 +174,8 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("About")
 
-                GridLayout {
-                    columns: 2; columnSpacing: 16; rowSpacing: 6; width: parent.width
+                contentItem: GridLayout {
+                    columns: 2; columnSpacing: 16; rowSpacing: 6
                     UTText { text: qsTr("Engine:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     UTText { text: qsTr("mitmproxy (PyInstaller bundle)"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                     UTText { text: qsTr("Communication:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }

@@ -63,9 +63,7 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("Current Time")
 
-                ColumnLayout {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                contentItem: ColumnLayout {
                     spacing: 6
 
                     // Big timestamp display + copy button
@@ -95,9 +93,7 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("Timestamp → DateTime")
 
-                ColumnLayout {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                contentItem: ColumnLayout {
                     spacing: 8
 
                     // Input row
@@ -138,9 +134,7 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("DateTime → Timestamp")
 
-                ColumnLayout {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                contentItem: ColumnLayout {
                     spacing: 8
 
                     // Input row

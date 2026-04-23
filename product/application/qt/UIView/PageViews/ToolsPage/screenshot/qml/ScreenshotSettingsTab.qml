@@ -25,8 +25,7 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("Output Settings")
 
-                ColumnLayout {
-                    width: parent.width
+                contentItem: ColumnLayout {
                     spacing: 16
 
                     // Output directory
@@ -90,8 +89,7 @@ Item {
                 Layout.fillWidth: true
                 title: qsTr("Capture Settings")
 
-                ColumnLayout {
-                    width: parent.width
+                contentItem: ColumnLayout {
                     spacing: 16
 
                     // Delay

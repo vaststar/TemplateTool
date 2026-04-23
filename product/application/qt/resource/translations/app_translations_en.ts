@@ -1397,77 +1397,77 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="38"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="37"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="50"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="62"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="61"/>
         <source>Video format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="168"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="166"/>
         <source>⚠ Microphone permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Microphone.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="181"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="179"/>
         <source>System Audio:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="84"/>
         <source>Recording Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="97"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="95"/>
         <source>Frame rate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="105"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="103"/>
         <source>15 fps (small size)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="106"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="104"/>
         <source>30 fps (standard)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="105"/>
         <source>60 fps (smooth)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="132"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="130"/>
         <source>Microphone:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="217"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="215"/>
         <source>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="230"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="228"/>
         <source>FFmpeg:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="238"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="236"/>
         <source>Not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="254"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="252"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1655,67 +1655,67 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="38"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="37"/>
         <source>Save to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="50"/>
         <source>Browse...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="62"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="61"/>
         <source>Image format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="79"/>
         <source>PNG for quality, JPG for smaller size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="91"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="90"/>
         <source>Capture Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="103"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="101"/>
         <source>Default delay:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="111"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="109"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="112"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="110"/>
         <source>3 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="111"/>
         <source>5 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="114"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="112"/>
         <source>10 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="139"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="137"/>
         <source>Include timestamp:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="151"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="149"/>
         <source>Add date/time watermark to screenshots</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="163"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="161"/>
         <source>Select Output Directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1724,7 +1724,7 @@ Press ESC to cancel</source>
     <name>TimestampPanel</name>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="32"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="78"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1739,61 +1739,61 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="85"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="128"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="83"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="124"/>
         <source>UTC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="86"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="129"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="84"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="125"/>
         <source>Local Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="87"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="85"/>
         <source>Timezone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="94"/>
         <source>Timestamp → DateTime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="110"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="106"/>
         <source>Enter timestamp...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="116"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="173"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="112"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="167"/>
         <source>Milliseconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="122"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="166"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="118"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="160"/>
         <source>Convert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="130"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="126"/>
         <source>Relative Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="139"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="135"/>
         <source>DateTime → Timestamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="153"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="147"/>
         <source>Format: YYYY-MM-DD HH:MM:SS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="172"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="166"/>
         <source>Seconds</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1983,47 +1983,47 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="37"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="36"/>
         <source>Generate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="42"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="41"/>
         <source>Batch Generate (5)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="59"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="58"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="70"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="69"/>
         <source>Validate UUID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="82"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="80"/>
         <source>Enter UUID to validate...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="89"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="87"/>
         <source>Validate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="105"/>
         <source>Generation History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="116"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="112"/>
         <source>Copy All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="121"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="117"/>
         <source>Clear History</source>
         <translation type="unfinished"></translation>
     </message>

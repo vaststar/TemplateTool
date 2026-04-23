@@ -26,8 +26,7 @@ Item {
             Layout.fillWidth: true
             title: qsTr("Generate UUID")
 
-            ColumnLayout {
-                width: parent.width
+            contentItem: ColumnLayout {
                 spacing: 8
 
                 RowLayout {
@@ -69,8 +68,7 @@ Item {
             Layout.fillWidth: true
             title: qsTr("Validate UUID")
 
-            ColumnLayout {
-                width: parent.width
+            contentItem: ColumnLayout {
                 spacing: 8
 
                 RowLayout {
@@ -106,9 +104,7 @@ Item {
             Layout.fillHeight: true
             title: qsTr("Generation History")
 
-            ColumnLayout {
-                width: parent.width
-                height: parent.height
+            contentItem: ColumnLayout {
                 spacing: 8
 
                 RowLayout {
