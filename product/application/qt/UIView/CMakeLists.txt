@@ -42,6 +42,8 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ContactsPage/src/ContactsPageController.cpp
     PageViews/HomePage/include/HomePageController.h
     PageViews/HomePage/src/HomePageController.cpp
+    PageViews/AboutPage/include/AboutPageController.h
+    PageViews/AboutPage/src/AboutPageController.cpp
     PageViews/SettingsPage/include/SettingsPageController.h
     PageViews/SettingsPage/include/SettingsTreeModel.h
     PageViews/SettingsPage/include/AppearanceSettingsController.h
@@ -53,6 +55,7 @@ set(MODULE_SOURCE_PRIVATE
 
     PageViews/ToolsPage/common/include/ToolsPageController.h
     PageViews/ToolsPage/common/include/ToolsTreeModel.h
+    PageViews/ToolsPage/common/include/ToolsPanelRegistry.h
     PageViews/ToolsPage/textprocess/include/Base64ToolController.h
     PageViews/ToolsPage/textprocess/include/JsonToolController.h
     PageViews/ToolsPage/textprocess/include/JsonTreeItemModel.h
@@ -63,6 +66,7 @@ set(MODULE_SOURCE_PRIVATE
     PageViews/ToolsPage/network/include/ProxyRulesManager.h
     PageViews/ToolsPage/common/src/ToolsPageController.cpp
     PageViews/ToolsPage/common/src/ToolsTreeModel.cpp
+    PageViews/ToolsPage/common/src/ToolsPanelRegistry.cpp
     PageViews/ToolsPage/textprocess/src/Base64ToolController.cpp
     PageViews/ToolsPage/textprocess/src/JsonToolController.cpp
     PageViews/ToolsPage/textprocess/src/JsonTreeItemModel.cpp
@@ -113,6 +117,8 @@ set(MODULE_SOURCE_PRIVATE
     UIEvents/UIMainWindowEvent.cpp
     UIEvents/UIUpgradeEvent.h
     UIEvents/UIUpgradeEvent.cpp
+    UIEvents/UIAboutEvent.h
+    UIEvents/UIAboutEvent.cpp
 
     AppUpgrade/include/AppUpgradeController.h
     AppUpgrade/src/AppUpgradeController.cpp
@@ -147,6 +153,7 @@ set(MODULE_QML_TARGET_URI
 )
 set(MODULE_QML_TARGET_FILES
     PageViews/HomePage/qml/HomePage.qml
+    PageViews/AboutPage/qml/AboutDialog.qml
     PageViews/ContactsPage/qml/ContactsPage.qml
     PageViews/ContactsPage/qml/ContactListPanel.qml
     PageViews/ContactsPage/qml/ContactDetailPanel.qml

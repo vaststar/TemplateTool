@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import UIView 1.0
 import UTComponent 1.0
@@ -7,62 +8,6 @@ import UIResourceLoader 1.0
 Item {
     id: toolsPage
     property ToolsPageController controller: ToolsPageController {}
-
-    // ── Panel cache: lazy-load on first visit, never destroy ──
-    // Tracks which QML panels have been activated (visited at least once)
-    property var _activatedPanels: ({})
-
-    // All possible panel QML names → Component mappings
-    readonly property var _panelList: [
-        "Base64Panel.qml",
-        "JsonPanel.qml",
-        "TimestampPanel.qml",
-        "UuidPanel.qml",
-        "NetworkProxyPanel.qml",
-        "ScreenshotPanel.qml",
-        "RecordingPanel.qml"
-    ]
-    readonly property var _panelComponents: ({
-        "Base64Panel.qml":        compBase64,
-        "JsonPanel.qml":          compJson,
-        "TimestampPanel.qml":     compTimestamp,
-        "UuidPanel.qml":          compUuid,
-        "NetworkProxyPanel.qml":  compNetworkProxy,
-        "ScreenshotPanel.qml":    compScreenshot,
-        "RecordingPanel.qml":     compRecording
-    })
-
-    // Components for each panel type (registered via qt_add_qml_module, same URI)
-    Component { id: compBase64;        Base64Panel {} }
-    Component { id: compJson;          JsonPanel {} }
-    Component { id: compTimestamp;     TimestampPanel {} }
-    Component { id: compUuid;          UuidPanel {} }
-    Component { id: compNetworkProxy;  NetworkProxyPanel {} }
-    Component { id: compScreenshot;    ScreenshotPanel { controller: ScreenshotController {} } }
-    Component { id: compRecording;     RecordingPanel { controller: RecordingController {} } }
-
-    // When current panel changes, mark it as activated
-    Connections {
-        target: controller
-        function onCurrentPanelQmlChanged() {
-            var qml = controller.currentPanelQml
-            if (qml && !toolsPage._activatedPanels[qml]) {
-                var copy = toolsPage._activatedPanels
-                copy[qml] = true
-                toolsPage._activatedPanels = copy
-            }
-        }
-    }
-
-    Component.onCompleted: {
-        // Activate the initial panel
-        var qml = controller.currentPanelQml
-        if (qml) {
-            var copy = _activatedPanels
-            copy[qml] = true
-            _activatedPanels = copy
-        }
-    }
 
     RowLayout {
         anchors.fill: parent
@@ -76,27 +21,23 @@ Item {
             Layout.preferredWidth: 200
         }
 
-        // Right content panel: one Loader per panel type, cached
-        Item {
+        // Right content panel — StackLayout driven by currentPanelType
+        StackLayout {
+            id: contentStack
             Layout.fillWidth: true
             Layout.fillHeight: true
+            currentIndex: controller.panelRegistry ? controller.panelRegistry.indexOfPanel(controller.currentPanelType) : -1
 
             Repeater {
-                model: toolsPage._panelList
+                model: controller.initialized && controller.panelRegistry ? controller.panelRegistry.entries : []
 
                 Loader {
-                    anchors.fill: parent
-                    // Only load once the panel has been visited
-                    active: !!toolsPage._activatedPanels[modelData]
-                    // Only show the current panel
-                    visible: controller.currentPanelQml === modelData
-                    sourceComponent: toolsPage._panelComponents[modelData] || null
-
+                    required property string modelData
+                    required property int index
+                    source: modelData
                     onLoaded: {
-                        // Initialize panel controller via setupController (once)
-                        if (item && "controller" in item && item.controller) {
+                        if (item && item.controller)
                             toolsPage.controller.setupController(item.controller)
-                        }
                     }
                 }
             }

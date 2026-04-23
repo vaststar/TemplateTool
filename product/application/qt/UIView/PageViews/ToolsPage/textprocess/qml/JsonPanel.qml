@@ -18,8 +18,9 @@ Item {
     readonly property font _monoFont: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 16
+        x: 16; y: 16
+        width: Math.max(0, parent.width - 32)
+        height: Math.max(0, parent.height - 32)
         spacing: 12
 
         // Title

@@ -2,7 +2,9 @@
 #include "UpdaterLog.h"
 #include "../platform/PlatformUtils.h"
 
+#include <chrono>
 #include <filesystem>
+#include <thread>
 
 namespace updater {
 
@@ -40,9 +42,24 @@ int performUpgrade(const UpdaterConfig& config)
 
     if (std::filesystem::exists(config.targetDir)) {
         UPDATER_LOG("Backing up: " << config.targetDir.string() << " -> " << backupDir.string());
-        std::filesystem::rename(config.targetDir, backupDir, ec);
+
+        // On Windows, file handles may linger briefly after the parent exits
+        // (antivirus scanners, search indexer, DLL unload delays).
+        // Retry the rename a few times with increasing delay.
+        constexpr int kMaxRetries = 5;
+        for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
+            ec.clear();
+            std::filesystem::rename(config.targetDir, backupDir, ec);
+            if (!ec) {
+                break;
+            }
+            UPDATER_WARN("Backup attempt " << (attempt + 1) << " failed: " << ec.message());
+            if (attempt + 1 < kMaxRetries) {
+                std::this_thread::sleep_for(std::chrono::seconds(attempt + 1));
+            }
+        }
         if (ec) {
-            UPDATER_ERR("Failed to backup: " << ec.message());
+            UPDATER_ERR("Failed to backup after " << kMaxRetries << " attempts: " << ec.message());
             return 2;
         }
     }

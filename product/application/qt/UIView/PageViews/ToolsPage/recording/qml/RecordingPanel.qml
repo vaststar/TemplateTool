@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
+import UIView 1.0
 
 /**
  * Recording Panel - Main panel with Recording controls and Settings tabs
@@ -9,7 +10,7 @@ import UTComponent
 FocusScope {
     id: root
 
-    required property var controller
+    property RecordingController controller: RecordingController {}
 
     UTTabBar {
         id: tabBar

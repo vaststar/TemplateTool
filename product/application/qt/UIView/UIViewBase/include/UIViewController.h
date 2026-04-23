@@ -10,9 +10,12 @@ class AppContext;
 class UIViewController : public UIAppCore::UIController
 {
     Q_OBJECT
+    Q_PROPERTY(bool initialized READ isInitialized NOTIFY controllerInitialized)
 public:
     UIViewController(QObject* parent = nullptr);
     virtual ~UIViewController() = default;
+
+    bool isInitialized() const;
 
     void initializeController(QPointer<AppContext> appContext);
 

@@ -24,9 +24,13 @@
 #include "PageViews/HomePage/include/HomePageController.h"
 #include "PageViews/SettingsPage/include/SettingsPageController.h"
 #include "AppUpgrade/include/AppUpgradeController.h"
+#include "PageViews/AboutPage/include/AboutPageController.h"
+#include "UIEvents/UIAboutEvent.h"
+#include "UIEvents/UIMainWindowEvent.h"
 
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
+    , m_pageRegistry(new MainWindowContentPageRegistry(this))
 {
     UIVIEW_LOG_DEBUG("create MainWindowController");
 }
@@ -40,8 +44,8 @@ void MainWindowController::init()
 {
     UIVIEW_LOG_DEBUG("");
 
-    // Listen for UIMainWindowEvent from EventBus
-    listenUIEvents<UIMainWindowEvent>();
+    // Listen for events from EventBus
+    listenUIEvents<UIMainWindowEvent, UIAboutEvent>();
 
     mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
     mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
@@ -50,8 +54,6 @@ void MainWindowController::init()
                 this, &MainWindowController::activateMainWindow);
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onLogsPackComplete,
                 this, &MainWindowController::onLogsPackComplete);
-
-    registerPages();
 
     mMainViewModel->initViewModel();
 
@@ -73,7 +75,8 @@ void MainWindowController::openCamera()
     getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
 
-    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller){
+    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller)
+    {
         if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
         {
             UIVIEW_LOG_DEBUG("MediaCameraView.qml load done, will start init MediaCameraViewController");
@@ -139,23 +142,25 @@ void MainWindowController::createUpgradeController()
     {
         UIVIEW_LOG_DEBUG("Creating AppUpgradeController");
         m_upgradeController = new AppUpgradeController(this);
-        connect(m_upgradeController, &AppUpgradeController::quitRequested,
-                this, &MainWindowController::quitApplication);
+        connect(m_upgradeController, &AppUpgradeController::quitRequested, this, &MainWindowController::quitApplication);
         setupController(m_upgradeController);
     }
+}
+
+void MainWindowController::showAboutDialog()
+{
+    UIVIEW_LOG_DEBUG("showAboutDialog");
+    getAppContext()->getViewFactory()->loadQmlWindow( QStringLiteral("UIView/PageViews/AboutPage/qml/AboutDialog.qml"), [this](auto controller) {
+        if (auto* aboutController = dynamic_cast<UIViewController*>(controller))
+        {
+            setupController(aboutController);
+        }
+    });
 }
 
 void MainWindowController::componentCompleted()
 {
     emit visibleChanged();
-}
-
-void MainWindowController::registerPages()
-{
-    if (!m_pageRegistry)
-    {
-        m_pageRegistry = new MainWindowContentPageRegistry(this);
-    }
 }
 
 MainWindowContentPageRegistry* MainWindowController::pageRegistry() const
@@ -166,15 +171,32 @@ MainWindowContentPageRegistry* MainWindowController::pageRegistry() const
 bool MainWindowController::startSystemResize(QWindow *window, int edges)
 {
     if (window)
+    {
         return window->startSystemResize(Qt::Edges(edges));
+    }
     return false;
 }
 
 bool MainWindowController::event(QEvent* event)
 {
-    if (event->type() == UIMainWindowEvent::type) {
-        auto* e = static_cast<UIMainWindowEvent*>(event);
-        switch (e->mAction) {
+    if (event->type() == UIAboutEvent::type)
+    {
+        switch (static_cast<UIAboutEvent*>(event)->mAction)
+        {
+        case UIAboutEvent::Action::ShowAboutDialog:
+            UIVIEW_LOG_DEBUG("UIAboutEvent::ShowAboutDialog");
+            showAboutDialog();
+            break;
+        default:
+            UIVIEW_LOG_DEBUG("UIAboutEvent::UnknownAction");
+            break;
+        }
+        return true;
+    }
+    if (event->type() == UIMainWindowEvent::type)
+    {
+        switch (static_cast<UIMainWindowEvent*>(event)->mAction)
+        {
         case UIMainWindowEvent::Action::Hide:
             UIVIEW_LOG_DEBUG("UIMainWindowEvent::Hide");
             emit hideWindow();
@@ -201,6 +223,9 @@ bool MainWindowController::event(QEvent* event)
         case UIMainWindowEvent::Action::Close:
             UIVIEW_LOG_DEBUG("UIMainWindowEvent::Close");
             quitApplication();
+            break;
+        default:
+            UIVIEW_LOG_DEBUG("UIMainWindowEvent::UnknownAction");
             break;
         }
         return true;

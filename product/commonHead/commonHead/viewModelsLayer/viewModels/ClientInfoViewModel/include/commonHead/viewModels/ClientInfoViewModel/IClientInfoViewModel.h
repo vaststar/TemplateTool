@@ -43,6 +43,10 @@ public:
     virtual std::string getViewModelName() const = 0;
 
     virtual std::string getApplicationVersion() const = 0;
+    virtual std::string getProductName() const = 0;
+    virtual std::string getCompanyName() const = 0;
+    virtual std::string getCopyright() const = 0;
+    virtual std::string getProductDescription() const = 0;
 
     virtual commonHead::viewModels::model::LanguageType getApplicationLanguage() const = 0;
     virtual void setApplicationLanguage(commonHead::viewModels::model::LanguageType language) = 0;

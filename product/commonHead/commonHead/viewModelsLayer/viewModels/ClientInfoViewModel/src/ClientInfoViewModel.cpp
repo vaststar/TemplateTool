@@ -46,6 +46,66 @@ std::string ClientInfoViewModel::getApplicationVersion() const
     return "0.0.0";
 }
 
+std::string ClientInfoViewModel::getProductName() const
+{
+    if (auto fw = getCommonHeadFramework().lock())
+    {
+        if (auto sl = fw->getServiceLocator())
+        {
+            if (auto svc = sl->getClientInfoService().lock())
+            {
+                return svc->getProductInfo().productName;
+            }
+        }
+    }
+    return {};
+}
+
+std::string ClientInfoViewModel::getCompanyName() const
+{
+    if (auto fw = getCommonHeadFramework().lock())
+    {
+        if (auto sl = fw->getServiceLocator())
+        {
+            if (auto svc = sl->getClientInfoService().lock())
+            {
+                return svc->getProductInfo().companyName;
+            }
+        }
+    }
+    return {};
+}
+
+std::string ClientInfoViewModel::getCopyright() const
+{
+    if (auto fw = getCommonHeadFramework().lock())
+    {
+        if (auto sl = fw->getServiceLocator())
+        {
+            if (auto svc = sl->getClientInfoService().lock())
+            {
+                return svc->getProductInfo().copyright;
+            }
+        }
+    }
+    return {};
+}
+
+std::string ClientInfoViewModel::getProductDescription() const
+{
+    if (auto fw = getCommonHeadFramework().lock())
+    {
+        if (auto sl = fw->getServiceLocator())
+        {
+            if (auto svc = sl->getClientInfoService().lock())
+            {
+                return svc->getProductInfo().productDescription;
+            }
+        }
+    }
+    return {};
+}
+
 commonHead::viewModels::model::LanguageType ClientInfoViewModel::getApplicationLanguage() const
 {
     if (auto commonHeadFramework = getCommonHeadFramework().lock())

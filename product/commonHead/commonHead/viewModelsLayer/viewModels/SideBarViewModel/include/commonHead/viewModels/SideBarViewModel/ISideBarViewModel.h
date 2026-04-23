@@ -55,6 +55,12 @@ public:
      */
     virtual void onSubMenuRequested(model::PageId pageId,
                                     const std::vector<model::SubMenuItem>& items) = 0;
+
+    /**
+     * @brief Called when a submenu action needs UI-layer handling
+     * @param actionId The menu action that was triggered
+     */
+    virtual void onMenuActionClicked(model::MenuActionId actionId) = 0;
 };
 
 /**

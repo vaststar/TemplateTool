@@ -401,17 +401,13 @@ void SideBarViewModel::handleSubMenuAction(model::MenuActionId actionId)
 {
     COMMONHEAD_LOG_DEBUG("handleSubMenuAction: " << static_cast<int>(actionId));
 
-    switch (actionId)
+    if (actionId == model::MenuActionId::Unknown)
     {
-    case model::MenuActionId::CheckUpgrade:
-        // Delegate to upgrade service (caller / AppRunner will handle)
-        break;
-    case model::MenuActionId::About:
-        break;
-    default:
         COMMONHEAD_LOG_WARN("Unknown MenuActionId: " << static_cast<int>(actionId));
-        break;
+        return;
     }
+
+    fireNotification(&ISideBarViewModelCallback::onMenuActionClicked, actionId);
 }
 
 } // namespace commonHead::viewModels

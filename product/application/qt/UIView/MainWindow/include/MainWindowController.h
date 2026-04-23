@@ -6,7 +6,6 @@
 #include <QtQml>
 
 #include "UIViewBase/include/UIViewController.h"
-#include "UIEvents/UIMainWindowEvent.h"
 #include "MainWindow/include/MainWindowContentPageRegistry.h"
 
 class AppUpgradeController;
@@ -65,7 +64,7 @@ protected:
 private:
     void connectSignals(UIViewController* controller);
     void createUpgradeController();
-    void registerPages();
+    void showAboutDialog();
     void quitApplication();
 private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;

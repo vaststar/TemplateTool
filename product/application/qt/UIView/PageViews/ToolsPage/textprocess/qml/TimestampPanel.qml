@@ -36,8 +36,9 @@ Item {
     }
 
     Flickable {
-        anchors.fill: parent
-        anchors.margins: 16
+        x: 16; y: 16
+        width: Math.max(0, parent.width - 32)
+        height: Math.max(0, parent.height - 32)
         contentWidth: width
         contentHeight: mainColumn.implicitHeight
         clip: true
@@ -63,7 +64,8 @@ Item {
                 title: qsTr("Current Time")
 
                 ColumnLayout {
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     spacing: 6
 
                     // Big timestamp display + copy button
@@ -94,7 +96,8 @@ Item {
                 title: qsTr("Timestamp → DateTime")
 
                 ColumnLayout {
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     spacing: 8
 
                     // Input row
@@ -136,7 +139,8 @@ Item {
                 title: qsTr("DateTime → Timestamp")
 
                 ColumnLayout {
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     spacing: 8
 
                     // Input row

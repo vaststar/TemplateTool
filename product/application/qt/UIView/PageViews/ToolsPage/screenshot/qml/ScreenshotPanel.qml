@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
+import UIView 1.0
 
 /**
  * Screenshot Panel - Main panel with Screenshot gallery and Settings tabs
@@ -9,7 +10,7 @@ import UTComponent
 FocusScope {
     id: root
 
-    required property var controller
+    property ScreenshotController controller: ScreenshotController {}
 
     UTTabBar {
         id: tabBar

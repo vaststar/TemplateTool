@@ -32,10 +32,10 @@ Item {
             left: navigationBar.right
             right: parent.right
         }
-        currentIndex: controller.pageRegistry.indexOfPage(navigationBar.controller.currentPageId)
+        currentIndex: controller.initialized ? controller.pageRegistry.indexOfPage(navigationBar.controller.currentPageId) : -1
 
         Repeater {
-            model: controller.pageRegistry.entries
+            model: controller.initialized ? controller.pageRegistry.entries : []
             Loader {
                 required property string modelData
                 required property int index

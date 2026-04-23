@@ -12,6 +12,7 @@
 ToolsPageController::ToolsPageController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::ToolsViewModelEmitter>())
+    , m_panelRegistry(new ToolsPanelRegistry(this))
 {
     UIVIEW_LOG_DEBUG("create ToolsPageController");
 }
@@ -57,14 +58,19 @@ ToolsTreeModel* ToolsPageController::getTreeModel() const
     return m_treeModel;
 }
 
-QString ToolsPageController::getCurrentPanelQml() const
+int ToolsPageController::getCurrentPanelType() const
 {
-    return m_currentPanelQml;
+    return m_currentPanelType;
 }
 
 QString ToolsPageController::getCurrentNodeId() const
 {
     return m_currentNodeId;
+}
+
+ToolsPanelRegistry* ToolsPageController::panelRegistry() const
+{
+    return m_panelRegistry;
 }
 
 void ToolsPageController::selectNode(const QString& nodeId)
@@ -120,35 +126,12 @@ void ToolsPageController::onCurrentToolNodeChanged(const QString& nodeId, int pa
     m_currentNodeId = nodeId;
     emit currentNodeIdChanged();
 
-    QString newPanelQml = mapPanelTypeToQml(panelType);
-    if (m_currentPanelQml != newPanelQml) {
-        m_currentPanelQml = newPanelQml;
-        emit currentPanelQmlChanged();
+    if (m_currentPanelType != panelType)
+    {
+        m_currentPanelType = panelType;
+        emit currentPanelTypeChanged();
     }
 
-    UIVIEW_LOG_DEBUG("onCurrentToolNodeChanged: " << nodeId.toStdString() << " -> " << m_currentPanelQml.toStdString());
+    UIVIEW_LOG_DEBUG("onCurrentToolNodeChanged: " << nodeId.toStdString() << " -> panelType=" << panelType);
 }
 
-QString ToolsPageController::mapPanelTypeToQml(int panelType) const
-{
-    using PanelType = commonHead::viewModels::model::ToolPanelType;
-
-    switch (static_cast<PanelType>(panelType)) {
-    case PanelType::Base64:
-        return QStringLiteral("Base64Panel.qml");
-    case PanelType::Json:
-        return QStringLiteral("JsonPanel.qml");
-    case PanelType::Timestamp:
-        return QStringLiteral("TimestampPanel.qml");
-    case PanelType::Uuid:
-        return QStringLiteral("UuidPanel.qml");
-    case PanelType::NetworkProxy:
-        return QStringLiteral("NetworkProxyPanel.qml");
-    case PanelType::Screenshot:
-        return QStringLiteral("ScreenshotPanel.qml");
-    case PanelType::ScreenRecording:
-        return QStringLiteral("RecordingPanel.qml");
-    default:
-        return QString();
-    }
-}

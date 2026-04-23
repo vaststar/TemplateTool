@@ -9,7 +9,6 @@ BaseMenuSeparator {
 
     contentItem: Rectangle {
         implicitHeight: 1
-        implicitWidth: parent ? parent.width : 100
         color: UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Separator, UIColorState.Normal)
     }
 }

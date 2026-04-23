@@ -2,6 +2,24 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="13"/>
+        <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="39"/>
+        <source>Version %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="84"/>
+        <source>OK</source>
+        <translation type="unfinished">ok</translation>
+    </message>
+</context>
+<context>
     <name>AppSystemTray</name>
     <message>
         <location filename="../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
@@ -101,58 +119,58 @@
 <context>
     <name>JsonPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="27"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="28"/>
         <source>JSON Formatter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="37"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="38"/>
         <source>Indent spaces:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="57"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="58"/>
         <source>Input JSON</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="70"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="71"/>
         <source>Enter JSON here...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="81"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="84"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="85"/>
         <source>Minify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="89"/>
         <source>Validate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="92"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="93"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="118"/>
         <source>Tree View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="97"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="118"/>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="124"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="125"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -985,7 +1003,7 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="63"/>
+        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="65"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1317,12 +1335,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="26"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="27"/>
         <source>🎬 Gallery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="30"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="31"/>
         <source>⚙️ Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1619,12 +1637,12 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="26"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="27"/>
         <source>📷 Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="30"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="31"/>
         <source>⚙️ Settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1706,76 +1724,76 @@ Press ESC to cancel</source>
     <name>TimestampPanel</name>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="32"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="78"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="80"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="54"/>
         <source>Timestamp Converter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="63"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="64"/>
         <source>Current Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="83"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="125"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="128"/>
         <source>UTC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="84"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="126"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="86"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="129"/>
         <source>Local Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="87"/>
         <source>Timezone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="94"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="96"/>
         <source>Timestamp → DateTime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="110"/>
         <source>Enter timestamp...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="113"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="169"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="116"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="173"/>
         <source>Milliseconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="119"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="162"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="122"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="166"/>
         <source>Convert</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="127"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="130"/>
         <source>Relative Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="136"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="139"/>
         <source>DateTime → Timestamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="149"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="153"/>
         <source>Format: YYYY-MM-DD HH:MM:SS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="168"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="172"/>
         <source>Seconds</source>
         <translation type="unfinished"></translation>
     </message>

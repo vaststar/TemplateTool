@@ -13,6 +13,11 @@ UIViewController::UIViewController(QObject* parent)
 {
 }
 
+bool UIViewController::isInitialized() const
+{
+    return !mAppContext.isNull();
+}
+
 void UIViewController::initializeController(QPointer<AppContext> appContext)
 {
     if (getAppContext())

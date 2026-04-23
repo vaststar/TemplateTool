@@ -16,7 +16,7 @@ namespace ucf::service::model{
 }
 
 namespace commonHead::viewModels{
-class ClientInfoViewModel: public virtual IClientInfoViewModel, 
+class ClientInfoViewModel: public virtual IClientInfoViewModel,
                            public virtual commonHead::utilities::VMNotificationHelper<IClientInfoViewModelCallback>,
                            public std::enable_shared_from_this<ClientInfoViewModel>
 {
@@ -30,7 +30,11 @@ public:
 public:
     virtual std::string getViewModelName() const override;
     virtual std::string getApplicationVersion() const override;
-    
+    virtual std::string getProductName() const override;
+    virtual std::string getCompanyName() const override;
+    virtual std::string getCopyright() const override;
+    virtual std::string getProductDescription() const override;
+
     virtual commonHead::viewModels::model::LanguageType getApplicationLanguage() const override;
     virtual void setApplicationLanguage(commonHead::viewModels::model::LanguageType language) override;
     virtual std::vector<commonHead::viewModels::model::LanguageType> getSupportedLanguages() const override;
@@ -44,7 +48,7 @@ private:
     commonHead::viewModels::model::LanguageType convertServiceLanguageToModelLanguage(ucf::service::model::LanguageType language) const;
     ucf::service::model::LanguageType convertModelLanguageToServiceLanguage(commonHead::viewModels::model::LanguageType language) const;
 
-    
+
     commonHead::viewModels::model::ThemeType convertServiceThemeTypeToModelThemeType(ucf::service::model::ThemeType theme) const;
     ucf::service::model::ThemeType convertModelThemeTypeToServiceThemeType(commonHead::viewModels::model::ThemeType theme) const;
 };

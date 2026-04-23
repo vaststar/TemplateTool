@@ -7,6 +7,7 @@
 
 #include "ViewModelSingalEmitter/SideBarViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"
+#include "UIEvents/UIAboutEvent.h"
 #include "LoggerDefine/LoggerDefine.h"
 
 // ==================== MainWindowSideBarController ====================
@@ -38,12 +39,15 @@ void MainWindowSideBarController::init()
             this, &MainWindowSideBarController::onNavItemUpdated);
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onSubMenuRequested,
             this, &MainWindowSideBarController::onSubMenuRequested);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onMenuActionClicked,
+            this, &MainWindowSideBarController::onMenuActionClicked);
 
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init signals connected, creating ViewModel");
 
     // Create ViewModel and register callback
     m_sideBarViewModel = getAppContext()->getViewModelFactory()->createSideBarViewModelInstance();
-    if (!m_sideBarViewModel) {
+    if (!m_sideBarViewModel)
+    {
         UIVIEW_LOG_ERROR("Failed to create SideBarViewModel!");
         return;
     }
@@ -86,16 +90,24 @@ void MainWindowSideBarController::navigateTo(int pageId)
 
 void MainWindowSideBarController::handleSubMenuAction(int actionId)
 {
-    switch (auto id = static_cast<commonHead::viewModels::model::MenuActionId>(actionId))
+    if (m_sideBarViewModel)
+    {
+        m_sideBarViewModel->handleSubMenuAction(
+            static_cast<commonHead::viewModels::model::MenuActionId>(actionId));
+    }
+}
+
+void MainWindowSideBarController::onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId)
+{
+    switch (actionId)
     {
     case commonHead::viewModels::model::MenuActionId::CheckUpgrade:
         sendUIEvent<UIUpgradeEvent>(UIUpgradeEvent::Action::CheckForUpgrade);
         break;
+    case commonHead::viewModels::model::MenuActionId::About:
+        sendUIEvent<UIAboutEvent>(UIAboutEvent::Action::ShowAboutDialog);
+        break;
     default:
-        if (m_sideBarViewModel)
-        {
-            m_sideBarViewModel->handleSubMenuAction(id);
-        }
         break;
     }
 }
@@ -159,7 +171,8 @@ void MainWindowSideBarController::onSubMenuRequested(
 void MainWindowSideBarController::onLanguageChanged()
 {
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::onLanguageChanged");
-    if (m_sideBarViewModel) {
+    if (m_sideBarViewModel)
+    {
         m_sideBarViewModel->reloadNavConfig();
     }
 }

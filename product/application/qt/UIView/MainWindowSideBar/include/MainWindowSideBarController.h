@@ -54,6 +54,7 @@ private slots:
     void onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event);
     void onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item);
     void onSubMenuRequested(int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items);
+    void onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId);
 
 private:
     void refreshNavItems();

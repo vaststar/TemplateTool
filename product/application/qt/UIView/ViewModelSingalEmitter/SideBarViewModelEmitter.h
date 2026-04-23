@@ -37,11 +37,17 @@ public:
         emit signals_onSubMenuRequested(static_cast<int>(pageId), items);
     }
 
+    void onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId) override
+    {
+        emit signals_onMenuActionClicked(actionId);
+    }
+
 signals:
     void signals_onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items);
     void signals_onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event);
     void signals_onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item);
     void signals_onSubMenuRequested(int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items);
+    void signals_onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId);
 };
 
 } // namespace UIVMSignalEmitter

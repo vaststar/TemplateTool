@@ -4,6 +4,7 @@
 #include <QtQml>
 #include "UIViewBase/include/UIViewController.h"
 #include "ToolsTreeModel.h"
+#include "ToolsPanelRegistry.h"
 #include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
 
 namespace commonHead::viewModels {
@@ -19,15 +20,18 @@ class ToolsPageController : public UIViewController
     QML_ELEMENT
 
     Q_PROPERTY(ToolsTreeModel* treeModel READ getTreeModel NOTIFY treeModelChanged)
-    Q_PROPERTY(QString currentPanelQml READ getCurrentPanelQml NOTIFY currentPanelQmlChanged)
+    Q_PROPERTY(int currentPanelType READ getCurrentPanelType NOTIFY currentPanelTypeChanged)
     Q_PROPERTY(QString currentNodeId READ getCurrentNodeId NOTIFY currentNodeIdChanged)
+    Q_PROPERTY(ToolsPanelRegistry* panelRegistry READ panelRegistry CONSTANT)
 
 public:
     explicit ToolsPageController(QObject* parent = nullptr);
 
     ToolsTreeModel* getTreeModel() const;
-    QString getCurrentPanelQml() const;
+    int getCurrentPanelType() const;
     QString getCurrentNodeId() const;
+
+    ToolsPanelRegistry* panelRegistry() const;
 
     Q_INVOKABLE void selectNode(const QString& nodeId);
 
@@ -37,7 +41,7 @@ protected:
 
 signals:
     void treeModelChanged();
-    void currentPanelQmlChanged();
+    void currentPanelTypeChanged();
     void currentNodeIdChanged();
 
 private slots:
@@ -48,11 +52,10 @@ private slots:
     void onCurrentToolNodeChanged(const QString& nodeId, int panelType);
 
 private:
-    QString mapPanelTypeToQml(int panelType) const;
-
     std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
     std::shared_ptr<UIVMSignalEmitter::ToolsViewModelEmitter> m_viewModelEmitter;
     ToolsTreeModel* m_treeModel = nullptr;
-    QString m_currentPanelQml;
+    ToolsPanelRegistry* m_panelRegistry = nullptr;
+    int m_currentPanelType = 0;
     QString m_currentNodeId;
 };
