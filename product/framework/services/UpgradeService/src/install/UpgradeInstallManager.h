@@ -36,12 +36,6 @@ public:
     void launchUpdaterAndExit(const std::string& packagePath,
                               InstallCallback callback);
 
-    /// Get the current platform's install directory
-    [[nodiscard]] std::filesystem::path getInstallDirectory() const;
-
-    /// Get the current executable path
-    [[nodiscard]] std::filesystem::path getCurrentExecutablePath() const;
-
     /// Check for sufficient disk space (need ~2x package size for extraction)
     [[nodiscard]] bool hasSufficientDiskSpace(int64_t requiredBytes) const;
 

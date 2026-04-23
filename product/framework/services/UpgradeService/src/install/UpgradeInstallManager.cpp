@@ -18,10 +18,6 @@
 #include <unistd.h>
 #endif
 
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
-#endif
-
 namespace ucf::service {
 
 UpgradeInstallManager::UpgradeInstallManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
@@ -37,53 +33,23 @@ UpgradeInstallManager::~UpgradeInstallManager()
 
 std::filesystem::path UpgradeInstallManager::getTempDirectory() const
 {
+    if (auto cf = mCoreFramework.lock()) {
+        if (auto clientInfo = cf->getService<IClientInfoService>().lock()) {
+            return ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getAppTempStoragePath())
+                   / upgrade::constants::kTempSubDir;
+        }
+    }
     return std::filesystem::temp_directory_path() / upgrade::constants::kTempSubDir;
-}
-
-std::filesystem::path UpgradeInstallManager::getInstallDirectory() const
-{
-    auto execPath = getCurrentExecutablePath();
-#if defined(__APPLE__)
-    // macOS: the .app bundle's parent directory
-    // execPath = /path/to/mainEntry.app/Contents/MacOS/mainEntry
-    return execPath.parent_path().parent_path().parent_path(); // → mainEntry.app
-#else
-    // Windows & Linux: install root is parent of bin/
-    // execPath = /install-root/bin/mainEntry(.exe)
-    return execPath.parent_path().parent_path();
-#endif
-}
-
-std::filesystem::path UpgradeInstallManager::getCurrentExecutablePath() const
-{
-#if defined(__APPLE__) || defined(__linux__)
-    char buf[4096];
-#if defined(__APPLE__)
-    uint32_t size = sizeof(buf);
-    if (_NSGetExecutablePath(buf, &size) == 0) {
-        return std::filesystem::canonical(buf);
-    }
-#else
-    auto len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
-    if (len > 0) {
-        buf[len] = '\0';
-        return std::filesystem::path(buf);
-    }
-#endif
-    return {};
-#elif defined(_WIN32)
-    wchar_t buf[MAX_PATH];
-    GetModuleFileNameW(nullptr, buf, MAX_PATH);
-    return std::filesystem::path(buf);
-#else
-    return {};
-#endif
 }
 
 bool UpgradeInstallManager::hasSufficientDiskSpace(int64_t requiredBytes) const
 {
     try {
-        auto targetDir = getInstallDirectory();
+        auto cf = mCoreFramework.lock();
+        if (!cf) return false;
+        auto clientInfo = cf->getService<IClientInfoService>().lock();
+        if (!clientInfo) return false;
+        auto targetDir = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getInstallDirectory());
         auto spaceInfo = std::filesystem::space(targetDir);
         return spaceInfo.available > static_cast<std::uintmax_t>(requiredBytes * 2);
     } catch (const std::exception& ex) {
@@ -178,7 +144,11 @@ void UpgradeInstallManager::launchUpdaterAndExit(
         auto updaterPath = extractUpdaterToTemp(packagePath);
 
         // 2. Build arguments
-        auto targetDir = getInstallDirectory();
+        auto cf = mCoreFramework.lock();
+        if (!cf) throw std::runtime_error("CoreFramework unavailable");
+        auto clientInfo = cf->getService<IClientInfoService>().lock();
+        if (!clientInfo) throw std::runtime_error("ClientInfoService unavailable");
+        auto targetDir = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getInstallDirectory());
         auto args = buildUpdaterArgs(packagePath, targetDir);
 
         // 3. Write a marker file so we can detect interrupted upgrades on next start
@@ -243,14 +213,17 @@ void UpgradeInstallManager::reset()
 
 std::filesystem::path UpgradeInstallManager::getUpdaterSourcePath() const
 {
-    auto execPath = getCurrentExecutablePath();
-#if defined(__APPLE__)
-    // macOS: updater is at .app/Contents/MacOS/updater (same dir as main exe)
+    std::filesystem::path execPath;
+    if (auto cf = mCoreFramework.lock()) {
+        if (auto clientInfo = cf->getService<IClientInfoService>().lock()) {
+            execPath = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getExecutablePath());
+        }
+    }
+    if (execPath.empty()) {
+        return {};
+    }
+    // Updater is alongside the main executable on all platforms
     return execPath.parent_path() / upgrade::constants::kUpdaterBinaryName;
-#else
-    // Windows & Linux: updater alongside the main executable
-    return execPath.parent_path() / upgrade::constants::kUpdaterBinaryName;
-#endif
 }
 
 } // namespace ucf::service

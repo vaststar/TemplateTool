@@ -48,6 +48,10 @@ public:
     [[nodiscard]] virtual std::string getAppCrashStoragePath() const = 0;
     [[nodiscard]] virtual std::string getAppHangStoragePath() const = 0;
     [[nodiscard]] virtual std::string getAppCacheStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppTempStoragePath() const = 0;
+
+    [[nodiscard]] virtual std::string getExecutablePath() const = 0;
+    [[nodiscard]] virtual std::string getInstallDirectory() const = 0;
 
     virtual void initializeAppClient() = 0;
 

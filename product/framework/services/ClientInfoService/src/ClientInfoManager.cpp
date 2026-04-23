@@ -14,6 +14,16 @@
 #include <ucf/Utilities/SystemUtils/SystemUtils.h>
 #include "ClientInfoServiceLogger.h"
 
+#include <filesystem>
+
+#ifdef _WIN32
+#include <windows.h>
+#elif defined(__APPLE__)
+#include <mach-o/dyld.h>
+#else
+#include <unistd.h>
+#endif
+
 namespace ucf::service{
 static constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
 static constexpr const char* APP_INTERNAL_NAME_DEBUG = "TemplateToolAppDebug";
@@ -261,6 +271,58 @@ std::string ClientInfoManager::getCacheStoragePath() const
     ).string();
 #endif
     return {};
+}
+
+std::string ClientInfoManager::getTempStoragePath() const
+{
+#if defined(_DEBUG) || !defined(NDEBUG)
+    return (std::filesystem::temp_directory_path() / APP_INTERNAL_NAME_DEBUG).string();
+#else
+    return (std::filesystem::temp_directory_path() / APP_INTERNAL_NAME).string();
+#endif
+}
+
+std::string ClientInfoManager::getExecutablePath() const
+{
+#if defined(__APPLE__)
+    char buf[4096];
+    uint32_t size = sizeof(buf);
+    if (_NSGetExecutablePath(buf, &size) == 0) {
+        return std::filesystem::canonical(buf).string();
+    }
+    return {};
+#elif defined(__linux__)
+    char buf[4096];
+    auto len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (len > 0) {
+        buf[len] = '\0';
+        return std::string(buf);
+    }
+    return {};
+#elif defined(_WIN32)
+    wchar_t buf[MAX_PATH];
+    GetModuleFileNameW(nullptr, buf, MAX_PATH);
+    return std::filesystem::path(buf).string();
+#else
+    return {};
+#endif
+}
+
+std::string ClientInfoManager::getInstallDirectory() const
+{
+    auto execPath = std::filesystem::path(getExecutablePath());
+    if (execPath.empty()) {
+        return {};
+    }
+#if defined(__APPLE__)
+    // macOS: execPath = /path/to/mainEntry.app/Contents/MacOS/mainEntry
+    // Install directory is the .app bundle itself
+    return execPath.parent_path().parent_path().parent_path().string();
+#else
+    // Windows & Linux: execPath = /install-root/bin/mainEntry(.exe)
+    // Install directory is parent of bin/
+    return execPath.parent_path().parent_path().string();
+#endif
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

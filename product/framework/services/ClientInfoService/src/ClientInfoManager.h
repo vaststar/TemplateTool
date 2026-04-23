@@ -48,6 +48,10 @@ public:
     std::string getCrashStoragePath() const;
     std::string getHangStoragePath() const;
     std::string getCacheStoragePath() const;
+    std::string getTempStoragePath() const;
+
+    std::string getExecutablePath() const;
+    std::string getInstallDirectory() const;
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::atomic<model::LanguageType> mLanguageType;

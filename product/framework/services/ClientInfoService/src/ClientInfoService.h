@@ -55,6 +55,10 @@ public:
     virtual std::string getAppCrashStoragePath() const override;
     virtual std::string getAppHangStoragePath() const override;
     virtual std::string getAppCacheStoragePath() const override;
+    virtual std::string getAppTempStoragePath() const override;
+
+    virtual std::string getExecutablePath() const override;
+    virtual std::string getInstallDirectory() const override;
 
     virtual void initializeAppClient() override;
 protected:

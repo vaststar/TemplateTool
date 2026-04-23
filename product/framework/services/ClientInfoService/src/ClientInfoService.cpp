@@ -123,6 +123,10 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
     SERVICE_LOG_DEBUG("app data storage path: " << getAppDataStoragePath());
     SERVICE_LOG_DEBUG("app log storage path: " << getAppLogStoragePath());
+    SERVICE_LOG_DEBUG("app cache storage path: " << getAppCacheStoragePath());
+    SERVICE_LOG_DEBUG("app temp storage path: " << getAppTempStoragePath());
+    SERVICE_LOG_DEBUG("executable path: " << getExecutablePath());
+    SERVICE_LOG_DEBUG("install directory: " << getInstallDirectory());
     SERVICE_LOG_DEBUG("product name: " << getProductInfo().productName);
     SERVICE_LOG_DEBUG("copyright: " << getProductInfo().copyright);
     SERVICE_LOG_DEBUG("company name: " << getProductInfo().companyName);
@@ -231,6 +235,21 @@ std::string ClientInfoService::getAppHangStoragePath() const
 std::string ClientInfoService::getAppCacheStoragePath() const
 {
     return mDataPrivate->getClientInfoManager().getCacheStoragePath();
+}
+
+std::string ClientInfoService::getAppTempStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager().getTempStoragePath();
+}
+
+std::string ClientInfoService::getExecutablePath() const
+{
+    return mDataPrivate->getClientInfoManager().getExecutablePath();
+}
+
+std::string ClientInfoService::getInstallDirectory() const
+{
+    return mDataPrivate->getClientInfoManager().getInstallDirectory();
 }
 
 void ClientInfoService::initializeAppClient()
