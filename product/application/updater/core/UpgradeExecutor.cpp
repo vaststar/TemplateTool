@@ -102,7 +102,8 @@ int performUpgrade(const UpdaterConfig& config)
     if (std::filesystem::exists(backupDir)) {
         std::filesystem::remove_all(backupDir, ec);
     }
-    auto markerPath = std::filesystem::temp_directory_path() / "template-factory-upgrade" / "upgrade_in_progress";
+    // The marker file is in the same directory as the updater binary
+    auto markerPath = detail::getUpdaterDirectory() / "upgrade_in_progress";
     if (std::filesystem::exists(markerPath)) {
         std::filesystem::remove(markerPath, ec);
     }
