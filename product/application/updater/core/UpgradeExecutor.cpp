@@ -29,6 +29,14 @@ int performUpgrade(const UpdaterConfig& config)
     // 2. Wait for parent process to exit
     platform::waitForProcessExit(config.parentPid);
 
+    // 2b. Change CWD to a safe location.  The updater inherits the main app's
+    //     working directory, which may point inside targetDir.  Windows refuses
+    //     to rename a directory that is any process's CWD.
+    std::filesystem::current_path(std::filesystem::temp_directory_path(), ec);
+    if (ec) {
+        UPDATER_WARN("Could not change CWD: " << ec.message());
+    }
+
     // 3. Backup current installation
     std::filesystem::path backupDir = config.targetDir;
     backupDir += ".bak";

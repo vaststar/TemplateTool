@@ -9,9 +9,7 @@ if not exist "%INFO_JSON%" (
 )
 
 :: Parse version fields from product_info.json via PowerShell
-for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command ^
-    "$j = Get-Content '%INFO_JSON%' -Raw | ConvertFrom-Json; ^
-     Write-Host \"$($j.version.major).$($j.version.minor).$($j.version.patch)\""`) do (
+for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "$j = Get-Content \"%INFO_JSON%\" -Raw | ConvertFrom-Json; $v = $j.version; Write-Host ('{0}.{1}.{2}' -f $v.major,$v.minor,$v.patch)"`) do (
     set "VERSION=%%V"
 )
 
