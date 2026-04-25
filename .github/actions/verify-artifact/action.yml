@@ -233,10 +233,19 @@ runs:
             echo "::warning::Skipping runtime curl check for Windows ARM64 artifact on non-ARM64 runner (PROCESSOR_ARCHITECTURE=${PROCESSOR_ARCHITECTURE:-unknown})"
           else
           CURL_BIN=""
-          if [ -x "./bin/curl" ]; then
-            CURL_BIN="./bin/curl"
-          elif [ -x "./bin/curl.exe" ]; then
-            CURL_BIN="./bin/curl.exe"
+          if [ "$PLATFORM" = "windows" ]; then
+            # In Git Bash, invoking "./bin/curl" may not resolve to curl.exe reliably.
+            if [ -f "./bin/curl.exe" ]; then
+              CURL_BIN="./bin/curl.exe"
+            elif [ -f "./bin/curl" ]; then
+              CURL_BIN="./bin/curl"
+            fi
+          else
+            if [ -x "./bin/curl" ]; then
+              CURL_BIN="./bin/curl"
+            elif [ -x "./bin/curl.exe" ]; then
+              CURL_BIN="./bin/curl.exe"
+            fi
           fi
 
           if [ -z "$CURL_BIN" ]; then
