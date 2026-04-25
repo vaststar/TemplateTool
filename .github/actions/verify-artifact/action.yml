@@ -52,6 +52,10 @@ inputs:
     description: 'Expected SSL backend keyword in `curl --version` output (e.g. OpenSSL)'
     required: false
     default: ''
+  target-arch:
+    description: 'Target architecture of artifact (e.g. x64, x86, arm64)'
+    required: false
+    default: ''
 
 # 输出变量，可供后续步骤使用
 outputs:
@@ -86,6 +90,7 @@ runs:
         EXPECT_HEADERS="${{ inputs.expect-headers }}"
         VERIFY_HTTPS="${{ inputs.verify-https }}"
         EXPECT_SSL_BACKEND="${{ inputs.expected-ssl-backend }}"
+        TARGET_ARCH="${{ inputs.target-arch }}"
 
         echo "::group::📦 Verifying $LIBRARY artifact for $PLATFORM"
 
@@ -220,6 +225,13 @@ runs:
 
         # --- 可选：校验 curl HTTPS/SSL backend 能力 ---
         if [ "$VERIFY_HTTPS" = "true" ]; then
+          # Windows ARM64 binaries cannot run on standard x64 GitHub runners.
+          # Skip runtime execution in cross-arch scenario to avoid false failures (exit 126).
+          if [ "$PLATFORM" = "windows" ] && [ "$TARGET_ARCH" = "arm64" ] && [ "${PROCESSOR_ARCHITECTURE:-}" != "ARM64" ]; then
+            echo ""
+            echo "=== 🔐 curl Capability Check ==="
+            echo "::warning::Skipping runtime curl check for Windows ARM64 artifact on non-ARM64 runner (PROCESSOR_ARCHITECTURE=${PROCESSOR_ARCHITECTURE:-unknown})"
+          else
           CURL_BIN=""
           if [ -x "./bin/curl" ]; then
             CURL_BIN="./bin/curl"
@@ -232,9 +244,46 @@ runs:
             exit 1
           fi
 
-          CURL_VERSION_OUTPUT=$($CURL_BIN --version 2>&1)
           echo ""
           echo "=== 🔐 curl Capability Check ==="
+          CURL_VERSION_OUTPUT=""
+          CURL_CMD_EXIT=0
+
+          # Ensure runtime loader can resolve bundled dependencies first.
+          if [ "$PLATFORM" = "macos" ]; then
+            set +e
+            CURL_VERSION_OUTPUT=$(DYLD_LIBRARY_PATH="./lib:${DYLD_LIBRARY_PATH:-}" "$CURL_BIN" --version 2>&1)
+            CURL_CMD_EXIT=$?
+            set -e
+          elif [ "$PLATFORM" = "linux" ] || [ "$PLATFORM" = "android" ]; then
+            set +e
+            CURL_VERSION_OUTPUT=$(LD_LIBRARY_PATH="./lib:${LD_LIBRARY_PATH:-}" "$CURL_BIN" --version 2>&1)
+            CURL_CMD_EXIT=$?
+            set -e
+          else
+            set +e
+            CURL_VERSION_OUTPUT=$($CURL_BIN --version 2>&1)
+            CURL_CMD_EXIT=$?
+            set -e
+          fi
+
+          if [ "$CURL_CMD_EXIT" -ne 0 ]; then
+            echo "::error::Failed to run '$CURL_BIN --version' (exit code: $CURL_CMD_EXIT)"
+            echo "$CURL_VERSION_OUTPUT"
+
+            if [ "$PLATFORM" = "macos" ]; then
+              echo ""
+              echo "=== 🔍 macOS Runtime Diagnostics ==="
+              echo "[otool -L $CURL_BIN]"
+              otool -L "$CURL_BIN" 2>/dev/null || true
+              echo ""
+              echo "[./lib contents]"
+              ls -la ./lib 2>/dev/null || true
+            fi
+
+            exit 1
+          fi
+
           echo "$CURL_VERSION_OUTPUT" | head -n 1
 
           if ! echo "$CURL_VERSION_OUTPUT" | grep -qi "Protocols:.*https"; then
@@ -252,6 +301,7 @@ runs:
           echo "  ✅ https protocol supported"
           if [ -n "$EXPECT_SSL_BACKEND" ]; then
             echo "  ✅ SSL backend contains keyword: $EXPECT_SSL_BACKEND"
+          fi
           fi
         fi
 

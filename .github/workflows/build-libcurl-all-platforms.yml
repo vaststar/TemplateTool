@@ -144,6 +144,7 @@ jobs:
           artifact-path: artifact/windows/${{ matrix.arch }}
           platform: windows
           library-name: libcurl
+          target-arch: ${{ matrix.arch }}
           expect-shared-libs: '1'    # libcurl.dll
           expect-static-libs: '1'    # libcurl.lib
           verify-https: 'true'
