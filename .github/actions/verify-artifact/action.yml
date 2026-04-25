@@ -1,9 +1,9 @@
 # ==============================================================================
 # Verify Build Artifact Action
 # ==============================================================================
-# 
+#
 # 用途：验证构建产物的完整性和正确性
-# 
+#
 # 功能：
 #   1. 统计动态库、静态库、头文件数量
 #   2. 验证数量是否符合预期
@@ -44,6 +44,14 @@ inputs:
     description: 'Whether to expect header files (true/false)'
     required: false
     default: 'true'
+  verify-https:
+    description: 'Whether to verify curl supports https protocol'
+    required: false
+    default: 'false'
+  expected-ssl-backend:
+    description: 'Expected SSL backend keyword in `curl --version` output (e.g. OpenSSL)'
+    required: false
+    default: ''
 
 # 输出变量，可供后续步骤使用
 outputs:
@@ -76,11 +84,13 @@ runs:
         EXPECT_SHARED="${{ inputs.expect-shared-libs }}"
         EXPECT_STATIC="${{ inputs.expect-static-libs }}"
         EXPECT_HEADERS="${{ inputs.expect-headers }}"
-        
+        VERIFY_HTTPS="${{ inputs.verify-https }}"
+        EXPECT_SSL_BACKEND="${{ inputs.expected-ssl-backend }}"
+
         echo "::group::📦 Verifying $LIBRARY artifact for $PLATFORM"
-        
+
         HAS_WARNINGS=false
-        
+
         # ==================================================================
         # 检查 artifact 目录是否存在
         # ==================================================================
@@ -89,9 +99,9 @@ runs:
           echo "has_warnings=true" >> $GITHUB_OUTPUT
           exit 1
         fi
-        
+
         cd "$ARTIFACT_PATH"
-        
+
         # ==================================================================
         # 根据平台统计不同类型的文件数量
         # ==================================================================
@@ -99,7 +109,7 @@ runs:
         STATIC_COUNT=0
         HEADER_COUNT=0
         XCFRAMEWORK_COUNT=0
-        
+
         case "$PLATFORM" in
           windows)
             # Windows: .dll (动态库), .lib (导入库/静态库)
@@ -143,10 +153,10 @@ runs:
             echo "::warning::Unknown platform: $PLATFORM"
             ;;
         esac
-        
+
         # 统计头文件数量 (.h 和 .hpp)
         HEADER_COUNT=$(find . \( -name "*.h" -o -name "*.hpp" \) -type f 2>/dev/null | wc -l)
-        
+
         # ==================================================================
         # 输出文件清单
         # ==================================================================
@@ -155,17 +165,17 @@ runs:
         echo "  📚 Shared libraries (.$SHARED_EXT): $SHARED_COUNT"
         echo "  📦 Static libraries (.$STATIC_EXT): $STATIC_COUNT"
         echo "  📄 Header files (.h/.hpp): $HEADER_COUNT"
-        
+
         if [ "$PLATFORM" = "ios" ]; then
           echo "  📱 XCFrameworks: $XCFRAMEWORK_COUNT"
         fi
-        
+
         # ==================================================================
         # 验证检查
         # ==================================================================
         echo ""
         echo "=== ✔️ Validation Checks ==="
-        
+
         # --- 检查动态库数量 ---
         if [ "$EXPECT_SHARED" -gt 0 ] && [ "$SHARED_COUNT" -lt "$EXPECT_SHARED" ]; then
           echo "::warning::Expected at least $EXPECT_SHARED shared libraries, found $SHARED_COUNT"
@@ -175,7 +185,7 @@ runs:
         elif [ "$EXPECT_SHARED" -eq 0 ]; then
           echo "  ℹ️ Shared libraries: $SHARED_COUNT (not required)"
         fi
-        
+
         # --- 检查静态库数量 ---
         if [ "$EXPECT_STATIC" -gt 0 ] && [ "$STATIC_COUNT" -lt "$EXPECT_STATIC" ]; then
           echo "::warning::Expected at least $EXPECT_STATIC static libraries, found $STATIC_COUNT"
@@ -185,7 +195,7 @@ runs:
         elif [ "$EXPECT_STATIC" -eq 0 ]; then
           echo "  ℹ️ Static libraries: $STATIC_COUNT (not required)"
         fi
-        
+
         # --- 检查头文件 ---
         if [ "$EXPECT_HEADERS" = "true" ] && [ "$HEADER_COUNT" -eq 0 ]; then
           echo "::warning::No header files found in artifact"
@@ -193,7 +203,7 @@ runs:
         elif [ "$HEADER_COUNT" -gt 0 ]; then
           echo "  ✅ Header files: $HEADER_COUNT"
         fi
-        
+
         # --- iOS XCFramework 检查 ---
         if [ "$PLATFORM" = "ios" ] && [ "$XCFRAMEWORK_COUNT" -eq 0 ]; then
           echo "::warning::No XCFramework found for iOS build"
@@ -201,25 +211,62 @@ runs:
         elif [ "$PLATFORM" = "ios" ]; then
           echo "  ✅ XCFramework: found"
         fi
-        
+
         # --- 关键检查：没有任何库文件 ---
         if [ "$SHARED_COUNT" -eq 0 ] && [ "$STATIC_COUNT" -eq 0 ]; then
           echo "::warning::No library files found! Build may have failed silently."
           HAS_WARNINGS=true
         fi
-        
+
+        # --- 可选：校验 curl HTTPS/SSL backend 能力 ---
+        if [ "$VERIFY_HTTPS" = "true" ]; then
+          CURL_BIN=""
+          if [ -x "./bin/curl" ]; then
+            CURL_BIN="./bin/curl"
+          elif [ -x "./bin/curl.exe" ]; then
+            CURL_BIN="./bin/curl.exe"
+          fi
+
+          if [ -z "$CURL_BIN" ]; then
+            echo "::error::verify-https=true but curl executable not found under ./bin"
+            exit 1
+          fi
+
+          CURL_VERSION_OUTPUT=$($CURL_BIN --version 2>&1)
+          echo ""
+          echo "=== 🔐 curl Capability Check ==="
+          echo "$CURL_VERSION_OUTPUT" | head -n 1
+
+          if ! echo "$CURL_VERSION_OUTPUT" | grep -qi "Protocols:.*https"; then
+            echo "::error::curl does not report https protocol support"
+            exit 1
+          fi
+
+          if [ -n "$EXPECT_SSL_BACKEND" ]; then
+            if ! echo "$CURL_VERSION_OUTPUT" | grep -qi "$EXPECT_SSL_BACKEND"; then
+              echo "::error::curl SSL backend check failed, expected keyword: $EXPECT_SSL_BACKEND"
+              exit 1
+            fi
+          fi
+
+          echo "  ✅ https protocol supported"
+          if [ -n "$EXPECT_SSL_BACKEND" ]; then
+            echo "  ✅ SSL backend contains keyword: $EXPECT_SSL_BACKEND"
+          fi
+        fi
+
         # ==================================================================
         # 列出库文件（最多显示 20 个）
         # ==================================================================
         echo ""
         echo "=== 📁 Library Files ==="
         find . -type f \( -name "*.dll" -o -name "*.lib" -o -name "*.dylib" -o -name "*.so" -o -name "*.so.*" -o -name "*.a" \) 2>/dev/null | sort | head -20
-        
+
         LIB_TOTAL=$(find . -type f \( -name "*.dll" -o -name "*.lib" -o -name "*.dylib" -o -name "*.so" -o -name "*.so.*" -o -name "*.a" \) 2>/dev/null | wc -l)
         if [ "$LIB_TOTAL" -gt 20 ]; then
           echo "  ... and $((LIB_TOTAL - 20)) more"
         fi
-        
+
         # ==================================================================
         # 总计
         # ==================================================================
@@ -227,7 +274,7 @@ runs:
         echo ""
         echo "=== 📈 Summary ==="
         echo "  Total files: $TOTAL_FILES"
-        
+
         if [ "$HAS_WARNINGS" = "true" ]; then
           echo ""
           echo "  ⚠️ Verification completed with warnings"
@@ -235,9 +282,9 @@ runs:
           echo ""
           echo "  ✅ Verification passed - all checks OK"
         fi
-        
+
         echo "::endgroup::"
-        
+
         # ==================================================================
         # 设置输出变量供后续步骤使用
         # ==================================================================

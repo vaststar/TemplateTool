@@ -2,6 +2,24 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh-Hans">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="13"/>
+        <source>About</source>
+        <translation>关于</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="39"/>
+        <source>Version %1</source>
+        <translation>版本 %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="84"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+</context>
+<context>
     <name>AppSystemTray</name>
     <message>
         <location filename="../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
@@ -101,58 +119,58 @@
 <context>
     <name>JsonPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="27"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="28"/>
         <source>JSON Formatter</source>
         <translation type="unfinished">JSON 格式化</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="37"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="38"/>
         <source>Indent spaces:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="57"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="58"/>
         <source>Input JSON</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="70"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="71"/>
         <source>Enter JSON here...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="81"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="84"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="85"/>
         <source>Minify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="89"/>
         <source>Validate</source>
         <translation type="unfinished">校验</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="92"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="93"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="118"/>
         <source>Tree View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="97"/>
         <source>Clear</source>
         <translation type="unfinished">清空</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="117"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="118"/>
         <source>Output</source>
         <translation type="unfinished">输出</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="124"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="125"/>
         <source>Copy</source>
         <translation type="unfinished">复制</translation>
     </message>
@@ -987,7 +1005,7 @@ Double-click a rule to view details.</source>
         <translation>我的测试窗口标题栏</translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="56"/>
+        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="65"/>
         <source>my test window aa</source>
         <translation>我的测试窗口 aa</translation>
     </message>
@@ -1063,111 +1081,121 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="28"/>
+        <source>Check for Updates</source>
+        <translation>检查更新</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="29"/>
+        <source>About</source>
+        <translation>关于</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="30"/>
         <source>Text Processing</source>
         <translation>文本处理</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="29"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="31"/>
         <source>Date &amp; Time</source>
         <translation>时间日期</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="30"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="32"/>
         <source>Generators</source>
         <translation>生成器</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="31"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="33"/>
         <source>Base64 Encode/Decode</source>
         <translation>Base64 编解码</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="32"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="34"/>
         <source>JSON Formatter</source>
         <translation>JSON 格式化</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="33"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="35"/>
         <source>Timestamp Converter</source>
         <translation>时间戳转换</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="34"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
         <source>UUID Generator</source>
         <translation>UUID 生成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="35"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
         <source>Network</source>
         <translation>网络</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
         <source>Network Proxy</source>
         <translation>网络代理</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
         <source>Media</source>
         <translation>媒体</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
         <source>Screen Capture</source>
         <translation>屏幕捕获</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
         <source>Screenshot</source>
         <translation>截图</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
         <source>Screen Recording</source>
         <translation>录屏</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
         <source>JSON is valid</source>
         <translation>JSON 格式有效</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
         <source>Invalid timestamp</source>
         <translation>无效的时间戳</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
         <source>DateTime format parse failed</source>
         <translation>日期时间格式解析失败</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
         <source>Invalid datetime</source>
         <translation>无效的日期时间</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
         <source>General</source>
         <translation>通用</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} / {{1}} 已完成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>测试参数 {{0}}，仅 1 个参数</translation>
     </message>
@@ -1309,12 +1337,12 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="26"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="27"/>
         <source>🎬 Gallery</source>
         <translation>🎬 图库</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="30"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingPanel.qml" line="31"/>
         <source>⚙️ Settings</source>
         <translation>⚙️ 设置</translation>
     </message>
@@ -1372,77 +1400,77 @@ Press ESC to cancel</source>
         <translation>输出设置</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="38"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="37"/>
         <source>Save to:</source>
         <translation>保存至:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="50"/>
         <source>Browse...</source>
         <translation>浏览...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="62"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="61"/>
         <source>Video format:</source>
         <translation>视频格式:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="168"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="166"/>
         <source>⚠ Microphone permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Microphone.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="181"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="179"/>
         <source>System Audio:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="85"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="84"/>
         <source>Recording Settings</source>
         <translation>录制设置</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="97"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="95"/>
         <source>Frame rate:</source>
         <translation>帧率:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="105"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="103"/>
         <source>15 fps (small size)</source>
         <translation>15 fps（较小体积）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="106"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="104"/>
         <source>30 fps (standard)</source>
         <translation>30 fps（标准）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="105"/>
         <source>60 fps (smooth)</source>
         <translation>60 fps（流畅）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="132"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="130"/>
         <source>Microphone:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="217"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="215"/>
         <source>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="230"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="228"/>
         <source>FFmpeg:</source>
         <translation>FFmpeg:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="238"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="236"/>
         <source>Not found</source>
         <translation>未找到</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="254"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="252"/>
         <source>Select Output Directory</source>
         <translation>选择输出目录</translation>
     </message>
@@ -1613,12 +1641,12 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotPanel</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="26"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="27"/>
         <source>📷 Screenshot</source>
         <translation>📷 截图</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="30"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="31"/>
         <source>⚙️ Settings</source>
         <translation>⚙️ 设置</translation>
     </message>
@@ -1631,67 +1659,67 @@ Press ESC to cancel</source>
         <translation>输出设置</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="38"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="37"/>
         <source>Save to:</source>
         <translation>保存至:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="50"/>
         <source>Browse...</source>
         <translation>浏览...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="62"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="61"/>
         <source>Image format:</source>
         <translation>图片格式:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="80"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="79"/>
         <source>PNG for quality, JPG for smaller size</source>
         <translation>PNG 画质更好，JPG 体积更小</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="91"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="90"/>
         <source>Capture Settings</source>
         <translation>截图设置</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="103"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="101"/>
         <source>Default delay:</source>
         <translation>默认延迟:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="111"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="109"/>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="112"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="110"/>
         <source>3 seconds</source>
         <translation>3 秒</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="113"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="111"/>
         <source>5 seconds</source>
         <translation>5 秒</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="114"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="112"/>
         <source>10 seconds</source>
         <translation>10 秒</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="139"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="137"/>
         <source>Include timestamp:</source>
         <translation>包含时间戳:</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="151"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="149"/>
         <source>Add date/time watermark to screenshots</source>
         <translation>在截图上添加日期/时间水印</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="163"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="161"/>
         <source>Select Output Directory</source>
         <translation>选择输出目录</translation>
     </message>
@@ -1705,24 +1733,24 @@ Press ESC to cancel</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="54"/>
         <source>Timestamp Converter</source>
         <translation>时间戳转换</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="63"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="64"/>
         <source>Current Time</source>
         <translation>当前时间</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="83"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="125"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="124"/>
         <source>UTC</source>
         <translation>UTC</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="84"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="126"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="125"/>
         <source>Local Time</source>
         <translation>本地时间</translation>
     </message>
@@ -1737,39 +1765,39 @@ Press ESC to cancel</source>
         <translation>时间戳 → 日期时间</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="106"/>
         <source>Enter timestamp...</source>
         <translation>输入时间戳...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="113"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="169"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="112"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="167"/>
         <source>Milliseconds</source>
         <translation>毫秒</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="119"/>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="162"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="118"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="160"/>
         <source>Convert</source>
         <translation>转换</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="127"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="126"/>
         <source>Relative Time</source>
         <translation>相对时间</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="136"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="135"/>
         <source>DateTime → Timestamp</source>
         <translation>日期时间 → 时间戳</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="149"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="147"/>
         <source>Format: YYYY-MM-DD HH:MM:SS</source>
         <translation>格式: YYYY-MM-DD HH:MM:SS</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="168"/>
+        <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/TimestampPanel.qml" line="166"/>
         <source>Seconds</source>
         <translation>秒</translation>
     </message>
@@ -1869,11 +1897,81 @@ Press ESC to cancel</source>
     </message>
 </context>
 <context>
-    <name>UTWindow</name>
+    <name>UpgradeDialog</name>
     <message>
-        <location filename="../../UIComponent/UTComponent/UTWindow/UTWindow.qml" line="12"/>
-        <source>test ut window</source>
-        <translation>测试 ut 窗口</translation>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="12"/>
+        <source>Software Update</source>
+        <translation>软件更新</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="27"/>
+        <source>Ready to install</source>
+        <translation>准备安装</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="29"/>
+        <source>Verifying package...</source>
+        <translation>正在校验安装包...</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
+        <source>Downloading update...</source>
+        <translation>正在下载更新...</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
+        <source>A new version is available!</source>
+        <translation>发现新版本！</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
+        <source>Checking for updates...</source>
+        <translation>正在检查更新...</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="36"/>
+        <source>Check for Updates</source>
+        <translation>检查更新</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="45"/>
+        <source>Version %1</source>
+        <translation>版本 %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="84"/>
+        <source>%1%</source>
+        <translation>%1%</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="105"/>
+        <source>You are using the latest version.</source>
+        <translation>当前已是最新版本。</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="122"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="128"/>
+        <source>Install &amp;&amp; Restart</source>
+        <translation>安装并重启</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="135"/>
+        <source>Download &amp;&amp; Install</source>
+        <translation>下载并安装</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="141"/>
+        <source>Later</source>
+        <translation>稍后</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="141"/>
+        <source>Close</source>
+        <translation>关闭</translation>
     </message>
 </context>
 <context>
@@ -1889,47 +1987,47 @@ Press ESC to cancel</source>
         <translation>生成 UUID</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="37"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="36"/>
         <source>Generate</source>
         <translation>生成</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="42"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="41"/>
         <source>Batch Generate (5)</source>
         <translation>批量生成 (5个)</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="59"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="58"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="70"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="69"/>
         <source>Validate UUID</source>
         <translation>校验 UUID</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="82"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="80"/>
         <source>Enter UUID to validate...</source>
         <translation>输入要校验的 UUID...</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="89"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="87"/>
         <source>Validate</source>
         <translation>校验</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="107"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="105"/>
         <source>Generation History</source>
         <translation>生成历史</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="116"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="112"/>
         <source>Copy All</source>
         <translation>复制全部</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="121"/>
+        <location filename="../../UIView/PageViews/ToolsPage/generators/qml/UuidPanel.qml" line="117"/>
         <source>Clear History</source>
         <translation>清空历史</translation>
     </message>

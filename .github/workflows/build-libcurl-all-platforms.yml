@@ -16,10 +16,16 @@ on:
 
 env:
   CURL_VERSION: ${{ github.event.inputs.curl_version }}
+  OPENSSL_WORKFLOW_FILE: build-openssl-all-platforms.yml
+  OPENSSL_WORKFLOW_BRANCH: main
+
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   # ============================================================================
-  # Windows Builds (x64, x86, arm64) - Using Schannel (system SSL)
+  # Windows Builds (x64, x86, arm64) - Using OpenSSL
   # ============================================================================
   build-windows:
     if: contains(github.event.inputs.platforms, 'windows')
@@ -48,6 +54,16 @@ jobs:
         with:
           arch: ${{ matrix.msvc_arch }}
 
+      - name: Download OpenSSL artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ${{ env.OPENSSL_WORKFLOW_FILE }}
+          workflow_conclusion: success
+          branch: ${{ env.OPENSSL_WORKFLOW_BRANCH }}
+          name: openssl-windows-${{ matrix.arch }}
+          path: deps/openssl
+
       - name: Download curl source
         shell: pwsh
         run: |
@@ -67,8 +83,12 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../curl_install ^
             -DBUILD_SHARED_LIBS=ON ^
             -DBUILD_STATIC_LIBS=ON ^
-            -DCURL_USE_SCHANNEL=ON ^
-            -DCURL_USE_OPENSSL=OFF ^
+            -DCURL_USE_SCHANNEL=OFF ^
+            -DCURL_USE_OPENSSL=ON ^
+            -DOPENSSL_ROOT_DIR=../deps/openssl/windows/${{ matrix.arch }} ^
+            -DOPENSSL_INCLUDE_DIR=../deps/openssl/windows/${{ matrix.arch }}/include ^
+            -DOPENSSL_SSL_LIBRARY=../deps/openssl/windows/${{ matrix.arch }}/lib/libssl.lib ^
+            -DOPENSSL_CRYPTO_LIBRARY=../deps/openssl/windows/${{ matrix.arch }}/lib/libcrypto.lib ^
             -DCURL_USE_LIBSSH2=OFF ^
             -DCURL_USE_LIBPSL=OFF ^
             -DUSE_LIBIDN2=OFF ^
@@ -110,6 +130,11 @@ jobs:
             Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
           }
 
+          # Copy OpenSSL runtime DLLs
+          Get-ChildItem -Path "deps/openssl/windows/$arch/bin" -Include "*.dll" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
+          }
+
           Write-Host "=== Built files ==="
           Get-ChildItem -Recurse artifact -File | Select-Object FullName
 
@@ -121,6 +146,8 @@ jobs:
           library-name: libcurl
           expect-shared-libs: '1'    # libcurl.dll
           expect-static-libs: '1'    # libcurl.lib
+          verify-https: 'true'
+          expected-ssl-backend: 'OpenSSL'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -130,7 +157,7 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # macOS Builds (Intel x86_64, Apple Silicon arm64) - Using SecureTransport
+  # macOS Builds (Intel x86_64, Apple Silicon arm64) - Using OpenSSL
   # ============================================================================
   build-macos:
     if: contains(github.event.inputs.platforms, 'macos')
@@ -154,6 +181,16 @@ jobs:
       - name: Install dependencies
         run: brew install cmake ninja
 
+      - name: Download OpenSSL artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ${{ env.OPENSSL_WORKFLOW_FILE }}
+          workflow_conclusion: success
+          branch: ${{ env.OPENSSL_WORKFLOW_BRANCH }}
+          name: openssl-macos-${{ matrix.platform_name }}
+          path: deps/openssl
+
       - name: Download curl source
         run: |
           curl -L -o curl.tar.gz https://curl.se/download/curl-${{ env.CURL_VERSION }}.tar.gz
@@ -174,7 +211,11 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_STATIC_LIBS=ON \
             -DCURL_ENABLE_SSL=ON \
-            -DCURL_USE_OPENSSL=OFF \
+            -DCURL_USE_OPENSSL=ON \
+            -DOPENSSL_ROOT_DIR=../deps/openssl/macosx/${{ matrix.platform_name }} \
+            -DOPENSSL_INCLUDE_DIR=../deps/openssl/macosx/${{ matrix.platform_name }}/include \
+            -DOPENSSL_SSL_LIBRARY=../deps/openssl/macosx/${{ matrix.platform_name }}/lib/libssl.dylib \
+            -DOPENSSL_CRYPTO_LIBRARY=../deps/openssl/macosx/${{ matrix.platform_name }}/lib/libcrypto.dylib \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_USE_LIBPSL=OFF \
             -DUSE_LIBIDN2=OFF \
@@ -202,6 +243,9 @@ jobs:
           cp curl_install/lib/*.dylib artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
           cp curl_install/lib/*.a artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
 
+          # Copy OpenSSL runtime libraries
+          cp deps/openssl/macosx/$PLATFORM/lib/*.dylib artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
+
           # Copy binary
           cp curl_install/bin/curl artifact/macosx/$PLATFORM/bin/ 2>/dev/null || true
 
@@ -222,6 +266,8 @@ jobs:
           library-name: libcurl
           expect-shared-libs: '1'    # libcurl.dylib
           expect-static-libs: '1'    # libcurl.a
+          verify-https: 'true'
+          expected-ssl-backend: 'OpenSSL'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -231,7 +277,7 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # iOS Build (arm64 device, arm64+x86_64 simulator) - Using SecureTransport
+  # iOS Build (arm64 device, arm64+x86_64 simulator) - Using OpenSSL
   # ============================================================================
   build-ios:
     if: contains(github.event.inputs.platforms, 'ios')
@@ -255,6 +301,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Download OpenSSL artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ${{ env.OPENSSL_WORKFLOW_FILE }}
+          workflow_conclusion: success
+          branch: ${{ env.OPENSSL_WORKFLOW_BRANCH }}
+          name: openssl-ios-${{ matrix.platform }}-${{ matrix.arch }}
+          path: deps/openssl
+
       - name: Download curl source
         run: |
           curl -L -o curl.tar.gz https://curl.se/download/curl-${{ env.CURL_VERSION }}.tar.gz
@@ -276,7 +332,11 @@ jobs:
             -DBUILD_SHARED_LIBS=OFF \
             -DBUILD_STATIC_LIBS=ON \
             -DCURL_ENABLE_SSL=ON \
-            -DCURL_USE_OPENSSL=OFF \
+            -DCURL_USE_OPENSSL=ON \
+            -DOPENSSL_ROOT_DIR=../deps/openssl/ios/${{ matrix.platform }}-${{ matrix.arch }} \
+            -DOPENSSL_INCLUDE_DIR=../deps/openssl/ios/${{ matrix.platform }}-${{ matrix.arch }}/include \
+            -DOPENSSL_SSL_LIBRARY=../deps/openssl/ios/${{ matrix.platform }}-${{ matrix.arch }}/lib/libssl.a \
+            -DOPENSSL_CRYPTO_LIBRARY=../deps/openssl/ios/${{ matrix.platform }}-${{ matrix.arch }}/lib/libcrypto.a \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_USE_LIBPSL=OFF \
             -DUSE_LIBIDN2=OFF \
@@ -303,6 +363,9 @@ jobs:
 
           # Copy static libraries
           cp curl_install/lib/*.a artifact/ios/$PLATFORM-$ARCH/lib/
+
+          # Copy OpenSSL static libraries
+          cp deps/openssl/ios/$PLATFORM-$ARCH/lib/*.a artifact/ios/$PLATFORM-$ARCH/lib/ 2>/dev/null || true
 
           echo "=== Built files ==="
           find artifact -type f
@@ -379,7 +442,7 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # Android Build (arm64-v8a, armeabi-v7a, x86_64, x86) - Static with system SSL
+  # Android Build (arm64-v8a, armeabi-v7a, x86_64, x86) - Using OpenSSL
   # ============================================================================
   build-android:
     if: contains(github.event.inputs.platforms, 'android')
@@ -393,6 +456,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download OpenSSL artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ${{ env.OPENSSL_WORKFLOW_FILE }}
+          workflow_conclusion: success
+          branch: ${{ env.OPENSSL_WORKFLOW_BRANCH }}
+          name: openssl-android-${{ matrix.abi }}
+          path: deps/openssl
 
       - name: Setup Android NDK
         uses: android-actions/setup-android@v3
@@ -423,8 +496,12 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=../curl_install \
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_STATIC_LIBS=ON \
-            -DCURL_ENABLE_SSL=OFF \
-            -DCURL_USE_OPENSSL=OFF \
+            -DCURL_ENABLE_SSL=ON \
+            -DCURL_USE_OPENSSL=ON \
+            -DOPENSSL_ROOT_DIR=../deps/openssl/android/${{ matrix.abi }} \
+            -DOPENSSL_INCLUDE_DIR=../deps/openssl/android/${{ matrix.abi }}/include \
+            -DOPENSSL_SSL_LIBRARY=../deps/openssl/android/${{ matrix.abi }}/lib/libssl.so \
+            -DOPENSSL_CRYPTO_LIBRARY=../deps/openssl/android/${{ matrix.abi }}/lib/libcrypto.so \
             -DCURL_USE_MBEDTLS=OFF \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_USE_LIBPSL=OFF \
@@ -454,6 +531,9 @@ jobs:
           # Copy libraries
           cp curl_install/lib/*.so artifact/android/$ABI/lib/ 2>/dev/null || true
           cp curl_install/lib/*.a artifact/android/$ABI/lib/ 2>/dev/null || true
+
+          # Copy OpenSSL shared libraries
+          cp deps/openssl/android/$ABI/lib/*.so* artifact/android/$ABI/lib/ 2>/dev/null || true
 
           echo "=== Built files ==="
           find artifact -type f
@@ -493,7 +573,17 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build libssl-dev patchelf
+          sudo apt-get install -y cmake ninja-build patchelf
+
+      - name: Download OpenSSL artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ${{ env.OPENSSL_WORKFLOW_FILE }}
+          workflow_conclusion: success
+          branch: ${{ env.OPENSSL_WORKFLOW_BRANCH }}
+          name: openssl-linux-x64
+          path: deps/openssl
 
       - name: Download curl source
         run: |
@@ -513,6 +603,10 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DBUILD_STATIC_LIBS=ON \
             -DCURL_USE_OPENSSL=ON \
+            -DOPENSSL_ROOT_DIR=../deps/openssl/linux/x64 \
+            -DOPENSSL_INCLUDE_DIR=../deps/openssl/linux/x64/include \
+            -DOPENSSL_SSL_LIBRARY=../deps/openssl/linux/x64/lib/libssl.so \
+            -DOPENSSL_CRYPTO_LIBRARY=../deps/openssl/linux/x64/lib/libcrypto.so \
             -DCURL_USE_LIBSSH2=OFF \
             -DCURL_USE_LIBPSL=OFF \
             -DUSE_LIBIDN2=OFF \
@@ -539,6 +633,9 @@ jobs:
           cp curl_install/lib/*.so* artifact/linux/x64/lib/ 2>/dev/null || true
           cp curl_install/lib/*.a artifact/linux/x64/lib/ 2>/dev/null || true
 
+          # Copy OpenSSL shared libraries
+          cp deps/openssl/linux/x64/lib/*.so* artifact/linux/x64/lib/ 2>/dev/null || true
+
           # Copy binary
           cp curl_install/bin/curl artifact/linux/x64/bin/
 
@@ -559,6 +656,8 @@ jobs:
           library-name: libcurl
           expect-shared-libs: '1'    # libcurl.so
           expect-static-libs: '1'    # libcurl.a
+          verify-https: 'true'
+          expected-ssl-backend: 'OpenSSL'
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
