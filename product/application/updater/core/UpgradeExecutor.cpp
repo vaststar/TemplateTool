@@ -38,6 +38,10 @@ int performUpgrade(const UpdaterConfig& config)
     }
 
     // 3. Backup current installation
+    // On Windows, file handles / indexer / antivirus may linger briefly on
+    // recently-touched directories.  Retry renames with increasing delay.
+    constexpr int kMaxRetries = 5;
+
     std::filesystem::path backupDir = config.targetDir;
     backupDir += ".bak";
 
@@ -50,10 +54,6 @@ int performUpgrade(const UpdaterConfig& config)
 
     if (std::filesystem::exists(config.targetDir)) {
         UPDATER_LOG("Backing up: " << config.targetDir.string() << " -> " << backupDir.string());
-
-        // On Windows, file handles may linger briefly after the parent exits.
-        // Retry the rename a few times with increasing delay.
-        constexpr int kMaxRetries = 5;
         for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
             ec.clear();
             std::filesystem::rename(config.targetDir, backupDir, ec);
@@ -72,10 +72,22 @@ int performUpgrade(const UpdaterConfig& config)
     }
 
     // 4. Rename staging directory to target (atomic on same partition)
+    //    Antivirus / Windows Search may briefly lock newly-extracted files
+    //    in staging, so retry with increasing delay just like the backup step.
     UPDATER_LOG("Renaming staging -> target");
-    std::filesystem::rename(config.stagingDir, config.targetDir, ec);
+    for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
+        ec.clear();
+        std::filesystem::rename(config.stagingDir, config.targetDir, ec);
+        if (!ec) {
+            break;
+        }
+        UPDATER_WARN("Staging rename attempt " << (attempt + 1) << " failed: " << ec.message());
+        if (attempt + 1 < kMaxRetries) {
+            std::this_thread::sleep_for(std::chrono::seconds(attempt + 1));
+        }
+    }
     if (ec) {
-        UPDATER_ERR("Failed to rename staging to target: " << ec.message());
+        UPDATER_ERR("Failed to rename staging to target after " << kMaxRetries << " attempts: " << ec.message());
         // Rollback
         if (std::filesystem::exists(backupDir)) {
             UPDATER_LOG("Rolling back...");
