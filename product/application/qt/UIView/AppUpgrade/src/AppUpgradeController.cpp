@@ -204,6 +204,8 @@ void AppUpgradeController::onDownloadProgress(int64_t currentBytes, int64_t tota
 void AppUpgradeController::onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state)
 {
     using State = commonHead::viewModels::model::UpgradeViewState;
+    if (state == State::Downloading)
+        m_downloadProgress = 0.0;
     m_downloading    = (state == State::Downloading);
     m_verifying      = (state == State::Verifying || state == State::Extracting);
     m_readyToInstall = (state == State::ReadyToInstall);

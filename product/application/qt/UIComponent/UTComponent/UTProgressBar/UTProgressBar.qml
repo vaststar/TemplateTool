@@ -37,14 +37,19 @@ BaseProgressBar {
         radius: height / 2
     }
 
-    contentItem: Rectangle {
+    contentItem: Item {
+        implicitWidth: 200
         implicitHeight: control.barHeight
-        width: control.visualPosition * parent.width
-        color: UTComponentUtil.getPlainUIColor(
-                   control.progressColorEnum,
-                   control.enabled ? UIColorState.Normal : UIColorState.Disabled)
-        radius: height / 2
 
-        Behavior on color { ColorAnimation { duration: 100 } }
+        Rectangle {
+            width: control.visualPosition * parent.width
+            height: parent.height
+            radius: height / 2
+            color: UTComponentUtil.getPlainUIColor(
+                       control.progressColorEnum,
+                       control.enabled ? UIColorState.Normal : UIColorState.Disabled)
+
+            Behavior on color { ColorAnimation { duration: 100 } }
+        }
     }
 }
