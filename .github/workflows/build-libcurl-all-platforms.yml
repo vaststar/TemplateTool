@@ -131,9 +131,12 @@ jobs:
           }
 
           # Copy OpenSSL runtime DLLs
-          Get-ChildItem -Path "deps/openssl/windows/$arch/bin" -Include "*.dll" | ForEach-Object {
+          Get-ChildItem -Path "deps/openssl/windows/$arch/bin/*.dll" -File -ErrorAction SilentlyContinue | ForEach-Object {
             Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
           }
+
+          Write-Host "=== Runtime DLLs in artifact bin ==="
+          Get-ChildItem -Path "artifact/windows/$arch/bin" -Filter "*.dll" -ErrorAction SilentlyContinue | Select-Object Name
 
           Write-Host "=== Built files ==="
           Get-ChildItem -Recurse artifact -File | Select-Object FullName
