@@ -68,6 +68,7 @@ set(MODULE_QML_TARGET_FILES
     BasePopup/BasePopup.qml
     BaseScrollView/BaseScrollView.qml
     BaseSlider/BaseSlider.qml
+    BaseProgressBar/BaseProgressBar.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

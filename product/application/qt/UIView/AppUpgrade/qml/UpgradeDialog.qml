@@ -74,7 +74,7 @@ UTDialog {
             Layout.fillWidth: true
             spacing: 4
 
-            ProgressBar {
+            UTProgressBar {
                 from: 0; to: 1.0
                 value: dialog.controller.downloadProgress
                 Layout.fillWidth: true
