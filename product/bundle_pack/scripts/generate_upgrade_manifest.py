@@ -32,17 +32,28 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+PRIMARY_PACKAGE_PATTERNS = {
+    "Windows": ("*.zip",),
+    "Linux": ("*.tar.gz",),
+    "macOS": ("*.tar.gz",),
+}
+
+
 def find_primary_package(artifacts_dir: str, label: str) -> Path | None:
     """Find the primary package file for a platform by matching the label in the filename.
 
     Package names follow: ProductName-Version-<Label>.ext
     e.g. Template-Factory-2026.04.0.606-Windows.zip
     """
-    for ext in ("*.zip", "*.dmg", "*.tar.gz"):
-        matches = [
-            p for p in Path(artifacts_dir).glob(ext)
+    patterns = PRIMARY_PACKAGE_PATTERNS.get(label, ("*.zip", "*.tar.gz"))
+    for pattern in patterns:
+        matches = sorted(
+            [
+                p for p in Path(artifacts_dir).glob(pattern)
             if not p.name.endswith(".sha256") and label in p.name
-        ]
+            ],
+            key=lambda p: p.name,
+        )
         if matches:
             return matches[0]
     return None

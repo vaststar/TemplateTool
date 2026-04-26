@@ -132,9 +132,9 @@ jobs:
         run: |
           BUILD_DIR="build/${{ matrix.preset }}"
 
-          # Collect all package files (zip, tar.gz, deb, dmg)
+          # Collect all package files used for release distribution.
           PACKAGES=$(find "$BUILD_DIR" -maxdepth 1 \
-            \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.dmg" \) \
+            \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.dmg" -o -name "*.exe" \) \
             ! -name "*.sha256" | sort)
 
           if [[ -z "$PACKAGES" ]]; then
@@ -194,6 +194,8 @@ jobs:
             build/${{ matrix.preset }}/*.deb.sha256
             build/${{ matrix.preset }}/*.dmg
             build/${{ matrix.preset }}/*.dmg.sha256
+            build/${{ matrix.preset }}/*.exe
+            build/${{ matrix.preset }}/*.exe.sha256
             build/${{ matrix.preset }}/package-info-*.json
           if-no-files-found: error
           retention-days: 30
