@@ -266,27 +266,17 @@ runs:
             set -e
           elif [ "$PLATFORM" = "windows" ]; then
             set +e
-            WIN_CURL_BIN="$CURL_BIN"
-            WIN_BIN_DIR="$(pwd)/bin"
-            WIN_CMD_EXE="cmd.exe"
-
-            if command -v cygpath >/dev/null 2>&1; then
-              WIN_CURL_BIN=$(cygpath -w "$CURL_BIN")
-              WIN_BIN_DIR=$(cygpath -w "$(pwd)/bin")
+            WIN_CMD_EXE="$(command -v cmd.exe 2>/dev/null || true)"
+            if [ -z "$WIN_CMD_EXE" ] && [ -x "/c/Windows/System32/cmd.exe" ]; then
+              WIN_CMD_EXE="/c/Windows/System32/cmd.exe"
             fi
 
-            # Some Git Bash environments do not have cmd.exe in PATH.
-            if ! command -v "$WIN_CMD_EXE" >/dev/null 2>&1; then
-              if [ -x "/c/Windows/System32/cmd.exe" ]; then
-                WIN_CMD_EXE="/c/Windows/System32/cmd.exe"
-              fi
-            fi
-
-            if [ ! -x "$WIN_CMD_EXE" ] && [ "$WIN_CMD_EXE" != "cmd.exe" ]; then
+            if [ -z "$WIN_CMD_EXE" ]; then
               CURL_VERSION_OUTPUT="cmd.exe not found for Windows runtime verification"
               CURL_CMD_EXIT=127
             else
-              CURL_VERSION_OUTPUT=$("$WIN_CMD_EXE" //V:ON //C "set \"PATH=$WIN_BIN_DIR;%PATH%\" && \"$WIN_CURL_BIN\" --version" 2>&1)
+              # Use cmd native expansion to avoid Git Bash quoting/translation issues.
+              CURL_VERSION_OUTPUT=$("$WIN_CMD_EXE" //C "set PATH=%CD%\\bin;%PATH% && .\\bin\\curl.exe --version" 2>&1)
               CURL_CMD_EXIT=$?
             fi
             set -e
