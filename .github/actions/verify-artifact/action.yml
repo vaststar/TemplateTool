@@ -264,6 +264,19 @@ runs:
             CURL_VERSION_OUTPUT=$(DYLD_LIBRARY_PATH="./lib:${DYLD_LIBRARY_PATH:-}" "$CURL_BIN" --version 2>&1)
             CURL_CMD_EXIT=$?
             set -e
+          elif [ "$PLATFORM" = "windows" ]; then
+            set +e
+            WIN_CURL_BIN="$CURL_BIN"
+            WIN_BIN_DIR="$(pwd)/bin"
+
+            if command -v cygpath >/dev/null 2>&1; then
+              WIN_CURL_BIN=$(cygpath -w "$CURL_BIN")
+              WIN_BIN_DIR=$(cygpath -w "$(pwd)/bin")
+            fi
+
+            CURL_VERSION_OUTPUT=$(cmd.exe //V:ON //C "set \"PATH=$WIN_BIN_DIR;%PATH%\" && \"$WIN_CURL_BIN\" --version" 2>&1)
+            CURL_CMD_EXIT=$?
+            set -e
           elif [ "$PLATFORM" = "linux" ] || [ "$PLATFORM" = "android" ]; then
             set +e
             CURL_VERSION_OUTPUT=$(LD_LIBRARY_PATH="./lib:${LD_LIBRARY_PATH:-}" "$CURL_BIN" --version 2>&1)
