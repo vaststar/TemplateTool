@@ -132,6 +132,7 @@ jobs:
           artifact-path: artifact/windows/${{ matrix.arch }}
           platform: windows
           library-name: openssl
+          target-arch: ${{ matrix.arch }}
           expect-shared-libs: '2'    # libssl.dll, libcrypto.dll
           expect-static-libs: '2'    # libssl.lib, libcrypto.lib
 

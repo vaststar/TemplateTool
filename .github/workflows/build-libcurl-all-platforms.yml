@@ -153,6 +153,13 @@ jobs:
           verify-https: 'true'
           expected-ssl-backend: 'OpenSSL'
 
+      - name: Remove OpenSSL from artifact
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}"
+          Remove-Item "artifact/windows/$arch/bin/libssl*.dll" -ErrorAction SilentlyContinue
+          Remove-Item "artifact/windows/$arch/bin/libcrypto*.dll" -ErrorAction SilentlyContinue
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -272,6 +279,12 @@ jobs:
           expect-static-libs: '1'    # libcurl.a
           verify-https: 'true'
           expected-ssl-backend: 'OpenSSL'
+
+      - name: Remove OpenSSL from artifact
+        run: |
+          PLATFORM="${{ matrix.platform_name }}"
+          rm -f artifact/macosx/$PLATFORM/lib/libssl*.dylib
+          rm -f artifact/macosx/$PLATFORM/lib/libcrypto*.dylib
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -662,6 +675,10 @@ jobs:
           expect-static-libs: '1'    # libcurl.a
           verify-https: 'true'
           expected-ssl-backend: 'OpenSSL'
+
+      - name: Remove OpenSSL from artifact
+        run: |
+          rm -f artifact/linux/x64/lib/libssl.so* artifact/linux/x64/lib/libcrypto.so*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
