@@ -569,6 +569,11 @@ jobs:
           expect-shared-libs: '1'    # libcurl.so
           expect-static-libs: '1'    # libcurl.a
 
+      - name: Remove OpenSSL from artifact
+        run: |
+          rm -f artifact/android/${{ matrix.abi }}/lib/libssl.so*
+          rm -f artifact/android/${{ matrix.abi }}/lib/libcrypto.so*
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
