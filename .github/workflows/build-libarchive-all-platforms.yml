@@ -617,3 +617,26 @@ jobs:
           name: libarchive-linux-x64
           path: artifact/
           retention-days: 30
+
+  # ============================================================================
+  # Merge All Artifacts
+  # ============================================================================
+  merge-artifacts:
+    needs: [build-windows, build-macos, build-ios-xcframework, build-android, build-linux]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Merge all platform artifacts
+        uses: ./.github/actions/merge-artifacts
+        with:
+          library-name: libarchive
+          version: ${{ github.event.inputs.libarchive_version }}
+          windows-archs: 'x64,x86,arm64'
+          macos-platforms: 'intel,arm'
+          android-abis: 'arm64-v8a,armeabi-v7a,x86_64,x86'
+          has-ios: 'true'
+          has-linux: 'true'
