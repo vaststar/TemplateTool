@@ -76,6 +76,98 @@ std::filesystem::path UpgradeInstallManager::getStagingDirectory() const
     return {};
 }
 
+std::filesystem::path UpgradeInstallManager::prepareEmptyStagingDir() const
+{
+    auto stagingDir = getStagingDirectory();
+    if (stagingDir.empty()) {
+        throw std::runtime_error("Could not determine staging directory");
+    }
+
+    std::error_code ec;
+    if (std::filesystem::exists(stagingDir)) {
+        std::filesystem::remove_all(stagingDir, ec);
+        if (ec) {
+            throw std::runtime_error("Failed to remove old staging dir: " + ec.message());
+        }
+    }
+    std::filesystem::create_directories(stagingDir, ec);
+    if (ec) {
+        throw std::runtime_error("Failed to create staging dir: " + ec.message());
+    }
+    return stagingDir;
+}
+
+void UpgradeInstallManager::normalizeStagingLayout(const std::filesystem::path& stagingDir)
+{
+    // Reshape the just-extracted tree so <staging> matches install root layout.
+    //
+    // Windows / Linux: install root is a directory tree (bin/, lib/, ...).
+    //   CPack nests everything under one versioned directory
+    //   ("Template-Factory-x.y.z-Windows/"); promote it up one level.
+    //
+    // macOS: install root *is* a .app bundle, but the same CPack TGZ
+    //   contains <pkg>/bin/<bundle>.app plus extra files (cmake/, lib/, ...).
+    //   We only want the .app — find it anywhere and make it the staging root.
+    std::error_code ec;
+
+#ifdef __APPLE__
+    std::filesystem::path foundApp;
+    for (auto it = std::filesystem::recursive_directory_iterator(stagingDir, ec);
+         !ec && it != std::filesystem::recursive_directory_iterator();
+         ++it) {
+        if (it->is_directory() && it->path().extension() == ".app") {
+            foundApp = it->path();
+            break;
+        }
+    }
+    if (foundApp.empty()) {
+        throw std::runtime_error("No .app bundle found in upgrade package");
+    }
+    UPGRADE_LOG_INFO("Extracting macOS bundle as staging: "
+                     << ucf::utilities::FilePathUtils::utf8FromPath(foundApp));
+
+    // Move the .app aside, wipe staging, then put .app back in its place.
+    auto tmpApp = stagingDir.parent_path() / (stagingDir.filename().string() + ".app-tmp");
+    std::filesystem::remove_all(tmpApp, ec);
+    std::filesystem::rename(foundApp, tmpApp, ec);
+    if (ec) {
+        throw std::runtime_error("Failed to move .app aside: " + ec.message());
+    }
+    std::filesystem::remove_all(stagingDir, ec);
+    if (ec) {
+        throw std::runtime_error("Failed to clean staging: " + ec.message());
+    }
+    std::filesystem::rename(tmpApp, stagingDir, ec);
+    if (ec) {
+        throw std::runtime_error("Failed to install .app as staging: " + ec.message());
+    }
+#else
+    std::filesystem::path singleChild;
+    int childCount = 0;
+    for (auto& entry : std::filesystem::directory_iterator(stagingDir)) {
+        if (entry.is_directory()) {
+            singleChild = entry.path();
+        }
+        ++childCount;
+    }
+    if (childCount != 1 || singleChild.empty()) {
+        return;
+    }
+
+    UPGRADE_LOG_INFO("Promoting nested directory: "
+                     << ucf::utilities::FilePathUtils::utf8FromPath(singleChild));
+    for (auto& entry : std::filesystem::directory_iterator(singleChild)) {
+        auto dest = stagingDir / entry.path().filename();
+        std::filesystem::rename(entry.path(), dest, ec);
+        if (ec) {
+            throw std::runtime_error(
+                "Failed to promote " + entry.path().filename().string() + ": " + ec.message());
+        }
+    }
+    std::filesystem::remove(singleChild, ec);
+#endif
+}
+
 void UpgradeInstallManager::extractPackageToStaging(
     const std::string& packagePath,
     ExtractCallback callback)
@@ -83,27 +175,13 @@ void UpgradeInstallManager::extractPackageToStaging(
     UPGRADE_LOG_INFO("Extracting package to staging directory...");
 
     try {
-        auto stagingDir = getStagingDirectory();
-        if (stagingDir.empty()) {
-            throw std::runtime_error("Could not determine staging directory");
-        }
+        // 1. Prepare an empty <installDir>.staging
+        auto stagingDir = prepareEmptyStagingDir();
 
-        // Clean up any previous staging directory
-        std::error_code ec;
-        if (std::filesystem::exists(stagingDir)) {
-            std::filesystem::remove_all(stagingDir, ec);
-            if (ec) {
-                throw std::runtime_error("Failed to remove old staging dir: " + ec.message());
-            }
-        }
-        std::filesystem::create_directories(stagingDir, ec);
-        if (ec) {
-            throw std::runtime_error("Failed to create staging dir: " + ec.message());
-        }
-
-        // Extract the full ZIP into the staging directory
+        // 2. Extract the archive (zip/tar/tar.gz/...) into staging
         ucf::utilities::ArchiveWrapper archiver;
-        auto error = archiver.extractAll(packagePath,
+        auto error = archiver.extractAll(
+            packagePath,
             ucf::utilities::FilePathUtils::utf8FromPath(stagingDir));
         if (error != ucf::utilities::ArchiveError::Success) {
             throw std::runtime_error(
@@ -111,32 +189,10 @@ void UpgradeInstallManager::extractPackageToStaging(
                 ucf::utilities::ArchiveWrapper::errorToString(error));
         }
 
-        // CPack ZIPs nest files under a versioned prefix directory
-        // (e.g. "Template-Factory-x.y.z-Windows/").  If the staging dir
-        // contains exactly one subdirectory, promote its contents up.
-        std::filesystem::path singleChild;
-        int childCount = 0;
-        for (auto& entry : std::filesystem::directory_iterator(stagingDir)) {
-            if (entry.is_directory()) {
-                singleChild = entry.path();
-            }
-            ++childCount;
-        }
-        if (childCount == 1 && !singleChild.empty()) {
-            UPGRADE_LOG_INFO("Promoting nested directory: "
-                             << ucf::utilities::FilePathUtils::utf8FromPath(singleChild));
-            // Move all children of the single subdirectory up to staging root
-            for (auto& entry : std::filesystem::directory_iterator(singleChild)) {
-                auto dest = stagingDir / entry.path().filename();
-                std::filesystem::rename(entry.path(), dest, ec);
-                if (ec) {
-                    throw std::runtime_error(
-                        "Failed to promote " + entry.path().filename().string() + ": " + ec.message());
-                }
-            }
-            std::filesystem::remove(singleChild, ec);
-        }
+        // 3. Make staging look like the install root for this platform
+        normalizeStagingLayout(stagingDir);
 
+        // 4. Done
         UPGRADE_LOG_INFO("Package extracted to staging: "
                          << ucf::utilities::FilePathUtils::utf8FromPath(stagingDir));
         callback(true, ucf::utilities::FilePathUtils::utf8FromPath(stagingDir),
@@ -144,7 +200,7 @@ void UpgradeInstallManager::extractPackageToStaging(
 
     } catch (const std::exception& ex) {
         UPGRADE_LOG_ERROR("Extract to staging failed: " << ex.what());
-        // Clean up failed staging
+        // Clean up any partially populated staging directory
         auto stagingDir = getStagingDirectory();
         if (!stagingDir.empty() && std::filesystem::exists(stagingDir)) {
             std::error_code ec;
@@ -153,6 +209,7 @@ void UpgradeInstallManager::extractPackageToStaging(
         callback(false, "", model::UpgradeErrorCode::ExtractFailed, ex.what());
     }
 }
+
 
 std::vector<std::string> UpgradeInstallManager::buildUpdaterArgs(
     const std::filesystem::path& stagingDir,
@@ -182,14 +239,28 @@ void UpgradeInstallManager::launchUpdaterAndExit(
     try {
         auto stagingPath = ucf::utilities::FilePathUtils::pathFromUtf8(stagingDir);
 
-        // 1. Locate updater binary inside staging dir (in bin/ subdirectory)
+        // 1. Locate updater binary inside staging dir.
+        //    Layout matches install root layout per platform:
+        //      Windows / Linux: <staging>/bin/updater(.exe)
+        //      macOS:           <staging>/Contents/MacOS/updater
+        //                       (staging itself is the .app bundle)
         auto updaterName = getUpdaterEntryName();
-        auto updaterInStaging = stagingPath / "bin" / updaterName;
-        if (!std::filesystem::exists(updaterInStaging)) {
-            // Fallback: updater might be at staging root
-            updaterInStaging = stagingPath / updaterName;
-        }
-        if (!std::filesystem::exists(updaterInStaging)) {
+        std::filesystem::path updaterInStaging;
+
+        auto tryPath = [&](const std::filesystem::path& p) {
+            if (updaterInStaging.empty() && std::filesystem::exists(p)) {
+                updaterInStaging = p;
+            }
+        };
+
+#ifdef __APPLE__
+        tryPath(stagingPath / "Contents" / "MacOS" / updaterName);
+#else
+        tryPath(stagingPath / "bin" / updaterName);
+        tryPath(stagingPath / updaterName);
+#endif
+
+        if (updaterInStaging.empty()) {
             throw std::runtime_error("Updater binary not found in staging directory");
         }
 

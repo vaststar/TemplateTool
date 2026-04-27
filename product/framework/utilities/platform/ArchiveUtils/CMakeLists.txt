@@ -17,6 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     archive::zip
+    archive::multi
     LoggerUtils
     FilePathUtils
 )

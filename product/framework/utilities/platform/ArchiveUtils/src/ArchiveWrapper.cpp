@@ -9,6 +9,12 @@
 #include <mz_zip.h>
 #include <mz_zip_rw.h>
 
+#include <archive.h>
+#include <archive_entry.h>
+
+#include <algorithm>
+#include <cctype>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 
@@ -16,6 +22,34 @@
 namespace ucf::utilities {
 
 using FilePathUtils = ucf::utilities::FilePathUtils;
+
+namespace {
+
+/// Lower-cased file name; cheap helper for extension matching.
+std::string toLowerCopy(std::string s)
+{
+    std::transform(s.begin(), s.end(), s.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    return s;
+}
+
+/// Anything libarchive should handle (tar family, gzip-wrapped tar, etc.).
+/// ZIP stays on minizip-ng for back-compat and performance.
+bool isMultiFormatArchive(const std::string& archivePath)
+{
+    const std::string lower = toLowerCopy(archivePath);
+    auto endsWith = [&](const char* suffix) {
+        const size_t n = std::strlen(suffix);
+        return lower.size() >= n &&
+               lower.compare(lower.size() - n, n, suffix) == 0;
+    };
+    return endsWith(".tar")     || endsWith(".tar.gz")  || endsWith(".tgz")  ||
+           endsWith(".tar.bz2") || endsWith(".tbz2")    || endsWith(".tbz")  ||
+           endsWith(".tar.xz")  || endsWith(".txz")     ||
+           endsWith(".tar.zst") || endsWith(".tzst");
+}
+
+} // namespace
 
 //============================================
 // Impl - PIMPL implementation
@@ -203,6 +237,10 @@ public:
             return ArchiveError::FileNotFound;
         }
 
+        if (isMultiFormatArchive(archivePath)) {
+            return extractAllWithLibarchive(archivePath, destDir);
+        }
+
         void* zipReader = mz_zip_reader_create();
         if (!zipReader) {
             return ArchiveError::OutOfMemory;
@@ -234,6 +272,119 @@ public:
 
         ARCHIVE_LOG_INFO("Extracted archive to: " << destDir);
         return ArchiveError::Success;
+    }
+
+    /// Extract tar/tar.gz/tar.xz/... using libarchive (archive::multi backend).
+    ArchiveError extractAllWithLibarchive(const std::string& archivePath,
+                                          const std::string& destDir)
+    {
+        struct archive* reader = archive_read_new();
+        if (!reader) {
+            return ArchiveError::OutOfMemory;
+        }
+        struct archive* writer = archive_write_disk_new();
+        if (!writer) {
+            archive_read_free(reader);
+            return ArchiveError::OutOfMemory;
+        }
+
+        archive_read_support_format_tar(reader);
+        archive_read_support_format_zip(reader);
+        archive_read_support_filter_gzip(reader);
+        archive_read_support_filter_none(reader);
+
+        int writerFlags = ARCHIVE_EXTRACT_TIME | ARCHIVE_EXTRACT_PERM |
+                          ARCHIVE_EXTRACT_ACL  | ARCHIVE_EXTRACT_FFLAGS;
+        if (mOptions.storeSymlinks) {
+            writerFlags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
+        }
+        archive_write_disk_set_options(writer, writerFlags);
+        archive_write_disk_set_standard_lookup(writer);
+
+        if (archive_read_open_filename(reader, archivePath.c_str(), 10240) != ARCHIVE_OK) {
+            ARCHIVE_LOG_ERROR("libarchive open failed: " << archive_error_string(reader));
+            archive_read_free(reader);
+            archive_write_free(writer);
+            return ArchiveError::ArchiveOpenFailed;
+        }
+
+        FilePathUtils::createDirectoriesUtf8(destDir);
+        const std::filesystem::path destRoot = FilePathUtils::pathFromUtf8(destDir);
+
+        ArchiveError result = ArchiveError::Success;
+        size_t entryIndex = 0;
+        for (;;) {
+            struct archive_entry* entry = nullptr;
+            int r = archive_read_next_header(reader, &entry);
+            if (r == ARCHIVE_EOF) {
+                break;
+            }
+            if (r < ARCHIVE_WARN) {
+                ARCHIVE_LOG_ERROR("libarchive read header failed: "
+                                  << archive_error_string(reader));
+                result = ArchiveError::ArchiveCorrupted;
+                break;
+            }
+
+            // Re-anchor the entry under destDir.
+            const char* origPath = archive_entry_pathname(entry);
+            std::string entryName = origPath ? origPath : "";
+            if (mProgressCallback &&
+                !mProgressCallback(entryIndex, 0, entryName)) {
+                ARCHIVE_LOG_INFO("libarchive extraction cancelled by user");
+                break;
+            }
+            ++entryIndex;
+
+            std::filesystem::path target = destRoot / entryName;
+            archive_entry_set_pathname(entry, target.string().c_str());
+
+            r = archive_write_header(writer, entry);
+            if (r < ARCHIVE_OK) {
+                ARCHIVE_LOG_WARNING("libarchive write header: "
+                                    << archive_error_string(writer));
+            }
+
+            if (archive_entry_size(entry) > 0) {
+                const void* buff   = nullptr;
+                size_t      size   = 0;
+                la_int64_t  offset = 0;
+                while ((r = archive_read_data_block(reader, &buff, &size, &offset))
+                       != ARCHIVE_EOF) {
+                    if (r < ARCHIVE_WARN) {
+                        ARCHIVE_LOG_ERROR("libarchive read data: "
+                                          << archive_error_string(reader));
+                        result = ArchiveError::ExtractionFailed;
+                        break;
+                    }
+                    if (archive_write_data_block(writer, buff, size, offset)
+                        < ARCHIVE_OK) {
+                        ARCHIVE_LOG_ERROR("libarchive write data: "
+                                          << archive_error_string(writer));
+                        result = ArchiveError::FileWriteFailed;
+                        break;
+                    }
+                }
+                if (result != ArchiveError::Success) {
+                    break;
+                }
+            }
+
+            if (archive_write_finish_entry(writer) < ARCHIVE_WARN) {
+                ARCHIVE_LOG_WARNING("libarchive finish entry: "
+                                    << archive_error_string(writer));
+            }
+        }
+
+        archive_read_close(reader);
+        archive_read_free(reader);
+        archive_write_close(writer);
+        archive_write_free(writer);
+
+        if (result == ArchiveError::Success) {
+            ARCHIVE_LOG_INFO("Extracted (libarchive) " << archivePath << " -> " << destDir);
+        }
+        return result;
     }
 
     ArchiveError extractEntry(const std::string& archivePath,
@@ -551,6 +702,20 @@ bool ArchiveWrapper::isValidArchive(const std::string& filePath)
         return false;
     }
 
+    if (isMultiFormatArchive(filePath)) {
+        struct archive* a = archive_read_new();
+        if (!a) {
+            return false;
+        }
+        archive_read_support_format_tar(a);
+        archive_read_support_filter_gzip(a);
+        archive_read_support_filter_none(a);
+        bool ok = (archive_read_open_filename(a, filePath.c_str(), 10240) == ARCHIVE_OK);
+        archive_read_close(a);
+        archive_read_free(a);
+        return ok;
+    }
+
     void* zipReader = mz_zip_reader_create();
     if (!zipReader) {
         return false;
@@ -565,7 +730,7 @@ bool ArchiveWrapper::isValidArchive(const std::string& filePath)
 
 std::string ArchiveWrapper::getBackendName()
 {
-    return "minizip-ng";
+    return "minizip-ng + libarchive";
 }
 
 std::string ArchiveWrapper::getBackendVersion()

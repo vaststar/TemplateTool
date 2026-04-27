@@ -78,6 +78,14 @@ private:
     /// Get the path to the installed updater binary (platform-aware)
     [[nodiscard]] std::filesystem::path getUpdaterSourcePath() const;
 
+    // -- extractPackageToStaging helpers --
+    /// Wipe and recreate <installDir>.staging, returning its path.
+    std::filesystem::path prepareEmptyStagingDir() const;
+    /// Reshape staging contents to mirror the install root layout for the
+    /// current platform (handles macOS .app extraction and CPack nested
+    /// versioned directory promotion on Windows / Linux).
+    static void normalizeStagingLayout(const std::filesystem::path& stagingDir);
+
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
 };

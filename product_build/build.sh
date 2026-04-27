@@ -117,6 +117,39 @@ ensure_configured() {
     fi
 }
 
+cleanup_macos_cpack_dragndrop() {
+    if [[ "$(uname -s)" != "Darwin" ]]; then
+        return
+    fi
+
+    if [[ "$PRESET" != *"macos"* ]]; then
+        return
+    fi
+
+    local dragndrop_dir="$BUILD_DIR/_CPack_Packages/Darwin/DragNDrop"
+    local temp_dmg="$dragndrop_dir/temp.dmg"
+
+    echo ""
+    echo "[Pre-package] Cleaning stale macOS CPack DMG artifacts..."
+    echo "----------------------------------------------------"
+
+    if command -v hdiutil >/dev/null 2>&1; then
+        while IFS= read -r disk_dev; do
+            [ -z "$disk_dev" ] && continue
+            echo "  Detaching stale image: $disk_dev"
+            hdiutil detach "$disk_dev" -force >/dev/null 2>&1 || true
+        done < <(hdiutil info 2>/dev/null | awk '
+            /^image-path/ {img=$3}
+            /^\/dev\/disk[0-9]+/ && img ~ /_CPack_Packages\/Darwin\/DragNDrop\/temp\.dmg$/ {print $1}
+        ')
+    fi
+
+    if [ -f "$temp_dmg" ]; then
+        echo "  Removing stale temp image: $temp_dmg"
+        rm -f "$temp_dmg"
+    fi
+}
+
 do_all() {
     echo ""
     echo "[Step 1/2] Configuring project..."
@@ -250,6 +283,7 @@ case "$ACTION" in
         "$CMAKE" --build --preset "$PRESET"
         BUILD_RESULT=$?
         if [ $BUILD_RESULT -eq 0 ]; then
+            cleanup_macos_cpack_dragndrop
             echo ""
             echo "[Step 2/2] Creating package..."
             echo "----------------------------------------------------"
