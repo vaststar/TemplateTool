@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       libarchive_version:
-        description: 'libarchive version (e.g., 3.8.1)'
+        description: 'libarchive version (e.g., 3.8.7)'
         required: true
-        default: '3.8.1'
+        default: '3.8.7'
         type: string
       zlib_version:
-        description: 'zlib-ng version used for gzip support (e.g., 2.2.4)'
+        description: 'zlib-ng version used for gzip support (e.g., 2.3.3)'
         required: true
-        default: '2.2.4'
+        default: '2.3.3'
         type: string
       platforms:
         description: 'Platforms to build (comma-separated: windows,macos,linux)'
