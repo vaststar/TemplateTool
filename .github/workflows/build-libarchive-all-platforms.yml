@@ -555,7 +555,8 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
             -DZLIB_COMPAT=ON \
             -DZLIB_ENABLE_TESTS=OFF \
-            -DBUILD_SHARED_LIBS=OFF
+            -DBUILD_SHARED_LIBS=OFF \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
           cmake --build zlib_build --parallel
           cmake --install zlib_build
 
