@@ -1,0 +1,335 @@
+name: Build libarchive All Platforms
+
+on:
+  workflow_dispatch:
+    inputs:
+      libarchive_version:
+        description: 'libarchive version (e.g., 3.8.1)'
+        required: true
+        default: '3.8.1'
+        type: string
+      zlib_version:
+        description: 'zlib-ng version used for gzip support (e.g., 2.2.4)'
+        required: true
+        default: '2.2.4'
+        type: string
+      platforms:
+        description: 'Platforms to build (comma-separated: windows,macos,linux)'
+        required: true
+        default: 'windows,macos,linux'
+        type: string
+
+env:
+  LIBARCHIVE_VERSION: ${{ github.event.inputs.libarchive_version }}
+  ZLIB_VERSION: ${{ github.event.inputs.zlib_version }}
+
+jobs:
+  build-windows:
+    if: contains(github.event.inputs.platforms, 'windows')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            cmake_arch: x64
+            msvc_arch: amd64
+          - arch: x86
+            cmake_arch: Win32
+            msvc_arch: amd64_x86
+          - arch: arm64
+            cmake_arch: ARM64
+            msvc_arch: amd64_arm64
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+
+      - name: Download zlib-ng source
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.zip" -OutFile zlib.zip
+          Expand-Archive zlib.zip -DestinationPath .
+          Rename-Item "zlib-ng-${{ env.ZLIB_VERSION }}" zlib_src
+
+      - name: Build zlib-ng (static)
+        shell: cmd
+        run: |
+          mkdir zlib_build
+          cd zlib_build
+          cmake ../zlib_src ^
+            -G "Visual Studio 17 2022" ^
+            -A ${{ matrix.cmake_arch }} ^
+            -DCMAKE_INSTALL_PREFIX=../zlib_install ^
+            -DZLIB_COMPAT=ON ^
+            -DZLIB_ENABLE_TESTS=OFF ^
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build . --config Release --parallel
+          cmake --install . --config Release
+
+      - name: Download libarchive source
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libarchive/libarchive/releases/download/v${{ env.LIBARCHIVE_VERSION }}/libarchive-${{ env.LIBARCHIVE_VERSION }}.tar.xz" -OutFile libarchive.tar.xz
+          tar -xf libarchive.tar.xz
+          Rename-Item "libarchive-${{ env.LIBARCHIVE_VERSION }}" libarchive_src
+
+      - name: Build libarchive (shared)
+        shell: cmd
+        run: |
+          mkdir la_build
+          cd la_build
+          cmake ../libarchive_src ^
+            -G "Visual Studio 17 2022" ^
+            -A ${{ matrix.cmake_arch }} ^
+            -DCMAKE_INSTALL_PREFIX=../la_install ^
+            -DBUILD_SHARED_LIBS=ON ^
+            -DENABLE_TEST=OFF ^
+            -DENABLE_CPIO=OFF ^
+            -DENABLE_CAT=OFF ^
+            -DENABLE_TAR=ON ^
+            -DENABLE_XATTR=OFF ^
+            -DENABLE_ACL=OFF ^
+            -DENABLE_BZip2=OFF ^
+            -DENABLE_LIBXML2=OFF ^
+            -DENABLE_EXPAT=OFF ^
+            -DENABLE_LZ4=OFF ^
+            -DENABLE_LZMA=OFF ^
+            -DENABLE_ZSTD=OFF ^
+            -DENABLE_ICONV=OFF ^
+            -DENABLE_OPENSSL=OFF ^
+            -DENABLE_NETTLE=OFF ^
+            -DENABLE_ZLIB=ON ^
+            -DZLIB_ROOT=../zlib_install ^
+            -DCMAKE_PREFIX_PATH=../zlib_install
+          cmake --build . --config Release --parallel
+          cmake --install . --config Release
+
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/include"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/lib"
+          New-Item -ItemType Directory -Force -Path "artifact/windows/$arch/bin"
+
+          Copy-Item -Force "la_install/include/archive*.h" "artifact/windows/$arch/include/"
+          Get-ChildItem -Path la_install -Recurse -Include "*.lib" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/lib/" -ErrorAction SilentlyContinue
+          }
+          Get-ChildItem -Path la_install -Recurse -Include "*.dll" | ForEach-Object {
+            Copy-Item $_.FullName "artifact/windows/$arch/bin/" -ErrorAction SilentlyContinue
+          }
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/windows/${{ matrix.arch }}
+          platform: windows
+          library-name: libarchive
+          target-arch: ${{ matrix.arch }}
+          expect-shared-libs: '1'
+          expect-static-libs: '1'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libarchive-windows-${{ matrix.arch }}
+          path: artifact/
+          retention-days: 30
+
+  build-macos:
+    if: contains(github.event.inputs.platforms, 'macos')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            arch: x86_64
+            platform_name: intel
+          - os: macos-15
+            arch: arm64
+            platform_name: arm
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install cmake ninja xz
+
+      - name: Download zlib-ng source
+        run: |
+          curl -L -o zlib.tar.gz https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.tar.gz
+          tar -xzf zlib.tar.gz
+          mv zlib-ng-${{ env.ZLIB_VERSION }} zlib_src
+
+      - name: Build zlib-ng (static)
+        run: |
+          cmake -B zlib_build -S zlib_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
+            -DZLIB_COMPAT=ON \
+            -DZLIB_ENABLE_TESTS=OFF \
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build zlib_build --parallel $(sysctl -n hw.ncpu)
+          cmake --install zlib_build
+
+      - name: Download libarchive source
+        run: |
+          curl -L -o libarchive.tar.xz https://github.com/libarchive/libarchive/releases/download/v${{ env.LIBARCHIVE_VERSION }}/libarchive-${{ env.LIBARCHIVE_VERSION }}.tar.xz
+          tar -xf libarchive.tar.xz
+          mv libarchive-${{ env.LIBARCHIVE_VERSION }} libarchive_src
+
+      - name: Build libarchive (shared)
+        run: |
+          cmake -B la_build -S libarchive_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_INSTALL_PREFIX=$PWD/la_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DENABLE_TEST=OFF \
+            -DENABLE_CPIO=OFF \
+            -DENABLE_CAT=OFF \
+            -DENABLE_TAR=ON \
+            -DENABLE_XATTR=OFF \
+            -DENABLE_ACL=OFF \
+            -DENABLE_BZip2=OFF \
+            -DENABLE_LIBXML2=OFF \
+            -DENABLE_EXPAT=OFF \
+            -DENABLE_LZ4=OFF \
+            -DENABLE_LZMA=OFF \
+            -DENABLE_ZSTD=OFF \
+            -DENABLE_ICONV=OFF \
+            -DENABLE_OPENSSL=OFF \
+            -DENABLE_NETTLE=OFF \
+            -DENABLE_ZLIB=ON \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install
+          cmake --build la_build --parallel $(sysctl -n hw.ncpu)
+          cmake --install la_build
+
+      - name: Prepare artifact
+        run: |
+          PLATFORM="${{ matrix.platform_name }}"
+          mkdir -p artifact/macosx/$PLATFORM/include
+          mkdir -p artifact/macosx/$PLATFORM/lib
+
+          cp la_install/include/archive*.h artifact/macosx/$PLATFORM/include/
+          cp la_install/lib/*.dylib artifact/macosx/$PLATFORM/lib/ 2>/dev/null || true
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/macosx/${{ matrix.platform_name }}
+          platform: macos
+          library-name: libarchive
+          expect-shared-libs: '1'
+          expect-static-libs: '0'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libarchive-macos-${{ matrix.platform_name }}
+          path: artifact/
+          retention-days: 30
+
+  build-linux:
+    if: contains(github.event.inputs.platforms, 'linux')
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build xz-utils
+
+      - name: Download zlib-ng source
+        run: |
+          curl -L -o zlib.tar.gz https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${{ env.ZLIB_VERSION }}.tar.gz
+          tar -xzf zlib.tar.gz
+          mv zlib-ng-${{ env.ZLIB_VERSION }} zlib_src
+
+      - name: Build zlib-ng (static)
+        run: |
+          cmake -B zlib_build -S zlib_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/zlib_install \
+            -DZLIB_COMPAT=ON \
+            -DZLIB_ENABLE_TESTS=OFF \
+            -DBUILD_SHARED_LIBS=OFF
+          cmake --build zlib_build --parallel
+          cmake --install zlib_build
+
+      - name: Download libarchive source
+        run: |
+          curl -L -o libarchive.tar.xz https://github.com/libarchive/libarchive/releases/download/v${{ env.LIBARCHIVE_VERSION }}/libarchive-${{ env.LIBARCHIVE_VERSION }}.tar.xz
+          tar -xf libarchive.tar.xz
+          mv libarchive-${{ env.LIBARCHIVE_VERSION }} libarchive_src
+
+      - name: Build libarchive (shared)
+        run: |
+          cmake -B la_build -S libarchive_src \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$PWD/la_install \
+            -DBUILD_SHARED_LIBS=ON \
+            -DENABLE_TEST=OFF \
+            -DENABLE_CPIO=OFF \
+            -DENABLE_CAT=OFF \
+            -DENABLE_TAR=ON \
+            -DENABLE_XATTR=OFF \
+            -DENABLE_ACL=OFF \
+            -DENABLE_BZip2=OFF \
+            -DENABLE_LIBXML2=OFF \
+            -DENABLE_EXPAT=OFF \
+            -DENABLE_LZ4=OFF \
+            -DENABLE_LZMA=OFF \
+            -DENABLE_ZSTD=OFF \
+            -DENABLE_ICONV=OFF \
+            -DENABLE_OPENSSL=OFF \
+            -DENABLE_NETTLE=OFF \
+            -DENABLE_ZLIB=ON \
+            -DZLIB_ROOT=$PWD/zlib_install \
+            -DCMAKE_PREFIX_PATH=$PWD/zlib_install
+          cmake --build la_build --parallel
+          cmake --install la_build
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p artifact/linux/x64/include
+          mkdir -p artifact/linux/x64/lib
+
+          cp la_install/include/archive*.h artifact/linux/x64/include/
+          cp la_install/lib/libarchive.so* artifact/linux/x64/lib/ 2>/dev/null || true
+
+      - name: Verify artifact
+        uses: ./.github/actions/verify-artifact
+        with:
+          artifact-path: artifact/linux/x64
+          platform: linux
+          library-name: libarchive
+          expect-shared-libs: '1'
+          expect-static-libs: '0'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libarchive-linux-x64
+          path: artifact/
+          retention-days: 30
