@@ -1,5 +1,5 @@
 #include "PageViews/HomePage/include/HomePageController.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 HomePageController::HomePageController(QObject* parent)
     : UIViewController(parent)

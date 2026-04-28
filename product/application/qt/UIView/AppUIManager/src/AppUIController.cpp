@@ -16,9 +16,9 @@
 #include <QStyleHints>
 #include <QTimer>
 
-#include "LoggerDefine/LoggerDefine.h"
-#include "MainWindow/include/MainWindowController.h"
-#include "ViewModelSingalEmitter/AppUIViewModelEmitter.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "MainWindowSuite/MainWindow/include/MainWindowController.h"
+#include "UIViewCommon/ViewModelSingalEmitter/AppUIViewModelEmitter.h"
 #include "UIIPCServerHelper.h"
 #include "UIStabilityMonitor.h"
 
@@ -92,7 +92,7 @@ void AppUIController::onAppConfigInitialized()
 void AppUIController::showMainWindow()
 {
     UIVIEW_LOG_DEBUG("start load main qml");
-    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindow/qml/MainWindow.qml"), [this](auto controller){
+    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindowSuite/MainWindow/qml/MainWindow.qml"), [this](auto controller){
         if (auto mainController = dynamic_cast<MainWindowController*>(controller))
         {
             UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");

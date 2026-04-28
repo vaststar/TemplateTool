@@ -1,6 +1,6 @@
 #include "PageViews/ToolsPage/textprocess/include/JsonToolController.h"
 #include "PageViews/ToolsPage/textprocess/include/JsonTreeItemModel.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 #include <commonHead/viewModels/JsonTreeViewModel/IJsonTreeViewModel.h>

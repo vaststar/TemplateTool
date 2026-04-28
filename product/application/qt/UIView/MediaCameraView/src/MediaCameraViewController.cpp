@@ -5,9 +5,9 @@
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 
-#include "ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
+#include "UIViewCommon/ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 MediaCameraViewController::MediaCameraViewController(QObject *parent)
     : UIViewController(parent)

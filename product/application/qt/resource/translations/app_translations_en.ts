@@ -20,14 +20,6 @@
     </message>
 </context>
 <context>
-    <name>AppSystemTray</name>
-    <message>
-        <location filename="../../UIView/AppSystemTray/qml/AppSystemTray.qml" line="15"/>
-        <source>Quit</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>AppearanceSettingsController</name>
     <message>
         <location filename="../../UIView/PageViews/SettingsPage/src/AppearanceSettingsController.cpp" line="79"/>
@@ -191,13 +183,21 @@
 <context>
     <name>MainWindowFootBar</name>
     <message>
-        <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="19"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindowFootBar/qml/MainWindowFootBar.qml" line="19"/>
         <source>‹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowFootBar/qml/MainWindowFootBar.qml" line="31"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindowFootBar/qml/MainWindowFootBar.qml" line="31"/>
         <source>⋮</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowSystemTray</name>
+    <message>
+        <location filename="../../UIView/MainWindowSuite/MainWindowSystemTray/qml/MainWindowSystemTray.qml" line="23"/>
+        <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -998,22 +998,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../UIView/AppSystemTray/src/AppSystemTrayController.cpp" line="15"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindowSystemTray/src/MainWindowSystemTrayController.cpp" line="16"/>
         <source>my test window title bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindow/src/MainWindowController.cpp" line="65"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="65"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="20"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="20"/>
         <source>my footer bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="23"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="23"/>
         <source>oo window title bar</source>
         <translation type="unfinished"></translation>
     </message>

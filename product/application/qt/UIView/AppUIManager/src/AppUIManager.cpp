@@ -12,10 +12,10 @@
 #include <UTComponent/UTComponent.h>
 #include <UTComposite/UTComposite.h>
 
-#include "LoggerDefine/LoggerDefine.h"
-// #include "UIViewBase/include/UIViewControllerInitializer.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+// #include "UIViewCommon/UIViewBase/include/UIViewControllerInitializer.h"
 #include "AppUIController.h"
-#include <ViewModelSingalEmitter/RegisterViewModelMetaTypes.h>
+#include "UIViewCommon/ViewModelSingalEmitter/RegisterViewModelMetaTypes.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

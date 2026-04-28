@@ -5,9 +5,9 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
 
-#include "ViewModelSingalEmitter/UpgradeViewModelEmitter.h"
+#include "UIViewCommon/ViewModelSingalEmitter/UpgradeViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 AppUpgradeController::AppUpgradeController(QObject* parent)
     : UIViewController(parent)

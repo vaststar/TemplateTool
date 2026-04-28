@@ -5,8 +5,8 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
-#include "LoggerDefine/LoggerDefine.h"
-#include "ViewModelSingalEmitter/StabilityViewModelEmitter.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/ViewModelSingalEmitter/StabilityViewModelEmitter.h"
 
 UIStabilityMonitor::UIStabilityMonitor(AppContext* appContext, QObject* parent)
     : QObject(parent)

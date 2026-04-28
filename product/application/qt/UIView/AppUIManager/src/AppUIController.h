@@ -3,7 +3,7 @@
 #include <memory>
 #include <QPointer>
 
-#include <UIViewBase/include/UIViewController.h>
+#include "UIViewCommon/UIViewBase/include/UIViewController.h"
 
 namespace commonHead::viewModels{
     class IAppUIViewModel;

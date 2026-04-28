@@ -2,10 +2,10 @@
 
 #include <QObject>
 #include <QtQml>
-#include "UIViewBase/include/UIViewController.h"
+#include "UIViewCommon/UIViewBase/include/UIViewController.h"
 #include "ToolsTreeModel.h"
 #include "ToolsPanelRegistry.h"
-#include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
+#include "UIViewCommon/ViewModelSingalEmitter/ToolsViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class IToolsViewModel;

@@ -1,5 +1,5 @@
 #include "PageViews/ToolsPage/screenshot/include/ScreenshotController.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIEvents/UIMainWindowEvent.h"
 
 #include <AppContext/AppContext.h>

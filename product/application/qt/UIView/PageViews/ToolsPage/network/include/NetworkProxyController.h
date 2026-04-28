@@ -5,10 +5,10 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <memory>
-#include "UIViewBase/include/UIViewController.h"
+#include "UIViewCommon/UIViewBase/include/UIViewController.h"
 #include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
 #include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
-#include "ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h"
+#include "UIViewCommon/ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class INetworkProxyViewModel;

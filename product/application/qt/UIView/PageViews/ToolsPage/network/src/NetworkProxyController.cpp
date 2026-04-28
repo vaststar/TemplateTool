@@ -1,7 +1,7 @@
 #include "PageViews/ToolsPage/network/include/NetworkProxyController.h"
 #include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
 #include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>

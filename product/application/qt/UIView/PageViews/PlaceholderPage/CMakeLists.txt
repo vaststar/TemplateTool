@@ -1,0 +1,4 @@
+list(APPEND MODULE_QML_TARGET_FILES
+    PageViews/PlaceholderPage/qml/PlaceholderPage.qml
+)
+set(MODULE_QML_TARGET_FILES ${MODULE_QML_TARGET_FILES} PARENT_SCOPE)

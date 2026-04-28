@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <memory>
 
-#include "UIViewBase/include/UIViewController.h"
+#include "UIViewCommon/UIViewBase/include/UIViewController.h"
 
 #include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
 

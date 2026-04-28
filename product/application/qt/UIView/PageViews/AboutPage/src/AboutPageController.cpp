@@ -4,7 +4,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 AboutPageController::AboutPageController(QObject* parent)
     : UIViewController(parent)

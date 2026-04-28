@@ -1,5 +1,5 @@
 #include "PageViews/ToolsPage/generators/include/UuidToolController.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>

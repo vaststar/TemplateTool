@@ -4,8 +4,8 @@
 #include <QRect>
 #include <QtQml>
 #include <memory>
-#include "UIViewBase/include/UIViewController.h"
-#include "ViewModelSingalEmitter/RecordingViewModelEmitter.h"
+#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewCommon/ViewModelSingalEmitter/RecordingViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class IRecordingViewModel;
