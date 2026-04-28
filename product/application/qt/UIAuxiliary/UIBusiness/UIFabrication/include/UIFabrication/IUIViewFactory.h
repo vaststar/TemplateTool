@@ -34,25 +34,28 @@ public:
     /**
      * * @brief load qml window with pure qml resource path
      * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
+     * * @param parentWindow optional parent window for centering; if null, auto-detects
      * * @note please ensure the qml code is window type
      */
-    virtual void loadQmlWindow(const QString& qmlResource) = 0;
+    virtual void loadQmlWindow(const QString& qmlResource, QWindow* parentWindow = nullptr) = 0;
 
     /**
      * * @brief load qml window with qml resource path and controller
      * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
      * * @param controller controller object, such as MainWindowController
+     * * @param parentWindow optional parent window for centering; if null, auto-detects
      * * @note please ensure the qml code is window type
      */
-    virtual void loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller) = 0;
+    virtual void loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller, QWindow* parentWindow = nullptr) = 0;
 
     /**
      * * @brief load qml window with qml resource path and controller object name
      * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
      * * @param controllerCallback callback function to get controller object
+     * * @param parentWindow optional parent window for centering; if null, auto-detects
      * * @note please ensure the qml code is window type
      */
-    virtual void loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback) = 0;
+    virtual void loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback, QWindow* parentWindow = nullptr) = 0;
 
     static std::unique_ptr<IUIViewFactory> createInstance(QPointer<UIAppCore::UIQmlEngine> qmlEngine);
 };

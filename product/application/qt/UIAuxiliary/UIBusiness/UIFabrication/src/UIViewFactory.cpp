@@ -5,9 +5,9 @@
 #include <QFileInfo>
 #include <QApplication>
 #include <QQmlComponent>
+#include <QQuickWindow>
 
 #include "LoggerDefine.h"
-
 
 namespace UIFabrication{
 std::unique_ptr<IUIViewFactory> IUIViewFactory::createInstance(QPointer<UIAppCore::UIQmlEngine> qmlEngine)
@@ -28,6 +28,36 @@ UIViewFactory::UIViewFactory(QPointer<UIAppCore::UIQmlEngine> qmlEngine)
 }
 
 UIViewFactory::~UIViewFactory() = default;
+
+void UIViewFactory::setupChildWindow(QQuickWindow* window, QWindow* parentWindow)
+{
+    if (!parentWindow)
+    {
+        for (QWindow* tlw : QGuiApplication::topLevelWindows())
+        {
+            if (tlw != window && tlw->isVisible())
+            {
+                parentWindow = tlw;
+                break;
+            }
+        }
+    }
+    if (parentWindow)
+    {
+        window->setTransientParent(parentWindow);
+        const auto parentGeo = parentWindow->geometry();
+        int x = parentGeo.x() + (parentGeo.width() - window->width()) / 2;
+        int y = parentGeo.y() + (parentGeo.height() - window->height()) / 2;
+        window->setPosition(x, y);
+    }
+    QObject::connect(window, &QQuickWindow::closing, [window]{
+        if (window)
+        {
+            UIFabrication_LOG_DEBUG("will close window: " << window->objectName().toStdString());
+            window->deleteLater();
+        }
+    });
+}
 
 QString UIViewFactory::getQRCPrefixPath() const
 {
@@ -76,7 +106,7 @@ QPointer<QQuickView> UIViewFactory::createQmlView(const QString& qmlResource, QW
     return view;
 }
 
-void UIViewFactory::loadQmlWindow(const QString& qmlResource)
+void UIViewFactory::loadQmlWindow(const QString& qmlResource, QWindow* parentWindow)
 {
     if (!mQmlEngine)
     {
@@ -99,13 +129,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
             if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
             {
                 UIFabrication_LOG_DEBUG("window created, install closing handler, qmlResource: " << actualQmlResource.toStdString() << ", window objectName: " << window->objectName().toStdString());
-                QObject::connect(window, &QQuickWindow::closing, [window]{ 
-                    if (window)
-                    {
-                        UIFabrication_LOG_DEBUG("will close window: " << window->objectName().toStdString());
-                        window->deleteLater();
-                    }
-                });
+                setupChildWindow(window, parentWindow);
             }
             else
             {
@@ -124,7 +148,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource)
     }
 }
 
-void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback)
+void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback, QWindow* parentWindow)
 {
     if (!mQmlEngine)
     {
@@ -147,13 +171,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UIAppCore::C
             if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
             {
                 UIFabrication_LOG_DEBUG("window created, install closing handler, qmlResource: " << actualQmlResource.toStdString() << ", window objectName: " << window->objectName().toStdString());
-                QObject::connect(window, &QQuickWindow::closing, [window]{ 
-                    if (window)
-                    {
-                        UIFabrication_LOG_DEBUG("will close window: " << window->objectName().toStdString());
-                        window->deleteLater();
-                    }
-                });
+                setupChildWindow(window, parentWindow);
             }
             else
             {
@@ -165,7 +183,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UIAppCore::C
             {
                 if (QVariant controllerVar = object->property("controller"); controllerVar.isValid())
                 {
-                    if (auto controller = qobject_cast<UIAppCore::UIController*>(controllerVar.value<QObject*>())) 
+                    if (auto controller = qobject_cast<UIAppCore::UIController*>(controllerVar.value<QObject*>()))
                     {
                         UIFabrication_LOG_DEBUG("controller found, do callback, controllerName: " << controller->getControllerName().toStdString() << ", objectName: "<< controller->objectName().toStdString());
                         controllerCallback(controller);
@@ -191,9 +209,9 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, const UIAppCore::C
     {
         UIFabrication_LOG_WARN("load qml failed: " << actualQmlResource.toStdString() << ", error: " << component.errorString().toStdString());
     }
-}  
+}
 
-void UIViewFactory::loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller)
+void UIViewFactory::loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller, QWindow* parentWindow)
 {
     if (!mQmlEngine)
     {
@@ -221,13 +239,7 @@ void UIViewFactory::loadQmlWindow(const QString& qmlResource, UIAppCore::UIContr
             if (QQuickWindow* window = qobject_cast<QQuickWindow*>(object))
             {
                 UIFabrication_LOG_DEBUG("window created, install closing handler, qmlResource: " << actualQmlResource.toStdString() << ", window objectName: " << window->objectName().toStdString());
-                QObject::connect(window, &QQuickWindow::closing, [window]{ 
-                    if (window)
-                    {
-                        UIFabrication_LOG_DEBUG("will close window: " << window->objectName().toStdString());
-                        window->deleteLater();
-                    }
-                });
+                setupChildWindow(window, parentWindow);
             }
             else
             {
