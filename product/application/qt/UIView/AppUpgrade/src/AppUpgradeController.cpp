@@ -5,6 +5,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
 
+#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
 #include "UIViewCommon/ViewModelSingalEmitter/UpgradeViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
@@ -241,6 +242,14 @@ void AppUpgradeController::showUpgradeDialog()
     }
     UIVIEW_LOG_DEBUG("showUpgradeDialog");
     m_dialogOpen = true;
-    getAppContext()->getViewFactory()->loadQmlWindow(
-        QStringLiteral("UIView/AppUpgrade/qml/UpgradeDialog.qml"), this);
+    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/AppUpgrade/qml/UpgradeDialog.qml"),
+        { { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) } });
+    if (!win)
+    {
+        m_dialogOpen = false;
+        return;
+    }
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
 }

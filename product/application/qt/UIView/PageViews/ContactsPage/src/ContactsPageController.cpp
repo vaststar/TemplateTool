@@ -1,5 +1,6 @@
 #include "PageViews/ContactsPage/include/ContactsPageController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 #include <AppContext/AppContext.h>
@@ -24,7 +25,11 @@ void ContactsPageController::init()
 
 void ContactsPageController::buttonClicked()
 {
-    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
+    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+        QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
+    if (!win) return;
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
 }
 
 QAbstractItemModel* ContactsPageController::getOrgTreeModel() const
@@ -51,11 +56,11 @@ QVariantMap ContactsPageController::getContactInfo(const QString& contactId) con
     QVariantMap result;
     if (contactId.isEmpty() || !mContactListViewModel)
         return result;
-    
+
     auto tree = mContactListViewModel->getContactList();
     if (!tree)
         return result;
-        
+
     auto node = tree->findNodeById(contactId.toStdString());
     if (node) {
         auto data = node->getNodeData();

@@ -14,6 +14,7 @@
 #include <UIUtilities/UIPlatformUtils.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
 
 #include <QCoreApplication>
 
@@ -75,15 +76,17 @@ void MainWindowController::openCamera()
     getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
 
-    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"), [this](auto controller)
+    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
+    if (!win) return;
+    if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
     {
-        if (auto mediaController = dynamic_cast<MediaCameraViewController*>(controller))
-        {
-            UIVIEW_LOG_DEBUG("MediaCameraView.qml load done, will start init MediaCameraViewController");
-            mediaController->initializeController(getAppContext());
-            UIVIEW_LOG_DEBUG("MediaCameraViewController init done, callback end");
-        }
-    });
+        UIVIEW_LOG_DEBUG("MediaCameraView.qml load done, will start init MediaCameraViewController");
+        mediaController->initializeController(getAppContext());
+        UIVIEW_LOG_DEBUG("MediaCameraViewController init done");
+    }
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
 }
 
 void MainWindowController::testFunc()
@@ -150,12 +153,15 @@ void MainWindowController::createUpgradeController()
 void MainWindowController::showAboutDialog()
 {
     UIVIEW_LOG_DEBUG("showAboutDialog");
-    getAppContext()->getViewFactory()->loadQmlWindow( QStringLiteral("UIView/PageViews/AboutPage/qml/AboutDialog.qml"), [this](auto controller) {
-        if (auto* aboutController = dynamic_cast<UIViewController*>(controller))
-        {
-            setupController(aboutController);
-        }
-    });
+    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/PageViews/AboutPage/qml/AboutDialog.qml"));
+    if (!win) return;
+    if (auto* aboutController = UIView::UIViewHelper::controllerOf<UIViewController>(win))
+    {
+        setupController(aboutController);
+    }
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
 }
 
 void MainWindowController::componentCompleted()

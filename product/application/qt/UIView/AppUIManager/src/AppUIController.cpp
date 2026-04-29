@@ -17,6 +17,7 @@
 #include <QTimer>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
 #include "MainWindowSuite/MainWindow/include/MainWindowController.h"
 #include "UIViewCommon/ViewModelSingalEmitter/AppUIViewModelEmitter.h"
 #include "UIIPCServerHelper.h"
@@ -92,13 +93,19 @@ void AppUIController::onAppConfigInitialized()
 void AppUIController::showMainWindow()
 {
     UIVIEW_LOG_DEBUG("start load main qml");
-    getAppContext()->getViewFactory()->loadQmlWindow(QStringLiteral("UIView/MainWindowSuite/MainWindow/qml/MainWindow.qml"), [this](auto controller){
-        if (auto mainController = dynamic_cast<MainWindowController*>(controller))
-        {
-            UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
-            mainController->initializeController(getAppContext());
-            UIVIEW_LOG_DEBUG("MainWindowController init done, callback end");
-        }
-    });
+    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/MainWindowSuite/MainWindow/qml/MainWindow.qml"));
+    if (!win)
+    {
+        UIVIEW_LOG_WARN("failed to create main window");
+        return;
+    }
+    if (auto* mainController = UIView::UIViewHelper::controllerOf<MainWindowController>(win))
+    {
+        UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
+        mainController->initializeController(getAppContext());
+        UIVIEW_LOG_DEBUG("MainWindowController init done");
+    }
+    win->show();
     UIVIEW_LOG_DEBUG("finish load main qml");
 }

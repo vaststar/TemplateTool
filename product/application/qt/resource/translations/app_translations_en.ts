@@ -1003,7 +1003,7 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="65"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="66"/>
         <source>my test window aa</source>
         <translation type="unfinished"></translation>
     </message>

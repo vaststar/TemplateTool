@@ -7,7 +7,7 @@ import UIResourceLoader 1.0
  * UTDialog - Themed modal dialog window.
  *
  * Provides consistent background, border overlay, and sensible defaults
- * for dialogs loaded via ViewFactory::loadQmlWindow().
+ * for dialogs loaded via ViewFactory::createQmlWindow().
  *
  * Usage:
  *   UTDialog {

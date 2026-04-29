@@ -2,7 +2,9 @@
 
 #include <UIFabrication/IUIViewFactory.h>
 
-class QQuickWindow;
+namespace UIAppCore{
+class UIQmlEngine;
+}
 
 namespace UIFabrication{
 class UIViewFactory final: public IUIViewFactory
@@ -15,17 +17,18 @@ public:
     UIViewFactory& operator=(const UIViewFactory&) = delete;
     UIViewFactory& operator=(UIViewFactory&&) = delete;
     virtual ~UIViewFactory();
-public:
-    virtual QPointer<QQuickView> createQmlView(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) override;
 
-    virtual void loadQmlWindow(const QString& qmlResource, QWindow* parentWindow = nullptr) override;
-    virtual void loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller, QWindow* parentWindow = nullptr) override;
-    virtual void loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback, QWindow* parentWindow = nullptr) override;
+    QPointer<QQuickWindow> createQmlWindow(const QString& qmlResource,
+                                           const QVariantMap& initialProperties = {}) override;
+
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;
-    void setupChildWindow(QQuickWindow* window, QWindow* parentWindow);
-private:
+
+    // Wires the window's closing -> deleteLater handler. Does NOT touch
+    // transient parent and does NOT touch window position.
+    void installCloseHandler(QQuickWindow* window);
+
     const QPointer<UIAppCore::UIQmlEngine> mQmlEngine;
 };
 }

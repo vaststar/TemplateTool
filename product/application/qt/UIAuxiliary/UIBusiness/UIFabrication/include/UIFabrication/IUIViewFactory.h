@@ -4,14 +4,13 @@
 
 #include <QPointer>
 #include <QObject>
-#include <QQuickView>
+#include <QQuickWindow>
+#include <QVariantMap>
 
 #include <UIFabrication/UIFabricationExport.h>
 
 namespace UIAppCore{
 class UIQmlEngine;
-class UIController;
-using ControllerCallback = std::function<void(UIController*)>;
 }
 
 namespace UIFabrication{
@@ -22,40 +21,26 @@ public:
     virtual ~IUIViewFactory() = default;
 
     /**
-     * * @brief create qml view
-     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
-     * * @param parent parent window, such as MainWindow
-     * * @param controller controller object, such as MainWindowController
-     * * @return qml view pointer
-     * * @note please ensure the qml code is item type
+     * @brief Create a top-level QML window and install the standard
+     *        closing -> deleteLater handler.
+     *
+     * @param qmlResource        QML resource path, e.g.
+     *                           "UIView/AppUpgrade/qml/UpgradeDialog.qml",
+     *                           or a full "qrc:/..." URL.
+     * @param initialProperties  Properties injected at construction time via
+     *                           QQmlComponent::createWithInitialProperties().
+     *                           Visible inside QML's Component.onCompleted, so
+     *                           use this for `required property` bindings such
+     *                           as `controller`.
+     * @return The created window; null on failure.
+     *
+     * @note Only local / qrc resources are supported (synchronous load).
+     * @note Does NOT call show(), does NOT set transient parent and does NOT
+     *       set window position. Callers are responsible for those concerns
+     *       (e.g. via UIView::UIViewHelper).
      */
-    virtual QPointer<QQuickView> createQmlView(const QString& qmlResource, QWindow* parent = nullptr, QObject* controller = nullptr) = 0;
-
-    /**
-     * * @brief load qml window with pure qml resource path
-     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
-     * * @param parentWindow optional parent window for centering; if null, auto-detects
-     * * @note please ensure the qml code is window type
-     */
-    virtual void loadQmlWindow(const QString& qmlResource, QWindow* parentWindow = nullptr) = 0;
-
-    /**
-     * * @brief load qml window with qml resource path and controller
-     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
-     * * @param controller controller object, such as MainWindowController
-     * * @param parentWindow optional parent window for centering; if null, auto-detects
-     * * @note please ensure the qml code is window type
-     */
-    virtual void loadQmlWindow(const QString& qmlResource, UIAppCore::UIController* controller, QWindow* parentWindow = nullptr) = 0;
-
-    /**
-     * * @brief load qml window with qml resource path and controller object name
-     * * @param qmlResource qml resource path, such as "UTComponent/UTWindow/UTWindow.qml"
-     * * @param controllerCallback callback function to get controller object
-     * * @param parentWindow optional parent window for centering; if null, auto-detects
-     * * @note please ensure the qml code is window type
-     */
-    virtual void loadQmlWindow(const QString& qmlResource, const UIAppCore::ControllerCallback& controllerCallback, QWindow* parentWindow = nullptr) = 0;
+    virtual QPointer<QQuickWindow> createQmlWindow(const QString& qmlResource,
+                                                   const QVariantMap& initialProperties = {}) = 0;
 
     static std::unique_ptr<IUIViewFactory> createInstance(QPointer<UIAppCore::UIQmlEngine> qmlEngine);
 };

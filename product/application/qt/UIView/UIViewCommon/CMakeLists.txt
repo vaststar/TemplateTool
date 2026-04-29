@@ -1,6 +1,7 @@
 add_subdirectory(UIViewBase)
 add_subdirectory(ViewModelSingalEmitter)
 add_subdirectory(LoggerDefine)
+add_subdirectory(UIViewHelper)
 set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
 set(MODULE_QML_TARGET_FILES ${MODULE_QML_TARGET_FILES} PARENT_SCOPE)
 set(MODULE_PRIVATE_INCLUDE_DIRS ${MODULE_PRIVATE_INCLUDE_DIRS} PARENT_SCOPE)
