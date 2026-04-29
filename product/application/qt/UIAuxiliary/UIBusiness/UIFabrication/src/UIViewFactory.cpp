@@ -46,26 +46,10 @@ void UIViewFactory::setupChildWindow(QQuickWindow* window, QWindow* parentWindow
     {
         window->setTransientParent(parentWindow);
 
-        // Centering must happen AFTER the child window has its real size.
-        // At setup time on Linux/X11 the QML-declared width/height may not
-        // be applied yet (window->width() returns the default), and many
-        // window managers ignore setPosition() on a not-yet-mapped window.
-        // Hook visibleChanged: when the window first becomes visible Qt has
-        // resolved the QML size, so centering math is correct.
-        auto centerOnce = std::make_shared<QMetaObject::Connection>();
         QPointer<QWindow> parentGuard(parentWindow);
         QPointer<QQuickWindow> windowGuard(window);
-        *centerOnce = QObject::connect(window, &QWindow::visibleChanged,
-            [windowGuard, parentGuard, centerOnce](bool visible)
+        auto centerFn = [windowGuard, parentGuard]()
         {
-            if (!visible)
-            {
-                // Wait for the first visible=true; ignore intermediate hides.
-                return;
-            }
-            // We only want to center once on first show, so disconnect first
-            // (also releases the shared_ptr captured in this lambda).
-            QObject::disconnect(*centerOnce);
             if (!windowGuard || !parentGuard)
             {
                 return;
@@ -74,7 +58,26 @@ void UIViewFactory::setupChildWindow(QQuickWindow* window, QWindow* parentWindow
             const int x = parentGeo.x() + (parentGeo.width()  - windowGuard->width())  / 2;
             const int y = parentGeo.y() + (parentGeo.height() - windowGuard->height()) / 2;
             windowGuard->setPosition(x, y);
-        });
+        };
+
+        if (window->isVisible())
+        {
+            QMetaObject::invokeMethod(window, centerFn, Qt::QueuedConnection);
+        }
+        else
+        {
+            auto centerOnce = std::make_shared<QMetaObject::Connection>();
+            *centerOnce = QObject::connect(window, &QWindow::visibleChanged,
+                [centerFn, centerOnce](bool visible)
+            {
+                if (!visible)
+                {
+                    return;
+                }
+                QObject::disconnect(*centerOnce);
+                centerFn();
+            });
+        }
     }
     QObject::connect(window, &QQuickWindow::closing, [window]{
         if (window)
