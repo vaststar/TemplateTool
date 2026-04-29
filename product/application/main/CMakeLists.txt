@@ -18,12 +18,14 @@ if(APPLE)
     )
 
     # Get Qt lib path for BUILD_RPATH (Qt6_DIR is like .../lib/cmake/Qt6)
-    get_filename_component(QT_LIB_DIR "${Qt6_DIR}/../.." ABSOLUTE)
+    # get_filename_component(QT_LIB_DIR "${Qt6_DIR}/../.." ABSOLUTE)
 
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         MACOSX_BUNDLE_ICON_FILE "logo"
         INSTALL_RPATH "@executable_path/../Frameworks"
-        BUILD_RPATH "${QT_LIB_DIR}"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH OFF
+        # BUILD_RPATH "${QT_LIB_DIR}"
     )
     message(STATUS "  INSTALL_RPATH: @executable_path/../Frameworks")
     message(STATUS "  BUILD_RPATH: ${QT_LIB_DIR}")
@@ -57,16 +59,9 @@ else()
     message(STATUS "  Platform: Linux")
     add_executable(${MAIN_ENTRY} main.cpp)
 
-    # Set RPATH so the binary finds .so libs without LD_LIBRARY_PATH
-    # $ORIGIN     = same dir as binary (bin/)
-    # $ORIGIN/../lib = sibling lib/ dir
-    # Use INSTALL_RPATH for the build tree too, so running directly from
-    # build/<preset>/bin/ uses $ORIGIN instead of CMake's auto-derived
-    # BUILD_RPATH (which would leak absolute Qt / thirdparty paths and
-    # cause the wrong libcurl/libssl to be loaded).
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
-        BUILD_WITH_INSTALL_RPATH ON
+        BUILD_WITH_INSTALL_RPATH OFF
         INSTALL_RPATH_USE_LINK_PATH OFF
     )
     message(STATUS "  INSTALL_RPATH: $ORIGIN;$ORIGIN/../lib")

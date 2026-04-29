@@ -102,14 +102,14 @@ function(BuildModule)
     if(APPLE)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
             INSTALL_NAME_DIR "@rpath"
-            BUILD_WITH_INSTALL_RPATH ON
             INSTALL_RPATH "@loader_path;@executable_path"
+            BUILD_WITH_INSTALL_RPATH OFF
             INSTALL_RPATH_USE_LINK_PATH OFF
         )
     elseif(UNIX AND NOT APPLE)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-            BUILD_WITH_INSTALL_RPATH ON
             INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
+            BUILD_WITH_INSTALL_RPATH OFF
             INSTALL_RPATH_USE_LINK_PATH OFF
         )
     endif()
