@@ -32,11 +32,16 @@ message(STATUS "[FFmpeg] macOS ${FFMPEG_ARCH_DIR}")
 message(STATUS "[FFmpeg] ffmpeg: ${FFMPEG_EXECUTABLE}")
 message(STATUS "[FFmpeg] ffprobe: ${FFPROBE_EXECUTABLE}")
 
-# Copy ffmpeg executables to output directory
+# Copy ffmpeg executables to output directory.
+# Re-apply 0755 because the source files (extracted from a zip) may have
+# lost the Unix executable bit during artifact upload/download.
 add_custom_target(copy_ffmpeg ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFMPEG_EXECUTABLE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFPROBE_EXECUTABLE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+    COMMAND ${CMAKE_COMMAND} -E chmod 0755
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffmpeg"
+            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffprobe"
     COMMENT "[FFmpeg] Copying executables to output directory"
 )
 set_target_properties(copy_ffmpeg PROPERTIES FOLDER framework/thirdparty/ffmpeg)

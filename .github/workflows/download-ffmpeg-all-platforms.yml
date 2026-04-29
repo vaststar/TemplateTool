@@ -5,19 +5,19 @@ on:
   workflow_dispatch:
     inputs:
       ffmpeg_version:
-        description: 'FFmpeg version (e.g., 8.1, 7.1, 6.1)'
+        description: 'FFmpeg version (e.g., 8.1, 7.1, 6.1). Honored on Win/Linux only — macOS always uses the latest static build from evermeet.cx / osxexperts.net.'
         required: true
         default: '8.1'
         type: string
       platforms:
-        description: 'Platforms to download (comma-separated: windows,macos,linux)'
+        description: 'Platforms to download (comma-separated: windows,windows-arm64,macos,linux)'
         required: true
-        default: 'windows,macos,linux'
+        default: 'windows,windows-arm64,macos,linux'
         type: string
 
 env:
   FFMPEG_VERSION: ${{ github.event.inputs.ffmpeg_version }}
-  # BtbN builds (Windows + Linux only): https://github.com/BtbN/FFmpeg-Builds/releases
+  # BtbN builds (Windows x64/arm64 + Linux x64): https://github.com/BtbN/FFmpeg-Builds/releases
   BTBN_BASE: 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest'
 
 jobs:
@@ -89,10 +89,88 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # macOS — Intel + ARM via Homebrew (most reliable macOS package source)
-  # BtbN does NOT provide macOS builds.
-  # Homebrew is the most mature macOS package manager; FFmpeg is a core formula.
-  # We install via brew, then copy the binaries out.
+  # Windows (ARM64) — from BtbN
+  # BtbN ships winarm64 GPL builds; no Gyan fallback (Gyan is x64 only).
+  # Use the exact same VERSION pin as x64 for consistency.
+  # ============================================================================
+  download-windows-arm64:
+    if: contains(github.event.inputs.platforms, 'windows-arm64')
+    runs-on: ubuntu-latest
+    name: Download (Windows ARM64)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download FFmpeg for Windows ARM64
+        run: |
+          BASE="${{ env.BTBN_BASE }}"
+          VER="${{ env.FFMPEG_VERSION }}"
+
+          # BtbN naming: ffmpeg-n8.1-latest-winarm64-gpl-8.1.zip
+          URLS=(
+            "${BASE}/ffmpeg-n${VER}-latest-winarm64-gpl-${VER}.zip"
+            "${BASE}/ffmpeg-n${VER}-latest-winarm64-lgpl-${VER}.zip"
+          )
+
+          DOWNLOADED=false
+          for url in "${URLS[@]}"; do
+            echo "Trying: $url"
+            if curl -fSL -o ffmpeg.zip "$url" 2>/dev/null; then
+              echo "✓ Downloaded from: $url"
+              DOWNLOADED=true
+              break
+            fi
+            echo "✗ Not found, trying next..."
+          done
+
+          if [ "$DOWNLOADED" = false ]; then
+            echo "::error::Could not download FFmpeg ${VER} for Windows ARM64. Note: BtbN may not have arm64 builds for very old ffmpeg versions; try 6.0 or newer."
+            exit 1
+          fi
+
+      - name: Extract and prepare artifact
+        run: |
+          unzip -q ffmpeg.zip -d ffmpeg_raw
+
+          FFMPEG_BIN=$(find ffmpeg_raw -name "ffmpeg.exe" -type f | head -1)
+          FFPROBE_BIN=$(find ffmpeg_raw -name "ffprobe.exe" -type f | head -1)
+
+          if [[ -z "$FFMPEG_BIN" || -z "$FFPROBE_BIN" ]]; then
+            echo "::error::ffmpeg.exe or ffprobe.exe not found in archive"
+            find ffmpeg_raw -type f | head -20
+            exit 1
+          fi
+
+          mkdir -p artifact/windows/arm64
+          cp "$FFMPEG_BIN"  artifact/windows/arm64/ffmpeg.exe
+          cp "$FFPROBE_BIN" artifact/windows/arm64/ffprobe.exe
+
+          echo "=== Windows ARM64 artifacts ==="
+          ls -la artifact/windows/arm64/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-windows-arm64
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # macOS — prebuilt static binaries (latest only)
+  #
+  # Sources:
+  #   - x86_64 : evermeet.cx     (single-file static, no external dylib deps)
+  #   - arm64  : osxexperts.net  (single-file static, no external dylib deps)
+  #
+  # Both mirrors only host "latest" — they do NOT keep historical versions.
+  # The ffmpeg_version input is therefore ignored here. If you need a pinned
+  # version on macOS you must compile from source (not done in this workflow).
+  #
+  # We never use Homebrew's ffmpeg formula: brew binaries are dynamically
+  # linked to /opt/homebrew/Cellar/ffmpeg/<ver>/lib/*.dylib (absolute paths
+  # baked into LC_LOAD_DYLIB), so copying the binary out crashes (SIGABRT)
+  # on any machine without that exact brew Cellar version installed.
   # ============================================================================
   download-macos:
     if: contains(github.event.inputs.platforms, 'macos')
@@ -103,48 +181,68 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install FFmpeg via Homebrew
+      - name: Install 7zip (needed to unpack evermeet archives)
+        run: brew install p7zip
+
+      - name: Download static FFmpeg/FFprobe (arm64 + x86_64)
         run: |
-          # Homebrew on macos-latest (ARM) installs native arm64 binaries
-          brew install ffmpeg
+          set -euo pipefail
+          mkdir -p artifact/macosx/arm artifact/macosx/intel
 
-          FFMPEG_BIN=$(which ffmpeg)
-          FFPROBE_BIN=$(which ffprobe)
+          echo "::warning::macOS ignores ffmpeg_version (${FFMPEG_VERSION}); evermeet/osxexperts only host the latest release."
 
-          echo "ffmpeg:  $FFMPEG_BIN"
-          echo "ffprobe: $FFPROBE_BIN"
-
-          # Verify they work
-          ffmpeg -version | head -1
-          ffprobe -version | head -1
-
-          # Show architecture
-          file "$FFMPEG_BIN"
-          file "$FFPROBE_BIN"
-
-      - name: Prepare artifact
-        run: |
-          FFMPEG_BIN=$(which ffmpeg)
-          FFPROBE_BIN=$(which ffprobe)
-
-          # Resolve symlinks to get real binaries
-          FFMPEG_REAL=$(realpath "$FFMPEG_BIN")
-          FFPROBE_REAL=$(realpath "$FFPROBE_BIN")
-
-          # macos-latest is ARM — produces native arm64 binaries
-          # Copy to arm/ directly; intel/ gets the same binary (runs via Rosetta 2)
-          for dir in intel arm; do
-            mkdir -p artifact/macosx/$dir
-            cp "$FFMPEG_REAL"  artifact/macosx/$dir/ffmpeg
-            cp "$FFPROBE_REAL" artifact/macosx/$dir/ffprobe
-            chmod +x artifact/macosx/$dir/ffmpeg artifact/macosx/$dir/ffprobe
+          # ---- arm64 (Apple Silicon) — osxexperts.net ----
+          # File name follows ffmpeg<MAJOR><MINOR>arm.zip; we try a couple of
+          # recent ones since osxexperts has no stable "latest" alias.
+          for tag in 711 71 7 8; do
+            if curl -fSL -o ffmpeg-arm.zip   "https://www.osxexperts.net/ffmpeg${tag}arm.zip" \
+            && curl -fSL -o ffprobe-arm.zip  "https://www.osxexperts.net/ffprobe${tag}arm.zip"; then
+              echo "✓ osxexperts arm64: tag=${tag}"
+              break
+            fi
           done
 
-          echo "=== macOS artifacts ==="
-          find artifact/macosx -type f -exec ls -lh {} \;
-          echo ""
-          echo "=== Architecture check ==="
-          file artifact/macosx/arm/ffmpeg
+          unzip -o ffmpeg-arm.zip   -d artifact/macosx/arm
+          unzip -o ffprobe-arm.zip  -d artifact/macosx/arm
+
+          # ---- x86_64 (Intel) — evermeet.cx ----
+          curl -fSL -o ffmpeg-intel.7z  "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/7z"
+          curl -fSL -o ffprobe-intel.7z "https://evermeet.cx/ffmpeg/getrelease/ffprobe/7z"
+
+          7z x -y ffmpeg-intel.7z  -o./artifact/macosx/intel
+          7z x -y ffprobe-intel.7z -o./artifact/macosx/intel
+
+          chmod +x artifact/macosx/arm/ffmpeg   artifact/macosx/arm/ffprobe
+          chmod +x artifact/macosx/intel/ffmpeg artifact/macosx/intel/ffprobe
+
+      - name: Verify binaries are static (no homebrew dylib deps)
+        run: |
+          set -euo pipefail
+          for arch in arm intel; do
+            for bin in ffmpeg ffprobe; do
+              path="artifact/macosx/$arch/$bin"
+              echo "--- $path ---"
+              ls -lh "$path"
+              file "$path"
+
+              DEPS=$(otool -L "$path" || true)
+              echo "$DEPS" | head -20
+
+              # FAIL if any non-system dylib is referenced.
+              BAD=$(echo "$DEPS" | tail -n +2 | awk '{print $1}' \
+                    | grep -Ev '^(/usr/lib/|/System/Library/)' || true)
+              if [ -n "$BAD" ]; then
+                echo "::error::$path has non-system dylib dependencies:"
+                echo "$BAD"
+                exit 1
+              fi
+
+              # Sanity: arm64 binary should run natively on the runner
+              if [ "$arch" = "arm" ]; then
+                "./$path" -version | head -1
+              fi
+            done
+          done
 
       - name: Upload artifact (intel)
         uses: actions/upload-artifact@v4
@@ -233,7 +331,7 @@ jobs:
   # Merge All Artifacts
   # ============================================================================
   merge-artifacts:
-    needs: [download-windows, download-macos, download-linux]
+    needs: [download-windows, download-windows-arm64, download-macos, download-linux]
     if: always() && !cancelled()
     runs-on: ubuntu-latest
     name: Merge Artifacts
@@ -249,10 +347,18 @@ jobs:
         run: |
           mkdir -p merged
 
-          # Windows — artifact contains windows/x64/{ffmpeg.exe,ffprobe.exe}
+          # Windows x64 — artifact contains windows/x64/{ffmpeg.exe,ffprobe.exe}
           if [ -d "downloads/ffmpeg-windows-x64" ]; then
-            cp -r downloads/ffmpeg-windows-x64/windows merged/
+            mkdir -p merged/windows
+            cp -r downloads/ffmpeg-windows-x64/windows/* merged/windows/
             echo "✓ Windows x64"
+          fi
+
+          # Windows ARM64 — artifact contains windows/arm64/{ffmpeg.exe,ffprobe.exe}
+          if [ -d "downloads/ffmpeg-windows-arm64" ]; then
+            mkdir -p merged/windows
+            cp -r downloads/ffmpeg-windows-arm64/windows/* merged/windows/
+            echo "✓ Windows ARM64"
           fi
 
           # macOS — artifacts are flat (ffmpeg, ffprobe) without subdirs
