@@ -28,7 +28,7 @@ add_custom_target(copy_ffmpeg ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFMPEG_EXECUTABLE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFPROBE_EXECUTABLE}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
-    COMMAND ${CMAKE_COMMAND} -E chmod 0755
+    COMMAND chmod 0755
             "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffmpeg"
             "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ffprobe"
     COMMENT "[FFmpeg] Copying executables to output directory"
