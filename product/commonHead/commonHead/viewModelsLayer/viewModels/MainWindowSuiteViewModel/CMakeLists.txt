@@ -1,0 +1,9 @@
+add_subdirectory(MainWindowViewModel)
+add_subdirectory(SideBarViewModel)
+add_subdirectory(SettingsViewModel)
+add_subdirectory(StabilityViewModel)
+
+set(MODULE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR} PARENT_SCOPE)
+set(MODULE_HEADER_FILES ${MODULE_HEADER_FILES} PARENT_SCOPE)
+set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
+set(MODULE_BUILD_PRIVATE_DIR ${MODULE_BUILD_PRIVATE_DIR} PARENT_SCOPE)
