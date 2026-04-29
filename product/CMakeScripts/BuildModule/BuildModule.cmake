@@ -47,7 +47,7 @@ function(BuildModule)
     # ==========================================
     message(STATUS "")
     message(STATUS "[BuildModule] ${MODULE_MODULE_NAME} (${LIB_TYPE})")
-    
+
     if(CMAKE_VERBOSE_MAKEFILE)
         message(STATUS "[BuildModule]   Sources      : ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS "[BuildModule]   Headers      : ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
@@ -73,7 +73,7 @@ function(BuildModule)
 
     target_sources(${MODULE_MODULE_NAME}
         PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
-        PUBLIC FILE_SET HEADERS 
+        PUBLIC FILE_SET HEADERS
         BASE_DIRS ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}
         FILES ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}
     )
@@ -102,16 +102,18 @@ function(BuildModule)
     if(APPLE)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
             INSTALL_NAME_DIR "@rpath"
-            BUILD_WITH_INSTALL_RPATH OFF
+            BUILD_WITH_INSTALL_RPATH ON
             INSTALL_RPATH "@loader_path;@executable_path"
+            INSTALL_RPATH_USE_LINK_PATH OFF
         )
     elseif(UNIX AND NOT APPLE)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-            BUILD_WITH_INSTALL_RPATH OFF
+            BUILD_WITH_INSTALL_RPATH ON
             INSTALL_RPATH "$ORIGIN"
+            INSTALL_RPATH_USE_LINK_PATH OFF
         )
     endif()
-    
+
     # ==========================================
     # Include directories
     # ==========================================
@@ -121,7 +123,7 @@ function(BuildModule)
         TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}
         TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
     )
-    
+
     # ==========================================
     # Link libraries
     # ==========================================
@@ -139,7 +141,7 @@ function(BuildModule)
     if(MODULE_TARGET_ADD_DEPENDENCIES)
         add_dependencies(${MODULE_MODULE_NAME} ${MODULE_TARGET_ADD_DEPENDENCIES})
     endif()
-    
+
     if(MODULE_TARGET_DEFINITIONS)
         target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
     endif()

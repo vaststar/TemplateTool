@@ -60,9 +60,14 @@ else()
     # Set RPATH so the binary finds .so libs without LD_LIBRARY_PATH
     # $ORIGIN     = same dir as binary (bin/)
     # $ORIGIN/../lib = sibling lib/ dir
+    # Use INSTALL_RPATH for the build tree too, so running directly from
+    # build/<preset>/bin/ uses $ORIGIN instead of CMake's auto-derived
+    # BUILD_RPATH (which would leak absolute Qt / thirdparty paths and
+    # cause the wrong libcurl/libssl to be loaded).
     set_target_properties(${MAIN_ENTRY} PROPERTIES
         INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
-        BUILD_WITH_INSTALL_RPATH OFF
+        BUILD_WITH_INSTALL_RPATH ON
+        INSTALL_RPATH_USE_LINK_PATH OFF
     )
     message(STATUS "  INSTALL_RPATH: $ORIGIN;$ORIGIN/../lib")
 

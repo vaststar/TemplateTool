@@ -20,13 +20,6 @@
     </message>
 </context>
 <context>
-    <name>AppSystemTray</name>
-    <message>
-        <source>Quit</source>
-        <translation type="vanished">結束</translation>
-    </message>
-</context>
-<context>
     <name>AppearanceSettingsController</name>
     <message>
         <location filename="../../UIView/PageViews/SettingsPage/src/AppearanceSettingsController.cpp" line="79"/>
