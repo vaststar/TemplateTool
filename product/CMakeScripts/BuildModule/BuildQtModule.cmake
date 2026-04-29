@@ -15,7 +15,7 @@ function(BuildQtModule)
                        TARGET_ADD_LINK_LIBRARY_PRIVATE TARGET_ADD_LINK_LIBRARY_PUBLIC TARGET_ADD_DEPENDENCIES
                        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
                        TARGET_DEFINITIONS
-                       QML_TARGET_FILES QML_TARGET_SOURCES 
+                       QML_TARGET_FILES QML_TARGET_SOURCES
                        QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES
     )
     cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -26,22 +26,22 @@ function(BuildQtModule)
     if(NOT DEFINED MODULE_MODULE_NAME)
         message(FATAL_ERROR "[BuildQtModule] MODULE_NAME is required")
     endif()
-    
+
     # Source file check: non-QML modules must have C++ source files
     if(NOT MODULE_TARGET_SOURCE_PRIVATE AND NOT MODULE_QML_TARGET_URI)
         message(FATAL_ERROR "[BuildQtModule] TARGET_SOURCE_PRIVATE is required for non-QML modules")
     endif()
-    
+
     # Public header BASE_DIR check
     if(MODULE_TARGET_SOURCE_PUBLIC_HEADER AND NOT MODULE_TARGET_SOURCE_HEADER_BASE_DIR)
         message(FATAL_ERROR "[BuildQtModule] TARGET_SOURCE_HEADER_BASE_DIR is required when TARGET_SOURCE_PUBLIC_HEADER is specified")
     endif()
-    
+
     # QML resources directory check
     if(MODULE_QML_TARGET_RESOURCES AND NOT MODULE_QML_TARGET_RESOURCES_DIR)
         message(FATAL_ERROR "[BuildQtModule] QML_TARGET_RESOURCES_DIR is required when QML_TARGET_RESOURCES is specified")
     endif()
-    
+
     if(MODULE_UNPARSED_ARGUMENTS)
         message(WARNING "[BuildQtModule] Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
     endif()
@@ -61,7 +61,7 @@ function(BuildQtModule)
     if(MODULE_QML_TARGET_URI)
         message(STATUS "[BuildQtModule]   QML URI: ${MODULE_QML_TARGET_URI}")
     endif()
-    
+
     if(CMAKE_VERBOSE_MAKEFILE)
         message(STATUS "[BuildQtModule]   Sources      : ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS "[BuildQtModule]   Headers      : ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
@@ -93,11 +93,11 @@ function(BuildQtModule)
 
     target_sources(${MODULE_MODULE_NAME}
         PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
-        PUBLIC FILE_SET HEADERS 
+        PUBLIC FILE_SET HEADERS
         BASE_DIRS ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}
         FILES ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}
     )
-    
+
     target_compile_features(${MODULE_MODULE_NAME} PUBLIC cxx_std_20)
     target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE
         CMAKE_VERSION_STR="${CMAKE_VERSION}"
@@ -125,16 +125,18 @@ function(BuildQtModule)
     if(APPLE)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
             INSTALL_NAME_DIR "@rpath"
-            BUILD_WITH_INSTALL_RPATH OFF
+            BUILD_WITH_INSTALL_RPATH ON
             INSTALL_RPATH "@loader_path;@executable_path"
+            INSTALL_RPATH_USE_LINK_PATH OFF
         )
     elseif(UNIX AND NOT APPLE)
         set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-            BUILD_WITH_INSTALL_RPATH OFF
+            BUILD_WITH_INSTALL_RPATH ON
             INSTALL_RPATH "$ORIGIN"
+            INSTALL_RPATH_USE_LINK_PATH OFF
         )
     endif()
-    
+
     # ==========================================
     # Include directories
     # ==========================================
@@ -144,7 +146,7 @@ function(BuildQtModule)
         TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}
         TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
     )
-    
+
     # ==========================================
     # Link libraries
     # ==========================================
@@ -162,7 +164,7 @@ function(BuildQtModule)
     if(MODULE_TARGET_ADD_DEPENDENCIES)
         add_dependencies(${MODULE_MODULE_NAME} ${MODULE_TARGET_ADD_DEPENDENCIES})
     endif()
-    
+
     if(MODULE_TARGET_DEFINITIONS)
         target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
     endif()
@@ -236,7 +238,7 @@ function(BuildQtModule)
             FOLDER_NAME
                 ${MODULE_IDE_FOLDER}/internalTargets
         )
-        
+
         # Link plugin for static library
         target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
         if(NOT is_shared_lib)
@@ -254,7 +256,7 @@ function(BuildQtModule)
             MODULE_NAME ${MODULE_MODULE_NAME}
         )
     endif()
-    
+
     if(WIN32)
         target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
         if(is_shared_lib)

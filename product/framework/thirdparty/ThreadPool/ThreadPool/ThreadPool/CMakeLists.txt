@@ -13,7 +13,7 @@ project(${MODULE_NAME} VERSION ${ThreadPool_VERSION_MAJOR}.${ThreadPool_VERSION_
 
 configure_file(ThreadPoolConfig.h.in ThreadPoolConfig.h)
 
-set(TARGET_SOURCE_PRIVATE 
+set(TARGET_SOURCE_PRIVATE
         src/ThreadPool.h
         src/ThreadPool.cpp
 )
@@ -29,7 +29,7 @@ add_library(${MODULE_NAME} SHARED  "")
 
 target_sources(${MODULE_NAME}
         PRIVATE ${TARGET_SOURCE_PRIVATE}
-        PUBLIC FILE_SET HEADERS 
+        PUBLIC FILE_SET HEADERS
         BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
         FILES ${TARGET_SOURCE_PUBLIC_HEADER}
 )
@@ -44,25 +44,27 @@ endif(WIN32)
 if(APPLE)
     set_target_properties(${MODULE_NAME} PROPERTIES
         INSTALL_NAME_DIR "@rpath"
-        BUILD_WITH_INSTALL_RPATH OFF
+        BUILD_WITH_INSTALL_RPATH ON
         INSTALL_RPATH "@loader_path;@executable_path"
+        INSTALL_RPATH_USE_LINK_PATH OFF
     )
 elseif(UNIX AND NOT APPLE)
     set_target_properties(${MODULE_NAME} PROPERTIES
-        BUILD_WITH_INSTALL_RPATH OFF
+        BUILD_WITH_INSTALL_RPATH ON
         INSTALL_RPATH "$ORIGIN"
+        INSTALL_RPATH_USE_LINK_PATH OFF
     )
 endif()
 
-target_include_directories(${MODULE_NAME} PUBLIC 
+target_include_directories(${MODULE_NAME} PUBLIC
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                 $<INSTALL_INTERFACE:${MODULE_NAME}/include>
                                 PRIVATE src  ${PROJECT_BINARY_DIR}
 )
 
-## install 
+## install
 if (UNIX)
-    install(TARGETS ${MODULE_NAME} 
+    install(TARGETS ${MODULE_NAME}
             EXPORT ${MODULE_NAME}Targets
     	    RUNTIME DESTINATION bin
     	    LIBRARY DESTINATION bin
@@ -71,7 +73,7 @@ if (UNIX)
             INCLUDES DESTINATION include
     )
 else()
-    install(TARGETS ${MODULE_NAME} 
+    install(TARGETS ${MODULE_NAME}
             EXPORT ${MODULE_NAME}Targets
     	    RUNTIME DESTINATION bin
     	    LIBRARY DESTINATION lib
@@ -81,8 +83,8 @@ else()
     )
 endif()
 
-install(EXPORT ${MODULE_NAME}Targets 
-        FILE ${MODULE_NAME}Config.cmake 
+install(EXPORT ${MODULE_NAME}Targets
+        FILE ${MODULE_NAME}Config.cmake
         DESTINATION cmake/${MODULE_NAME}
         NAMESPACE ${ExportProjectNameSpace}::
         )
