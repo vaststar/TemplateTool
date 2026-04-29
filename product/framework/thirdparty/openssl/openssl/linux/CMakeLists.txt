@@ -61,7 +61,14 @@ endif()
 # Create interface library
 add_library(openssl INTERFACE)
 target_include_directories(openssl INTERFACE "${SSL_INCLUDE}")
-target_link_libraries(openssl INTERFACE "${SSL_CRYPTO_LIB}" "${SSL_SSL_LIB}")
+# Wrap with --no-as-needed so libssl/libcrypto stay in DT_NEEDED of every
+# consumer (e.g. LibCurlClient). Otherwise ld --as-needed drops them and the
+# loader has to find them via libcurl's own RUNPATH ($ORIGIN), which fails.
+target_link_libraries(openssl INTERFACE
+    "-Wl,--push-state,--no-as-needed"
+    "${SSL_CRYPTO_LIB}" "${SSL_SSL_LIB}"
+    "-Wl,--pop-state"
+)
 
 if(TARGET copy_ssl)
     add_dependencies(openssl copy_ssl)
