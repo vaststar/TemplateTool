@@ -34,6 +34,14 @@
       "platform": "windows"
     },
     {
+      "path": "ffmpeg/ffmpeg/windows/arm64/ffmpeg.exe",
+      "platform": "windows"
+    },
+    {
+      "path": "ffmpeg/ffmpeg/windows/arm64/ffprobe.exe",
+      "platform": "windows"
+    },
+    {
       "path": "ffmpeg/ffmpeg/linux/x64/ffmpeg",
       "platform": "linux"
     },
