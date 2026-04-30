@@ -13,6 +13,7 @@
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 #include <QGuiApplication>
+#include <QIcon>
 #include <QStyleHints>
 #include <QTimer>
 
@@ -36,6 +37,24 @@ void AppUIController::init()
 {
     UIVIEW_LOG_DEBUG("init AppUIController start");
     auto appContext = getAppContext();
+
+    // Set the application-wide window icon. All QWindows created afterwards
+    // (main window, dialogs, message boxes) inherit it via QGuiApplication's
+    // windowIcon(), which fixes the blank/default icon shown on the Windows
+    // taskbar for child windows like MessageDialog.
+    if (auto* loader = appContext->getManagerProvider()->getUIResourceLoaderManager())
+    {
+        const QString iconPath = loader->getImageResourcePath(
+            UIAssetImageToken::AssetImageToken::Logo);
+        if (!iconPath.isEmpty())
+        {
+            QGuiApplication::setWindowIcon(QIcon(iconPath));
+        }
+        else
+        {
+            UIVIEW_LOG_WARN("Logo resource path is empty; window icon not set");
+        }
+    }
 
     // Create ViewModel and connect signals
     mAppUIViewModel = appContext->getViewModelFactory()->createAppUIViewModelInstance();
