@@ -12,7 +12,7 @@
 #include <UIIPCChannel/UIIPCClient.h>
 #include "LoggerDefine.h"
 
-#include "AppUIManager/include/AppUIManager.h"
+#include <AppUIManager/AppUIManager.h>
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ int Main::DataPrivate::runApp(int argc, char *argv[])
         runResult = AppUIManager.runApp();
     }
     MAINUI_LOG_DEBUG("===========mainApp run result:" << runResult << "=======");
-    
+
     MAINUI_LOG_DEBUG("===========================================");
     MAINUI_LOG_DEBUG("===========start quit mainApp==============");
     MAINUI_LOG_DEBUG("===========================================");

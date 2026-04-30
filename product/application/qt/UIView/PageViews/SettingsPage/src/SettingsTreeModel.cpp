@@ -1,4 +1,4 @@
-#include "PageViews/SettingsPage/include/SettingsTreeModel.h"
+#include "SettingsPage/SettingsTreeModel.h"
 
 #include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
 #include <UIResourceAssetLoader/UIResourceAssetLoader.h>

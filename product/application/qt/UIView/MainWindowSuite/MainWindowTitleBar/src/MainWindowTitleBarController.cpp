@@ -1,4 +1,4 @@
-#include "MainWindowSuite/MainWindowTitleBar/include/MainWindowTitleBarController.h"
+#include "MainWindowTitleBar/MainWindowTitleBarController.h"
 
 #include <AppContext/AppContext.h>
 #include <UIManager/IUIManagerProvider.h>

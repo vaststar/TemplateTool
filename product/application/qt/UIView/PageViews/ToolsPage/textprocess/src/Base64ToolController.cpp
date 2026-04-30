@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/textprocess/include/Base64ToolController.h"
+#include "ToolsPage/textprocess/Base64ToolController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>

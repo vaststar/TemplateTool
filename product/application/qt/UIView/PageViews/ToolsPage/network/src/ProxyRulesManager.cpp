@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
+#include "ToolsPage/network/ProxyRulesManager.h"
 
 #include <QRegularExpression>
 

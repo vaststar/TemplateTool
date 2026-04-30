@@ -1,4 +1,4 @@
-#include "MainWindowSuite/MainWindowMenuBar/include/MainWindowMenuBarController.h"
+#include "MainWindowMenuBar/MainWindowMenuBarController.h"
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>

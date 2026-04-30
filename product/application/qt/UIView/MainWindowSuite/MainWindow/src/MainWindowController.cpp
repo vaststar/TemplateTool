@@ -1,5 +1,5 @@
-#include "MainWindowSuite/MainWindow/include/MainWindowController.h"
-#include "MainWindowSuite/MainWindow/include/MainWindowContentPageRegistry.h"
+#include "MainWindow/MainWindowController.h"
+#include "MainWindow/MainWindowContentPageRegistry.h"
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
@@ -14,18 +14,18 @@
 #include <UIUtilities/UIPlatformUtils.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
+#include "UIViewHelper/UIViewHelper.h"
 
 #include <QCoreApplication>
 
-#include "MediaCameraView/include/MediaCameraViewController.h"
-#include "UIViewCommon/ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
+#include "MediaCameraView/MediaCameraViewController.h"
+#include "ViewModelSingalEmitter/MainWindowViewModelEmitter.h"
 
-#include "PageViews/ContactsPage/include/ContactsPageController.h"
-#include "PageViews/HomePage/include/HomePageController.h"
-#include "PageViews/SettingsPage/include/SettingsPageController.h"
-#include "AppUpgrade/include/AppUpgradeController.h"
-#include "PageViews/AboutPage/include/AboutPageController.h"
+#include "ContactsPage/ContactsPageController.h"
+#include "HomePage/HomePageController.h"
+#include "SettingsPage/SettingsPageController.h"
+#include "AppUpgrade/AppUpgradeController.h"
+#include "AboutPage/AboutPageController.h"
 #include "UIEvents/UIAboutEvent.h"
 #include "UIEvents/UIMainWindowEvent.h"
 

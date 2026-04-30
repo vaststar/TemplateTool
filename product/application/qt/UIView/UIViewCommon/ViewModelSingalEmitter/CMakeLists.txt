@@ -1,16 +1,19 @@
 list(APPEND MODULE_SOURCE_PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/RegisterViewModelMetaTypes.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/MediaCameraViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/InvocationViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/AppUIViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/MainWindowViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/StabilityViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/SideBarViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ToolsViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/SettingsViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/NetworkProxyViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ScreenshotViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/RecordingViewModelEmitter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/UpgradeViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/RegisterViewModelMetaTypes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/InvocationViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/AppUIViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/MainWindowViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/StabilityViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/SideBarViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/ToolsViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/SettingsViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/ScreenshotViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/RecordingViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/UpgradeViewModelEmitter.h
 )
 set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
+
+list(APPEND MODULE_PRIVATE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter)
+set(MODULE_PRIVATE_INCLUDE_DIRS ${MODULE_PRIVATE_INCLUDE_DIRS} PARENT_SCOPE)

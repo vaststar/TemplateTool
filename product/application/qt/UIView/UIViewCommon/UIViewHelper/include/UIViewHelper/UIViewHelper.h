@@ -7,7 +7,7 @@
 #include <QtQuick/QQuickWindow>
 #include <functional>
 
-#include "UIViewCommon/UIViewHelper/include/UIMessageOptions.h"
+#include "UIViewHelper/UIMessageOptions.h"
 
 class QWindow;
 class QScreen;

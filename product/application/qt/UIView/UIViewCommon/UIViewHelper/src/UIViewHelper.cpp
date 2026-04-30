@@ -1,4 +1,4 @@
-#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
+#include "UIViewHelper/UIViewHelper.h"
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>

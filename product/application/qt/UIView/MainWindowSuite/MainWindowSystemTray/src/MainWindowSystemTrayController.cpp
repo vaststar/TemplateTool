@@ -1,4 +1,4 @@
-#include "MainWindowSuite/MainWindowSystemTray/include/MainWindowSystemTrayController.h"
+#include "MainWindowSystemTray/MainWindowSystemTrayController.h"
 
 #include <AppContext/AppContext.h>
 

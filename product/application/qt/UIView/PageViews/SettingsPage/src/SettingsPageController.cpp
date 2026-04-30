@@ -1,4 +1,4 @@
-#include "PageViews/SettingsPage/include/SettingsPageController.h"
+#include "SettingsPage/SettingsPageController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
@@ -6,7 +6,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
-#include "UIViewCommon/ViewModelSingalEmitter/SettingsViewModelEmitter.h"
+#include "ViewModelSingalEmitter/SettingsViewModelEmitter.h"
 
 SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)

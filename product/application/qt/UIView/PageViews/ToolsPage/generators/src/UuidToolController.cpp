@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/generators/include/UuidToolController.h"
+#include "ToolsPage/generators/UuidToolController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>

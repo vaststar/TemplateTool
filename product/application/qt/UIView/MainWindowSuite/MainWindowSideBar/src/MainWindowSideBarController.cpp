@@ -1,11 +1,11 @@
-#include "MainWindowSuite/MainWindowSideBar/include/MainWindowSideBarController.h"
+#include "MainWindowSideBar/MainWindowSideBarController.h"
 
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
 #include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
-#include "UIViewCommon/ViewModelSingalEmitter/SideBarViewModelEmitter.h"
+#include "ViewModelSingalEmitter/SideBarViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIEvents/UIAboutEvent.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"

@@ -1,6 +1,6 @@
-#include "PageViews/ContactsPage/include/ContactsPageController.h"
+#include "ContactsPage/ContactsPageController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
+#include "UIViewHelper/UIViewHelper.h"
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 #include <AppContext/AppContext.h>

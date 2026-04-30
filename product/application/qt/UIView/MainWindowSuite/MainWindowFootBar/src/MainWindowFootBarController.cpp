@@ -1,4 +1,4 @@
-#include "MainWindowSuite/MainWindowFootBar/include/MainWindowFootBarController.h"
+#include "MainWindowFootBar/MainWindowFootBarController.h"
 
 #include <AppContext/AppContext.h>
 

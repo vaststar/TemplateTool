@@ -1,5 +1,5 @@
-#include "PageViews/ToolsPage/textprocess/include/JsonToolController.h"
-#include "PageViews/ToolsPage/textprocess/include/JsonTreeItemModel.h"
+#include "ToolsPage/textprocess/JsonToolController.h"
+#include "ToolsPage/textprocess/JsonTreeItemModel.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>

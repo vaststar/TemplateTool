@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/common/include/ToolsTreeModel.h"
+#include "ToolsPage/common/ToolsTreeModel.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
 

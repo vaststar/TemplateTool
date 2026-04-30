@@ -17,9 +17,9 @@
 #include <QTimer>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
-#include "MainWindowSuite/MainWindow/include/MainWindowController.h"
-#include "UIViewCommon/ViewModelSingalEmitter/AppUIViewModelEmitter.h"
+#include "UIViewHelper/UIViewHelper.h"
+#include "MainWindow/MainWindowController.h"
+#include "ViewModelSingalEmitter/AppUIViewModelEmitter.h"
 #include "UIIPCServerHelper.h"
 #include "UIStabilityMonitor.h"
 

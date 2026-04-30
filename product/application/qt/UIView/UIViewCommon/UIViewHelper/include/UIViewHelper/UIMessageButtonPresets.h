@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIViewCommon/UIViewHelper/include/UIMessageOptions.h"
+#include "UIViewHelper/UIMessageOptions.h"
 
 namespace UIView {
 

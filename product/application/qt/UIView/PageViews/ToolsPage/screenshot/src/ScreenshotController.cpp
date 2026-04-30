@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/screenshot/include/ScreenshotController.h"
+#include "ToolsPage/screenshot/ScreenshotController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIEvents/UIMainWindowEvent.h"
 

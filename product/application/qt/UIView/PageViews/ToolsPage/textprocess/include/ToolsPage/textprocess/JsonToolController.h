@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QtQml>
 #include "UIViewBase/UIViewController.h"
-#include "PageViews/ToolsPage/textprocess/include/JsonTreeItemModel.h"
+#include "ToolsPage/textprocess/JsonTreeItemModel.h"
 
 namespace commonHead::viewModels {
     class IToolsViewModel;

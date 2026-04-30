@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/textprocess/include/JsonTreeItemModel.h"
+#include "ToolsPage/textprocess/JsonTreeItemModel.h"
 
 #include <commonHead/viewModels/JsonTreeViewModel/IJsonTreeModel.h>
 

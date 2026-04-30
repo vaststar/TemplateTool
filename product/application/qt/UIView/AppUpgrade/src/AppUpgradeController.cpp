@@ -1,12 +1,12 @@
-#include "AppUpgrade/include/AppUpgradeController.h"
+#include "AppUpgrade/AppUpgradeController.h"
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
 
-#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
-#include "UIViewCommon/ViewModelSingalEmitter/UpgradeViewModelEmitter.h"
+#include "UIViewHelper/UIViewHelper.h"
+#include "ViewModelSingalEmitter/UpgradeViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 

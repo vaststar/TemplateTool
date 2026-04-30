@@ -1,4 +1,4 @@
-#include "AppUIManager/include/AppUIManager.h"
+#include "AppUIManager/AppUIManager.h"
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 // #include "UIViewBase/UIViewControllerInitializer.h"
 #include "AppUIController.h"
-#include "UIViewCommon/ViewModelSingalEmitter/RegisterViewModelMetaTypes.h"
+#include "ViewModelSingalEmitter/RegisterViewModelMetaTypes.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-#include "PageViews/SettingsPage/include/AppearanceSettingsController.h"
+#include "SettingsPage/AppearanceSettingsController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>

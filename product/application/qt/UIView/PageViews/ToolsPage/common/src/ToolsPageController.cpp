@@ -1,5 +1,5 @@
-#include "PageViews/ToolsPage/common/include/ToolsPageController.h"
-#include "PageViews/ToolsPage/common/include/ToolsTreeModel.h"
+#include "ToolsPage/common/ToolsPageController.h"
+#include "ToolsPage/common/ToolsTreeModel.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
@@ -7,7 +7,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
-#include "UIViewCommon/ViewModelSingalEmitter/ToolsViewModelEmitter.h"
+#include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
 
 ToolsPageController::ToolsPageController(QObject* parent)
     : UIViewController(parent)

@@ -6,9 +6,9 @@
 #include <QJsonArray>
 #include <memory>
 #include "UIViewBase/UIViewController.h"
-#include "PageViews/ToolsPage/network/include/ProxyRequestModel.h"
-#include "PageViews/ToolsPage/network/include/ProxyRulesManager.h"
-#include "UIViewCommon/ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h"
+#include "ToolsPage/network/ProxyRequestModel.h"
+#include "ToolsPage/network/ProxyRulesManager.h"
+#include "ViewModelSingalEmitter/NetworkProxyViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class INetworkProxyViewModel;

@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/recording/include/RecordingController.h"
+#include "ToolsPage/recording/RecordingController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <AppContext/AppContext.h>

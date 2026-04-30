@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <AppUIManager/include/AppUIExport.h>
+#include <AppUIManager/AppUIExport.h>
 
 namespace commonHead{
     class ICommonHeadFramework;

@@ -1,4 +1,4 @@
-#include "PageViews/SettingsPage/include/LanguageSettingsController.h"
+#include "SettingsPage/LanguageSettingsController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>

@@ -1,4 +1,4 @@
-#include "PageViews/AboutPage/include/AboutPageController.h"
+#include "AboutPage/AboutPageController.h"
 
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>

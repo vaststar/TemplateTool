@@ -1,11 +1,11 @@
-#include "MediaCameraView/include/MediaCameraViewController.h"
+#include "MediaCameraView/MediaCameraViewController.h"
 
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 
-#include "UIViewCommon/ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
+#include "ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 

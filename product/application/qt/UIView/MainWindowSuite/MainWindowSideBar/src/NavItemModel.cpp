@@ -1,4 +1,4 @@
-#include "MainWindowSuite/MainWindowSideBar/include/NavItemModel.h"
+#include "MainWindowSideBar/NavItemModel.h"
 
 #include <UIResourceAssetLoader/UIResourceAssetLoader.h>
 

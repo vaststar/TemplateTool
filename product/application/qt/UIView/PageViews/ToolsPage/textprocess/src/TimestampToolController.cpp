@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/textprocess/include/TimestampToolController.h"
+#include "ToolsPage/textprocess/TimestampToolController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>

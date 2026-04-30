@@ -1,4 +1,4 @@
-#include "MainWindowSuite/MainWindow/include/MainWindowContentPageRegistry.h"
+#include "MainWindow/MainWindowContentPageRegistry.h"
 
 #include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 

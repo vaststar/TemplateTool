@@ -1,4 +1,4 @@
-#include "PageViews/ToolsPage/common/include/ToolsPanelRegistry.h"
+#include "ToolsPage/common/ToolsPanelRegistry.h"
 
 #include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
 

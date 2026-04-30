@@ -1,8 +1,8 @@
-#include "PageViews/HomePage/include/HomePageController.h"
+#include "HomePage/HomePageController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewCommon/UIViewHelper/include/UIViewHelper.h"
-#include "UIViewCommon/UIViewHelper/include/UIMessageOptions.h"
-#include "MediaCameraView/include/MediaCameraViewController.h"
+#include "UIViewHelper/UIViewHelper.h"
+#include "UIViewHelper/UIMessageOptions.h"
+#include "MediaCameraView/MediaCameraViewController.h"
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
