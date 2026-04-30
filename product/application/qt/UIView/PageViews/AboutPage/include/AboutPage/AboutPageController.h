@@ -16,6 +16,7 @@ class AboutPageController : public UIViewController
     QML_ELEMENT
     Q_PROPERTY(QString productName READ productName NOTIFY infoReady)
     Q_PROPERTY(QString version READ version NOTIFY infoReady)
+    Q_PROPERTY(QString qtVersion READ qtVersion CONSTANT)
     Q_PROPERTY(QString companyName READ companyName NOTIFY infoReady)
     Q_PROPERTY(QString copyright READ copyright NOTIFY infoReady)
     Q_PROPERTY(QString description READ description NOTIFY infoReady)
@@ -26,6 +27,7 @@ public:
 
     QString productName() const;
     QString version() const;
+    QString qtVersion() const;
     QString companyName() const;
     QString copyright() const;
     QString description() const;

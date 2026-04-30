@@ -9,12 +9,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="39"/>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="68"/>
         <source>Version %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="84"/>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="100"/>
+        <source>Qt Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="101"/>
+        <source>Company</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="102"/>
+        <source>Copyright</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/AboutPage/qml/AboutDialog.qml" line="115"/>
         <source>OK</source>
         <translation type="unfinished">ok</translation>
     </message>

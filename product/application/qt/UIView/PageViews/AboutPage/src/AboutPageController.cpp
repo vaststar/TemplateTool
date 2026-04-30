@@ -42,6 +42,11 @@ QString AboutPageController::version() const
     return {};
 }
 
+QString AboutPageController::qtVersion() const
+{
+    return QStringLiteral(QT_VERSION_STR);
+}
+
 QString AboutPageController::companyName() const
 {
     if (m_clientInfoViewModel)

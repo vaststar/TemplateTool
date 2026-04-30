@@ -286,6 +286,20 @@ void UIViewHelper::showMessageAsync(AppContext& appContext,
         bridge->metaObject()->indexOfSlot("onAccepted(int)"));
     QObject::connect(win.data(), sig, bridge, slot);
 
+    // Mark the dialog as owned by `parent` so that:
+    //   * Windows: no separate taskbar entry; the dialog inherits the parent's
+    //     window icon (avoids the "blank icon" issue).
+    //   * macOS / Linux: appropriate stacking and modality semantics.
+    // Falls back to any visible top-level window when no explicit parent is
+    // given, mirroring centerOnParentWhenShown()'s behaviour.
+    QWindow* parentWindow = normalized.parent
+        ? normalized.parent
+        : findFallbackParent(win.data());
+    if (parentWindow)
+    {
+        win->setTransientParent(parentWindow);
+    }
+
     centerOnParentWhenShown(win.data(), normalized.parent);
     win->show();
 }
