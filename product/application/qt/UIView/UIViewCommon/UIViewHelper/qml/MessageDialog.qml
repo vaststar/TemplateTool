@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
@@ -28,8 +29,29 @@ UTDialog {
     property string titleText:   ""
     property string messageText: ""
     property string detailText:  ""
-    property int    iconKind:    0       // 0=None,1=Info,2=Warning,3=Error,4=Question
+    property int    iconKind:    0       // matches UIView::UIMessageIcon (0=None,1=Info,2=Warning,3=Error,4=Question,5=Success)
     property var    buttonsModel: []     // [{ text, tooltip, role, isDefault, isCancel, enabled }, ...]
+
+    // iconKind (UIMessageIcon) -> AssetImageToken. Keep in sync with
+    // UIMessageOptions.h's enum order.
+    readonly property var _iconTokenMap: ({
+        1: UIAssetImageToken.Msg_Info,
+        2: UIAssetImageToken.Msg_Warning,
+        3: UIAssetImageToken.Msg_Error,
+        4: UIAssetImageToken.Msg_Question,
+        5: UIAssetImageToken.Msg_Success,
+    })
+
+    // iconKind (UIMessageIcon) -> tint color applied via ColorOverlay. The
+    // source SVGs (Material Design Icons) are intentionally unfilled so the
+    // consumer (this dialog) can colorize them per semantic.
+    readonly property var _iconColorMap: ({
+        1: "#2196F3",  // Info     - blue
+        2: "#FB8C00",  // Warning  - orange
+        3: "#E53935",  // Error    - red
+        4: "#7E57C2",  // Question - purple
+        5: "#43A047",  // Success  - green
+    })
 
     signal accepted(int index)
 
@@ -76,19 +98,67 @@ UTDialog {
         anchors.margins: 24
         spacing: 16
 
-        UTText {
-            visible: dialog.messageText.length > 0
-            text: dialog.messageText
-            wrapMode: Text.WordWrap
+        RowLayout {
             Layout.fillWidth: true
-        }
+            spacing: 16
 
-        UTText {
-            visible: dialog.detailText.length > 0
-            text: dialog.detailText
-            wrapMode: Text.WordWrap
-            opacity: 0.75
-            Layout.fillWidth: true
+            Item {
+                visible: dialog.iconKind !== 0
+                                 && iconImage.source.toString().length > 0
+                Layout.preferredWidth:  32
+                Layout.preferredHeight: 32
+                Layout.alignment: Qt.AlignTop
+
+                Image {
+                    id: iconImage
+                    anchors.fill: parent
+                    source: {
+                        var token = dialog._iconTokenMap[dialog.iconKind]
+                        return token ? UTComponentUtil.getImageResourcePath(token) : ""
+                    }
+                    sourceSize.width:  32
+                    sourceSize.height: 32
+                    fillMode: Image.PreserveAspectFit
+                    visible: false
+                    layer.enabled: true
+                }
+
+                // Tint the (unfilled) MDI SVG per semantic.
+                // brightness: 1.0   -> first push the black source to white,
+                //                       preserving alpha (icon shape).
+                // colorization: 1.0 -> then HSL-tint the now-white pixels to
+                //                       the target color.
+                // This works around MultiEffect.colorization preserving the
+                // source's HSL lightness (which leaves a pure-black source
+                // black no matter the colorizationColor).
+                MultiEffect {
+                    anchors.fill: parent
+                    source: iconImage
+                    brightness: 1.0
+                    colorization: 1.0
+                    colorizationColor: dialog._iconColorMap[dialog.iconKind] || "#000000"
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                UTText {
+                    visible: dialog.messageText.length > 0
+                    text: dialog.messageText
+                    wrapMode: Text.WordWrap
+                    Layout.fillWidth: true
+                }
+
+                UTText {
+                    visible: dialog.detailText.length > 0
+                    text: dialog.detailText
+                    wrapMode: Text.WordWrap
+                    opacity: 0.75
+                    Layout.fillWidth: true
+                }
+            }
         }
 
         Item { Layout.fillHeight: true }

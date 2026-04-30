@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QtQml>
-#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewBase/UIViewController.h"
 #include "SettingsTreeModel.h"
 #include "UIViewCommon/ViewModelSingalEmitter/SettingsViewModelEmitter.h"
 

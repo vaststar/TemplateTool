@@ -2,6 +2,8 @@
 
 #include <QtCore/QString>
 #include <QtCore/QVariant>
+#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickView>
 #include <QtQuick/QQuickWindow>
 #include <functional>
 
@@ -48,6 +50,14 @@ public:
 
     // Reads the QML `controller` property from `window` and qobject_casts to T.
     // Returns nullptr on any mismatch.
+    //
+    // Resolution order:
+    //   1. window->property("controller")  — for Window-as-root QMLs created
+    //      via IUIViewFactory::createQmlWindow().
+    //   2. If `window` is a QQuickView, fall back to its rootObject()'s
+    //      `controller` property — for Item-as-root QMLs created via
+    //      IUIViewFactory::createQmlItemWindow(). In that case `controller`
+    //      should be declared as a property of the root Item.
     template <typename T = UIAppCore::UIController>
     static T* controllerOf(QQuickWindow* window);
 
@@ -72,7 +82,19 @@ T* UIViewHelper::controllerOf(QQuickWindow* window)
     {
         return nullptr;
     }
-    const QVariant v = window->property("controller");
+    QVariant v = window->property("controller");
+    if (!v.isValid())
+    {
+        // Item-as-root path: controller lives on the root Item, not on the
+        // QQuickView container.
+        if (auto* view = qobject_cast<QQuickView*>(window))
+        {
+            if (auto* root = view->rootObject())
+            {
+                v = root->property("controller");
+            }
+        }
+    }
     if (!v.isValid())
     {
         return nullptr;

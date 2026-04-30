@@ -109,6 +109,19 @@
     </message>
 </context>
 <context>
+    <name>HomePage</name>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="48"/>
+        <source>Show Test Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="56"/>
+        <source>Open Camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>JsonPanel</name>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/qml/JsonPanel.qml" line="28"/>
@@ -1018,11 +1031,28 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="32"/>
+        <source>Test Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
+        <source>This is a UIViewHelper::showMessageAsync test.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="34"/>
+        <source>Click any button to dismiss the dialog.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
         <translation>ok</translation>
     </message>
     <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="38"/>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="17"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>

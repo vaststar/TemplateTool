@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QtQml>
-#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewBase/UIViewController.h"
 
 namespace commonHead::viewModels {
     class IClientInfoViewModel;

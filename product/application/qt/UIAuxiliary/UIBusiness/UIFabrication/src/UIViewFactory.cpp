@@ -2,6 +2,8 @@
 #include <UIAppCore/UIQmlEngine.h>
 
 #include <QQmlComponent>
+#include <QQuickItem>
+#include <QQuickView>
 #include <QQuickWindow>
 
 #include "LoggerDefine.h"
@@ -104,6 +106,70 @@ QPointer<QQuickWindow> UIViewFactory::createQmlWindow(const QString& qmlResource
                           << ", objectName: " << window->objectName().toStdString());
     installCloseHandler(window);
     return window;
+}
+
+QPointer<QQuickWindow> UIViewFactory::createQmlItemWindow(const QString& qmlResource,
+                                                          const QVariantMap& initialProperties)
+{
+    if (!mQmlEngine)
+    {
+        UIFabrication_LOG_WARN("no qml engine");
+        return nullptr;
+    }
+    if (qmlResource.isEmpty())
+    {
+        UIFabrication_LOG_WARN("empty qmlResource url");
+        return nullptr;
+    }
+
+    const QString actualQmlResource = generateQmlResourcePath(qmlResource);
+
+    // QQuickView shares the provided engine (its import paths, singletons,
+    // etc.). setInitialProperties() must be called BEFORE setSource() so the
+    // values are visible inside the root Item's Component.onCompleted.
+    auto* view = new QQuickView(mQmlEngine.get(), /*parent*/ nullptr);
+    view->setResizeMode(QQuickView::SizeViewToRootObject);
+    if (!initialProperties.isEmpty())
+    {
+        view->setInitialProperties(initialProperties);
+    }
+    view->setSource(QUrl(actualQmlResource));
+
+    if (view->status() != QQuickView::Ready)
+    {
+        QString errs;
+        for (const auto& e : view->errors())
+        {
+            errs += e.toString() + QStringLiteral("; ");
+        }
+        UIFabrication_LOG_WARN("load qml failed: " << actualQmlResource.toStdString()
+                              << ", error: " << errs.toStdString());
+        delete view;
+        return nullptr;
+    }
+
+    QQuickItem* root = view->rootObject();
+    if (!root)
+    {
+        UIFabrication_LOG_WARN("qml root is null: " << actualQmlResource.toStdString());
+        delete view;
+        return nullptr;
+    }
+    // Defensive: a Window-as-root would have been rejected by QQuickView
+    // already (status != Ready), but the explicit check keeps the contract
+    // visible in the logs.
+    if (qobject_cast<QQuickWindow*>(root))
+    {
+        UIFabrication_LOG_WARN("qml root is a Window; use createQmlWindow() instead: "
+                              << actualQmlResource.toStdString());
+        delete view;
+        return nullptr;
+    }
+
+    UIFabrication_LOG_DEBUG("item-window created: " << actualQmlResource.toStdString()
+                          << ", rootObjectName: " << root->objectName().toStdString());
+    installCloseHandler(view);
+    return view;
 }
 
 }

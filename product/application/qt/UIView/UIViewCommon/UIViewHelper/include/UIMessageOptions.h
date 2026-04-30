@@ -14,6 +14,7 @@ enum class UIMessageIcon
     Warning,
     Error,
     Question,
+    Success,
 };
 
 enum class UIButtonRole

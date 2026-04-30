@@ -5,7 +5,7 @@
 #include <QtQml>
 #include <QColor>
 
-#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewBase/UIViewController.h"
 
 class AppContext;
 class MainWindowTitleBarController: public UIViewController

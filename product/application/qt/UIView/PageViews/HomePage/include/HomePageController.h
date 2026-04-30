@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QtQml>
-#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewBase/UIViewController.h"
 
 class HomePageController : public UIViewController
 {
@@ -11,6 +11,9 @@ class HomePageController : public UIViewController
 
 public:
     explicit HomePageController(QObject* parent = nullptr);
+
+    Q_INVOKABLE void showTestMessage();
+    Q_INVOKABLE void openCamera();
 
 protected:
     void init() override;

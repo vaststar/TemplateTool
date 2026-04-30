@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QtQml>
-#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewBase/UIViewController.h"
 
 class MainWindowFootBarController: public UIViewController
 {

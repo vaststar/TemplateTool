@@ -21,6 +21,9 @@ public:
     QPointer<QQuickWindow> createQmlWindow(const QString& qmlResource,
                                            const QVariantMap& initialProperties = {}) override;
 
+    QPointer<QQuickWindow> createQmlItemWindow(const QString& qmlResource,
+                                               const QVariantMap& initialProperties = {}) override;
+
 private:
     QString getQRCPrefixPath() const;
     QString generateQmlResourcePath(const QString& qmlResource) const;

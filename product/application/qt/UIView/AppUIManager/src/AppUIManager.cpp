@@ -13,7 +13,7 @@
 #include <UTComposite/UTComposite.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-// #include "UIViewCommon/UIViewBase/include/UIViewControllerInitializer.h"
+// #include "UIViewBase/UIViewControllerInitializer.h"
 #include "AppUIController.h"
 #include "UIViewCommon/ViewModelSingalEmitter/RegisterViewModelMetaTypes.h"
 

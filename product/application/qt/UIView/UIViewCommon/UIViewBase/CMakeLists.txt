@@ -1,6 +1,6 @@
 list(APPEND MODULE_SOURCE_PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewController.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewControllerInitializer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewBase/UIViewController.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewBase/UIViewControllerInitializer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UIViewController.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UIViewControllerInitializer.cpp
 )

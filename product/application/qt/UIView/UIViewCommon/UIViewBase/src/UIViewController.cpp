@@ -1,4 +1,4 @@
-#include "UIViewCommon/UIViewBase/include/UIViewController.h"
+#include "UIViewBase/UIViewController.h"
 
 #include <AppContext/AppContext.h>
 #include <UIManager/IUIManagerProvider.h>

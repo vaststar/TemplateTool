@@ -97,6 +97,36 @@
         "path": "assets/images/nav_icons/nav_settings_selected.svg",
         "format": "svg",
         "animated": false
+      },
+      {
+        "token": "msg_info",
+        "path": "assets/images/message_icons/msg_info.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "msg_warning",
+        "path": "assets/images/message_icons/msg_warning.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "msg_error",
+        "path": "assets/images/message_icons/msg_error.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "msg_question",
+        "path": "assets/images/message_icons/msg_question.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "msg_success",
+        "path": "assets/images/message_icons/msg_success.svg",
+        "format": "svg",
+        "animated": false
       }
     ],
     "videos": [

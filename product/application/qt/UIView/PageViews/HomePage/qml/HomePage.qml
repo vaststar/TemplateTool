@@ -40,5 +40,21 @@ Item {
             activeFocusOnTab: true
             onLinkActivated: (link) => Qt.openUrlExternally(link)
         }
+
+        UTButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 200
+            height: 36
+            text: qsTr("Show Test Message")
+            onClicked: homePage.controller.showTestMessage()
+        }
+
+        UTButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 200
+            height: 36
+            text: qsTr("Open Camera")
+            onClicked: homePage.controller.openCamera()
+        }
     }
 }
