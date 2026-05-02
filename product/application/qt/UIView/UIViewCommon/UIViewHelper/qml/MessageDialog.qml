@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import UTComponent 1.0
 import UIResourceLoader 1.0
-
 /**
  * MessageDialog - Generic message dialog used by UIViewHelper::showMessageAsync.
  *
@@ -22,18 +21,16 @@ import UIResourceLoader 1.0
  *   - Escape         -> button with isCancel  === true (if any), else accepted(-1)
  *   - Window close   -> same as Escape
  */
+
 UTDialog {
     id: dialog
 
-    // Injected by C++.
-    property string titleText:   ""
+    property string titleText: ""
     property string messageText: ""
-    property string detailText:  ""
-    property int    iconKind:    0       // matches UIView::UIMessageIcon (0=None,1=Info,2=Warning,3=Error,4=Question,5=Success)
-    property var    buttonsModel: []     // [{ text, tooltip, role, isDefault, isCancel, enabled }, ...]
+    property string detailText: ""
+    property int iconKind: 0
+    property var buttonsModel: []
 
-    // iconKind (UIMessageIcon) -> AssetImageToken. Keep in sync with
-    // UIMessageOptions.h's enum order.
     readonly property var _iconTokenMap: ({
         1: UIAssetImageToken.Msg_Info,
         2: UIAssetImageToken.Msg_Warning,
@@ -42,15 +39,12 @@ UTDialog {
         5: UIAssetImageToken.Msg_Success,
     })
 
-    // iconKind (UIMessageIcon) -> tint color applied via ColorOverlay. The
-    // source SVGs (Material Design Icons) are intentionally unfilled so the
-    // consumer (this dialog) can colorize them per semantic.
     readonly property var _iconColorMap: ({
-        1: "#2196F3",  // Info     - blue
-        2: "#FB8C00",  // Warning  - orange
-        3: "#E53935",  // Error    - red
-        4: "#7E57C2",  // Question - purple
-        5: "#43A047",  // Success  - green
+        1: "#2196F3",
+        2: "#FB8C00",
+        3: "#E53935",
+        4: "#7E57C2",
+        5: "#43A047",
     })
 
     signal accepted(int index)
@@ -61,7 +55,6 @@ UTDialog {
     minimumWidth: 360
     minimumHeight: 180
 
-    // Cancel index resolved once from buttonsModel; -1 means no cancel button.
     readonly property int cancelIndex: {
         for (var i = 0; i < buttonsModel.length; ++i) {
             if (buttonsModel[i].isCancel === true) return i
@@ -69,8 +62,6 @@ UTDialog {
         return -1
     }
 
-    // Guard: emit accepted() at most once even if both a button click and a
-    // window-close event arrive.
     property bool _emitted: false
 
     function _emit(idx) {
@@ -98,16 +89,26 @@ UTDialog {
         anchors.margins: 24
         spacing: 16
 
+        UTText {
+            visible: messageText.length > 0
+            text: messageText
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            horizontalAlignment: Qt.AlignHCenter
+        }
+
         RowLayout {
             Layout.fillWidth: true
+            Layout.fillHeight: true
             spacing: 16
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
 
             Item {
-                visible: dialog.iconKind !== 0
-                                 && iconImage.source.toString().length > 0
-                Layout.preferredWidth:  32
+                visible: dialog.iconKind !== 0 && iconImage.source.toString().length > 0
+                Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                Layout.alignment: Qt.AlignTop
+                Layout.alignment: Qt.AlignLeft
 
                 Image {
                     id: iconImage
@@ -116,21 +117,13 @@ UTDialog {
                         var token = dialog._iconTokenMap[dialog.iconKind]
                         return token ? UTComponentUtil.getImageResourcePath(token) : ""
                     }
-                    sourceSize.width:  32
+                    sourceSize.width: 32
                     sourceSize.height: 32
                     fillMode: Image.PreserveAspectFit
                     visible: false
                     layer.enabled: true
                 }
 
-                // Tint the (unfilled) MDI SVG per semantic.
-                // brightness: 1.0   -> first push the black source to white,
-                //                       preserving alpha (icon shape).
-                // colorization: 1.0 -> then HSL-tint the now-white pixels to
-                //                       the target color.
-                // This works around MultiEffect.colorization preserving the
-                // source's HSL lightness (which leaves a pure-black source
-                // black no matter the colorizationColor).
                 MultiEffect {
                     anchors.fill: parent
                     source: iconImage
@@ -140,47 +133,33 @@ UTDialog {
                 }
             }
 
-            ColumnLayout {
+            UTText {
+                text: detailText
+                wrapMode: Text.WordWrap
+                opacity: 0.75
                 Layout.fillWidth: true
-                spacing: 8
-
-                UTText {
-                    visible: dialog.messageText.length > 0
-                    text: dialog.messageText
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-
-                UTText {
-                    visible: dialog.detailText.length > 0
-                    text: dialog.detailText
-                    wrapMode: Text.WordWrap
-                    opacity: 0.75
-                    Layout.fillWidth: true
-                }
+                Layout.alignment: Qt.AlignLeft
             }
         }
-
-        Item { Layout.fillHeight: true }
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: 12
 
             Repeater {
-                model: dialog.buttonsModel
+                model: buttonsModel
 
                 UTButton {
                     required property var modelData
                     required property int index
 
-                    text:            modelData.text
-                    enabled:         modelData.enabled
-                    ToolTip.text:    modelData.tooltip
+                    text: modelData.text
+                    enabled: modelData.enabled
+                    ToolTip.text: modelData.tooltip
                     ToolTip.visible: hovered && modelData.tooltip.length > 0
 
                     Keys.onReturnPressed: if (modelData.isDefault) dialog._emit(index)
-                    Keys.onEnterPressed:  if (modelData.isDefault) dialog._emit(index)
+                    Keys.onEnterPressed: if (modelData.isDefault) dialog._emit(index)
 
                     onClicked: dialog._emit(index)
 

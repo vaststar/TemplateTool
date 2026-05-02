@@ -24,7 +24,7 @@ Window {
 
     visible: true
     modality: Qt.ApplicationModal
-    flags: Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint
+    flags: Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.Tool
 
     color: UTComponentUtil.getPlainUIColor(dialog.backgroundColorEnum, UIColorState.Normal)
 
