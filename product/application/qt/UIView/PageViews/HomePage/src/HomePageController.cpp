@@ -1,7 +1,7 @@
 #include "HomePage/HomePageController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
-#include "UIViewHelper/UIMessageOptions.h"
+#include <UTMessageDialog/UTMessageOptions.h>
 #include "MediaCameraView/MediaCameraViewController.h"
 
 #include <AppContext/AppContext.h>
@@ -28,18 +28,18 @@ void HomePageController::showTestMessage()
         return;
     }
 
-    UIView::UIMessageOptions opts;
+    UTMessageOptions opts;
     opts.title   = QObject::tr("Test Message");
     opts.message = QObject::tr("This is a UIViewHelper::showMessageAsync test.");
     opts.detail  = QObject::tr("Click any button to dismiss the dialog.");
-    opts.icon    = UIView::UIMessageIcon::Info;
+    opts.icon    = UTMessageIcon::Info;
     opts.buttons = {
-        UIView::UIMessageButton{ QObject::tr("OK"),     {}, UIView::UIButtonRole::Accept, /*isDefault*/ true,  /*isCancel*/ false },
-        UIView::UIMessageButton{ QObject::tr("Cancel"), {}, UIView::UIButtonRole::Reject, /*isDefault*/ false, /*isCancel*/ true  },
+        UTMessageButton{ QObject::tr("OK"),     {}, UTButtonRole::Accept, /*isDefault*/ true,  /*isCancel*/ false },
+        UTMessageButton{ QObject::tr("Cancel"), {}, UTButtonRole::Reject, /*isDefault*/ false, /*isCancel*/ true  },
     };
 
     UIView::UIViewHelper::showMessageAsync(*ctx, opts,
-        [](const UIView::UIMessageResult& r) {
+        [](const UTMessageResult& r) {
             UIVIEW_LOG_DEBUG("test message closed, buttonIndex=" << r.buttonIndex
                              << ", buttonText=" << r.buttonText.toStdString());
         });

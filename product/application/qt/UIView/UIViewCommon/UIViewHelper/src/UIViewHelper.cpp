@@ -1,18 +1,14 @@
-#include "UIViewHelper/UIViewHelper.h"
+﻿#include "UIViewHelper/UIViewHelper.h"
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
+#include <UTMessageDialog/UTMessageDialogController.h>
 
 #include <QGuiApplication>
-#include <QMetaMethod>
-#include <QMetaObject>
 #include <QPointer>
 #include <QQuickWindow>
 #include <QScreen>
-#include <QStringList>
 #include <QTimer>
-#include <QVariantList>
-#include <QVariantMap>
 #include <QWindow>
 
 #include <memory>
@@ -43,96 +39,6 @@ void positionCenter(QWindow* window, const QRect& reference)
     const int y = reference.y() + (reference.height() - window->height()) / 2;
     window->setPosition(x, y);
 }
-
-// Validates and clamps `isDefault` / `isCancel` to at most one each.
-void normalizeButtons(QList<UIMessageButton>& buttons)
-{
-    int defaultIdx = -1;
-    int cancelIdx  = -1;
-    for (int i = 0; i < buttons.size(); ++i)
-    {
-        if (buttons[i].isDefault)
-        {
-            if (defaultIdx == -1)
-            {
-                defaultIdx = i;
-            }
-            else
-            {
-                UIVIEW_LOG_WARN("UIMessageOptions: multiple isDefault=true; clearing extra at index " << i);
-                Q_ASSERT_X(false, "UIViewHelper::showMessageAsync", "multiple isDefault buttons");
-                buttons[i].isDefault = false;
-            }
-        }
-        if (buttons[i].isCancel)
-        {
-            if (cancelIdx == -1)
-            {
-                cancelIdx = i;
-            }
-            else
-            {
-                UIVIEW_LOG_WARN("UIMessageOptions: multiple isCancel=true; clearing extra at index " << i);
-                Q_ASSERT_X(false, "UIViewHelper::showMessageAsync", "multiple isCancel buttons");
-                buttons[i].isCancel = false;
-            }
-        }
-    }
-}
-
-QVariantList toButtonsModel(const QList<UIMessageButton>& buttons)
-{
-    QVariantList model;
-    model.reserve(buttons.size());
-    for (const auto& b : buttons)
-    {
-        QVariantMap m;
-        m.insert(QStringLiteral("text"),      b.text);
-        m.insert(QStringLiteral("tooltip"),   b.tooltip);
-        m.insert(QStringLiteral("role"),      static_cast<int>(b.role));
-        m.insert(QStringLiteral("isDefault"), b.isDefault);
-        m.insert(QStringLiteral("isCancel"),  b.isCancel);
-        m.insert(QStringLiteral("enabled"),   b.enabled);
-        model.append(m);
-    }
-    return model;
-}
-
-// Lightweight bridge that listens to MessageDialog.qml's `accepted(int)` signal
-// (declared in QML, not in C++) and forwards the result to a std::function.
-//
-// The bridge is parented to the dialog window; when the window is destroyed
-// (closing -> deleteLater), the bridge dies with it.
-class MessageDialogBridge final : public QObject
-{
-    Q_OBJECT
-public:
-    using Callback = std::function<void(int)>;
-
-    MessageDialogBridge(QObject* parent, Callback cb)
-        : QObject(parent)
-        , mCallback(std::move(cb))
-    {
-    }
-
-public slots:
-    void onAccepted(int index)
-    {
-        if (mFired)
-        {
-            return;
-        }
-        mFired = true;
-        if (mCallback)
-        {
-            mCallback(index);
-        }
-    }
-
-private:
-    Callback mCallback;
-    bool     mFired = false;
-};
 
 } // namespace
 
@@ -218,18 +124,16 @@ void UIViewHelper::centerOnScreen(QWindow* window, QScreen* screen)
 }
 
 void UIViewHelper::showMessageAsync(AppContext& appContext,
-                                    const UIMessageOptions& opts,
+                                    const UTMessageOptions& opts,
                                     MessageCallback onClosed)
 {
-    UIMessageOptions normalized = opts;
-    if (normalized.buttons.isEmpty())
+    if (opts.buttons.isEmpty())
     {
         UIVIEW_LOG_WARN("UIViewHelper::showMessageAsync: no buttons; aborting");
         Q_ASSERT_X(false, "UIViewHelper::showMessageAsync", "buttons must not be empty");
         if (onClosed) onClosed({ -1, {} });
         return;
     }
-    normalizeButtons(normalized.buttons);
 
     auto factory = appContext.getViewFactory();
     if (!factory)
@@ -239,52 +143,36 @@ void UIViewHelper::showMessageAsync(AppContext& appContext,
         return;
     }
 
-    QVariantMap initial;
-    initial.insert(QStringLiteral("titleText"),    normalized.title);
-    initial.insert(QStringLiteral("messageText"),  normalized.message);
-    initial.insert(QStringLiteral("detailText"),   normalized.detail);
-    initial.insert(QStringLiteral("iconKind"),     static_cast<int>(normalized.icon));
-    initial.insert(QStringLiteral("buttonsModel"), toButtonsModel(normalized.buttons));
-
+    // The dialog's QML root creates its own UTMessageDialogController, so we
+    // do NOT pass any initialProperties. The window owns the controller via
+    // the QML object tree; both die together when the window closes.
     QPointer<QQuickWindow> win = factory->createQmlWindow(
-        QStringLiteral("UIView/UIViewCommon/UIViewHelper/qml/MessageDialog.qml"),
-        initial);
+        QStringLiteral("UTComposite/UTMessageDialog/UTMessageDialog.qml"));
     if (!win)
     {
-        UIVIEW_LOG_WARN("UIViewHelper::showMessageAsync: failed to create MessageDialog");
+        UIVIEW_LOG_WARN("UIViewHelper::showMessageAsync: failed to create UTMessageDialog");
         if (onClosed) onClosed({ -1, {} });
         return;
     }
 
-    // Snapshot button texts for the result payload.
-    QStringList texts;
-    texts.reserve(normalized.buttons.size());
-    for (const auto& b : normalized.buttons) texts << b.text;
-
-    auto* bridge = new MessageDialogBridge(win.data(),
-        [texts, onClosed](int idx) {
-            UIMessageResult r;
-            r.buttonIndex = idx;
-            if (idx >= 0 && idx < texts.size())
-            {
-                r.buttonText = texts.at(idx);
-            }
-            if (onClosed) onClosed(r);
-        });
-
-    // The QML side declares: signal accepted(int index)
-    const int sigIndex = win->metaObject()->indexOfSignal("accepted(int)");
-    if (sigIndex < 0)
+    auto* controller = controllerOf<UTMessageDialogController>(win.data());
+    if (!controller)
     {
-        UIVIEW_LOG_WARN("UIViewHelper::showMessageAsync: MessageDialog.qml has no accepted(int) signal");
-        if (onClosed) onClosed({ -1, {} });
+        UIVIEW_LOG_WARN("UIViewHelper::showMessageAsync: UTMessageDialog has no UTMessageDialogController");
         win->deleteLater();
+        if (onClosed) onClosed({ -1, {} });
         return;
     }
-    QMetaMethod sig  = win->metaObject()->method(sigIndex);
-    QMetaMethod slot = bridge->metaObject()->method(
-        bridge->metaObject()->indexOfSlot("onAccepted(int)"));
-    QObject::connect(win.data(), sig, bridge, slot);
+
+    controller->setOptions(opts);
+    if (onClosed)
+    {
+        // `controller` is the connection's context: when it is destroyed
+        // (together with `win`), the connection is removed automatically.
+        QObject::connect(controller, &UTMessageDialogController::closed,
+                         controller,
+                         [onClosed](const UTMessageResult& r) { onClosed(r); });
+    }
 
     // Mark the dialog as owned by `parent` so that:
     //   * Windows: no separate taskbar entry; the dialog inherits the parent's
@@ -292,18 +180,16 @@ void UIViewHelper::showMessageAsync(AppContext& appContext,
     //   * macOS / Linux: appropriate stacking and modality semantics.
     // Falls back to any visible top-level window when no explicit parent is
     // given, mirroring centerOnParentWhenShown()'s behaviour.
-    QWindow* parentWindow = normalized.parent
-        ? normalized.parent
+    QWindow* parentWindow = opts.parent
+        ? opts.parent
         : findFallbackParent(win.data());
     if (parentWindow)
     {
         win->setTransientParent(parentWindow);
     }
 
-    centerOnParentWhenShown(win.data(), normalized.parent);
+    centerOnParentWhenShown(win.data(), opts.parent);
     win->show();
 }
 
 } // namespace UIView
-
-#include "UIViewHelper.moc"

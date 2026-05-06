@@ -14,10 +14,14 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(MODULE_HEADER_FILES #for include and install header
     include/UTComposite/UTCompositeExport.h
     include/UTComposite/UTComposite.h
+    UTMessageDialog/UTMessageOptions.h
+    UTMessageDialog/UTMessageButtonPresets.h
+    UTMessageDialog/UTMessageDialogController.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerDefine.h
     src/UTComposite.cpp
+    UTMessageDialog/UTMessageDialogController.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -31,9 +35,15 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UTComponent
 )
 
-set(MODULE_BUILD_INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(MODULE_BUILD_INTERFACE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src)
+set(MODULE_BUILD_PRIVATE_DIR
+    src
+    ${CMAKE_CURRENT_SOURCE_DIR}/UTMessageDialog
+)
 
 set(MODULE_QML_TARGET_URI
     ${MODULE_MODULE_NAME}
@@ -43,6 +53,7 @@ set(MODULE_QML_TARGET_FILES
     UTFolderView/UTFolderViewHeader.qml
     UTFolderView/UTFolderGridDelegate.qml
     UTFolderView/UTFolderDetailDelegate.qml
+    UTMessageDialog/UTMessageDialog.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

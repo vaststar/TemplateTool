@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QtCore/QString>
 #include <QtCore/QList>
+#include <QtCore/QMetaType>
+#include <QtCore/QString>
 
 class QWindow;
 
-namespace UIView {
-
-enum class UIMessageIcon
+enum class UTMessageIcon
 {
     None,
     Info,
@@ -17,7 +16,7 @@ enum class UIMessageIcon
     Success,
 };
 
-enum class UIButtonRole
+enum class UTButtonRole
 {
     Accept,        // Primary action (OK / Save / Yes)
     Reject,        // Cancel-style action (Cancel / No)
@@ -27,32 +26,34 @@ enum class UIButtonRole
 
 // Strongly-typed description of one dialog button.
 //
-// `isDefault` / `isCancel` are validated at runtime by UIViewHelper:
-// at most one of each per dialog. Extra flags are cleared (with assert).
-struct UIMessageButton
+// `isDefault` / `isCancel` are validated at runtime by
+// UTMessageDialogController::setOptions(): at most one of each per dialog.
+// Extra flags are cleared (with assert).
+struct UTMessageButton
 {
     QString      text;
     QString      tooltip;
-    UIButtonRole role      = UIButtonRole::Neutral;
+    UTButtonRole role      = UTButtonRole::Neutral;
     bool         isDefault = false;   // Triggered by Enter
     bool         isCancel  = false;   // Triggered by Esc / window close
     bool         enabled   = true;
 };
 
-struct UIMessageResult
+struct UTMessageResult
 {
-    int     buttonIndex = -1;   // -1: window closed externally with no cancel button
-    QString buttonText;
+    int          buttonIndex = -1;                       // -1: window closed externally with no cancel button
+    QString      buttonText;
+    UTButtonRole role        = UTButtonRole::Neutral;    // Role of the clicked button; meaningless when buttonIndex == -1
 };
 
-struct UIMessageOptions
+struct UTMessageOptions
 {
     QString                title;
     QString                message;
     QString                detail;        // Optional secondary description
-    UIMessageIcon          icon = UIMessageIcon::Info;
-    QList<UIMessageButton> buttons;       // Must contain at least one entry
+    UTMessageIcon          icon = UTMessageIcon::Info;
+    QList<UTMessageButton> buttons;       // Must contain at least one entry
     QWindow*               parent = nullptr;
 };
 
-} // namespace UIView
+Q_DECLARE_METATYPE(UTMessageResult)

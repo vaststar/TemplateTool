@@ -7,7 +7,7 @@
 #include <QtQuick/QQuickWindow>
 #include <functional>
 
-#include "UIViewHelper/UIMessageOptions.h"
+#include <UTMessageDialog/UTMessageOptions.h>
 
 class QWindow;
 class QScreen;
@@ -63,15 +63,19 @@ public:
 
     // ---------- Generic Message Dialog ----------
 
-    using MessageCallback = std::function<void(const UIMessageResult&)>;
+    using MessageCallback = std::function<void(const UTMessageResult&)>;
 
     // Async = the user's button click is delivered via callback.
     // The QML load itself is synchronous.
     //
+    // Lifetime: the dialog window is auto-deleted on close (installCloseHandler
+    // in UIViewFactory). The QML-owned UTMessageDialogController dies with it.
+    // The C++ side never owns either object.
+    //
     // `appContext` provides the IUIViewFactory used to instantiate the dialog.
     // `onClosed` may be empty if the caller does not need the result.
     static void showMessageAsync(AppContext& appContext,
-                                 const UIMessageOptions& opts,
+                                 const UTMessageOptions& opts,
                                  MessageCallback onClosed = {});
 };
 

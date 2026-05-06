@@ -1,11 +1,6 @@
 list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewHelper/UIViewHelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewHelper/UIMessageOptions.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIViewHelper/UIMessageButtonPresets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UIViewHelper.cpp
-)
-list(APPEND MODULE_QML_TARGET_FILES
-    UIViewCommon/UIViewHelper/qml/MessageDialog.qml
 )
 set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
 set(MODULE_QML_TARGET_FILES ${MODULE_QML_TARGET_FILES} PARENT_SCOPE)
