@@ -16,6 +16,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/UTComposite/UTComposite.h
     UTMessageDialog/UTMessageOptions.h
     UTMessageDialog/UTMessageButtonPresets.h
+    UTMessageDialog/UTMessagePresets.h
     UTMessageDialog/UTMessageDialogController.h
 )
 set(MODULE_SOURCE_PRIVATE

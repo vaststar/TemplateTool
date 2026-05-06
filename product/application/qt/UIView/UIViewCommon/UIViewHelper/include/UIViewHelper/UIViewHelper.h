@@ -1,17 +1,13 @@
 #pragma once
 
-#include <QtCore/QString>
+#include <QtCore/QRect>
 #include <QtCore/QVariant>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickView>
 #include <QtQuick/QQuickWindow>
-#include <functional>
-
-#include <UTMessageDialog/UTMessageOptions.h>
 
 class QWindow;
 class QScreen;
-class AppContext;
 
 namespace UIAppCore {
 class UIController;
@@ -19,9 +15,10 @@ class UIController;
 
 namespace UIView {
 
-// Static utilities for UI concerns that cut across views: window geometry,
-// controller extraction from a QML window, and a generic asynchronous
-// message dialog.
+// Static utilities for UI concerns that cut across views: window geometry
+// and controller extraction from a QML window.
+//
+// For message dialogs, see UIViewMessageBoxHelper.
 //
 // All methods must be invoked on the UI thread.
 class UIViewHelper
@@ -61,22 +58,18 @@ public:
     template <typename T = UIAppCore::UIController>
     static T* controllerOf(QQuickWindow* window);
 
-    // ---------- Generic Message Dialog ----------
+    // ---------- Low-level helpers ----------
+    // Exposed so other helpers (e.g. UIViewMessageBoxHelper) can reuse the
+    // same fallback-parent / centering primitives without duplicating logic.
 
-    using MessageCallback = std::function<void(const UTMessageResult&)>;
+    // Picks any visible top-level window other than `self`. Returns nullptr
+    // if none exists. Useful as a fallback transient parent when the caller
+    // did not provide one.
+    static QWindow* findFallbackParent(QWindow* self);
 
-    // Async = the user's button click is delivered via callback.
-    // The QML load itself is synchronous.
-    //
-    // Lifetime: the dialog window is auto-deleted on close (installCloseHandler
-    // in UIViewFactory). The QML-owned UTMessageDialogController dies with it.
-    // The C++ side never owns either object.
-    //
-    // `appContext` provides the IUIViewFactory used to instantiate the dialog.
-    // `onClosed` may be empty if the caller does not need the result.
-    static void showMessageAsync(AppContext& appContext,
-                                 const UTMessageOptions& opts,
-                                 MessageCallback onClosed = {});
+    // Positions `window` at the centre of `reference` (in screen coords).
+    // Requires `window`'s size to be already resolved.
+    static void positionCenter(QWindow* window, const QRect& reference);
 };
 
 template <typename T>

@@ -1054,22 +1054,24 @@ Double-click a rule to view details.</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
-        <source>This is a UIViewHelper::showMessageAsync test.</source>
-        <translation>This is a UIViewHelper::showMessageAsync test.</translation>
+        <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="34"/>
+        <source>This is a UIViewHelper::showMessageAsync test.</source>
+        <translation type="vanished">This is a UIViewHelper::showMessageAsync test.</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>
         <source>Click any button to dismiss the dialog.</source>
         <translation>Click any button to dismiss the dialog.</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
         <translation>ok</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="38"/>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="17"/>
         <source>Cancel</source>
         <translation>Cancel</translation>

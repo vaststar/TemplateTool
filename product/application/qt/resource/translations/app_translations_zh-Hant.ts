@@ -1054,22 +1054,24 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
-        <source>This is a UIViewHelper::showMessageAsync test.</source>
-        <translation>這是 UIViewHelper::showMessageAsync 的測試。</translation>
+        <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="34"/>
+        <source>This is a UIViewHelper::showMessageAsync test.</source>
+        <translation type="vanished">這是 UIViewHelper::showMessageAsync 的測試。</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>
         <source>Click any button to dismiss the dialog.</source>
         <translation>點擊任意按鈕關閉對話框。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="16"/>
         <source>OK</source>
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="38"/>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="17"/>
         <source>Cancel</source>
         <translation>取消</translation>
