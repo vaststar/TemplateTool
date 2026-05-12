@@ -48,11 +48,11 @@ struct Checking {
 struct UpgradeAvailable {
     static constexpr std::string_view name() { return "UpgradeAvailable"; }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvCheckRequested&)
-        -> fsm::Stay;
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
+        -> fsm::TransitionTo<Checking>;
     auto onEvent(UpgradeContext& ctx, const EvDownloadStart&)
         -> fsm::TransitionTo<Downloading>;
-    auto onEvent(UpgradeContext& ctx, const EvRemindLater&)
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
         -> fsm::TransitionTo<Idle>;
 };
 
@@ -107,7 +107,7 @@ struct Failed {
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
         -> fsm::TransitionTo<Checking>;
-    auto onEvent(UpgradeContext& ctx, const EvReset&)
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
         -> fsm::TransitionTo<Idle>;
 };
 

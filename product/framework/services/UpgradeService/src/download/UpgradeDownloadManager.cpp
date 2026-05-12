@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <sstream>
 #include <thread>
+#include <utility>
 
 // Use OpenSSL for SHA-256 if available; otherwise a stub
 #include <openssl/evp.h>
@@ -52,6 +53,12 @@ std::filesystem::path UpgradeDownloadManager::getDownloadDirectory() const
     return mDownloadDir;
 }
 
+bool UpgradeDownloadManager::isDownloading() const
+{
+    std::lock_guard<std::mutex> lk(mSessionMutex);
+    return static_cast<bool>(mActiveSession);
+}
+
 bool UpgradeDownloadManager::hasSufficientSpace(int64_t requiredBytes) const
 {
     try {
@@ -70,11 +77,6 @@ void UpgradeDownloadManager::downloadPackage(
     ProgressCallback progressCb,
     DownloadCompleteCallback completeCb)
 {
-    if (mDownloading.load()) {
-        UPGRADE_LOG_WARN("Download already in progress");
-        return;
-    }
-
     // Pre-flight: check disk space
     if (!hasSufficientSpace(packageInfo.sizeBytes)) {
         UPGRADE_LOG_ERROR("Insufficient disk space for download");
@@ -82,131 +84,179 @@ void UpgradeDownloadManager::downloadPackage(
         return;
     }
 
-    mCancelled.store(false);
-    mCurrentRetry = 0;
-    mLastProgressTime = {};
-    attemptDownload(packageInfo, std::move(progressCb), std::move(completeCb));
+    // Carry over partial bytes from any prior session (resume support).
+    std::int64_t resumeBytes = 0;
+    std::filesystem::path partialPath;
+    {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        resumeBytes = mResumeBytes;
+        partialPath = mResumePartialPath;
+    }
+
+    // Bump generation: any in-flight callbacks from the previous session
+    // will see a stale generation and become no-ops.
+    auto newGeneration = mGeneration.fetch_add(1, std::memory_order_acq_rel) + 1;
+
+    auto session = std::make_shared<DownloadSession>();
+    session->generation = newGeneration;
+    session->packageInfo = packageInfo;
+    session->progressCb = std::move(progressCb);
+    session->completeCb = std::move(completeCb);
+    session->resumedBytes = resumeBytes;
+    session->partialFilePath = std::move(partialPath);
+
+    {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        mActiveSession = session;
+        // Clear resume hint — it's now owned by the active session.
+        mResumePartialPath.clear();
+        mResumeBytes = 0;
+    }
+
+    attemptDownload(std::move(session));
 }
 
-void UpgradeDownloadManager::attemptDownload(
-    const model::PackageInfo& packageInfo,
-    ProgressCallback progressCb,
-    DownloadCompleteCallback completeCb)
+void UpgradeDownloadManager::attemptDownload(std::shared_ptr<DownloadSession> session)
 {
+    if (!isCurrent(*session)) {
+        return;
+    }
+
     auto coreFramework = mCoreFramework.lock();
     if (!coreFramework) {
-        completeCb(false, "", model::UpgradeErrorCode::NetworkError, "CoreFramework unavailable");
+        session->completeCb(false, "", model::UpgradeErrorCode::NetworkError, "CoreFramework unavailable");
         return;
     }
 
     auto networkService = coreFramework->getService<INetworkService>().lock();
     if (!networkService) {
-        completeCb(false, "", model::UpgradeErrorCode::NetworkError, "NetworkService unavailable");
+        session->completeCb(false, "", model::UpgradeErrorCode::NetworkError, "NetworkService unavailable");
         return;
     }
 
     auto httpManager = networkService->getNetworkHttpManager().lock();
     if (!httpManager) {
-        completeCb(false, "", model::UpgradeErrorCode::NetworkError, "HttpManager unavailable");
+        session->completeCb(false, "", model::UpgradeErrorCode::NetworkError, "HttpManager unavailable");
         return;
     }
 
-    // Determine download file path
-    auto fileName = ucf::utilities::FilePathUtils::pathFromUtf8(packageInfo.downloadUrl).filename().string();
-    if (fileName.empty()) {
-        fileName = upgrade::constants::kDefaultPackageFileName;
+    // Determine download file path (sticky across retries within a session).
+    if (session->partialFilePath.empty()) {
+        auto fileName = ucf::utilities::FilePathUtils::pathFromUtf8(session->packageInfo.downloadUrl).filename().string();
+        if (fileName.empty()) {
+            fileName = upgrade::constants::kDefaultPackageFileName;
+        }
+        session->partialFilePath = mDownloadDir / fileName;
     }
-    mPartialFilePath = mDownloadDir / fileName;
 
     // Build headers (support resume if partial file exists)
     network::http::NetworkHttpHeaders headers;
-    if (mResumedBytes > 0 && std::filesystem::exists(mPartialFilePath)) {
-        headers.emplace_back("Range", "bytes=" + std::to_string(mResumedBytes) + "-");
-        UPGRADE_LOG_INFO("Resuming download from byte " << mResumedBytes);
+    if (session->resumedBytes > 0 && std::filesystem::exists(session->partialFilePath)) {
+        headers.emplace_back("Range", "bytes=" + std::to_string(session->resumedBytes) + "-");
+        UPGRADE_LOG_INFO("Resuming download from byte " << session->resumedBytes);
     }
 
-    mDownloading.store(true);
-
-    UPGRADE_LOG_INFO("Starting download: " << packageInfo.downloadUrl
-                     << " → " << ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath));
+    UPGRADE_LOG_INFO("Starting download (gen=" << session->generation << "): "
+                     << session->packageInfo.downloadUrl
+                     << " → " << ucf::utilities::FilePathUtils::utf8FromPath(session->partialFilePath));
 
     auto request = std::make_unique<network::http::HttpDownloadToFileRequest>(
-        packageInfo.downloadUrl,
+        session->packageInfo.downloadUrl,
         headers,
         300, // 5 min timeout
-        ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath)
+        ucf::utilities::FilePathUtils::utf8FromPath(session->partialFilePath)
     );
 
     httpManager->downloadContentToFile(*request,
-        [this, packageInfo, progressCb, completeCb](
-            const network::http::HttpDownloadToFileResponse& response)
+        [this, session](const network::http::HttpDownloadToFileResponse& response)
         {
-            if (mCancelled.load()) {
-                mDownloading.store(false);
+            // First gate: stale callback from a cancelled / superseded session.
+            if (!isCurrent(*session)) {
                 return;
             }
 
             // Progress update
             if (!response.isFinished()) {
-                auto current = static_cast<int64_t>(response.getCurrentSize()) + mResumedBytes;
-                auto total = static_cast<int64_t>(response.getTotalSize()) + mResumedBytes;
+                auto current = static_cast<int64_t>(response.getCurrentSize()) + session->resumedBytes;
+                auto total = static_cast<int64_t>(response.getTotalSize()) + session->resumedBytes;
 
                 // Throttle: fire at most every 200ms, or on completion
                 bool isComplete = (total > 0 && current >= total);
                 auto now = std::chrono::steady_clock::now();
-                bool throttleOk = (now - mLastProgressTime >= std::chrono::milliseconds(200));
+                bool throttleOk = (now - session->lastProgressTime >= std::chrono::milliseconds(200));
 
                 if (isComplete || throttleOk) {
-                    mLastProgressTime = now;
-                    progressCb(current, total);
+                    session->lastProgressTime = now;
+                    session->progressCb(current, total);
                 }
                 return;
             }
 
-            // Download finished
-            mDownloading.store(false);
-
+            // Download finished — re-check generation under lock and clear
+            // active slot atomically with the completion notification.
             auto errorData = response.getErrorData();
             if (errorData.has_value()) {
-                UPGRADE_LOG_ERROR("Download failed: " << errorData->errorDescription);
+                UPGRADE_LOG_ERROR("Download failed (gen=" << session->generation
+                                  << "): " << errorData->errorDescription);
 
                 // Retry with exponential backoff
-                if (mCurrentRetry < mMaxRetryCount) {
-                    mCurrentRetry++;
-                    auto delay = getRetryDelay();
+                if (session->currentRetry < mMaxRetryCount) {
+                    session->currentRetry++;
+                    auto delay = getRetryDelay(session->currentRetry);
                     UPGRADE_LOG_INFO("Retrying download in " << delay.count()
-                                     << "s (attempt " << mCurrentRetry << "/" << mMaxRetryCount << ")");
+                                     << "s (attempt " << session->currentRetry << "/" << mMaxRetryCount << ")");
                     // Record partial progress for resume
-                    if (std::filesystem::exists(mPartialFilePath)) {
-                        mResumedBytes = static_cast<int64_t>(std::filesystem::file_size(mPartialFilePath));
+                    if (std::filesystem::exists(session->partialFilePath)) {
+                        session->resumedBytes = static_cast<int64_t>(std::filesystem::file_size(session->partialFilePath));
                     }
-                    // Retry after delay (on a detached thread — simple approach)
-                    std::thread([this, packageInfo, progressCb, completeCb, delay]() {
+                    // Retry after delay (on a detached thread)
+                    std::thread([this, session, delay]() {
                         std::this_thread::sleep_for(delay);
-                        if (!mCancelled.load()) {
-                            attemptDownload(packageInfo, progressCb, completeCb);
+                        if (isCurrent(*session)) {
+                            attemptDownload(session);
                         }
                     }).detach();
                     return;
                 }
 
-                completeCb(false, "", model::UpgradeErrorCode::DownloadFailed,
+                {
+                    std::lock_guard<std::mutex> lk(mSessionMutex);
+                    if (mActiveSession.get() == session.get()) {
+                        mActiveSession.reset();
+                    }
+                }
+                session->completeCb(false, "", model::UpgradeErrorCode::DownloadFailed,
                            "Download failed after " + std::to_string(mMaxRetryCount) + " retries: "
                            + errorData->errorDescription);
                 return;
             }
 
-            UPGRADE_LOG_INFO("Download complete: " << ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath));
-            mResumedBytes = 0;
-            completeCb(true, ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath), model::UpgradeErrorCode::None, "");
+            UPGRADE_LOG_INFO("Download complete: " << ucf::utilities::FilePathUtils::utf8FromPath(session->partialFilePath));
+            auto finalPath = ucf::utilities::FilePathUtils::utf8FromPath(session->partialFilePath);
+            {
+                std::lock_guard<std::mutex> lk(mSessionMutex);
+                if (mActiveSession.get() == session.get()) {
+                    mActiveSession.reset();
+                }
+            }
+            session->completeCb(true, finalPath, model::UpgradeErrorCode::None, "");
         });
 }
 
 void UpgradeDownloadManager::cancelDownload()
 {
-    mCancelled.store(true);
-    mDownloading.store(false);
-    UPGRADE_LOG_INFO("Download cancelled");
+    // Bump generation first so any in-flight HTTP callbacks become no-ops.
+    mGeneration.fetch_add(1, std::memory_order_acq_rel);
+
+    std::shared_ptr<DownloadSession> dropped;
+    {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        dropped = std::move(mActiveSession);
+        mActiveSession.reset();
+    }
+    if (dropped) {
+        UPGRADE_LOG_INFO("Download cancelled (gen=" << dropped->generation << ")");
+    }
 }
 
 void UpgradeDownloadManager::verifyPackage(
@@ -282,22 +332,47 @@ std::string UpgradeDownloadManager::computeSha256(const std::filesystem::path& f
 
 void UpgradeDownloadManager::softReset()
 {
+    // Preserve partial-file info as a resume hint for the next download.
+    std::shared_ptr<DownloadSession> previous;
+    {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        previous = mActiveSession;
+    }
     cancelDownload();
-    mCurrentRetry = 0;
-    mLastProgressTime = {};
-    // Partial file and mResumedBytes intentionally preserved for resume
+    if (previous && !previous->partialFilePath.empty()) {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        mResumePartialPath = previous->partialFilePath;
+        if (std::filesystem::exists(mResumePartialPath)) {
+            mResumeBytes = static_cast<int64_t>(std::filesystem::file_size(mResumePartialPath));
+        } else {
+            mResumeBytes = 0;
+        }
+    }
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager soft reset");
 }
 
 void UpgradeDownloadManager::hardReset()
 {
-    softReset();
-    mResumedBytes = 0;
-    if (!mPartialFilePath.empty() && std::filesystem::exists(mPartialFilePath)) {
-        std::filesystem::remove(mPartialFilePath);
-        UPGRADE_LOG_DEBUG("Removed partial file: " << ucf::utilities::FilePathUtils::utf8FromPath(mPartialFilePath));
+    std::filesystem::path partialToDelete;
+    {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        if (mActiveSession) {
+            partialToDelete = mActiveSession->partialFilePath;
+        } else if (!mResumePartialPath.empty()) {
+            partialToDelete = mResumePartialPath;
+        }
     }
-    mPartialFilePath.clear();
+    cancelDownload();
+    {
+        std::lock_guard<std::mutex> lk(mSessionMutex);
+        mResumePartialPath.clear();
+        mResumeBytes = 0;
+    }
+    if (!partialToDelete.empty() && std::filesystem::exists(partialToDelete)) {
+        std::error_code ec;
+        std::filesystem::remove(partialToDelete, ec);
+        UPGRADE_LOG_DEBUG("Removed partial file: " << ucf::utilities::FilePathUtils::utf8FromPath(partialToDelete));
+    }
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager hard reset");
 }
 
@@ -306,10 +381,10 @@ void UpgradeDownloadManager::setMaxRetryCount(int count)
     mMaxRetryCount = count;
 }
 
-std::chrono::seconds UpgradeDownloadManager::getRetryDelay() const
+std::chrono::seconds UpgradeDownloadManager::getRetryDelay(int retryAttempt) const
 {
     // Exponential backoff: 2s, 4s, 8s ...
-    return std::chrono::seconds(1 << (mCurrentRetry));
+    return std::chrono::seconds(1 << retryAttempt);
 }
 
 } // namespace ucf::service

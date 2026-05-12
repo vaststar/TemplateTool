@@ -19,6 +19,7 @@ namespace UIVMSignalEmitter {
 class AppUpgradeController : public UIViewController
 {
     Q_OBJECT
+    Q_PROPERTY(bool idle READ isIdle NOTIFY stateChanged)
     Q_PROPERTY(bool checking READ isChecking NOTIFY stateChanged)
     Q_PROPERTY(bool hasUpgrade READ hasUpgrade NOTIFY stateChanged)
     Q_PROPERTY(bool downloading READ isDownloading NOTIFY stateChanged)
@@ -39,6 +40,7 @@ public:
     bool isDownloading() const;
     bool isVerifying() const;
     bool isReadyToInstall() const;
+    bool isIdle() const;
     QString version() const;
     QString releaseNotes() const;
     bool isMandatory() const;
@@ -70,14 +72,17 @@ private slots:
 private:
     void showUpgradeDialog();
 
+    // ── Helpers ──
+    bool isOperationInProgress() const;
+
     std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> m_viewModel;
     std::shared_ptr<UIVMSignalEmitter::UpgradeViewModelEmitter> m_emitter;
 
-    bool m_checking = false;
-    bool m_hasUpgrade = false;
-    bool m_downloading = false;
-    bool m_verifying = false;
-    bool m_readyToInstall = false;
+    // Single source of truth — mirrors the FSM state reported via onUpgradeStateChanged.
+    // All bool properties (checking, downloading, ...) are derived from this value.
+    commonHead::viewModels::model::UpgradeViewState m_state
+        = commonHead::viewModels::model::UpgradeViewState::Idle;
+
     bool m_dialogOpen = false;
     QString m_version;
     QString m_releaseNotes;

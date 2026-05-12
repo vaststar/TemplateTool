@@ -123,9 +123,9 @@ void UpgradeService::cancelDownload()
     mDataPrivate->getUpgradeManager().cancelDownload();
 }
 
-void UpgradeService::remindLater()
+void UpgradeService::dismissUpgrade()
 {
-    mDataPrivate->getUpgradeManager().remindLater();
+    mDataPrivate->getUpgradeManager().dismissUpgrade();
 }
 
 model::UpgradeState UpgradeService::getUpgradeState() const

@@ -28,6 +28,12 @@ Window {
 
     color: UTComponentUtil.getPlainUIColor(dialog.backgroundColorEnum, UIColorState.Normal)
 
+    onVisibleChanged: {
+        if (visible) {
+            requestActivate()
+        }
+    }
+
     Rectangle {
         parent: Overlay.overlay ? Overlay.overlay : dialog.contentItem
         anchors.fill: parent

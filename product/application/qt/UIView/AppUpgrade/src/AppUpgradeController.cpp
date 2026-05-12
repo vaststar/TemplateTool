@@ -49,32 +49,38 @@ void AppUpgradeController::init()
 }
 
 // ============================================================================
-// Property Getters
+// Property Getters — all derived from m_state
 // ============================================================================
 
 bool AppUpgradeController::isChecking() const
 {
-    return m_checking;
+    return m_state == commonHead::viewModels::model::UpgradeViewState::Checking;
 }
 
 bool AppUpgradeController::hasUpgrade() const
 {
-    return m_hasUpgrade;
+    return m_state == commonHead::viewModels::model::UpgradeViewState::UpgradeAvailable;
 }
 
 bool AppUpgradeController::isDownloading() const
 {
-    return m_downloading;
+    return m_state == commonHead::viewModels::model::UpgradeViewState::Downloading;
 }
 
 bool AppUpgradeController::isVerifying() const
 {
-    return m_verifying;
+    using S = commonHead::viewModels::model::UpgradeViewState;
+    return m_state == S::Verifying || m_state == S::Extracting;
 }
 
 bool AppUpgradeController::isReadyToInstall() const
 {
-    return m_readyToInstall;
+    return m_state == commonHead::viewModels::model::UpgradeViewState::ReadyToInstall;
+}
+
+bool AppUpgradeController::isIdle() const
+{
+    return m_state == commonHead::viewModels::model::UpgradeViewState::Idle;
 }
 
 QString AppUpgradeController::version() const
@@ -132,9 +138,21 @@ void AppUpgradeController::cancelDownload()
 
 void AppUpgradeController::dismiss()
 {
+    using S = commonHead::viewModels::model::UpgradeViewState;
+
+    UIVIEW_LOG_DEBUG("dismiss (state=" << static_cast<int>(m_state) << ")");
+
     m_dialogOpen = false;
     m_errorMessage.clear();
     emit errorChanged();
+
+    // If the user is dismissing while we're parked on "upgrade available" or in
+    // a terminal Failed state, tell the FSM to return to Idle so the next
+    // CheckForUpgrade triggers a fresh server query instead of reusing stale data.
+    if (m_viewModel && (m_state == S::UpgradeAvailable || m_state == S::Failed))
+    {
+        m_viewModel->dismissUpgrade();
+    }
 }
 
 // ============================================================================
@@ -150,16 +168,16 @@ bool AppUpgradeController::event(QEvent* e)
         {
         case UIUpgradeEvent::Action::CheckForUpgrade:
             UIVIEW_LOG_DEBUG("UIUpgradeEvent::CheckForUpgrade");
-            if (m_checking || m_downloading || m_verifying || m_readyToInstall || m_hasUpgrade)
+            if (isOperationInProgress())
             {
-                // Operation already in progress or result pending — just reopen the dialog
+                // Download / verify / install in flight — just bring the dialog back
                 showUpgradeDialog();
             }
             else if (m_viewModel)
             {
-                m_checking = true;
+                // Any other state (Idle, UpgradeAvailable, Failed) → start a fresh check.
+                // The FSM handles re-check from all these states.
                 m_errorMessage.clear();
-                emit stateChanged();
                 emit errorChanged();
                 showUpgradeDialog();
                 m_viewModel->checkForUpgrade();
@@ -171,6 +189,16 @@ bool AppUpgradeController::event(QEvent* e)
     return UIViewController::event(e);
 }
 
+bool AppUpgradeController::isOperationInProgress() const
+{
+    using S = commonHead::viewModels::model::UpgradeViewState;
+    return m_state == S::Checking
+        || m_state == S::Downloading
+        || m_state == S::Verifying
+        || m_state == S::Extracting
+        || m_state == S::ReadyToInstall;
+}
+
 // ============================================================================
 // ViewModel Callback Slots
 // ============================================================================
@@ -180,18 +208,13 @@ void AppUpgradeController::onCheckCompleted(bool hasUpgrade, const QString& vers
 {
     UIVIEW_LOG_DEBUG("onCheckCompleted: hasUpgrade=" << hasUpgrade
                      << ", version=" << version.toStdString());
-    m_checking = false;
-    m_hasUpgrade = hasUpgrade;
     m_version = version;
     m_releaseNotes = releaseNotes;
     m_mandatory = mandatory;
-    emit stateChanged();
     emit upgradeInfoChanged();
-
-    if (hasUpgrade)
-    {
-        showUpgradeDialog();
-    }
+    // Note: dialog visibility is owned by event() (user-triggered check) or by
+    // onUpgradeStateChanged (auto-triggered check, when state becomes
+    // UpgradeAvailable). Don't reopen the dialog here.
 }
 
 void AppUpgradeController::onDownloadProgress(int64_t currentBytes, int64_t totalBytes)
@@ -205,11 +228,14 @@ void AppUpgradeController::onDownloadProgress(int64_t currentBytes, int64_t tota
 void AppUpgradeController::onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state)
 {
     using State = commonHead::viewModels::model::UpgradeViewState;
+
+    UIVIEW_LOG_DEBUG("onUpgradeStateChanged: " << static_cast<int>(state));
+
+    m_state = state;
+
     if (state == State::Downloading)
         m_downloadProgress = 0.0;
-    m_downloading    = (state == State::Downloading);
-    m_verifying      = (state == State::Verifying || state == State::Extracting);
-    m_readyToInstall = (state == State::ReadyToInstall);
+
     emit stateChanged();
 
     if (state == State::Installing)
@@ -222,8 +248,6 @@ void AppUpgradeController::onUpgradeStateChanged(commonHead::viewModels::model::
 void AppUpgradeController::onUpgradeError(const QString& message)
 {
     UIVIEW_LOG_DEBUG("onUpgradeError: " << message.toStdString());
-    m_checking = false;
-    m_downloading = false;
     m_errorMessage = message;
     emit stateChanged();
     emit errorChanged();

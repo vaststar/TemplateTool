@@ -114,6 +114,7 @@ UTDialog {
             UTButton {
                 text: qsTr("OK")
                 onClicked: dialog.close()
+                focus: true
             }
         }
     }

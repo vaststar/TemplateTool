@@ -26,14 +26,15 @@ struct UpgradeContext {
     std::function<void()>                        triggerCancelDownload;
 
     // ── Reset triggers ──
-    std::function<void()>                        triggerResetManagers;
-    std::function<void()>                        triggerSoftResetManagers;
+    // hardReset:  clear caches AND remove partial downloads / staging dir
+    // softReset:  clear caches but PRESERVE partial download (so resume is possible)
+    std::function<void()>                        triggerHardReset;
+    std::function<void()>                        triggerSoftReset;
 
     // ── Shared data ──
     std::optional<model::UpgradeInfo> availableUpgrade;
     std::string downloadedFilePath;
     std::string stagingDir;
-    bool keepPartialDownload{false};
 };
 
 } // namespace ucf::service::upgrade

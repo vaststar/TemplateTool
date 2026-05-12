@@ -70,5 +70,6 @@ public:
     virtual void downloadUpgrade() = 0;
     virtual void installAndRestart() = 0;
     virtual void cancelDownload() = 0;
+    virtual void dismissUpgrade() = 0;
 };
 }

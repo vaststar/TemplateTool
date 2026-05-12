@@ -15,8 +15,9 @@ struct EvCheckRequested   { bool userTriggered{false}; };
 struct EvDownloadStart    {};
 struct EvInstallStart     {};
 struct EvCancel           {};
-struct EvRemindLater      {};
-struct EvReset            {};
+/// User dismissed the current upgrade prompt or error — return to Idle.
+/// Handled by UpgradeAvailable and Failed; ignored elsewhere.
+struct EvDismiss          {};
 
 // ── Async result events (posted from manager callbacks) ──
 

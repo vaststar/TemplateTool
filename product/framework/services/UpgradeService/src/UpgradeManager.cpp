@@ -151,11 +151,11 @@ void UpgradeManager::bindFsmCallbacks()
 
     // ── Reset triggers ──
 
-    mFsmContext.triggerResetManagers = [this]() {
-        resetAllManagers();
+    mFsmContext.triggerHardReset = [this]() {
+        hardResetManagers();
     };
 
-    mFsmContext.triggerSoftResetManagers = [this]() {
+    mFsmContext.triggerSoftReset = [this]() {
         softResetManagers();
     };
 }
@@ -182,9 +182,9 @@ void UpgradeManager::cancelDownload()
     mFsm->processEvent(upgrade::EvCancel{});
 }
 
-void UpgradeManager::remindLater()
+void UpgradeManager::dismissUpgrade()
 {
-    mFsm->processEvent(upgrade::EvRemindLater{});
+    mFsm->processEvent(upgrade::EvDismiss{});
 }
 
 // ── Queries ──
@@ -245,9 +245,9 @@ void UpgradeManager::notifyError(model::UpgradeErrorCode code, const std::string
 
 // ── Manager reset ──
 
-void UpgradeManager::resetAllManagers()
+void UpgradeManager::hardResetManagers()
 {
-    UPGRADE_LOG_DEBUG("Hard reset all managers");
+    UPGRADE_LOG_DEBUG("Hard reset all managers (clear caches and partial downloads)");
     mCheckManager->reset();
     mDownloadManager->hardReset();
     mInstallManager->reset();
@@ -258,10 +258,12 @@ void UpgradeManager::resetAllManagers()
 
 void UpgradeManager::softResetManagers()
 {
-    UPGRADE_LOG_DEBUG("Soft reset managers (preserving partial download)");
+    UPGRADE_LOG_DEBUG("Soft reset managers (preserve partial download for resume)");
     mCheckManager->reset();
     mDownloadManager->softReset();
     mInstallManager->reset();
+    // Keep ctx.availableUpgrade so a subsequent EvDownloadStart can resume.
+    // downloadedFilePath / stagingDir remain empty until that download progresses.
 }
 
 // ── Helper: app info ──

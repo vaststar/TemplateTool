@@ -99,6 +99,21 @@ void UpgradeViewModel::cancelDownload()
     }
 }
 
+void UpgradeViewModel::dismissUpgrade()
+{
+    COMMONHEAD_LOG_DEBUG("dismissUpgrade");
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto service = serviceLocator->getUpgradeService().lock())
+            {
+                service->dismissUpgrade();
+            }
+        }
+    }
+}
+
 // ── IUpgradeServiceCallback → forward to UI via fireNotification ──
 
 void UpgradeViewModel::onUpgradeStateChanged(ucf::service::model::UpgradeState state)

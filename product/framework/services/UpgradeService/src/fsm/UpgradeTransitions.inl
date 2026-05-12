@@ -8,20 +8,13 @@ namespace ucf::service::upgrade {
 
 // ═══════════════════════════════════════════════════
 // onEnter implementations
+//   Pure side-effects: state notification + work kickoff.
+//   Reset logic is owned by transition handlers (onEvent), because each path
+//   into a state may need a different cleanup policy.
 // ═══════════════════════════════════════════════════
 
 inline void Idle::onEnter(UpgradeContext& ctx) {
     ctx.onStateChanged(model::UpgradeState::Idle);
-    if (ctx.keepPartialDownload) {
-        ctx.keepPartialDownload = false;
-        if (ctx.triggerSoftResetManagers) {
-            ctx.triggerSoftResetManagers();
-        }
-    } else {
-        if (ctx.triggerResetManagers) {
-            ctx.triggerResetManagers();
-        }
-    }
 }
 
 inline void Checking::onEnter(UpgradeContext& ctx) {
@@ -31,7 +24,8 @@ inline void Checking::onEnter(UpgradeContext& ctx) {
 
 inline void UpgradeAvailable::onEnter(UpgradeContext& ctx) {
     ctx.onStateChanged(model::UpgradeState::UpgradeAvailable);
-    ctx.onCheckCompleted(model::UpgradeCheckResult{true, *ctx.availableUpgrade});
+    // Note: onCheckCompleted is fired by Checking::onEvent(EvCheckSuccess)
+    // so both "has upgrade" and "no upgrade" exits are notified from the same place.
 }
 
 inline void Downloading::onEnter(UpgradeContext& ctx) {
@@ -65,6 +59,9 @@ inline void Failed::onEnter(UpgradeContext& ctx) {
 
 // ═══════════════════════════════════════════════════
 // onEvent (transition) implementations
+//   Reset policy lives in transitions:
+//     • EvCancel  (Downloading → Idle):  softReset — keep partial file
+//     • All other paths → Idle / Failed: hardReset — wipe caches & downloads
 // ═══════════════════════════════════════════════════
 
 // ── Idle ──
@@ -79,30 +76,38 @@ inline auto Idle::onEvent(UpgradeContext&, const EvCheckRequested& e)
 inline auto Checking::onEvent(UpgradeContext& ctx, const EvCheckSuccess& e)
     -> fsm::TransitionTo<UpgradeAvailable> {
     ctx.availableUpgrade = e.info;
+    ctx.onCheckCompleted(model::UpgradeCheckResult{true, e.info});
     return {};
 }
 
 inline auto Checking::onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade&)
     -> fsm::TransitionTo<Idle> {
     ctx.onCheckCompleted(model::UpgradeCheckResult{false, {}});
+    ctx.triggerHardReset();
     return {};
 }
 
-inline auto Checking::onEvent(UpgradeContext&, const EvError& e)
+inline auto Checking::onEvent(UpgradeContext& ctx, const EvError& e)
     -> fsm::TransitionTo<Failed> {
+    ctx.triggerHardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
 // ── UpgradeAvailable ──
 
-inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvCheckRequested&)
-    -> fsm::Stay { return {}; }
+inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvCheckRequested& e)
+    -> fsm::TransitionTo<Checking> {
+    return fsm::TransitionTo<Checking>{Checking{.userTriggered = e.userTriggered}};
+}
 
 inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvDownloadStart&)
     -> fsm::TransitionTo<Downloading> { return {}; }
 
-inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvRemindLater&)
-    -> fsm::TransitionTo<Idle> { return {}; }
+inline auto UpgradeAvailable::onEvent(UpgradeContext& ctx, const EvDismiss&)
+    -> fsm::TransitionTo<Idle> {
+    ctx.triggerHardReset();
+    return {};
+}
 
 // ── Downloading ──
 
@@ -121,12 +126,13 @@ inline auto Downloading::onEvent(UpgradeContext& ctx, const EvDownloadDone& e)
 inline auto Downloading::onEvent(UpgradeContext& ctx, const EvCancel&)
     -> fsm::TransitionTo<Idle> {
     ctx.triggerCancelDownload();
-    ctx.keepPartialDownload = true;
+    ctx.triggerSoftReset();   // preserve partial download for future resume
     return {};
 }
 
-inline auto Downloading::onEvent(UpgradeContext&, const EvError& e)
+inline auto Downloading::onEvent(UpgradeContext& ctx, const EvError& e)
     -> fsm::TransitionTo<Failed> {
+    ctx.triggerHardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
@@ -135,8 +141,9 @@ inline auto Downloading::onEvent(UpgradeContext&, const EvError& e)
 inline auto Verifying::onEvent(UpgradeContext&, const EvVerifyOk&)
     -> fsm::TransitionTo<Extracting> { return {}; }
 
-inline auto Verifying::onEvent(UpgradeContext&, const EvError& e)
+inline auto Verifying::onEvent(UpgradeContext& ctx, const EvError& e)
     -> fsm::TransitionTo<Failed> {
+    ctx.triggerHardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
@@ -148,8 +155,9 @@ inline auto Extracting::onEvent(UpgradeContext& ctx, const EvExtractOk& e)
     return {};
 }
 
-inline auto Extracting::onEvent(UpgradeContext&, const EvError& e)
+inline auto Extracting::onEvent(UpgradeContext& ctx, const EvError& e)
     -> fsm::TransitionTo<Failed> {
+    ctx.triggerHardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
@@ -160,8 +168,9 @@ inline auto ReadyToInstall::onEvent(UpgradeContext&, const EvInstallStart&)
 
 // ── Installing ──
 
-inline auto Installing::onEvent(UpgradeContext&, const EvError& e)
+inline auto Installing::onEvent(UpgradeContext& ctx, const EvError& e)
     -> fsm::TransitionTo<Failed> {
+    ctx.triggerHardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
@@ -172,7 +181,10 @@ inline auto Failed::onEvent(UpgradeContext&, const EvCheckRequested& e)
     return fsm::TransitionTo<Checking>{Checking{.userTriggered = e.userTriggered}};
 }
 
-inline auto Failed::onEvent(UpgradeContext&, const EvReset&)
-    -> fsm::TransitionTo<Idle> { return {}; }
+inline auto Failed::onEvent(UpgradeContext& ctx, const EvDismiss&)
+    -> fsm::TransitionTo<Idle> {
+    ctx.triggerHardReset();
+    return {};
+}
 
 } // namespace ucf::service::upgrade

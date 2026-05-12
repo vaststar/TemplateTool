@@ -53,7 +53,7 @@ public:
     void downloadUpgrade();
     void installAndRestart();
     void cancelDownload();
-    void remindLater();
+    void dismissUpgrade();
 
     // ── Queries ──
 
@@ -71,7 +71,7 @@ private:
     void notifyError(model::UpgradeErrorCode code, const std::string& msg);
 
     // Manager reset
-    void resetAllManagers();
+    void hardResetManagers();
     void softResetManagers();
 
     // Helper: get current app info

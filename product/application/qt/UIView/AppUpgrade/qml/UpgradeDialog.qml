@@ -99,8 +99,7 @@ UTDialog {
 
         // No update message
         UTText {
-            visible: !dialog.controller.hasUpgrade && !dialog.controller.checking
-                     && !dialog.controller.verifying && !dialog.controller.readyToInstall
+            visible: dialog.controller.idle
                      && dialog.controller.errorMessage.length === 0
             text: qsTr("You are using the latest version.")
             fontEnum: UIFontToken.Body_Text
@@ -119,14 +118,22 @@ UTDialog {
 
             UTButton {
                 visible: dialog.controller.downloading
+                text: qsTr("Background")
+                onClicked: dialog.close()
+            }
+
+            UTButton {
+                visible: dialog.controller.downloading
                 text: qsTr("Cancel")
                 onClicked: dialog.controller.cancelDownload()
+                focus: visible
             }
 
             UTButton {
                 visible: dialog.controller.readyToInstall
                 text: qsTr("Install && Restart")
                 onClicked: dialog.controller.installAndRestart()
+                focus: visible
             }
 
             UTButton {
@@ -134,6 +141,8 @@ UTDialog {
                          && !dialog.controller.verifying && !dialog.controller.readyToInstall
                 text: qsTr("Download && Install")
                 onClicked: dialog.controller.downloadUpgrade()
+                focus: visible
+
             }
 
             UTButton {
@@ -143,6 +152,7 @@ UTDialog {
                 backgroundColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Background : UIColorToken.Button_Primary_Background
                 borderColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Input_Border : UIColorToken.Button_Primary_Border
                 onClicked: dialog.close()
+                focus: visible
             }
         }
     }

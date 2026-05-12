@@ -38,7 +38,7 @@ public:
     virtual void downloadUpgrade() override;
     virtual void installAndRestart() override;
     virtual void cancelDownload() override;
-    virtual void remindLater() override;
+    virtual void dismissUpgrade() override;
 
     // IUpgradeService — queries
     virtual model::UpgradeState getUpgradeState() const override;

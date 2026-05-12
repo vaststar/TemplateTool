@@ -58,8 +58,8 @@ UpgradeContext makeTestContext()
     ctx.triggerExtract      = [](const std::string&) {};
     ctx.triggerInstall      = [](const std::string&) {};
     ctx.triggerCancelDownload  = []() {};
-    ctx.triggerResetManagers   = []() {};
-    ctx.triggerSoftResetManagers = []() {};
+    ctx.triggerHardReset = []() {};
+    ctx.triggerSoftReset = []() {};
     return ctx;
 }
 
@@ -171,14 +171,14 @@ TEST_CASE("FSM: UpgradeAvailable -> Downloading on EvDownloadStart", "[UpgradeSe
     REQUIRE(fsm.template isIn<Downloading>());
 }
 
-TEST_CASE("FSM: UpgradeAvailable -> Idle on EvRemindLater", "[UpgradeService][FSM]")
+TEST_CASE("FSM: UpgradeAvailable -> Idle on EvDismiss", "[UpgradeService][FSM]")
 {
     auto ctx = makeTestContext();
     UpgradeFSM fsm(ctx);
 
     fsm.processEvent(EvCheckRequested{});
     fsm.processEvent(EvCheckSuccess{.info = makeSampleUpgradeInfo()});
-    fsm.processEvent(EvRemindLater{});
+    fsm.processEvent(EvDismiss{});
 
     REQUIRE(fsm.template isIn<Idle>());
 }
@@ -198,13 +198,13 @@ TEST_CASE("FSM: Downloading -> Verifying on EvDownloadDone", "[UpgradeService][F
     REQUIRE(ctx.downloadedFilePath == "/tmp/test.zip");
 }
 
-TEST_CASE("FSM: Downloading -> Idle on EvCancel (sets keepPartialDownload)", "[UpgradeService][FSM]")
+TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService][FSM]")
 {
     auto ctx = makeTestContext();
     ctx.availableUpgrade = makeSampleUpgradeInfo();
 
     bool softResetCalled = false;
-    ctx.triggerSoftResetManagers = [&]() { softResetCalled = true; };
+    ctx.triggerSoftReset = [&]() { softResetCalled = true; };
 
     UpgradeFSM fsm(ctx);
 
@@ -248,7 +248,7 @@ TEST_CASE("FSM: ReadyToInstall -> Installing on EvInstallStart", "[UpgradeServic
     REQUIRE(fsm.template isIn<Installing>());
 }
 
-TEST_CASE("FSM: Failed -> Idle on EvReset", "[UpgradeService][FSM]")
+TEST_CASE("FSM: Failed -> Idle on EvDismiss", "[UpgradeService][FSM]")
 {
     auto ctx = makeTestContext();
     UpgradeFSM fsm(ctx);
@@ -257,7 +257,7 @@ TEST_CASE("FSM: Failed -> Idle on EvReset", "[UpgradeService][FSM]")
     fsm.processEvent(EvError{.code = UpgradeErrorCode::NetworkError, .message = "err"});
     REQUIRE(fsm.template isIn<Failed>());
 
-    fsm.processEvent(EvReset{});
+    fsm.processEvent(EvDismiss{});
     REQUIRE(fsm.template isIn<Idle>());
 }
 

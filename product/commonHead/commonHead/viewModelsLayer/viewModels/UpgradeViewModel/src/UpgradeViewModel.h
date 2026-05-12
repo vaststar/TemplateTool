@@ -27,6 +27,7 @@ public:
     void downloadUpgrade() override;
     void installAndRestart() override;
     void cancelDownload() override;
+    void dismissUpgrade() override;
 
     // IUpgradeServiceCallback
     void onUpgradeStateChanged(ucf::service::model::UpgradeState state) override;

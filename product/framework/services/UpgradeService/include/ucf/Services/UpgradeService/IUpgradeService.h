@@ -43,7 +43,7 @@ public:
     virtual void cancelDownload() = 0;
 
     /// Dismiss the upgrade prompt (return to idle)
-    virtual void remindLater() = 0;
+    virtual void dismissUpgrade() = 0;
 
     // ── Queries ──
 

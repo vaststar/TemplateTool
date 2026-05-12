@@ -1991,32 +1991,37 @@ Press ESC to cancel</source>
         <translation>%1%</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="105"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="104"/>
         <source>You are using the latest version.</source>
         <translation>当前已是最新版本。</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="122"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="121"/>
+        <source>Background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="127"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="128"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="134"/>
         <source>Install &amp;&amp; Restart</source>
         <translation>安装并重启</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="135"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="142"/>
         <source>Download &amp;&amp; Install</source>
         <translation>下载并安装</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="141"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="150"/>
         <source>Later</source>
         <translation>稍后</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="141"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="150"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
