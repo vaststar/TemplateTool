@@ -91,6 +91,8 @@ struct ReadyToInstall {
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvInstallStart&)
         -> fsm::TransitionTo<Installing>;
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
+        -> fsm::TransitionTo<Idle>;
 };
 
 struct Installing {

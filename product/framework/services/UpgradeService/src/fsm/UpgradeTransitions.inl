@@ -166,6 +166,14 @@ inline auto Extracting::onEvent(UpgradeContext& ctx, const EvError& e)
 inline auto ReadyToInstall::onEvent(UpgradeContext&, const EvInstallStart&)
     -> fsm::TransitionTo<Installing> { return {}; }
 
+inline auto ReadyToInstall::onEvent(UpgradeContext& ctx, const EvDismiss&)
+    -> fsm::TransitionTo<Idle> {
+    // User abandons the extracted package — wipe it so a fresh CheckForUpgrade
+    // can start from a clean slate instead of reusing the staged build.
+    ctx.triggerHardReset();
+    return {};
+}
+
 // ── Installing ──
 
 inline auto Installing::onEvent(UpgradeContext& ctx, const EvError& e)

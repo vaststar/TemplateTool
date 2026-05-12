@@ -146,10 +146,14 @@ void AppUpgradeController::dismiss()
     m_errorMessage.clear();
     emit errorChanged();
 
-    // If the user is dismissing while we're parked on "upgrade available" or in
-    // a terminal Failed state, tell the FSM to return to Idle so the next
-    // CheckForUpgrade triggers a fresh server query instead of reusing stale data.
-    if (m_viewModel && (m_state == S::UpgradeAvailable || m_state == S::Failed))
+    // If the user is dismissing while we're parked on a state where the FSM
+    // is holding onto upgrade artifacts (available info / extracted staging
+    // dir / failure data), tell it to drop them and return to Idle. Otherwise
+    // the next CheckForUpgrade would either be ignored or re-show the cached
+    // result instead of querying the server.
+    if (m_viewModel && (m_state == S::UpgradeAvailable
+                        || m_state == S::ReadyToInstall
+                        || m_state == S::Failed))
     {
         m_viewModel->dismissUpgrade();
     }
