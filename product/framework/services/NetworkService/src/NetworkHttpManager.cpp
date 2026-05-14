@@ -61,7 +61,7 @@ NetworkHttpManager::NetworkHttpManager()
 {
     SERVICE_LOG_DEBUG("Create NetworkHttpManager, address:" << this);
 }
- 
+
 NetworkHttpManager::~NetworkHttpManager()
 {
    SERVICE_LOG_DEBUG("");
@@ -91,9 +91,14 @@ void NetworkHttpManager::downloadContentToFile(const ucf::service::network::http
     sendHttpRequest(httpHandler, location);
 }
 
+void NetworkHttpManager::cancelRequest(const std::string& requestId)
+{
+    mDataPrivate->getNetworkHttpClient()->cancelRequest(requestId);
+}
+
 void NetworkHttpManager::sendHttpRequest(std::shared_ptr<INetworkHttpHandler> httpHandler, const std::source_location location)
 {
-   SERVICE_LOG_DEBUG("about making http request:" << httpHandler->getHttpRequest().toString() <<", from: " 
+   SERVICE_LOG_DEBUG("about making http request:" << httpHandler->getHttpRequest().toString() <<", from: "
               << location.file_name() << '('
               << location.line() << ':'
               << location.column() << ") `"

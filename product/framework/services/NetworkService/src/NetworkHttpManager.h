@@ -26,6 +26,7 @@ public:
     virtual void sendHttpRawRequest(const ucf::service::network::http::HttpRawRequest& rawRequest, const ucf::service::network::http::HttpRawResponseCallbackFunc& rawResponseCallback, const std::source_location location = std::source_location::current()) override;
     virtual void downloadContentToMemory(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& downloadResponseCallback, const std::source_location location = std::source_location::current()) override;
     virtual void downloadContentToFile(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, const ucf::service::network::http::HttpDownloadToFileResponseCallbackFunc& downloadResponseCallback, const std::source_location location = std::source_location::current()) override;
+    virtual void cancelRequest(const std::string& requestId) override;
 private:
     void sendHttpRequest(std::shared_ptr<INetworkHttpHandler> callbackHandler, const std::source_location location = std::source_location::current());
 private:

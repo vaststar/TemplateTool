@@ -221,7 +221,7 @@ LibCurlEasyHandle::DataPrivate::~DataPrivate()
     {
         curl_slist_free_all(mHeaders);
     }
-} 
+}
 
 CURL* LibCurlEasyHandle::DataPrivate::getHandle()
 {
@@ -244,7 +244,7 @@ ucf::agents::network::http::HttpResponseMetrics LibCurlEasyHandle::DataPrivate::
     getInfo(CURLINFO_SIZE_DOWNLOAD_T, &responseLength);
     long httpVersion{0};
     getInfo(CURLINFO_HTTP_VERSION, &httpVersion);
-    
+
     std::string versionString;
     switch(httpVersion)
     {
@@ -263,7 +263,7 @@ ucf::agents::network::http::HttpResponseMetrics LibCurlEasyHandle::DataPrivate::
         default:
             versionString = "HTTP Unknown";
     }
-    
+
     return { 0, static_cast<int>(nameLookup) / 1000, static_cast<int>(connectTime - nameLookup) / 1000, static_cast<int>(startTransferTime - preTransferTime) / 1000, static_cast<int>(transferTime - startTransferTime) / 1000,  static_cast<size_t>(responseLength), versionString };
 }
 
@@ -423,7 +423,7 @@ void LibCurlEasyHandle::setInFileSizeLarge(size_t file_size)
 }
 
 void LibCurlEasyHandle::setCommonOptions()
-{    
+{
     mDataPrivate->setOption(CURLOPT_READFUNCTION, request_body_callback);
     mDataPrivate->setOption(CURLOPT_READDATA, this);
     mDataPrivate->setOption(CURLOPT_SEEKFUNCTION, seek_body_callback);
@@ -441,10 +441,10 @@ void LibCurlEasyHandle::setCommonOptions()
     mDataPrivate->setOption(CURLOPT_SSL_VERIFYHOST, 0L);
 
     mDataPrivate->setOption(CURLOPT_NOSIGNAL, 1L);
-    
+
     // Connection timeout (TCP + TLS handshake), default 30 seconds
     mDataPrivate->setOption(CURLOPT_CONNECTTIMEOUT, 30L);
-    
+
     // Low speed detection: timeout if speed < 1KB/s for 30 seconds
     mDataPrivate->setOption(CURLOPT_LOW_SPEED_LIMIT, 1000L);
     mDataPrivate->setOption(CURLOPT_LOW_SPEED_TIME, 30L);
@@ -512,9 +512,9 @@ void LibCurlEasyHandle::headersCompleted()
 
 void LibCurlEasyHandle::finishHandle(CURLcode code)
 {
-    LIBCURL_LOG_INFO("[REQUEST_FINISH] requestId=" << mDataPrivate->getRequestId() 
-                     << ", trackingId=" << mDataPrivate->getTrackingId() 
-                     << ", code=" << static_cast<int>(code) 
+    LIBCURL_LOG_INFO("[REQUEST_FINISH] requestId=" << mDataPrivate->getRequestId()
+                     << ", trackingId=" << mDataPrivate->getTrackingId()
+                     << ", code=" << static_cast<int>(code)
                      << " (" << curl_easy_strerror(code) << ")");
     if (code == CURLE_OK)
     {
@@ -551,7 +551,7 @@ ucf::agents::network::http::ResponseErrorStruct LibCurlEasyHandle::makeErrorData
     case CURLE_COULDNT_RESOLVE_PROXY:
         errorStruct.errorType = ucf::agents::network::http::ResponseErrorType::DNSError;
         break;
-    
+
     case CURLE_COULDNT_CONNECT:
     case CURLE_SEND_ERROR:
     case CURLE_RECV_ERROR:
@@ -576,8 +576,10 @@ ucf::agents::network::http::ResponseErrorStruct LibCurlEasyHandle::makeErrorData
     case CURLE_OPERATION_TIMEDOUT:
         errorStruct.errorType = ucf::agents::network::http::ResponseErrorType::TimeoutError;
         break;
-    case CURLE_REMOTE_ACCESS_DENIED:
     case CURLE_ABORTED_BY_CALLBACK:
+        errorStruct.errorType = ucf::agents::network::http::ResponseErrorType::CanceledError;
+        break;
+    case CURLE_REMOTE_ACCESS_DENIED:
         errorStruct.errorType = ucf::agents::network::http::ResponseErrorType::OtherError;
         break;
     default:

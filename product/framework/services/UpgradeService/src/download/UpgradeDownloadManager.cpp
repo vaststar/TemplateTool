@@ -167,6 +167,11 @@ void UpgradeDownloadManager::attemptDownload(std::shared_ptr<DownloadSession> se
         ucf::utilities::FilePathUtils::utf8FromPath(session->partialFilePath)
     );
 
+    // Capture requestId so cancelDownload() can abort the transport-level
+    // transfer. The HTTP layer will deliver a terminal callback with
+    // errorType=CanceledError, which the isCurrent() gate will discard.
+    session->requestId = request->getRequestId();
+
     httpManager->downloadContentToFile(*request,
         [this, session](const network::http::HttpDownloadToFileResponse& response)
         {
@@ -252,11 +257,33 @@ void UpgradeDownloadManager::cancelDownload()
     {
         std::lock_guard<std::mutex> lk(mSessionMutex);
         dropped = std::move(mActiveSession);
-        mActiveSession.reset();
     }
-    if (dropped) {
-        UPGRADE_LOG_INFO("Download cancelled (gen=" << dropped->generation << ")");
+    if (!dropped) {
+        return;
     }
+
+    UPGRADE_LOG_INFO("Download cancelled (gen=" << dropped->generation << ")");
+
+    // Abort the underlying HTTP transfer so we don't keep downloading bytes
+    // for a session that no caller will observe. The terminal callback that
+    // results (errorType=CanceledError) is automatically discarded by the
+    // isCurrent() gate at the top of the response lambda.
+    if (dropped->requestId.empty()) {
+        return;
+    }
+    auto coreFramework = mCoreFramework.lock();
+    if (!coreFramework) {
+        return;
+    }
+    auto networkService = coreFramework->getService<INetworkService>().lock();
+    if (!networkService) {
+        return;
+    }
+    auto httpManager = networkService->getNetworkHttpManager().lock();
+    if (!httpManager) {
+        return;
+    }
+    httpManager->cancelRequest(dropped->requestId);
 }
 
 void UpgradeDownloadManager::verifyPackage(

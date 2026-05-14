@@ -91,6 +91,10 @@ private:
         std::int64_t resumedBytes{0};
         int currentRetry{0};
         std::chrono::steady_clock::time_point lastProgressTime{};
+        /// requestId of the in-flight HTTP transfer. Empty when no transfer
+        /// is currently active for this session (e.g. between retries).
+        /// Used by cancelDownload() to abort the transport-level transfer.
+        std::string requestId;
     };
 
     void ensureDownloadDirectory();
