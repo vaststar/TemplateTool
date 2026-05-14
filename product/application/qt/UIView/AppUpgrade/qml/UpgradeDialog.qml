@@ -125,7 +125,10 @@ UTDialog {
             UTButton {
                 visible: dialog.controller.downloading
                 text: qsTr("Cancel")
-                onClicked: dialog.controller.cancelDownload()
+                onClicked: {
+                    dialog.controller.cancelDownload()
+                    dialog.close()
+                }
                 focus: visible
             }
 

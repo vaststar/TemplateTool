@@ -1055,7 +1055,7 @@ Double-click a rule to view details.</translation>
     <message>
         <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
         <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
-        <translation type="unfinished"></translation>
+        <translation>This is a UIViewMessageBoxHelper::showOkCancel test.</translation>
     </message>
     <message>
         <source>This is a UIViewHelper::showMessageAsync test.</source>
@@ -1998,7 +1998,7 @@ Press ESC to cancel</translation>
     <message>
         <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="121"/>
         <source>Background</source>
-        <translation type="unfinished"></translation>
+        <translation>Background</translation>
     </message>
     <message>
         <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="127"/>
@@ -2006,22 +2006,22 @@ Press ESC to cancel</translation>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="134"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="137"/>
         <source>Install &amp;&amp; Restart</source>
         <translation>Install &amp;&amp; Restart</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="142"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="145"/>
         <source>Download &amp;&amp; Install</source>
         <translation>Download &amp;&amp; Install</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="150"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="153"/>
         <source>Later</source>
         <translation>Later</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="150"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="153"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
