@@ -14,6 +14,7 @@ Item {
     signal showMockDetail(var ruleData)
 
     property alias currentRuleSection: rulesNavRepeater.currentIndex
+    property var bypassHostsModel: []
 
     function loadMockFormData(data) {
         mockUrl.text     = data.url_pattern || ""
@@ -23,6 +24,12 @@ Item {
         mockHeaders.text = data.headers || ""
         rulesNavRepeater.currentIndex = 0
     }
+
+    function refreshBypassHosts() {
+        bypassHostsModel = root.controller.rulesManager.getBypassHosts()
+    }
+
+    Component.onCompleted: refreshBypassHosts()
 
     // ── Theme ──
     readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
@@ -50,6 +57,7 @@ Item {
                         {icon: "🔴", label: qsTr("Breakpoints")},
                         {icon: "🚫", label: qsTr("Blacklist")},
                         {icon: "📂", label: qsTr("Map Local")},
+                        {icon: "🛡", label: qsTr("Bypass Hosts")},
                         {icon: "🔀", label: qsTr("Map Remote")},
                         {icon: "🐌", label: qsTr("Throttle")}
                     ]
@@ -302,6 +310,101 @@ Item {
                                 }
                             }
                             UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map local rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5 }
+                        }
+                    }
+                }
+
+                // ─── Bypass Hosts ───
+                ColumnLayout {
+                    spacing: 10
+
+                    UTText { text: qsTr("Bypass Hosts (Passthrough)"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
+                    UTText {
+                        text: qsTr("Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.")
+                        fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
+                        wrapMode: Text.WordWrap; Layout.fillWidth: true
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true; implicitHeight: 66; radius: 4
+                        color: Qt.alpha("#FF9800", 0.08); border.color: Qt.alpha("#FF9800", 0.25); border.width: 1
+                        ColumnLayout {
+                            anchors.fill: parent; anchors.margins: 8; spacing: 4
+                            UTText { text: qsTr("Note: bypassed hosts will not show request/response details in Capture."); fontEnum: UIFontToken.Caption_Text; color: "#FF9800"; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                            UTText { text: qsTr("They are forwarded directly so the app can connect successfully."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.8; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 8; Layout.fillWidth: true
+                        UTTextField { id: bypassHostInput; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Host regex, e.g. (^|\\.)openai\\.com(:\\d+)?$") }
+                        UTButton {
+                            text: qsTr("+ Add")
+                            onClicked: {
+                                var p = bypassHostInput.text.trim()
+                                if (!p)
+                                    return
+                                var next = root.controller.rulesManager.getBypassHosts()
+                                if (next.indexOf(p) < 0)
+                                    next.push(p)
+                                root.controller.rulesManager.setBypassHosts(next)
+                                bypassHostInput.text = ""
+                                root.refreshBypassHosts()
+                            }
+                        }
+                        UTButton { text: qsTr("Reload"); onClicked: root.refreshBypassHosts() }
+                        UTButton {
+                            text: qsTr("Reset Default")
+                            onClicked: {
+                                root.controller.rulesManager.setBypassHosts([
+                                    "(^|\\.)openai\\.com(:\\d+)?$",
+                                    "(^|\\.)chatgpt\\.com(:\\d+)?$",
+                                    "(^|\\.)oaistatic\\.com(:\\d+)?$",
+                                    "(^|\\.)oaiusercontent\\.com(:\\d+)?$",
+                                    "(^|\\.)githubcopilot\\.com(:\\d+)?$",
+                                    "(^|\\.)copilot\\.microsoft\\.com(:\\d+)?$",
+                                    "(^|\\.)doubao\\.com(:\\d+)?$",
+                                    "(^|\\.)volces\\.com(:\\d+)?$"
+                                ])
+                                root.refreshBypassHosts()
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true; Layout.fillHeight: true
+                        color: root._inputBg; border.color: root._inputBorder; border.width: 1; radius: 4
+
+                        ListView {
+                            id: bypassListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
+                            model: root.bypassHostsModel
+
+                            delegate: Rectangle {
+                                width: bypassListView.width; height: 28; radius: 3
+                                color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
+
+                                RowLayout {
+                                    anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
+                                    Rectangle { width: 14; height: 14; radius: 7; color: "#4CAF50"; anchors.verticalCenter: parent.verticalCenter }
+                                    UTText { Layout.fillWidth: true; text: modelData; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
+                                    UTButton {
+                                        text: "✕"; implicitWidth: 28; implicitHeight: 24
+                                        onClicked: {
+                                            var next = root.controller.rulesManager.getBypassHosts()
+                                            next.splice(index, 1)
+                                            root.controller.rulesManager.setBypassHosts(next)
+                                            root.refreshBypassHosts()
+                                        }
+                                    }
+                                }
+                            }
+
+                            UTText {
+                                anchors.centerIn: parent
+                                visible: parent.count === 0
+                                text: qsTr("No bypass hosts. Add one above.")
+                                fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5
+                            }
                         }
                     }
                 }

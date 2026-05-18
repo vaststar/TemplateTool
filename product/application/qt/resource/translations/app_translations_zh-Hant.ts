@@ -420,17 +420,17 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="534"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="541"/>
         <source>Exported %1 requests</source>
         <translation>已匯出 %1 個請求</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="746"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="769"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation>憑證資料夾尚不存在。請先啟動代理以產生 CA 憑證。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="760"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/NetworkProxyController.cpp" line="783"/>
         <source>Certificate folder: %1</source>
         <translation>憑證資料夾：%1</translation>
     </message>
@@ -501,312 +501,358 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkRulesTab</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="49"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="56"/>
         <source>Mock Response</source>
         <translation>Mock 回應</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="50"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="57"/>
         <source>Breakpoints</source>
         <translation>中斷點</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="51"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="58"/>
         <source>Blacklist</source>
         <translation>黑名單</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="52"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="59"/>
         <source>Map Local</source>
         <translation>對應本機</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="53"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="60"/>
+        <source>Bypass Hosts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="61"/>
         <source>Map Remote</source>
         <translation>對應遠端</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="54"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="62"/>
         <source>Throttle</source>
         <translation>限速</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="83"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="91"/>
         <source>Mock Response Rules</source>
         <translation>Mock 回應規則</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="84"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="92"/>
         <source>Match requests by URL pattern and return a custom response. Mocked requests will appear in Capture with a &quot;MOCK&quot; tag.</source>
         <translation>依 URL 比對請求並回傳自訂回應。被 Mock 的請求會在擷取中以 &quot;MOCK&quot; 標籤顯示。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="87"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="95"/>
         <source>URL Pattern:</source>
         <translation>URL 比對：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="88"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
         <source>e.g. /api/user.*</source>
         <translation>例如 /api/user.*</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="89"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="152"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="97"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="160"/>
         <source>🧪 Test</source>
         <translation>🧪 測試</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="90"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="98"/>
         <source>Status:</source>
         <translation>狀態：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="92"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="100"/>
         <source>Content-Type:</source>
         <translation>Content-Type：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="94"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="102"/>
         <source>Headers:</source>
         <translation>Headers：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="95"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="103"/>
         <source>X-Custom: value  (one per line or comma-separated)</source>
         <translation>X-Custom: value  （每行一個或以逗號分隔）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="104"/>
         <source>Body:</source>
         <translation>Body：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="97"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="105"/>
         <source>{&quot;message&quot;: &quot;mocked&quot;}</source>
         <translation>{&quot;message&quot;: &quot;mocked&quot;}</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="101"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="109"/>
         <source>+ Add Rule</source>
         <translation>+ 新增規則</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="103"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="154"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="111"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="162"/>
         <source>Clear All</source>
         <translation>全部清除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="126"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="134"/>
         <source>No mock rules. Add one above.
 Double-click a rule to view details.</source>
         <translation>尚無 Mock 規則，請於上方新增。
 按兩下規則查看詳情。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="134"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="142"/>
         <source>Breakpoint Rules</source>
         <translation>中斷點規則</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="135"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="143"/>
         <source>Pause matching requests so you can inspect or modify them before forwarding.</source>
         <translation>暫停符合的請求，方便在放行前檢視或修改。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="142"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="150"/>
         <source>⚠️ Interception is OFF — breakpoints won&apos;t take effect.</source>
         <translation>⚠️ 攔截已關閉——中斷點不會生效。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="143"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="151"/>
         <source>Enable</source>
         <translation>啟用</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="149"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="286"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="157"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="294"/>
         <source>URL pattern (regex)</source>
         <translation>URL 比對（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="151"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="257"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="288"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="318"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="159"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="265"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="296"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="342"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="421"/>
         <source>+ Add</source>
         <translation>+ 新增</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="171"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="179"/>
         <source>No breakpoint rules.</source>
         <translation>尚無中斷點規則。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="177"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="185"/>
         <source>Paused Requests (%1)</source>
         <translation>已暫停的請求 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="202"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="210"/>
         <source>▶ Forward</source>
         <translation>▶ 放行</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="206"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="214"/>
         <source>✕ Drop</source>
         <translation>✕ 丟棄</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="216"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="224"/>
         <source>▶ Forward All (%1)</source>
         <translation>▶ 全部放行 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="224"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="232"/>
         <source>✕ Drop All (%1)</source>
         <translation>✕ 全部丟棄 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="239"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="247"/>
         <source>How to use Breakpoints:</source>
         <translation>中斷點使用方法：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="240"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="248"/>
         <source>1. Add a URL pattern rule above (regex)</source>
         <translation>1. 於上方加入 URL 比對規則（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="241"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="249"/>
         <source>2. Interception is auto-enabled when you add a rule</source>
         <translation>2. 加入規則後自動啟用攔截</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="242"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="250"/>
         <source>3. When a matching request arrives, it pauses and appears in &quot;Paused Requests&quot;</source>
         <translation>3. 符合的請求送達後會被暫停，並出現在 &quot;已暫停的請求&quot; 中</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="243"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="251"/>
         <source>4. Click &quot;▶ Forward&quot; to let it through, or &quot;✕ Drop&quot; to block it (returns 502)</source>
         <translation>4. 點擊 &quot;▶ 放行&quot; 讓其通過，或 &quot;✕ 丟棄&quot; 阻斷（回傳 502）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="244"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="252"/>
         <source>5. Paused requests auto-forward after 5 minutes timeout</source>
         <translation>5. 暫停的請求於 5 分鐘逾時後自動放行</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="252"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="260"/>
         <source>Blacklist Rules</source>
         <translation>黑名單規則</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="253"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="261"/>
         <source>Block matching requests entirely. They will receive a 403 response.</source>
         <translation>完全阻斷符合的請求，將回傳 403 回應。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="256"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="264"/>
         <source>URL pattern to block (regex)</source>
         <translation>要阻斷的 URL 比對（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="274"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="282"/>
         <source>No blacklist rules.</source>
         <translation>尚無黑名單規則。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="282"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="290"/>
         <source>Map Local Rules</source>
         <translation>對應本機規則</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="283"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="291"/>
         <source>Serve a local file instead of the remote response for matching URLs.</source>
         <translation>對符合的 URL 以本機檔案取代遠端回應。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="287"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="295"/>
         <source>Local file path</source>
         <translation>本機檔案路徑</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="304"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="312"/>
         <source>No map local rules.</source>
         <translation>尚無對應本機規則。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="312"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="321"/>
+        <source>Bypass Hosts (Passthrough)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
+        <source>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="333"/>
+        <source>Note: bypassed hosts will not show request/response details in Capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
+        <source>They are forwarded directly so the app can connect successfully.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="340"/>
+        <source>Host regex, e.g. (^|.)openai.com(:d+)?$</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="355"/>
+        <source>Reload</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
+        <source>Reset Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="405"/>
+        <source>No bypass hosts. Add one above.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="415"/>
         <source>Map Remote Rules</source>
         <translation>對應遠端規則</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="313"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="416"/>
         <source>Redirect matching requests to a different URL.</source>
         <translation>將符合的請求重新導向至另一個 URL。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="316"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="419"/>
         <source>Source URL pattern (regex)</source>
         <translation>來源 URL 比對（正規表示式）</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="317"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="420"/>
         <source>Destination URL</source>
         <translation>目的 URL</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="437"/>
         <source>No map remote rules.</source>
         <translation>尚無對應遠端規則。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="342"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="445"/>
         <source>Bandwidth Throttle</source>
         <translation>頻寬限速</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="343"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="446"/>
         <source>Simulate slow network conditions by limiting bandwidth.</source>
         <translation>透過限制頻寬模擬慢速網路。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="345"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="448"/>
         <source>Enable Throttle</source>
         <translation>啟用限速</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="351"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="454"/>
         <source>Download:</source>
         <translation>下載：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="353"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="456"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="460"/>
         <source>%1 KB/s</source>
         <translation>%1 KB/s</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="353"/>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="456"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="460"/>
         <source>Unlimited</source>
         <translation>不限制</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="355"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="458"/>
         <source>Upload:</source>
         <translation>上傳：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="362"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="465"/>
         <source>Presets:</source>
         <translation>預設：</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="376"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="479"/>
         <source>Apply</source>
         <translation>套用</translation>
     </message>
@@ -1005,22 +1051,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>ProxyRulesManager</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="216"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="251"/>
         <source>✗ Empty pattern</source>
         <translation>✗ 比對模式為空</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="220"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="255"/>
         <source>✗ Invalid regex: %1</source>
         <translation>✗ 無效的正規表示式：%1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="224"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="259"/>
         <source>✓ Match! Captured: &quot;%1&quot;</source>
         <translation>✓ 比對成功！擷取：&quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="226"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="261"/>
         <source>✗ No match</source>
         <translation>✗ 未比對</translation>
     </message>
@@ -1056,10 +1102,6 @@ Double-click a rule to view details.</source>
         <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
         <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
         <translation>這是 UIViewMessageBoxHelper::showOkCancel 的測試。</translation>
-    </message>
-    <message>
-        <source>This is a UIViewHelper::showMessageAsync test.</source>
-        <translation type="vanished">這是 UIViewHelper::showMessageAsync 的測試。</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>

@@ -134,6 +134,13 @@ static QString decodeBodyText(const QJsonObject& data, const QString& bodyKey, c
     return body;
 }
 
+static QString shellSingleQuote(const QString& value)
+{
+    QString escaped = value;
+    escaped.replace(QStringLiteral("'"), QStringLiteral("'\"'\"'"));
+    return QStringLiteral("'%1'").arg(escaped);
+}
+
 QString NetworkProxyController::getDetailText() const
 {
     if (!m_requestModel || m_selectedIndex < 0 || m_selectedIndex >= m_requestModel->rowCount())
@@ -585,14 +592,30 @@ void NetworkProxyController::copyRequestCurl()
 
     QJsonObject req = m_requestModel->getRequestAt(m_selectedIndex);
     QString method = req["method"].toString();
+    if (method.isEmpty())
+        method = QStringLiteral("GET");
     QString url = req["url"].toString();
 
-    QString curl = QStringLiteral("curl -X %1 '%2'").arg(method, url);
+    QString curl = QStringLiteral("curl -X %1 %2").arg(method, shellSingleQuote(url));
 
     // Add headers
     QJsonObject headers = req["request_headers"].toObject();
     for (auto it = headers.begin(); it != headers.end(); ++it) {
-        curl += QStringLiteral(" -H '%1: %2'").arg(it.key(), it.value().toString());
+        QString headerLine = QStringLiteral("%1: %2").arg(it.key(), it.value().toString());
+        curl += QStringLiteral(" -H %1").arg(shellSingleQuote(headerLine));
+    }
+
+    // Add request body for replayable requests.
+    QString requestBody = req["request_body"].toString();
+    bool requestBodyBase64 = req["request_body_base64"].toBool(false);
+    qint64 requestContentLength = req["request_content_length"].toVariant().toLongLong();
+    if (!requestBody.isEmpty() || requestContentLength > 0) {
+        if (requestBodyBase64) {
+            curl += QStringLiteral(" --data-binary %1").arg(shellSingleQuote(requestBody));
+            curl += QStringLiteral(" -H 'X-TemplateTool-Body-Base64: 1'");
+        } else {
+            curl += QStringLiteral(" --data-raw %1").arg(shellSingleQuote(requestBody));
+        }
     }
 
     QClipboard* clipboard = QGuiApplication::clipboard();

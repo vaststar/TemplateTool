@@ -62,6 +62,20 @@ from mitmproxy.flow import Flow
 logger = logging.getLogger("proxy_addon")
 
 
+DEFAULT_AI_BYPASS_HOSTS = [
+    r"(^|\.)openai\.com(:\d+)?$",
+    r"(^|\.)chatgpt\.com(:\d+)?$",
+    r"(^|\.)oaistatic\.com(:\d+)?$",
+    r"(^|\.)oaiusercontent\.com(:\d+)?$",
+    r"(^|\.)githubcopilot\.com(:\d+)?$",
+    r"(^|\.)copilot\.microsoft\.com(:\d+)?$",
+    r"(^|\.)anthropic\.com(:\d+)?$",
+    r"(^|\.)claude\.ai(:\d+)?$",
+    r"(^|\.)doubao\.com(:\d+)?$",
+    r"(^|\.)volces\.com(:\d+)?$",
+]
+
+
 def _encode_body(raw_bytes: bytes, content_type: str = "") -> tuple[str, bool]:
     """Encode body bytes for JSON transport.
 
@@ -307,6 +321,7 @@ class ProxyAddon:
         self._blacklist_rules: list[dict] = []
         self._map_local_rules: list[dict] = []
         self._map_remote_rules: list[dict] = []
+        self._bypass_hosts: list[str] = list(DEFAULT_AI_BYPASS_HOSTS)
 
         # Intercept state
         self._intercept_enabled = False
@@ -320,8 +335,36 @@ class ProxyAddon:
 
     def load(self, loader):
         """Called by mitmproxy on addon load."""
+        self._apply_bypass_hosts()
         self._tcp.start()
         logger.info("ProxyAddon loaded, connecting to control server...")
+
+    def _normalize_bypass_hosts(self, hosts) -> list[str]:
+        normalized: list[str] = []
+        if not isinstance(hosts, list):
+            return normalized
+        for item in hosts:
+            if isinstance(item, str):
+                value = item.strip()
+                if value:
+                    normalized.append(value)
+            elif isinstance(item, dict):
+                value = str(item.get("host_pattern", "")).strip()
+                if value:
+                    normalized.append(value)
+        return normalized
+
+    def _apply_bypass_hosts(self):
+        """Configure mitmproxy passthrough hosts to avoid TLS MITM for pinned clients."""
+        try:
+            ctx.options.update(ignore_hosts=self._bypass_hosts)
+            logger.info("Configured %d bypass hosts for passthrough", len(self._bypass_hosts))
+            self._tcp.send({
+                "type": "status",
+                "message": f"Bypass hosts active: {len(self._bypass_hosts)}",
+            })
+        except Exception as exc:
+            logger.warning("Failed to apply bypass hosts: %s", exc)
 
     def done(self):
         """Called by mitmproxy on shutdown."""
@@ -614,6 +657,12 @@ class ProxyAddon:
                 logger.info("Throttle %s (DL=%dKB/s UL=%dKB/s)",
                             "on" if self._throttle_enabled else "off",
                             self._throttle_dl_kbps, self._throttle_ul_kbps)
+
+            elif cmd_type == "update_bypass_hosts":
+                hosts = msg.get("hosts", msg.get("rules", []))
+                self._bypass_hosts = self._normalize_bypass_hosts(hosts)
+                self._apply_bypass_hosts()
+                logger.info("Updated bypass hosts: %d", len(self._bypass_hosts))
 
             elif cmd_type == "resume_flow":
                 flow_id = msg.get("flow_id", "")

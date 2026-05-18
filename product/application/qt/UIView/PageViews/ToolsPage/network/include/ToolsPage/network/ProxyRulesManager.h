@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QStringList>
 #include <QtQml>
 
 class QTcpSocket;
@@ -57,6 +58,10 @@ public:
     // ── Throttle ──
     Q_INVOKABLE void setThrottle(bool enabled, int downloadKBps, int uploadKBps);
 
+    // ── Bypass Hosts (passthrough / no MITM) ──
+    Q_INVOKABLE void setBypassHosts(const QStringList& hostPatterns);
+    Q_INVOKABLE QStringList getBypassHosts() const;
+
     // ── URL Pattern Testing ──
     Q_INVOKABLE QString testUrlPattern(const QString& pattern, const QString& testUrl);
 
@@ -78,4 +83,5 @@ private:
     QJsonArray m_blacklistRules;
     QJsonArray m_mapLocalRules;
     QJsonArray m_mapRemoteRules;
+    QStringList m_bypassHosts;
 };

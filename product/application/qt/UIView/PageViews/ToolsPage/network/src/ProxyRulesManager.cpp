@@ -5,6 +5,17 @@
 ProxyRulesManager::ProxyRulesManager(QObject* parent)
     : QObject(parent)
 {
+    // Default passthrough domains for AI tools that commonly use TLS pinning.
+    m_bypassHosts = {
+        QStringLiteral("(^|\\.)openai\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)chatgpt\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)oaistatic\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)oaiusercontent\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)githubcopilot\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)copilot\\.microsoft\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)doubao\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)volces\\.com(:\\d+)?$")
+    };
 }
 
 void ProxyRulesManager::setSendCommandFn(SendCommandFn fn)
@@ -208,6 +219,30 @@ void ProxyRulesManager::setThrottle(bool enabled, int downloadKBps, int uploadKB
     sendCommand(cmd);
 }
 
+void ProxyRulesManager::setBypassHosts(const QStringList& hostPatterns)
+{
+    m_bypassHosts.clear();
+    for (const QString& pattern : hostPatterns) {
+        QString trimmed = pattern.trimmed();
+        if (!trimmed.isEmpty())
+            m_bypassHosts.append(trimmed);
+    }
+
+    QJsonArray hosts;
+    for (const QString& host : m_bypassHosts)
+        hosts.append(host);
+
+    QJsonObject cmd;
+    cmd["type"] = QStringLiteral("update_bypass_hosts");
+    cmd["hosts"] = hosts;
+    sendCommand(cmd);
+}
+
+QStringList ProxyRulesManager::getBypassHosts() const
+{
+    return m_bypassHosts;
+}
+
 // ====================== URL Pattern Testing ======================
 
 QString ProxyRulesManager::testUrlPattern(const QString& pattern, const QString& testUrl)
@@ -258,6 +293,16 @@ void ProxyRulesManager::sendAllRules()
         QJsonObject cmd;
         cmd["type"] = QStringLiteral("update_map_remote");
         cmd["rules"] = m_mapRemoteRules;
+        sendCommand(cmd);
+    }
+
+    if (!m_bypassHosts.isEmpty()) {
+        QJsonArray hosts;
+        for (const QString& host : m_bypassHosts)
+            hosts.append(host);
+        QJsonObject cmd;
+        cmd["type"] = QStringLiteral("update_bypass_hosts");
+        cmd["hosts"] = hosts;
         sendCommand(cmd);
     }
 }
