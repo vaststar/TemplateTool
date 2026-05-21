@@ -8,10 +8,9 @@
 #include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Utilities/JsonUtils/JsonValue.h>
+#include <ucf/Utilities/VersionUtils/Version.h>
 
 #include <format>
-#include <sstream>
-#include <vector>
 
 namespace ucf::service {
 
@@ -166,8 +165,10 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     info.mandatory    = json.get("mandatory").asBool().value_or(false);
     info.minVersion   = json.get("minVersion").asString().value_or("");
 
-    // Check if the manifest version is newer than current
-    result.hasUpgrade = isNewerVersion(currentVersion, info.version);
+    // Check if the manifest version is newer than current. Malformed
+    // version strings are treated as "not newer" — VersionUtils returns
+    // false in that case rather than throwing.
+    result.hasUpgrade = ucf::utilities::Version::isNewer(info.version, currentVersion);
 
     if (result.hasUpgrade) {
         // Look up platform-specific package (e.g. "windows-x64")
@@ -186,36 +187,6 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     }
 
     return result;
-}
-
-bool UpgradeCheckManager::isNewerVersion(
-    const std::string& current, const std::string& latest) const
-{
-    // Compare dot-separated numeric version strings (e.g. "2026.04.0.1523")
-    auto parseSegments = [](const std::string& v) -> std::vector<int> {
-        std::vector<int> segments;
-        std::istringstream ss(v);
-        std::string token;
-        while (std::getline(ss, token, '.')) {
-            try { segments.push_back(std::stoi(token)); }
-            catch (...) { segments.push_back(0); }
-        }
-        return segments;
-    };
-
-    auto cur = parseSegments(current);
-    auto lat = parseSegments(latest);
-
-    // Pad to same length
-    size_t maxLen = std::max(cur.size(), lat.size());
-    cur.resize(maxLen, 0);
-    lat.resize(maxLen, 0);
-
-    for (size_t i = 0; i < maxLen; ++i) {
-        if (lat[i] > cur[i]) return true;
-        if (lat[i] < cur[i]) return false;
-    }
-    return false; // equal
 }
 
 } // namespace ucf::service

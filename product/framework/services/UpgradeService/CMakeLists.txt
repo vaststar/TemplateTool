@@ -43,6 +43,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ArchiveUtils
     FilePathUtils
     JsonUtils
+    VersionUtils
     OSUtils
     LoggerUtils
     CompressionUtils

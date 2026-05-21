@@ -523,7 +523,7 @@ Proxy: 127.0.0.1:%1</translation>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="60"/>
         <source>Bypass Hosts</source>
-        <translation type="unfinished"></translation>
+        <translation>Bypass Hosts</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="61"/>
@@ -747,42 +747,42 @@ Double-click a rule to view details.</translation>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="321"/>
         <source>Bypass Hosts (Passthrough)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bypass Hosts (Passthrough)</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
         <source>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</source>
-        <translation type="unfinished"></translation>
+        <translation>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="333"/>
         <source>Note: bypassed hosts will not show request/response details in Capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>Note: bypassed hosts will not show request/response details in Capture.</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
         <source>They are forwarded directly so the app can connect successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>They are forwarded directly so the app can connect successfully.</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="340"/>
         <source>Host regex, e.g. (^|.)openai.com(:d+)?$</source>
-        <translation type="unfinished"></translation>
+        <translation>Host regex, e.g. (^|.)openai.com(:d+)?$</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="355"/>
         <source>Reload</source>
-        <translation type="unfinished"></translation>
+        <translation>Reload</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
         <source>Reset Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Reset Default</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="405"/>
         <source>No bypass hosts. Add one above.</source>
-        <translation type="unfinished"></translation>
+        <translation>No bypass hosts. Add one above.</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="415"/>
@@ -1051,22 +1051,22 @@ Double-click a rule to view details.</translation>
 <context>
     <name>ProxyRulesManager</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="251"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="320"/>
         <source>✗ Empty pattern</source>
         <translation>✗ Empty pattern</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="255"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="324"/>
         <source>✗ Invalid regex: %1</source>
         <translation>✗ Invalid regex: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="259"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="328"/>
         <source>✓ Match! Captured: &quot;%1&quot;</source>
         <translation>✓ Match! Captured: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="261"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="330"/>
         <source>✗ No match</source>
         <translation>✗ No match</translation>
     </message>

@@ -7,14 +7,83 @@ ProxyRulesManager::ProxyRulesManager(QObject* parent)
 {
     // Default passthrough domains for AI tools that commonly use TLS pinning.
     m_bypassHosts = {
+        // OpenAI / ChatGPT / Codex
         QStringLiteral("(^|\\.)openai\\.com(:\\d+)?$"),
         QStringLiteral("(^|\\.)chatgpt\\.com(:\\d+)?$"),
         QStringLiteral("(^|\\.)oaistatic\\.com(:\\d+)?$"),
         QStringLiteral("(^|\\.)oaiusercontent\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)openaiapi-site\\.azureedge\\.net(:\\d+)?$"),
+        QStringLiteral("(^|\\.)codex\\.openai\\.com(:\\d+)?$"),
+        // GitHub Copilot
         QStringLiteral("(^|\\.)githubcopilot\\.com(:\\d+)?$"),
         QStringLiteral("(^|\\.)copilot\\.microsoft\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)copilot-proxy\\.githubusercontent\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)individual\\.githubcopilot\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)business\\.githubcopilot\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)enterprise\\.githubcopilot\\.com(:\\d+)?$"),
+        // Anthropic / Claude
+        QStringLiteral("(^|\\.)anthropic\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)claude\\.ai(:\\d+)?$"),
+        // Google Gemini / Bard
+        QStringLiteral("(^|\\.)gemini\\.google\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)bard\\.google\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)generativelanguage\\.googleapis\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)aistudio\\.google\\.com(:\\d+)?$"),
+        // DeepSeek
+        QStringLiteral("(^|\\.)deepseek\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)deepseek\\.ai(:\\d+)?$"),
+        // Mistral
+        QStringLiteral("(^|\\.)mistral\\.ai(:\\d+)?$"),
+        // xAI / Grok
+        QStringLiteral("(^|\\.)x\\.ai(:\\d+)?$"),
+        QStringLiteral("(^|\\.)grok\\.com(:\\d+)?$"),
+        // Perplexity
+        QStringLiteral("(^|\\.)perplexity\\.ai(:\\d+)?$"),
+        // Cursor
+        QStringLiteral("(^|\\.)cursor\\.sh(:\\d+)?$"),
+        QStringLiteral("(^|\\.)cursor\\.com(:\\d+)?$"),
+        // Cody / Sourcegraph
+        QStringLiteral("(^|\\.)sourcegraph\\.com(:\\d+)?$"),
+        // Codeium / Windsurf
+        QStringLiteral("(^|\\.)codeium\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)windsurf\\.ai(:\\d+)?$"),
+        // Tabnine
+        QStringLiteral("(^|\\.)tabnine\\.com(:\\d+)?$"),
+        // Hugging Face
+        QStringLiteral("(^|\\.)huggingface\\.co(:\\d+)?$"),
+        // ByteDance Doubao / Volcengine
         QStringLiteral("(^|\\.)doubao\\.com(:\\d+)?$"),
-        QStringLiteral("(^|\\.)volces\\.com(:\\d+)?$")
+        QStringLiteral("(^|\\.)volces\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)volcengineapi\\.com(:\\d+)?$"),
+        // Moonshot / Kimi
+        QStringLiteral("(^|\\.)moonshot\\.cn(:\\d+)?$"),
+        QStringLiteral("(^|\\.)moonshot\\.ai(:\\d+)?$"),
+        QStringLiteral("(^|\\.)kimi\\.com(:\\d+)?$"),
+        // Zhipu / GLM
+        QStringLiteral("(^|\\.)bigmodel\\.cn(:\\d+)?$"),
+        QStringLiteral("(^|\\.)zhipuai\\.cn(:\\d+)?$"),
+        // Alibaba Qwen / Tongyi
+        QStringLiteral("(^|\\.)tongyi\\.aliyun\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)dashscope\\.aliyuncs\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)qwen\\.ai(:\\d+)?$"),
+        // Baidu Wenxin / ERNIE
+        QStringLiteral("(^|\\.)wenxin\\.baidu\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)yiyan\\.baidu\\.com(:\\d+)?$"),
+        // Tencent Hunyuan
+        QStringLiteral("(^|\\.)hunyuan\\.tencent\\.com(:\\d+)?$"),
+        // 01.AI / Yi
+        QStringLiteral("(^|\\.)01\\.ai(:\\d+)?$"),
+        QStringLiteral("(^|\\.)lingyiwanwu\\.com(:\\d+)?$"),
+        // MiniMax
+        QStringLiteral("(^|\\.)minimax\\.chat(:\\d+)?$"),
+        QStringLiteral("(^|\\.)minimaxi\\.com(:\\d+)?$"),
+        // Baichuan
+        QStringLiteral("(^|\\.)baichuan-ai\\.com(:\\d+)?$"),
+        // SenseTime
+        QStringLiteral("(^|\\.)sensetime\\.com(:\\d+)?$"),
+        QStringLiteral("(^|\\.)sensenova\\.cn(:\\d+)?$"),
+        // Stepfun
+        QStringLiteral("(^|\\.)stepfun\\.com(:\\d+)?$")
     };
 }
 

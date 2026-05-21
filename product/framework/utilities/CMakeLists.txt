@@ -6,5 +6,4 @@ endif()
 
 add_subdirectory(common_file)
 add_subdirectory(foundation)
-add_subdirectory(ipc)
-add_subdirectory(platform)
+add_subdirectory(extended)

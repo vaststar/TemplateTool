@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <ctime>
 #include <string>
@@ -7,50 +8,44 @@
 #include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
 
 namespace ucf::utilities {
+
+// Non-instantiable bag of free helpers that complement Instant /
+// LocalDate / LocalDateTime. Prefer the value types for new code;
+// the helpers here are kept for ergonomics at boundaries (time_t,
+// int64_t ms) and for duration formatting.
 class Utilities_EXPORT TimeUtils final
 {
 public:
     // ---- Current time as numeric values ----
-
-    /// Returns current UTC time in milliseconds since Unix epoch
     static int64_t getCurrentUTCMilliseconds();
-
-    /// Returns current UTC time in seconds since Unix epoch (std::time_t)
     static std::time_t getCurrentUTCSeconds();
 
     // ---- Current time as fixed-format strings ----
-
-    /// Returns current UTC time as "YYYY-MM-DD HH:MM:SS"
+    // "YYYY-MM-DD HH:MM:SS".
     static std::string getCurrentUTCTimeString();
-
-    /// Returns local timezone name, e.g. "Asia/Shanghai", "America/New_York"
+    // IANA name when available, otherwise abbreviation, otherwise "UTC".
     static std::string getLocalTimeZoneName();
 
     // ---- Custom format (caller provides time_t) ----
-    // pattern follows std::strftime specification, e.g. "%Y-%m-%d %H:%M:%S"
-    // Empty pattern returns empty string; invalid pattern falls back to "%Y-%m-%d %H:%M:%S"
-
-    /// Format a time_t value as local time string with the given pattern
+    // Pattern follows std::strftime. Empty pattern returns empty string;
+    // invalid pattern falls back to "%Y-%m-%d %H:%M:%S".
     static std::string formatLocalTime(std::time_t time, const std::string& pattern);
-
-    /// Format a time_t value as UTC time string with the given pattern
     static std::string formatUTCTime(std::time_t time, const std::string& pattern);
 
     // ---- Custom format (auto-captures current time) ----
-
-    /// Format current local time with the given pattern
     static std::string formatCurrentLocalTime(const std::string& pattern);
-
-    /// Format current UTC time with the given pattern
     static std::string formatCurrentUTCTime(const std::string& pattern);
 
     // ---- Duration formatting ----
-
-    /// Format seconds to "HH:MM:SS", e.g. 3661 -> "01:01:01"
+    // "HH:MM:SS", e.g. 3661 -> "01:01:01". Negative clamps to zero.
     static std::string formatSecondsToHMS(int totalSeconds);
-
-    /// Format seconds to "MM:SS", e.g. 125 -> "02:05"
+    // "MM:SS", e.g. 125 -> "02:05". Negative clamps to zero.
     static std::string formatSecondsToMS(int totalSeconds);
+
+    // "HH:MM:SS.fff", millisecond precision. Negative clamps to zero.
+    static std::string formatDuration(std::chrono::milliseconds duration);
+    // Human-readable, e.g. "1h 2m 3s", "500 ms". Negative clamps to zero.
+    static std::string formatDurationHuman(std::chrono::milliseconds duration);
 
 public:
     TimeUtils() = delete;
@@ -60,4 +55,5 @@ public:
     TimeUtils& operator=(TimeUtils&& rhs) = delete;
     ~TimeUtils() = delete;
 };
-}
+
+} // namespace ucf::utilities

@@ -523,7 +523,7 @@ Proxy: 127.0.0.1:%1</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="60"/>
         <source>Bypass Hosts</source>
-        <translation type="unfinished"></translation>
+        <translation>略過主機</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="61"/>
@@ -747,42 +747,42 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="321"/>
         <source>Bypass Hosts (Passthrough)</source>
-        <translation type="unfinished"></translation>
+        <translation>略過主機（直接轉發）</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
         <source>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</source>
-        <translation type="unfinished"></translation>
+        <translation>符合這些主機正則表達式的請求將跳過 MITM 解密。適用於使用憑證鎖定的 AI 工具（GPT/Codex/豆包）。</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="333"/>
         <source>Note: bypassed hosts will not show request/response details in Capture.</source>
-        <translation type="unfinished"></translation>
+        <translation>注意：被略過的主機不會在抓包中顯示請求/回應詳情。</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
         <source>They are forwarded directly so the app can connect successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>這些請求會被直接轉發，讓應用程式可以正常連線。</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="340"/>
         <source>Host regex, e.g. (^|.)openai.com(:d+)?$</source>
-        <translation type="unfinished"></translation>
+        <translation>主機正則表達式，例如 (^|.)openai.com(:d+)?$</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="355"/>
         <source>Reload</source>
-        <translation type="unfinished"></translation>
+        <translation>重新載入</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
         <source>Reset Default</source>
-        <translation type="unfinished"></translation>
+        <translation>還原預設</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="405"/>
         <source>No bypass hosts. Add one above.</source>
-        <translation type="unfinished"></translation>
+        <translation>尚無略過主機，請在上方新增。</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/NetworkRulesTab.qml" line="415"/>
@@ -1051,22 +1051,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>ProxyRulesManager</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="251"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="320"/>
         <source>✗ Empty pattern</source>
         <translation>✗ 比對模式為空</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="255"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="324"/>
         <source>✗ Invalid regex: %1</source>
         <translation>✗ 無效的正規表示式：%1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="259"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="328"/>
         <source>✓ Match! Captured: &quot;%1&quot;</source>
         <translation>✓ 比對成功！擷取：&quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="261"/>
+        <location filename="../../UIView/PageViews/ToolsPage/network/src/ProxyRulesManager.cpp" line="330"/>
         <source>✗ No match</source>
         <translation>✗ 未比對</translation>
     </message>

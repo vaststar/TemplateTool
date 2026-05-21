@@ -1,5 +1,6 @@
+add_subdirectory(TcpChannelUtils)
+add_subdirectory(ProcessBridgeUtils)
 add_subdirectory(ArchiveUtils)
-add_subdirectory(QRCodeUtils)
 add_subdirectory(ImageProcessUtils)
 add_subdirectory(ScreenCaptureUtils)
 add_subdirectory(ScreenRecordingUtils)

@@ -59,7 +59,6 @@ private:
         const std::string& jsonBody,
         const std::string& currentVersion,
         const std::string& platformKey) const;
-    bool isNewerVersion(const std::string& current, const std::string& latest) const;
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;

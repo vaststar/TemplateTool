@@ -63,16 +63,83 @@ logger = logging.getLogger("proxy_addon")
 
 
 DEFAULT_AI_BYPASS_HOSTS = [
+    # OpenAI / ChatGPT / Codex
     r"(^|\.)openai\.com(:\d+)?$",
     r"(^|\.)chatgpt\.com(:\d+)?$",
     r"(^|\.)oaistatic\.com(:\d+)?$",
     r"(^|\.)oaiusercontent\.com(:\d+)?$",
+    r"(^|\.)openaiapi-site\.azureedge\.net(:\d+)?$",
+    r"(^|\.)codex\.openai\.com(:\d+)?$",
+    # GitHub Copilot
     r"(^|\.)githubcopilot\.com(:\d+)?$",
     r"(^|\.)copilot\.microsoft\.com(:\d+)?$",
+    r"(^|\.)copilot-proxy\.githubusercontent\.com(:\d+)?$",
+    r"(^|\.)individual\.githubcopilot\.com(:\d+)?$",
+    r"(^|\.)business\.githubcopilot\.com(:\d+)?$",
+    r"(^|\.)enterprise\.githubcopilot\.com(:\d+)?$",
+    # Anthropic / Claude
     r"(^|\.)anthropic\.com(:\d+)?$",
     r"(^|\.)claude\.ai(:\d+)?$",
+    # Google Gemini / Bard
+    r"(^|\.)gemini\.google\.com(:\d+)?$",
+    r"(^|\.)bard\.google\.com(:\d+)?$",
+    r"(^|\.)generativelanguage\.googleapis\.com(:\d+)?$",
+    r"(^|\.)aistudio\.google\.com(:\d+)?$",
+    # DeepSeek
+    r"(^|\.)deepseek\.com(:\d+)?$",
+    r"(^|\.)deepseek\.ai(:\d+)?$",
+    # Mistral
+    r"(^|\.)mistral\.ai(:\d+)?$",
+    # xAI / Grok
+    r"(^|\.)x\.ai(:\d+)?$",
+    r"(^|\.)grok\.com(:\d+)?$",
+    # Perplexity
+    r"(^|\.)perplexity\.ai(:\d+)?$",
+    # Cursor
+    r"(^|\.)cursor\.sh(:\d+)?$",
+    r"(^|\.)cursor\.com(:\d+)?$",
+    # Cody / Sourcegraph
+    r"(^|\.)sourcegraph\.com(:\d+)?$",
+    # Codeium / Windsurf
+    r"(^|\.)codeium\.com(:\d+)?$",
+    r"(^|\.)windsurf\.ai(:\d+)?$",
+    # Tabnine
+    r"(^|\.)tabnine\.com(:\d+)?$",
+    # Hugging Face
+    r"(^|\.)huggingface\.co(:\d+)?$",
+    # ByteDance Doubao / Volcengine
     r"(^|\.)doubao\.com(:\d+)?$",
     r"(^|\.)volces\.com(:\d+)?$",
+    r"(^|\.)volcengineapi\.com(:\d+)?$",
+    # Moonshot / Kimi
+    r"(^|\.)moonshot\.cn(:\d+)?$",
+    r"(^|\.)moonshot\.ai(:\d+)?$",
+    r"(^|\.)kimi\.com(:\d+)?$",
+    # Zhipu / GLM
+    r"(^|\.)bigmodel\.cn(:\d+)?$",
+    r"(^|\.)zhipuai\.cn(:\d+)?$",
+    # Alibaba Qwen / Tongyi
+    r"(^|\.)tongyi\.aliyun\.com(:\d+)?$",
+    r"(^|\.)dashscope\.aliyuncs\.com(:\d+)?$",
+    r"(^|\.)qwen\.ai(:\d+)?$",
+    # Baidu Wenxin / ERNIE
+    r"(^|\.)wenxin\.baidu\.com(:\d+)?$",
+    r"(^|\.)yiyan\.baidu\.com(:\d+)?$",
+    # Tencent Hunyuan
+    r"(^|\.)hunyuan\.tencent\.com(:\d+)?$",
+    # 01.AI / Yi
+    r"(^|\.)01\.ai(:\d+)?$",
+    r"(^|\.)lingyiwanwu\.com(:\d+)?$",
+    # MiniMax
+    r"(^|\.)minimax\.chat(:\d+)?$",
+    r"(^|\.)minimaxi\.com(:\d+)?$",
+    # Baichuan
+    r"(^|\.)baichuan-ai\.com(:\d+)?$",
+    # SenseTime
+    r"(^|\.)sensetime\.com(:\d+)?$",
+    r"(^|\.)sensenova\.cn(:\d+)?$",
+    # Stepfun
+    r"(^|\.)stepfun\.com(:\d+)?$",
 ]
 
 

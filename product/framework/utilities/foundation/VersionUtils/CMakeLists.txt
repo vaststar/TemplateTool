@@ -1,21 +1,15 @@
 include(BuildModule)
 
-set(MODULE_MODULE_NAME TimeUtils)
+set(MODULE_MODULE_NAME VersionUtils)
 set(MODULE_IDE_FOLDER framework/utilities/foundation)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/TimeUtils/TimeUtils.h
-    include/ucf/Utilities/TimeUtils/Instant.h
-    include/ucf/Utilities/TimeUtils/LocalDate.h
-    include/ucf/Utilities/TimeUtils/LocalDateTime.h
+    include/ucf/Utilities/VersionUtils/Version.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/TimeUtils.cpp
-    src/Instant.cpp
-    src/LocalDate.cpp
-    src/LocalDateTime.cpp
+    src/Version.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     UtilitiesCommonFile

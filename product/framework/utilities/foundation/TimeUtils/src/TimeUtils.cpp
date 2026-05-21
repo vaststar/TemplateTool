@@ -1,142 +1,166 @@
+#include <ucf/Utilities/TimeUtils/TimeUtils.h>
+
+#include <ucf/Utilities/TimeUtils/Instant.h>
+#include <ucf/Utilities/TimeUtils/LocalDateTime.h>
+
 #include <chrono>
 #include <cstdio>
 #include <ctime>
-#include <iomanip>
-#include <sstream>
-
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
-
-namespace {
-
-// Thread-safe local time conversion (platform-independent helper)
-std::tm toLocalTime(std::time_t time)
-{
-    std::tm tm{};
-#if defined(_WIN32)
-    localtime_s(&tm, &time);
-#else
-    localtime_r(&time, &tm);
-#endif
-    return tm;
-}
-
-// Thread-safe UTC time conversion (platform-independent helper)
-std::tm toUTCTime(std::time_t time)
-{
-    std::tm tm{};
-#if defined(_WIN32)
-    gmtime_s(&tm, &time);
-#else
-    gmtime_r(&time, &tm);
-#endif
-    return tm;
-}
-
-} // anonymous namespace
 
 namespace ucf::utilities {
 
-// ---- Current time as numeric values ----
+namespace {
+
+std::tm toLocalTm(std::time_t t)
+{
+    std::tm tm{};
+#if defined(_WIN32)
+    localtime_s(&tm, &t);
+#else
+    localtime_r(&t, &tm);
+#endif
+    return tm;
+}
+
+int64_t clampToZero(std::chrono::milliseconds d) noexcept
+{
+    auto ms = d.count();
+    return ms < 0 ? 0 : ms;
+}
+
+} // namespace
 
 int64_t TimeUtils::getCurrentUTCMilliseconds()
 {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
+    return Instant::now().toUnixMilliseconds();
 }
 
 std::time_t TimeUtils::getCurrentUTCSeconds()
 {
-    return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    return static_cast<std::time_t>(Instant::now().toUnixSeconds());
 }
-
-// ---- Current time as fixed-format strings ----
 
 std::string TimeUtils::getCurrentUTCTimeString()
 {
-    return formatCurrentUTCTime("%Y-%m-%d %H:%M:%S");
+    return LocalDateTime::nowUTC().format("%Y-%m-%d %H:%M:%S");
 }
 
 std::string TimeUtils::getLocalTimeZoneName()
 {
 #if defined(_WIN32)
-    // Windows MSVC supports C++20 timezone library
     return std::string{std::chrono::current_zone()->name()};
 #else
-    // macOS/Linux: libc++ doesn't support current_zone(), use POSIX API
     std::time_t now = std::time(nullptr);
-    auto localTm = toLocalTime(now);
-    return localTm.tm_zone ? std::string(localTm.tm_zone) : "UTC";
+    auto tm = toLocalTm(now);
+    return tm.tm_zone ? std::string(tm.tm_zone) : "UTC";
 #endif
 }
 
-// ---- Custom format (caller provides time_t) ----
-
 std::string TimeUtils::formatLocalTime(std::time_t time, const std::string& pattern)
 {
-    if (pattern.empty()) {
-        return {};
-    }
-    auto tm = toLocalTime(time);
-    char buffer[128]{};
-    size_t len = std::strftime(buffer, sizeof(buffer), pattern.c_str(), &tm);
-    if (len == 0) {
-        // Fallback to safe default format on invalid pattern or overflow
-        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
-    }
-    return buffer;
+    return Instant::fromUnixSeconds(static_cast<int64_t>(time))
+        .toLocalDateTime()
+        .format(pattern);
 }
 
 std::string TimeUtils::formatUTCTime(std::time_t time, const std::string& pattern)
 {
-    if (pattern.empty()) {
-        return {};
-    }
-    auto tm = toUTCTime(time);
-    char buffer[128]{};
-    size_t len = std::strftime(buffer, sizeof(buffer), pattern.c_str(), &tm);
-    if (len == 0) {
-        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm);
-    }
-    return buffer;
+    return Instant::fromUnixSeconds(static_cast<int64_t>(time))
+        .toUTCDateTime()
+        .format(pattern);
 }
-
-// ---- Custom format (auto-captures current time) ----
 
 std::string TimeUtils::formatCurrentLocalTime(const std::string& pattern)
 {
-    return formatLocalTime(getCurrentUTCSeconds(), pattern);
+    return LocalDateTime::now().format(pattern);
 }
 
 std::string TimeUtils::formatCurrentUTCTime(const std::string& pattern)
 {
-    return formatUTCTime(getCurrentUTCSeconds(), pattern);
+    return LocalDateTime::nowUTC().format(pattern);
 }
-
-// ---- Duration formatting ----
 
 std::string TimeUtils::formatSecondsToHMS(int totalSeconds)
 {
-    if (totalSeconds < 0) {
+    if (totalSeconds < 0)
+    {
         totalSeconds = 0;
     }
     int h = totalSeconds / 3600;
     int m = (totalSeconds % 3600) / 60;
     int s = totalSeconds % 60;
-    char buffer[16];
+    char buffer[16]{};
     std::snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", h, m, s);
     return buffer;
 }
 
 std::string TimeUtils::formatSecondsToMS(int totalSeconds)
 {
-    if (totalSeconds < 0) {
+    if (totalSeconds < 0)
+    {
         totalSeconds = 0;
     }
     int m = totalSeconds / 60;
     int s = totalSeconds % 60;
-    char buffer[16];
+    char buffer[16]{};
     std::snprintf(buffer, sizeof(buffer), "%02d:%02d", m, s);
     return buffer;
+}
+
+std::string TimeUtils::formatDuration(std::chrono::milliseconds duration)
+{
+    int64_t total = clampToZero(duration);
+    int64_t h = total / (3600LL * 1000);
+    int64_t m = (total / (60LL * 1000)) % 60;
+    int64_t s = (total / 1000) % 60;
+    int64_t ms = total % 1000;
+    char buffer[32]{};
+    std::snprintf(buffer, sizeof(buffer),
+                  "%02lld:%02lld:%02lld.%03lld",
+                  static_cast<long long>(h),
+                  static_cast<long long>(m),
+                  static_cast<long long>(s),
+                  static_cast<long long>(ms));
+    return buffer;
+}
+
+std::string TimeUtils::formatDurationHuman(std::chrono::milliseconds duration)
+{
+    int64_t total = clampToZero(duration);
+    if (total < 1000)
+    {
+        char buffer[16]{};
+        std::snprintf(buffer, sizeof(buffer), "%lld ms", static_cast<long long>(total));
+        return buffer;
+    }
+
+    int64_t h = total / (3600LL * 1000);
+    int64_t m = (total / (60LL * 1000)) % 60;
+    int64_t s = (total / 1000) % 60;
+
+    std::string out;
+    char piece[16]{};
+    if (h > 0)
+    {
+        std::snprintf(piece, sizeof(piece), "%lldh", static_cast<long long>(h));
+        out += piece;
+    }
+    if (m > 0 || h > 0)
+    {
+        if (!out.empty())
+        {
+            out += ' ';
+        }
+        std::snprintf(piece, sizeof(piece), "%lldm", static_cast<long long>(m));
+        out += piece;
+    }
+    if (!out.empty())
+    {
+        out += ' ';
+    }
+    std::snprintf(piece, sizeof(piece), "%llds", static_cast<long long>(s));
+    out += piece;
+    return out;
 }
 
 } // namespace ucf::utilities
