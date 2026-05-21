@@ -1,9 +1,9 @@
 
 #include "NetworkHttpRestHandler.h"
 
-#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h>
 #include <ucf/Services/NetworkService/Model/HttpRestRequest.h>
 #include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
 
@@ -19,8 +19,8 @@ class NetworkHttpRestHandler::DataPrivate{
 public:
     DataPrivate(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback);
     
-    const ucf::agents::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
-    ucf::agents::network::http::NetworkHttpResponse& getHttpResponse(){return mHttpResponse;}
+    const ucf::infrastructure::network::http::NetworkHttpRequest& getHttpRequest() const{ return mHttpRequest;}
+    ucf::infrastructure::network::http::NetworkHttpResponse& getHttpResponse(){return mHttpResponse;}
     const ucf::service::network::http::HttpRestResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
     int getRedirectCount() const{ return mRedirectCount;}
@@ -28,12 +28,12 @@ public:
 
     void prepareRetry();
 
-    void convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::agents::network::http::NetworkHttpRequest& httpRequest) const;
-    void convertHttpResponseToRestResponse(const ucf::agents::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRestResponse& restResponse) const;
+    void convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::infrastructure::network::http::NetworkHttpRequest& httpRequest) const;
+    void convertHttpResponseToRestResponse(const ucf::infrastructure::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRestResponse& restResponse) const;
 private:
     ucf::service::network::http::HttpRestResponseCallbackFunc mResponseCallBack;
-    ucf::agents::network::http::NetworkHttpResponse mHttpResponse;
-    ucf::agents::network::http::NetworkHttpRequest mHttpRequest;
+    ucf::infrastructure::network::http::NetworkHttpResponse mHttpResponse;
+    ucf::infrastructure::network::http::NetworkHttpRequest mHttpRequest;
     int mRedirectCount;
 };
 
@@ -60,7 +60,7 @@ void NetworkHttpRestHandler::DataPrivate::prepareRetry()
     mHttpResponse.clear();
 }
 
-void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::agents::network::http::NetworkHttpRequest& httpRequest) const
+void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const ucf::service::network::http::HttpRestRequest& restRequest, ucf::infrastructure::network::http::NetworkHttpRequest& httpRequest) const
 {
     httpRequest.setRequestMethod(convertToUtilitiesHttpMethod(restRequest.getRequestMethod()));
     httpRequest.setRequestHeaders(restRequest.getRequestHeaders());
@@ -71,7 +71,7 @@ void NetworkHttpRestHandler::DataPrivate::convertRestRequestToHttpRequest(const 
     httpRequest.setPayloadString(restRequest.getPayloadJsonString());
 }
 
-void NetworkHttpRestHandler::DataPrivate::convertHttpResponseToRestResponse(const ucf::agents::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRestResponse& restResponse) const
+void NetworkHttpRestHandler::DataPrivate::convertHttpResponseToRestResponse(const ucf::infrastructure::network::http::NetworkHttpResponse& httpResponse, ucf::service::network::http::HttpRestResponse& restResponse) const
 {
     restResponse.setHttpResponseCode(httpResponse.getHttpResponseCode());
     restResponse.setResponseHeaders(httpResponse.getResponseHeaders());
@@ -108,12 +108,12 @@ NetworkHttpRestHandler::~NetworkHttpRestHandler()
 
 }
 
-const ucf::agents::network::http::NetworkHttpRequest& NetworkHttpRestHandler::getHttpRequest() const
+const ucf::infrastructure::network::http::NetworkHttpRequest& NetworkHttpRestHandler::getHttpRequest() const
 {
     return mDataPrivate->getHttpRequest();
 }
 
-void NetworkHttpRestHandler::setResponseHeader(int statusCode, const ucf::agents::network::http::NetworkHttpHeaders& headers, std::optional<ucf::agents::network::http::ResponseErrorStruct> errorData)
+void NetworkHttpRestHandler::setResponseHeader(int statusCode, const ucf::infrastructure::network::http::NetworkHttpHeaders& headers, std::optional<ucf::infrastructure::network::http::ResponseErrorStruct> errorData)
 {
     mDataPrivate->getHttpResponse().setHttpResponseCode(statusCode);
     mDataPrivate->getHttpResponse().setResponseHeaders(headers);
@@ -123,7 +123,7 @@ void NetworkHttpRestHandler::setResponseHeader(int statusCode, const ucf::agents
     }
 }
 
-void NetworkHttpRestHandler::appendResponseBody(const ucf::agents::network::http::ByteBuffer& buffer, bool isFinished)
+void NetworkHttpRestHandler::appendResponseBody(const ucf::infrastructure::network::http::ByteBuffer& buffer, bool isFinished)
 {
     if (!buffer.empty())
     {
@@ -131,7 +131,7 @@ void NetworkHttpRestHandler::appendResponseBody(const ucf::agents::network::http
     }
 }
 
-void NetworkHttpRestHandler::completeResponse(const ucf::agents::network::http::HttpResponseMetrics& metrics)
+void NetworkHttpRestHandler::completeResponse(const ucf::infrastructure::network::http::HttpResponseMetrics& metrics)
 {
     if (mDataPrivate->getResponseCallback())
     {

@@ -9,7 +9,7 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include "ContactServiceLogger.h"
-// #include <ucf/Agents/DatabaseAgent/IDatabaseWrapper.h>
+// #include <ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h>
 
 namespace ucf::service{
 

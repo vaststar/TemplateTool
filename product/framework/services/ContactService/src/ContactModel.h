@@ -47,6 +47,6 @@ private:
     std::vector<model::ContactRelationPtr> mContactRelations;
 
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    // std::shared_ptr<ucf::agents::database::IDatabaseWrapper> mContactDatabase;
+    // std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper> mContactDatabase;
 };
 }

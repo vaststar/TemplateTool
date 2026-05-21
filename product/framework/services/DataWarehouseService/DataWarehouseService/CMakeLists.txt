@@ -32,7 +32,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
-    DatabaseAgent
+    DatabaseClient
     CoreFramework
     LoggerUtils
 )

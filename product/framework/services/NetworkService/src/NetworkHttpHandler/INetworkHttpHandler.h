@@ -1,9 +1,9 @@
 #pragma once
 
 #include <functional>
-#include <ucf/Agents/NetworkAgent/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
-namespace ucf::agents::network::http{
+namespace ucf::infrastructure::network::http{
 class NetworkHttpRequest;
 }
 
@@ -18,10 +18,10 @@ public:
     INetworkHttpHandler& operator=(INetworkHttpHandler&&) = delete;
     virtual ~INetworkHttpHandler() = default;
 public:
-    virtual const ucf::agents::network::http::NetworkHttpRequest& getHttpRequest() const = 0;
-    virtual void setResponseHeader(int statusCode, const ucf::agents::network::http::NetworkHttpHeaders& headers, std::optional<ucf::agents::network::http::ResponseErrorStruct> errorData) = 0;
-    virtual void appendResponseBody(const ucf::agents::network::http::ByteBuffer& buffer, bool isFinished) = 0;
-    virtual void completeResponse(const ucf::agents::network::http::HttpResponseMetrics& metrics) = 0;
+    virtual const ucf::infrastructure::network::http::NetworkHttpRequest& getHttpRequest() const = 0;
+    virtual void setResponseHeader(int statusCode, const ucf::infrastructure::network::http::NetworkHttpHeaders& headers, std::optional<ucf::infrastructure::network::http::ResponseErrorStruct> errorData) = 0;
+    virtual void appendResponseBody(const ucf::infrastructure::network::http::ByteBuffer& buffer, bool isFinished) = 0;
+    virtual void completeResponse(const ucf::infrastructure::network::http::HttpResponseMetrics& metrics) = 0;
     
     virtual bool shouldRedirectRequest() const {return false;}
     virtual void prepareRedirectRequest() {}

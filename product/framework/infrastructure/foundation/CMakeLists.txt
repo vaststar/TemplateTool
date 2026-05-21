@@ -1,0 +1,2 @@
+add_subdirectory(DatabaseClient)
+add_subdirectory(NetworkClient)
