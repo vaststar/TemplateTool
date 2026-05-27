@@ -1,10 +1,13 @@
 list(APPEND MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 list(APPEND MODULE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/commonHead/viewModels/MediaCameraViewModel/VideoFrame.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/commonHead/viewModels/MediaCameraViewModel/CameraSource.h
 )
 list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/MediaCameraViewModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/MediaCameraViewModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraSource.cpp
 )
 list(APPEND MODULE_BUILD_PRIVATE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

@@ -5,8 +5,8 @@
 #include "MediaServiceLogger.h"
 
 namespace ucf::service {
-CameraDevice::CameraDevice(int cameraNum)
-    : mCameraNum(cameraNum)
+CameraDevice::CameraDevice(const media::CameraSource& source)
+    : mSource(source)
 {
 }
 
@@ -19,35 +19,55 @@ bool CameraDevice::open()
 {
     if (isOpened())
     {
-        SERVICE_LOG_DEBUG("camera already opened, index: " << mCameraNum);
+        SERVICE_LOG_DEBUG("camera already opened, source: " << media::toKey(mSource));
         return true;
     }
-    
-    bool result = false;
-    switch (ucf::utilities::OSUtils::getOSType())
-    {
-    case ucf::utilities::OSType::WINDOWS:
-        result = mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_DSHOW);
-        break;
-    case ucf::utilities::OSType::LINUX:
-        result = mVideoCap.open(mCameraNum, cv::VideoCaptureAPIs::CAP_V4L2);
-        break;
-    default:
-        result = mVideoCap.open(mCameraNum);
-        break;
-    }
-    
+
+    bool result = std::visit([this](auto&& s) -> bool {
+        using T = std::decay_t<decltype(s)>;
+        if constexpr (std::is_same_v<T, media::LocalCameraSource>)
+        {
+            switch (ucf::utilities::OSUtils::getOSType())
+            {
+            case ucf::utilities::OSType::WINDOWS:
+                return mVideoCap.open(s.index, cv::VideoCaptureAPIs::CAP_DSHOW);
+            case ucf::utilities::OSType::LINUX:
+                return mVideoCap.open(s.index, cv::VideoCaptureAPIs::CAP_V4L2);
+            default:
+                return mVideoCap.open(s.index);
+            }
+        }
+        else if constexpr (std::is_same_v<T, media::NetworkCameraSource>)
+        {
+            bool ok = mVideoCap.open(s.url, cv::CAP_FFMPEG);
+            if (ok && mVideoCap.isOpened())
+            {
+                mVideoCap.set(cv::CAP_PROP_BUFFERSIZE, 1);
+                if (s.openTimeoutMs > 0)
+                {
+                    mVideoCap.set(cv::CAP_PROP_OPEN_TIMEOUT_MSEC, s.openTimeoutMs);
+
+                }
+                if (s.readTimeoutMs > 0)
+                {
+                    mVideoCap.set(cv::CAP_PROP_READ_TIMEOUT_MSEC, s.readTimeoutMs);
+                }
+            }
+            return ok;
+        }
+    }, mSource);
+
     if (result && isOpened())
     {
-        SERVICE_LOG_DEBUG("camera opened, index: " << mCameraNum 
-            << ", width: " << getFrameWidth() 
+        SERVICE_LOG_DEBUG("camera opened, source: " << media::toKey(mSource)
+            << ", width: " << getFrameWidth()
             << ", height: " << getFrameHeight());
     }
     else
     {
-        SERVICE_LOG_WARN("failed to open camera, index: " << mCameraNum);
+        SERVICE_LOG_WARN("failed to open camera, source: " << media::toKey(mSource));
     }
-    
+
     return result && isOpened();
 }
 
@@ -56,7 +76,7 @@ void CameraDevice::close()
     if (isOpened())
     {
         mVideoCap.release();
-        SERVICE_LOG_DEBUG("camera closed, index: " << mCameraNum);
+        SERVICE_LOG_DEBUG("camera closed, source: " << media::toKey(mSource));
     }
 }
 
@@ -75,9 +95,9 @@ cv::Mat CameraDevice::readFrame()
     return frame;
 }
 
-int CameraDevice::getCameraNum() const
+const media::CameraSource& CameraDevice::getSource() const
 {
-    return mCameraNum;
+    return mSource;
 }
 
 int CameraDevice::getFrameWidth() const

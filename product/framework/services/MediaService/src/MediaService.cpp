@@ -72,9 +72,9 @@ void MediaService::initService()
 
 }
 
-std::string MediaService::openCamera(int cameraNum)
+std::string MediaService::openCamera(const media::CameraSource& source)
 {
-    return mDataPrivate->getCameraManager()->openCamera(cameraNum);
+    return mDataPrivate->getCameraManager()->openCamera(source);
 }
 
 void MediaService::releaseCamera(const std::string& cameraId)

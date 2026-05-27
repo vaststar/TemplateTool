@@ -22,7 +22,7 @@ MediaCameraViewModel::MediaCameraViewModel(commonHead::ICommonHeadFrameworkWptr 
 MediaCameraViewModel::~MediaCameraViewModel()
 {
     COMMONHEAD_LOG_DEBUG("");
-    
+
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -48,7 +48,22 @@ void MediaCameraViewModel::init()
 {
 }
 
-void MediaCameraViewModel::openCamera()
+namespace {
+ucf::service::media::CameraSource toServiceSource(
+    const model::CameraSource& vm)
+{
+    return std::visit([](auto&& s) -> ucf::service::media::CameraSource {
+        using T = std::decay_t<decltype(s)>;
+        if constexpr (std::is_same_v<T, model::LocalCameraSource>)
+            return ucf::service::media::LocalCameraSource{s.index};
+        else // model::NetworkCameraSource
+            return ucf::service::media::NetworkCameraSource{
+                s.url, s.transport, s.openTimeoutMs, s.readTimeoutMs};
+    }, vm);
+}
+}
+
+void MediaCameraViewModel::openCamera(const model::CameraSource& source)
 {
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
@@ -56,10 +71,15 @@ void MediaCameraViewModel::openCamera()
         {
             if (auto mediaService = serviceLocator->getMediaService().lock())
             {
-                mCameraId = mediaService->openCamera(0);
+                mCameraId = mediaService->openCamera(toServiceSource(source));
             }
         }
     }
+}
+
+bool MediaCameraViewModel::isOpened() const
+{
+    return !mCameraId.empty();
 }
 
 void MediaCameraViewModel::startCaptureCameraVideo()
@@ -106,7 +126,7 @@ model::VideoFrame MediaCameraViewModel::convertServiceFrameToViewModelFrame(
         std::vector<uint8_t>(frame->getData(), frame->getData() + frame->getDataSize()),
         frame->getWidth(),
         frame->getHeight(),
-        frame->getBytesPerLine(), 
+        frame->getBytesPerLine(),
         static_cast<model::PixelFormat>(frame->getFormat())
     };
 }

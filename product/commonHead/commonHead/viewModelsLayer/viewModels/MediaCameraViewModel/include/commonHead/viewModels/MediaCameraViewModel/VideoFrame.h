@@ -25,8 +25,8 @@ struct COMMONHEAD_EXPORT VideoFrame
     PixelFormat format = PixelFormat::RGB888;
 
     VideoFrame() = default;
-    
-    VideoFrame(ImageBuffer buf, int w, int h, int stride, 
+
+    VideoFrame(ImageBuffer buf, int w, int h, int stride,
                PixelFormat fmt = PixelFormat::RGB888)
         : data(std::move(buf))
         , width(w)

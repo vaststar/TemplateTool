@@ -23,7 +23,8 @@ public:
 
 public:
     virtual std::string getViewModelName() const override;
-    virtual void openCamera() override;
+    virtual void openCamera(const model::CameraSource& source) override;
+    virtual bool isOpened() const override;
     virtual void startCaptureCameraVideo() override;
     virtual void stopCaptureCameraVideo() override;
 

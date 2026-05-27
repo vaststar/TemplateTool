@@ -1,6 +1,7 @@
 #include "MediaCameraView/MediaCameraViewController.h"
 
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
+#include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>
 
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
@@ -45,7 +46,7 @@ void MediaCameraViewController::init()
     QObject::connect(mMediaCameraViewModelEmitter.get(), &UIVMSignalEmitter::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived);
     mMediaCameraViewModel = getAppContext()->getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
-    mMediaCameraViewModel->openCamera();
+    mMediaCameraViewModel->openCamera(commonHead::viewModels::model::LocalCameraSource{0});
     mMediaCameraViewModel->startCaptureCameraVideo();
 }
 

@@ -31,12 +31,12 @@ public:
 
 public:
     /**
-     * * @brief open camera
-     * * @param cameraNum camera number, such as 0, 1, 2
-     * * @return camera id, if failed, return empty string
-     * * @note camera id is a unique string, used to identify the camera
+     * @brief open a camera from a generic source (local index or network URL)
+     * @param source the camera source descriptor
+     * @return camera id, empty string if failed
+     * @note camera id is a unique string used to identify the opened camera
      */
-    virtual std::string openCamera(int cameraNum) = 0;
+    virtual std::string openCamera(const media::CameraSource& source) = 0;
 
     /**
      * @brief release camera
@@ -44,10 +44,10 @@ public:
      * @note you should release camera after use, otherwise, the camera will be occupied and cannot be used by other process
      */
     virtual void releaseCamera(const std::string& cameraId) = 0;
-    
+
     virtual std::vector<std::string> getOpenedCameras() const = 0;
     virtual media::IVideoFramePtr readImageData(const std::string& cameraId) = 0;
-    
+
     /**
      * @brief start video capture and subscribe to frames
      * @param cameraId camera id
@@ -57,7 +57,7 @@ public:
     virtual std::string startVideoCapture(
         const std::string& cameraId,
         VideoFrameCallback callback) = 0;
-    
+
     /**
      * @brief stop video capture subscription
      * @param cameraId camera id

@@ -21,7 +21,7 @@ class CameraDevice;
 class CameraVideoCapture
 {
 public:
-    explicit CameraVideoCapture(int cameraNum);
+    explicit CameraVideoCapture(const media::CameraSource& source);
     CameraVideoCapture(const CameraVideoCapture&) = delete;
     CameraVideoCapture(CameraVideoCapture&&) = delete;
     CameraVideoCapture& operator=(const CameraVideoCapture&) = delete;
@@ -32,16 +32,17 @@ public:
     // 设备状态
     bool isOpened() const;
     std::string getCameraId() const;
-    int getCameraNum() const;
-    
+    std::string getSourceKey() const;
+    const media::CameraSource& getSource() const;
+
     // 设备引用计数
     void addDeviceRef();
     void releaseDeviceRef();
     int getDeviceRefCount() const;
-    
+
     // 帧读取 (单帧，用于截图等)
     media::IVideoFramePtr readImageData();
-    
+
     // 视频捕获订阅
     std::string addSubscription(VideoFrameCallback callback);
     void removeSubscription(const std::string& subscriptionId);
@@ -55,7 +56,7 @@ private:
     std::unique_ptr<CameraDevice> mDevice;
     std::string mCameraId;
     std::atomic<int> mDeviceRefCount{0};
-    
+
     // 订阅管理
     struct Subscription
     {
@@ -64,7 +65,7 @@ private:
     };
     std::vector<Subscription> mSubscriptions;
     std::mutex mSubscriptionMutex;
-    
+
     // 捕获线程
     std::thread mCaptureThread;
     std::atomic<bool> mCapturing{false};

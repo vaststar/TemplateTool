@@ -20,37 +20,38 @@ CameraManager::~CameraManager()
     }
 }
 
-std::string CameraManager::openCamera(int cameraNum)
+std::string CameraManager::openCamera(const media::CameraSource& source)
 {
+    const std::string key = media::toKey(source);
     std::scoped_lock loc(mCamerasMutex);
-    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraNum](const auto& camera) {
-        return camera->getCameraNum() == cameraNum;
+    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [&key](const auto& camera) {
+        return camera->getSourceKey() == key;
     });
 
     if (iter != mCamerasList.end())
     {
         if ((*iter)->isOpened())
         {
-            SERVICE_LOG_DEBUG("camera already opened, cameraNum:" << cameraNum);
+            SERVICE_LOG_DEBUG("camera already opened, source:" << key);
             (*iter)->addDeviceRef();
             return (*iter)->getCameraId();
         }
         else
         {
-            SERVICE_LOG_DEBUG("camera not opened, cameraNum:" << cameraNum);
+            SERVICE_LOG_DEBUG("camera not opened, removing stale entry, source:" << key);
             mCamerasList.erase(iter);
         }
     }
-    
-    if (auto camera = std::make_unique<CameraVideoCapture>(cameraNum); camera->isOpened())
+
+    if (auto camera = std::make_unique<CameraVideoCapture>(source); camera->isOpened())
     {
-        SERVICE_LOG_DEBUG("camera opened, index: " << camera->getCameraNum() << ", id: " << camera->getCameraId());
+        SERVICE_LOG_DEBUG("camera opened, source: " << key << ", id: " << camera->getCameraId());
         mCamerasList.emplace_back(std::move(camera));
         return mCamerasList.back()->getCameraId();
     }
     else
     {
-        SERVICE_LOG_DEBUG("camera not opened:" << cameraNum);
+        SERVICE_LOG_DEBUG("failed to open camera, source:" << key);
         return {};
     }
 }
@@ -132,7 +133,7 @@ std::string CameraManager::startVideoCapture(const std::string& cameraId, VideoF
     CameraVideoCapture* camera = nullptr;
     {
         std::scoped_lock loc(mCamerasMutex);
-        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), 
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(),
             [&cameraId](const auto& cam) {
                 return cam->isOpened() && cam->getCameraId() == cameraId;
             });
@@ -141,12 +142,12 @@ std::string CameraManager::startVideoCapture(const std::string& cameraId, VideoF
             camera = iter->get();
         }
     }
-    
+
     if (camera)
     {
         return camera->addSubscription(std::move(callback));
     }
-    
+
     SERVICE_LOG_WARN("camera not found for startVideoCapture, id: " << cameraId);
     return {};
 }
@@ -156,7 +157,7 @@ void CameraManager::stopVideoCapture(const std::string& cameraId, const std::str
     CameraVideoCapture* camera = nullptr;
     {
         std::scoped_lock loc(mCamerasMutex);
-        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), 
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(),
             [&cameraId](const auto& cam) {
                 return cam->isOpened() && cam->getCameraId() == cameraId;
             });
@@ -165,7 +166,7 @@ void CameraManager::stopVideoCapture(const std::string& cameraId, const std::str
             camera = iter->get();
         }
     }
-    
+
     if (camera)
     {
         camera->removeSubscription(subscriptionId);

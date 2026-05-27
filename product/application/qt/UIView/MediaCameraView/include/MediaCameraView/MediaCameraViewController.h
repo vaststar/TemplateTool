@@ -6,7 +6,7 @@
 #include <QImage>
 #include <QVideoFrame>
 #include <QVideoSink>
-#include <commonHead/viewModels/ViewModelDataDefine/VideoFrame.h>
+#include <commonHead/viewModels/MediaCameraViewModel/VideoFrame.h>
 
 #include "UIViewBase/UIViewController.h"
 #include "ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"

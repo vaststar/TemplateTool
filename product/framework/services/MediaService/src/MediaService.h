@@ -27,7 +27,7 @@ public:
     virtual std::string getServiceName() const override;
 
     //MediaService
-    virtual std::string openCamera(int cameraNum) override;
+    virtual std::string openCamera(const media::CameraSource& source) override;
     virtual void releaseCamera(const std::string& cameraId) override;
     virtual std::vector<std::string> getOpenedCameras() const override;
     virtual media::IVideoFramePtr readImageData(const std::string& cameraId) override;

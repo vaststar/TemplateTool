@@ -5,7 +5,8 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
-#include <commonHead/viewModels/ViewModelDataDefine/VideoFrame.h>
+#include <commonHead/viewModels/MediaCameraViewModel/VideoFrame.h>
+#include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>
 #include <commonHead/viewModels/IViewModel/IViewModel.h>
 
 namespace commonHead{
@@ -24,7 +25,7 @@ public:
     IMediaCameraViewModelCallback& operator=(IMediaCameraViewModelCallback&&) = delete;
     virtual ~IMediaCameraViewModelCallback() = default;
 public:
-    virtual void onCameraFrameReceived(const model::VideoFrame& frame) {};
+    virtual void onCameraFrameReceived(const model::VideoFrame& /*frame*/) {};
 };
 
 class COMMONHEAD_EXPORT IMediaCameraViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IMediaCameraViewModelCallback>
@@ -38,7 +39,11 @@ public:
     virtual ~IMediaCameraViewModel() = default;
 public:
     virtual std::string getViewModelName() const = 0;
-    virtual void openCamera() = 0;
+
+    // 打开摄像头。每个实例只能绑一个源；要换源请重建实例。
+    virtual void openCamera(const model::CameraSource& source) = 0;
+    virtual bool isOpened() const = 0;
+
     virtual void startCaptureCameraVideo() = 0;
     virtual void stopCaptureCameraVideo() = 0;
 public:

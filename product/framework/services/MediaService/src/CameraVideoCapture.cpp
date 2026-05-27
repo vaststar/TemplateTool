@@ -10,19 +10,19 @@
 #include "MediaServiceLogger.h"
 
 namespace ucf::service {
-CameraVideoCapture::CameraVideoCapture(int cameraNum)
-    : mDevice(std::make_unique<CameraDevice>(cameraNum))
+CameraVideoCapture::CameraVideoCapture(const media::CameraSource& source)
+    : mDevice(std::make_unique<CameraDevice>(source))
 {
     if (mDevice->open())
     {
         mDeviceRefCount = 1;
         mCameraId = ucf::utilities::UUIDUtils::generateUUID();
-        SERVICE_LOG_DEBUG("CameraVideoCapture created, cameraNum: " << cameraNum 
+        SERVICE_LOG_DEBUG("CameraVideoCapture created, source: " << media::toKey(source)
             << ", cameraId: " << mCameraId);
     }
     else
     {
-        SERVICE_LOG_WARN("CameraVideoCapture created but device not opened, cameraNum: " << cameraNum);
+        SERVICE_LOG_WARN("CameraVideoCapture created but device not opened, source: " << media::toKey(source));
     }
 }
 
@@ -37,7 +37,7 @@ CameraVideoCapture::~CameraVideoCapture()
     {
         mCaptureThread.join();
     }
-    
+
     SERVICE_LOG_DEBUG("CameraVideoCapture destroyed, cameraId: " << mCameraId);
 }
 
@@ -51,9 +51,15 @@ std::string CameraVideoCapture::getCameraId() const
     return mCameraId;
 }
 
-int CameraVideoCapture::getCameraNum() const
+std::string CameraVideoCapture::getSourceKey() const
 {
-    return mDevice ? mDevice->getCameraNum() : -1;
+    return mDevice ? media::toKey(mDevice->getSource()) : std::string{};
+}
+
+const media::CameraSource& CameraVideoCapture::getSource() const
+{
+    static const media::CameraSource kEmpty{media::LocalCameraSource{}};
+    return mDevice ? mDevice->getSource() : kEmpty;
 }
 
 void CameraVideoCapture::addDeviceRef()
@@ -63,9 +69,9 @@ void CameraVideoCapture::addDeviceRef()
         SERVICE_LOG_WARN("cannot add ref, device not opened, cameraId: " << mCameraId);
         return;
     }
-    
+
     mDeviceRefCount++;
-    SERVICE_LOG_DEBUG("device ref added, cameraId: " << mCameraId 
+    SERVICE_LOG_DEBUG("device ref added, cameraId: " << mCameraId
         << ", refCount: " << mDeviceRefCount);
 }
 
@@ -76,11 +82,11 @@ void CameraVideoCapture::releaseDeviceRef()
         SERVICE_LOG_WARN("cannot release ref, refCount already 0, cameraId: " << mCameraId);
         return;
     }
-    
+
     mDeviceRefCount--;
-    SERVICE_LOG_DEBUG("device ref released, cameraId: " << mCameraId 
+    SERVICE_LOG_DEBUG("device ref released, cameraId: " << mCameraId
         << ", refCount: " << mDeviceRefCount);
-    
+
     if (mDeviceRefCount <= 0 && mDevice)
     {
         mDevice->close();
@@ -100,14 +106,14 @@ media::IVideoFramePtr CameraVideoCapture::readImageData()
         SERVICE_LOG_WARN("cannot read, device not opened, cameraId: " << mCameraId);
         return nullptr;
     }
-    
+
     cv::Mat frame = mDevice->readFrame();
     if (frame.empty())
     {
         SERVICE_LOG_WARN("read empty frame, cameraId: " << mCameraId);
         return nullptr;
     }
-    
+
     processFrame(frame);
     return convertFrameToVideoFrame(frame);
 }
@@ -134,24 +140,24 @@ std::string CameraVideoCapture::addSubscription(VideoFrameCallback callback)
         SERVICE_LOG_WARN("cannot add subscription, device not available, cameraId: " << mCameraId);
         return {};
     }
-    
+
     std::string subscriptionId = ucf::utilities::UUIDUtils::generateUUID();
     bool shouldStart = false;
-    
+
     {
         std::scoped_lock lock(mSubscriptionMutex);
         shouldStart = mSubscriptions.empty();
         mSubscriptions.push_back({subscriptionId, std::move(callback)});
     }
-    
+
     if (shouldStart)
     {
         mCapturing = true;
         mCaptureThread = std::thread(&CameraVideoCapture::captureLoop, this);
         SERVICE_LOG_DEBUG("capture started, cameraId: " << mCameraId);
     }
-    
-    SERVICE_LOG_DEBUG("subscription added, cameraId: " << mCameraId 
+
+    SERVICE_LOG_DEBUG("subscription added, cameraId: " << mCameraId
         << ", subscriptionId: " << subscriptionId);
     return subscriptionId;
 }
@@ -159,32 +165,32 @@ std::string CameraVideoCapture::addSubscription(VideoFrameCallback callback)
 void CameraVideoCapture::removeSubscription(const std::string& subscriptionId)
 {
     bool shouldStop = false;
-    
+
     {
         std::scoped_lock lock(mSubscriptionMutex);
         auto it = std::find_if(mSubscriptions.begin(), mSubscriptions.end(),
             [&subscriptionId](const Subscription& sub) { return sub.id == subscriptionId; });
-        
+
         if (it != mSubscriptions.end())
         {
             mSubscriptions.erase(it);
-            SERVICE_LOG_DEBUG("subscription removed, cameraId: " << mCameraId 
+            SERVICE_LOG_DEBUG("subscription removed, cameraId: " << mCameraId
                 << ", subscriptionId: " << subscriptionId);
         }
         else
         {
-            SERVICE_LOG_WARN("subscription not found, cameraId: " << mCameraId 
+            SERVICE_LOG_WARN("subscription not found, cameraId: " << mCameraId
                 << ", subscriptionId: " << subscriptionId);
             return;
         }
-        
+
         if (mSubscriptions.empty())
         {
             mCapturing = false;
             shouldStop = true;
         }
     }
-    
+
     if (shouldStop)
     {
         if (mCaptureThread.joinable())
@@ -199,11 +205,11 @@ void CameraVideoCapture::captureLoop()
 {
     SERVICE_LOG_DEBUG("capture loop started, cameraId: " << mCameraId);
     constexpr auto targetFrameTime = std::chrono::milliseconds(33);  // ~30fps
-    
+
     while (mCapturing && isOpened() && mDeviceRefCount > 0)
     {
         auto frameStart = std::chrono::steady_clock::now();
-        
+
         if (auto frame = readImageData())
         {
             std::scoped_lock lock(mSubscriptionMutex);
@@ -215,14 +221,14 @@ void CameraVideoCapture::captureLoop()
                 }
             }
         }
-        
+
         auto elapsed = std::chrono::steady_clock::now() - frameStart;
         if (elapsed < targetFrameTime)
         {
             std::this_thread::sleep_for(targetFrameTime - elapsed);
         }
     }
-    
+
     SERVICE_LOG_DEBUG("capture loop stopped, cameraId: " << mCameraId);
 }
 }

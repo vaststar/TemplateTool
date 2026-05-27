@@ -4,11 +4,13 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 
+#include <ucf/Services/MediaService/MediaTypes.h>
+
 namespace ucf::service {
 class CameraDevice
 {
 public:
-    explicit CameraDevice(int cameraNum);
+    explicit CameraDevice(const media::CameraSource& source);
     CameraDevice(const CameraDevice&) = delete;
     CameraDevice(CameraDevice&&) = delete;
     CameraDevice& operator=(const CameraDevice&) = delete;
@@ -20,13 +22,13 @@ public:
     void close();
     bool isOpened() const;
     cv::Mat readFrame();
-    
-    int getCameraNum() const;
+
     int getFrameWidth() const;
     int getFrameHeight() const;
+    const media::CameraSource& getSource() const;
 
 private:
-    const int mCameraNum;
+    media::CameraSource mSource;
     cv::VideoCapture mVideoCap;
 };
 }
