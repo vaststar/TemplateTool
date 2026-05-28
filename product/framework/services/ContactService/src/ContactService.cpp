@@ -1,33 +1,32 @@
 #include "ContactService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 
-#include "ContactServiceLogger.h"
 #include "ContactManager.h"
+#include "ContactServiceLogger.h"
 
-namespace ucf::service{
+namespace ucf::service {
+
 /////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start DataPrivate Logic///////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start DataPrivate Logic//////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-class ContactService::DataPrivate{
+
+class ContactService::DataPrivate {
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-
-    ContactManager& getContactManager();
-    const ContactManager& getContactManager() const;
+    ContactManager& getManager();
+    const ContactManager& getManager() const;
 private:
-    const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    const std::unique_ptr<ContactManager> mContactManagerPtr;
+    ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    std::unique_ptr<ContactManager> mManager;
 };
 
 ContactService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
-    , mContactManagerPtr(std::make_unique<ContactManager>(coreFramework))
+    , mManager(std::make_unique<ContactManager>(coreFramework))
 {
-
 }
 
 ucf::framework::ICoreFrameworkWPtr ContactService::DataPrivate::getCoreFramework() const
@@ -35,26 +34,24 @@ ucf::framework::ICoreFrameworkWPtr ContactService::DataPrivate::getCoreFramework
     return mCoreFrameworkWPtr;
 }
 
-ContactManager& ContactService::DataPrivate::getContactManager()
+ContactManager& ContactService::DataPrivate::getManager()
 {
-    return *mContactManagerPtr;
+    return *mManager;
 }
 
-const ContactManager& ContactService::DataPrivate::getContactManager() const
+const ContactManager& ContactService::DataPrivate::getManager() const
 {
-    return *mContactManagerPtr;
+    return *mManager;
 }
-/////////////////////////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////
+////////////////////Start ContactService Logic////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start ContactService Logic///////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+
 std::shared_ptr<IContactService> IContactService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<ContactService>(coreFramework);
@@ -76,6 +73,10 @@ void ContactService::initService()
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
+        if (auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
+        {
+            dataWarehouseService->registerCallback(shared_from_this());
+        }
     }
 }
 
@@ -86,41 +87,136 @@ std::string ContactService::getServiceName() const
 
 void ContactService::onServiceInitialized()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG("ContactService initialized");
 }
 
 void ContactService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG("ContactService exiting");
 }
 
-std::vector<model::IPersonContactPtr> ContactService::getPersonContactList() const
+void ContactService::OnDatabaseInitialized(const std::string& dbId)
 {
-    return mDataPrivate->getContactManager().getPersonContactList();
+    mDataPrivate->getManager().onDatabaseReady(dbId);
+    fireNotification(&IContactServiceCallback::onContactDirectoryReady);
+}
+
+// ===== Read =====
+
+model::PersonContactArray ContactService::getPersonContactList() const
+{
+    return mDataPrivate->getManager().getPersonContactList();
+}
+
+model::GroupContactArray ContactService::getGroupContactList() const
+{
+    return mDataPrivate->getManager().getGroupContactList();
+}
+
+model::ContactRelationArray ContactService::getContactRelations() const
+{
+    return mDataPrivate->getManager().getContactRelations();
 }
 
 model::IPersonContactPtr ContactService::getPersonContact(const std::string& contactId) const
 {
-    return mDataPrivate->getContactManager().getPersonContact(contactId);
-}
-
-std::vector<model::IGroupContactPtr> ContactService::getGroupContactList() const
-{
-    return mDataPrivate->getContactManager().getGroupContactList();
+    return mDataPrivate->getManager().getPersonContact(contactId);
 }
 
 model::IGroupContactPtr ContactService::getGroupContact(const std::string& contactId) const
 {
-    return mDataPrivate->getContactManager().getGroupContact(contactId);
+    return mDataPrivate->getManager().getGroupContact(contactId);
 }
 
-std::vector<model::IContactRelationPtr> ContactService::getContactRelations() const
+// ===== Person batch write =====
+
+void ContactService::addPersonContacts(const model::PersonContactArray& persons)
 {
-    return mDataPrivate->getContactManager().getContactRelations();
+    auto accepted = mDataPrivate->getManager().addPersonContacts(persons);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onPersonContactsAdded, accepted);
+    }
 }
-/////////////////////////////////////////////////////////////////////////////////////
+
+void ContactService::updatePersonContacts(const model::PersonContactArray& persons)
+{
+    auto accepted = mDataPrivate->getManager().updatePersonContacts(persons);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onPersonContactsUpdated, accepted);
+    }
+}
+
+void ContactService::removePersonContacts(const std::vector<std::string>& contactIds)
+{
+    auto accepted = mDataPrivate->getManager().removePersonContacts(contactIds);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onPersonContactsRemoved, accepted);
+    }
+}
+
+// ===== Group batch write =====
+
+void ContactService::addGroupContacts(const model::GroupContactArray& groups)
+{
+    auto accepted = mDataPrivate->getManager().addGroupContacts(groups);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onGroupContactsAdded, accepted);
+    }
+}
+
+void ContactService::updateGroupContacts(const model::GroupContactArray& groups)
+{
+    auto accepted = mDataPrivate->getManager().updateGroupContacts(groups);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onGroupContactsUpdated, accepted);
+    }
+}
+
+void ContactService::removeGroupContacts(const std::vector<std::string>& contactIds)
+{
+    auto accepted = mDataPrivate->getManager().removeGroupContacts(contactIds);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onGroupContactsRemoved, accepted);
+    }
+}
+
+// ===== Relation batch write =====
+
+void ContactService::addContactRelations(const model::ContactRelationArray& relations)
+{
+    auto accepted = mDataPrivate->getManager().addContactRelations(relations);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onContactRelationsAdded, accepted);
+    }
+}
+
+void ContactService::updateContactRelations(const model::ContactRelationArray& relations)
+{
+    auto accepted = mDataPrivate->getManager().updateContactRelations(relations);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onContactRelationsUpdated, accepted);
+    }
+}
+
+void ContactService::removeContactRelations(const std::vector<std::string>& childIds)
+{
+    auto accepted = mDataPrivate->getManager().removeContactRelations(childIds);
+    if (!accepted.empty())
+    {
+        fireNotification(&IContactServiceCallback::onContactRelationsRemoved, accepted);
+    }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish ContactService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-}
+
+} // namespace ucf::service

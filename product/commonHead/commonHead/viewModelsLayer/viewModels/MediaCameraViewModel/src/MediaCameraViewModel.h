@@ -9,7 +9,7 @@
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 
 namespace commonHead::viewModels {
-class MediaCameraViewModel : public virtual IMediaCameraViewModel, 
+class MediaCameraViewModel : public virtual IMediaCameraViewModel,
                              public virtual commonHead::utilities::VMNotificationHelper<IMediaCameraViewModelCallback>
 {
 public:

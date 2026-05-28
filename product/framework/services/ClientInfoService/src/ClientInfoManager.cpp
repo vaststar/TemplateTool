@@ -135,9 +135,13 @@ void ClientInfoManager::initializeAppClient()
             std::vector<ucf::service::model::DBTableModel> tables{
                 db::schema::UserContactTable{},
                 db::schema::GroupContactTable{},
+                db::schema::ContactRelationTable{},
                 db::schema::SettingsTable{},
                 db::schema::ScreenshotSettingsTable{},
-                db::schema::RecordingSettingsTable{}
+                db::schema::RecordingSettingsTable{},
+                db::schema::CameraGroupTable{},
+                db::schema::CameraTable{},
+                db::schema::CameraDirectoryRelationTable{}
             };
             dataWarehouseService->initializeDB(
                 std::make_shared<ucf::service::model::SqliteDBConfig>(dbConfig.getDBId(), dbConfig.getDBFilePath()),

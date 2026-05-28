@@ -35,6 +35,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     StabilityService
     PerformanceService
     FeatureSettingsService
+    CameraDirectoryService
     CoreFramework
     FilePathUtils
     SystemUtils

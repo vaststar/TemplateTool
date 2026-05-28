@@ -1,57 +1,62 @@
 #pragma once
 
 #include <memory>
-#include <vector>
-#include <optional>
 #include <string>
+#include <vector>
 
-namespace ucf::framework
-{
+#include "ContactEntities.h"
+
+namespace ucf::framework {
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
-namespace ucf::adapter
-{
+namespace ucf::adapter {
     class ContactAdapter;
 }
-namespace ucf::service
-{
-    class ContactModel;
-    namespace model
-    {
-        class IPersonContact;
-        using IPersonContactPtr = std::shared_ptr<IPersonContact>;
-        class IGroupContact;
-        using IGroupContactPtr = std::shared_ptr<IGroupContact>;
-        class IContactRelation;
-        using IContactRelationPtr = std::shared_ptr<IContactRelation>;
-    }
 
-   
+namespace ucf::service {
+
+class ContactModel;
+
+// 业务编排层：当前转发到 Model；预留位置用于后续承担网络拉取 / 同步等业务。
 class ContactManager final
 {
 public:
-    ContactManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    explicit ContactManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ~ContactManager();
     ContactManager(const ContactManager&) = delete;
     ContactManager(ContactManager&&) = delete;
     ContactManager& operator=(const ContactManager&) = delete;
     ContactManager& operator=(ContactManager&&) = delete;
+
 public:
-    std::vector<model::IPersonContactPtr> getPersonContactList() const;
-    model::IPersonContactPtr getPersonContact(const std::string& contactId) const;
+    // ===== Read =====
+    model::PersonContactArray   getPersonContactList() const;
+    model::GroupContactArray    getGroupContactList() const;
+    model::ContactRelationArray getContactRelations() const;
+    model::IPersonContactPtr    getPersonContact(const std::string& contactId) const;
+    model::IGroupContactPtr     getGroupContact(const std::string& contactId) const;
 
-    std::vector<model::IGroupContactPtr> getGroupContactList() const;
-    model::IGroupContactPtr getGroupContact(const std::string& contactId) const;
+    // ===== Batch write =====
+    model::PersonContactArray addPersonContacts(const model::PersonContactArray& persons);
+    model::PersonContactArray updatePersonContacts(const model::PersonContactArray& persons);
+    std::vector<std::string>  removePersonContacts(const std::vector<std::string>& contactIds);
 
-    std::vector<model::IContactRelationPtr> getContactRelations() const;
+    model::GroupContactArray addGroupContacts(const model::GroupContactArray& groups);
+    model::GroupContactArray updateGroupContacts(const model::GroupContactArray& groups);
+    std::vector<std::string> removeGroupContacts(const std::vector<std::string>& contactIds);
+
+    model::ContactRelationArray addContactRelations(const model::ContactRelationArray& relations);
+    model::ContactRelationArray updateContactRelations(const model::ContactRelationArray& relations);
+    std::vector<std::string>    removeContactRelations(const std::vector<std::string>& childIds);
+
+    // ===== Lifecycle =====
+    void onDatabaseReady(const std::string& databaseId);
+
 private:
-    const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
+    const ucf::framework::ICoreFrameworkWPtr      mCoreFrameworkWPtr;
+    const std::unique_ptr<ContactModel>           mContactModel;
     const std::unique_ptr<ucf::adapter::ContactAdapter> mContactAdapter;
-    const std::unique_ptr<ContactModel>  mContactModelPtr;
-
-    // 初始化和测试数据
-    void initializeTestData();  // 初始化测试数据
-    void printOrganizationStructure() const;  // 打印组织结构
 };
-}
+
+} // namespace ucf::service

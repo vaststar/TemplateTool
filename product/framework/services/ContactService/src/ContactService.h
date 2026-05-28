@@ -3,16 +3,18 @@
 #include <memory>
 
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
-
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ContactService/IContactService.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
+namespace ucf::service {
 
-namespace ucf::service{
-class ContactService final: public virtual IContactService, 
-                            public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>,
-                            public ucf::framework::CoreFrameworkCallbackDefault,
-                            public std::enable_shared_from_this<ContactService>
+class SERVICE_EXPORT ContactService final
+    : public virtual IContactService
+    , public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>
+    , public ucf::framework::CoreFrameworkCallbackDefault
+    , public ucf::service::IDataWarehouseServiceCallback
+    , public std::enable_shared_from_this<ContactService>
 {
 public:
     explicit ContactService(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -21,27 +23,45 @@ public:
     ContactService(ContactService&&) = delete;
     ContactService& operator=(const ContactService&) = delete;
     ContactService& operator=(ContactService&&) = delete;
+
 public:
-    //IContactService
-    virtual std::vector<model::IPersonContactPtr> getPersonContactList() const override;
-    virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const override;
-
-    virtual std::vector<model::IGroupContactPtr> getGroupContactList() const override;
-    virtual model::IGroupContactPtr getGroupContact(const std::string& contactId) const override;
-
-    virtual std::vector<model::IContactRelationPtr> getContactRelations() const override;
-
-    //IService
+    // IService
     virtual std::string getServiceName() const override;
 
-    //ICoreFrameworkCallback
+    // ICoreFrameworkCallback
     virtual void onServiceInitialized() override;
     virtual void onCoreFrameworkExit() override;
+
+    // IDataWarehouseServiceCallback
+    virtual void OnDatabaseInitialized(const std::string& dbId) override;
+
+    // IContactService - Read
+    virtual model::PersonContactArray   getPersonContactList() const override;
+    virtual model::GroupContactArray    getGroupContactList() const override;
+    virtual model::ContactRelationArray getContactRelations() const override;
+    virtual model::IPersonContactPtr    getPersonContact(const std::string& contactId) const override;
+    virtual model::IGroupContactPtr     getGroupContact(const std::string& contactId) const override;
+
+    // IContactService - Batch write
+    virtual void addPersonContacts(const model::PersonContactArray& persons) override;
+    virtual void updatePersonContacts(const model::PersonContactArray& persons) override;
+    virtual void removePersonContacts(const std::vector<std::string>& contactIds) override;
+
+    virtual void addGroupContacts(const model::GroupContactArray& groups) override;
+    virtual void updateGroupContacts(const model::GroupContactArray& groups) override;
+    virtual void removeGroupContacts(const std::vector<std::string>& contactIds) override;
+
+    virtual void addContactRelations(const model::ContactRelationArray& relations) override;
+    virtual void updateContactRelations(const model::ContactRelationArray& relations) override;
+    virtual void removeContactRelations(const std::vector<std::string>& childIds) override;
+
 protected:
-    //IService
+    // IService
     virtual void initService() override;
+
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
 };
-}
+
+} // namespace ucf::service

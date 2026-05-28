@@ -1,32 +1,23 @@
-#pragma once
+﻿#pragma once
 
-#include <functional>
-#include <vector>
 #include <memory>
-#include <optional>
+#include <string>
+#include <vector>
 
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 #include <ucf/Services/ServiceDeclaration/IService.h>
 #include <ucf/Services/ContactService/IContactServiceCallback.h>
 
-namespace ucf::framework{
+namespace ucf::framework {
     class ICoreFramework;
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
-namespace ucf::service{
-namespace model{
-    class IPersonContact;
-    using IPersonContactPtr = std::shared_ptr<IPersonContact>;
+namespace ucf::service {
 
-    class IGroupContact;
-    using IGroupContactPtr = std::shared_ptr<IGroupContact>;
-
-    class IContactRelation;
-    using IContactRelationPtr = std::shared_ptr<IContactRelation>;
-}
-
-class SERVICE_EXPORT IContactService: public IService, public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
+class SERVICE_EXPORT IContactService:
+    public IService,
+    public virtual ucf::utilities::INotificationHelper<IContactServiceCallback>
 {
 public:
     IContactService() = default;
@@ -35,40 +26,30 @@ public:
     IContactService& operator=(const IContactService&) = delete;
     IContactService& operator=(IContactService&&) = delete;
     virtual ~IContactService() = default;
+
 public:
-    /**
-     * @brief get Full PersonContact List
-     * @return std::vector<model::IPersonContactPtr> - List of person contacts
-     * @note This function retrieves the full list of person contacts. careful when using it, as it may be a large list.
-     */
-    [[nodiscard]] virtual std::vector<model::IPersonContactPtr> getPersonContactList() const = 0;
+    // ===== Read =====
+    [[nodiscard]] virtual model::PersonContactArray   getPersonContactList() const = 0;
+    [[nodiscard]] virtual model::GroupContactArray    getGroupContactList() const = 0;
+    [[nodiscard]] virtual model::ContactRelationArray getContactRelations() const = 0;
+    [[nodiscard]] virtual model::IPersonContactPtr    getPersonContact(const std::string& contactId) const = 0;
+    [[nodiscard]] virtual model::IGroupContactPtr     getGroupContact(const std::string& contactId) const = 0;
 
-    /**
-     * @brief get Full GroupContact List
-     * @return std::vector<model::IGroupContactPtr> - List of group contacts
-     * @note This function retrieves the full list of group contacts. careful when using it, as it may be a large list.
-     */
-    [[nodiscard]] virtual std::vector<model::IGroupContactPtr> getGroupContactList() const = 0;
+    // ===== Batch write =====
+    virtual void addPersonContacts(const model::PersonContactArray& persons)    = 0;
+    virtual void updatePersonContacts(const model::PersonContactArray& persons) = 0;
+    virtual void removePersonContacts(const std::vector<std::string>& contactIds) = 0;
 
-    /**
-     * @brief get PersonContact by ID
-     * @param contactId - ID of the contact to retrieve
-     * @return model::IPersonContactPtr - The person contact if found, otherwise nulptr
-     */
-    [[nodiscard]] virtual model::IPersonContactPtr getPersonContact(const std::string& contactId) const = 0;
+    virtual void addGroupContacts(const model::GroupContactArray& groups)    = 0;
+    virtual void updateGroupContacts(const model::GroupContactArray& groups) = 0;
+    virtual void removeGroupContacts(const std::vector<std::string>& contactIds) = 0;
 
-    /**
-     * @brief get GroupContact by ID
-     * @param contactId - ID of the contact to retrieve
-     * @return model::IGroupContactPtr - The group contact if found, otherwise nulptr
-     */
-    [[nodiscard]] virtual model::IGroupContactPtr getGroupContact(const std::string& contactId) const = 0;
+    virtual void addContactRelations(const model::ContactRelationArray& relations)    = 0;
+    virtual void updateContactRelations(const model::ContactRelationArray& relations) = 0;
+    virtual void removeContactRelations(const std::vector<std::string>& childIds)     = 0;
 
-    /**
-     * @brief get Contact Relations
-     * @return std::vector<model::IContactRelationPtr> - List of contact relations
-     */
-    [[nodiscard]] virtual std::vector<model::IContactRelationPtr> getContactRelations() const = 0;
     static std::shared_ptr<IContactService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
-}
+
+} // namespace ucf::service
+

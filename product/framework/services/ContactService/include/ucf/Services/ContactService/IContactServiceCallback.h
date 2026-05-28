@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 
+#include <string>
 #include <vector>
 
-namespace ucf::service{
-    namespace model{
-        class Contact;
-    }
+#include <ucf/Services/ContactService/IContactEntities.h>
+
+namespace ucf::service {
 
 class IContactServiceCallback
 {
@@ -15,8 +15,27 @@ public:
     IContactServiceCallback(IContactServiceCallback&&) = delete;
     IContactServiceCallback& operator=(const IContactServiceCallback&) = delete;
     IContactServiceCallback& operator=(IContactServiceCallback&&) = delete;
-    virtual ~ IContactServiceCallback() = default;
+    virtual ~IContactServiceCallback() = default;
+
 public:
-    virtual void OnContactListAvailable(const std::vector<model::Contact>& contactList) = 0;
+    // Contact directory is ready (DB initialized & loaded into memory)
+    virtual void onContactDirectoryReady() {}
+
+    // ===== Person contacts =====
+    virtual void onPersonContactsAdded(const model::PersonContactArray& /*persons*/) {}
+    virtual void onPersonContactsUpdated(const model::PersonContactArray& /*persons*/) {}
+    virtual void onPersonContactsRemoved(const std::vector<std::string>& /*contactIds*/) {}
+
+    // ===== Group contacts =====
+    virtual void onGroupContactsAdded(const model::GroupContactArray& /*groups*/) {}
+    virtual void onGroupContactsUpdated(const model::GroupContactArray& /*groups*/) {}
+    virtual void onGroupContactsRemoved(const std::vector<std::string>& /*contactIds*/) {}
+
+    // ===== Relations =====
+    virtual void onContactRelationsAdded(const model::ContactRelationArray& /*relations*/) {}
+    virtual void onContactRelationsUpdated(const model::ContactRelationArray& /*relations*/) {}
+    virtual void onContactRelationsRemoved(const std::vector<std::string>& /*childIds*/) {}
 };
-}
+
+} // namespace ucf::service
+

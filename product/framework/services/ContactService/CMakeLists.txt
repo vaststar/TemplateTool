@@ -20,6 +20,8 @@ set(MODULE_SOURCE_PRIVATE
     src/ContactEntities.cpp
     src/ContactManager.h
     src/ContactManager.cpp
+    src/ContactDBAccess.h
+    src/ContactDBAccess.cpp
     src/Adapters/ContactAdapter.h
     src/Adapters/ContactAdapter.cpp
 )
@@ -31,6 +33,9 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
     DatabaseClient
+    DataWarehouseService
+    DataWarehouseSchema
+    ClientInfoService
     CoreFramework
     LoggerUtils
     ThreadPool

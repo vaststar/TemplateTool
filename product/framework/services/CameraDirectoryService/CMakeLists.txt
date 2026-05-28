@@ -1,37 +1,41 @@
 include(BuildModule)
 
-set(MODULE_MODULE_NAME ServiceFactory)
+set(MODULE_MODULE_NAME CameraDirectoryService)
 set(MODULE_IDE_FOLDER framework/Services)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Services/ServiceFactory/IServiceFactory.h
+    include/ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h
+    include/ucf/Services/CameraDirectoryService/ICameraDirectoryServiceCallback.h
+    include/ucf/Services/CameraDirectoryService/ICameraDirectoryService.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/ServiceFactoryLogger.h
-    src/ServiceFactory.h
-    src/ServiceFactory.cpp
+    src/CameraDirectoryServiceLogger.h
+    src/CameraDirectoryEntities.h
+    src/CameraDirectoryEntities.cpp
+    src/CameraDirectoryModel.h
+    src/CameraDirectoryModel.cpp
+    src/CameraDirectoryDBAccess.h
+    src/CameraDirectoryDBAccess.cpp
+    src/CameraDirectoryManager.h
+    src/CameraDirectoryManager.cpp
+    src/CameraDirectoryService.h
+    src/CameraDirectoryService.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceExportMacro
-)
-
-set(MODULE_DEPENDENCIES_PRIVATE
-    UpgradeService
-    CameraDirectoryService
-    FeatureSettingsService
-    PerformanceService
-    StabilityService
+    NotificationHelper
+    ServiceDeclaration
     MediaService
-    ImageService
-    ContactService
-    NetworkService
-    ClientInfoService
+)
+set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseService
-    InvocationService
+    DataWarehouseSchema
+    ClientInfoService
     CoreFramework
     LoggerUtils
+    UUIDUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)

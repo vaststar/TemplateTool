@@ -31,7 +31,8 @@ class SERVICE_EXPORT IPersonContact: public IContact
 public:
     virtual std::string getPersonName() const = 0;
 };
-using IPersonContactPtr = std::shared_ptr<IPersonContact>;
+using IPersonContactPtr  = std::shared_ptr<IPersonContact>;
+using PersonContactArray = std::vector<IPersonContactPtr>;
 
 // Represents a contact for a group, which can be used to store group information.
 class SERVICE_EXPORT IGroupContact: public IContact
@@ -39,7 +40,8 @@ class SERVICE_EXPORT IGroupContact: public IContact
 public:
     virtual std::string getGroupName() const = 0;
 };
-using IGroupContactPtr = std::shared_ptr<IGroupContact>;
+using IGroupContactPtr  = std::shared_ptr<IGroupContact>;
+using GroupContactArray = std::vector<IGroupContactPtr>;
 
 class SERVICE_EXPORT IContactRelation
 {

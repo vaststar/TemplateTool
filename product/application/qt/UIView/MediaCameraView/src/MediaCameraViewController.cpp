@@ -22,19 +22,19 @@ MediaCameraViewController::~MediaCameraViewController()
     UIVIEW_LOG_DEBUG("delete MediaCameraViewController");
 }
 
-QVideoSink* MediaCameraViewController::getVideoSink() const 
-{ 
-    return mVideoSink; 
+QVideoSink* MediaCameraViewController::getVideoSink() const
+{
+    return mVideoSink;
 }
 
-void MediaCameraViewController::setVideoSink(QVideoSink* videoSink) 
+void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 {
-    if (!videoSink) 
+    if (!videoSink)
     {
         return;
     }
 
-    if (mVideoSink != videoSink) 
+    if (mVideoSink != videoSink)
     {
         mVideoSink = videoSink;
         emit videoSinkChanged(mVideoSink);
@@ -58,7 +58,7 @@ bool MediaCameraViewController::isVisible() const
 void MediaCameraViewController::onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame)
 {
     QImage img(&frame.data[0], frame.width, frame.height, frame.bytesPerLine, QImage::Format::Format_RGB888);
-    
+
     if(mVideoSink)
     {
         mVideoSink->setVideoFrame(imageToVideoFrame(img));

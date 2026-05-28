@@ -11,6 +11,7 @@
 #include <ucf/Services/StabilityService/IStabilityService.h>
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
 #include <ucf/Services/UpgradeService/IUpgradeService.h>
 #include "ServiceFactoryLogger.h"
 
@@ -79,6 +80,11 @@ std::shared_ptr<ucf::service::IPerformanceService> ServiceFactory::createPerform
 std::shared_ptr<ucf::service::IFeatureSettingsService> ServiceFactory::createFeatureSettingsService()
 {
     return ucf::service::IFeatureSettingsService::createInstance(mCoreFrameworkWPtr.lock());
+}
+
+std::shared_ptr<ucf::service::ICameraDirectoryService> ServiceFactory::createCameraDirectoryService()
+{
+    return ucf::service::ICameraDirectoryService::createInstance(mCoreFrameworkWPtr.lock());
 }
 
 std::shared_ptr<ucf::service::IUpgradeService> ServiceFactory::createUpgradeService()

@@ -1,162 +1,382 @@
 #include "ContactModel.h"
 
-#include <algorithm>
-#include <iterator>
-#include <map>
-#include <set>
-
-
-#include <ucf/CoreFramework/ICoreFramework.h>
-
+#include "ContactDBAccess.h"
 #include "ContactServiceLogger.h"
-// #include <ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h>
 
-namespace ucf::service{
-
+namespace ucf::service {
 
 ContactModel::ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
-:  mCoreFrameworkWPtr(coreFramework)
+    : mContactDBAccess(std::make_unique<ContactDBAccess>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("create ContactModel, address:"  << this);
 }
 
-std::vector<model::IPersonContactPtr> ContactModel::getPersonContacts() const
-{
-    std::vector<model::IPersonContactPtr> results;
-    std::scoped_lock loc(mContactMutex);
-    std::transform(mPersonContacts.begin(), mPersonContacts.end(), std::back_inserter(results), [](const auto& contactPair) -> model::IPersonContactPtr {
-        return contactPair.second;
-    });
-    return results;
-}
+ContactModel::~ContactModel() = default;
 
-void ContactModel::deletePersonContacts(const std::initializer_list<std::string>& contactIds)
+// ===== Read =====
+
+model::PersonContactArray ContactModel::getPersonContacts() const
 {
-    std::scoped_lock loc(mContactMutex);
-    for (const auto& contactId : contactIds)
+    model::PersonContactArray result;
+    std::scoped_lock lock(mMutex);
+    result.reserve(mPersonContacts.size());
+    for (const auto& [_, p] : mPersonContacts)
     {
-        if (auto iter = mPersonContacts.find(contactId); iter != mPersonContacts.end())
-        {
-            iter->second->setContactStatus(model::IContact::ContactStatus::Deleted);
-        }
+        result.push_back(p);
     }
+    return result;
 }
 
-void ContactModel::addPersonContact(const model::PersonContactPtr& contact)
+model::GroupContactArray ContactModel::getGroupContacts() const
 {
-    std::scoped_lock loc(mContactMutex);
-    if (auto iter = mPersonContacts.find(contact->getContactId()); iter != mPersonContacts.end())
+    model::GroupContactArray result;
+    std::scoped_lock lock(mMutex);
+    result.reserve(mGroupContacts.size());
+    for (const auto& [_, g] : mGroupContacts)
     {
-        SERVICE_LOG_DEBUG("Contact already exists, contactId:" << contact->getContactId());
-        return;
+        result.push_back(g);
     }
-    mPersonContacts.emplace(contact->getContactId(), contact);
+    return result;
+}
+
+model::ContactRelationArray ContactModel::getContactRelations() const
+{
+    model::ContactRelationArray result;
+    std::scoped_lock lock(mMutex);
+    result.reserve(mContactRelations.size());
+    for (const auto& [_, r] : mContactRelations)
+    {
+        result.push_back(r);
+    }
+    return result;
 }
 
 model::IPersonContactPtr ContactModel::getPersonContact(const std::string& contactId) const
 {
-    std::scoped_lock loc(mContactMutex);
-    if (auto iter = mPersonContacts.find(contactId); iter != mPersonContacts.end())
+    std::scoped_lock lock(mMutex);
+    auto it = mPersonContacts.find(contactId);
+    if (it == mPersonContacts.end())
     {
-        return iter->second;
+        return nullptr;
     }
-    return nullptr;
-}
-
-std::vector<model::IGroupContactPtr> ContactModel::getGroupContacts() const
-{
-    std::vector<model::IGroupContactPtr> results;
-    std::scoped_lock loc(mContactMutex);
-    std::transform(mGroupContacts.begin(), mGroupContacts.end(), std::back_inserter(results), [](const auto& contactPair) -> model::IGroupContactPtr {
-        return contactPair.second;
-    });
-    return results;
+    return it->second;
 }
 
 model::IGroupContactPtr ContactModel::getGroupContact(const std::string& contactId) const
 {
-    std::scoped_lock loc(mContactMutex);
-    if (auto iter = mGroupContacts.find(contactId); iter != mGroupContacts.end())
+    std::scoped_lock lock(mMutex);
+    auto it = mGroupContacts.find(contactId);
+    if (it == mGroupContacts.end())
     {
-        return iter->second;
+        return nullptr;
     }
-    return nullptr;
+    return it->second;
 }
 
-void ContactModel::addGroupContact(const model::GroupContactPtr& contact)
-{
-    std::scoped_lock loc(mContactMutex);
-    if (auto iter = mGroupContacts.find(contact->getContactId()); iter != mGroupContacts.end())
-    {
-        SERVICE_LOG_DEBUG("Group Contact already exists, contactId:" << contact->getContactId());
-        return;
-    }
-    mGroupContacts.emplace(contact->getContactId(), contact);
-}
+// ===== Memory primitives =====
 
-void ContactModel::deleteGroupContacts(const std::initializer_list<std::string>& contactIds)
+model::PersonContactArray ContactModel::addPersonContactsInMemory(const model::PersonContactArray& persons)
 {
-    std::scoped_lock loc(mContactMutex);
-    for (const auto& contactId : contactIds)
+    model::PersonContactArray accepted;
+    accepted.reserve(persons.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& p : persons)
     {
-        if (auto iter = mGroupContacts.find(contactId); iter != mGroupContacts.end())
+        if (!p)
         {
-            iter->second->setContactStatus(model::IContact::ContactStatus::Deleted);
+            continue;
+        }
+        const std::string contactId = p->getContactId();
+        if (contactId.empty() || mPersonContacts.find(contactId) != mPersonContacts.end())
+        {
+            continue;
+        }
+        auto impl = std::make_shared<model::PersonContact>(contactId);
+        impl->setPersonName(p->getPersonName());
+        impl->setContactStatus(p->getContactStatus());
+        mPersonContacts.emplace(contactId, impl);
+        accepted.push_back(impl);
+    }
+    return accepted;
+}
+
+model::PersonContactArray ContactModel::updatePersonContactsInMemory(const model::PersonContactArray& persons)
+{
+    model::PersonContactArray accepted;
+    accepted.reserve(persons.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& p : persons)
+    {
+        if (!p)
+        {
+            continue;
+        }
+        auto it = mPersonContacts.find(p->getContactId());
+        if (it == mPersonContacts.end())
+        {
+            continue;
+        }
+        it->second->setPersonName(p->getPersonName());
+        it->second->setContactStatus(p->getContactStatus());
+        accepted.push_back(it->second);
+    }
+    return accepted;
+}
+
+std::vector<std::string> ContactModel::removePersonContactsInMemory(const std::vector<std::string>& contactIds)
+{
+    std::vector<std::string> accepted;
+    accepted.reserve(contactIds.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& id : contactIds)
+    {
+        if (mPersonContacts.erase(id) > 0)
+        {
+            accepted.push_back(id);
         }
     }
+    return accepted;
 }
 
-std::vector<model::IContactRelationPtr> ContactModel::getContactRelations() const
+model::GroupContactArray ContactModel::addGroupContactsInMemory(const model::GroupContactArray& groups)
 {
-    std::vector<model::IContactRelationPtr> results;
-    std::scoped_lock loc(mContactMutex);
-    std::transform(mContactRelations.begin(), mContactRelations.end(), std::back_inserter(results), [](const auto& relation) -> model::IContactRelationPtr {
-        return relation;
-    });
-    return results;
-}
-
-void ContactModel::addContactRelation(const model::ContactRelationPtr& relation)
-{
-    std::scoped_lock loc(mContactMutex);
-    auto it = std::find_if(mContactRelations.begin(), mContactRelations.end(),
-                           [&relation](const model::ContactRelationPtr& existingRelation) {
-                               return existingRelation->getChildId() == relation->getChildId();
-                           });
-    if (it != mContactRelations.end())
+    model::GroupContactArray accepted;
+    accepted.reserve(groups.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& g : groups)
     {
-        SERVICE_LOG_DEBUG("Contact relation already exists for childId:" << relation->getChildId());
-        return;
-    }
-    mContactRelations.push_back(relation);
-}
-
-void ContactModel::deleteContactRelations(const std::initializer_list<std::string>& childIds)
-{
-    std::scoped_lock loc(mContactMutex);
-    for (const auto& childId : childIds)
-    {
-        auto it = std::remove_if(mContactRelations.begin(), mContactRelations.end(),
-                                 [&childId](const model::ContactRelationPtr& relation) {
-                                     return relation->getChildId() == childId;
-                                 });
-        if (it != mContactRelations.end())
+        if (!g)
         {
-            mContactRelations.erase(it, mContactRelations.end());
+            continue;
+        }
+        const std::string contactId = g->getContactId();
+        if (contactId.empty() || mGroupContacts.find(contactId) != mGroupContacts.end())
+        {
+            continue;
+        }
+        auto impl = std::make_shared<model::GroupContact>(contactId);
+        impl->setGroupName(g->getGroupName());
+        impl->setContactStatus(g->getContactStatus());
+        mGroupContacts.emplace(contactId, impl);
+        accepted.push_back(impl);
+    }
+    return accepted;
+}
+
+model::GroupContactArray ContactModel::updateGroupContactsInMemory(const model::GroupContactArray& groups)
+{
+    model::GroupContactArray accepted;
+    accepted.reserve(groups.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& g : groups)
+    {
+        if (!g)
+        {
+            continue;
+        }
+        auto it = mGroupContacts.find(g->getContactId());
+        if (it == mGroupContacts.end())
+        {
+            continue;
+        }
+        it->second->setGroupName(g->getGroupName());
+        it->second->setContactStatus(g->getContactStatus());
+        accepted.push_back(it->second);
+    }
+    return accepted;
+}
+
+std::vector<std::string> ContactModel::removeGroupContactsInMemory(const std::vector<std::string>& contactIds)
+{
+    std::vector<std::string> accepted;
+    accepted.reserve(contactIds.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& id : contactIds)
+    {
+        if (mGroupContacts.erase(id) > 0)
+        {
+            accepted.push_back(id);
         }
     }
+    return accepted;
 }
 
-void ContactModel::modifyContactRelation(const std::string& childId, const std::string& newParentId)
+model::ContactRelationArray ContactModel::addContactRelationsInMemory(const model::ContactRelationArray& relations)
 {
-    std::scoped_lock loc(mContactMutex);
-    auto it = std::find_if(mContactRelations.begin(), mContactRelations.end(),
-                           [&childId](const model::ContactRelationPtr& relation) {
-                               return relation->getChildId() == childId;
-                           });
-    if (it != mContactRelations.end())
+    model::ContactRelationArray accepted;
+    accepted.reserve(relations.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& r : relations)
     {
-        (*it)->setParentId(newParentId);
+        if (!r)
+        {
+            continue;
+        }
+        const std::string childId = r->getChildId();
+        if (childId.empty() || mContactRelations.find(childId) != mContactRelations.end())
+        {
+            continue;
+        }
+        auto impl = std::make_shared<model::ContactRelation>(childId, r->getParentId());
+        impl->setRelationType(r->getRelationType());
+        mContactRelations.emplace(childId, impl);
+        accepted.push_back(impl);
     }
+    return accepted;
 }
+
+model::ContactRelationArray ContactModel::updateContactRelationsInMemory(const model::ContactRelationArray& relations)
+{
+    model::ContactRelationArray accepted;
+    accepted.reserve(relations.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& r : relations)
+    {
+        if (!r)
+        {
+            continue;
+        }
+        auto it = mContactRelations.find(r->getChildId());
+        if (it == mContactRelations.end())
+        {
+            continue;
+        }
+        it->second->setParentId(r->getParentId());
+        it->second->setRelationType(r->getRelationType());
+        accepted.push_back(it->second);
+    }
+    return accepted;
+}
+
+std::vector<std::string> ContactModel::removeContactRelationsInMemory(const std::vector<std::string>& childIds)
+{
+    std::vector<std::string> accepted;
+    accepted.reserve(childIds.size());
+    std::scoped_lock lock(mMutex);
+    for (const auto& id : childIds)
+    {
+        if (mContactRelations.erase(id) > 0)
+        {
+            accepted.push_back(id);
+        }
+    }
+    return accepted;
+}
+
+// ===== Public write: memory first, then persist =====
+
+model::PersonContactArray ContactModel::addPersonContacts(const model::PersonContactArray& persons)
+{
+    auto accepted = addPersonContactsInMemory(persons);
+    if (!accepted.empty())
+    {
+        mContactDBAccess->insertPersonContacts(accepted);
+    }
+    return accepted;
+}
+
+model::PersonContactArray ContactModel::updatePersonContacts(const model::PersonContactArray& persons)
+{
+    auto accepted = updatePersonContactsInMemory(persons);
+    for (const auto& p : accepted)
+    {
+        mContactDBAccess->updatePersonContact(p);
+    }
+    return accepted;
+}
+
+std::vector<std::string> ContactModel::removePersonContacts(const std::vector<std::string>& contactIds)
+{
+    auto accepted = removePersonContactsInMemory(contactIds);
+    for (const auto& id : accepted)
+    {
+        mContactDBAccess->deletePersonContact(id);
+    }
+    return accepted;
+}
+
+model::GroupContactArray ContactModel::addGroupContacts(const model::GroupContactArray& groups)
+{
+    auto accepted = addGroupContactsInMemory(groups);
+    if (!accepted.empty())
+    {
+        mContactDBAccess->insertGroupContacts(accepted);
+    }
+    return accepted;
+}
+
+model::GroupContactArray ContactModel::updateGroupContacts(const model::GroupContactArray& groups)
+{
+    auto accepted = updateGroupContactsInMemory(groups);
+    for (const auto& g : accepted)
+    {
+        mContactDBAccess->updateGroupContact(g);
+    }
+    return accepted;
+}
+
+std::vector<std::string> ContactModel::removeGroupContacts(const std::vector<std::string>& contactIds)
+{
+    auto accepted = removeGroupContactsInMemory(contactIds);
+    for (const auto& id : accepted)
+    {
+        mContactDBAccess->deleteGroupContact(id);
+    }
+    return accepted;
+}
+
+model::ContactRelationArray ContactModel::addContactRelations(const model::ContactRelationArray& relations)
+{
+    auto accepted = addContactRelationsInMemory(relations);
+    if (!accepted.empty())
+    {
+        mContactDBAccess->insertContactRelations(accepted);
+    }
+    return accepted;
+}
+
+model::ContactRelationArray ContactModel::updateContactRelations(const model::ContactRelationArray& relations)
+{
+    auto accepted = updateContactRelationsInMemory(relations);
+    for (const auto& r : accepted)
+    {
+        mContactDBAccess->updateContactRelation(r);
+    }
+    return accepted;
+}
+
+std::vector<std::string> ContactModel::removeContactRelations(const std::vector<std::string>& childIds)
+{
+    auto accepted = removeContactRelationsInMemory(childIds);
+    for (const auto& id : accepted)
+    {
+        mContactDBAccess->deleteContactRelation(id);
+    }
+    return accepted;
+}
+
+// ===== Lifecycle =====
+
+void ContactModel::onDatabaseReady(const std::string& databaseId)
+{
+    SERVICE_LOG_DEBUG("Database ready, databaseId:" << databaseId);
+    mContactDBAccess->setDatabaseId(databaseId);
+
+    mContactDBAccess->loadPersonContacts(
+        [this](const model::PersonContactArray& persons)
+        {
+            addPersonContactsInMemory(persons);
+        });
+    mContactDBAccess->loadGroupContacts(
+        [this](const model::GroupContactArray& groups)
+        {
+            addGroupContactsInMemory(groups);
+        });
+    mContactDBAccess->loadContactRelations(
+        [this](const model::ContactRelationArray& relations)
+        {
+            addContactRelationsInMemory(relations);
+        });
+}
+
 } // namespace ucf::service
+
