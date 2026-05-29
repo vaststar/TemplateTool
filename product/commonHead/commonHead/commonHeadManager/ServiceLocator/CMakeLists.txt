@@ -22,6 +22,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
     ClientInfoService
     ContactService
+    CameraDirectoryService
     MediaService
     ImageService
     StabilityService

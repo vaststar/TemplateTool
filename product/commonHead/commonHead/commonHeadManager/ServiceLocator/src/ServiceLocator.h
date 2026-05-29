@@ -12,6 +12,7 @@ public:
     virtual std::weak_ptr<ucf::service::INetworkService> getNetworkService() const override;
     virtual std::weak_ptr<ucf::service::IClientInfoService> getClientInfoService() const override;
     virtual std::weak_ptr<ucf::service::IContactService> getContactService() const override;
+    virtual std::weak_ptr<ucf::service::ICameraDirectoryService> getCameraDirectoryService() const override;
     virtual std::weak_ptr<ucf::service::IImageService> getImageService() const override;
     virtual std::weak_ptr<ucf::service::IMediaService> getMediaService() const override;
     virtual std::weak_ptr<ucf::service::IStabilityService> getStabilityService() const override;

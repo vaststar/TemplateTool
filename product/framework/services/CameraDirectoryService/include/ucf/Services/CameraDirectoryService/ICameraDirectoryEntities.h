@@ -32,7 +32,9 @@ using ICameraDirectoryNodePtr = std::shared_ptr<ICameraDirectoryNode>;
 class SERVICE_EXPORT ICameraGroup : public ICameraDirectoryNode
 {
 public:
-    // 目前不增加额外字段，预留扩展
+    static std::shared_ptr<ICameraGroup> createInstance(std::string nodeId,
+                                                        std::string displayName,
+                                                        CameraNodeStatus status = CameraNodeStatus::Active);
 };
 using ICameraGroupPtr   = std::shared_ptr<ICameraGroup>;
 using CameraGroupArray  = std::vector<ICameraGroupPtr>;
@@ -42,6 +44,11 @@ class SERVICE_EXPORT ICameraEntry : public ICameraDirectoryNode
 {
 public:
     virtual media::CameraSource getSource() const = 0;
+
+    static std::shared_ptr<ICameraEntry> createInstance(std::string nodeId,
+                                                        std::string displayName,
+                                                        media::CameraSource source,
+                                                        CameraNodeStatus status = CameraNodeStatus::Active);
 };
 using ICameraEntryPtr   = std::shared_ptr<ICameraEntry>;
 using CameraEntryArray  = std::vector<ICameraEntryPtr>;
@@ -59,6 +66,10 @@ public:
     virtual std::string getParentId() const = 0;
     virtual std::string getChildId() const = 0;
     virtual RelationType getRelationType() const = 0;
+
+    static std::shared_ptr<ICameraDirectoryRelation> createInstance(std::string parentId,
+                                                                    std::string childId,
+                                                                    RelationType type = RelationType::Containment);
 };
 using ICameraDirectoryRelationPtr   = std::shared_ptr<ICameraDirectoryRelation>;
 using CameraDirectoryRelationArray  = std::vector<ICameraDirectoryRelationPtr>;

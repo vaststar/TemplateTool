@@ -15,6 +15,7 @@ namespace ucf::service{
     class INetworkService;
     class IClientInfoService;
     class IContactService;
+    class ICameraDirectoryService;
     class IImageService;
     class IMediaService;
     class IStabilityService;
@@ -33,6 +34,7 @@ public:
     [[nodiscard]] virtual std::weak_ptr<ucf::service::INetworkService> getNetworkService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IClientInfoService> getClientInfoService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IContactService> getContactService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::ICameraDirectoryService> getCameraDirectoryService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IImageService> getImageService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IMediaService> getMediaService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IStabilityService> getStabilityService() const = 0;

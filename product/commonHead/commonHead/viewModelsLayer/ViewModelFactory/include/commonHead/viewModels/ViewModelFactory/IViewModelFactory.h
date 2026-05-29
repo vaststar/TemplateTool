@@ -15,6 +15,7 @@ namespace commonHead::viewModels{
     class IContactListViewModel;
     class IMainWindowViewModel;
     class IMediaCameraViewModel;
+    class ICameraDirectoryViewModel;
     class IInvocationViewModel;
     class ISettingsViewModel;
     class ISideBarViewModel;
@@ -45,6 +46,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> createCameraDirectoryViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;

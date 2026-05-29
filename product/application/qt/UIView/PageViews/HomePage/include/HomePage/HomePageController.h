@@ -14,6 +14,7 @@ public:
 
     Q_INVOKABLE void showTestMessage();
     Q_INVOKABLE void openCamera();
+    Q_INVOKABLE void openCameraMonitor();
 
 protected:
     void init() override;

@@ -22,6 +22,7 @@ add_subdirectory(MainWindowSuite)
 add_subdirectory(PageViews)
 add_subdirectory(AppUpgrade)
 add_subdirectory(MediaCameraView)
+add_subdirectory(CameraMonitorView)
 add_subdirectory(AppUIManager)
 
 set(MODULE_DEPENDENCIES_PUBLIC

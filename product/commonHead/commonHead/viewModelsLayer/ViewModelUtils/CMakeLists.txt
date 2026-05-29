@@ -3,7 +3,7 @@ include(BuildModule)
 set(MODULE_MODULE_NAME ViewModelUtils)
 set(MODULE_IDE_FOLDER commonhead)
 
-set(MODULE_HEADER_BASE_DIR 
+set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/LogOperationUtils/include
 )
 

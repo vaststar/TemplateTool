@@ -3,6 +3,7 @@
 #include "UIViewHelper/UIViewHelper.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include "MediaCameraView/MediaCameraViewController.h"
+#include "CameraMonitorView/CameraMonitorViewController.h"
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
@@ -57,6 +58,31 @@ void HomePageController::openCamera()
     if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
     {
         mediaController->initializeController(ctx.data());
+    }
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
+}
+
+void HomePageController::openCameraMonitor()
+{
+    UIVIEW_LOG_DEBUG("HomePageController::openCameraMonitor");
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        UIVIEW_LOG_WARN("no AppContext");
+        return;
+    }
+
+    auto win = ctx->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/CameraMonitorView/qml/CameraMonitorView.qml"));
+    if (!win)
+    {
+        UIVIEW_LOG_WARN("failed to create CameraMonitorView window");
+        return;
+    }
+    if (auto* monitorController = UIView::UIViewHelper::controllerOf<CameraMonitorViewController>(win))
+    {
+        monitorController->initializeController(ctx.data());
     }
     UIView::UIViewHelper::centerOnParentWhenShown(win);
     win->show();

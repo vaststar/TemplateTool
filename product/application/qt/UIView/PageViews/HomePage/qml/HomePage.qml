@@ -56,5 +56,13 @@ Item {
             text: qsTr("Open Camera")
             onClicked: homePage.controller.openCamera()
         }
+
+        UTButton {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 200
+            height: 36
+            text: qsTr("Open Camera Monitor")
+            onClicked: homePage.controller.openCameraMonitor()
+        }
     }
 }

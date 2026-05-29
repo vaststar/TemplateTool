@@ -1,0 +1,16 @@
+list(APPEND MODULE_SOURCE_PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/CameraMonitorView/CameraDirectoryItemModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/CameraMonitorView/CameraMonitorViewController.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraDirectoryItemModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraMonitorViewController.cpp
+)
+list(APPEND MODULE_QML_TARGET_FILES
+    CameraMonitorView/qml/CameraMonitorView.qml
+    CameraMonitorView/qml/CameraDirectoryTreePanel.qml
+    CameraMonitorView/qml/CameraPreviewPanel.qml
+)
+set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
+set(MODULE_QML_TARGET_FILES ${MODULE_QML_TARGET_FILES} PARENT_SCOPE)
+
+list(APPEND MODULE_PRIVATE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/CameraMonitorView)
+set(MODULE_PRIVATE_INCLUDE_DIRS ${MODULE_PRIVATE_INCLUDE_DIRS} PARENT_SCOPE)

@@ -124,6 +124,30 @@
     </message>
 </context>
 <context>
+    <name>CameraDirectoryTreePanel</name>
+    <message>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="32"/>
+        <source>Cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CameraMonitorView</name>
+    <message>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraMonitorView.qml" line="14"/>
+        <source>Camera Monitor</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CameraPreviewPanel</name>
+    <message>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraPreviewPanel.qml" line="56"/>
+        <source>Slot %1 — empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>HomePage</name>
     <message>
         <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="48"/>
@@ -134,6 +158,11 @@
         <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="56"/>
         <source>Open Camera</source>
         <translation>Open Camera</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="64"/>
+        <source>Open Camera Monitor</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1094,17 +1123,17 @@ Double-click a rule to view details.</translation>
         <translation>oo window title bar</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="32"/>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
         <source>Test Message</source>
         <translation>Test Message</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="34"/>
         <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
         <translation>This is a UIViewMessageBoxHelper::showOkCancel test.</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="37"/>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="38"/>
         <source>Click any button to dismiss the dialog.</source>
         <translation>Click any button to dismiss the dialog.</translation>
     </message>

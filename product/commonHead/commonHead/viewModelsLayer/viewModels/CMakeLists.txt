@@ -16,6 +16,7 @@ add_subdirectory(AppUIViewModel)
 add_subdirectory(ClientInfoViewModel)
 add_subdirectory(UpgradeViewModel)
 add_subdirectory(MediaCameraViewModel)
+add_subdirectory(CameraDirectoryViewModel)
 add_subdirectory(InvocationViewModel)
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -27,6 +28,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceLocator
     ContactService
+    CameraDirectoryService
     MediaService
     ImageService
     ClientInfoService
