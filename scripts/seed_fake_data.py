@@ -1,0 +1,196 @@
+"""Seed fake data into the TemplateTool shared SQLite database.
+
+Inserts a small but realistic Contact + Camera directory tree:
+
+  Contacts                          Cameras
+  --------                          -------
+  Engineering (group)               Local (group)
+    +-- Alice Chen                    +-- Built-in Webcam (index 0)
+    +-- Bob Liu                       +-- USB Camera #2 (index 1)
+    +-- Backend Team (group)        Remote (group)
+          +-- Cathy Wang              +-- Front Door (rtsp)
+          +-- David Zhang             +-- Backyard (rtsp)
+  Sales (group)                     Yard (group)
+    +-- Eve Sun                       +-- (empty placeholder)
+
+Usage (PowerShell):
+  python scripts/seed_fake_data.py            # default debug DB
+  python scripts/seed_fake_data.py --release  # release DB
+  python scripts/seed_fake_data.py --db <path-to-shared_database.db>
+  python scripts/seed_fake_data.py --wipe     # delete existing fake rows first
+
+The script is idempotent: re-running it overwrites the same fake IDs via
+INSERT OR REPLACE, so the directory tree stays stable across runs.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sqlite3
+import sys
+from pathlib import Path
+
+# ----- Schema constants (mirror DataWarehouseSchemas.h) -----
+T_USER_CONTACT     = "UserContact"
+T_GROUP_CONTACT    = "GroupContact"
+T_CONTACT_REL      = "ContactRelation"
+T_CAMERA_GROUP     = "CameraGroup"
+T_CAMERA           = "Camera"
+T_CAMERA_REL       = "CameraDirectoryRelation"
+
+STATUS_ACTIVE         = 0   # ContactStatus::Active / CameraNodeStatus::Active
+CAMERA_RELATION_CONT  = 0   # CameraDirectoryRelation::RelationType::Containment
+CONTACT_RELATION_DEPT = 0   # IContactRelation::RelationType::Department
+SOURCE_TYPE_LOCAL     = 0
+SOURCE_TYPE_NETWORK   = 1
+
+
+def default_db_path(release: bool) -> Path:
+    base = os.environ.get("LOCALAPPDATA") or os.environ.get("USERPROFILE")
+    if not base:
+        raise RuntimeError("Cannot resolve LOCALAPPDATA / USERPROFILE")
+    folder = "TemplateToolApp" if release else "TemplateToolAppDebug"
+    return Path(base) / folder / "app_data" / "shared_database.db"
+
+
+# ----- Fake data -----
+
+CONTACT_PERSONS = [
+    # (id, full_name)
+    ("seed_person_alice",  "Alice Chen"),
+    ("seed_person_bob",    "Bob Liu"),
+    ("seed_person_cathy",  "Cathy Wang"),
+    ("seed_person_david",  "David Zhang"),
+    ("seed_person_eve",    "Eve Sun"),
+]
+
+CONTACT_GROUPS = [
+    # (id, name)
+    ("seed_group_eng",     "Engineering"),
+    ("seed_group_backend", "Backend Team"),
+    ("seed_group_sales",   "Sales"),
+]
+
+# child -> parent
+CONTACT_RELATIONS = [
+    ("seed_person_alice",  "seed_group_eng"),
+    ("seed_person_bob",    "seed_group_eng"),
+    ("seed_group_backend", "seed_group_eng"),
+    ("seed_person_cathy",  "seed_group_backend"),
+    ("seed_person_david",  "seed_group_backend"),
+    ("seed_person_eve",    "seed_group_sales"),
+]
+
+
+CAMERA_GROUPS = [
+    # (id, name)
+    ("seed_cgroup_local",  "Local"),
+    ("seed_cgroup_remote", "Remote"),
+    ("seed_cgroup_yard",   "Yard"),
+]
+
+# (id, name, source_type, local_index, url, transport, open_timeout_ms, read_timeout_ms)
+CAMERAS = [
+    ("seed_cam_local_0",  "Built-in Webcam", SOURCE_TYPE_LOCAL,   0, "",                                  "",     0,    0),
+    ("seed_cam_local_1",  "USB Camera #2",   SOURCE_TYPE_LOCAL,   1, "",                                  "",     0,    0),
+    ("seed_cam_front",    "Front Door",      SOURCE_TYPE_NETWORK, 0, "rtsp://192.168.1.10:554/stream1",   "tcp",  5000, 5000),
+    ("seed_cam_backyard", "Backyard",        SOURCE_TYPE_NETWORK, 0, "rtsp://192.168.1.11:554/stream1",   "tcp",  5000, 5000),
+]
+
+# child -> parent
+CAMERA_RELATIONS = [
+    ("seed_cam_local_0",  "seed_cgroup_local"),
+    ("seed_cam_local_1",  "seed_cgroup_local"),
+    ("seed_cam_front",    "seed_cgroup_remote"),
+    ("seed_cam_backyard", "seed_cgroup_remote"),
+]
+
+
+def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
+    """Remove rows we previously inserted (matched by `seed_` id prefix)."""
+    cur.execute(f"DELETE FROM {T_CONTACT_REL}   WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+    cur.execute(f"DELETE FROM {T_USER_CONTACT}  WHERE CONTACT_ID LIKE 'seed_%'")
+    cur.execute(f"DELETE FROM {T_GROUP_CONTACT} WHERE GROUP_ID   LIKE 'seed_%'")
+    cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+    cur.execute(f"DELETE FROM {T_CAMERA}        WHERE NODE_ID    LIKE 'seed_%'")
+    cur.execute(f"DELETE FROM {T_CAMERA_GROUP}  WHERE NODE_ID    LIKE 'seed_%'")
+
+
+def insert_contacts(cur: sqlite3.Cursor) -> None:
+    cur.executemany(
+        f"INSERT OR REPLACE INTO {T_USER_CONTACT} (CONTACT_ID, CONTACT_FULL_NAME, CONTACT_STATUS) VALUES (?, ?, ?)",
+        [(cid, name, STATUS_ACTIVE) for cid, name in CONTACT_PERSONS],
+    )
+    cur.executemany(
+        f"INSERT OR REPLACE INTO {T_GROUP_CONTACT} (GROUP_ID, GROUP_NAME, CONTACT_STATUS) VALUES (?, ?, ?)",
+        [(gid, name, STATUS_ACTIVE) for gid, name in CONTACT_GROUPS],
+    )
+    cur.executemany(
+        f"INSERT OR REPLACE INTO {T_CONTACT_REL} (CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?)",
+        [(child, parent, CONTACT_RELATION_DEPT) for child, parent in CONTACT_RELATIONS],
+    )
+
+
+def insert_cameras(cur: sqlite3.Cursor) -> None:
+    cur.executemany(
+        f"INSERT OR REPLACE INTO {T_CAMERA_GROUP} (NODE_ID, DISPLAY_NAME, NODE_STATUS) VALUES (?, ?, ?)",
+        [(nid, name, STATUS_ACTIVE) for nid, name in CAMERA_GROUPS],
+    )
+    cur.executemany(
+        f"INSERT OR REPLACE INTO {T_CAMERA} "
+        "(NODE_ID, DISPLAY_NAME, NODE_STATUS, SOURCE_TYPE, LOCAL_INDEX, NETWORK_URL, NETWORK_TRANSPORT, OPEN_TIMEOUT_MS, READ_TIMEOUT_MS) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [(nid, name, STATUS_ACTIVE, st, idx, url, transport, ot, rt)
+         for (nid, name, st, idx, url, transport, ot, rt) in CAMERAS],
+    )
+    cur.executemany(
+        f"INSERT OR REPLACE INTO {T_CAMERA_REL} (CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?)",
+        [(child, parent, CAMERA_RELATION_CONT) for child, parent in CAMERA_RELATIONS],
+    )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--release", action="store_true",
+                        help="Target the release DB (TemplateToolApp); default is debug.")
+    parser.add_argument("--db", type=Path, default=None,
+                        help="Explicit path to shared_database.db (overrides --release).")
+    parser.add_argument("--wipe", action="store_true",
+                        help="Delete any previously seeded rows (id prefix 'seed_') before inserting.")
+    args = parser.parse_args()
+
+    db_path = args.db if args.db else default_db_path(args.release)
+    if not db_path.exists():
+        print(f"[error] DB not found: {db_path}", file=sys.stderr)
+        print("        Run the app at least once so the schema is created, then retry.", file=sys.stderr)
+        return 1
+
+    print(f"[info] using db: {db_path}")
+    conn = sqlite3.connect(str(db_path))
+    try:
+        cur = conn.cursor()
+        if args.wipe:
+            print("[info] wiping previously seeded rows...")
+            wipe_seed_rows(cur)
+
+        insert_contacts(cur)
+        insert_cameras(cur)
+        conn.commit()
+
+        # Summary
+        def count(table: str) -> int:
+            return cur.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+
+        print("[done] table row counts:")
+        for t in (T_USER_CONTACT, T_GROUP_CONTACT, T_CONTACT_REL,
+                  T_CAMERA, T_CAMERA_GROUP, T_CAMERA_REL):
+            print(f"  {t:30s} {count(t)}")
+    finally:
+        conn.close()
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
