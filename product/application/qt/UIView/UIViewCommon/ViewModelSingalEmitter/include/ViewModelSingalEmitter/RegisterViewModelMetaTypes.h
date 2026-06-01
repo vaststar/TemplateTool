@@ -8,6 +8,7 @@
 #include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
 #include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
+#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 
 Q_DECLARE_METATYPE(commonHead::viewModels::model::NavItemData)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::PageChangeEvent)
@@ -23,6 +24,10 @@ Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryRelationData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactNodeData)
+Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::ContactNodeData>)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactRelationData)
+Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::ContactRelationData>)
 Q_DECLARE_METATYPE(std::vector<std::string>)
 
 namespace UIVMSignalEmitter {
@@ -43,6 +48,10 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::CameraDirectoryRelationData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>>();
+    qRegisterMetaType<commonHead::viewModels::model::ContactNodeData>();
+    qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactNodeData>>();
+    qRegisterMetaType<commonHead::viewModels::model::ContactRelationData>();
+    qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactRelationData>>();
     qRegisterMetaType<std::vector<std::string>>();
 }
 

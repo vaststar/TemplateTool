@@ -39,10 +39,15 @@ public:
 
     void setParent(const std::shared_ptr<ContactTreeNode>& parent);
     void addChild(const std::shared_ptr<ContactTreeNode>& child);
+    void removeChild(const std::string& childId);
+    void updateData(const ContactNodeData& data);
+    // Move all children out (used when re-parenting orphans to virtual root)
+    std::vector<std::shared_ptr<ContactTreeNode>> takeChildren();
 private:
     ContactNodeData m_data;
     std::weak_ptr<ContactTreeNode> m_parent;
     std::vector<std::shared_ptr<ContactTreeNode>> m_children;
+    std::unordered_map<std::string, std::size_t> m_childIndex; // id -> position in m_children
 };
 
 
@@ -55,14 +60,28 @@ public:
 
     ContactTreeNodePtr findNodeById(const std::string& id) const override;
 
+    // Incremental mutations (single)
+    void addNode(const ContactNodeData& data);
+    void updateNode(const ContactNodeData& data);
+    void removeNode(const std::string& id);
+    void setRelation(const std::string& parentId, const std::string& childId);
+    void clearRelation(const std::string& childId);
+
+    // Batch variants (preferred for callback payloads)
+    void addNodes(const std::vector<ContactNodeData>& datas);
+    void updateNodes(const std::vector<ContactNodeData>& datas);
+    void removeNodes(const std::vector<std::string>& ids);
+    void setRelations(const std::vector<std::pair<std::string, std::string>>& parentChildPairs);
+    void clearRelations(const std::vector<std::string>& childIds);
+
 private:
     void buildNodes(const std::vector<ucf::service::model::IContactPtr>& contacts);
     void buildRelations(const std::vector<ucf::service::model::IContactRelationPtr>& relations);
     void createVirtualRoot();
+    void detachFromParent(const std::shared_ptr<ContactTreeNode>& node);
 private:
     std::shared_ptr<ContactTreeNode> m_root;
-    std::unordered_map<std::string, std::weak_ptr<ContactTreeNode>> m_index; //just for indexing
-    std::unordered_map<std::string, std::shared_ptr<ContactTreeNode>> m_nodes; // actual tree nodes
+    std::unordered_map<std::string, std::shared_ptr<ContactTreeNode>> m_nodes;
 };
 
 }

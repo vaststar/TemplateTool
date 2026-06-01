@@ -25,7 +25,16 @@ public:
     IContactListViewModelCallback& operator=(IContactListViewModelCallback&&) = delete;
     virtual ~IContactListViewModelCallback() = default;
 public:
-    // virtual void onContactListAvaliable(const std::vector<model::Contact>& contactList) = 0;
+    virtual void onContactDirectoryReady() {}
+    virtual void onPersonContactsAdded(const std::vector<model::ContactNodeData>& persons) {}
+    virtual void onPersonContactsUpdated(const std::vector<model::ContactNodeData>& persons) {}
+    virtual void onPersonContactsRemoved(const std::vector<std::string>& contactIds) {}
+    virtual void onGroupContactsAdded(const std::vector<model::ContactNodeData>& groups) {}
+    virtual void onGroupContactsUpdated(const std::vector<model::ContactNodeData>& groups) {}
+    virtual void onGroupContactsRemoved(const std::vector<std::string>& contactIds) {}
+    virtual void onContactRelationsAdded(const std::vector<model::ContactRelationData>& relations) {}
+    virtual void onContactRelationsUpdated(const std::vector<model::ContactRelationData>& relations) {}
+    virtual void onContactRelationsRemoved(const std::vector<std::string>& childIds) {}
 };
 
 class COMMONHEAD_EXPORT IContactListViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IContactListViewModelCallback>

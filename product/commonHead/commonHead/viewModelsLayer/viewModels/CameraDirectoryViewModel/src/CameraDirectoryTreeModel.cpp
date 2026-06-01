@@ -1,7 +1,5 @@
 #include "CameraDirectoryTreeModel.h"
 
-#include <algorithm>
-
 namespace commonHead::viewModels::model {
 
 CameraDirectoryTreeNode::CameraDirectoryTreeNode(const CameraDirectoryNodeData& data)
@@ -39,7 +37,7 @@ std::shared_ptr<ICameraDirectoryTreeNode> CameraDirectoryTreeNode::getChild(std:
 
 void CameraDirectoryTreeNode::setNodeData(const CameraDirectoryNodeData& data)
 {
-    // id / type 是节点身份，禁止变更；仅刷新展示字段
+    // id / type are identity; only display fields refresh.
     m_data.displayName = data.displayName;
     m_data.status      = data.status;
 }
@@ -60,22 +58,53 @@ void CameraDirectoryTreeNode::addChild(const std::shared_ptr<CameraDirectoryTree
     {
         return;
     }
+    const auto& childId = child->getNodeData().id;
+    if (!childId.empty() && m_childIndex.count(childId))
+    {
+        return; // already a child
+    }
     child->setParent(shared_from_this());
+    m_childIndex.emplace(childId, m_children.size());
     m_children.push_back(child);
 }
 
-void CameraDirectoryTreeNode::removeChild(const std::shared_ptr<CameraDirectoryTreeNode>& child)
+void CameraDirectoryTreeNode::removeChild(const std::string& childId)
 {
-    if (!child)
+    auto it = m_childIndex.find(childId);
+    if (it == m_childIndex.end())
     {
         return;
     }
-    auto it = std::remove(m_children.begin(), m_children.end(), child);
-    if (it != m_children.end())
+    const std::size_t idx = it->second;
+    m_childIndex.erase(it);
+
+    if (m_children[idx])
     {
-        m_children.erase(it, m_children.end());
-        child->clearParent();
+        m_children[idx]->clearParent();
     }
+    // Swap-remove: O(1) erase from vector, then fix the moved entry's index.
+    const std::size_t last = m_children.size() - 1;
+    if (idx != last)
+    {
+        m_children[idx] = std::move(m_children[last]);
+        if (m_children[idx])
+        {
+            m_childIndex[m_children[idx]->getNodeData().id] = idx;
+        }
+    }
+    m_children.pop_back();
+}
+
+std::vector<std::shared_ptr<CameraDirectoryTreeNode>> CameraDirectoryTreeNode::takeChildren()
+{
+    std::vector<std::shared_ptr<CameraDirectoryTreeNode>> out;
+    out.swap(m_children);
+    m_childIndex.clear();
+    for (auto& c : out)
+    {
+        if (c) c->clearParent();
+    }
+    return out;
 }
 
 
@@ -89,37 +118,20 @@ CameraDirectoryTree::CameraDirectoryTree(const ucf::service::model::CameraGroupA
     buildCameraNodes(cameras);
     buildRelations(relations);
     createVirtualRoot();
-    rebuildIndex();
-}
-
-void CameraDirectoryTree::rebuildIndex()
-{
-    m_index.clear();
-    m_index.reserve(m_nodes.size());
-    for (const auto& [id, node] : m_nodes)
-    {
-        m_index.emplace(id, node);
-    }
 }
 
 void CameraDirectoryTree::buildGroupNodes(const ucf::service::model::CameraGroupArray& groups)
 {
     for (const auto& group : groups)
     {
-        if (!group)
-        {
-            continue;
-        }
+        if (!group) continue;
         const std::string id = group->getNodeId();
-        if (id.empty())
-        {
-            continue;
-        }
+        if (id.empty()) continue;
         CameraDirectoryNodeData data;
         data.id          = id;
         data.displayName = group->getDisplayName();
         data.type        = CameraDirectoryNodeType::Group;
-
+        data.status      = static_cast<CameraNodeStatus>(static_cast<int>(group->getNodeStatus()));
         m_nodes.emplace(id, std::make_shared<CameraDirectoryTreeNode>(data));
     }
 }
@@ -128,20 +140,14 @@ void CameraDirectoryTree::buildCameraNodes(const ucf::service::model::CameraEntr
 {
     for (const auto& camera : cameras)
     {
-        if (!camera)
-        {
-            continue;
-        }
+        if (!camera) continue;
         const std::string id = camera->getNodeId();
-        if (id.empty())
-        {
-            continue;
-        }
+        if (id.empty()) continue;
         CameraDirectoryNodeData data;
         data.id          = id;
         data.displayName = camera->getDisplayName();
         data.type        = CameraDirectoryNodeType::Camera;
-
+        data.status      = static_cast<CameraNodeStatus>(static_cast<int>(camera->getNodeStatus()));
         m_nodes.emplace(id, std::make_shared<CameraDirectoryTreeNode>(data));
     }
 }
@@ -150,38 +156,16 @@ void CameraDirectoryTree::buildRelations(const ucf::service::model::CameraDirect
 {
     for (const auto& rel : relations)
     {
-        if (!rel)
-        {
-            continue;
-        }
+        if (!rel) continue;
         const std::string parentId = rel->getParentId();
-        if (parentId.empty())
-        {
-            continue;
-        }
+        if (parentId.empty()) continue;
         auto itParent = m_nodes.find(parentId);
-        if (itParent == m_nodes.end())
-        {
-            continue;
-        }
-        auto parentNode = itParent->second;
-        if (!parentNode)
-        {
-            continue;
-        }
+        if (itParent == m_nodes.end() || !itParent->second) continue;
 
         const std::string childId = rel->getChildId();
         auto itChild = m_nodes.find(childId);
-        if (itChild == m_nodes.end())
-        {
-            continue;
-        }
-        auto childNode = itChild->second;
-        if (!childNode)
-        {
-            continue;
-        }
-        parentNode->addChild(childNode);
+        if (itChild == m_nodes.end() || !itChild->second) continue;
+        itParent->second->addChild(itChild->second);
     }
 }
 
@@ -196,10 +180,7 @@ void CameraDirectoryTree::createVirtualRoot()
 
     for (const auto& [_, node] : m_nodes)
     {
-        if (!node)
-        {
-            continue;
-        }
+        if (!node) continue;
         if (auto parent = node->getParent().lock(); !parent)
         {
             m_root->addChild(node);
@@ -214,123 +195,125 @@ CameraDirectoryTreeNodePtr CameraDirectoryTree::getRoot() const
 
 CameraDirectoryTreeNodePtr CameraDirectoryTree::findNodeById(const std::string& id) const
 {
-    if (auto it = m_index.find(id); it != m_index.end())
+    auto it = m_nodes.find(id);
+    if (it != m_nodes.end() && it->second)
     {
-        if (auto ptr = it->second.lock())
-        {
-            return std::static_pointer_cast<ICameraDirectoryTreeNode>(ptr);
-        }
+        return std::static_pointer_cast<ICameraDirectoryTreeNode>(it->second);
     }
     return nullptr;
 }
 
-// ===== Incremental mutators =====
+// ===== Helpers =====
 
-void CameraDirectoryTree::attachToVirtualRoot(const std::shared_ptr<CameraDirectoryTreeNode>& node)
+void CameraDirectoryTree::detachFromParent(const std::shared_ptr<CameraDirectoryTreeNode>& node)
 {
-    if (!node || !m_root)
+    if (!node) return;
+    if (auto parent = std::dynamic_pointer_cast<CameraDirectoryTreeNode>(node->getParent().lock()))
     {
-        return;
+        parent->removeChild(node->getNodeData().id);
     }
-    m_root->addChild(node);
+    else if (m_root)
+    {
+        m_root->removeChild(node->getNodeData().id);
+    }
 }
 
-void CameraDirectoryTree::detachFromCurrentParent(const std::shared_ptr<CameraDirectoryTreeNode>& node)
-{
-    if (!node)
-    {
-        return;
-    }
-    if (auto parent = node->getParent().lock())
-    {
-        // parent 是 ICameraDirectoryTreeNode；这里 cast 回 impl 类型以调用 removeChild
-        auto parentImpl = std::static_pointer_cast<CameraDirectoryTreeNode>(parent);
-        parentImpl->removeChild(node);
-    }
-}
+// ===== Incremental mutations (single) =====
 
 void CameraDirectoryTree::addNode(const CameraDirectoryNodeData& data)
 {
-    if (data.id.empty() || m_nodes.find(data.id) != m_nodes.end())
-    {
-        return;
-    }
+    if (data.id.empty() || m_nodes.count(data.id)) return;
     auto node = std::make_shared<CameraDirectoryTreeNode>(data);
     m_nodes.emplace(data.id, node);
-    m_index.emplace(data.id, node);
-    attachToVirtualRoot(node);
+    m_root->addChild(node);
 }
 
 void CameraDirectoryTree::updateNode(const CameraDirectoryNodeData& data)
 {
     auto it = m_nodes.find(data.id);
-    if (it == m_nodes.end() || !it->second)
-    {
-        return;
-    }
+    if (it == m_nodes.end() || !it->second) return;
     it->second->setNodeData(data);
 }
 
 void CameraDirectoryTree::removeNode(const std::string& nodeId)
 {
     auto it = m_nodes.find(nodeId);
-    if (it == m_nodes.end())
+    if (it == m_nodes.end() || !it->second)
     {
+        if (it != m_nodes.end()) m_nodes.erase(it);
         return;
     }
     auto node = it->second;
-    if (node)
+
+    // Re-parent orphaned children to virtual root before deleting this node.
+    auto orphans = node->takeChildren();
+    for (auto& child : orphans)
     {
-        detachFromCurrentParent(node);
-        // node 的 children 此时仍指向 m_children 中的 shared_ptr，且这些子节点的 parent 指针仍指向被删 node。
-        // 这里采取保守策略：把 children 全部挂回 virtual root，由后续 relation 事件再重组。
-        for (std::size_t i = 0; i < node->getChildCount(); ++i)
-        {
-            auto child = std::static_pointer_cast<CameraDirectoryTreeNode>(node->getChild(i));
-            if (child)
-            {
-                child->clearParent();
-                attachToVirtualRoot(child);
-            }
-        }
+        if (child) m_root->addChild(child);
     }
+
+    detachFromParent(node);
     m_nodes.erase(it);
-    m_index.erase(nodeId);
 }
 
 void CameraDirectoryTree::setRelation(const std::string& parentId, const std::string& childId)
 {
     auto itChild = m_nodes.find(childId);
-    if (itChild == m_nodes.end() || !itChild->second)
-    {
-        return;
-    }
+    if (itChild == m_nodes.end() || !itChild->second) return;
     auto child = itChild->second;
 
-    detachFromCurrentParent(child);
+    detachFromParent(child);
 
     auto itParent = m_nodes.find(parentId);
-    if (itParent != m_nodes.end() && itParent->second)
+    if (itParent != m_nodes.end() && itParent->second && itParent->second != child)
     {
         itParent->second->addChild(child);
     }
     else
     {
-        // 父节点不存在：暂挂 virtual root，等父节点出现时由后续事件再 reparent
-        attachToVirtualRoot(child);
+        // Parent unknown / invalid: park on virtual root.
+        m_root->addChild(child);
     }
 }
 
 void CameraDirectoryTree::clearRelation(const std::string& childId)
 {
     auto it = m_nodes.find(childId);
-    if (it == m_nodes.end() || !it->second)
-    {
-        return;
-    }
+    if (it == m_nodes.end() || !it->second) return;
     auto child = it->second;
-    detachFromCurrentParent(child);
-    attachToVirtualRoot(child);
+    detachFromParent(child);
+    m_root->addChild(child);
+}
+
+// ===== Batch variants =====
+
+void CameraDirectoryTree::addNodes(const std::vector<CameraDirectoryNodeData>& datas)
+{
+    m_nodes.reserve(m_nodes.size() + datas.size());
+    for (const auto& d : datas) addNode(d);
+}
+
+void CameraDirectoryTree::updateNodes(const std::vector<CameraDirectoryNodeData>& datas)
+{
+    for (const auto& d : datas) updateNode(d);
+}
+
+void CameraDirectoryTree::removeNodes(const std::vector<std::string>& nodeIds)
+{
+    for (const auto& id : nodeIds) removeNode(id);
+}
+
+void CameraDirectoryTree::setRelations(const std::vector<std::pair<std::string, std::string>>& parentChildPairs)
+{
+    for (const auto& [parentId, childId] : parentChildPairs)
+    {
+        setRelation(parentId, childId);
+    }
+}
+
+void CameraDirectoryTree::clearRelations(const std::vector<std::string>& childIds)
+{
+    for (const auto& id : childIds) clearRelation(id);
 }
 
 }

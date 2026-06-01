@@ -1,23 +1,30 @@
 #pragma once
 
-#include <memory>
-
 #include <QAbstractItemModel>
 #include <QtQml>
 
-namespace commonHead::viewModels::model {
-    class ICameraDirectoryTree;
-    class ICameraDirectoryTreeNode;
-}
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-// QAbstractItemModel adapter over commonHead::viewModels::model::ICameraDirectoryTree。
-// 设计与 ContactsPage::ContactListItemModel 一致：树快照 + reset 语义。
-// 增量事件由上层 controller 重新 setTree() 触发 begin/endResetModel。
+#include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
+
+// Pure tree model. Owns its own mirror of nodes; exposes coarse mutation
+// methods so callers (controller) can translate VM callbacks into proper
+// QAbstractItemModel structural changes.
 class CameraDirectoryItemModel : public QAbstractItemModel
 {
     Q_OBJECT
     QML_ELEMENT
+
 public:
+    using NodeData     = commonHead::viewModels::model::CameraDirectoryNodeData;
+    using RelationData = commonHead::viewModels::model::CameraDirectoryRelationData;
+    using TreePtr      = std::shared_ptr<commonHead::viewModels::model::ICameraDirectoryTree>;
+    using TreeNodePtr  = std::shared_ptr<commonHead::viewModels::model::ICameraDirectoryTreeNode>;
+
     enum Roles {
         IdRole = Qt::UserRole + 1,
         DisplayNameRole,
@@ -28,22 +35,43 @@ public:
     explicit CameraDirectoryItemModel(QObject* parent = nullptr);
     ~CameraDirectoryItemModel() override;
 
-    void setTree(const std::shared_ptr<commonHead::viewModels::model::ICameraDirectoryTree>& tree);
+    // --- Mutation API (each method emits the proper begin/end pair(s)) ---
+    void resetFromTree(const TreePtr& tree);
+    void insertNodes(const std::vector<NodeData>& datas);
+    void updateNodes(const std::vector<NodeData>& datas);
+    void removeNodes(const std::vector<std::string>& ids);
+    void setParents(const std::vector<std::pair<std::string, std::string>>& pairs);
+    void clearParents(const std::vector<std::string>& childIds);
 
-    QVariant data(const QModelIndex& index, int role) const override;
+    // --- QAbstractItemModel ---
+    QVariant      data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    QModelIndex index(int row, int column, const QModelIndex& parent = {}) const override;
-    QModelIndex parent(const QModelIndex& index) const override;
-    int rowCount(const QModelIndex& parent = {}) const override;
-    int columnCount(const QModelIndex& parent = {}) const override;
-
-protected:
+    QVariant      headerData(int section, Qt::Orientation orientation,
+                             int role = Qt::DisplayRole) const override;
+    QModelIndex   index(int row, int column,
+                        const QModelIndex& parent = {}) const override;
+    QModelIndex   parent(const QModelIndex& index) const override;
+    int           rowCount(const QModelIndex& parent = {}) const override;
+    int           columnCount(const QModelIndex& parent = {}) const override;
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    commonHead::viewModels::model::ICameraDirectoryTreeNode* nodeFromIndex(const QModelIndex& index) const;
+    struct Node {
+        NodeData    data;
+        std::string parentId;              // "" = root sentinel
+        int         rowInParent = -1;      // -1 for root
+        std::vector<std::string> childIds; // ordered
+    };
+
+    Node* getRoot() const;
+    Node* findNode(const std::string& id) const;
+    Node* nodeFromIndex(const QModelIndex& idx) const;
+    QModelIndex indexFor(Node* node) const;
+
+    void resetMirror();
+    void walkPopulate(const TreeNodePtr& src, const std::string& parentId);
+    void moveNodeToParent(const std::string& childId, const std::string& newParentId);
 
 private:
-    std::shared_ptr<commonHead::viewModels::model::ICameraDirectoryTree> mTree;
+    std::unordered_map<std::string, std::unique_ptr<Node>> m_nodes;
 };

@@ -190,12 +190,6 @@ void CameraDirectoryViewModel::rebuildTreeFromService()
     }
 }
 
-std::shared_ptr<model::CameraDirectoryTree> CameraDirectoryViewModel::lockTree() const
-{
-    std::scoped_lock lk(mTreeMutex);
-    return mTree;
-}
-
 // ===== Read =====
 
 model::CameraDirectoryTreePtr CameraDirectoryViewModel::getCameraTree() const
@@ -352,13 +346,9 @@ void CameraDirectoryViewModel::onCameraDirectoryReady()
 void CameraDirectoryViewModel::onCameraGroupsAdded(const ucf::service::model::CameraGroupArray& groups)
 {
     auto vmGroups = toVMNodeDatas(groups);
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& g : vmGroups)
-        {
-            tree->addNode(g);
-        }
+        if (mTree) mTree->addNodes(vmGroups);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraGroupsAdded, vmGroups);
 }
@@ -366,26 +356,18 @@ void CameraDirectoryViewModel::onCameraGroupsAdded(const ucf::service::model::Ca
 void CameraDirectoryViewModel::onCameraGroupsUpdated(const ucf::service::model::CameraGroupArray& groups)
 {
     auto vmGroups = toVMNodeDatas(groups);
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& g : vmGroups)
-        {
-            tree->updateNode(g);
-        }
+        if (mTree) mTree->updateNodes(vmGroups);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraGroupsUpdated, vmGroups);
 }
 
 void CameraDirectoryViewModel::onCameraGroupsRemoved(const std::vector<std::string>& nodeIds)
 {
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& id : nodeIds)
-        {
-            tree->removeNode(id);
-        }
+        if (mTree) mTree->removeNodes(nodeIds);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraGroupsRemoved, nodeIds);
 }
@@ -393,13 +375,9 @@ void CameraDirectoryViewModel::onCameraGroupsRemoved(const std::vector<std::stri
 void CameraDirectoryViewModel::onCamerasAdded(const ucf::service::model::CameraEntryArray& cameras)
 {
     auto vmCameras = toVMNodeDatas(cameras);
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& c : vmCameras)
-        {
-            tree->addNode(c);
-        }
+        if (mTree) mTree->addNodes(vmCameras);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCamerasAdded, vmCameras);
 }
@@ -407,26 +385,18 @@ void CameraDirectoryViewModel::onCamerasAdded(const ucf::service::model::CameraE
 void CameraDirectoryViewModel::onCamerasUpdated(const ucf::service::model::CameraEntryArray& cameras)
 {
     auto vmCameras = toVMNodeDatas(cameras);
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& c : vmCameras)
-        {
-            tree->updateNode(c);
-        }
+        if (mTree) mTree->updateNodes(vmCameras);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCamerasUpdated, vmCameras);
 }
 
 void CameraDirectoryViewModel::onCamerasRemoved(const std::vector<std::string>& nodeIds)
 {
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& id : nodeIds)
-        {
-            tree->removeNode(id);
-        }
+        if (mTree) mTree->removeNodes(nodeIds);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCamerasRemoved, nodeIds);
 }
@@ -434,13 +404,12 @@ void CameraDirectoryViewModel::onCamerasRemoved(const std::vector<std::string>& 
 void CameraDirectoryViewModel::onCameraRelationsAdded(const ucf::service::model::CameraDirectoryRelationArray& relations)
 {
     auto vmRelations = toVMRelations(relations);
-    if (auto tree = lockTree())
+    std::vector<std::pair<std::string, std::string>> pairs;
+    pairs.reserve(vmRelations.size());
+    for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& r : vmRelations)
-        {
-            tree->setRelation(r.parentId, r.childId);
-        }
+        if (mTree) mTree->setRelations(pairs);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraRelationsAdded, vmRelations);
 }
@@ -448,26 +417,21 @@ void CameraDirectoryViewModel::onCameraRelationsAdded(const ucf::service::model:
 void CameraDirectoryViewModel::onCameraRelationsUpdated(const ucf::service::model::CameraDirectoryRelationArray& relations)
 {
     auto vmRelations = toVMRelations(relations);
-    if (auto tree = lockTree())
+    std::vector<std::pair<std::string, std::string>> pairs;
+    pairs.reserve(vmRelations.size());
+    for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& r : vmRelations)
-        {
-            tree->setRelation(r.parentId, r.childId);
-        }
+        if (mTree) mTree->setRelations(pairs);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraRelationsUpdated, vmRelations);
 }
 
 void CameraDirectoryViewModel::onCameraRelationsRemoved(const std::vector<std::string>& childIds)
 {
-    if (auto tree = lockTree())
     {
         std::scoped_lock lk(mTreeMutex);
-        for (const auto& id : childIds)
-        {
-            tree->clearRelation(id);
-        }
+        if (mTree) mTree->clearRelations(childIds);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraRelationsRemoved, childIds);
 }

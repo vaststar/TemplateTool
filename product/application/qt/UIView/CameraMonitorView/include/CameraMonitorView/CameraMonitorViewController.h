@@ -21,39 +21,40 @@ namespace UIVMSignalEmitter {
     class CameraDirectoryViewModelEmitter;
 }
 
-// 摄像机监控视图控制器。
-// 只负责目录树 (CameraDirectoryItemModel) + 当前选中节点；
-// 视频解码/渲染由各个 MediaCameraView 实例自己持有，controller 不暴露 VideoSink。
+// Thin controller: 9 个回调槽都只把 VM payload 转给 CameraDirectoryItemModel
+// 的对应 mutation 方法，让 model 自己发 begin/end insert/update/remove/move 信号。
 class CameraMonitorViewController : public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(QAbstractItemModel* cameraTreeModel READ getCameraTreeModel NOTIFY cameraTreeModelChanged)
     Q_PROPERTY(QString selectedCameraId READ getSelectedCameraId NOTIFY selectedCameraChanged)
     Q_PROPERTY(QString selectedCameraName READ getSelectedCameraName NOTIFY selectedCameraChanged)
+    Q_PROPERTY(LoadState loadState READ getLoadState NOTIFY loadStateChanged)
     QML_ELEMENT
 public:
+    enum LoadState { Loading = 0, Ready = 1, Error = 2 };
+    Q_ENUM(LoadState)
+
     explicit CameraMonitorViewController(QObject* parent = nullptr);
     ~CameraMonitorViewController() override;
 
     QAbstractItemModel* getCameraTreeModel() const;
     QString getSelectedCameraId() const;
     QString getSelectedCameraName() const;
+    LoadState getLoadState() const;
 
 public slots:
-    // 由 QML tree 在节点单击时调用。仅记录选中状态，并通过 signal 通知 UI；
-    // 不直接驱动视频播放——cell 内的 MediaCameraView 自己决定是否拉流。
     Q_INVOKABLE void selectNode(const QString& nodeId);
 
 signals:
     void cameraTreeModelChanged();
     void selectedCameraChanged();
+    void loadStateChanged();
 
 protected:
     void init() override;
 
 private slots:
-    // 一对一对应 ICameraDirectoryViewModelCallback；
-    // 当前都简单地 rebuildTreeModel()，future 可在此做差量更新。
     void onCameraDirectoryReady();
     void onCameraGroupsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& groups);
     void onCameraGroupsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& groups);
@@ -66,13 +67,14 @@ private slots:
     void onCameraRelationsRemoved(const std::vector<std::string>& ids);
 
 private:
-    void rebuildTreeModel();
+    void setLoadState(LoadState s);
 
 private:
     std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> mCameraDirectoryViewModel;
     std::shared_ptr<UIVMSignalEmitter::CameraDirectoryViewModelEmitter> mCameraDirectoryEmitter;
 
     CameraDirectoryItemModel* mCameraTreeModel = nullptr;
-    QString mSelectedCameraId;
-    QString mSelectedCameraName;
+    QString   mSelectedCameraId;
+    QString   mSelectedCameraName;
+    LoadState mLoadState = Loading;
 };

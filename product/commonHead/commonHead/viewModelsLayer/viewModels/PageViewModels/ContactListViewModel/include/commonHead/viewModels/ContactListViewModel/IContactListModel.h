@@ -19,6 +19,12 @@ struct COMMONHEAD_EXPORT ContactNodeData
     ContactNodeType type;
 };
 
+struct COMMONHEAD_EXPORT ContactRelationData
+{
+    std::string parentId;
+    std::string childId;
+};
+
 class COMMONHEAD_EXPORT IContactTreeNode
 {
 public:

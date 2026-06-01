@@ -48,7 +48,9 @@ Item {
             top: header.bottom
             bottom: parent.bottom
         }
-        model: controller.orgTreeModel
+        visible: controller && controller.loadState === ContactsPageController.Ready
+                 && controller.orgTreeModel !== null
+        model: controller ? controller.orgTreeModel : null
 
         onItemInvoked: function(idx) {
             var contactId = treeView.model.data(idx, Qt.UserRole + 1);
@@ -140,6 +142,28 @@ Item {
             UTFocusItem {
                 delegateFocused: current && treeContainer.treeView.activeFocus
             }
+        }
+    }
+
+    // Loading / error overlay (shown when tree is not Ready)
+    Item {
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: header.bottom
+            bottom: parent.bottom
+        }
+        visible: !treeContainer.visible
+
+        UTText {
+            anchors.centerIn: parent
+            text: {
+                if (!controller) return "";
+                if (controller.loadState === ContactsPageController.Error) return "加载失败";
+                return "加载中…";
+            }
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Sidebar_Item_Text
         }
     }
 }

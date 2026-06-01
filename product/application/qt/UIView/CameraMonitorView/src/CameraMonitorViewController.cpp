@@ -19,19 +19,16 @@ CameraMonitorViewController::~CameraMonitorViewController()
     UIVIEW_LOG_DEBUG("delete CameraMonitorViewController");
 }
 
-QAbstractItemModel* CameraMonitorViewController::getCameraTreeModel() const
-{
-    return mCameraTreeModel;
-}
+QAbstractItemModel* CameraMonitorViewController::getCameraTreeModel() const  { return mCameraTreeModel; }
+QString CameraMonitorViewController::getSelectedCameraId() const             { return mSelectedCameraId; }
+QString CameraMonitorViewController::getSelectedCameraName() const           { return mSelectedCameraName; }
+CameraMonitorViewController::LoadState CameraMonitorViewController::getLoadState() const { return mLoadState; }
 
-QString CameraMonitorViewController::getSelectedCameraId() const
+void CameraMonitorViewController::setLoadState(LoadState s)
 {
-    return mSelectedCameraId;
-}
-
-QString CameraMonitorViewController::getSelectedCameraName() const
-{
-    return mSelectedCameraName;
+    if (mLoadState == s) return;
+    mLoadState = s;
+    emit loadStateChanged();
 }
 
 void CameraMonitorViewController::init()
@@ -42,13 +39,16 @@ void CameraMonitorViewController::init()
     if (!ctx)
     {
         UIVIEW_LOG_WARN("no AppContext");
+        setLoadState(Error);
         return;
     }
 
-    mCameraTreeModel = new CameraDirectoryItemModel(this);
-    emit cameraTreeModelChanged();
-
     mCameraDirectoryViewModel = ctx->getViewModelFactory()->createCameraDirectoryViewModelInstance();
+    if (!mCameraDirectoryViewModel)
+    {
+        setLoadState(Error);
+        return;
+    }
 
     using Emitter = UIVMSignalEmitter::CameraDirectoryViewModelEmitter;
     auto* e = mCameraDirectoryEmitter.get();
@@ -65,31 +65,14 @@ void CameraMonitorViewController::init()
 
     mCameraDirectoryViewModel->registerCallback(mCameraDirectoryEmitter);
 
-    rebuildTreeModel();
-}
+    mCameraTreeModel = new CameraDirectoryItemModel(this);
+    emit cameraTreeModelChanged();
 
-// ---- Directory callbacks: currently all collapse to a full rebuild.
-// CameraDirectoryItemModel only supports setTree() today; once it gains
-// row-level mutators these slots can do begin/endInsertRows etc. without
-// touching upstream signals.
-void CameraMonitorViewController::onCameraDirectoryReady()                                                                                       { rebuildTreeModel(); }
-void CameraMonitorViewController::onCameraGroupsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>&)                { rebuildTreeModel(); }
-void CameraMonitorViewController::onCameraGroupsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>&)              { rebuildTreeModel(); }
-void CameraMonitorViewController::onCameraGroupsRemoved(const std::vector<std::string>&)                                                         { rebuildTreeModel(); }
-void CameraMonitorViewController::onCamerasAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>&)                     { rebuildTreeModel(); }
-void CameraMonitorViewController::onCamerasUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>&)                   { rebuildTreeModel(); }
-void CameraMonitorViewController::onCamerasRemoved(const std::vector<std::string>&)                                                              { rebuildTreeModel(); }
-void CameraMonitorViewController::onCameraRelationsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>&)         { rebuildTreeModel(); }
-void CameraMonitorViewController::onCameraRelationsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>&)       { rebuildTreeModel(); }
-void CameraMonitorViewController::onCameraRelationsRemoved(const std::vector<std::string>&)                                                      { rebuildTreeModel(); }
-
-void CameraMonitorViewController::rebuildTreeModel()
-{
-    if (!mCameraTreeModel || !mCameraDirectoryViewModel)
+    if (auto tree = mCameraDirectoryViewModel->getCameraTree())
     {
-        return;
+        mCameraTreeModel->resetFromTree(tree);
+        setLoadState(Ready);
     }
-    mCameraTreeModel->setTree(mCameraDirectoryViewModel->getCameraTree());
 }
 
 void CameraMonitorViewController::selectNode(const QString& nodeId)
@@ -98,7 +81,6 @@ void CameraMonitorViewController::selectNode(const QString& nodeId)
     {
         return;
     }
-    // 只对 Camera 节点反应；用 getCameraSource() 的存在与否判定（Group 节点没有 source）。
     auto source = mCameraDirectoryViewModel->getCameraSource(nodeId.toStdString());
     if (!source)
     {
@@ -123,3 +105,53 @@ void CameraMonitorViewController::selectNode(const QString& nodeId)
     emit selectedCameraChanged();
     UIVIEW_LOG_DEBUG("selectNode: " << nodeId.toStdString());
 }
+
+// ---- Thin forwarding slots ----
+
+void CameraMonitorViewController::onCameraDirectoryReady()
+{
+    if (mCameraTreeModel && mCameraDirectoryViewModel)
+    {
+        mCameraTreeModel->resetFromTree(mCameraDirectoryViewModel->getCameraTree());
+    }
+    setLoadState(Ready);
+}
+
+void CameraMonitorViewController::onCameraGroupsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->insertNodes(v); }
+
+void CameraMonitorViewController::onCameraGroupsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->updateNodes(v); }
+
+void CameraMonitorViewController::onCameraGroupsRemoved(const std::vector<std::string>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->removeNodes(v); }
+
+void CameraMonitorViewController::onCamerasAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->insertNodes(v); }
+
+void CameraMonitorViewController::onCamerasUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->updateNodes(v); }
+
+void CameraMonitorViewController::onCamerasRemoved(const std::vector<std::string>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->removeNodes(v); }
+
+void CameraMonitorViewController::onCameraRelationsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>& v)
+{
+    if (!mCameraTreeModel) return;
+    std::vector<std::pair<std::string, std::string>> pairs;
+    pairs.reserve(v.size());
+    for (const auto& r : v) pairs.emplace_back(r.parentId, r.childId);
+    mCameraTreeModel->setParents(pairs);
+}
+
+void CameraMonitorViewController::onCameraRelationsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>& v)
+{
+    if (!mCameraTreeModel) return;
+    std::vector<std::pair<std::string, std::string>> pairs;
+    pairs.reserve(v.size());
+    for (const auto& r : v) pairs.emplace_back(r.parentId, r.childId);
+    mCameraTreeModel->setParents(pairs);
+}
+
+void CameraMonitorViewController::onCameraRelationsRemoved(const std::vector<std::string>& v)
+{ if (mCameraTreeModel) mCameraTreeModel->clearParents(v); }

@@ -51,8 +51,51 @@ void ContactTreeNode::addChild(const std::shared_ptr<ContactTreeNode>& child)
     {
         return;
     }
+    const auto& childId = child->getNodeData().id;
+    if (!childId.empty() && m_childIndex.count(childId))
+    {
+        return; // already a child
+    }
     child->setParent(shared_from_this());
+    m_childIndex.emplace(childId, m_children.size());
     m_children.push_back(child);
+}
+
+
+void ContactTreeNode::removeChild(const std::string& childId)
+{
+    auto it = m_childIndex.find(childId);
+    if (it == m_childIndex.end())
+    {
+        return;
+    }
+    const std::size_t idx = it->second;
+    m_childIndex.erase(it);
+
+    // Swap-remove: O(1) erase from vector, then fix the moved entry's index
+    const std::size_t last = m_children.size() - 1;
+    if (idx != last)
+    {
+        m_children[idx] = std::move(m_children[last]);
+        if (m_children[idx])
+        {
+            m_childIndex[m_children[idx]->getNodeData().id] = idx;
+        }
+    }
+    m_children.pop_back();
+}
+
+void ContactTreeNode::updateData(const ContactNodeData& data)
+{
+    m_data = data;
+}
+
+std::vector<std::shared_ptr<ContactTreeNode>> ContactTreeNode::takeChildren()
+{
+    std::vector<std::shared_ptr<ContactTreeNode>> out;
+    out.swap(m_children);
+    m_childIndex.clear();
+    return out;
 }
 
 
@@ -61,17 +104,8 @@ void ContactTreeNode::addChild(const std::shared_ptr<ContactTreeNode>& child)
 ContactTree::ContactTree(const std::vector<ucf::service::model::IContactPtr>& contacts, const std::vector<ucf::service::model::IContactRelationPtr>& relations)
 {
     buildNodes(contacts);
-
     buildRelations(relations);
-
     createVirtualRoot();
-
-    m_index.clear();
-    m_index.reserve(m_nodes.size());
-    for (const auto& [id, node] : m_nodes)
-    {
-        m_index.emplace(id, node);
-    }
 }
 
 void ContactTree::createVirtualRoot()
@@ -151,27 +185,18 @@ void ContactTree::buildRelations(const std::vector<ucf::service::model::IContact
             continue;
         }
         auto itParent = m_nodes.find(parentId);
-        if (itParent == m_nodes.end())
+        if (itParent == m_nodes.end() || !itParent->second)
         {
-            continue;
-        }
-        auto parentNode = itParent->second;
-        if (!parentNode) {
             continue;
         }
 
         const std::string childId  = rel->getChildId();
         auto itChild = m_nodes.find(childId);
-        if (itChild == m_nodes.end())
+        if (itChild == m_nodes.end() || !itChild->second)
         {
             continue;
         }
-        auto childNode = itChild->second;
-        if (!childNode)
-        {
-            continue;
-        }
-        parentNode->addChild(childNode);
+        itParent->second->addChild(itChild->second);
     }
 }
 
@@ -182,15 +207,150 @@ ContactTreeNodePtr ContactTree::getRoot() const
 
 ContactTreeNodePtr ContactTree::findNodeById(const std::string& id) const
 {
-    
-    if (auto it = m_index.find(id); it != m_index.end())
+    auto it = m_nodes.find(id);
+    if (it != m_nodes.end() && it->second)
     {
-        if (auto ptr = it->second.lock())
-        {
-            return std::static_pointer_cast<IContactTreeNode>(ptr);
-        }
+        return std::static_pointer_cast<IContactTreeNode>(it->second);
     }
     return nullptr;
+}
+
+// ===== Helpers =====
+
+void ContactTree::detachFromParent(const std::shared_ptr<ContactTreeNode>& node)
+{
+    if (!node)
+    {
+        return;
+    }
+    if (auto parent = std::dynamic_pointer_cast<ContactTreeNode>(node->getParent().lock()))
+    {
+        parent->removeChild(node->getNodeData().id);
+    }
+    else if (m_root)
+    {
+        m_root->removeChild(node->getNodeData().id);
+    }
+}
+
+// ===== Incremental mutations (single) =====
+
+void ContactTree::addNode(const ContactNodeData& data)
+{
+    if (data.id.empty() || m_nodes.count(data.id))
+    {
+        return;
+    }
+    auto node = std::make_shared<ContactTreeNode>(data);
+    m_nodes.emplace(data.id, node);
+    m_root->addChild(node);
+}
+
+void ContactTree::updateNode(const ContactNodeData& data)
+{
+    auto it = m_nodes.find(data.id);
+    if (it == m_nodes.end() || !it->second)
+    {
+        return;
+    }
+    it->second->updateData(data);
+}
+
+void ContactTree::removeNode(const std::string& id)
+{
+    auto it = m_nodes.find(id);
+    if (it == m_nodes.end() || !it->second)
+    {
+        if (it != m_nodes.end()) m_nodes.erase(it);
+        return;
+    }
+    auto node = it->second;
+
+    // Re-parent orphaned children to virtual root before deleting this node
+    auto orphans = node->takeChildren();
+    for (auto& child : orphans)
+    {
+        if (child)
+        {
+            m_root->addChild(child);
+        }
+    }
+
+    detachFromParent(node);
+    m_nodes.erase(it);
+}
+
+void ContactTree::setRelation(const std::string& parentId, const std::string& childId)
+{
+    auto itChild = m_nodes.find(childId);
+    auto itParent = m_nodes.find(parentId);
+    if (itChild == m_nodes.end() || itParent == m_nodes.end())
+    {
+        return;
+    }
+    auto childNode = itChild->second;
+    auto parentNode = itParent->second;
+    if (!childNode || !parentNode || childNode == parentNode)
+    {
+        return;
+    }
+    detachFromParent(childNode);
+    parentNode->addChild(childNode);
+}
+
+void ContactTree::clearRelation(const std::string& childId)
+{
+    auto itChild = m_nodes.find(childId);
+    if (itChild == m_nodes.end() || !itChild->second)
+    {
+        return;
+    }
+    auto childNode = itChild->second;
+    detachFromParent(childNode);
+    m_root->addChild(childNode);
+}
+
+// ===== Batch variants =====
+
+void ContactTree::addNodes(const std::vector<ContactNodeData>& datas)
+{
+    m_nodes.reserve(m_nodes.size() + datas.size());
+    for (const auto& d : datas)
+    {
+        addNode(d);
+    }
+}
+
+void ContactTree::updateNodes(const std::vector<ContactNodeData>& datas)
+{
+    for (const auto& d : datas)
+    {
+        updateNode(d);
+    }
+}
+
+void ContactTree::removeNodes(const std::vector<std::string>& ids)
+{
+    for (const auto& id : ids)
+    {
+        removeNode(id);
+    }
+}
+
+void ContactTree::setRelations(const std::vector<std::pair<std::string, std::string>>& parentChildPairs)
+{
+    for (const auto& [parentId, childId] : parentChildPairs)
+    {
+        setRelation(parentId, childId);
+    }
+}
+
+void ContactTree::clearRelations(const std::vector<std::string>& childIds)
+{
+    for (const auto& id : childIds)
+    {
+        clearRelation(id);
+    }
 }
 
 }

@@ -1,180 +1,248 @@
 #include "ContactsPage/ContactListItemModel.h"
 
-#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+
+namespace {
+constexpr const char* kRootId = "";
 
 enum Roles {
     IdRole = Qt::UserRole + 1,
     DisplayNameRole,
-    TypeRole  // 0 = Person, 1 = Group
+    TypeRole, // 0 = Person, 1 = Group
 };
+} // namespace
 
-ContactListItemModel::ContactListItemModel(QObject *parent)
+ContactListItemModel::ContactListItemModel(QObject* parent)
     : QAbstractItemModel(parent)
 {
-
+    resetMirror();
 }
 
-ContactListItemModel::~ContactListItemModel()
+ContactListItemModel::~ContactListItemModel() = default;
+
+// ---------------- Public mutation API ----------------
+
+void ContactListItemModel::resetFromTree(const TreePtr& tree)
 {
-    
+    beginResetModel();
+    resetMirror();
+    if (tree)
+    {
+        if (auto srcRoot = tree->getRoot())
+        {
+            const std::size_t n = srcRoot->getChildCount();
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                walkPopulate(srcRoot->getChild(i), kRootId);
+            }
+        }
+    }
+    endResetModel();
 }
 
-QVariant ContactListItemModel::data(const QModelIndex &index, int role) const
+void ContactListItemModel::insertNodes(const std::vector<NodeData>& datas)
 {
-    if (!m_tree || !index.isValid()) {
+    Node* root = getRoot();
+    if (!root)
+    {
+        return;
+    }
+    std::vector<NodeData> fresh;
+    fresh.reserve(datas.size());
+    for (const auto& d : datas)
+    {
+        if (d.id.empty() || m_nodes.count(d.id))
+        {
+            continue;
+        }
+        fresh.push_back(d);
+    }
+    if (fresh.empty())
+    {
+        return;
+    }
+    const int start = static_cast<int>(root->childIds.size());
+    const int end   = start + static_cast<int>(fresh.size()) - 1;
+    beginInsertRows(QModelIndex(), start, end);
+    for (const auto& d : fresh)
+    {
+        auto node = std::make_unique<Node>();
+        node->data = d;
+        node->parentId = kRootId;
+        node->rowInParent = static_cast<int>(root->childIds.size());
+        root->childIds.push_back(d.id);
+        m_nodes.emplace(d.id, std::move(node));
+    }
+    endInsertRows();
+}
+
+void ContactListItemModel::updateNodes(const std::vector<NodeData>& datas)
+{
+    for (const auto& d : datas)
+    {
+        Node* node = findNode(d.id);
+        if (!node || node == getRoot())
+        {
+            continue;
+        }
+        node->data = d;
+        QModelIndex idx = indexFor(node);
+        if (idx.isValid())
+        {
+            emit dataChanged(idx, idx);
+        }
+    }
+}
+
+void ContactListItemModel::removeNodes(const std::vector<std::string>& ids)
+{
+    for (const auto& id : ids)
+    {
+        if (id.empty())
+        {
+            continue;
+        }
+        Node* node = findNode(id);
+        if (!node || node == getRoot())
+        {
+            continue;
+        }
+
+        // Re-parent children to root before removing this node. Snapshot the
+        // list because moveNodeToParent mutates childIds.
+        std::vector<std::string> orphans = node->childIds;
+        for (const auto& cid : orphans)
+        {
+            moveNodeToParent(cid, kRootId);
+        }
+
+        Node* parentNode = findNode(node->parentId);
+        if (!parentNode)
+        {
+            m_nodes.erase(id);
+            continue;
+        }
+        const int row = node->rowInParent;
+        QModelIndex parentIdx = indexFor(parentNode);
+        beginRemoveRows(parentIdx, row, row);
+        parentNode->childIds.erase(parentNode->childIds.begin() + row);
+        for (int i = row; i < static_cast<int>(parentNode->childIds.size()); ++i)
+        {
+            if (Node* sib = findNode(parentNode->childIds[i]))
+            {
+                sib->rowInParent = i;
+            }
+        }
+        m_nodes.erase(id);
+        endRemoveRows();
+    }
+}
+
+void ContactListItemModel::setParents(
+    const std::vector<std::pair<std::string, std::string>>& pairs)
+{
+    for (const auto& [parentId, childId] : pairs)
+    {
+        moveNodeToParent(childId, parentId);
+    }
+}
+
+void ContactListItemModel::clearParents(const std::vector<std::string>& childIds)
+{
+    for (const auto& cid : childIds)
+    {
+        moveNodeToParent(cid, kRootId);
+    }
+}
+
+// ---------------- QAbstractItemModel ----------------
+
+QVariant ContactListItemModel::data(const QModelIndex& index, int role) const
+{
+    if (!index.isValid())
+    {
         return {};
     }
-
-    commonHead::viewModels::model::IContactTreeNode* node = nodeFromIndex(index);
-    if (!node) {
+    Node* node = nodeFromIndex(index);
+    if (!node || node == getRoot())
+    {
         return {};
     }
-
-    commonHead::viewModels::model::ContactNodeData nodeData = node->getNodeData();
-
-    switch (role) {
+    const auto& d = node->data;
+    switch (role)
+    {
     case Qt::DisplayRole:
-    case DisplayNameRole:
-        return QString::fromStdString(nodeData.displayName);
-    case IdRole:
-        return QString::fromStdString(nodeData.id);
-    case TypeRole:
-        return (nodeData.type ==
-                commonHead::viewModels::model::ContactNodeType::Person) ? 0 : 1;
-    default:
-        break;
+    case DisplayNameRole: return QString::fromStdString(d.displayName);
+    case IdRole:          return QString::fromStdString(d.id);
+    case TypeRole:        return (d.type == commonHead::viewModels::model::ContactNodeType::Person) ? 0 : 1;
+    default: return {};
     }
-
-    return {};
 }
 
-Qt::ItemFlags ContactListItemModel::flags(const QModelIndex &index) const
+Qt::ItemFlags ContactListItemModel::flags(const QModelIndex& index) const
 {
-    if (!index.isValid()) {
-        return Qt::NoItemFlags;
-    }
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    return index.isValid() ? (Qt::ItemIsEnabled | Qt::ItemIsSelectable)
+                           : Qt::NoItemFlags;
 }
 
 QVariant ContactListItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        if (section == 0) {
-            return QStringLiteral("Contact");
-        }
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole && section == 0)
+    {
+        return QStringLiteral("Contact");
     }
     return {};
 }
 
-QModelIndex ContactListItemModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex ContactListItemModel::index(int row, int column, const QModelIndex& parent) const
 {
-    if (!m_tree) {
+    if (row < 0 || column < 0 || column >= columnCount(parent))
+    {
         return {};
     }
-    if (row < 0 || column < 0 || column >= columnCount()) {
+    Node* parentNode = nodeFromIndex(parent);
+    if (!parentNode || row >= static_cast<int>(parentNode->childIds.size()))
+    {
         return {};
     }
-    
-    commonHead::viewModels::model::IContactTreeNode* parentNode = nodeFromIndex(parent);
-    if (!parentNode) {
+    Node* child = findNode(parentNode->childIds[row]);
+    if (!child)
+    {
         return {};
     }
-
-    if (static_cast<std::size_t>(row) >= parentNode->getChildCount()) {
-        return {};
-    }
-
-    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> child =
-        parentNode->getChild(static_cast<std::size_t>(row));
-
-    if (!child) {
-        return {};
-    }
-
-    return createIndex(
-        row,
-        column,
-        static_cast<void*>(child.get())
-    );
+    return createIndex(row, column, static_cast<void*>(child));
 }
 
-QModelIndex ContactListItemModel::parent(const QModelIndex &index) const
+QModelIndex ContactListItemModel::parent(const QModelIndex& index) const
 {
-     if (!m_tree || !index.isValid()) {
+    if (!index.isValid())
+    {
         return {};
     }
-
-    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> root = m_tree->getRoot();
-    if (!root) {
+    Node* child = static_cast<Node*>(index.internalPointer());
+    if (!child || child->parentId == kRootId)
+    {
         return {};
     }
-
-    commonHead::viewModels::model::IContactTreeNode* node = nodeFromIndex(index);
-    if (!node) {
+    Node* parentNode = findNode(child->parentId);
+    if (!parentNode || parentNode == getRoot())
+    {
         return {};
     }
-
-    std::weak_ptr<commonHead::viewModels::model::IContactTreeNode> parentWeak = node->getParent();
-    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> parentShared = parentWeak.lock();
-
-    if (!parentShared) {
-        return {};
-    }
-
-    if (parentShared == root) {
-        return {};
-    }
-
-    std::weak_ptr<commonHead::viewModels::model::IContactTreeNode> gWeak = parentShared->getParent();
-    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> grandParent = gWeak.lock();
-
-    if (!grandParent) {
-        return {};
-    }
-
-    const std::size_t count = grandParent->getChildCount();
-    int row = -1;
-
-    for (std::size_t i = 0; i < count; ++i) {
-        std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> child =
-            grandParent->getChild(i);
-
-        if (child && child.get() == parentShared.get()) {
-            row = static_cast<int>(i);
-            break;
-        }
-    }
-
-    if (row < 0) {
-        return {};
-    }
-
-    return createIndex(
-        row,
-        0,
-        static_cast<void*>(parentShared.get())
-    );
+    return createIndex(parentNode->rowInParent, 0, static_cast<void*>(parentNode));
 }
 
-int ContactListItemModel::rowCount(const QModelIndex &parent) const
+int ContactListItemModel::rowCount(const QModelIndex& parent) const
 {
-    if (!m_tree) {
+    if (parent.isValid() && parent.column() != 0)
+    {
         return 0;
     }
-
-    if (parent.isValid() && parent.column() != 0) {
-        return 0;
-    }
-
-    commonHead::viewModels::model::IContactTreeNode* parentNode = nodeFromIndex(parent);
-    if (!parentNode) {
-        return 0;
-    }
-
-    return static_cast<int>(parentNode->getChildCount());
+    Node* parentNode = nodeFromIndex(parent);
+    return parentNode ? static_cast<int>(parentNode->childIds.size()) : 0;
 }
 
-int ContactListItemModel::columnCount(const QModelIndex &parent) const
+int ContactListItemModel::columnCount(const QModelIndex& /*parent*/) const
 {
     return 1;
 }
@@ -188,32 +256,125 @@ QHash<int, QByteArray> ContactListItemModel::roleNames() const
     return roles;
 }
 
-commonHead::viewModels::model::IContactTreeNode*
-ContactListItemModel::nodeFromIndex(const QModelIndex &index) const
+// ---------------- Internal helpers ----------------
+
+ContactListItemModel::Node* ContactListItemModel::getRoot() const
 {
-    if (!m_tree) {
-        return nullptr;
-    }
-
-    std::shared_ptr<commonHead::viewModels::model::IContactTreeNode> root = m_tree->getRoot();
-    if (!root) {
-        return nullptr;
-    }
-
-    if (!index.isValid()) {
-        return root.get();
-    }
-
-    return static_cast<commonHead::viewModels::model::IContactTreeNode*>(index.internalPointer());
+    auto it = m_nodes.find(std::string(kRootId));
+    return (it != m_nodes.end()) ? it->second.get() : nullptr;
 }
 
-void ContactListItemModel::setTree(const std::shared_ptr<commonHead::viewModels::model::IContactTree>& tree)
+ContactListItemModel::Node* ContactListItemModel::findNode(const std::string& id) const
 {
-    if (m_tree == tree)
+    auto it = m_nodes.find(id);
+    return (it != m_nodes.end()) ? it->second.get() : nullptr;
+}
+
+ContactListItemModel::Node* ContactListItemModel::nodeFromIndex(const QModelIndex& idx) const
+{
+    if (!idx.isValid())
+    {
+        return getRoot();
+    }
+    return static_cast<Node*>(idx.internalPointer());
+}
+
+QModelIndex ContactListItemModel::indexFor(Node* node) const
+{
+    if (!node || node == getRoot())
+    {
+        return {};
+    }
+    return createIndex(node->rowInParent, 0, static_cast<void*>(node));
+}
+
+void ContactListItemModel::resetMirror()
+{
+    m_nodes.clear();
+    auto root = std::make_unique<Node>();
+    root->parentId = kRootId;
+    root->rowInParent = -1;
+    m_nodes.emplace(std::string(kRootId), std::move(root));
+}
+
+void ContactListItemModel::walkPopulate(const TreeNodePtr& src,
+                                        const std::string& parentId)
+{
+    if (!src)
     {
         return;
     }
-    beginResetModel();
-    m_tree = tree;
-    endResetModel();
+    auto data = src->getNodeData();
+    if (data.id.empty() || m_nodes.count(data.id))
+    {
+        return;
+    }
+    Node* parentNode = findNode(parentId);
+    if (!parentNode)
+    {
+        return;
+    }
+    auto node = std::make_unique<Node>();
+    node->data = data;
+    node->parentId = parentId;
+    node->rowInParent = static_cast<int>(parentNode->childIds.size());
+    parentNode->childIds.push_back(data.id);
+    m_nodes.emplace(data.id, std::move(node));
+
+    const std::size_t n = src->getChildCount();
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        walkPopulate(src->getChild(i), data.id);
+    }
+}
+
+void ContactListItemModel::moveNodeToParent(const std::string& childId,
+                                            const std::string& newParentId)
+{
+    if (childId.empty() || childId == newParentId)
+    {
+        return;
+    }
+    Node* child = findNode(childId);
+    if (!child || child == getRoot())
+    {
+        return;
+    }
+    Node* newParent = findNode(newParentId);
+    if (!newParent)
+    {
+        return; // unknown parent — skip
+    }
+    if (child->parentId == newParentId)
+    {
+        return;
+    }
+    Node* oldParent = findNode(child->parentId);
+    if (!oldParent)
+    {
+        return;
+    }
+
+    const int srcRow  = child->rowInParent;
+    const int destRow = static_cast<int>(newParent->childIds.size());
+    QModelIndex srcIdx  = indexFor(oldParent);
+    QModelIndex destIdx = indexFor(newParent);
+
+    if (!beginMoveRows(srcIdx, srcRow, srcRow, destIdx, destRow))
+    {
+        UIVIEW_LOG_WARN("beginMoveRows refused: " << childId << " -> " << newParentId);
+        return;
+    }
+    oldParent->childIds.erase(oldParent->childIds.begin() + srcRow);
+    for (int i = srcRow; i < static_cast<int>(oldParent->childIds.size()); ++i)
+    {
+        if (Node* sib = findNode(oldParent->childIds[i]))
+        {
+            sib->rowInParent = i;
+        }
+    }
+    child->parentId = newParentId;
+    child->rowInParent = destRow;
+    newParent->childIds.push_back(childId);
+    endMoveRows();
 }

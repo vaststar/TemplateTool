@@ -77,7 +77,6 @@ protected:
 private:
     std::shared_ptr<ucf::service::ICameraDirectoryService> lockService() const;
     void rebuildTreeFromService();
-    std::shared_ptr<model::CameraDirectoryTree> lockTree() const;
 
 private:
     mutable std::mutex mTreeMutex;

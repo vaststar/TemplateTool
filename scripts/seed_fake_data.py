@@ -107,14 +107,23 @@ CAMERA_RELATIONS = [
 ]
 
 
+def _table_exists(cur: sqlite3.Cursor, table: str) -> bool:
+    cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?", (table,))
+    return cur.fetchone()[0] > 0
+
+
 def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
     """Remove rows we previously inserted (matched by `seed_` id prefix)."""
-    cur.execute(f"DELETE FROM {T_CONTACT_REL}   WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+    if _table_exists(cur, T_CONTACT_REL):
+        cur.execute(f"DELETE FROM {T_CONTACT_REL}   WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_USER_CONTACT}  WHERE CONTACT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_GROUP_CONTACT} WHERE GROUP_ID   LIKE 'seed_%'")
-    cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
-    cur.execute(f"DELETE FROM {T_CAMERA}        WHERE NODE_ID    LIKE 'seed_%'")
-    cur.execute(f"DELETE FROM {T_CAMERA_GROUP}  WHERE NODE_ID    LIKE 'seed_%'")
+    if _table_exists(cur, T_CAMERA_REL):
+        cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+    if _table_exists(cur, T_CAMERA):
+        cur.execute(f"DELETE FROM {T_CAMERA}        WHERE NODE_ID    LIKE 'seed_%'")
+    if _table_exists(cur, T_CAMERA_GROUP):
+        cur.execute(f"DELETE FROM {T_CAMERA_GROUP}  WHERE NODE_ID    LIKE 'seed_%'")
 
 
 def insert_contacts(cur: sqlite3.Cursor) -> None:
@@ -126,13 +135,17 @@ def insert_contacts(cur: sqlite3.Cursor) -> None:
         f"INSERT OR REPLACE INTO {T_GROUP_CONTACT} (GROUP_ID, GROUP_NAME, CONTACT_STATUS) VALUES (?, ?, ?)",
         [(gid, name, STATUS_ACTIVE) for gid, name in CONTACT_GROUPS],
     )
-    cur.executemany(
-        f"INSERT OR REPLACE INTO {T_CONTACT_REL} (CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?)",
-        [(child, parent, CONTACT_RELATION_DEPT) for child, parent in CONTACT_RELATIONS],
-    )
+    if _table_exists(cur, T_CONTACT_REL):
+        cur.executemany(
+            f"INSERT OR REPLACE INTO {T_CONTACT_REL} (CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?)",
+            [(child, parent, CONTACT_RELATION_DEPT) for child, parent in CONTACT_RELATIONS],
+        )
 
 
 def insert_cameras(cur: sqlite3.Cursor) -> None:
+    if not _table_exists(cur, T_CAMERA_GROUP):
+        print("[skip] Camera tables not found, skipping camera seed.")
+        return
     cur.executemany(
         f"INSERT OR REPLACE INTO {T_CAMERA_GROUP} (NODE_ID, DISPLAY_NAME, NODE_STATUS) VALUES (?, ?, ?)",
         [(nid, name, STATUS_ACTIVE) for nid, name in CAMERA_GROUPS],
@@ -185,7 +198,8 @@ def main() -> int:
         print("[done] table row counts:")
         for t in (T_USER_CONTACT, T_GROUP_CONTACT, T_CONTACT_REL,
                   T_CAMERA, T_CAMERA_GROUP, T_CAMERA_REL):
-            print(f"  {t:30s} {count(t)}")
+            if _table_exists(cur, t):
+                print(f"  {t:30s} {count(t)}")
     finally:
         conn.close()
 
