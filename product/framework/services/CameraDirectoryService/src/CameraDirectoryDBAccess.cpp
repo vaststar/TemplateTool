@@ -109,6 +109,11 @@ void CameraDirectoryDBAccess::setDatabaseId(const std::string& dbId)
     mDatabaseId = dbId;
 }
 
+const std::string& CameraDirectoryDBAccess::getDatabaseId() const
+{
+    return mDatabaseId;
+}
+
 std::string CameraDirectoryDBAccess::resolveDatabaseId() const
 {
     if (!mDatabaseId.empty())

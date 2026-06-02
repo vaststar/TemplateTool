@@ -14,7 +14,7 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-// 仅负责数据库读写：把内存对象 ↔ 数据库行做转换。不持有任何缓存。
+// Database read/write only: converts in-memory objects <-> database rows. Holds no cache.
 class CameraDirectoryDBAccess
 {
 public:
@@ -31,6 +31,7 @@ public:
 
 public:
     void setDatabaseId(const std::string& dbId);
+    const std::string& getDatabaseId() const;
 
     // ===== Load (async) =====
     void loadCameraGroups(LoadGroupsCallback callback) const;
@@ -55,7 +56,7 @@ private:
 
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    std::string mDatabaseId;  // 由 Manager 在 DB ready 时设置；未设置则查询 ClientInfoService
+    std::string mDatabaseId;  // Set by Manager when the database is reported ready; falls back to ClientInfoService when empty.
 };
 
 } // namespace ucf::service

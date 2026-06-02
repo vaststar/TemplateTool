@@ -130,6 +130,11 @@
         <source>Cameras</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="159"/>
+        <source>Failed to load camera directory</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CameraMonitorView</name>

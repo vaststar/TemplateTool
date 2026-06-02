@@ -16,7 +16,7 @@ enum class CameraNodeStatus {
     Archived = 3
 };
 
-// 摄像头目录节点的共享基类（分组或具体摄像头）
+// Shared base for camera directory tree nodes (groups and concrete cameras).
 class SERVICE_EXPORT ICameraDirectoryNode
 {
 public:
@@ -28,7 +28,7 @@ public:
 };
 using ICameraDirectoryNodePtr = std::shared_ptr<ICameraDirectoryNode>;
 
-// 分组节点（如 Local / Remote / Family / Yard）
+// Group node (e.g. Local / Remote / Family / Yard).
 class SERVICE_EXPORT ICameraGroup : public ICameraDirectoryNode
 {
 public:
@@ -39,7 +39,7 @@ public:
 using ICameraGroupPtr   = std::shared_ptr<ICameraGroup>;
 using CameraGroupArray  = std::vector<ICameraGroupPtr>;
 
-// 具体摄像头节点（本地索引 / 网络流）
+// Concrete camera node (local index / network stream).
 class SERVICE_EXPORT ICameraEntry : public ICameraDirectoryNode
 {
 public:
@@ -53,12 +53,12 @@ public:
 using ICameraEntryPtr   = std::shared_ptr<ICameraEntry>;
 using CameraEntryArray  = std::vector<ICameraEntryPtr>;
 
-// 父子关系（当前只有 Containment 一种）
+// Parent-child relation (only Containment is supported today).
 class SERVICE_EXPORT ICameraDirectoryRelation
 {
 public:
     enum class RelationType {
-        Containment = 0     // 包含关系：父分组 -> 子节点（分组或摄像头）
+        Containment = 0     // Containment: parent group -> child node (group or camera)
     };
 
     virtual ~ICameraDirectoryRelation() = default;

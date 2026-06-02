@@ -20,8 +20,8 @@ CameraMonitorViewController::~CameraMonitorViewController()
 }
 
 QAbstractItemModel* CameraMonitorViewController::getCameraTreeModel() const  { return mCameraTreeModel; }
-QString CameraMonitorViewController::getSelectedCameraId() const             { return mSelectedCameraId; }
-QString CameraMonitorViewController::getSelectedCameraName() const           { return mSelectedCameraName; }
+QString CameraMonitorViewController::getCurrentCameraId() const              { return mCurrentCameraId; }
+QString CameraMonitorViewController::getCurrentCameraName() const            { return mCurrentCameraName; }
 CameraMonitorViewController::LoadState CameraMonitorViewController::getLoadState() const { return mLoadState; }
 
 void CameraMonitorViewController::setLoadState(LoadState s)
@@ -46,13 +46,20 @@ void CameraMonitorViewController::init()
     mCameraDirectoryViewModel = ctx->getViewModelFactory()->createCameraDirectoryViewModelInstance();
     if (!mCameraDirectoryViewModel)
     {
+        UIVIEW_LOG_ERROR("failed to create CameraDirectoryViewModel");
         setLoadState(Error);
         return;
     }
 
+    // Create the tree model first so QML can bind to it while we are still loading.
+    mCameraTreeModel = new CameraDirectoryItemModel(this);
+    emit cameraTreeModelChanged();
+
     using Emitter = UIVMSignalEmitter::CameraDirectoryViewModelEmitter;
     auto* e = mCameraDirectoryEmitter.get();
-    QObject::connect(e, &Emitter::signals_onCameraDirectoryReady,    this, &CameraMonitorViewController::onCameraDirectoryReady);
+    QObject::connect(e, &Emitter::signals_onCameraDirectoryReady,       this, &CameraMonitorViewController::onCameraDirectoryReady);
+    QObject::connect(e, &Emitter::signals_onCameraDirectoryLoadFailed,  this, &CameraMonitorViewController::onCameraDirectoryLoadFailed);
+    QObject::connect(e, &Emitter::signals_onCurrentCameraChanged,       this, &CameraMonitorViewController::onCurrentCameraChanged);
     QObject::connect(e, &Emitter::signals_onCameraGroupsAdded,       this, &CameraMonitorViewController::onCameraGroupsAdded);
     QObject::connect(e, &Emitter::signals_onCameraGroupsUpdated,     this, &CameraMonitorViewController::onCameraGroupsUpdated);
     QObject::connect(e, &Emitter::signals_onCameraGroupsRemoved,     this, &CameraMonitorViewController::onCameraGroupsRemoved);
@@ -63,58 +70,84 @@ void CameraMonitorViewController::init()
     QObject::connect(e, &Emitter::signals_onCameraRelationsUpdated,  this, &CameraMonitorViewController::onCameraRelationsUpdated);
     QObject::connect(e, &Emitter::signals_onCameraRelationsRemoved,  this, &CameraMonitorViewController::onCameraRelationsRemoved);
 
+    // Register the emitter BEFORE probing isCameraDirectoryReady(): if the VM transitions
+    // between the probe and the registration we would otherwise miss the Ready / change
+    // events that arrive in that window.
     mCameraDirectoryViewModel->registerCallback(mCameraDirectoryEmitter);
+    mCameraDirectoryViewModel->initViewModel();
 
-    mCameraTreeModel = new CameraDirectoryItemModel(this);
-    emit cameraTreeModelChanged();
-
-    if (auto tree = mCameraDirectoryViewModel->getCameraTree())
+    if (mCameraDirectoryViewModel->isCameraDirectoryReady())
     {
-        mCameraTreeModel->resetFromTree(tree);
+        // VM already loaded (we joined late); pull the snapshot synchronously.
+        UIVIEW_LOG_DEBUG("CameraDirectoryViewModel already ready on init, pulling snapshot");
+        mCameraTreeModel->resetFromTree(mCameraDirectoryViewModel->getCameraTree());
         setLoadState(Ready);
+    }
+    else
+    {
+        // Wait for onCameraDirectoryReady / onCameraDirectoryLoadFailed.
+        UIVIEW_LOG_DEBUG("CameraDirectoryViewModel not ready yet, waiting for load notification");
+        setLoadState(Loading);
+    }
+
+    // Pull initial selection in case a sibling VM consumer already set one before we joined.
+    if (const auto initialId = mCameraDirectoryViewModel->getCurrentCameraId(); !initialId.empty())
+    {
+        onCurrentCameraChanged(QString::fromStdString(initialId));
     }
 }
 
 void CameraMonitorViewController::selectNode(const QString& nodeId)
 {
-    if (nodeId.isEmpty() || !mCameraDirectoryViewModel)
+    if (!mCameraDirectoryViewModel)
     {
         return;
     }
-    auto source = mCameraDirectoryViewModel->getCameraSource(nodeId.toStdString());
-    if (!source)
-    {
-        UIVIEW_LOG_DEBUG("selectNode ignored (not a camera): " << nodeId.toStdString());
-        return;
-    }
-    if (mSelectedCameraId == nodeId)
-    {
-        return;
-    }
+    // Pure forward: VM owns the selection state. The mirror is updated when the VM fires
+    // onCurrentCameraChanged back to us. The VM also validates that the id refers to a
+    // real camera and dedupes against the current value.
+    mCameraDirectoryViewModel->selectCamera(nodeId.toStdString());
+}
 
+void CameraMonitorViewController::onCurrentCameraChanged(const QString& nodeId)
+{
     QString displayName;
-    if (auto tree = mCameraDirectoryViewModel->getCameraTree())
+    if (!nodeId.isEmpty() && mCameraDirectoryViewModel)
     {
-        if (auto node = tree->findNodeById(nodeId.toStdString()))
+        if (auto tree = mCameraDirectoryViewModel->getCameraTree())
         {
-            displayName = QString::fromStdString(node->getNodeData().displayName);
+            if (auto node = tree->findNodeById(nodeId.toStdString()))
+            {
+                displayName = QString::fromStdString(node->getNodeData().displayName);
+            }
         }
     }
-    mSelectedCameraId   = nodeId;
-    mSelectedCameraName = displayName;
-    emit selectedCameraChanged();
-    UIVIEW_LOG_DEBUG("selectNode: " << nodeId.toStdString());
+    if (mCurrentCameraId == nodeId && mCurrentCameraName == displayName)
+    {
+        return;
+    }
+    mCurrentCameraId   = nodeId;
+    mCurrentCameraName = displayName;
+    UIVIEW_LOG_DEBUG("onCurrentCameraChanged: " << nodeId.toStdString());
+    emit currentCameraChanged();
 }
 
 // ---- Thin forwarding slots ----
 
 void CameraMonitorViewController::onCameraDirectoryReady()
 {
+    UIVIEW_LOG_DEBUG("onCameraDirectoryReady received");
     if (mCameraTreeModel && mCameraDirectoryViewModel)
     {
         mCameraTreeModel->resetFromTree(mCameraDirectoryViewModel->getCameraTree());
     }
     setLoadState(Ready);
+}
+
+void CameraMonitorViewController::onCameraDirectoryLoadFailed(commonHead::viewModels::model::CameraDirectoryLoadError error)
+{
+    UIVIEW_LOG_ERROR("onCameraDirectoryLoadFailed received, error:" << static_cast<int>(error));
+    setLoadState(Error);
 }
 
 void CameraMonitorViewController::onCameraGroupsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)

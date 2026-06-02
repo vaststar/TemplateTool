@@ -39,6 +39,8 @@ public:
     // ICameraDirectoryViewModel - read
     model::CameraDirectoryTreePtr getCameraTree() const override;
     std::optional<model::CameraSource> getCameraSource(const std::string& nodeId) const override;
+    bool isCameraDirectoryReady() const override;
+    std::string getCurrentCameraId() const override;
 
     // ICameraDirectoryViewModel - write groups
     void addCameraGroup(const std::string& nodeId, const std::string& displayName) override;
@@ -59,8 +61,12 @@ public:
     void updateRelation(const std::string& parentId, const std::string& childId) override;
     void removeRelations(const std::vector<std::string>& childIds) override;
 
+    // ICameraDirectoryViewModel - selection
+    void selectCamera(const std::string& nodeId) override;
+
     // ICameraDirectoryServiceCallback
     void onCameraDirectoryReady() override;
+    void onCameraDirectoryLoadFailed(ucf::service::CameraDirectoryLoadError error) override;
     void onCameraGroupsAdded(const ucf::service::model::CameraGroupArray& groups) override;
     void onCameraGroupsUpdated(const ucf::service::model::CameraGroupArray& groups) override;
     void onCameraGroupsRemoved(const std::vector<std::string>& nodeIds) override;
@@ -77,10 +83,17 @@ protected:
 private:
     std::shared_ptr<ucf::service::ICameraDirectoryService> lockService() const;
     void rebuildTreeFromService();
+    // Returns true when the tree was just rebuilt (because it was null), in which case
+    // the incremental apply should be skipped because the rebuilt tree already contains
+    // the event's effect.
+    bool ensureTreeBuilt();
 
 private:
     mutable std::mutex mTreeMutex;
     std::shared_ptr<model::CameraDirectoryTree> mTree;
+
+    mutable std::mutex mSelectionMutex;
+    std::string mCurrentCameraId;
 };
 
 }

@@ -27,8 +27,8 @@ class CameraMonitorViewController : public UIViewController
 {
     Q_OBJECT
     Q_PROPERTY(QAbstractItemModel* cameraTreeModel READ getCameraTreeModel NOTIFY cameraTreeModelChanged)
-    Q_PROPERTY(QString selectedCameraId READ getSelectedCameraId NOTIFY selectedCameraChanged)
-    Q_PROPERTY(QString selectedCameraName READ getSelectedCameraName NOTIFY selectedCameraChanged)
+    Q_PROPERTY(QString currentCameraId READ getCurrentCameraId NOTIFY currentCameraChanged)
+    Q_PROPERTY(QString currentCameraName READ getCurrentCameraName NOTIFY currentCameraChanged)
     Q_PROPERTY(LoadState loadState READ getLoadState NOTIFY loadStateChanged)
     QML_ELEMENT
 public:
@@ -39,8 +39,8 @@ public:
     ~CameraMonitorViewController() override;
 
     QAbstractItemModel* getCameraTreeModel() const;
-    QString getSelectedCameraId() const;
-    QString getSelectedCameraName() const;
+    QString getCurrentCameraId() const;
+    QString getCurrentCameraName() const;
     LoadState getLoadState() const;
 
 public slots:
@@ -48,7 +48,7 @@ public slots:
 
 signals:
     void cameraTreeModelChanged();
-    void selectedCameraChanged();
+    void currentCameraChanged();
     void loadStateChanged();
 
 protected:
@@ -56,6 +56,8 @@ protected:
 
 private slots:
     void onCameraDirectoryReady();
+    void onCameraDirectoryLoadFailed(commonHead::viewModels::model::CameraDirectoryLoadError error);
+    void onCurrentCameraChanged(const QString& nodeId);
     void onCameraGroupsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& groups);
     void onCameraGroupsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& groups);
     void onCameraGroupsRemoved(const std::vector<std::string>& ids);
@@ -74,7 +76,7 @@ private:
     std::shared_ptr<UIVMSignalEmitter::CameraDirectoryViewModelEmitter> mCameraDirectoryEmitter;
 
     CameraDirectoryItemModel* mCameraTreeModel = nullptr;
-    QString   mSelectedCameraId;
-    QString   mSelectedCameraName;
+    QString   mCurrentCameraId;
+    QString   mCurrentCameraName;
     LoadState mLoadState = Loading;
 };

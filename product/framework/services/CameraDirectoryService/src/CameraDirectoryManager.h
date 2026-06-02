@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "CameraDirectoryEntities.h"
+#include "CameraDirectoryNotificationSink.h"
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -15,8 +16,9 @@ namespace ucf::service {
 
 class CameraDirectoryModel;
 
-// 业务编排层：当前仅转发到 CameraDirectoryModel；
-// 预留位置用于后续承担摄像头发现 / 设备热插拔 / 默认目录初始化等业务。
+// Business orchestration layer: currently a thin forwarder onto CameraDirectoryModel.
+// Reserved as the place where camera discovery / device hot-plug / default directory
+// initialization will live in the future.
 class CameraDirectoryManager final
 {
 public:
@@ -49,10 +51,20 @@ public:
     std::vector<std::string>            removeCameraRelations(const std::vector<std::string>& childIds);
 
     // ===== Lifecycle =====
-    void onDatabaseReady(const std::string& databaseId);
+    void bindDatabase(const std::string& databaseId);
+    void loadCameraDirectory();
+    bool isCameraDirectoryReady() const;
+
+    // Forwarded to the Model; Manager also keeps a weak_ptr copy so it can later emit
+    // business-level aggregated events on its own.
+    void setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink);
 
 private:
     const std::unique_ptr<CameraDirectoryModel> mCameraDirectoryModel;
+
+    // Manager does not emit events today, but the sink reference is reserved for
+    // future business-level aggregation use.
+    std::weak_ptr<ICameraDirectoryNotificationSink> mNotificationSink;
 };
 
 } // namespace ucf::service

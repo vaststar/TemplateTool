@@ -7,6 +7,8 @@
 #include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
+#include "CameraDirectoryNotificationSink.h"
+
 namespace ucf::service {
 
 class SERVICE_EXPORT CameraDirectoryService final
@@ -14,6 +16,7 @@ class SERVICE_EXPORT CameraDirectoryService final
     , public virtual ucf::utilities::NotificationHelper<ICameraDirectoryServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault
     , public ucf::service::IDataWarehouseServiceCallback
+    , public ICameraDirectoryNotificationSink
     , public std::enable_shared_from_this<CameraDirectoryService>
 {
 public:
@@ -55,9 +58,28 @@ public:
     virtual void updateCameraRelations(const model::CameraDirectoryRelationArray& relations) override;
     virtual void removeCameraRelations(const std::vector<std::string>& childIds) override;
 
+    // ICameraDirectoryService - Lifecycle
+    virtual void loadCameraDirectory() override;
+    virtual bool isCameraDirectoryReady() const override;
+
 protected:
     // IService
     virtual void initService() override;
+
+private:
+    // ICameraDirectoryNotificationSink — translation layer from internal changes to outward
+    // notifications; not exposed externally.
+    virtual void onGroupsAdded   (const model::CameraGroupArray& groups,    CameraDirectoryNotificationSource src) override;
+    virtual void onGroupsUpdated (const model::CameraGroupArray& groups,    CameraDirectoryNotificationSource src) override;
+    virtual void onGroupsRemoved (const std::vector<std::string>& nodeIds,  CameraDirectoryNotificationSource src) override;
+    virtual void onCamerasAdded  (const model::CameraEntryArray& cameras,   CameraDirectoryNotificationSource src) override;
+    virtual void onCamerasUpdated(const model::CameraEntryArray& cameras,   CameraDirectoryNotificationSource src) override;
+    virtual void onCamerasRemoved(const std::vector<std::string>& nodeIds,  CameraDirectoryNotificationSource src) override;
+    virtual void onRelationsAdded  (const model::CameraDirectoryRelationArray& relations, CameraDirectoryNotificationSource src) override;
+    virtual void onRelationsUpdated(const model::CameraDirectoryRelationArray& relations, CameraDirectoryNotificationSource src) override;
+    virtual void onRelationsRemoved(const std::vector<std::string>& childIds,             CameraDirectoryNotificationSource src) override;
+    virtual void onDirectoryLoaded() override;
+    virtual void onDirectoryLoadFailed(CameraDirectoryLoadError error) override;
 
 private:
     class DataPrivate;

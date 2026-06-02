@@ -45,6 +45,7 @@ Item {
             bottom: parent.bottom
         }
         model: controller.cameraTreeModel
+        visible: controller.loadState === CameraMonitorViewController.Ready
 
         onItemInvoked: function(idx) {
             var nodeId = treeView.model.data(idx, Qt.UserRole + 1);
@@ -133,6 +134,31 @@ Item {
             UTFocusItem {
                 delegateFocused: current && treeContainer.treeView.activeFocus
             }
+        }
+    }
+
+    // Status overlay shown while loading or after a load failure.
+    Item {
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: header.bottom
+            bottom: parent.bottom
+        }
+        visible: controller.loadState !== CameraMonitorViewController.Ready
+
+        BusyIndicator {
+            anchors.centerIn: parent
+            running: controller.loadState === CameraMonitorViewController.Loading
+            visible: running
+        }
+
+        UTText {
+            anchors.centerIn: parent
+            visible: controller.loadState === CameraMonitorViewController.Error
+            text: qsTr("Failed to load camera directory")
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Sidebar_Item_Text
         }
     }
 }

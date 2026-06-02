@@ -12,7 +12,8 @@ namespace ucf::service {
 ////////////////////Start DataPrivate Logic///////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-class CameraDirectoryService::DataPrivate {
+class CameraDirectoryService::DataPrivate
+{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
@@ -70,6 +71,13 @@ CameraDirectoryService::~CameraDirectoryService()
 
 void CameraDirectoryService::initService()
 {
+    // Inject the sink first: must happen before registering any external callback that
+    // could trigger a change, otherwise an early callback would arrive before the sink
+    // is in place and events would be lost.
+    auto self = shared_from_this();
+    mDataPrivate->getManager().setNotificationSink(
+        std::static_pointer_cast<ICameraDirectoryNotificationSink>(self));
+
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
@@ -97,8 +105,10 @@ void CameraDirectoryService::onCoreFrameworkExit()
 
 void CameraDirectoryService::OnDatabaseInitialized(const std::string& dbId)
 {
-    mDataPrivate->getManager().onDatabaseReady(dbId);
-    fireNotification(&ICameraDirectoryServiceCallback::onCameraDirectoryReady);
+    // Only bind the database here; do not fire onCameraDirectoryReady immediately.
+    // Data load must be requested explicitly via loadCameraDirectory(); ready / loadFailed
+    // events are emitted uniformly through the sink path after the load completes.
+    mDataPrivate->getManager().bindDatabase(dbId);
 }
 
 // ===== Read =====
@@ -128,85 +138,119 @@ model::ICameraEntryPtr CameraDirectoryService::getCamera(const std::string& node
 }
 
 // ===== Batch write =====
+// Events are not fired here; the Model emits them via the sink after persistence completes,
+// which then routes through this class's onGroupsAdded / onCamerasAdded / ... to translate
+// into outward notifications.
 void CameraDirectoryService::addCameraGroups(const model::CameraGroupArray& groups)
 {
-    auto accepted = mDataPrivate->getManager().addCameraGroups(groups);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCameraGroupsAdded, accepted);
-    }
+    mDataPrivate->getManager().addCameraGroups(groups);
 }
 
 void CameraDirectoryService::updateCameraGroups(const model::CameraGroupArray& groups)
 {
-    auto accepted = mDataPrivate->getManager().updateCameraGroups(groups);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCameraGroupsUpdated, accepted);
-    }
+    mDataPrivate->getManager().updateCameraGroups(groups);
 }
 
 void CameraDirectoryService::removeCameraGroups(const std::vector<std::string>& nodeIds)
 {
-    auto accepted = mDataPrivate->getManager().removeCameraGroups(nodeIds);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCameraGroupsRemoved, accepted);
-    }
+    mDataPrivate->getManager().removeCameraGroups(nodeIds);
 }
 
 void CameraDirectoryService::addCameras(const model::CameraEntryArray& cameras)
 {
-    auto accepted = mDataPrivate->getManager().addCameras(cameras);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCamerasAdded, accepted);
-    }
+    mDataPrivate->getManager().addCameras(cameras);
 }
 
 void CameraDirectoryService::updateCameras(const model::CameraEntryArray& cameras)
 {
-    auto accepted = mDataPrivate->getManager().updateCameras(cameras);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCamerasUpdated, accepted);
-    }
+    mDataPrivate->getManager().updateCameras(cameras);
 }
 
 void CameraDirectoryService::removeCameras(const std::vector<std::string>& nodeIds)
 {
-    auto accepted = mDataPrivate->getManager().removeCameras(nodeIds);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCamerasRemoved, accepted);
-    }
+    mDataPrivate->getManager().removeCameras(nodeIds);
 }
 
 void CameraDirectoryService::addCameraRelations(const model::CameraDirectoryRelationArray& relations)
 {
-    auto accepted = mDataPrivate->getManager().addCameraRelations(relations);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsAdded, accepted);
-    }
+    mDataPrivate->getManager().addCameraRelations(relations);
 }
 
 void CameraDirectoryService::updateCameraRelations(const model::CameraDirectoryRelationArray& relations)
 {
-    auto accepted = mDataPrivate->getManager().updateCameraRelations(relations);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsUpdated, accepted);
-    }
+    mDataPrivate->getManager().updateCameraRelations(relations);
 }
 
 void CameraDirectoryService::removeCameraRelations(const std::vector<std::string>& childIds)
 {
-    auto accepted = mDataPrivate->getManager().removeCameraRelations(childIds);
-    if (!accepted.empty())
-    {
-        fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsRemoved, accepted);
-    }
+    mDataPrivate->getManager().removeCameraRelations(childIds);
+}
+
+// ===== Lifecycle =====
+void CameraDirectoryService::loadCameraDirectory()
+{
+    mDataPrivate->getManager().loadCameraDirectory();
+}
+
+bool CameraDirectoryService::isCameraDirectoryReady() const
+{
+    return mDataPrivate->getManager().isCameraDirectoryReady();
+}
+
+// ===== ICameraDirectoryNotificationSink =====
+void CameraDirectoryService::onGroupsAdded(const model::CameraGroupArray& groups, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraGroupsAdded, groups);
+}
+
+void CameraDirectoryService::onGroupsUpdated(const model::CameraGroupArray& groups, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraGroupsUpdated, groups);
+}
+
+void CameraDirectoryService::onGroupsRemoved(const std::vector<std::string>& nodeIds, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraGroupsRemoved, nodeIds);
+}
+
+void CameraDirectoryService::onCamerasAdded(const model::CameraEntryArray& cameras, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCamerasAdded, cameras);
+}
+
+void CameraDirectoryService::onCamerasUpdated(const model::CameraEntryArray& cameras, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCamerasUpdated, cameras);
+}
+
+void CameraDirectoryService::onCamerasRemoved(const std::vector<std::string>& nodeIds, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCamerasRemoved, nodeIds);
+}
+
+void CameraDirectoryService::onRelationsAdded(const model::CameraDirectoryRelationArray& relations, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsAdded, relations);
+}
+
+void CameraDirectoryService::onRelationsUpdated(const model::CameraDirectoryRelationArray& relations, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsUpdated, relations);
+}
+
+void CameraDirectoryService::onRelationsRemoved(const std::vector<std::string>& childIds, CameraDirectoryNotificationSource /*src*/)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsRemoved, childIds);
+}
+
+void CameraDirectoryService::onDirectoryLoaded()
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraDirectoryReady);
+}
+
+void CameraDirectoryService::onDirectoryLoadFailed(CameraDirectoryLoadError error)
+{
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraDirectoryLoadFailed, error);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

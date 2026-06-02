@@ -274,6 +274,10 @@ model::CameraGroupArray CameraDirectoryModel::addCameraGroups(const model::Camer
     if (!accepted.empty())
     {
         mCameraDirectoryDBAccess->insertCameraGroups(accepted);
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onGroupsAdded(accepted, CameraDirectoryNotificationSource::Local);
+        }
     }
     return accepted;
 }
@@ -285,6 +289,13 @@ model::CameraGroupArray CameraDirectoryModel::updateCameraGroups(const model::Ca
     {
         mCameraDirectoryDBAccess->updateCameraGroup(g);
     }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onGroupsUpdated(accepted, CameraDirectoryNotificationSource::Local);
+        }
+    }
     return accepted;
 }
 
@@ -295,6 +306,13 @@ std::vector<std::string> CameraDirectoryModel::removeCameraGroups(const std::vec
     {
         mCameraDirectoryDBAccess->deleteCameraGroup(nodeId);
     }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onGroupsRemoved(accepted, CameraDirectoryNotificationSource::Local);
+        }
+    }
     return accepted;
 }
 
@@ -304,6 +322,10 @@ model::CameraEntryArray CameraDirectoryModel::addCameras(const model::CameraEntr
     if (!accepted.empty())
     {
         mCameraDirectoryDBAccess->insertCameras(accepted);
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onCamerasAdded(accepted, CameraDirectoryNotificationSource::Local);
+        }
     }
     return accepted;
 }
@@ -315,6 +337,13 @@ model::CameraEntryArray CameraDirectoryModel::updateCameras(const model::CameraE
     {
         mCameraDirectoryDBAccess->updateCamera(e);
     }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onCamerasUpdated(accepted, CameraDirectoryNotificationSource::Local);
+        }
+    }
     return accepted;
 }
 
@@ -325,6 +354,13 @@ std::vector<std::string> CameraDirectoryModel::removeCameras(const std::vector<s
     {
         mCameraDirectoryDBAccess->deleteCamera(nodeId);
     }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onCamerasRemoved(accepted, CameraDirectoryNotificationSource::Local);
+        }
+    }
     return accepted;
 }
 
@@ -334,6 +370,10 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::addCameraRelations(con
     if (!accepted.empty())
     {
         mCameraDirectoryDBAccess->insertCameraRelations(accepted);
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onRelationsAdded(accepted, CameraDirectoryNotificationSource::Local);
+        }
     }
     return accepted;
 }
@@ -345,6 +385,13 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::updateCameraRelations(
     {
         mCameraDirectoryDBAccess->updateCameraRelation(r);
     }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onRelationsUpdated(accepted, CameraDirectoryNotificationSource::Local);
+        }
+    }
     return accepted;
 }
 
@@ -355,31 +402,133 @@ std::vector<std::string> CameraDirectoryModel::removeCameraRelations(const std::
     {
         mCameraDirectoryDBAccess->deleteCameraRelation(childId);
     }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onRelationsRemoved(accepted, CameraDirectoryNotificationSource::Local);
+        }
+    }
     return accepted;
 }
 
 // ===== Lifecycle =====
 
-void CameraDirectoryModel::onDatabaseReady(const std::string& databaseId)
+void CameraDirectoryModel::setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink)
 {
-    SERVICE_LOG_DEBUG("Database ready, databaseId:" << databaseId);
+    mNotificationSink = std::move(sink);
+}
+
+void CameraDirectoryModel::bindDatabase(const std::string& databaseId)
+{
+    if (databaseId.empty())
+    {
+        SERVICE_LOG_ERROR("bindDatabase ignored: empty databaseId");
+        return;
+    }
+
+    // Already advanced past Uninit: allow idempotent rebinding with the same id, reject
+    // rebinding to a different database.
+    if (mLoadStage.load() != LoadStage::Uninit)
+    {
+        const auto& current = mCameraDirectoryDBAccess->getDatabaseId();
+        if (current != databaseId)
+        {
+            SERVICE_LOG_ERROR("bindDatabase rejected: rebinding to a different db is not supported"
+                              << ", current:" << current
+                              << ", incoming:" << databaseId);
+        }
+        return;
+    }
+
     mCameraDirectoryDBAccess->setDatabaseId(databaseId);
+    mLoadStage.store(LoadStage::DbBound);
+    SERVICE_LOG_DEBUG("Bind database, databaseId:" << databaseId);
+}
+
+void CameraDirectoryModel::loadCameraDirectory()
+{
+    // State guard: only DbBound / Failed -> Loading is allowed.
+    auto stage = mLoadStage.load();
+    if (stage == LoadStage::Uninit)
+    {
+        SERVICE_LOG_ERROR("loadCameraDirectory ignored: database not bound yet");
+        return;
+    }
+    if (stage == LoadStage::Loading || stage == LoadStage::Ready)
+    {
+        SERVICE_LOG_DEBUG("loadCameraDirectory ignored: already loading or ready");
+        return;
+    }
+    // DbBound or Failed -> Loading
+    if (!mLoadStage.compare_exchange_strong(stage, LoadStage::Loading))
+    {
+        // Race: another thread already advanced the state; let them drive completion.
+        return;
+    }
+
+    // Shared context: each chunk callback decrements the counter; the last one fires the
+    // completion notification.
+    struct LoadContext
+    {
+        std::atomic<int> remaining{3};
+    };
+    auto ctx = std::make_shared<LoadContext>();
+
+    auto onChunkDone = [this, ctx]()
+    {
+        if (ctx->remaining.fetch_sub(1) == 1)
+        {
+            // Today's DBAccess interface does not distinguish "empty table" from "failure",
+            // so we always finish as success here. Once DBAccess supports onError, switch
+            // this path to finishLoadFailure(CameraDirectoryLoadError::DatabaseReadFailed).
+            finishLoadSuccess();
+        }
+    };
 
     mCameraDirectoryDBAccess->loadCameraGroups(
-        [this](const model::CameraGroupArray& groups)
+        [this, onChunkDone](const model::CameraGroupArray& groups)
         {
             addCameraGroupsInMemory(groups);
+            onChunkDone();
         });
     mCameraDirectoryDBAccess->loadCameras(
-        [this](const model::CameraEntryArray& cameras)
+        [this, onChunkDone](const model::CameraEntryArray& cameras)
         {
             addCamerasInMemory(cameras);
+            onChunkDone();
         });
     mCameraDirectoryDBAccess->loadCameraRelations(
-        [this](const model::CameraDirectoryRelationArray& relations)
+        [this, onChunkDone](const model::CameraDirectoryRelationArray& relations)
         {
             addCameraRelationsInMemory(relations);
+            onChunkDone();
         });
+}
+
+bool CameraDirectoryModel::isCameraDirectoryReady() const
+{
+    return mLoadStage.load() == LoadStage::Ready;
+}
+
+void CameraDirectoryModel::finishLoadSuccess()
+{
+    mLoadStage.store(LoadStage::Ready);
+    SERVICE_LOG_DEBUG("loadCameraDirectory finished, success:true");
+    if (auto sink = mNotificationSink.lock())
+    {
+        sink->onDirectoryLoaded();
+    }
+}
+
+void CameraDirectoryModel::finishLoadFailure(CameraDirectoryLoadError error)
+{
+    mLoadStage.store(LoadStage::Failed);
+    SERVICE_LOG_DEBUG("loadCameraDirectory finished, success:false, error:" << static_cast<int>(error));
+    if (auto sink = mNotificationSink.lock())
+    {
+        sink->onDirectoryLoadFailed(error);
+    }
 }
 
 } // namespace ucf::service

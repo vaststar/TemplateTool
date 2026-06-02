@@ -7,6 +7,14 @@
 
 namespace ucf::service {
 
+// Why a directory load may fail; loadCameraDirectory() can be retried after a failure.
+enum class CameraDirectoryLoadError
+{
+    Unknown,            // Catch-all when no more specific cause is known.
+    DatabaseNotBound,   // loadCameraDirectory was invoked before the database was bound.
+    DatabaseReadFailed, // The underlying database read returned an error.
+};
+
 class ICameraDirectoryServiceCallback
 {
 public:
@@ -18,20 +26,24 @@ public:
     virtual ~ICameraDirectoryServiceCallback() = default;
 
 public:
-    // 目录加载完成（数据库初始化后触发）
+    // Directory load finished (fired after loadCameraDirectory() has populated all data).
     virtual void onCameraDirectoryReady() {}
 
-    // 分组事件（按数组下发，单条变更亦传 size==1 的数组）
+    // Directory load failed; the model stays in the bound state and loadCameraDirectory()
+    // can be invoked again to retry.
+    virtual void onCameraDirectoryLoadFailed(CameraDirectoryLoadError /*error*/) {}
+
+    // Group events (batched; a single-item change is still delivered as an array of size 1).
     virtual void onCameraGroupsAdded(const model::CameraGroupArray& /*groups*/) {}
     virtual void onCameraGroupsUpdated(const model::CameraGroupArray& /*groups*/) {}
     virtual void onCameraGroupsRemoved(const std::vector<std::string>& /*nodeIds*/) {}
 
-    // 摄像头事件
+    // Camera events.
     virtual void onCamerasAdded(const model::CameraEntryArray& /*cameras*/) {}
     virtual void onCamerasUpdated(const model::CameraEntryArray& /*cameras*/) {}
     virtual void onCamerasRemoved(const std::vector<std::string>& /*nodeIds*/) {}
 
-    // 关系事件
+    // Relation events.
     virtual void onCameraRelationsAdded(const model::CameraDirectoryRelationArray& /*relations*/) {}
     virtual void onCameraRelationsUpdated(const model::CameraDirectoryRelationArray& /*relations*/) {}
     virtual void onCameraRelationsRemoved(const std::vector<std::string>& /*childIds*/) {}

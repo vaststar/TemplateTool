@@ -31,12 +31,22 @@ struct COMMONHEAD_EXPORT CameraDirectoryNodeData
     CameraNodeStatus status      = CameraNodeStatus::Active;
 };
 
-// VM 层"关系"载荷：父子节点 id 对。
-// service 端 ICameraDirectoryRelation 的 VM 投影，作为增量回调的 payload。
+// VM-level relation payload: parent/child node id pair.
+// VM-side projection of the service's ICameraDirectoryRelation, used as the payload of
+// incremental relation callbacks.
 struct COMMONHEAD_EXPORT CameraDirectoryRelationData
 {
     std::string parentId;
     std::string childId;
+};
+
+// VM-level mirror of the service's CameraDirectoryLoadError. Reported via
+// ICameraDirectoryViewModelCallback::onCameraDirectoryLoadFailed.
+enum class COMMONHEAD_EXPORT CameraDirectoryLoadError
+{
+    Unknown,
+    DatabaseNotBound,
+    DatabaseReadFailed,
 };
 
 class COMMONHEAD_EXPORT ICameraDirectoryTreeNode

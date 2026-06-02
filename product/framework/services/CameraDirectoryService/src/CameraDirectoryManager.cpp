@@ -96,9 +96,25 @@ std::vector<std::string> CameraDirectoryManager::removeCameraRelations(const std
 
 // ===== Lifecycle =====
 
-void CameraDirectoryManager::onDatabaseReady(const std::string& databaseId)
+void CameraDirectoryManager::bindDatabase(const std::string& databaseId)
 {
-    mCameraDirectoryModel->onDatabaseReady(databaseId);
+    mCameraDirectoryModel->bindDatabase(databaseId);
+}
+
+void CameraDirectoryManager::loadCameraDirectory()
+{
+    mCameraDirectoryModel->loadCameraDirectory();
+}
+
+bool CameraDirectoryManager::isCameraDirectoryReady() const
+{
+    return mCameraDirectoryModel->isCameraDirectoryReady();
+}
+
+void CameraDirectoryManager::setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink)
+{
+    mNotificationSink = sink;
+    mCameraDirectoryModel->setNotificationSink(std::move(sink));
 }
 
 } // namespace ucf::service

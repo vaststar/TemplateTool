@@ -24,6 +24,7 @@ Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryRelationData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryLoadError)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::ContactNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactRelationData)
@@ -48,6 +49,7 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::CameraDirectoryRelationData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>>();
+    qRegisterMetaType<commonHead::viewModels::model::CameraDirectoryLoadError>();
     qRegisterMetaType<commonHead::viewModels::model::ContactNodeData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::ContactRelationData>();

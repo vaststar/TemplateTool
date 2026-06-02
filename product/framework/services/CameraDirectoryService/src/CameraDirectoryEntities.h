@@ -7,7 +7,7 @@
 
 namespace ucf::service::model {
 
-// 内部存储用的具体实现，避免把可写状态泄漏到公共接口
+// Concrete in-memory implementations; keep mutable state out of the public interfaces.
 class CameraGroupImpl : public ICameraGroup
 {
 public:

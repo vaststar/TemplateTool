@@ -14,6 +14,7 @@ set(MODULE_SOURCE_PRIVATE
     src/CameraDirectoryServiceLogger.h
     src/CameraDirectoryEntities.h
     src/CameraDirectoryEntities.cpp
+    src/CameraDirectoryNotificationSink.h
     src/CameraDirectoryModel.h
     src/CameraDirectoryModel.cpp
     src/CameraDirectoryDBAccess.h

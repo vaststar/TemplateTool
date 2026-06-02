@@ -3,6 +3,7 @@
 #include "RegisterViewModelMetaTypes.h"
 
 #include <QObject>
+#include <QString>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,9 @@ public:
     void onCameraDirectoryReady() override
     { emit signals_onCameraDirectoryReady(); }
 
+    void onCameraDirectoryLoadFailed(commonHead::viewModels::model::CameraDirectoryLoadError error) override
+    { emit signals_onCameraDirectoryLoadFailed(error); }
+
     void onCameraGroupsAdded(const std::vector<NodeData>& groups) override
     { emit signals_onCameraGroupsAdded(groups); }
     void onCameraGroupsUpdated(const std::vector<NodeData>& groups) override
@@ -48,8 +52,12 @@ public:
     void onCameraRelationsRemoved(const std::vector<std::string>& ids) override
     { emit signals_onCameraRelationsRemoved(ids); }
 
+    void onCurrentCameraChanged(const std::string& nodeId) override
+    { emit signals_onCurrentCameraChanged(QString::fromStdString(nodeId)); }
+
 signals:
     void signals_onCameraDirectoryReady();
+    void signals_onCameraDirectoryLoadFailed(commonHead::viewModels::model::CameraDirectoryLoadError error);
 
     void signals_onCameraGroupsAdded(const std::vector<NodeData>& groups);
     void signals_onCameraGroupsUpdated(const std::vector<NodeData>& groups);
@@ -62,6 +70,8 @@ signals:
     void signals_onCameraRelationsAdded(const std::vector<RelationData>& relations);
     void signals_onCameraRelationsUpdated(const std::vector<RelationData>& relations);
     void signals_onCameraRelationsRemoved(const std::vector<std::string>& ids);
+
+    void signals_onCurrentCameraChanged(const QString& nodeId);
 };
 
 } // namespace UIVMSignalEmitter

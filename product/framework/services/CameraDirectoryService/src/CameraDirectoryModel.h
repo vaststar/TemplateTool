@@ -2,11 +2,13 @@
 
 #include <memory>
 #include <mutex>
+#include <atomic>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "CameraDirectoryEntities.h"
+#include "CameraDirectoryNotificationSink.h"
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -17,9 +19,9 @@ namespace ucf::service {
 
 class CameraDirectoryDBAccess;
 
-// 内存数据视图 + 数据库持久化的协调点：
-//   - 内存层：批量 CRUD，加锁保护
-//   - 持久层：内部持有 CameraDirectoryDBAccess，对接受到的写入做落盘
+// Coordinates the in-memory view with database persistence:
+//   - In-memory layer: batched CRUD protected by a mutex.
+//   - Persistence layer: owns CameraDirectoryDBAccess and flushes accepted writes to disk.
 class CameraDirectoryModel
 {
 public:
@@ -38,7 +40,7 @@ public:
     model::ICameraGroupPtr              getCameraGroup(const std::string& nodeId) const;
     model::ICameraEntryPtr              getCamera(const std::string& nodeId) const;
 
-    // ===== Batch write: 先 memory 后 DB，返回真正生效的项 =====
+    // ===== Batch write: memory first then DB; returns items that actually took effect =====
     model::CameraGroupArray addCameraGroups(const model::CameraGroupArray& groups);
     model::CameraGroupArray updateCameraGroups(const model::CameraGroupArray& groups);
     std::vector<std::string> removeCameraGroups(const std::vector<std::string>& nodeIds);
@@ -52,10 +54,23 @@ public:
     std::vector<std::string>            removeCameraRelations(const std::vector<std::string>& childIds);
 
     // ===== Lifecycle =====
-    void onDatabaseReady(const std::string& databaseId);
+    // Bind the database id only; does not start any load. Idempotent.
+    void bindDatabase(const std::string& databaseId);
+
+    // Load the three data classes from the database and populate memory; requires bindDatabase first.
+    // See ICameraDirectoryService::loadCameraDirectory for full semantics.
+    void loadCameraDirectory();
+
+    // True when the in-memory view is fully populated from the database.
+    bool isCameraDirectoryReady() const;
+
+    // ===== Notification sink =====
+    // Injected by Service; weak_ptr so async DB callbacks arriving after sink destruction
+    // don't dangle.
+    void setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink);
 
 private:
-    // memory-only primitives（不触发 DB）
+    // Memory-only primitives (do not touch the DB).
     model::CameraGroupArray             addCameraGroupsInMemory(const model::CameraGroupArray& groups);
     model::CameraGroupArray             updateCameraGroupsInMemory(const model::CameraGroupArray& groups);
     std::vector<std::string>            removeCameraGroupsInMemory(const std::vector<std::string>& nodeIds);
@@ -66,6 +81,19 @@ private:
     model::CameraDirectoryRelationArray updateCameraRelationsInMemory(const model::CameraDirectoryRelationArray& relations);
     std::vector<std::string>            removeCameraRelationsInMemory(const std::vector<std::string>& childIds);
 
+    // Single exit points that emit the load-finished / load-failed notification
+    // (thread-safe; fires exactly once per load).
+    void finishLoadSuccess();
+    void finishLoadFailure(CameraDirectoryLoadError error);
+
+    enum class LoadStage : std::uint8_t {
+        Uninit,    // bindDatabase has not been called.
+        DbBound,   // bindDatabase done; load not started.
+        Loading,   // At least one chunk load is in flight.
+        Ready,     // All chunks succeeded.
+        Failed,    // Load failed (in-memory data preserved; retryable).
+    };
+
 private:
     mutable std::mutex mMutex;
     std::unordered_map<std::string, std::shared_ptr<model::CameraGroupImpl>>             mGroups;
@@ -73,6 +101,12 @@ private:
     std::unordered_map<std::string, std::shared_ptr<model::CameraDirectoryRelationImpl>> mRelations;
 
     const std::unique_ptr<CameraDirectoryDBAccess> mCameraDirectoryDBAccess;
+
+    // Sink is set once and then read-only; no locking needed. Write paths lock() it once per call.
+    std::weak_ptr<ICameraDirectoryNotificationSink> mNotificationSink;
+
+    // Load-stage state machine; atomic so chunk callbacks and the calling thread see consistent values.
+    std::atomic<LoadStage> mLoadStage{LoadStage::Uninit};
 };
 
 } // namespace ucf::service

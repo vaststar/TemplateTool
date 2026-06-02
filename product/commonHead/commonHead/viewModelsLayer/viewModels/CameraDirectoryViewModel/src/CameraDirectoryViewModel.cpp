@@ -1,5 +1,6 @@
 #include "CameraDirectoryViewModel.h"
 
+#include <algorithm>
 #include <utility>
 #include <variant>
 
@@ -50,6 +51,20 @@ model::CameraSource toVMSource(const ucf::service::media::CameraSource& svc)
 model::CameraNodeStatus toVMStatus(ucf::service::model::CameraNodeStatus s)
 {
     return static_cast<model::CameraNodeStatus>(static_cast<int>(s));
+}
+
+model::CameraDirectoryLoadError toVMLoadError(ucf::service::CameraDirectoryLoadError e)
+{
+    switch (e)
+    {
+    case ucf::service::CameraDirectoryLoadError::DatabaseNotBound:
+        return model::CameraDirectoryLoadError::DatabaseNotBound;
+    case ucf::service::CameraDirectoryLoadError::DatabaseReadFailed:
+        return model::CameraDirectoryLoadError::DatabaseReadFailed;
+    case ucf::service::CameraDirectoryLoadError::Unknown:
+    default:
+        return model::CameraDirectoryLoadError::Unknown;
+    }
 }
 
 model::CameraDirectoryNodeData toVMNodeData(const ucf::service::model::ICameraGroupPtr& g)
@@ -152,12 +167,32 @@ std::string CameraDirectoryViewModel::getViewModelName() const
 
 void CameraDirectoryViewModel::init()
 {
-    if (auto service = lockService())
+    auto service = lockService();
+    if (!service)
     {
-        service->registerCallback(
-            std::static_pointer_cast<ucf::service::ICameraDirectoryServiceCallback>(shared_from_this()));
+        COMMONHEAD_LOG_ERROR("CameraDirectoryViewModel init: service not available");
+        return;
     }
-    rebuildTreeFromService();
+    // Register first so we do not miss any change event that arrives between the
+    // isCameraDirectoryReady() probe and the load decision below.
+    service->registerCallback(
+        std::static_pointer_cast<ucf::service::ICameraDirectoryServiceCallback>(shared_from_this()));
+
+    if (service->isCameraDirectoryReady())
+    {
+        // Late subscriber: the service already finished its load and will not re-fire
+        // onCameraDirectoryReady, so build the tree synchronously from the current snapshot.
+        COMMONHEAD_LOG_DEBUG("CameraDirectoryViewModel init: service already ready, rebuilding tree synchronously");
+        rebuildTreeFromService();
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+    }
+    else
+    {
+        // Trigger the load (idempotent if it is already in progress); the tree will be
+        // built when onCameraDirectoryReady is delivered.
+        COMMONHEAD_LOG_DEBUG("CameraDirectoryViewModel init: requesting service to load camera directory");
+        service->loadCameraDirectory();
+    }
 }
 
 std::shared_ptr<ucf::service::ICameraDirectoryService> CameraDirectoryViewModel::lockService() const
@@ -177,17 +212,40 @@ void CameraDirectoryViewModel::rebuildTreeFromService()
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("rebuildTreeFromService skipped: service not available");
         return;
     }
     auto groups    = service->getCameraGroups();
     auto cameras   = service->getCameras();
     auto relations = service->getCameraRelations();
+    COMMONHEAD_LOG_DEBUG("rebuildTreeFromService, groups:" << groups.size()
+                         << ", cameras:" << cameras.size()
+                         << ", relations:" << relations.size());
 
     auto tree = std::make_shared<model::CameraDirectoryTree>(groups, cameras, relations);
     {
         std::scoped_lock lk(mTreeMutex);
         mTree = std::move(tree);
     }
+}
+
+bool CameraDirectoryViewModel::ensureTreeBuilt()
+{
+    {
+        std::scoped_lock lk(mTreeMutex);
+        if (mTree)
+        {
+            return false;
+        }
+    }
+    // Out-of-order safety net: an incremental event arrived before our tree was built
+    // (typically before onCameraDirectoryReady). Pull a full snapshot now so the VM state
+    // is self-consistent; callers will surface this to subscribers as a Ready notification
+    // rather than as the original delta, because the snapshot already contains the delta
+    // plus everything else that was loaded before the subscriber attached.
+    COMMONHEAD_LOG_DEBUG("ensureTreeBuilt: tree is null on incremental event, rebuilding full snapshot");
+    rebuildTreeFromService();
+    return true;
 }
 
 // ===== Read =====
@@ -213,6 +271,46 @@ std::optional<model::CameraSource> CameraDirectoryViewModel::getCameraSource(con
     return toVMSource(entry->getSource());
 }
 
+bool CameraDirectoryViewModel::isCameraDirectoryReady() const
+{
+    std::scoped_lock lk(mTreeMutex);
+    return static_cast<bool>(mTree);
+}
+
+std::string CameraDirectoryViewModel::getCurrentCameraId() const
+{
+    std::scoped_lock lk(mSelectionMutex);
+    return mCurrentCameraId;
+}
+
+// ===== Selection =====
+
+void CameraDirectoryViewModel::selectCamera(const std::string& nodeId)
+{
+    // Empty id is a valid "clear" command; non-empty must resolve to an actual camera.
+    if (!nodeId.empty())
+    {
+        auto service = lockService();
+        if (!service || !service->getCamera(nodeId))
+        {
+            COMMONHEAD_LOG_WARN("selectCamera ignored: not a known camera, nodeId:" << nodeId);
+            return;
+        }
+    }
+
+    {
+        std::scoped_lock lk(mSelectionMutex);
+        if (mCurrentCameraId == nodeId)
+        {
+            return;
+        }
+        mCurrentCameraId = nodeId;
+    }
+    // Single funnel for selection metrics / analytics hooks.
+    COMMONHEAD_LOG_INFO("selectCamera: nodeId:" << (nodeId.empty() ? "<cleared>" : nodeId));
+    fireNotification(&ICameraDirectoryViewModelCallback::onCurrentCameraChanged, nodeId);
+}
+
 // ===== Write: Groups =====
 
 void CameraDirectoryViewModel::addCameraGroup(const std::string& nodeId, const std::string& displayName)
@@ -220,8 +318,10 @@ void CameraDirectoryViewModel::addCameraGroup(const std::string& nodeId, const s
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("addCameraGroup ignored: service not available, nodeId:" << nodeId);
         return;
     }
+    COMMONHEAD_LOG_DEBUG("addCameraGroup, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraGroupArray groups{
         ucf::service::model::ICameraGroup::createInstance(nodeId, displayName)
     };
@@ -233,8 +333,10 @@ void CameraDirectoryViewModel::updateCameraGroup(const std::string& nodeId, cons
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("updateCameraGroup ignored: service not available, nodeId:" << nodeId);
         return;
     }
+    COMMONHEAD_LOG_DEBUG("updateCameraGroup, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraGroupArray groups{
         ucf::service::model::ICameraGroup::createInstance(nodeId, displayName)
     };
@@ -246,8 +348,10 @@ void CameraDirectoryViewModel::removeCameraGroups(const std::vector<std::string>
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("removeCameraGroups ignored: service not available, count:" << nodeIds.size());
         return;
     }
+    COMMONHEAD_LOG_DEBUG("removeCameraGroups, count:" << nodeIds.size());
     service->removeCameraGroups(nodeIds);
 }
 
@@ -260,8 +364,10 @@ void CameraDirectoryViewModel::addCamera(const std::string& nodeId,
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("addCamera ignored: service not available, nodeId:" << nodeId);
         return;
     }
+    COMMONHEAD_LOG_DEBUG("addCamera, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraEntryArray cameras{
         ucf::service::model::ICameraEntry::createInstance(
             nodeId, displayName,
@@ -277,8 +383,10 @@ void CameraDirectoryViewModel::updateCamera(const std::string& nodeId,
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("updateCamera ignored: service not available, nodeId:" << nodeId);
         return;
     }
+    COMMONHEAD_LOG_DEBUG("updateCamera, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraEntryArray cameras{
         ucf::service::model::ICameraEntry::createInstance(
             nodeId, displayName,
@@ -292,8 +400,10 @@ void CameraDirectoryViewModel::removeCameras(const std::vector<std::string>& nod
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("removeCameras ignored: service not available, count:" << nodeIds.size());
         return;
     }
+    COMMONHEAD_LOG_DEBUG("removeCameras, count:" << nodeIds.size());
     service->removeCameras(nodeIds);
 }
 
@@ -304,8 +414,10 @@ void CameraDirectoryViewModel::addRelation(const std::string& parentId, const st
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("addRelation ignored: service not available, childId:" << childId);
         return;
     }
+    COMMONHEAD_LOG_DEBUG("addRelation, parentId:" << parentId << ", childId:" << childId);
     ucf::service::model::CameraDirectoryRelationArray relations{
         ucf::service::model::ICameraDirectoryRelation::createInstance(parentId, childId)
     };
@@ -317,8 +429,10 @@ void CameraDirectoryViewModel::updateRelation(const std::string& parentId, const
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("updateRelation ignored: service not available, childId:" << childId);
         return;
     }
+    COMMONHEAD_LOG_DEBUG("updateRelation, parentId:" << parentId << ", childId:" << childId);
     ucf::service::model::CameraDirectoryRelationArray relations{
         ucf::service::model::ICameraDirectoryRelation::createInstance(parentId, childId)
     };
@@ -330,22 +444,40 @@ void CameraDirectoryViewModel::removeRelations(const std::vector<std::string>& c
     auto service = lockService();
     if (!service)
     {
+        COMMONHEAD_LOG_ERROR("removeRelations ignored: service not available, count:" << childIds.size());
         return;
     }
+    COMMONHEAD_LOG_DEBUG("removeRelations, count:" << childIds.size());
     service->removeCameraRelations(childIds);
 }
 
-// ===== ICameraDirectoryServiceCallback：增量回放并转发 =====
+// ===== ICameraDirectoryServiceCallback: apply incremental updates then forward to VM subscribers =====
 
 void CameraDirectoryViewModel::onCameraDirectoryReady()
 {
+    COMMONHEAD_LOG_DEBUG("onCameraDirectoryReady received from service");
     rebuildTreeFromService();
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+}
+
+void CameraDirectoryViewModel::onCameraDirectoryLoadFailed(ucf::service::CameraDirectoryLoadError error)
+{
+    COMMONHEAD_LOG_ERROR("onCameraDirectoryLoadFailed received from service, error:" << static_cast<int>(error));
+    fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryLoadFailed, toVMLoadError(error));
 }
 
 void CameraDirectoryViewModel::onCameraGroupsAdded(const ucf::service::model::CameraGroupArray& groups)
 {
     auto vmGroups = toVMNodeDatas(groups);
+    if (ensureTreeBuilt())
+    {
+        // Snapshot rebuilt; the delta is already included. Surface as Ready so subscribers
+        // re-sync from getCameraTree() instead of double-applying the delta.
+        COMMONHEAD_LOG_WARN("onCameraGroupsAdded arrived before tree was built (count:" << vmGroups.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->addNodes(vmGroups);
@@ -356,6 +488,13 @@ void CameraDirectoryViewModel::onCameraGroupsAdded(const ucf::service::model::Ca
 void CameraDirectoryViewModel::onCameraGroupsUpdated(const ucf::service::model::CameraGroupArray& groups)
 {
     auto vmGroups = toVMNodeDatas(groups);
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCameraGroupsUpdated arrived before tree was built (count:" << vmGroups.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->updateNodes(vmGroups);
@@ -365,6 +504,13 @@ void CameraDirectoryViewModel::onCameraGroupsUpdated(const ucf::service::model::
 
 void CameraDirectoryViewModel::onCameraGroupsRemoved(const std::vector<std::string>& nodeIds)
 {
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCameraGroupsRemoved arrived before tree was built (count:" << nodeIds.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->removeNodes(nodeIds);
@@ -375,6 +521,13 @@ void CameraDirectoryViewModel::onCameraGroupsRemoved(const std::vector<std::stri
 void CameraDirectoryViewModel::onCamerasAdded(const ucf::service::model::CameraEntryArray& cameras)
 {
     auto vmCameras = toVMNodeDatas(cameras);
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCamerasAdded arrived before tree was built (count:" << vmCameras.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->addNodes(vmCameras);
@@ -385,6 +538,13 @@ void CameraDirectoryViewModel::onCamerasAdded(const ucf::service::model::CameraE
 void CameraDirectoryViewModel::onCamerasUpdated(const ucf::service::model::CameraEntryArray& cameras)
 {
     auto vmCameras = toVMNodeDatas(cameras);
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCamerasUpdated arrived before tree was built (count:" << vmCameras.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->updateNodes(vmCameras);
@@ -394,16 +554,47 @@ void CameraDirectoryViewModel::onCamerasUpdated(const ucf::service::model::Camer
 
 void CameraDirectoryViewModel::onCamerasRemoved(const std::vector<std::string>& nodeIds)
 {
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCamerasRemoved arrived before tree was built (count:" << nodeIds.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->removeNodes(nodeIds);
     }
+    // If the currently selected camera was just removed, clear the selection so UI
+    // mirrors do not keep stale ids highlighted.
+    bool clearedSelection = false;
+    {
+        std::scoped_lock lk(mSelectionMutex);
+        if (!mCurrentCameraId.empty()
+            && std::find(nodeIds.begin(), nodeIds.end(), mCurrentCameraId) != nodeIds.end())
+        {
+            mCurrentCameraId.clear();
+            clearedSelection = true;
+        }
+    }
     fireNotification(&ICameraDirectoryViewModelCallback::onCamerasRemoved, nodeIds);
+    if (clearedSelection)
+    {
+        COMMONHEAD_LOG_INFO("selectCamera auto-cleared: selected camera was removed");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCurrentCameraChanged, std::string{});
+    }
 }
 
 void CameraDirectoryViewModel::onCameraRelationsAdded(const ucf::service::model::CameraDirectoryRelationArray& relations)
 {
     auto vmRelations = toVMRelations(relations);
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCameraRelationsAdded arrived before tree was built (count:" << vmRelations.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     std::vector<std::pair<std::string, std::string>> pairs;
     pairs.reserve(vmRelations.size());
     for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
@@ -417,6 +608,13 @@ void CameraDirectoryViewModel::onCameraRelationsAdded(const ucf::service::model:
 void CameraDirectoryViewModel::onCameraRelationsUpdated(const ucf::service::model::CameraDirectoryRelationArray& relations)
 {
     auto vmRelations = toVMRelations(relations);
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCameraRelationsUpdated arrived before tree was built (count:" << vmRelations.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     std::vector<std::pair<std::string, std::string>> pairs;
     pairs.reserve(vmRelations.size());
     for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
@@ -429,6 +627,13 @@ void CameraDirectoryViewModel::onCameraRelationsUpdated(const ucf::service::mode
 
 void CameraDirectoryViewModel::onCameraRelationsRemoved(const std::vector<std::string>& childIds)
 {
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onCameraRelationsRemoved arrived before tree was built (count:" << childIds.size()
+                            << "); fired onCameraDirectoryReady instead of delta");
+        fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
+        return;
+    }
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree) mTree->clearRelations(childIds);
