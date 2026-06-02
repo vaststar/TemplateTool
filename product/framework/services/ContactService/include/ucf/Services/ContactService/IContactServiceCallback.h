@@ -7,6 +7,14 @@
 
 namespace ucf::service {
 
+// Reason for a directory load failure; loadContactDirectory() can be retried after a failure.
+enum class ContactDirectoryLoadError
+{
+    Unknown,
+    DatabaseNotBound,
+    DatabaseReadFailed,
+};
+
 class IContactServiceCallback
 {
 public:
@@ -18,8 +26,11 @@ public:
     virtual ~IContactServiceCallback() = default;
 
 public:
-    // Contact directory is ready (DB initialized & loaded into memory)
+    // Directory load finished successfully.
     virtual void onContactDirectoryReady() {}
+
+    // Directory load failed; retry via loadContactDirectory().
+    virtual void onContactDirectoryLoadFailed(ContactDirectoryLoadError /*error*/) {}
 
     // ===== Person contacts =====
     virtual void onPersonContactsAdded(const model::PersonContactArray& /*persons*/) {}

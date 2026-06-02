@@ -266,116 +266,284 @@ std::vector<std::string> ContactModel::removeContactRelationsInMemory(const std:
 
 model::PersonContactArray ContactModel::addPersonContacts(const model::PersonContactArray& persons)
 {
+    SERVICE_LOG_DEBUG("addPersonContacts requested, count:" << persons.size());
     auto accepted = addPersonContactsInMemory(persons);
+    SERVICE_LOG_DEBUG("addPersonContacts accepted, count:" << accepted.size());
     if (!accepted.empty())
     {
         mContactDBAccess->insertPersonContacts(accepted);
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onPersonContactsAdded(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 model::PersonContactArray ContactModel::updatePersonContacts(const model::PersonContactArray& persons)
 {
+    SERVICE_LOG_DEBUG("updatePersonContacts requested, count:" << persons.size());
     auto accepted = updatePersonContactsInMemory(persons);
+    SERVICE_LOG_DEBUG("updatePersonContacts accepted, count:" << accepted.size());
     for (const auto& p : accepted)
     {
         mContactDBAccess->updatePersonContact(p);
+    }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onPersonContactsUpdated(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 std::vector<std::string> ContactModel::removePersonContacts(const std::vector<std::string>& contactIds)
 {
+    SERVICE_LOG_DEBUG("removePersonContacts requested, count:" << contactIds.size());
     auto accepted = removePersonContactsInMemory(contactIds);
+    SERVICE_LOG_DEBUG("removePersonContacts accepted, count:" << accepted.size());
     for (const auto& id : accepted)
     {
         mContactDBAccess->deletePersonContact(id);
+    }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onPersonContactsRemoved(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 model::GroupContactArray ContactModel::addGroupContacts(const model::GroupContactArray& groups)
 {
+    SERVICE_LOG_DEBUG("addGroupContacts requested, count:" << groups.size());
     auto accepted = addGroupContactsInMemory(groups);
+    SERVICE_LOG_DEBUG("addGroupContacts accepted, count:" << accepted.size());
     if (!accepted.empty())
     {
         mContactDBAccess->insertGroupContacts(accepted);
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onGroupContactsAdded(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 model::GroupContactArray ContactModel::updateGroupContacts(const model::GroupContactArray& groups)
 {
+    SERVICE_LOG_DEBUG("updateGroupContacts requested, count:" << groups.size());
     auto accepted = updateGroupContactsInMemory(groups);
+    SERVICE_LOG_DEBUG("updateGroupContacts accepted, count:" << accepted.size());
     for (const auto& g : accepted)
     {
         mContactDBAccess->updateGroupContact(g);
+    }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onGroupContactsUpdated(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 std::vector<std::string> ContactModel::removeGroupContacts(const std::vector<std::string>& contactIds)
 {
+    SERVICE_LOG_DEBUG("removeGroupContacts requested, count:" << contactIds.size());
     auto accepted = removeGroupContactsInMemory(contactIds);
+    SERVICE_LOG_DEBUG("removeGroupContacts accepted, count:" << accepted.size());
     for (const auto& id : accepted)
     {
         mContactDBAccess->deleteGroupContact(id);
+    }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onGroupContactsRemoved(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 model::ContactRelationArray ContactModel::addContactRelations(const model::ContactRelationArray& relations)
 {
+    SERVICE_LOG_DEBUG("addContactRelations requested, count:" << relations.size());
     auto accepted = addContactRelationsInMemory(relations);
+    SERVICE_LOG_DEBUG("addContactRelations accepted, count:" << accepted.size());
     if (!accepted.empty())
     {
         mContactDBAccess->insertContactRelations(accepted);
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onContactRelationsAdded(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 model::ContactRelationArray ContactModel::updateContactRelations(const model::ContactRelationArray& relations)
 {
+    SERVICE_LOG_DEBUG("updateContactRelations requested, count:" << relations.size());
     auto accepted = updateContactRelationsInMemory(relations);
+    SERVICE_LOG_DEBUG("updateContactRelations accepted, count:" << accepted.size());
     for (const auto& r : accepted)
     {
         mContactDBAccess->updateContactRelation(r);
+    }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onContactRelationsUpdated(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 std::vector<std::string> ContactModel::removeContactRelations(const std::vector<std::string>& childIds)
 {
+    SERVICE_LOG_DEBUG("removeContactRelations requested, count:" << childIds.size());
     auto accepted = removeContactRelationsInMemory(childIds);
+    SERVICE_LOG_DEBUG("removeContactRelations accepted, count:" << accepted.size());
     for (const auto& id : accepted)
     {
         mContactDBAccess->deleteContactRelation(id);
+    }
+    if (!accepted.empty())
+    {
+        if (auto sink = mNotificationSink.lock())
+        {
+            sink->onContactRelationsRemoved(accepted, ContactNotificationSource::Local);
+        }
     }
     return accepted;
 }
 
 // ===== Lifecycle =====
 
-void ContactModel::onDatabaseReady(const std::string& databaseId)
+void ContactModel::setNotificationSink(std::weak_ptr<IContactNotificationSink> sink)
 {
-    SERVICE_LOG_DEBUG("Database ready, databaseId:" << databaseId);
+    SERVICE_LOG_DEBUG("setNotificationSink");
+    mNotificationSink = std::move(sink);
+}
+
+void ContactModel::bindDatabase(const std::string& databaseId)
+{
+    if (databaseId.empty())
+    {
+        SERVICE_LOG_ERROR("bindDatabase ignored: empty databaseId");
+        return;
+    }
+
+    if (mLoadStage.load() != LoadStage::Uninit)
+    {
+        const auto& current = mContactDBAccess->getDatabaseId();
+        if (current != databaseId)
+        {
+            SERVICE_LOG_ERROR("bindDatabase rejected: rebinding to a different db is not supported"
+                              << ", current:" << current
+                              << ", incoming:" << databaseId);
+        }
+        else
+        {
+            SERVICE_LOG_DEBUG("bindDatabase noop, same databaseId:" << databaseId);
+        }
+        return;
+    }
+
     mContactDBAccess->setDatabaseId(databaseId);
+    mLoadStage.store(LoadStage::DbBound);
+    SERVICE_LOG_DEBUG("bindDatabase done, databaseId:" << databaseId);
+}
+
+void ContactModel::loadContactDirectory()
+{
+    auto stage = mLoadStage.load();
+    if (stage == LoadStage::Uninit)
+    {
+        SERVICE_LOG_ERROR("loadContactDirectory ignored: database not bound yet");
+        finishLoadFailure(ContactDirectoryLoadError::DatabaseNotBound);
+        return;
+    }
+    if (stage == LoadStage::Loading || stage == LoadStage::Ready)
+    {
+        SERVICE_LOG_DEBUG("loadContactDirectory ignored, stage:" << static_cast<int>(stage));
+        return;
+    }
+    if (!mLoadStage.compare_exchange_strong(stage, LoadStage::Loading))
+    {
+        SERVICE_LOG_DEBUG("loadContactDirectory raced, stage advanced by another thread");
+        return;
+    }
+    SERVICE_LOG_DEBUG("loadContactDirectory started");
+
+    struct LoadContext
+    {
+        std::atomic<int> remaining{3};
+    };
+    auto ctx = std::make_shared<LoadContext>();
+
+    auto onChunkDone = [this, ctx](const char* chunkName, std::size_t count)
+    {
+        SERVICE_LOG_DEBUG("loadContactDirectory chunk done, chunk:" << chunkName
+                          << ", count:" << count
+                          << ", remaining:" << (ctx->remaining.load() - 1));
+        if (ctx->remaining.fetch_sub(1) == 1)
+        {
+            finishLoadSuccess();
+        }
+    };
 
     mContactDBAccess->loadPersonContacts(
-        [this](const model::PersonContactArray& persons)
+        [this, onChunkDone](const model::PersonContactArray& persons)
         {
             addPersonContactsInMemory(persons);
+            onChunkDone("persons", persons.size());
         });
     mContactDBAccess->loadGroupContacts(
-        [this](const model::GroupContactArray& groups)
+        [this, onChunkDone](const model::GroupContactArray& groups)
         {
             addGroupContactsInMemory(groups);
+            onChunkDone("groups", groups.size());
         });
     mContactDBAccess->loadContactRelations(
-        [this](const model::ContactRelationArray& relations)
+        [this, onChunkDone](const model::ContactRelationArray& relations)
         {
             addContactRelationsInMemory(relations);
+            onChunkDone("relations", relations.size());
         });
+}
+
+bool ContactModel::isContactDirectoryReady() const
+{
+    return mLoadStage.load() == LoadStage::Ready;
+}
+
+void ContactModel::finishLoadSuccess()
+{
+    mLoadStage.store(LoadStage::Ready);
+    SERVICE_LOG_DEBUG("loadContactDirectory finished, success:true");
+    if (auto sink = mNotificationSink.lock())
+    {
+        sink->onDirectoryLoaded();
+    }
+}
+
+void ContactModel::finishLoadFailure(ContactDirectoryLoadError error)
+{
+    mLoadStage.store(LoadStage::Failed);
+    SERVICE_LOG_ERROR("loadContactDirectory finished, success:false, error:" << static_cast<int>(error));
+    if (auto sink = mNotificationSink.lock())
+    {
+        sink->onDirectoryLoadFailed(error);
+    }
 }
 
 } // namespace ucf::service

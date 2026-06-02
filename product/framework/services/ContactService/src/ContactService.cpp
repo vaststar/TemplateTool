@@ -70,13 +70,28 @@ ContactService::~ContactService()
 
 void ContactService::initService()
 {
+    SERVICE_LOG_DEBUG("initService");
+    // Inject sink before registering DB callback so no early events are lost.
+    auto self = shared_from_this();
+    mDataPrivate->getManager().setNotificationSink(
+        std::static_pointer_cast<IContactNotificationSink>(self));
+
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
         if (auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
         {
             dataWarehouseService->registerCallback(shared_from_this());
+            SERVICE_LOG_DEBUG("registered DataWarehouseService callback");
         }
+        else
+        {
+            SERVICE_LOG_ERROR("initService: DataWarehouseService unavailable");
+        }
+    }
+    else
+    {
+        SERVICE_LOG_ERROR("initService: CoreFramework unavailable");
     }
 }
 
@@ -97,8 +112,9 @@ void ContactService::onCoreFrameworkExit()
 
 void ContactService::OnDatabaseInitialized(const std::string& dbId)
 {
-    mDataPrivate->getManager().onDatabaseReady(dbId);
-    fireNotification(&IContactServiceCallback::onContactDirectoryReady);
+    SERVICE_LOG_DEBUG("OnDatabaseInitialized, dbId:" << dbId);
+    // Bind only; load is triggered explicitly via loadContactDirectory().
+    mDataPrivate->getManager().bindDatabase(dbId);
 }
 
 // ===== Read =====
@@ -128,91 +144,140 @@ model::IGroupContactPtr ContactService::getGroupContact(const std::string& conta
     return mDataPrivate->getManager().getGroupContact(contactId);
 }
 
-// ===== Person batch write =====
+// ===== Batch write =====
+// Events fire via the sink after persistence; not here.
 
 void ContactService::addPersonContacts(const model::PersonContactArray& persons)
 {
-    auto accepted = mDataPrivate->getManager().addPersonContacts(persons);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onPersonContactsAdded, accepted);
-    }
+    SERVICE_LOG_DEBUG("addPersonContacts, count:" << persons.size());
+    mDataPrivate->getManager().addPersonContacts(persons);
 }
 
 void ContactService::updatePersonContacts(const model::PersonContactArray& persons)
 {
-    auto accepted = mDataPrivate->getManager().updatePersonContacts(persons);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onPersonContactsUpdated, accepted);
-    }
+    SERVICE_LOG_DEBUG("updatePersonContacts, count:" << persons.size());
+    mDataPrivate->getManager().updatePersonContacts(persons);
 }
 
 void ContactService::removePersonContacts(const std::vector<std::string>& contactIds)
 {
-    auto accepted = mDataPrivate->getManager().removePersonContacts(contactIds);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onPersonContactsRemoved, accepted);
-    }
+    SERVICE_LOG_DEBUG("removePersonContacts, count:" << contactIds.size());
+    mDataPrivate->getManager().removePersonContacts(contactIds);
 }
-
-// ===== Group batch write =====
 
 void ContactService::addGroupContacts(const model::GroupContactArray& groups)
 {
-    auto accepted = mDataPrivate->getManager().addGroupContacts(groups);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onGroupContactsAdded, accepted);
-    }
+    SERVICE_LOG_DEBUG("addGroupContacts, count:" << groups.size());
+    mDataPrivate->getManager().addGroupContacts(groups);
 }
 
 void ContactService::updateGroupContacts(const model::GroupContactArray& groups)
 {
-    auto accepted = mDataPrivate->getManager().updateGroupContacts(groups);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onGroupContactsUpdated, accepted);
-    }
+    SERVICE_LOG_DEBUG("updateGroupContacts, count:" << groups.size());
+    mDataPrivate->getManager().updateGroupContacts(groups);
 }
 
 void ContactService::removeGroupContacts(const std::vector<std::string>& contactIds)
 {
-    auto accepted = mDataPrivate->getManager().removeGroupContacts(contactIds);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onGroupContactsRemoved, accepted);
-    }
+    SERVICE_LOG_DEBUG("removeGroupContacts, count:" << contactIds.size());
+    mDataPrivate->getManager().removeGroupContacts(contactIds);
 }
-
-// ===== Relation batch write =====
 
 void ContactService::addContactRelations(const model::ContactRelationArray& relations)
 {
-    auto accepted = mDataPrivate->getManager().addContactRelations(relations);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onContactRelationsAdded, accepted);
-    }
+    SERVICE_LOG_DEBUG("addContactRelations, count:" << relations.size());
+    mDataPrivate->getManager().addContactRelations(relations);
 }
 
 void ContactService::updateContactRelations(const model::ContactRelationArray& relations)
 {
-    auto accepted = mDataPrivate->getManager().updateContactRelations(relations);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onContactRelationsUpdated, accepted);
-    }
+    SERVICE_LOG_DEBUG("updateContactRelations, count:" << relations.size());
+    mDataPrivate->getManager().updateContactRelations(relations);
 }
 
 void ContactService::removeContactRelations(const std::vector<std::string>& childIds)
 {
-    auto accepted = mDataPrivate->getManager().removeContactRelations(childIds);
-    if (!accepted.empty())
-    {
-        fireNotification(&IContactServiceCallback::onContactRelationsRemoved, accepted);
-    }
+    SERVICE_LOG_DEBUG("removeContactRelations, count:" << childIds.size());
+    mDataPrivate->getManager().removeContactRelations(childIds);
+}
+
+// ===== Lifecycle =====
+void ContactService::loadContactDirectory()
+{
+    SERVICE_LOG_DEBUG("loadContactDirectory");
+    mDataPrivate->getManager().loadContactDirectory();
+}
+
+bool ContactService::isContactDirectoryReady() const
+{
+    return mDataPrivate->getManager().isContactDirectoryReady();
+}
+
+// ===== IContactNotificationSink =====
+void ContactService::onPersonContactsAdded(const model::PersonContactArray& persons, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onPersonContactsAdded, count:" << persons.size());
+    fireNotification(&IContactServiceCallback::onPersonContactsAdded, persons);
+}
+
+void ContactService::onPersonContactsUpdated(const model::PersonContactArray& persons, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onPersonContactsUpdated, count:" << persons.size());
+    fireNotification(&IContactServiceCallback::onPersonContactsUpdated, persons);
+}
+
+void ContactService::onPersonContactsRemoved(const std::vector<std::string>& contactIds, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onPersonContactsRemoved, count:" << contactIds.size());
+    fireNotification(&IContactServiceCallback::onPersonContactsRemoved, contactIds);
+}
+
+void ContactService::onGroupContactsAdded(const model::GroupContactArray& groups, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onGroupContactsAdded, count:" << groups.size());
+    fireNotification(&IContactServiceCallback::onGroupContactsAdded, groups);
+}
+
+void ContactService::onGroupContactsUpdated(const model::GroupContactArray& groups, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onGroupContactsUpdated, count:" << groups.size());
+    fireNotification(&IContactServiceCallback::onGroupContactsUpdated, groups);
+}
+
+void ContactService::onGroupContactsRemoved(const std::vector<std::string>& contactIds, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onGroupContactsRemoved, count:" << contactIds.size());
+    fireNotification(&IContactServiceCallback::onGroupContactsRemoved, contactIds);
+}
+
+void ContactService::onContactRelationsAdded(const model::ContactRelationArray& relations, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onContactRelationsAdded, count:" << relations.size());
+    fireNotification(&IContactServiceCallback::onContactRelationsAdded, relations);
+}
+
+void ContactService::onContactRelationsUpdated(const model::ContactRelationArray& relations, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onContactRelationsUpdated, count:" << relations.size());
+    fireNotification(&IContactServiceCallback::onContactRelationsUpdated, relations);
+}
+
+void ContactService::onContactRelationsRemoved(const std::vector<std::string>& childIds, ContactNotificationSource /*src*/)
+{
+    SERVICE_LOG_DEBUG("fire onContactRelationsRemoved, count:" << childIds.size());
+    fireNotification(&IContactServiceCallback::onContactRelationsRemoved, childIds);
+}
+
+void ContactService::onDirectoryLoaded()
+{
+    SERVICE_LOG_DEBUG("fire onContactDirectoryReady");
+    fireNotification(&IContactServiceCallback::onContactDirectoryReady);
+}
+
+void ContactService::onDirectoryLoadFailed(ContactDirectoryLoadError error)
+{
+    SERVICE_LOG_ERROR("fire onContactDirectoryLoadFailed, error:" << static_cast<int>(error));
+    fireNotification(&IContactServiceCallback::onContactDirectoryLoadFailed, error);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

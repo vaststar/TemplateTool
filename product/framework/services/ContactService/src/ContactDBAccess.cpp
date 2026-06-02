@@ -22,6 +22,11 @@ void ContactDBAccess::setDatabaseId(const std::string& dbId)
     mDatabaseId = dbId;
 }
 
+const std::string& ContactDBAccess::getDatabaseId() const
+{
+    return mDatabaseId;
+}
+
 std::string ContactDBAccess::resolveDatabaseId() const
 {
     if (!mDatabaseId.empty())

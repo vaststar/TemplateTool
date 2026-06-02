@@ -99,9 +99,28 @@ std::vector<std::string> ContactManager::removeContactRelations(const std::vecto
 
 // ===== Lifecycle =====
 
-void ContactManager::onDatabaseReady(const std::string& databaseId)
+void ContactManager::bindDatabase(const std::string& databaseId)
 {
-    mContactModel->onDatabaseReady(databaseId);
+    SERVICE_LOG_DEBUG("bindDatabase, databaseId:" << databaseId);
+    mContactModel->bindDatabase(databaseId);
+}
+
+void ContactManager::loadContactDirectory()
+{
+    SERVICE_LOG_DEBUG("loadContactDirectory");
+    mContactModel->loadContactDirectory();
+}
+
+bool ContactManager::isContactDirectoryReady() const
+{
+    return mContactModel->isContactDirectoryReady();
+}
+
+void ContactManager::setNotificationSink(std::weak_ptr<IContactNotificationSink> sink)
+{
+    SERVICE_LOG_DEBUG("setNotificationSink");
+    mNotificationSink = sink;
+    mContactModel->setNotificationSink(std::move(sink));
 }
 
 } // namespace ucf::service

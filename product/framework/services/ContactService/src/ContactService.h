@@ -7,6 +7,8 @@
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
+#include "ContactNotificationSink.h"
+
 namespace ucf::service {
 
 class SERVICE_EXPORT ContactService final
@@ -14,6 +16,7 @@ class SERVICE_EXPORT ContactService final
     , public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault
     , public ucf::service::IDataWarehouseServiceCallback
+    , public IContactNotificationSink
     , public std::enable_shared_from_this<ContactService>
 {
 public:
@@ -55,9 +58,28 @@ public:
     virtual void updateContactRelations(const model::ContactRelationArray& relations) override;
     virtual void removeContactRelations(const std::vector<std::string>& childIds) override;
 
+    // IContactService - Lifecycle
+    virtual void loadContactDirectory() override;
+    virtual bool isContactDirectoryReady() const override;
+
 protected:
     // IService
     virtual void initService() override;
+
+private:
+    // IContactNotificationSink — translation layer from internal changes to outward
+    // notifications; not exposed externally.
+    virtual void onPersonContactsAdded   (const model::PersonContactArray& persons,    ContactNotificationSource src) override;
+    virtual void onPersonContactsUpdated (const model::PersonContactArray& persons,    ContactNotificationSource src) override;
+    virtual void onPersonContactsRemoved (const std::vector<std::string>& contactIds,  ContactNotificationSource src) override;
+    virtual void onGroupContactsAdded    (const model::GroupContactArray& groups,      ContactNotificationSource src) override;
+    virtual void onGroupContactsUpdated  (const model::GroupContactArray& groups,      ContactNotificationSource src) override;
+    virtual void onGroupContactsRemoved  (const std::vector<std::string>& contactIds,  ContactNotificationSource src) override;
+    virtual void onContactRelationsAdded   (const model::ContactRelationArray& relations, ContactNotificationSource src) override;
+    virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations, ContactNotificationSource src) override;
+    virtual void onContactRelationsRemoved (const std::vector<std::string>& childIds,     ContactNotificationSource src) override;
+    virtual void onDirectoryLoaded() override;
+    virtual void onDirectoryLoadFailed(ContactDirectoryLoadError error) override;
 
 private:
     class DataPrivate;

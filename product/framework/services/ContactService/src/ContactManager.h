@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ContactEntities.h"
+#include "ContactNotificationSink.h"
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -18,7 +19,7 @@ namespace ucf::service {
 
 class ContactModel;
 
-// 业务编排层：当前转发到 Model；预留位置用于后续承担网络拉取 / 同步等业务。
+// Business orchestration layer; today a thin forwarder onto ContactModel.
 class ContactManager final
 {
 public:
@@ -51,12 +52,19 @@ public:
     std::vector<std::string>    removeContactRelations(const std::vector<std::string>& childIds);
 
     // ===== Lifecycle =====
-    void onDatabaseReady(const std::string& databaseId);
+    void bindDatabase(const std::string& databaseId);
+    void loadContactDirectory();
+    bool isContactDirectoryReady() const;
+
+    // Forwarded to the Model; Manager keeps a weak_ptr copy for future business-level events.
+    void setNotificationSink(std::weak_ptr<IContactNotificationSink> sink);
 
 private:
     const ucf::framework::ICoreFrameworkWPtr      mCoreFrameworkWPtr;
     const std::unique_ptr<ContactModel>           mContactModel;
     const std::unique_ptr<ucf::adapter::ContactAdapter> mContactAdapter;
+
+    std::weak_ptr<IContactNotificationSink> mNotificationSink;
 };
 
 } // namespace ucf::service

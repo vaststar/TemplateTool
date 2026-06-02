@@ -48,6 +48,15 @@ public:
     virtual void updateContactRelations(const model::ContactRelationArray& relations) = 0;
     virtual void removeContactRelations(const std::vector<std::string>& childIds)     = 0;
 
+    // ===== Lifecycle =====
+    // Trigger loading the contact directory from the database. Requires the database to be
+    // bound first; idempotent while Loading / Ready; retries when Failed.
+    virtual void loadContactDirectory() = 0;
+
+    // True once loadContactDirectory has completed successfully; lets late subscribers skip
+    // the missed onContactDirectoryReady callback.
+    [[nodiscard]] virtual bool isContactDirectoryReady() const = 0;
+
     static std::shared_ptr<IContactService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 

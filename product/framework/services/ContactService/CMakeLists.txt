@@ -14,6 +14,7 @@ set(MODULE_SOURCE_PRIVATE
     src/ContactServiceLogger.h
     src/ContactService.h
     src/ContactService.cpp
+    src/ContactNotificationSink.h
     src/ContactModel.h
     src/ContactModel.cpp
     src/ContactEntities.h
