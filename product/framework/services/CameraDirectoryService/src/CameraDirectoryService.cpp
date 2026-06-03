@@ -105,9 +105,6 @@ void CameraDirectoryService::onCoreFrameworkExit()
 
 void CameraDirectoryService::OnDatabaseInitialized(const std::string& dbId)
 {
-    // Only bind the database here; do not fire onCameraDirectoryReady immediately.
-    // Data load must be requested explicitly via loadCameraDirectory(); ready / loadFailed
-    // events are emitted uniformly through the sink path after the load completes.
     mDataPrivate->getManager().bindDatabase(dbId);
 }
 

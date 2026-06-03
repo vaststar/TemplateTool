@@ -3,7 +3,7 @@
 #include <typeindex>
 #include <memory>
 #include <mutex>
-#include <map>
+#include <unordered_map>
 #include <utility>
 
 #include <ucf/CoreFramework/IServiceAccessor.h>
@@ -59,12 +59,12 @@ protected:
 
     virtual void unRegisterServices() override
     {
-        std::map<std::type_index, ucf::service::IServicePtr> emptyServices;
-        std::mutex mDataMutex;
+        std::unordered_map<std::type_index, ucf::service::IServicePtr> emptyServices;
+        std::scoped_lock loc(mDataMutex);
         std::swap(mServices, emptyServices);
     }
 private:
     std::mutex mDataMutex;
-    std::map<std::type_index, ucf::service::IServicePtr> mServices;
+    std::unordered_map<std::type_index, ucf::service::IServicePtr> mServices;
 };
 }

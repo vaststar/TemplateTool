@@ -442,7 +442,7 @@ void ContactModel::bindDatabase(const std::string& databaseId)
         return;
     }
 
-    if (mLoadStage.load() != LoadStage::Uninit)
+    if (auto expected = LoadStage::Uninit; !mLoadStage.compare_exchange_strong(expected, LoadStage::DbBound))
     {
         const auto& current = mContactDBAccess->getDatabaseId();
         if (current != databaseId)
@@ -459,8 +459,13 @@ void ContactModel::bindDatabase(const std::string& databaseId)
     }
 
     mContactDBAccess->setDatabaseId(databaseId);
-    mLoadStage.store(LoadStage::DbBound);
     SERVICE_LOG_DEBUG("bindDatabase done, databaseId:" << databaseId);
+
+    if (mLoadPending.exchange(false))
+    {
+        SERVICE_LOG_DEBUG("bindDatabase auto-promoting pending loadContactDirectory");
+        loadContactDirectory();
+    }
 }
 
 void ContactModel::loadContactDirectory()
@@ -468,8 +473,10 @@ void ContactModel::loadContactDirectory()
     auto stage = mLoadStage.load();
     if (stage == LoadStage::Uninit)
     {
-        SERVICE_LOG_ERROR("loadContactDirectory ignored: database not bound yet");
-        finishLoadFailure(ContactDirectoryLoadError::DatabaseNotBound);
+        // DB not bound yet: park the request. bindDatabase() will auto-promote it
+        // once the DB id has been set, so callers do not need to retry.
+        mLoadPending.store(true);
+        SERVICE_LOG_DEBUG("loadContactDirectory deferred: database not bound yet, pending=true");
         return;
     }
     if (stage == LoadStage::Loading || stage == LoadStage::Ready)
@@ -528,7 +535,12 @@ bool ContactModel::isContactDirectoryReady() const
 
 void ContactModel::finishLoadSuccess()
 {
-    mLoadStage.store(LoadStage::Ready);
+    // CAS so a racing finishLoadFailure cannot also fire.
+    if (auto expected = LoadStage::Loading; !mLoadStage.compare_exchange_strong(expected, LoadStage::Ready))
+    {
+        SERVICE_LOG_DEBUG("finishLoadSuccess skipped, stage already:" << static_cast<int>(expected));
+        return;
+    }
     SERVICE_LOG_DEBUG("loadContactDirectory finished, success:true");
     if (auto sink = mNotificationSink.lock())
     {
@@ -538,7 +550,11 @@ void ContactModel::finishLoadSuccess()
 
 void ContactModel::finishLoadFailure(ContactDirectoryLoadError error)
 {
-    mLoadStage.store(LoadStage::Failed);
+    if (auto expected = LoadStage::Loading; !mLoadStage.compare_exchange_strong(expected, LoadStage::Failed))
+    {
+        SERVICE_LOG_DEBUG("finishLoadFailure skipped, stage already:" << static_cast<int>(expected));
+        return;
+    }
     SERVICE_LOG_ERROR("loadContactDirectory finished, success:false, error:" << static_cast<int>(error));
     if (auto sink = mNotificationSink.lock())
     {

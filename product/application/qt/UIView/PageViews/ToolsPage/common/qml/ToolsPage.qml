@@ -32,9 +32,24 @@ Item {
                 model: controller.initialized && controller.panelRegistry ? controller.panelRegistry.entries : []
 
                 Loader {
-                    required property string modelData
+                    id: panelLoader
+                    required property var modelData   // { source: string, preload: bool }
                     required property int index
-                    source: modelData
+
+                    // preload=true: load eagerly. Otherwise wait until the user first selects this
+                    // panel; once shown, stay loaded so subsequent selections do not rebuild it.
+                    property bool everShown: modelData.preload || index === contentStack.currentIndex
+                    Connections {
+                        target: contentStack
+                        function onCurrentIndexChanged() {
+                            if (index === contentStack.currentIndex)
+                                panelLoader.everShown = true
+                        }
+                    }
+
+                    active: everShown
+                    source: active ? modelData.source : ""
+
                     onLoaded: {
                         if (item && item.controller)
                             toolsPage.controller.setupController(item.controller)

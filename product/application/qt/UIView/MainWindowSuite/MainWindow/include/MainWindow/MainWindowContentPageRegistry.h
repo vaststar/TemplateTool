@@ -1,26 +1,31 @@
 #pragma once
 
 #include <QObject>
-#include <QStringList>
+#include <QVariantList>
 #include <QVector>
-#include <QPair>
 #include <QtQml>
 
 class MainWindowContentPageRegistry : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList entries READ entries NOTIFY entriesChanged)
+    // Each entry is a QVariantMap with keys: "source" (QString), "preload" (bool).
+    Q_PROPERTY(QVariantList entries READ entries NOTIFY entriesChanged)
     QML_ELEMENT
 public:
     explicit MainWindowContentPageRegistry(QObject* parent = nullptr);
 
-    QStringList entries() const;
+    QVariantList entries() const;
     Q_INVOKABLE int indexOfPage(int pageId) const;
 
 signals:
     void entriesChanged();
 
 private:
-    void registerPage(int pageId, const QString& qmlSource);
-    QVector<QPair<int, QString>> m_pages;
+    struct PageEntry {
+        int     pageId;
+        QString source;
+        bool    preload;
+    };
+    void registerPage(int pageId, const QString& qmlSource, bool preload = false);
+    QVector<PageEntry> m_pages;
 };

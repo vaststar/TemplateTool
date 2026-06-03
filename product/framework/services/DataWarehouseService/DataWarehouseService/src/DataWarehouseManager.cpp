@@ -32,7 +32,8 @@ class DataWarehouseManager::DataPrivate
 public:
     DataPrivate();
     ~DataPrivate();
-    void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    bool isDatabaseReady(const std::string& dbId) const;
     bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
     void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
     int64_t updateInDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::DBDataValues& values, const model::ListsOfWhereCondition& whereConditions, const std::source_location location);
@@ -94,37 +95,47 @@ void DataWarehouseManager::DataPrivate::createFolder(const std::string& dbFilePa
     }
 }
 
-void DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+bool DataWarehouseManager::DataPrivate::isDatabaseReady(const std::string& dbId) const
 {
     std::scoped_lock<std::mutex> loc(mDatabaseMutex);
-    if (mDatabaseWrapper.find(dbConfig->getDBId()) == mDatabaseWrapper.end())
+    return mDatabaseWrapper.find(dbId) != mDatabaseWrapper.end();
+}
+
+InitializeDBResult DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+{
+    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
+    if (mDatabaseWrapper.find(dbConfig->getDBId()) != mDatabaseWrapper.end())
     {
-        if (auto sqliteConfig = std::dynamic_pointer_cast<model::SqliteDBConfig>(dbConfig))
-        {
-            createFolder(sqliteConfig->getDBFilePath());
-            ucf::infrastructure::database::SqliteDatabaseConfig config;
-            config.fileName = sqliteConfig->getDBFilePath();
-            config.password = sqliteConfig->getDBPassword();
-            auto dataBaseWrapper = ucf::infrastructure::database::DatabaseFactory::create(config);
-            
-            if (!dataBaseWrapper->open())
-            {
-                SERVICE_LOG_ERROR("failed to open database: " << dbConfig->getDBId());
-                return;
-            }
-            
-            mDatabaseWrapper[dbConfig->getDBId()] = dataBaseWrapper;
-            if (!tables.empty())
-            {
-                dataBaseWrapper->createTables(convertToDatabaseSchemas(tables));
-            }
-            SERVICE_LOG_INFO("database created and opened: " << dbConfig->getDBId());
-        }
+        SERVICE_LOG_DEBUG("initializeDB no-op, already have db:" << dbConfig->getDBId());
+        return InitializeDBResult::AlreadyExists;
     }
-    else
+
+    auto sqliteConfig = std::dynamic_pointer_cast<model::SqliteDBConfig>(dbConfig);
+    if (!sqliteConfig)
     {
-        SERVICE_LOG_WARN("already have db:" << dbConfig->getDBId());
+        SERVICE_LOG_ERROR("initializeDB unsupported db config type, dbId:" << dbConfig->getDBId());
+        return InitializeDBResult::Failed;
     }
+
+    createFolder(sqliteConfig->getDBFilePath());
+    ucf::infrastructure::database::SqliteDatabaseConfig config;
+    config.fileName = sqliteConfig->getDBFilePath();
+    config.password = sqliteConfig->getDBPassword();
+    auto dataBaseWrapper = ucf::infrastructure::database::DatabaseFactory::create(config);
+
+    if (!dataBaseWrapper || !dataBaseWrapper->open())
+    {
+        SERVICE_LOG_ERROR("failed to open database: " << dbConfig->getDBId());
+        return InitializeDBResult::Failed;
+    }
+
+    mDatabaseWrapper[dbConfig->getDBId()] = dataBaseWrapper;
+    if (!tables.empty())
+    {
+        dataBaseWrapper->createTables(convertToDatabaseSchemas(tables));
+    }
+    SERVICE_LOG_INFO("database created and opened: " << dbConfig->getDBId());
+    return InitializeDBResult::Created;
 }
 
 ucf::infrastructure::database::DatabaseSchemas DataWarehouseManager::DataPrivate::convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const
@@ -174,7 +185,7 @@ ucf::infrastructure::database::ListOfArguments DataWarehouseManager::DataPrivate
 {
     ucf::infrastructure::database::ListOfArguments listOfArguments;
     std::transform(values.cbegin(), values.cend(), std::back_inserter(listOfArguments), [this](const auto& value) {
-        ucf::infrastructure::database::Arguments arguments; 
+        ucf::infrastructure::database::Arguments arguments;
         std::transform(value.begin(), value.end(), std::back_inserter(arguments), std::bind_front(&DataWarehouseManager::DataPrivate::convertToDatabaseDataValue, this));
         return arguments;
     });
@@ -282,7 +293,7 @@ model::DatabaseDataRecords DataWarehouseManager::DataPrivate::convertFromDatabas
         {
             modelRecord.addColumnData(columnName, convertFromDatabaseDataValue(columnData));
         }
-        
+
         return modelRecord;
     });
     return resultRecords;
@@ -311,7 +322,7 @@ int64_t DataWarehouseManager::DataPrivate::updateInDatabase(const std::string& d
     if (auto dbWrapper = getDBWrapper(dbId))
     {
         ucf::infrastructure::database::Arguments dbValues;
-        std::transform(values.cbegin(), values.cend(), std::back_inserter(dbValues), 
+        std::transform(values.cbegin(), values.cend(), std::back_inserter(dbValues),
             std::bind_front(&DataWarehouseManager::DataPrivate::convertToDatabaseDataValue, this));
         ucf::infrastructure::database::ListsOfWhereCondition dbConditions = convertToDatabaseWhereConditions(whereConditions);
         return dbWrapper->updateInDatabase(tableName, columnFields, dbValues, dbConditions, location);
@@ -386,9 +397,14 @@ DataWarehouseManager::~DataWarehouseManager()
 
 }
 
-void DataWarehouseManager::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+InitializeDBResult DataWarehouseManager::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
 {
-    mDataPrivate->initializeDB(dbConfig, tables);
+    return mDataPrivate->initializeDB(dbConfig, tables);
+}
+
+bool DataWarehouseManager::isDatabaseReady(const std::string& dbId) const
+{
+    return mDataPrivate->isDatabaseReady(dbId);
 }
 
 bool DataWarehouseManager::insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location)

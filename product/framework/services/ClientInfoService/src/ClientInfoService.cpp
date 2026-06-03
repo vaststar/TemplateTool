@@ -81,6 +81,14 @@ ClientInfoService::~ClientInfoService()
 
 void ClientInfoService::initService()
 {
+    // Wire reverse notification via internal sink: the model invokes our sink
+    // methods after a state change and we forward them through NotificationHelper.
+    // Sink is stored as weak_ptr inside the model so async DB callbacks arriving
+    // after teardown are safe.
+    mDataPrivate->getClientInfoManager().setNotificationSink(
+        std::weak_ptr<IClientInfoNotificationSink>(
+            std::static_pointer_cast<IClientInfoNotificationSink>(shared_from_this())));
+
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
@@ -190,11 +198,9 @@ std::vector<model::LanguageType> ClientInfoService::getSupportedLanguages() cons
 
 void ClientInfoService::setCurrentThemeType(model::ThemeType themeType)
 {
-    if (getCurrentThemeType() != themeType)
-    {
-        mDataPrivate->getClientInfoManager().setCurrentThemeType(themeType);
-        fireNotification(&IClientInfoServiceCallback::onClientThemeChanged, themeType);
-    }
+    // Model is the single source of truth; it dedupes, persists, and fires the
+    // sink (which we translate into onClientThemeChanged below).
+    mDataPrivate->getClientInfoManager().setCurrentThemeType(themeType);
 }
 
 model::ThemeType ClientInfoService::getCurrentThemeType() const
@@ -260,7 +266,37 @@ void ClientInfoService::initializeAppClient()
 void ClientInfoService::OnDatabaseInitialized(const std::string& dbId)
 {
     mDataPrivate->getClientInfoManager().databaseInitialized(dbId);
+}
+
+bool ClientInfoService::isClientInfoReady() const
+{
+    return mDataPrivate->getClientInfoManager().isReady();
+}
+
+// ===== IClientInfoNotificationSink =====
+
+void ClientInfoService::onClientInfoReady()
+{
+    SERVICE_LOG_DEBUG("fire onClientInfoReady");
     fireNotification(&IClientInfoServiceCallback::onClientInfoReady);
+}
+
+void ClientInfoService::onClientInfoLoadFailed(ClientInfoLoadError error)
+{
+    SERVICE_LOG_ERROR("fire onClientInfoLoadFailed, error:" << static_cast<int>(error));
+    fireNotification(&IClientInfoServiceCallback::onClientInfoLoadFailed, error);
+}
+
+void ClientInfoService::onClientLanguageChanged(model::LanguageType languageType)
+{
+    SERVICE_LOG_DEBUG("fire onClientLanguageChanged, language:" << static_cast<int>(languageType));
+    fireNotification(&IClientInfoServiceCallback::onClientLanguageChanged, languageType);
+}
+
+void ClientInfoService::onClientThemeChanged(model::ThemeType themeType)
+{
+    SERVICE_LOG_DEBUG("fire onClientThemeChanged, theme:" << static_cast<int>(themeType));
+    fireNotification(&IClientInfoServiceCallback::onClientThemeChanged, themeType);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

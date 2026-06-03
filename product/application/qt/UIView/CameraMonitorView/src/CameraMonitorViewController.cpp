@@ -76,25 +76,25 @@ void CameraMonitorViewController::init()
     mCameraDirectoryViewModel->registerCallback(mCameraDirectoryEmitter);
     mCameraDirectoryViewModel->initViewModel();
 
-    if (mCameraDirectoryViewModel->isCameraDirectoryReady())
-    {
-        // VM already loaded (we joined late); pull the snapshot synchronously.
-        UIVIEW_LOG_DEBUG("CameraDirectoryViewModel already ready on init, pulling snapshot");
-        mCameraTreeModel->resetFromTree(mCameraDirectoryViewModel->getCameraTree());
-        setLoadState(Ready);
-    }
-    else
-    {
-        // Wait for onCameraDirectoryReady / onCameraDirectoryLoadFailed.
-        UIVIEW_LOG_DEBUG("CameraDirectoryViewModel not ready yet, waiting for load notification");
-        setLoadState(Loading);
-    }
+    // if (mCameraDirectoryViewModel->isCameraDirectoryReady())
+    // {
+    //     // VM already loaded (we joined late); pull the snapshot synchronously.
+    //     UIVIEW_LOG_DEBUG("CameraDirectoryViewModel already ready on init, pulling snapshot");
+    //     mCameraTreeModel->resetFromTree(mCameraDirectoryViewModel->getCameraTree());
+    //     setLoadState(Ready);
+    // }
+    // else
+    // {
+    //     // Wait for onCameraDirectoryReady / onCameraDirectoryLoadFailed.
+    //     UIVIEW_LOG_DEBUG("CameraDirectoryViewModel not ready yet, waiting for load notification");
+    //     setLoadState(Loading);
+    // }
 
-    // Pull initial selection in case a sibling VM consumer already set one before we joined.
-    if (const auto initialId = mCameraDirectoryViewModel->getCurrentCameraId(); !initialId.empty())
-    {
-        onCurrentCameraChanged(QString::fromStdString(initialId));
-    }
+    // // Pull initial selection in case a sibling VM consumer already set one before we joined.
+    // if (const auto initialId = mCameraDirectoryViewModel->getCurrentCameraId(); !initialId.empty())
+    // {
+    //     onCurrentCameraChanged(QString::fromStdString(initialId));
+    // }
 }
 
 void CameraMonitorViewController::selectNode(const QString& nodeId)

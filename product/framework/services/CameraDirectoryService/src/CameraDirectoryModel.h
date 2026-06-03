@@ -107,6 +107,11 @@ private:
 
     // Load-stage state machine; atomic so chunk callbacks and the calling thread see consistent values.
     std::atomic<LoadStage> mLoadStage{LoadStage::Uninit};
+
+    // Set when loadCameraDirectory() is called before bindDatabase(); bindDatabase()
+    // then auto-promotes the load once the DB id has been set. Lets callers be order
+    // independent: registering and calling load before the DB is ready is safe.
+    std::atomic<bool> mLoadPending{false};
 };
 
 } // namespace ucf::service

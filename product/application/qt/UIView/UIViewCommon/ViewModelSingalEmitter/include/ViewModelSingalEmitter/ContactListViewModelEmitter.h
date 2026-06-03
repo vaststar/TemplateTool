@@ -27,6 +27,9 @@ public:
     void onContactDirectoryReady() override
     { emit signals_onContactDirectoryReady(); }
 
+    void onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error) override
+    { emit signals_onContactDirectoryLoadFailed(error); }
+
     void onPersonContactsAdded(const std::vector<NodeData>& persons) override
     { emit signals_onPersonContactsAdded(persons); }
     void onPersonContactsUpdated(const std::vector<NodeData>& persons) override
@@ -48,8 +51,12 @@ public:
     void onContactRelationsRemoved(const std::vector<std::string>& ids) override
     { emit signals_onContactRelationsRemoved(ids); }
 
+    void onCurrentContactChanged(const std::string& contactId) override
+    { emit signals_onCurrentContactChanged(contactId); }
+
 signals:
     void signals_onContactDirectoryReady();
+    void signals_onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error);
 
     void signals_onPersonContactsAdded(const std::vector<NodeData>& persons);
     void signals_onPersonContactsUpdated(const std::vector<NodeData>& persons);
@@ -62,6 +69,8 @@ signals:
     void signals_onContactRelationsAdded(const std::vector<RelationData>& relations);
     void signals_onContactRelationsUpdated(const std::vector<RelationData>& relations);
     void signals_onContactRelationsRemoved(const std::vector<std::string>& ids);
+
+    void signals_onCurrentContactChanged(const std::string& contactId);
 };
 
 } // namespace UIVMSignalEmitter

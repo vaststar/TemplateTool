@@ -56,6 +56,8 @@ protected:
 
 private slots:
     void onContactDirectoryReady();
+    void onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error);
+    void onCurrentContactChanged(const std::string& contactId);
     void onPersonContactsAdded   (const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
     void onPersonContactsUpdated (const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
     void onPersonContactsRemoved (const std::vector<std::string>& v);

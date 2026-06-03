@@ -1,20 +1,21 @@
 #include "ClientInfoManager.h"
 
+#include <filesystem>
+#include <utility>
+
 #include <appVersion.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 
+#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
 #include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
 
-
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 #include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
 #include <ucf/Utilities/SystemUtils/SystemUtils.h>
-#include "ClientInfoServiceLogger.h"
+#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
-#include <filesystem>
+#include "ClientInfoModel.h"
+#include "ClientInfoServiceLogger.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -32,16 +33,9 @@ static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
 static constexpr const char* APP_CRASH_FOLDER_NAME = "app_crash";
 static constexpr const char* APP_HANG_FOLDER_NAME = "app_hang";
 
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start ClientInfoManager Logic//////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
 ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
-    , mLanguageType(model::LanguageType::CHINESE_SIMPLIFIED)
-    , mThemeType(model::ThemeType::SystemDefault)
-    , mIsLanguageReadFromDB (false)
+    , mClientInfoModel(std::make_unique<ClientInfoModel>(coreFramework))
 {
     SERVICE_LOG_DEBUG("Create ClientInfoManager, address:" << this);
     if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(getDataStoragePath()))
@@ -54,10 +48,9 @@ ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFram
     }
 }
 
-ClientInfoManager::~ClientInfoManager()
-{
+ClientInfoManager::~ClientInfoManager() = default;
 
-}
+// ===== Static metadata =====
 
 model::Version ClientInfoManager::getApplicationVersion() const
 {
@@ -74,21 +67,16 @@ model::ProductInfo ClientInfoManager::getProductInfo() const
     };
 }
 
+// ===== Settings (delegated) =====
+
 model::LanguageType ClientInfoManager::getApplicationLanguage() const
 {
-    return mLanguageType.load();
+    return mClientInfoModel->getLanguage();
 }
 
 void ClientInfoManager::setApplicationLanguage(model::LanguageType languageType)
 {
-    mLanguageType.store(languageType);
-    if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
-    {
-        ucf::service::model::ListOfDBValues dbVals;
-        dbVals.emplace_back(ucf::service::model::DBDataValues{std::string("Language"), static_cast<int>(languageType)});
-        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName,
-            {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField}, dbVals);
-    }
+    mClientInfoModel->setLanguage(languageType);
 }
 
 std::vector<model::LanguageType> ClientInfoManager::getSupportedLanguages() const
@@ -99,25 +87,20 @@ std::vector<model::LanguageType> ClientInfoManager::getSupportedLanguages() cons
 
 void ClientInfoManager::setCurrentThemeType(model::ThemeType themeType)
 {
-    mThemeType.store(themeType);
-    if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
-    {
-        ucf::service::model::ListOfDBValues dbVals;
-        dbVals.emplace_back(ucf::service::model::DBDataValues{std::string("Theme"), static_cast<int>(themeType)});
-        dbService->insertIntoDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName,
-            {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField}, dbVals);
-    }
+    mClientInfoModel->setTheme(themeType);
 }
 
 model::ThemeType ClientInfoManager::getCurrentThemeType() const
 {
-    return mThemeType.load();
+    return mClientInfoModel->getTheme();
 }
 
 std::vector<model::ThemeType> ClientInfoManager::getSupportedThemeTypes() const
 {
     return {model::ThemeType::SystemDefault, model::ThemeType::Dark, model::ThemeType::Light};
 }
+
+// ===== Shared DB lifecycle =====
 
 model::SqliteDBConfig ClientInfoManager::getSharedDBConfig() const
 {
@@ -126,68 +109,65 @@ model::SqliteDBConfig ClientInfoManager::getSharedDBConfig() const
 
 void ClientInfoManager::initializeAppClient()
 {
-    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    auto coreFramework = mCoreFrameworkWPtr.lock();
+    if (!coreFramework)
     {
-        if (auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
-        {
-            auto dbConfig = getSharedDBConfig();
-            SERVICE_LOG_DEBUG("initializeAppClient with dbId:" << dbConfig.getDBId() << ", dbFilePath:" << dbConfig.getDBFilePath());
-            std::vector<ucf::service::model::DBTableModel> tables{
-                db::schema::UserContactTable{},
-                db::schema::GroupContactTable{},
-                db::schema::ContactRelationTable{},
-                db::schema::SettingsTable{},
-                db::schema::ScreenshotSettingsTable{},
-                db::schema::RecordingSettingsTable{},
-                db::schema::CameraGroupTable{},
-                db::schema::CameraTable{},
-                db::schema::CameraDirectoryRelationTable{}
-            };
-            dataWarehouseService->initializeDB(
-                std::make_shared<ucf::service::model::SqliteDBConfig>(dbConfig.getDBId(), dbConfig.getDBFilePath()),
-                tables
-            );
-        }
+        return;
     }
+    auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
+    if (!dataWarehouseService)
+    {
+        SERVICE_LOG_ERROR("initializeAppClient: DataWarehouseService unavailable");
+        return;
+    }
+
+    auto dbConfig = getSharedDBConfig();
+    SERVICE_LOG_DEBUG("initializeAppClient with dbId:" << dbConfig.getDBId() << ", dbFilePath:" << dbConfig.getDBFilePath());
+    std::vector<ucf::service::model::DBTableModel> tables{
+        db::schema::UserContactTable{},
+        db::schema::GroupContactTable{},
+        db::schema::ContactRelationTable{},
+        db::schema::SettingsTable{},
+        db::schema::ScreenshotSettingsTable{},
+        db::schema::RecordingSettingsTable{},
+        db::schema::CameraGroupTable{},
+        db::schema::CameraTable{},
+        db::schema::CameraDirectoryRelationTable{}
+    };
+    dataWarehouseService->initializeDB(
+        std::make_shared<ucf::service::model::SqliteDBConfig>(dbConfig.getDBId(), dbConfig.getDBFilePath()),
+        tables);
 }
 
 void ClientInfoManager::databaseInitialized(const std::string& dbId)
 {
-    if (auto dbService = mCoreFrameworkWPtr.lock()->getService<ucf::service::IDataWarehouseService>().lock())
+    if (const auto myDbId = getSharedDBConfig().getDBId(); dbId != myDbId)
     {
-        dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
-            {{db::schema::SettingsTable::KeyField, "Language", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
-                if (results.empty())
-                {
-                    SERVICE_LOG_DEBUG("no language setting found in database, use default");
-                    return;
-                }
-
-                for (const auto& res: results)
-                {
-                    auto  val = res.getColumnData(db::schema::SettingsTable::ValField);
-                    mLanguageType.store(static_cast<model::LanguageType>(val.getIntValue()));
-                    SERVICE_LOG_DEBUG("got language from database:" << val.getIntValue());
-                }
-        });
-
-        dbService->fetchFromDatabase(getSharedDBConfig().getDBId(), db::schema::SettingsTable::TableName, {db::schema::SettingsTable::KeyField, db::schema::SettingsTable::ValField},
-            {{db::schema::SettingsTable::KeyField, "Theme", ucf::service::model::DBOperatorType::Equal}},[this](const ucf::service::model::DatabaseDataRecords& results){
-                if (results.empty())
-                {
-                    SERVICE_LOG_DEBUG("no theme setting found in database, use default");
-                    return;
-                }
-
-                for (const auto& res: results)
-                {
-                    auto  val = res.getColumnData(db::schema::SettingsTable::ValField);
-                    mThemeType.store(static_cast<model::ThemeType>(val.getIntValue()));
-                    SERVICE_LOG_DEBUG("got theme from database:" << val.getIntValue());
-                }
-        });
+        SERVICE_LOG_DEBUG("databaseInitialized ignored, other db, dbId:" << dbId);
+        return;
     }
+    mClientInfoModel->bindDatabase(dbId);
+
+    SERVICE_LOG_DEBUG("Loading client settings after database initialized, dbId:" << dbId);
+    loadSettings();
 }
+
+void ClientInfoManager::loadSettings()
+{
+    mClientInfoModel->loadSettings();
+}
+
+bool ClientInfoManager::isReady() const
+{
+    return mClientInfoModel->isReady();
+}
+
+void ClientInfoManager::setNotificationSink(std::weak_ptr<IClientInfoNotificationSink> sink)
+{
+    mClientInfoModel->setNotificationSink(std::move(sink));
+}
+
+// ===== Path helpers =====
 
 std::string ClientInfoManager::getDataStoragePath() const
 {
@@ -204,7 +184,6 @@ std::string ClientInfoManager::getDataStoragePath() const
         APP_DATA_FOLDER_NAME
     ).string();
 #endif
-    return {};
 }
 
 std::string ClientInfoManager::getLogStoragePath() const
@@ -222,7 +201,6 @@ std::string ClientInfoManager::getLogStoragePath() const
         APP_LOG_FOLDER_NAME
     ).string();
 #endif
-    return {};
 }
 
 std::string ClientInfoManager::getCrashStoragePath() const
@@ -240,7 +218,6 @@ std::string ClientInfoManager::getCrashStoragePath() const
         APP_CRASH_FOLDER_NAME
     ).string();
 #endif
-    return {};
 }
 
 std::string ClientInfoManager::getHangStoragePath() const
@@ -258,7 +235,6 @@ std::string ClientInfoManager::getHangStoragePath() const
         APP_HANG_FOLDER_NAME
     ).string();
 #endif
-    return {};
 }
 
 std::string ClientInfoManager::getCacheStoragePath() const
@@ -274,7 +250,6 @@ std::string ClientInfoManager::getCacheStoragePath() const
         APP_INTERNAL_NAME
     ).string();
 #endif
-    return {};
 }
 
 std::string ClientInfoManager::getTempStoragePath() const
@@ -328,9 +303,5 @@ std::string ClientInfoManager::getInstallDirectory() const
     return execPath.parent_path().parent_path().string();
 #endif
 }
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-////////////////////Start ClientInfoManager Logic//////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+
 }

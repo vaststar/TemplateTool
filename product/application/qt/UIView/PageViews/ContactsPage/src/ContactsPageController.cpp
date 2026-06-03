@@ -38,7 +38,9 @@ void ContactsPageController::init()
 
     using Emitter = UIVMSignalEmitter::ContactListViewModelEmitter;
     auto* e = mContactListEmitter.get();
-    QObject::connect(e, &Emitter::signals_onContactDirectoryReady,    this, &ContactsPageController::onContactDirectoryReady);
+    QObject::connect(e, &Emitter::signals_onContactDirectoryReady,      this, &ContactsPageController::onContactDirectoryReady);
+    QObject::connect(e, &Emitter::signals_onContactDirectoryLoadFailed, this, &ContactsPageController::onContactDirectoryLoadFailed);
+    QObject::connect(e, &Emitter::signals_onCurrentContactChanged,      this, &ContactsPageController::onCurrentContactChanged);
     QObject::connect(e, &Emitter::signals_onPersonContactsAdded,      this, &ContactsPageController::onPersonContactsAdded);
     QObject::connect(e, &Emitter::signals_onPersonContactsUpdated,    this, &ContactsPageController::onPersonContactsUpdated);
     QObject::connect(e, &Emitter::signals_onPersonContactsRemoved,    this, &ContactsPageController::onPersonContactsRemoved);
@@ -49,17 +51,19 @@ void ContactsPageController::init()
     QObject::connect(e, &Emitter::signals_onContactRelationsUpdated,  this, &ContactsPageController::onContactRelationsUpdated);
     QObject::connect(e, &Emitter::signals_onContactRelationsRemoved,  this, &ContactsPageController::onContactRelationsRemoved);
 
-    mContactListViewModel->registerCallback(mContactListEmitter);
-    mContactListViewModel->initViewModel();
-
     mOrgTreeModel = new ContactListItemModel(this);
     emit orgTreeModelChanged();
 
-    if (auto tree = mContactListViewModel->getContactList())
-    {
-        mOrgTreeModel->resetFromTree(tree);
-        setLoadState(Ready);
-    }
+    // VM init contract: registerCallback may synchronously fire onContactDirectoryReady
+    // (when the directory is already loaded) or onContactDirectoryLoadFailed.
+    // Otherwise initViewModel() kicks off the async load, and the result arrives
+    // later via the emitter -> Qt signal. No need for a local sync probe here.
+    mContactListViewModel->registerCallback(mContactListEmitter);
+    mContactListViewModel->initViewModel();
+
+    // Seed selection cache from VM (typically empty on fresh init, but late-binding
+    // scenarios may already have a selection).
+    m_currentContactId = QString::fromStdString(mContactListViewModel->getCurrentContactId());
 }
 
 void ContactsPageController::buttonClicked()
@@ -84,9 +88,13 @@ void ContactsPageController::setLoadState(LoadState s)
 
 void ContactsPageController::selectContact(const QString& contactId)
 {
-    if (m_currentContactId == contactId) return;
-    m_currentContactId = contactId;
-    emit currentContactIdChanged();
+    // Forward to VM; the VM validates, dedupes, and (on a real change) fires
+    // onCurrentContactChanged back through the emitter, where our slot updates the
+    // cached QString and emits the property NOTIFY signal.
+    if (mContactListViewModel)
+    {
+        mContactListViewModel->selectContact(contactId.toStdString());
+    }
 }
 
 QVariantMap ContactsPageController::getContactInfo(const QString& contactId) const
@@ -109,11 +117,27 @@ QVariantMap ContactsPageController::getContactInfo(const QString& contactId) con
 
 void ContactsPageController::onContactDirectoryReady()
 {
+    UIVIEW_LOG_DEBUG("onContactDirectoryReady received");
     if (mOrgTreeModel && mContactListViewModel)
     {
         mOrgTreeModel->resetFromTree(mContactListViewModel->getContactList());
     }
     setLoadState(Ready);
+}
+
+void ContactsPageController::onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error)
+{
+    UIVIEW_LOG_ERROR("onContactDirectoryLoadFailed received, error:" << static_cast<int>(error));
+    setLoadState(Error);
+}
+
+void ContactsPageController::onCurrentContactChanged(const std::string& contactId)
+{
+    auto qId = QString::fromStdString(contactId);
+    if (m_currentContactId == qId) return;
+    m_currentContactId = qId;
+    UIVIEW_LOG_DEBUG("onCurrentContactChanged: " << (contactId.empty() ? std::string("<cleared>") : contactId));
+    emit currentContactIdChanged();
 }
 
 void ContactsPageController::onPersonContactsAdded(const std::vector<commonHead::viewModels::model::ContactNodeData>& v)

@@ -8,12 +8,14 @@
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
+#include "ClientInfoNotificationSink.h"
 
 namespace ucf::service{
 class SERVICE_EXPORT ClientInfoService final: public virtual IClientInfoService,
                                public virtual ucf::utilities::NotificationHelper<IClientInfoServiceCallback>,
                                public ucf::framework::CoreFrameworkCallbackDefault,
                                public ucf::service::IDataWarehouseServiceCallback,
+                               public IClientInfoNotificationSink,
                                public std::enable_shared_from_this<ClientInfoService>
 {
 public:
@@ -61,6 +63,13 @@ public:
     virtual std::string getInstallDirectory() const override;
 
     virtual void initializeAppClient() override;
+    virtual bool isClientInfoReady() const override;
+
+    // IClientInfoNotificationSink — translate model events to outward callbacks.
+    void onClientInfoReady() override;
+    void onClientInfoLoadFailed(ClientInfoLoadError error) override;
+    void onClientLanguageChanged(model::LanguageType languageType) override;
+    void onClientThemeChanged(model::ThemeType themeType) override;
 protected:
     //IService
     virtual void initService() override;

@@ -3,6 +3,7 @@
 #include <memory>
 #include <source_location>
 #include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
+#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -20,7 +21,8 @@ public:
     DataWarehouseManager& operator=(const DataWarehouseManager&) = delete;
     DataWarehouseManager& operator=(DataWarehouseManager&&) = delete;
 public:
-    void initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    bool isDatabaseReady(const std::string& dbId) const;
     bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
     void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
     int64_t updateInDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::DBDataValues& values, const model::ListsOfWhereCondition& whereConditions, const std::source_location location);

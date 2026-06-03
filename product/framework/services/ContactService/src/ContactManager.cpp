@@ -1,5 +1,9 @@
 #include "ContactManager.h"
 
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
+
 #include "Adapters/ContactAdapter.h"
 #include "ContactModel.h"
 #include "ContactServiceLogger.h"
@@ -102,7 +106,29 @@ std::vector<std::string> ContactManager::removeContactRelations(const std::vecto
 void ContactManager::bindDatabase(const std::string& databaseId)
 {
     SERVICE_LOG_DEBUG("bindDatabase, databaseId:" << databaseId);
+    // Filter: DataWarehouseService may host other DBs; only act on the shared DB
+    // owned by ClientInfoService (single source of truth for the shared db id).
+    auto coreFramework = mCoreFrameworkWPtr.lock();
+    if (!coreFramework)
+    {
+        SERVICE_LOG_ERROR("bindDatabase ignored: CoreFramework unavailable");
+        return;
+    }
+    auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
+    if (!clientInfoService)
+    {
+        SERVICE_LOG_ERROR("bindDatabase ignored: ClientInfoService unavailable");
+        return;
+    }
+    if (const auto sharedDbId = clientInfoService->getSharedDBConfig().getDBId(); databaseId != sharedDbId)
+    {
+        SERVICE_LOG_DEBUG("bindDatabase ignored, not shared db, incoming:" << databaseId
+                          << ", shared:" << sharedDbId);
+        return;
+    }
     mContactModel->bindDatabase(databaseId);
+    SERVICE_LOG_DEBUG("Loading contact directory after database bind");
+    loadContactDirectory();
 }
 
 void ContactManager::loadContactDirectory()

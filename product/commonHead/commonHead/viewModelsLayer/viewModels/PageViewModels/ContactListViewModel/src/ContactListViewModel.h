@@ -33,12 +33,16 @@ public:
 public:
     virtual std::string getViewModelName() const override;
     virtual model::ContactTreePtr getContactList() const override;
+    bool isContactDirectoryReady() const override;
+    std::string getCurrentContactId() const override;
+    void selectContact(const std::string& contactId) override;
 
 protected:
     virtual void init() override;
 
     // IContactServiceCallback overrides
     void onContactDirectoryReady() override;
+    void onContactDirectoryLoadFailed(ucf::service::ContactDirectoryLoadError error) override;
     void onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons) override;
     void onPersonContactsUpdated(const ucf::service::model::PersonContactArray& persons) override;
     void onPersonContactsRemoved(const std::vector<std::string>& contactIds) override;
@@ -52,9 +56,15 @@ protected:
 private:
     std::shared_ptr<ucf::service::IContactService> lockService() const;
     void rebuildTreeFromService();
+    // Returns true when the tree was just rebuilt (because it was null); callers should
+    // skip the incremental apply because the rebuilt snapshot already contains the delta.
+    bool ensureTreeBuilt();
 
 private:
     mutable std::mutex mTreeMutex;
     std::shared_ptr<model::ContactTree> mTree;
+
+    mutable std::mutex mSelectionMutex;
+    std::string mCurrentContactId;
 };
 }

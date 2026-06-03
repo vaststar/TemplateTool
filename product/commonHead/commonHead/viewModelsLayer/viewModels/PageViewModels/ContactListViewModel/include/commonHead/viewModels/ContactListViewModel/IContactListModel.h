@@ -25,6 +25,13 @@ struct COMMONHEAD_EXPORT ContactRelationData
     std::string childId;
 };
 
+enum class COMMONHEAD_EXPORT ContactDirectoryLoadError
+{
+    Unknown,
+    DatabaseNotBound,
+    DatabaseReadFailed,
+};
+
 class COMMONHEAD_EXPORT IContactTreeNode
 {
 public:

@@ -60,6 +60,7 @@ public:
     void setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink);
 
 private:
+    const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     const std::unique_ptr<CameraDirectoryModel> mCameraDirectoryModel;
 
     // Manager does not emit events today, but the sink reference is reserved for

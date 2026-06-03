@@ -38,8 +38,18 @@ void AppUIViewModel::initApplication()
         {
             if (auto clientInfoService = serviceLocator->getClientInfoService().lock())
             {
+                // Register first so we do not miss the Ready event between the
+                // isReady probe and the initializeAppClient call.
                 clientInfoService->registerCallback(shared_from_this());
-                clientInfoService->initializeAppClient();
+                if (clientInfoService->isClientInfoReady())
+                {
+                    COMMONHEAD_LOG_DEBUG("AppUIViewModel::initApplication: already ready, dispatching synchronously");
+                    onClientInfoReady();
+                }
+                else
+                {
+                    clientInfoService->initializeAppClient();
+                }
             }
         }
     }

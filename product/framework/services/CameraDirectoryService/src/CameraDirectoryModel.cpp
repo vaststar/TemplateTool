@@ -427,9 +427,9 @@ void CameraDirectoryModel::bindDatabase(const std::string& databaseId)
         return;
     }
 
-    // Already advanced past Uninit: allow idempotent rebinding with the same id, reject
-    // rebinding to a different database.
-    if (mLoadStage.load() != LoadStage::Uninit)
+    // Atomic Uninit -> DbBound. On failure (already bound) verify same dbId and
+    // either noop or reject; rebinding to a different DB is unsupported.
+    if (auto expected = LoadStage::Uninit; !mLoadStage.compare_exchange_strong(expected, LoadStage::DbBound))
     {
         const auto& current = mCameraDirectoryDBAccess->getDatabaseId();
         if (current != databaseId)
@@ -438,12 +438,23 @@ void CameraDirectoryModel::bindDatabase(const std::string& databaseId)
                               << ", current:" << current
                               << ", incoming:" << databaseId);
         }
+        else
+        {
+            SERVICE_LOG_DEBUG("bindDatabase noop, same databaseId:" << databaseId);
+        }
         return;
     }
 
     mCameraDirectoryDBAccess->setDatabaseId(databaseId);
-    mLoadStage.store(LoadStage::DbBound);
     SERVICE_LOG_DEBUG("Bind database, databaseId:" << databaseId);
+
+    // Auto-promote a load that was requested before the DB was bound, so callers
+    // can invoke loadCameraDirectory() in any order relative to bindDatabase().
+    if (mLoadPending.exchange(false))
+    {
+        SERVICE_LOG_DEBUG("bindDatabase auto-promoting pending loadCameraDirectory");
+        loadCameraDirectory();
+    }
 }
 
 void CameraDirectoryModel::loadCameraDirectory()
@@ -452,7 +463,10 @@ void CameraDirectoryModel::loadCameraDirectory()
     auto stage = mLoadStage.load();
     if (stage == LoadStage::Uninit)
     {
-        SERVICE_LOG_ERROR("loadCameraDirectory ignored: database not bound yet");
+        // DB not bound yet: park the request. bindDatabase() will auto-promote it
+        // once the DB id has been set, so callers do not need to retry.
+        mLoadPending.store(true);
+        SERVICE_LOG_DEBUG("loadCameraDirectory deferred: database not bound yet, pending=true");
         return;
     }
     if (stage == LoadStage::Loading || stage == LoadStage::Ready)
@@ -513,7 +527,12 @@ bool CameraDirectoryModel::isCameraDirectoryReady() const
 
 void CameraDirectoryModel::finishLoadSuccess()
 {
-    mLoadStage.store(LoadStage::Ready);
+    // CAS so a racing finishLoadFailure cannot also fire.
+    if (auto expected = LoadStage::Loading; !mLoadStage.compare_exchange_strong(expected, LoadStage::Ready))
+    {
+        SERVICE_LOG_DEBUG("finishLoadSuccess skipped, stage already:" << static_cast<int>(expected));
+        return;
+    }
     SERVICE_LOG_DEBUG("loadCameraDirectory finished, success:true");
     if (auto sink = mNotificationSink.lock())
     {
@@ -523,8 +542,12 @@ void CameraDirectoryModel::finishLoadSuccess()
 
 void CameraDirectoryModel::finishLoadFailure(CameraDirectoryLoadError error)
 {
-    mLoadStage.store(LoadStage::Failed);
-    SERVICE_LOG_DEBUG("loadCameraDirectory finished, success:false, error:" << static_cast<int>(error));
+    if (auto expected = LoadStage::Loading; !mLoadStage.compare_exchange_strong(expected, LoadStage::Failed))
+    {
+        SERVICE_LOG_DEBUG("finishLoadFailure skipped, stage already:" << static_cast<int>(expected));
+        return;
+    }
+    SERVICE_LOG_ERROR("loadCameraDirectory finished, success:false, error:" << static_cast<int>(error));
     if (auto sink = mNotificationSink.lock())
     {
         sink->onDirectoryLoadFailed(error);

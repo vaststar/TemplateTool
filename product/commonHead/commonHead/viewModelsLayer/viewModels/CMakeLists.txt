@@ -51,6 +51,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CompressionUtils
     ThreadPoolUtils
     FilePathUtils
+    magic_enum
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

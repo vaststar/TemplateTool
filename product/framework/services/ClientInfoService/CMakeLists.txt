@@ -9,10 +9,15 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/Services/ClientInfoService/IClientInfoServiceCallback.h
     include/ucf/Services/ClientInfoService/IClientInfoService.h
-    include/ucf/Services/ClientInfoService/ClientInfoModel.h
+    include/ucf/Services/ClientInfoService/ClientInfoTypes.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ClientInfoServiceLogger.h
+    src/ClientInfoNotificationSink.h
+    src/ClientInfoDBAccess.h
+    src/ClientInfoDBAccess.cpp
+    src/ClientInfoModel.h
+    src/ClientInfoModel.cpp
     src/ClientInfoService.h
     src/ClientInfoService.cpp
     src/ClientInfoManager.h

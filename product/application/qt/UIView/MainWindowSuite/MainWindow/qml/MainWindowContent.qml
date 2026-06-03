@@ -37,9 +37,24 @@ Item {
         Repeater {
             model: controller.initialized ? controller.pageRegistry.entries : []
             Loader {
-                required property string modelData
+                id: pageLoader
+                required property var modelData   // { source: string, preload: bool }
                 required property int index
-                source: modelData
+
+                // preload=true: load eagerly. Otherwise wait until the user first navigates here;
+                // once shown, stay loaded so subsequent visits do not rebuild the controller.
+                property bool everShown: modelData.preload || index === contentStack.currentIndex
+                Connections {
+                    target: contentStack
+                    function onCurrentIndexChanged() {
+                        if (index === contentStack.currentIndex)
+                            pageLoader.everShown = true
+                    }
+                }
+
+                active: everShown
+                source: active ? modelData.source : ""
+
                 onLoaded: {
                     if (item && item.controller)
                         mainWindowContent.controller.setupController(item.controller)

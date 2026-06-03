@@ -93,6 +93,10 @@ private:
 
     std::weak_ptr<IContactNotificationSink> mNotificationSink;
     std::atomic<LoadStage> mLoadStage{LoadStage::Uninit};
+    // Set when loadContactDirectory() is called before bindDatabase(); bindDatabase()
+    // then auto-promotes the load once the DB id has been set. Lets callers be order
+    // independent: registering and calling load before the DB is ready is safe.
+    std::atomic<bool>      mLoadPending{false};
 };
 
 } // namespace ucf::service

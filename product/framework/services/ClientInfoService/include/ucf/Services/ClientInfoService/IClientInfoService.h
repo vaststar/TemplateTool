@@ -6,7 +6,7 @@
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 #include <ucf/Services/ServiceDeclaration/IService.h>
-#include <ucf/Services/ClientInfoService/ClientInfoModel.h>
+#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
 #include <ucf/Services/ClientInfoService/IClientInfoServiceCallback.h>
 
 namespace ucf::framework{
@@ -54,6 +54,11 @@ public:
     [[nodiscard]] virtual std::string getInstallDirectory() const = 0;
 
     virtual void initializeAppClient() = 0;
+
+    // True once language/theme have been populated from the DB. Late subscribers
+    // should check this on registration; if true, read settings directly because
+    // onClientInfoReady will not be re-fired.
+    [[nodiscard]] virtual bool isClientInfoReady() const = 0;
 
     static std::shared_ptr<IClientInfoService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

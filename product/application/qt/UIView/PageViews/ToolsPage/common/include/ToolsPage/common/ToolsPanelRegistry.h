@@ -1,26 +1,31 @@
 #pragma once
 
 #include <QObject>
-#include <QStringList>
+#include <QVariantList>
 #include <QVector>
-#include <QPair>
 #include <QtQml>
 
 class ToolsPanelRegistry : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList entries READ entries NOTIFY entriesChanged)
+    // Each entry is a QVariantMap with keys: "source" (QString), "preload" (bool).
+    Q_PROPERTY(QVariantList entries READ entries NOTIFY entriesChanged)
     QML_ELEMENT
 public:
     explicit ToolsPanelRegistry(QObject* parent = nullptr);
 
-    QStringList entries() const;
+    QVariantList entries() const;
     Q_INVOKABLE int indexOfPanel(int panelType) const;
 
 signals:
     void entriesChanged();
 
 private:
-    void registerPanel(int panelType, const QString& qmlSource);
-    QVector<QPair<int, QString>> m_panels;
+    struct PanelEntry {
+        int     panelType;
+        QString source;
+        bool    preload;
+    };
+    void registerPanel(int panelType, const QString& qmlSource, bool preload = false);
+    QVector<PanelEntry> m_panels;
 };

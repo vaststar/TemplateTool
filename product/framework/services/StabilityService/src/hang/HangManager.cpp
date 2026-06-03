@@ -82,11 +82,11 @@ void HangManager::setHangDirectory(const std::filesystem::path& dir)
     // Ensure directory exists
     if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(mHangDirectory))
     {
-        CRASHHANDLER_LOG_ERROR("Failed to create hang directory: " << mHangDirectory.string());
+        CRASHHANDLER_LOG_ERROR("Failed to create hang directory: " << mHangDirectory);
     }
     else
     {
-        CRASHHANDLER_LOG_INFO("Hang directory set to: " << mHangDirectory.string());
+        CRASHHANDLER_LOG_INFO("Hang directory set to: " << mHangDirectory);
     }
 }
 

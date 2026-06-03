@@ -1,6 +1,6 @@
 #include "ClientInfoViewModel.h"
 
-#include <ucf/Services/ClientInfoService/ClientInfoModel.h>
+#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>

@@ -1,12 +1,17 @@
 #include "MainWindow/MainWindowContentPageRegistry.h"
 
+#include <QVariantMap>
+
 #include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
 MainWindowContentPageRegistry::MainWindowContentPageRegistry(QObject* parent)
     : QObject(parent)
 {
     using PageId = commonHead::viewModels::model::PageId;
-    registerPage(static_cast<int>(PageId::Home),        QStringLiteral("UIView/PageViews/HomePage/qml/HomePage.qml"));
+    // preload=true: page is constructed at startup (controller / VM created eagerly).
+    // preload=false (default): page is constructed the first time the user navigates to it,
+    // then kept alive for subsequent visits.
+    registerPage(static_cast<int>(PageId::Home),        QStringLiteral("UIView/PageViews/HomePage/qml/HomePage.qml"),                   /*preload=*/true);
     registerPage(static_cast<int>(PageId::Contacts),    QStringLiteral("UIView/PageViews/ContactsPage/qml/ContactsPage.qml"));
     registerPage(static_cast<int>(PageId::Tasks),       QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
     registerPage(static_cast<int>(PageId::Credentials), QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
@@ -15,24 +20,28 @@ MainWindowContentPageRegistry::MainWindowContentPageRegistry(QObject* parent)
     registerPage(static_cast<int>(PageId::Help),        QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
 }
 
-void MainWindowContentPageRegistry::registerPage(int pageId, const QString& qmlSource)
+void MainWindowContentPageRegistry::registerPage(int pageId, const QString& qmlSource, bool preload)
 {
-    m_pages.append({pageId, QStringLiteral("qrc:/qt/qml/") + qmlSource});
+    m_pages.append({pageId, QStringLiteral("qrc:/qt/qml/") + qmlSource, preload});
 }
 
-QStringList MainWindowContentPageRegistry::entries() const
+QVariantList MainWindowContentPageRegistry::entries() const
 {
-    QStringList list;
+    QVariantList list;
     list.reserve(m_pages.size());
-    for (const auto& p : m_pages)
-        list.append(p.second);
+    for (const auto& p : m_pages) {
+        QVariantMap m;
+        m.insert(QStringLiteral("source"),  p.source);
+        m.insert(QStringLiteral("preload"), p.preload);
+        list.append(m);
+    }
     return list;
 }
 
 int MainWindowContentPageRegistry::indexOfPage(int pageId) const
 {
     for (int i = 0; i < m_pages.size(); ++i) {
-        if (m_pages[i].first == pageId)
+        if (m_pages[i].pageId == pageId)
             return i;
     }
     return 0;

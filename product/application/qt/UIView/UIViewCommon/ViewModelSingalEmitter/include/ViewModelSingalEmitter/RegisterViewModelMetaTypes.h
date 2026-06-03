@@ -29,6 +29,7 @@ Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::ContactNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactRelationData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::ContactRelationData>)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::ContactDirectoryLoadError)
 Q_DECLARE_METATYPE(std::vector<std::string>)
 
 namespace UIVMSignalEmitter {
@@ -54,6 +55,7 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::ContactRelationData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactRelationData>>();
+    qRegisterMetaType<commonHead::viewModels::model::ContactDirectoryLoadError>();
     qRegisterMetaType<std::vector<std::string>>();
 }
 

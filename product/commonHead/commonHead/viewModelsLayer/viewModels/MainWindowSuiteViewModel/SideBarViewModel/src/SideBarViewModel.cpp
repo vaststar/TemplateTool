@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <AssetToken.h>
 #include <ResourceString.h>
+#include <magic_enum/magic_enum.hpp>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
@@ -258,19 +259,19 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
 
         if (it == m_navItems.end())
         {
-            COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " not found");
+            COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " not found");
             return false;
         }
 
         if (!it->isEnabled())
         {
-            COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is disabled");
+            COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " is disabled");
             return false;
         }
 
         if (!it->isVisible())
         {
-            COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is hidden");
+            COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " is hidden");
             return false;
         }
 
@@ -288,8 +289,8 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onCurrentPageChanged, event);
 
-    COMMONHEAD_LOG_DEBUG("Navigate: " << static_cast<int>(event.fromPageId)
-        << " -> " << static_cast<int>(event.toPageId)
+    COMMONHEAD_LOG_DEBUG("Navigate: " << magic_enum::enum_name(event.fromPageId)
+        << " -> " << magic_enum::enum_name(event.toPageId)
         << " (userAction=" << isUserAction << ")");
 
     return true;
@@ -321,14 +322,14 @@ void SideBarViewModel::updateBadge(model::PageId pageId, int32_t badge)
 
         if (!found)
         {
-            COMMONHEAD_LOG_WARN("updateBadge: pageId " << static_cast<int>(pageId) << " not found");
+            COMMONHEAD_LOG_WARN("updateBadge: pageId " << magic_enum::enum_name(pageId) << " not found");
             return;
         }
     }
 
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onNavItemUpdated, updatedItem);
-    COMMONHEAD_LOG_DEBUG("Badge updated: pageId=" << static_cast<int>(pageId) << ", badge=" << badge);
+    COMMONHEAD_LOG_DEBUG("Badge updated: pageId=" << magic_enum::enum_name(pageId) << ", badge=" << badge);
 }
 
 void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState state)
@@ -357,15 +358,15 @@ void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState
 
         if (!found)
         {
-            COMMONHEAD_LOG_WARN("setNavItemState: pageId " << static_cast<int>(pageId) << " not found");
+            COMMONHEAD_LOG_WARN("setNavItemState: pageId " << magic_enum::enum_name(pageId) << " not found");
             return;
         }
     }
 
     // Fire notification outside of lock to avoid deadlock
     fireNotification(&ISideBarViewModelCallback::onNavItemUpdated, updatedItem);
-    COMMONHEAD_LOG_DEBUG("NavItem state updated: pageId=" << static_cast<int>(pageId)
-        << ", state=" << static_cast<int>(state));
+    COMMONHEAD_LOG_DEBUG("NavItem state updated: pageId=" << magic_enum::enum_name(pageId)
+        << ", state=" << magic_enum::enum_name(state));
 }
 
 void SideBarViewModel::reloadNavConfig()
@@ -399,11 +400,11 @@ void SideBarViewModel::reloadNavConfig()
 
 void SideBarViewModel::handleSubMenuAction(model::MenuActionId actionId)
 {
-    COMMONHEAD_LOG_DEBUG("handleSubMenuAction: " << static_cast<int>(actionId));
+    COMMONHEAD_LOG_DEBUG("handleSubMenuAction: " << magic_enum::enum_name(actionId));
 
     if (actionId == model::MenuActionId::Unknown)
     {
-        COMMONHEAD_LOG_WARN("Unknown MenuActionId: " << static_cast<int>(actionId));
+        COMMONHEAD_LOG_WARN("Unknown MenuActionId: " << magic_enum::enum_name(actionId));
         return;
     }
 

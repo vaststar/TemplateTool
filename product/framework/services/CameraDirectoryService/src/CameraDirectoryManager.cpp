@@ -1,12 +1,17 @@
 #include "CameraDirectoryManager.h"
 
+#include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
+
 #include "CameraDirectoryModel.h"
 #include "CameraDirectoryServiceLogger.h"
 
 namespace ucf::service {
 
 CameraDirectoryManager::CameraDirectoryManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
-    : mCameraDirectoryModel(std::make_unique<CameraDirectoryModel>(coreFramework))
+    : mCoreFrameworkWPtr(coreFramework)
+    , mCameraDirectoryModel(std::make_unique<CameraDirectoryModel>(coreFramework))
 {
     SERVICE_LOG_DEBUG("Create CameraDirectoryManager, address:" << this);
 }
@@ -98,6 +103,28 @@ std::vector<std::string> CameraDirectoryManager::removeCameraRelations(const std
 
 void CameraDirectoryManager::bindDatabase(const std::string& databaseId)
 {
+    // Filter: DataWarehouseService may host other DBs; only act on the shared DB
+    // owned by ClientInfoService (single source of truth for the shared db id).
+    auto coreFramework = mCoreFrameworkWPtr.lock();
+    if (!coreFramework)
+    {
+        SERVICE_LOG_ERROR("bindDatabase ignored: CoreFramework unavailable");
+        return;
+    }
+    auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
+    if (!clientInfoService)
+    {
+        SERVICE_LOG_ERROR("bindDatabase ignored: ClientInfoService unavailable");
+        return;
+    }
+    if (const auto sharedDbId = clientInfoService->getSharedDBConfig().getDBId(); databaseId != sharedDbId)
+    {
+        SERVICE_LOG_DEBUG("bindDatabase ignored, not shared db, incoming:" << databaseId
+                          << ", shared:" << sharedDbId);
+        return;
+    }
+
+    SERVICE_LOG_DEBUG("Binding CameraDirectoryModel to databaseId:" << databaseId);
     mCameraDirectoryModel->bindDatabase(databaseId);
 }
 

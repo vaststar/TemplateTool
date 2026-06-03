@@ -85,7 +85,10 @@ void AppUIController::onAppConfigInitialized()
     });
 
     // 3. Show main window
-    showMainWindow();
+    QTimer::singleShot(0, this, [this]() {
+        UIVIEW_LOG_DEBUG("will show main window");
+        showMainWindow();
+    });
 
     UIVIEW_LOG_DEBUG("onAppConfigInitialized finish");
 }

@@ -113,7 +113,6 @@ void ContactService::onCoreFrameworkExit()
 void ContactService::OnDatabaseInitialized(const std::string& dbId)
 {
     SERVICE_LOG_DEBUG("OnDatabaseInitialized, dbId:" << dbId);
-    // Bind only; load is triggered explicitly via loadContactDirectory().
     mDataPrivate->getManager().bindDatabase(dbId);
 }
 
