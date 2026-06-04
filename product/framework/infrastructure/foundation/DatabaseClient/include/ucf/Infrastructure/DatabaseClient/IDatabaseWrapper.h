@@ -216,6 +216,29 @@ public:
         const std::string& tableName,
         const ListsOfWhereCondition& conditions) = 0;
     /// @}
+
+    /// @name Transaction Support
+    /// @{
+
+    /**
+     * @brief Execute a unit of work inside an atomic, nestable savepoint.
+     *
+     * Runs @p work between SAVEPOINT / RELEASE. If work returns true the
+     * savepoint is released (committed into the enclosing transaction if any,
+     * or persisted to disk if at the outermost level). If work returns false,
+     * or throws, the savepoint is rolled back and any changes made inside
+     * are undone; exceptions are re-thrown.
+     *
+     * Safe to nest. Safe to call from inside another atomicWrite. Intended
+     * for "multi-table writes that must succeed or fail together" (typical
+     * use case: a polymorphic entity with a main row + a typed sub-row).
+     *
+     * @param work Callable returning true to commit, false to roll back.
+     * @return true if work returned true and the savepoint was released;
+     *         false if work returned false, or any SQL step failed.
+     */
+    virtual bool executeInSavepoint(std::function<bool()> work) = 0;
+    /// @}
 };
 
 } // namespace ucf::infrastructure::database

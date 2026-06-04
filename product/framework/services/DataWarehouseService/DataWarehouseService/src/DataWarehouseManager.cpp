@@ -41,6 +41,7 @@ public:
     int64_t deleteFromDatabase(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions, const std::source_location location);
     bool exists(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
     int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
+    bool atomicWrite(const std::string& dbId, std::function<bool()> work);
 
     void createFolder(const std::string& dbFilePath) const;
     std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper> getDBWrapper(const std::string& dbId);
@@ -374,6 +375,22 @@ int64_t DataWarehouseManager::DataPrivate::count(const std::string& dbId, const 
     SERVICE_LOG_WARN("no db:" << dbId);
     return -1;
 }
+
+bool DataWarehouseManager::DataPrivate::atomicWrite(const std::string& dbId, std::function<bool()> work)
+{
+    if (!work)
+    {
+        SERVICE_LOG_WARN("atomicWrite called with null work, dbId:" << dbId);
+        return false;
+    }
+    auto wrapper = getDBWrapper(dbId);
+    if (!wrapper)
+    {
+        SERVICE_LOG_WARN("atomicWrite no db:" << dbId);
+        return false;
+    }
+    return wrapper->executeInSavepoint(std::move(work));
+}
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
@@ -499,6 +516,16 @@ int64_t DataWarehouseManager::count(const std::string& dbId, const std::string& 
         return -1;
     }
     return mDataPrivate->count(dbId, tableName, whereConditions);
+}
+
+bool DataWarehouseManager::atomicWrite(const std::string& dbId, std::function<bool()> work)
+{
+    if (dbId.empty())
+    {
+        SERVICE_LOG_WARN("atomicWrite called with empty dbId");
+        return false;
+    }
+    return mDataPrivate->atomicWrite(dbId, std::move(work));
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

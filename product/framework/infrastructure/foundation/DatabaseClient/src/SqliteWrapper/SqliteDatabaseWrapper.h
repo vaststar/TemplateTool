@@ -31,6 +31,12 @@ public:
     bool exists(const std::string& tableName, const ListsOfWhereCondition& conditions) override;
     int64_t count(const std::string& tableName, const ListsOfWhereCondition& conditions) override;
 
+    // Run work() inside a SQLite SAVEPOINT (nestable, unlike BEGIN/COMMIT).
+    //   work() == true  -> RELEASE (commit at outermost level).
+    //   work() == false -> ROLLBACK TO + RELEASE.
+    //   work() throws   -> logged, rolled back, swallowed; returns false.
+    bool executeInSavepoint(std::function<bool()> work) override;
+
 private:
     bool beginTransaction();
     bool commit();

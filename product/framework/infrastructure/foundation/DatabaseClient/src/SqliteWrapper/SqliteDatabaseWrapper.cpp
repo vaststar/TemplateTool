@@ -1,5 +1,6 @@
 #include <sstream>
 #include <algorithm>
+#include <atomic>
 #include <numeric>
 #include <mutex>
 #include <set>
@@ -378,6 +379,65 @@ bool SqliteDatabaseWrapper::rollback()
 {
     DBCLIENT_LOG_WARN("rollback transaction");
     return mDataPrivate->execute("ROLLBACK");
+}
+
+bool SqliteDatabaseWrapper::executeInSavepoint(std::function<bool()> work)
+{
+    if (!work)
+    {
+        DBCLIENT_LOG_WARN("executeInSavepoint: null work callable");
+        return false;
+    }
+
+    // Unique name per call so nested invocations don't collide.
+    static std::atomic<uint64_t> sCounter{0};
+    const std::string spName = "sp_atomic_" + std::to_string(sCounter.fetch_add(1));
+
+    if (!mDataPrivate->execute("SAVEPOINT " + spName))
+    {
+        DBCLIENT_LOG_WARN("executeInSavepoint: failed to create savepoint " << spName);
+        return false;
+    }
+
+    bool ok = false;
+    try
+    {
+        ok = work();
+    }
+    catch (const std::exception& e)
+    {
+        // Swallow: the wider stack is bool+log style and doesn't catch.
+        DBCLIENT_LOG_ERROR("executeInSavepoint: work threw std::exception: " << e.what() << ", savepoint: " << spName);
+        mDataPrivate->execute("ROLLBACK TO SAVEPOINT " + spName);
+        mDataPrivate->execute("RELEASE SAVEPOINT " + spName);
+        return false;
+    }
+    catch (...)
+    {
+        DBCLIENT_LOG_ERROR("executeInSavepoint: work threw unknown exception, savepoint: " << spName);
+        mDataPrivate->execute("ROLLBACK TO SAVEPOINT " + spName);
+        mDataPrivate->execute("RELEASE SAVEPOINT " + spName);
+        return false;
+    }
+
+    if (ok)
+    {
+        // RELEASE commits at outermost level, or folds into the enclosing SP when nested.
+        if (!mDataPrivate->execute("RELEASE SAVEPOINT " + spName))
+        {
+            DBCLIENT_LOG_WARN("executeInSavepoint: failed to release savepoint " << spName);
+            return false;
+        }
+        return true;
+    }
+
+    // ROLLBACK TO doesn't destroy the SP; must RELEASE to close this level.
+    if (!mDataPrivate->execute("ROLLBACK TO SAVEPOINT " + spName))
+    {
+        DBCLIENT_LOG_WARN("executeInSavepoint: failed to rollback to savepoint " << spName);
+    }
+    mDataPrivate->execute("RELEASE SAVEPOINT " + spName);
+    return false;
 }
 
 void SqliteDatabaseWrapper::createTables(const DatabaseSchemas& tableSchemas)

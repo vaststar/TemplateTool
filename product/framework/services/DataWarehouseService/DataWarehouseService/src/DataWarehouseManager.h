@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 #include <source_location>
 #include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
@@ -30,6 +31,7 @@ public:
     int64_t deleteFromDatabase(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions, const std::source_location location);
     bool exists(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
     int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
+    bool atomicWrite(const std::string& dbId, std::function<bool()> work);
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

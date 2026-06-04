@@ -31,6 +31,7 @@ public:
     int64_t deleteFromDatabase(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions, const std::source_location location);
     bool exists(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
     int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
+    bool atomicWrite(const std::string& dbId, std::function<bool()> work);
 private:
     std::unique_ptr<DataWarehouseManager> mDataWarehouseManager;
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
@@ -95,6 +96,11 @@ bool DataWarehouseService::DataPrivate::exists(const std::string& dbId, const st
 int64_t DataWarehouseService::DataPrivate::count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions)
 {
     return mDataWarehouseManager->count(dbId, tableName, whereConditions);
+}
+
+bool DataWarehouseService::DataPrivate::atomicWrite(const std::string& dbId, std::function<bool()> work)
+{
+    return mDataWarehouseManager->atomicWrite(dbId, std::move(work));
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -228,6 +234,12 @@ bool DataWarehouseService::exists(const std::string& dbId, const std::string& ta
 int64_t DataWarehouseService::count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions)
 {
     return mDataPrivate->count(dbId, tableName, whereConditions);
+}
+
+bool DataWarehouseService::atomicWrite(const std::string& dbId, std::function<bool()> work)
+{
+    SERVICE_LOG_DEBUG("about to perform atomic write on dbId: " << dbId);
+    return mDataPrivate->atomicWrite(dbId, std::move(work));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

@@ -32,6 +32,7 @@ public:
     virtual int64_t deleteFromDatabase(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions, const std::source_location location = std::source_location::current()) override;
     virtual bool exists(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions) override;
     virtual int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions) override;
+    virtual bool atomicWrite(const std::string& dbId, std::function<bool()> work) override;
 
     //ICoreFrameworkCallback
     virtual void onServiceInitialized() override;
