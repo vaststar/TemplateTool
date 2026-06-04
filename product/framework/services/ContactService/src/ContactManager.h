@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,8 +34,10 @@ public:
 public:
     // ===== Read =====
     model::PersonContactArray   getPersonContactList() const;
-    model::GroupContactArray    getGroupContactList() const;
-    model::ContactRelationArray getContactRelations() const;
+    model::GroupContactArray    getGroupContactList(
+        std::optional<model::IGroupContact::GroupType> groupType = std::nullopt) const;
+    model::ContactRelationArray getContactRelations(
+        std::optional<model::IContactRelation::RelationType> relationType = std::nullopt) const;
     model::IPersonContactPtr    getPersonContact(const std::string& contactId) const;
     model::IGroupContactPtr     getGroupContact(const std::string& contactId) const;
 
@@ -47,9 +50,9 @@ public:
     model::GroupContactArray updateGroupContacts(const model::GroupContactArray& groups);
     std::vector<std::string> removeGroupContacts(const std::vector<std::string>& contactIds);
 
-    model::ContactRelationArray addContactRelations(const model::ContactRelationArray& relations);
-    model::ContactRelationArray updateContactRelations(const model::ContactRelationArray& relations);
-    std::vector<std::string>    removeContactRelations(const std::vector<std::string>& childIds);
+    model::ContactRelationArray   addContactRelations(const model::ContactRelationArray& relations);
+    model::ContactRelationArray   updateContactRelations(const model::ContactRelationArray& relations);
+    std::vector<std::string> removeContactRelations(const std::vector<std::string>& relationIds);
 
     // ===== Lifecycle =====
     void bindDatabase(const std::string& databaseId);

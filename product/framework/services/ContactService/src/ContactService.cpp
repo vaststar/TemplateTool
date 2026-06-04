@@ -123,14 +123,16 @@ model::PersonContactArray ContactService::getPersonContactList() const
     return mDataPrivate->getManager().getPersonContactList();
 }
 
-model::GroupContactArray ContactService::getGroupContactList() const
+model::GroupContactArray ContactService::getGroupContactList(
+    std::optional<model::IGroupContact::GroupType> groupType) const
 {
-    return mDataPrivate->getManager().getGroupContactList();
+    return mDataPrivate->getManager().getGroupContactList(groupType);
 }
 
-model::ContactRelationArray ContactService::getContactRelations() const
+model::ContactRelationArray ContactService::getContactRelations(
+    std::optional<model::IContactRelation::RelationType> relationType) const
 {
-    return mDataPrivate->getManager().getContactRelations();
+    return mDataPrivate->getManager().getContactRelations(relationType);
 }
 
 model::IPersonContactPtr ContactService::getPersonContact(const std::string& contactId) const
@@ -194,10 +196,10 @@ void ContactService::updateContactRelations(const model::ContactRelationArray& r
     mDataPrivate->getManager().updateContactRelations(relations);
 }
 
-void ContactService::removeContactRelations(const std::vector<std::string>& childIds)
+void ContactService::removeContactRelations(const std::vector<std::string>& relationIds)
 {
-    SERVICE_LOG_DEBUG("removeContactRelations, count:" << childIds.size());
-    mDataPrivate->getManager().removeContactRelations(childIds);
+    SERVICE_LOG_DEBUG("removeContactRelations, count:" << relationIds.size());
+    mDataPrivate->getManager().removeContactRelations(relationIds);
 }
 
 // ===== Lifecycle =====
@@ -261,10 +263,10 @@ void ContactService::onContactRelationsUpdated(const model::ContactRelationArray
     fireNotification(&IContactServiceCallback::onContactRelationsUpdated, relations);
 }
 
-void ContactService::onContactRelationsRemoved(const std::vector<std::string>& childIds, ContactNotificationSource /*src*/)
+void ContactService::onContactRelationsRemoved(const std::vector<std::string>& relationIds, ContactNotificationSource /*src*/)
 {
-    SERVICE_LOG_DEBUG("fire onContactRelationsRemoved, count:" << childIds.size());
-    fireNotification(&IContactServiceCallback::onContactRelationsRemoved, childIds);
+    SERVICE_LOG_DEBUG("fire onContactRelationsRemoved, count:" << relationIds.size());
+    fireNotification(&IContactServiceCallback::onContactRelationsRemoved, relationIds);
 }
 
 void ContactService::onDirectoryLoaded()

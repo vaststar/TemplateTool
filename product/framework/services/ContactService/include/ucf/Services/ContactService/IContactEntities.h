@@ -35,10 +35,19 @@ using IPersonContactPtr  = std::shared_ptr<IPersonContact>;
 using PersonContactArray = std::vector<IPersonContactPtr>;
 
 // Represents a contact for a group, which can be used to store group information.
+// A group must declare its semantic kind via GroupType so that views (org chart, project
+// list, etc.) can filter for only the groups they care about.
 class SERVICE_EXPORT IGroupContact: public IContact
 {
 public:
+    enum class GroupType {
+        Department = 0, // 部门：组织架构中的一个部门
+        Project    = 1, // 项目组：一个具体项目
+        Team       = 2, // 临时/职能小组
+        Custom     = 3, // 用户自定义分组
+    };
     virtual std::string getGroupName() const = 0;
+    virtual GroupType   getGroupType() const = 0;
 };
 using IGroupContactPtr  = std::shared_ptr<IGroupContact>;
 using GroupContactArray = std::vector<IGroupContactPtr>;
@@ -47,13 +56,21 @@ class SERVICE_EXPORT IContactRelation
 {
 public:
     enum class RelationType {
-        Department,     // 部门关系：员工属于部门
-        Reporting,      // 汇报关系：下级向上级汇报
-        Project,        // 项目关系：项目组成员
-        Mentor,         // 导师关系：导师-学员
-        Collaboration   // 协作关系：跨部门协作
+        Department    = 0,  // 部门关系：员工属于部门
+        Reporting     = 1,  // 汇报关系：下级向上级汇报
+        Project       = 2,  // 项目关系：项目组成员
+        Mentor        = 3,  // 导师关系：导师-学员
+        Collaboration = 4,  // 协作关系：跨部门协作
     };
     virtual ~IContactRelation() = default;
+
+    // Stable surrogate primary key for this relation row. The triple
+    // (childId, parentId, relationType) is a UNIQUE business key, but the row is
+    // identified by its own id so that updates (e.g. moving a child to a new parent)
+    // are real UPDATE operations rather than DELETE + INSERT. May be empty when a
+    // caller submits a freshly-created relation through addContactRelations(); the
+    // service then assigns a UUID before persisting.
+    virtual std::string getRelationId() const = 0;
 
     virtual std::string getChildId() const = 0;
 

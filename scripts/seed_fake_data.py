@@ -2,16 +2,28 @@
 
 Inserts a small but realistic Contact + Camera directory tree:
 
-  Contacts                          Cameras
-  --------                          -------
-  Engineering (group)               Local (group)
-    +-- Alice Chen                    +-- Built-in Webcam (index 0)
-    +-- Bob Liu                       +-- USB Camera #2 (index 1)
-    +-- Backend Team (group)        Remote (group)
-          +-- Cathy Wang              +-- Front Door (rtsp)
-          +-- David Zhang             +-- Backyard (rtsp)
-  Sales (group)                     Yard (group)
-    +-- Eve Sun                       +-- (empty placeholder)
+  Contacts (Department slice)        Contacts (Reporting slice)
+  ---------------------------        ---------------------------
+  Engineering (group)                Alice Chen  (CTO, top)
+    +-- Alice Chen                     +-- Bob Liu
+    +-- Bob Liu                            +-- Cathy Wang
+    +-- Backend Team (group)               +-- David Zhang
+          +-- Cathy Wang               Eve Sun     (Sales Director, top)
+          +-- David Zhang
+  Sales (group)                      Cameras
+    +-- Eve Sun                      -------
+                                     Local (group)
+                                       +-- Built-in Webcam (index 0)
+                                       +-- USB Camera #2 (index 1)
+                                     Remote (group)
+                                       +-- Front Door (rtsp)
+                                       +-- Backyard (rtsp)
+                                     Yard (group)
+                                       +-- (empty placeholder)
+
+The Department slice and the Reporting slice are independent: the same person
+shows up in both, attached to different parents via two different relation rows
+(each carrying its own RELATION_ID UUID).
 
 Usage (PowerShell):
   python scripts/seed_fake_data.py            # default debug DB
@@ -39,11 +51,18 @@ T_CAMERA_GROUP     = "CameraGroup"
 T_CAMERA           = "Camera"
 T_CAMERA_REL       = "CameraDirectoryRelation"
 
-STATUS_ACTIVE         = 0   # ContactStatus::Active / CameraNodeStatus::Active
-CAMERA_RELATION_CONT  = 0   # CameraDirectoryRelation::RelationType::Containment
-CONTACT_RELATION_DEPT = 0   # IContactRelation::RelationType::Department
-SOURCE_TYPE_LOCAL     = 0
-SOURCE_TYPE_NETWORK   = 1
+STATUS_ACTIVE              = 0   # ContactStatus::Active / CameraNodeStatus::Active
+CAMERA_RELATION_CONT       = 0   # CameraDirectoryRelation::RelationType::Containment
+CONTACT_RELATION_DEPARTMENT = 0  # IContactRelation::RelationType::Department
+CONTACT_RELATION_REPORTING  = 1  # IContactRelation::RelationType::Reporting
+SOURCE_TYPE_LOCAL          = 0
+SOURCE_TYPE_NETWORK        = 1
+
+# IGroupContact::GroupType
+GROUP_TYPE_DEPARTMENT      = 0
+GROUP_TYPE_PROJECT         = 1
+GROUP_TYPE_TEAM            = 2
+GROUP_TYPE_CUSTOM          = 3
 
 
 def default_db_path(release: bool) -> Path:
@@ -66,20 +85,31 @@ CONTACT_PERSONS = [
 ]
 
 CONTACT_GROUPS = [
-    # (id, name)
-    ("seed_group_eng",     "Engineering"),
-    ("seed_group_backend", "Backend Team"),
-    ("seed_group_sales",   "Sales"),
+    # (id, name, group_type)
+    ("seed_group_eng",     "Engineering",  GROUP_TYPE_DEPARTMENT),
+    ("seed_group_backend", "Backend Team", GROUP_TYPE_TEAM),
+    ("seed_group_sales",   "Sales",        GROUP_TYPE_DEPARTMENT),
 ]
 
-# child -> parent
+# (relationId, child, parent, relationType)
+# Department slice: who belongs to which org-chart group.
+# Reporting slice: who reports to whom (top managers have no row here, they live
+# at the virtual root). The same person can appear in both slices with two
+# independent relation rows (different RELATION_IDs).
 CONTACT_RELATIONS = [
-    ("seed_person_alice",  "seed_group_eng"),
-    ("seed_person_bob",    "seed_group_eng"),
-    ("seed_group_backend", "seed_group_eng"),
-    ("seed_person_cathy",  "seed_group_backend"),
-    ("seed_person_david",  "seed_group_backend"),
-    ("seed_person_eve",    "seed_group_sales"),
+    # ---- Department ----
+    ("seed_rel_dep_alice",   "seed_person_alice",  "seed_group_eng",     CONTACT_RELATION_DEPARTMENT),
+    ("seed_rel_dep_bob",     "seed_person_bob",    "seed_group_eng",     CONTACT_RELATION_DEPARTMENT),
+    ("seed_rel_dep_backend", "seed_group_backend", "seed_group_eng",     CONTACT_RELATION_DEPARTMENT),
+    ("seed_rel_dep_cathy",   "seed_person_cathy",  "seed_group_backend", CONTACT_RELATION_DEPARTMENT),
+    ("seed_rel_dep_david",   "seed_person_david",  "seed_group_backend", CONTACT_RELATION_DEPARTMENT),
+    ("seed_rel_dep_eve",     "seed_person_eve",    "seed_group_sales",   CONTACT_RELATION_DEPARTMENT),
+    # ---- Reporting (上下级) ----
+    # Alice (CTO) and Eve (Sales Director) sit at the virtual root, so they have
+    # no reporting row of their own here.
+    ("seed_rel_rep_bob",     "seed_person_bob",    "seed_person_alice",  CONTACT_RELATION_REPORTING),
+    ("seed_rel_rep_cathy",   "seed_person_cathy",  "seed_person_bob",    CONTACT_RELATION_REPORTING),
+    ("seed_rel_rep_david",   "seed_person_david",  "seed_person_bob",    CONTACT_RELATION_REPORTING),
 ]
 
 
@@ -112,10 +142,35 @@ def _table_exists(cur: sqlite3.Cursor, table: str) -> bool:
     return cur.fetchone()[0] > 0
 
 
+def _column_exists(cur: sqlite3.Cursor, table: str, column: str) -> bool:
+    if not _table_exists(cur, table):
+        return False
+    cur.execute(f"PRAGMA table_info({table})")
+    return any(row[1] == column for row in cur.fetchall())
+
+
+def _migrate_contact_relation_schema(cur: sqlite3.Cursor) -> None:
+    """If ContactRelation predates the RELATION_ID surrogate PK, drop the table so
+    the C++ schema layer recreates it with the new shape on the next app launch.
+    Old rows would be invalid under the new schema anyway (no RELATION_ID), so it
+    is safe to discard them in dev.
+    """
+    if not _table_exists(cur, T_CONTACT_REL):
+        return
+    if _column_exists(cur, T_CONTACT_REL, "RELATION_ID"):
+        return
+    print(f"[migrate] {T_CONTACT_REL} is on the old schema (no RELATION_ID); dropping it so the app can recreate.")
+    cur.execute(f"DROP TABLE {T_CONTACT_REL}")
+
+
 def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
     """Remove rows we previously inserted (matched by `seed_` id prefix)."""
     if _table_exists(cur, T_CONTACT_REL):
-        cur.execute(f"DELETE FROM {T_CONTACT_REL}   WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+        if _column_exists(cur, T_CONTACT_REL, "RELATION_ID"):
+            cur.execute(f"DELETE FROM {T_CONTACT_REL} WHERE RELATION_ID LIKE 'seed_%' OR CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+        else:
+            # Old-schema fallback: no RELATION_ID column yet.
+            cur.execute(f"DELETE FROM {T_CONTACT_REL} WHERE CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_USER_CONTACT}  WHERE CONTACT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_GROUP_CONTACT} WHERE GROUP_ID   LIKE 'seed_%'")
     if _table_exists(cur, T_CAMERA_REL):
@@ -132,14 +187,17 @@ def insert_contacts(cur: sqlite3.Cursor) -> None:
         [(cid, name, STATUS_ACTIVE) for cid, name in CONTACT_PERSONS],
     )
     cur.executemany(
-        f"INSERT OR REPLACE INTO {T_GROUP_CONTACT} (GROUP_ID, GROUP_NAME, CONTACT_STATUS) VALUES (?, ?, ?)",
-        [(gid, name, STATUS_ACTIVE) for gid, name in CONTACT_GROUPS],
+        f"INSERT OR REPLACE INTO {T_GROUP_CONTACT} (GROUP_ID, GROUP_NAME, GROUP_TYPE, CONTACT_STATUS) VALUES (?, ?, ?, ?)",
+        [(gid, name, gtype, STATUS_ACTIVE) for gid, name, gtype in CONTACT_GROUPS],
     )
     if _table_exists(cur, T_CONTACT_REL):
-        cur.executemany(
-            f"INSERT OR REPLACE INTO {T_CONTACT_REL} (CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?)",
-            [(child, parent, CONTACT_RELATION_DEPT) for child, parent in CONTACT_RELATIONS],
-        )
+        if not _column_exists(cur, T_CONTACT_REL, "RELATION_ID"):
+            print(f"[skip] {T_CONTACT_REL} is missing RELATION_ID; skipping relation seed. Launch the app once to let it recreate the table, then re-run this script.")
+        else:
+            cur.executemany(
+                f"INSERT OR REPLACE INTO {T_CONTACT_REL} (RELATION_ID, CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?, ?)",
+                CONTACT_RELATIONS,
+            )
 
 
 def insert_cameras(cur: sqlite3.Cursor) -> None:
@@ -183,6 +241,7 @@ def main() -> int:
     conn = sqlite3.connect(str(db_path))
     try:
         cur = conn.cursor()
+        _migrate_contact_relation_schema(cur)
         if args.wipe:
             print("[info] wiping previously seeded rows...")
             wipe_seed_rows(cur)

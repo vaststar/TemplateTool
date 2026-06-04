@@ -30,14 +30,16 @@ model::PersonContactArray ContactManager::getPersonContactList() const
     return mContactModel->getPersonContacts();
 }
 
-model::GroupContactArray ContactManager::getGroupContactList() const
+model::GroupContactArray ContactManager::getGroupContactList(
+    std::optional<model::IGroupContact::GroupType> groupType) const
 {
-    return mContactModel->getGroupContacts();
+    return mContactModel->getGroupContacts(groupType);
 }
 
-model::ContactRelationArray ContactManager::getContactRelations() const
+model::ContactRelationArray ContactManager::getContactRelations(
+    std::optional<model::IContactRelation::RelationType> relationType) const
 {
-    return mContactModel->getContactRelations();
+    return mContactModel->getContactRelations(relationType);
 }
 
 model::IPersonContactPtr ContactManager::getPersonContact(const std::string& contactId) const
@@ -96,9 +98,9 @@ model::ContactRelationArray ContactManager::updateContactRelations(const model::
     return mContactModel->updateContactRelations(relations);
 }
 
-std::vector<std::string> ContactManager::removeContactRelations(const std::vector<std::string>& childIds)
+std::vector<std::string> ContactManager::removeContactRelations(const std::vector<std::string>& relationIds)
 {
-    return mContactModel->removeContactRelations(childIds);
+    return mContactModel->removeContactRelations(relationIds);
 }
 
 // ===== Lifecycle =====

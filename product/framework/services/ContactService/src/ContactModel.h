@@ -3,6 +3,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -32,9 +33,12 @@ public:
 
 public:
     // ===== Read =====
+    // Group / relation reads accept an optional filter; std::nullopt means "all".
     model::PersonContactArray   getPersonContacts() const;
-    model::GroupContactArray    getGroupContacts() const;
-    model::ContactRelationArray getContactRelations() const;
+    model::GroupContactArray    getGroupContacts(
+        std::optional<model::IGroupContact::GroupType> groupType = std::nullopt) const;
+    model::ContactRelationArray getContactRelations(
+        std::optional<model::IContactRelation::RelationType> relationType = std::nullopt) const;
     model::IPersonContactPtr    getPersonContact(const std::string& contactId) const;
     model::IGroupContactPtr     getGroupContact(const std::string& contactId) const;
 
@@ -47,9 +51,12 @@ public:
     model::GroupContactArray updateGroupContacts(const model::GroupContactArray& groups);
     std::vector<std::string> removeGroupContacts(const std::vector<std::string>& contactIds);
 
+    // Relations are identified by a surrogate id (getRelationId). For add() the caller
+    // may leave the id empty and the model assigns a UUID before persisting; update()
+    // looks up the row by id and may change parentId / relationType in place.
     model::ContactRelationArray addContactRelations(const model::ContactRelationArray& relations);
     model::ContactRelationArray updateContactRelations(const model::ContactRelationArray& relations);
-    std::vector<std::string>    removeContactRelations(const std::vector<std::string>& childIds);
+    std::vector<std::string>    removeContactRelations(const std::vector<std::string>& relationIds);
 
     // ===== Lifecycle =====
     void bindDatabase(const std::string& databaseId);
@@ -69,7 +76,7 @@ private:
     std::vector<std::string>    removeGroupContactsInMemory(const std::vector<std::string>& contactIds);
     model::ContactRelationArray addContactRelationsInMemory(const model::ContactRelationArray& relations);
     model::ContactRelationArray updateContactRelationsInMemory(const model::ContactRelationArray& relations);
-    std::vector<std::string>    removeContactRelationsInMemory(const std::vector<std::string>& childIds);
+    std::vector<std::string>    removeContactRelationsInMemory(const std::vector<std::string>& relationIds);
 
     // Single exit points for load completion / failure (fires exactly once per load).
     void finishLoadSuccess();
@@ -87,7 +94,10 @@ private:
     mutable std::mutex mMutex;
     std::unordered_map<std::string, std::shared_ptr<model::PersonContact>>   mPersonContacts;
     std::unordered_map<std::string, std::shared_ptr<model::GroupContact>>    mGroupContacts;
-    std::unordered_map<std::string, std::shared_ptr<model::ContactRelation>> mContactRelations;  // key = childId
+    // Keyed by relation id (surrogate primary key). The business triple
+    // (childId, parentId, relationType) is unique but not used as the map key, because
+    // the row identity must be stable across "move" updates.
+    std::unordered_map<std::string, std::shared_ptr<model::ContactRelation>> mContactRelations;
 
     const std::unique_ptr<ContactDBAccess> mContactDBAccess;
 

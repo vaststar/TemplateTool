@@ -31,6 +31,16 @@ std::string ContactListViewModel::getViewModelName() const
     return "ContactListViewModel";
 }
 
+model::RelationType ContactListViewModel::getRelationType() const
+{
+    return mInterestedRelationType;
+}
+
+ucf::service::model::IContactRelation::RelationType ContactListViewModel::serviceRelationType() const
+{
+    return utils::toServiceRelationType(mInterestedRelationType);
+}
+
 void ContactListViewModel::init()
 {
     auto service = lockService();
@@ -78,13 +88,26 @@ void ContactListViewModel::rebuildTreeFromService()
         COMMONHEAD_LOG_ERROR("rebuildTreeFromService skipped: service not available");
         return;
     }
+    // Pull only the slice this VM cares about. Persons are common to every slice;
+    // groups depend on the slice (Department -> Department groups, Project -> Project
+    // groups, Reporting/Mentor/Collaboration -> no groups). The mapping lives in
+    // utils::groupTypeFor so adding a new RelationType only requires touching one place.
+    const auto relType   = serviceRelationType();
+    const auto groupType = utils::groupTypeFor(mInterestedRelationType);
+
     std::vector<ucf::service::model::IContactPtr> allContacts;
     auto allPersonContacts = service->getPersonContactList();
-    auto allGroupContacts  = service->getGroupContactList();
     allContacts.insert(allContacts.end(), allPersonContacts.begin(), allPersonContacts.end());
-    allContacts.insert(allContacts.end(), allGroupContacts.begin(), allGroupContacts.end());
-    auto allRelations = service->getContactRelations();
-    COMMONHEAD_LOG_DEBUG("rebuildTreeFromService, persons:" << allPersonContacts.size()
+    ucf::service::model::GroupContactArray allGroupContacts;
+    if (groupType.has_value())
+    {
+        allGroupContacts = service->getGroupContactList(utils::toServiceGroupType(*groupType));
+        allContacts.insert(allContacts.end(), allGroupContacts.begin(), allGroupContacts.end());
+    }
+    auto allRelations = service->getContactRelations(relType);
+    COMMONHEAD_LOG_DEBUG("rebuildTreeFromService, slice relType:" << static_cast<int>(relType)
+                         << ", groupType:" << (groupType.has_value() ? static_cast<int>(*groupType) : -1)
+                         << ", persons:" << allPersonContacts.size()
                          << ", groups:" << allGroupContacts.size()
                          << ", relations:" << allRelations.size());
 
@@ -163,29 +186,50 @@ void ContactListViewModel::selectContact(const std::string& contactId)
 bool ContactListViewModel::canMoveContact(const std::string& childId,
                                           const std::string& newParentId) const
 {
-    if (childId.empty())        return false;
-    if (childId == newParentId) return false;
+    if (childId.empty())
+    {
+        return false;
+    }
+    if (childId == newParentId)
+    {
+        return false;
+    }
 
     std::shared_ptr<model::ContactTree> snapshot;
     {
         std::scoped_lock lk(mTreeMutex);
         snapshot = mTree;
     }
-    if (!snapshot) return false;
+    if (!snapshot)
+    {
+        return false;
+    }
 
     auto childNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(childId);
-    if (!childNode) return false;
+    if (!childNode)
+    {
+        return false;
+    }
 
     // Noop if the current parent already matches the target.
     auto curParent = childNode->getParent().lock();
     const std::string curParentId = curParent ? curParent->getNodeData().id : std::string{};
-    if (curParentId == newParentId) return false;
+    if (curParentId == newParentId)
+    {
+        return false;
+    }
 
     if (!newParentId.empty())
     {
         auto parentNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(newParentId);
-        if (!parentNode) return false;
-        if (utils::isAncestorOf(snapshot, childId, newParentId)) return false;
+        if (!parentNode)
+        {
+            return false;
+        }
+        if (utils::isAncestorOf(snapshot, childId, newParentId))
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -225,24 +269,44 @@ void ContactListViewModel::moveContact(const std::string& childId,
 
     COMMONHEAD_LOG_INFO("moveContact: childId=" << childId
                         << ", from=" << (curParentId.empty() ? "<root>" : curParentId)
-                        << ", to="   << (newParentId.empty() ? "<root>" : newParentId));
+                        << ", to="   << (newParentId.empty() ? "<root>" : newParentId)
+                        << ", relType=" << static_cast<int>(mInterestedRelationType));
 
+    std::string existingRelationId;
+    {
+        std::scoped_lock lk(mTreeMutex);
+        if (mTree)
+        {
+            existingRelationId = mTree->getRelationIdByChildId(childId);
+        }
+    }
+
+    const auto relType = serviceRelationType();
     if (newParentId.empty())
     {
-        // A -> root : drop the relation row entirely.
-        service->removeContactRelations({childId});
+        if (!existingRelationId.empty())
+        {
+            service->removeContactRelations({existingRelationId});
+        }
+        else
+        {
+            COMMONHEAD_LOG_WARN("moveContact: no existing relation to remove for childId=" << childId
+                                << " with empty newParentId; this should not happen");
+        }
     }
-    else if (curParentId.empty())
+    else if (existingRelationId.empty())
     {
-        // root -> B : no row exists yet, add one.
-        service->addContactRelations({std::make_shared<utils::VMContactRelation>(childId, newParentId)});
+        // root -> B : no row exists yet; let the service mint a UUID by passing empty id.
+        service->addContactRelations({
+            std::make_shared<utils::VMContactRelation>(std::string{}, childId, newParentId, relType)
+        });
     }
     else
     {
-        // A -> B : update existing row.
-        service->updateContactRelations({std::make_shared<utils::VMContactRelation>(childId, newParentId)});
+        service->updateContactRelations({
+            std::make_shared<utils::VMContactRelation>(existingRelationId, childId, newParentId, relType)
+        });
     }
-    // Do not mutate local tree here; rely on onContactRelations* callbacks for refresh.
 }
 
 // ===== IContactServiceCallback: apply incremental updates then forward to VM subscribers =====
@@ -272,7 +336,10 @@ void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::Pers
     }
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->addNodes(vmNodes);
+        if (mTree)
+        {
+            mTree->addNodes(vmNodes);
+        }
     }
     fireNotification(&IContactListViewModelCallback::onPersonContactsAdded, vmNodes);
 }
@@ -289,7 +356,10 @@ void ContactListViewModel::onPersonContactsUpdated(const ucf::service::model::Pe
     }
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->updateNodes(vmNodes);
+        if (mTree)
+        {
+            mTree->updateNodes(vmNodes);
+        }
     }
     fireNotification(&IContactListViewModelCallback::onPersonContactsUpdated, vmNodes);
 }
@@ -305,7 +375,10 @@ void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string
     }
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->removeNodes(contactIds);
+        if (mTree)
+        {
+            mTree->removeNodes(contactIds);
+        }
     }
     bool clearedSelection = false;
     {
@@ -327,7 +400,31 @@ void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string
 
 void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::GroupContactArray& groups)
 {
-    auto vmNodes = utils::toVMNodeDatas(groups);
+    // Filter to this VM's GroupType slice. Slices whose parent is a Person (Reporting /
+    // Mentor / Collaboration) declare std::nullopt and have no groups at all in the
+    // tree, so we drop the whole event.
+    const auto groupType = utils::groupTypeFor(mInterestedRelationType);
+    if (!groupType.has_value())
+    {
+        return;
+    }
+    const auto wantedGroupType = utils::toServiceGroupType(*groupType);
+
+    ucf::service::model::GroupContactArray filtered;
+    filtered.reserve(groups.size());
+    for (const auto& g : groups)
+    {
+        if (g && g->getGroupType() == wantedGroupType)
+        {
+            filtered.push_back(g);
+        }
+    }
+    if (filtered.empty())
+    {
+        return;
+    }
+
+    auto vmNodes = utils::toVMNodeDatas(filtered);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsAdded arrived before tree was built (count:" << vmNodes.size()
@@ -337,14 +434,38 @@ void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::Group
     }
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->addNodes(vmNodes);
+        if (mTree)
+        {
+            mTree->addNodes(vmNodes);
+        }
     }
     fireNotification(&IContactListViewModelCallback::onGroupContactsAdded, vmNodes);
 }
 
 void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::GroupContactArray& groups)
 {
-    auto vmNodes = utils::toVMNodeDatas(groups);
+    const auto groupType = utils::groupTypeFor(mInterestedRelationType);
+    if (!groupType.has_value())
+    {
+        return;
+    }
+    const auto wantedGroupType = utils::toServiceGroupType(*groupType);
+
+    ucf::service::model::GroupContactArray filtered;
+    filtered.reserve(groups.size());
+    for (const auto& g : groups)
+    {
+        if (g && g->getGroupType() == wantedGroupType)
+        {
+            filtered.push_back(g);
+        }
+    }
+    if (filtered.empty())
+    {
+        return;
+    }
+
+    auto vmNodes = utils::toVMNodeDatas(filtered);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsUpdated arrived before tree was built (count:" << vmNodes.size()
@@ -354,13 +475,18 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
     }
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->updateNodes(vmNodes);
+        if (mTree)
+        {
+            mTree->updateNodes(vmNodes);
+        }
     }
     fireNotification(&IContactListViewModelCallback::onGroupContactsUpdated, vmNodes);
 }
 
 void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>& contactIds)
 {
+    // Removed events do not carry the GroupType, so we apply optimistically: removing a
+    // node id that is not in our tree is a no-op inside ContactTree, which is safe.
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsRemoved arrived before tree was built (count:" << contactIds.size()
@@ -370,7 +496,10 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
     }
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->removeNodes(contactIds);
+        if (mTree)
+        {
+            mTree->removeNodes(contactIds);
+        }
     }
     bool clearedSelection = false;
     {
@@ -392,7 +521,24 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
 
 void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations)
 {
-    auto vmRelations = utils::toVMRelations(relations);
+    // Only relations of this VM's RelationType slice are interesting; others belong to
+    // sibling VM instances (Reporting, Project, ...).
+    const auto wanted = serviceRelationType();
+    ucf::service::model::ContactRelationArray filtered;
+    filtered.reserve(relations.size());
+    for (const auto& r : relations)
+    {
+        if (r && r->getRelationType() == wanted)
+        {
+            filtered.push_back(r);
+        }
+    }
+    if (filtered.empty())
+    {
+        return;
+    }
+
+    auto vmRelations = utils::toVMRelations(filtered);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onContactRelationsAdded arrived before tree was built (count:" << vmRelations.size()
@@ -400,19 +546,34 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
     }
-    std::vector<std::pair<std::string, std::string>> pairs;
-    pairs.reserve(vmRelations.size());
-    for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->setRelations(pairs);
+        if (mTree)
+        {
+            mTree->setRelations(vmRelations);
+        }
     }
     fireNotification(&IContactListViewModelCallback::onContactRelationsAdded, vmRelations);
 }
 
 void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::ContactRelationArray& relations)
 {
-    auto vmRelations = utils::toVMRelations(relations);
+    const auto wanted = serviceRelationType();
+    ucf::service::model::ContactRelationArray filtered;
+    filtered.reserve(relations.size());
+    for (const auto& r : relations)
+    {
+        if (r && r->getRelationType() == wanted)
+        {
+            filtered.push_back(r);
+        }
+    }
+    if (filtered.empty())
+    {
+        return;
+    }
+
+    auto vmRelations = utils::toVMRelations(filtered);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onContactRelationsUpdated arrived before tree was built (count:" << vmRelations.size()
@@ -420,30 +581,46 @@ void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
     }
-    std::vector<std::pair<std::string, std::string>> pairs;
-    pairs.reserve(vmRelations.size());
-    for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->setRelations(pairs);
+        if (mTree)
+        {
+            mTree->setRelations(vmRelations);
+        }
     }
     fireNotification(&IContactListViewModelCallback::onContactRelationsUpdated, vmRelations);
 }
 
-void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::string>& childIds)
+void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::string>& relationIds)
 {
-    if (ensureTreeBuilt())
-    {
-        COMMONHEAD_LOG_WARN("onContactRelationsRemoved arrived before tree was built (count:" << childIds.size()
-                            << "); fired onContactDirectoryReady instead of delta");
-        fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
-        return;
-    }
+    // Service emits a flat list of relationIds covering every slice. Ask the tree to
+    // translate each id back to the childId that belongs to this slice; unknown ids
+    // (those owned by sibling VMs) are skipped automatically.
+    std::vector<std::string> childIds;
+    std::vector<std::string> matchedRelationIds;
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->clearRelations(childIds);
+        if (mTree)
+        {
+            for (const auto& rid : relationIds)
+            {
+                auto childId = mTree->takeChildIdByRelationId(rid);
+                if (childId.empty())
+                {
+                    continue;
+                }
+                childIds.push_back(std::move(childId));
+                matchedRelationIds.push_back(rid);
+            }
+            mTree->clearRelations(childIds);
+        }
     }
-    fireNotification(&IContactListViewModelCallback::onContactRelationsRemoved, childIds);
+    if (childIds.empty())
+    {
+        return;
+    }
+
+    fireNotification(&IContactListViewModelCallback::onContactRelationsRemoved, matchedRelationIds);
 }
 
 }

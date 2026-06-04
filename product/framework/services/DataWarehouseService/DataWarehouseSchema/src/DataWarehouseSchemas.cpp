@@ -14,6 +14,7 @@ GroupContactTable::GroupContactTable()
     : ucf::service::model::DBTableModel(TableName,{
         {GroupIdField,         "TEXT UNIQUE NOT NULL"},
         {GroupNameField,       "TEXT NOT NULL"},
+        {GroupTypeField,       "INTEGER NOT NULL"},
         {ContactStatusField,   "INTEGER"}
     })
 {
@@ -21,7 +22,9 @@ GroupContactTable::GroupContactTable()
 
 ContactRelationTable::ContactRelationTable()
     : ucf::service::model::DBTableModel(TableName,{
-        {ChildIdField,      "TEXT UNIQUE NOT NULL"},
+        // RELATION_ID 为代理主键（UUID）；(CHILD_ID, PARENT_ID, RELATION_TYPE) 由应用层维护业务唯一性。
+        {RelationIdField,   "TEXT UNIQUE NOT NULL"},
+        {ChildIdField,      "TEXT NOT NULL"},
         {ParentIdField,     "TEXT NOT NULL"},
         {RelationTypeField, "INTEGER NOT NULL"}
     })

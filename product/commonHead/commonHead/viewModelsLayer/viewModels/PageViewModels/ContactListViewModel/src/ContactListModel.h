@@ -43,11 +43,17 @@ public:
     void updateData(const ContactNodeData& data);
     // Move all children out (used when re-parenting orphans to virtual root)
     std::vector<std::shared_ptr<ContactTreeNode>> takeChildren();
+
+    // Identity of the relation row that attaches this node to its parent in the slice
+    // this tree represents. Empty when the node is at the virtual root.
+    const std::string& getRelationId() const;
+    void               setRelationId(std::string relationId);
 private:
     ContactNodeData m_data;
     std::weak_ptr<ContactTreeNode> m_parent;
     std::vector<std::shared_ptr<ContactTreeNode>> m_children;
     std::unordered_map<std::string, std::size_t> m_childIndex; // id -> position in m_children
+    std::string m_relationId; // service-layer relation row id; empty => attached to virtual root
 };
 
 
@@ -64,15 +70,30 @@ public:
     void addNode(const ContactNodeData& data);
     void updateNode(const ContactNodeData& data);
     void removeNode(const std::string& id);
-    void setRelation(const std::string& parentId, const std::string& childId);
+    void setRelation(const ContactRelationData& relation);
     void clearRelation(const std::string& childId);
 
     // Batch variants (preferred for callback payloads)
     void addNodes(const std::vector<ContactNodeData>& datas);
     void updateNodes(const std::vector<ContactNodeData>& datas);
     void removeNodes(const std::vector<std::string>& ids);
-    void setRelations(const std::vector<std::pair<std::string, std::string>>& parentChildPairs);
+    void setRelations(const std::vector<ContactRelationData>& relations);
     void clearRelations(const std::vector<std::string>& childIds);
+
+    // ===== Relation row identity lookups =====
+    // Each child has at most one relation row in this tree (the slice the VM owns).
+    // These helpers let callers translate between the in-tree childId and the service
+    // layer's surrogate relationId without having to maintain a parallel map.
+
+    // Returns the relationId associated with childId, or empty if the child is at the
+    // virtual root (no parent relation row).
+    std::string getRelationIdByChildId(const std::string& childId) const;
+
+    // Looks up the childId for relationId, removes the mapping atomically, and returns
+    // the childId (empty if relationId is unknown). The tree node itself is not moved;
+    // callers typically follow this with clearRelations(childIds) to reparent the node
+    // under the virtual root.
+    std::string takeChildIdByRelationId(const std::string& relationId);
 
 private:
     void buildNodes(const std::vector<ucf::service::model::IContactPtr>& contacts);

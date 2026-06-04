@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,18 @@ std::vector<model::ContactRelationData> toVMRelations(const ucf::service::model:
 
 model::ContactDirectoryLoadError toVMLoadError(ucf::service::ContactDirectoryLoadError serviceError);
 
+// ===== Enum bridges between VM and service layers =====
+ucf::service::model::IContactRelation::RelationType toServiceRelationType(model::RelationType type);
+model::RelationType                                  toVMRelationType(ucf::service::model::IContactRelation::RelationType type);
+ucf::service::model::IGroupContact::GroupType        toServiceGroupType(model::GroupType type);
+model::GroupType                                     toVMGroupType(ucf::service::model::IGroupContact::GroupType type);
+
+// Maps a relation slice to the kind of group it expects as the parent node, when one
+// exists. RelationTypes whose parent is always a Person (Reporting / Mentor) or whose
+// parent shape is undefined here (Collaboration is peer-to-peer) return std::nullopt;
+// callers should treat that as "there are no group nodes to load for this slice".
+std::optional<model::GroupType> groupTypeFor(model::RelationType relationType);
+
 // ===== Tree helpers =====
 // Walk up from startNodeId; return true if ancestorCandidateId appears (including startNodeId itself).
 bool isAncestorOf(const std::shared_ptr<model::ContactTree>& contactTree,
@@ -38,14 +51,20 @@ bool isAncestorOf(const std::shared_ptr<model::ContactTree>& contactTree,
 class VMContactRelation final : public ucf::service::model::IContactRelation
 {
 public:
-    VMContactRelation(std::string childId, std::string parentId,
+    // relationId may be empty when issuing an "add" request; the service mints a new
+    // UUID in that case. For update requests callers must pass the existing id.
+    VMContactRelation(std::string relationId,
+                      std::string childId,
+                      std::string parentId,
                       RelationType relationType = RelationType::Department);
 
+    std::string  getRelationId()   const override;
     std::string  getChildId()      const override;
     std::string  getParentId()     const override;
     RelationType getRelationType() const override;
 
 private:
+    std::string  mRelationId;
     std::string  mChildId;
     std::string  mParentId;
     RelationType mRelationType;

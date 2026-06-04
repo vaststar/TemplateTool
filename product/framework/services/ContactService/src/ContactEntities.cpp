@@ -64,6 +64,18 @@ void GroupContact::setGroupName(const std::string& groupName)
     mGroupName = groupName;
 }
 
+IGroupContact::GroupType GroupContact::getGroupType() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mGroupType;
+}
+
+void GroupContact::setGroupType(IGroupContact::GroupType type)
+{
+    std::scoped_lock lock(mDataMutex);
+    mGroupType = type;
+}
+
 IContact::ContactStatus GroupContact::getContactStatus() const
 {
     std::scoped_lock lock(mDataMutex);
@@ -76,15 +88,22 @@ void GroupContact::setContactStatus(ContactStatus status)
     mStatus = status;
 }
 
-ContactRelation::ContactRelation(const std::string& childId,
+ContactRelation::ContactRelation(const std::string& relationId,
+                                 const std::string& childId,
                                  const std::string& parentId)
-    : mChildId(childId)
+    : mRelationId(relationId)
+    , mChildId(childId)
     , mParentId(parentId)
 {
 }
 
 ContactRelation::~ContactRelation()
 {
+}
+
+std::string ContactRelation::getRelationId() const
+{
+    return mRelationId;
 }
 
 std::string ContactRelation::getChildId() const

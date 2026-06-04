@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
@@ -33,6 +34,7 @@ public:
 public:
     virtual std::string getViewModelName() const override;
     virtual model::ContactTreePtr getContactList() const override;
+    model::RelationType getRelationType() const override;
     bool isContactDirectoryReady() const override;
     std::string getCurrentContactId() const override;
     void selectContact(const std::string& contactId) override;
@@ -53,7 +55,7 @@ protected:
     void onGroupContactsRemoved(const std::vector<std::string>& contactIds) override;
     void onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations) override;
     void onContactRelationsUpdated(const ucf::service::model::ContactRelationArray& relations) override;
-    void onContactRelationsRemoved(const std::vector<std::string>& childIds) override;
+    void onContactRelationsRemoved(const std::vector<std::string>& relationIds) override;
 
 private:
     std::shared_ptr<ucf::service::IContactService> lockService() const;
@@ -62,11 +64,20 @@ private:
     // skip the incremental apply because the rebuilt snapshot already contains the delta.
     bool ensureTreeBuilt();
 
+    // Returns the service-level RelationType this VM is interested in, derived once from
+    // mInterestedRelationType.
+    ucf::service::model::IContactRelation::RelationType serviceRelationType() const;
+
 private:
     mutable std::mutex mTreeMutex;
     std::shared_ptr<model::ContactTree> mTree;
 
     mutable std::mutex mSelectionMutex;
     std::string mCurrentContactId;
+
+    // The relation slice this VM instance is bound to. Today the factory only constructs
+    // Department VMs (matches legacy behaviour); a future factory overload will let UI
+    // construct VMs for other slices without touching this class.
+    model::RelationType mInterestedRelationType{model::RelationType::Department};
 };
 }

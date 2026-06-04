@@ -1,5 +1,7 @@
 #include "ContactModel.h"
 
+#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+
 #include "ContactDBAccess.h"
 #include "ContactServiceLogger.h"
 
@@ -26,25 +28,35 @@ model::PersonContactArray ContactModel::getPersonContacts() const
     return result;
 }
 
-model::GroupContactArray ContactModel::getGroupContacts() const
+model::GroupContactArray ContactModel::getGroupContacts(
+    std::optional<model::IGroupContact::GroupType> groupType) const
 {
     model::GroupContactArray result;
     std::scoped_lock lock(mMutex);
     result.reserve(mGroupContacts.size());
     for (const auto& [_, g] : mGroupContacts)
     {
+        if (groupType.has_value() && g->getGroupType() != *groupType)
+        {
+            continue;
+        }
         result.push_back(g);
     }
     return result;
 }
 
-model::ContactRelationArray ContactModel::getContactRelations() const
+model::ContactRelationArray ContactModel::getContactRelations(
+    std::optional<model::IContactRelation::RelationType> relationType) const
 {
     model::ContactRelationArray result;
     std::scoped_lock lock(mMutex);
     result.reserve(mContactRelations.size());
     for (const auto& [_, r] : mContactRelations)
     {
+        if (relationType.has_value() && r->getRelationType() != *relationType)
+        {
+            continue;
+        }
         result.push_back(r);
     }
     return result;
@@ -155,6 +167,7 @@ model::GroupContactArray ContactModel::addGroupContactsInMemory(const model::Gro
         }
         auto impl = std::make_shared<model::GroupContact>(contactId);
         impl->setGroupName(g->getGroupName());
+        impl->setGroupType(g->getGroupType());
         impl->setContactStatus(g->getContactStatus());
         mGroupContacts.emplace(contactId, impl);
         accepted.push_back(impl);
@@ -179,6 +192,7 @@ model::GroupContactArray ContactModel::updateGroupContactsInMemory(const model::
             continue;
         }
         it->second->setGroupName(g->getGroupName());
+        it->second->setGroupType(g->getGroupType());
         it->second->setContactStatus(g->getContactStatus());
         accepted.push_back(it->second);
     }
@@ -211,14 +225,27 @@ model::ContactRelationArray ContactModel::addContactRelationsInMemory(const mode
         {
             continue;
         }
-        const std::string childId = r->getChildId();
-        if (childId.empty() || mContactRelations.find(childId) != mContactRelations.end())
+        const std::string childId  = r->getChildId();
+        const std::string parentId = r->getParentId();
+        const auto        type     = r->getRelationType();
+        if (childId.empty())
         {
             continue;
         }
-        auto impl = std::make_shared<model::ContactRelation>(childId, r->getParentId());
-        impl->setRelationType(r->getRelationType());
-        mContactRelations.emplace(childId, impl);
+        // Caller may leave the id empty for a brand-new row; we mint one here so that
+        // every persisted relation has a stable surrogate key.
+        std::string relationId = r->getRelationId();
+        if (relationId.empty())
+        {
+            relationId = ucf::utilities::UUIDUtils::generateUUID();
+        }
+        if (mContactRelations.find(relationId) != mContactRelations.end())
+        {
+            continue;
+        }
+        auto impl = std::make_shared<model::ContactRelation>(relationId, childId, parentId);
+        impl->setRelationType(type);
+        mContactRelations.emplace(relationId, impl);
         accepted.push_back(impl);
     }
     return accepted;
@@ -226,20 +253,19 @@ model::ContactRelationArray ContactModel::addContactRelationsInMemory(const mode
 
 model::ContactRelationArray ContactModel::updateContactRelationsInMemory(const model::ContactRelationArray& relations)
 {
+    // Identify each row by its relationId; mutable fields are parentId and relationType
+    // (a "move" ⇒ change parentId; a "reclassify" ⇒ change type). Rows whose id is empty
+    // or unknown are silently skipped — the caller likely meant to add(), not update().
     model::ContactRelationArray accepted;
     accepted.reserve(relations.size());
     std::scoped_lock lock(mMutex);
     for (const auto& r : relations)
     {
-        if (!r)
-        {
-            continue;
-        }
-        auto it = mContactRelations.find(r->getChildId());
-        if (it == mContactRelations.end())
-        {
-            continue;
-        }
+        if (!r) continue;
+        const std::string relationId = r->getRelationId();
+        if (relationId.empty()) continue;
+        auto it = mContactRelations.find(relationId);
+        if (it == mContactRelations.end()) continue;
         it->second->setParentId(r->getParentId());
         it->second->setRelationType(r->getRelationType());
         accepted.push_back(it->second);
@@ -247,12 +273,12 @@ model::ContactRelationArray ContactModel::updateContactRelationsInMemory(const m
     return accepted;
 }
 
-std::vector<std::string> ContactModel::removeContactRelationsInMemory(const std::vector<std::string>& childIds)
+std::vector<std::string> ContactModel::removeContactRelationsInMemory(const std::vector<std::string>& relationIds)
 {
     std::vector<std::string> accepted;
-    accepted.reserve(childIds.size());
+    accepted.reserve(relationIds.size());
     std::scoped_lock lock(mMutex);
-    for (const auto& id : childIds)
+    for (const auto& id : relationIds)
     {
         if (mContactRelations.erase(id) > 0)
         {
@@ -407,10 +433,10 @@ model::ContactRelationArray ContactModel::updateContactRelations(const model::Co
     return accepted;
 }
 
-std::vector<std::string> ContactModel::removeContactRelations(const std::vector<std::string>& childIds)
+std::vector<std::string> ContactModel::removeContactRelations(const std::vector<std::string>& relationIds)
 {
-    SERVICE_LOG_DEBUG("removeContactRelations requested, count:" << childIds.size());
-    auto accepted = removeContactRelationsInMemory(childIds);
+    SERVICE_LOG_DEBUG("removeContactRelations requested, count:" << relationIds.size());
+    auto accepted = removeContactRelationsInMemory(relationIds);
     SERVICE_LOG_DEBUG("removeContactRelations accepted, count:" << accepted.size());
     for (const auto& id : accepted)
     {

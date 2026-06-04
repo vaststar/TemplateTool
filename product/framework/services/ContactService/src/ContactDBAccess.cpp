@@ -125,6 +125,7 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
         {
             db::schema::GroupContactTable::GroupIdField,
             db::schema::GroupContactTable::GroupNameField,
+            db::schema::GroupContactTable::GroupTypeField,
             db::schema::GroupContactTable::ContactStatusField
         },
         {},
@@ -136,6 +137,8 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
             {
                 const std::string groupId = record.getColumnData(db::schema::GroupContactTable::GroupIdField).getStringValue();
                 const std::string name    = record.getColumnData(db::schema::GroupContactTable::GroupNameField).getStringValue();
+                const auto        type    = static_cast<model::IGroupContact::GroupType>(
+                                                record.getColumnData(db::schema::GroupContactTable::GroupTypeField).getIntValue());
                 const auto        status  = static_cast<model::IContact::ContactStatus>(record.getColumnData(db::schema::GroupContactTable::ContactStatusField).getIntValue());
                 if (groupId.empty())
                 {
@@ -143,6 +146,7 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
                 }
                 auto group = std::make_shared<model::GroupContact>(groupId);
                 group->setGroupName(name);
+                group->setGroupType(type);
                 group->setContactStatus(status);
                 groups.push_back(group);
             }
@@ -176,6 +180,7 @@ void ContactDBAccess::loadContactRelations(LoadRelationsCallback callback) const
         dbId,
         db::schema::ContactRelationTable::TableName,
         {
+            db::schema::ContactRelationTable::RelationIdField,
             db::schema::ContactRelationTable::ChildIdField,
             db::schema::ContactRelationTable::ParentIdField,
             db::schema::ContactRelationTable::RelationTypeField
@@ -187,15 +192,16 @@ void ContactDBAccess::loadContactRelations(LoadRelationsCallback callback) const
             relations.reserve(results.size());
             for (const auto& record : results)
             {
-                const std::string childId  = record.getColumnData(db::schema::ContactRelationTable::ChildIdField).getStringValue();
-                const std::string parentId = record.getColumnData(db::schema::ContactRelationTable::ParentIdField).getStringValue();
-                const auto        type     = static_cast<model::IContactRelation::RelationType>(
-                                                record.getColumnData(db::schema::ContactRelationTable::RelationTypeField).getIntValue());
-                if (childId.empty())
+                const std::string relationId = record.getColumnData(db::schema::ContactRelationTable::RelationIdField).getStringValue();
+                const std::string childId    = record.getColumnData(db::schema::ContactRelationTable::ChildIdField).getStringValue();
+                const std::string parentId   = record.getColumnData(db::schema::ContactRelationTable::ParentIdField).getStringValue();
+                const auto        type       = static_cast<model::IContactRelation::RelationType>(
+                                                  record.getColumnData(db::schema::ContactRelationTable::RelationTypeField).getIntValue());
+                if (relationId.empty() || childId.empty())
                 {
                     continue;
                 }
-                auto relation = std::make_shared<model::ContactRelation>(childId, parentId);
+                auto relation = std::make_shared<model::ContactRelation>(relationId, childId, parentId);
                 relation->setRelationType(type);
                 relations.push_back(relation);
             }
@@ -346,6 +352,7 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
         values.emplace_back(model::DBDataValues{
             g->getContactId(),
             g->getGroupName(),
+            static_cast<int>(g->getGroupType()),
             static_cast<int>(g->getContactStatus())
         });
     }
@@ -355,6 +362,7 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
         {
             db::schema::GroupContactTable::GroupIdField,
             db::schema::GroupContactTable::GroupNameField,
+            db::schema::GroupContactTable::GroupTypeField,
             db::schema::GroupContactTable::ContactStatusField
         },
         values);
@@ -384,6 +392,7 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
 
     model::DBDataValues values{
         group->getGroupName(),
+        static_cast<int>(group->getGroupType()),
         static_cast<int>(group->getContactStatus())
     };
     dataWarehouseService->updateInDatabase(
@@ -391,6 +400,7 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
         db::schema::GroupContactTable::TableName,
         {
             db::schema::GroupContactTable::GroupNameField,
+            db::schema::GroupContactTable::GroupTypeField,
             db::schema::GroupContactTable::ContactStatusField
         },
         values,
@@ -452,6 +462,7 @@ void ContactDBAccess::insertContactRelations(const model::ContactRelationArray& 
     for (const auto& r : relations)
     {
         values.emplace_back(model::DBDataValues{
+            r->getRelationId(),
             r->getChildId(),
             r->getParentId(),
             static_cast<int>(r->getRelationType())
@@ -461,6 +472,7 @@ void ContactDBAccess::insertContactRelations(const model::ContactRelationArray& 
         dbId,
         db::schema::ContactRelationTable::TableName,
         {
+            db::schema::ContactRelationTable::RelationIdField,
             db::schema::ContactRelationTable::ChildIdField,
             db::schema::ContactRelationTable::ParentIdField,
             db::schema::ContactRelationTable::RelationTypeField
@@ -503,11 +515,11 @@ void ContactDBAccess::updateContactRelation(const model::IContactRelationPtr& re
         },
         values,
         {
-            {db::schema::ContactRelationTable::ChildIdField, relation->getChildId(), model::DBOperatorType::Equal}
+            {db::schema::ContactRelationTable::RelationIdField, relation->getRelationId(), model::DBOperatorType::Equal}
         });
 }
 
-void ContactDBAccess::deleteContactRelation(const std::string& childId) const
+void ContactDBAccess::deleteContactRelation(const std::string& relationId) const
 {
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
@@ -529,7 +541,7 @@ void ContactDBAccess::deleteContactRelation(const std::string& childId) const
         dbId,
         db::schema::ContactRelationTable::TableName,
         {
-            {db::schema::ContactRelationTable::ChildIdField, childId, model::DBOperatorType::Equal}
+            {db::schema::ContactRelationTable::RelationIdField, relationId, model::DBOperatorType::Equal}
         });
 }
 

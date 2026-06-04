@@ -35,7 +35,7 @@ public:
     virtual void onGroupContactsRemoved(const std::vector<std::string>& contactIds) {}
     virtual void onContactRelationsAdded(const std::vector<model::ContactRelationData>& relations) {}
     virtual void onContactRelationsUpdated(const std::vector<model::ContactRelationData>& relations) {}
-    virtual void onContactRelationsRemoved(const std::vector<std::string>& childIds) {}
+    virtual void onContactRelationsRemoved(const std::vector<std::string>& relationIds) {}
 
     // The VM-owned current selection changed. Empty contactId means selection was cleared
     // (e.g. the previously selected contact was removed). Fired after de-duplication, so
@@ -55,6 +55,12 @@ public:
 public:
     virtual std::string getViewModelName() const = 0;
     virtual model::ContactTreePtr getContactList() const = 0;
+
+    // The relation slice this VM instance is bound to (Department / Reporting / ...).
+    // Today every VM instance defaults to Department; a future factory overload will let
+    // callers construct VMs for the other slices. The getter exists so UI/controller can
+    // adapt labels and validation without hard-coding.
+    [[nodiscard]] virtual model::RelationType getRelationType() const = 0;
 
     // True once the VM tree has been populated from a successful service load.
     // Late subscribers should check this on registration; if true, read the tree directly

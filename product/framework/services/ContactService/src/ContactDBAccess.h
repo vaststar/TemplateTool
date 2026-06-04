@@ -49,7 +49,7 @@ public:
 
     void insertContactRelations(const model::ContactRelationArray& relations) const;
     void updateContactRelation(const model::IContactRelationPtr& relation) const;
-    void deleteContactRelation(const std::string& childId) const;
+    void deleteContactRelation(const std::string& relationId) const;
 
 private:
     std::string resolveDatabaseId() const;

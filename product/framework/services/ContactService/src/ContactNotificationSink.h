@@ -30,9 +30,9 @@ public:
     virtual void onGroupContactsUpdated  (const model::GroupContactArray& groups,      ContactNotificationSource src) = 0;
     virtual void onGroupContactsRemoved  (const std::vector<std::string>& contactIds,  ContactNotificationSource src) = 0;
 
-    virtual void onContactRelationsAdded   (const model::ContactRelationArray& relations, ContactNotificationSource src) = 0;
-    virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations, ContactNotificationSource src) = 0;
-    virtual void onContactRelationsRemoved (const std::vector<std::string>& childIds,     ContactNotificationSource src) = 0;
+    virtual void onContactRelationsAdded   (const model::ContactRelationArray& relations,    ContactNotificationSource src) = 0;
+    virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations,    ContactNotificationSource src) = 0;
+    virtual void onContactRelationsRemoved (const std::vector<std::string>& relationIds,     ContactNotificationSource src) = 0;
 
     virtual void onDirectoryLoaded() {}
     virtual void onDirectoryLoadFailed(ContactDirectoryLoadError /*error*/) {}

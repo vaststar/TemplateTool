@@ -45,7 +45,7 @@ public:
     // ===== Relations =====
     virtual void onContactRelationsAdded(const model::ContactRelationArray& /*relations*/) {}
     virtual void onContactRelationsUpdated(const model::ContactRelationArray& /*relations*/) {}
-    virtual void onContactRelationsRemoved(const std::vector<std::string>& /*childIds*/) {}
+    virtual void onContactRelationsRemoved(const std::vector<std::string>& /*relationIds*/) {}
 };
 
 } // namespace ucf::service

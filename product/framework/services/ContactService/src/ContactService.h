@@ -40,8 +40,10 @@ public:
 
     // IContactService - Read
     virtual model::PersonContactArray   getPersonContactList() const override;
-    virtual model::GroupContactArray    getGroupContactList() const override;
-    virtual model::ContactRelationArray getContactRelations() const override;
+    virtual model::GroupContactArray    getGroupContactList(
+        std::optional<model::IGroupContact::GroupType> groupType = std::nullopt) const override;
+    virtual model::ContactRelationArray getContactRelations(
+        std::optional<model::IContactRelation::RelationType> relationType = std::nullopt) const override;
     virtual model::IPersonContactPtr    getPersonContact(const std::string& contactId) const override;
     virtual model::IGroupContactPtr     getGroupContact(const std::string& contactId) const override;
 
@@ -56,7 +58,7 @@ public:
 
     virtual void addContactRelations(const model::ContactRelationArray& relations) override;
     virtual void updateContactRelations(const model::ContactRelationArray& relations) override;
-    virtual void removeContactRelations(const std::vector<std::string>& childIds) override;
+    virtual void removeContactRelations(const std::vector<std::string>& relationIds) override;
 
     // IContactService - Lifecycle
     virtual void loadContactDirectory() override;
@@ -75,9 +77,9 @@ private:
     virtual void onGroupContactsAdded    (const model::GroupContactArray& groups,      ContactNotificationSource src) override;
     virtual void onGroupContactsUpdated  (const model::GroupContactArray& groups,      ContactNotificationSource src) override;
     virtual void onGroupContactsRemoved  (const std::vector<std::string>& contactIds,  ContactNotificationSource src) override;
-    virtual void onContactRelationsAdded   (const model::ContactRelationArray& relations, ContactNotificationSource src) override;
-    virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations, ContactNotificationSource src) override;
-    virtual void onContactRelationsRemoved (const std::vector<std::string>& childIds,     ContactNotificationSource src) override;
+    virtual void onContactRelationsAdded   (const model::ContactRelationArray& relations,    ContactNotificationSource src) override;
+    virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations,    ContactNotificationSource src) override;
+    virtual void onContactRelationsRemoved (const std::vector<std::string>& relationIds, ContactNotificationSource src) override;
     virtual void onDirectoryLoaded() override;
     virtual void onDirectoryLoadFailed(ContactDirectoryLoadError error) override;
 

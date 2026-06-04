@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,9 +30,14 @@ public:
 
 public:
     // ===== Read =====
+    // Group / relation reads accept an optional filter so different views (org chart,
+    // project list, reporting line, ...) can fetch only the slice they need without
+    // post-filtering in every caller. Pass std::nullopt to get the full snapshot.
     [[nodiscard]] virtual model::PersonContactArray   getPersonContactList() const = 0;
-    [[nodiscard]] virtual model::GroupContactArray    getGroupContactList() const = 0;
-    [[nodiscard]] virtual model::ContactRelationArray getContactRelations() const = 0;
+    [[nodiscard]] virtual model::GroupContactArray    getGroupContactList(
+        std::optional<model::IGroupContact::GroupType> groupType = std::nullopt) const = 0;
+    [[nodiscard]] virtual model::ContactRelationArray getContactRelations(
+        std::optional<model::IContactRelation::RelationType> relationType = std::nullopt) const = 0;
     [[nodiscard]] virtual model::IPersonContactPtr    getPersonContact(const std::string& contactId) const = 0;
     [[nodiscard]] virtual model::IGroupContactPtr     getGroupContact(const std::string& contactId) const = 0;
 
@@ -44,9 +50,13 @@ public:
     virtual void updateGroupContacts(const model::GroupContactArray& groups) = 0;
     virtual void removeGroupContacts(const std::vector<std::string>& contactIds) = 0;
 
+    // Relation rows are identified by a surrogate id (IContactRelation::getRelationId).
+    // For add(), the caller may leave the id empty and the service will assign one;
+    // update() targets an existing row by its id (so the parent / type can change in
+    // place); remove() takes the ids to drop.
     virtual void addContactRelations(const model::ContactRelationArray& relations)    = 0;
     virtual void updateContactRelations(const model::ContactRelationArray& relations) = 0;
-    virtual void removeContactRelations(const std::vector<std::string>& childIds)     = 0;
+    virtual void removeContactRelations(const std::vector<std::string>& relationIds)  = 0;
 
     // ===== Lifecycle =====
     // Trigger loading the contact directory from the database. Requires the database to be

@@ -98,6 +98,16 @@ std::vector<std::shared_ptr<ContactTreeNode>> ContactTreeNode::takeChildren()
     return out;
 }
 
+const std::string& ContactTreeNode::getRelationId() const
+{
+    return m_relationId;
+}
+
+void ContactTreeNode::setRelationId(std::string relationId)
+{
+    m_relationId = std::move(relationId);
+}
+
 
 // ---------------- ContactTree ----------------
 
@@ -197,6 +207,7 @@ void ContactTree::buildRelations(const std::vector<ucf::service::model::IContact
             continue;
         }
         itParent->second->addChild(itChild->second);
+        itChild->second->setRelationId(rel->getRelationId());
     }
 }
 
@@ -261,7 +272,10 @@ void ContactTree::removeNode(const std::string& id)
     auto it = m_nodes.find(id);
     if (it == m_nodes.end() || !it->second)
     {
-        if (it != m_nodes.end()) m_nodes.erase(it);
+        if (it != m_nodes.end())
+        {
+            m_nodes.erase(it);
+        }
         return;
     }
     auto node = it->second;
@@ -272,6 +286,7 @@ void ContactTree::removeNode(const std::string& id)
     {
         if (child)
         {
+            child->setRelationId({});
             m_root->addChild(child);
         }
     }
@@ -280,15 +295,15 @@ void ContactTree::removeNode(const std::string& id)
     m_nodes.erase(it);
 }
 
-void ContactTree::setRelation(const std::string& parentId, const std::string& childId)
+void ContactTree::setRelation(const ContactRelationData& relation)
 {
-    auto itChild = m_nodes.find(childId);
-    auto itParent = m_nodes.find(parentId);
+    auto itChild  = m_nodes.find(relation.childId);
+    auto itParent = m_nodes.find(relation.parentId);
     if (itChild == m_nodes.end() || itParent == m_nodes.end())
     {
         return;
     }
-    auto childNode = itChild->second;
+    auto childNode  = itChild->second;
     auto parentNode = itParent->second;
     if (!childNode || !parentNode || childNode == parentNode)
     {
@@ -296,6 +311,7 @@ void ContactTree::setRelation(const std::string& parentId, const std::string& ch
     }
     detachFromParent(childNode);
     parentNode->addChild(childNode);
+    childNode->setRelationId(relation.id);
 }
 
 void ContactTree::clearRelation(const std::string& childId)
@@ -307,6 +323,7 @@ void ContactTree::clearRelation(const std::string& childId)
     }
     auto childNode = itChild->second;
     detachFromParent(childNode);
+    childNode->setRelationId({});
     m_root->addChild(childNode);
 }
 
@@ -337,11 +354,11 @@ void ContactTree::removeNodes(const std::vector<std::string>& ids)
     }
 }
 
-void ContactTree::setRelations(const std::vector<std::pair<std::string, std::string>>& parentChildPairs)
+void ContactTree::setRelations(const std::vector<ContactRelationData>& relations)
 {
-    for (const auto& [parentId, childId] : parentChildPairs)
+    for (const auto& r : relations)
     {
-        setRelation(parentId, childId);
+        setRelation(r);
     }
 }
 
@@ -351,6 +368,35 @@ void ContactTree::clearRelations(const std::vector<std::string>& childIds)
     {
         clearRelation(id);
     }
+}
+
+// ===== Relation row identity lookups =====
+
+std::string ContactTree::getRelationIdByChildId(const std::string& childId) const
+{
+    auto it = m_nodes.find(childId);
+    if (it == m_nodes.end() || !it->second)
+    {
+        return {};
+    }
+    return it->second->getRelationId();
+}
+
+std::string ContactTree::takeChildIdByRelationId(const std::string& relationId)
+{
+    if (relationId.empty())
+    {
+        return {};
+    }
+    for (const auto& [childId, node] : m_nodes)
+    {
+        if (node && node->getRelationId() == relationId)
+        {
+            node->setRelationId({});
+            return childId;
+        }
+    }
+    return {};
 }
 
 }
