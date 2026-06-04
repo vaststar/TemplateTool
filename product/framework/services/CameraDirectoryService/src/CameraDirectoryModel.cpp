@@ -1,5 +1,7 @@
 #include "CameraDirectoryModel.h"
 
+#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+
 #include "CameraDirectoryDBAccess.h"
 #include "CameraDirectoryServiceLogger.h"
 
@@ -216,13 +218,20 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::addCameraRelationsInMe
         {
             continue;
         }
-        if (mRelations.find(childId) != mRelations.end())
+        // Caller may leave the relationId empty for a brand-new row; we mint a UUID
+        // here so that every persisted relation has a stable surrogate key.
+        std::string relationId = relation->getRelationId();
+        if (relationId.empty())
+        {
+            relationId = ucf::utilities::UUIDUtils::generateUUID();
+        }
+        if (mRelations.find(relationId) != mRelations.end())
         {
             continue;
         }
         auto impl = std::make_shared<model::CameraDirectoryRelationImpl>(
-            parentId, childId, relation->getRelationType());
-        mRelations.emplace(childId, impl);
+            relationId, parentId, childId, relation->getRelationType());
+        mRelations.emplace(relationId, impl);
         accepted.push_back(impl);
     }
     return accepted;
@@ -230,6 +239,7 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::addCameraRelationsInMe
 
 model::CameraDirectoryRelationArray CameraDirectoryModel::updateCameraRelationsInMemory(const model::CameraDirectoryRelationArray& relations)
 {
+    // Identify each row by its relationId; mutable fields are parentId and relationType.
     model::CameraDirectoryRelationArray accepted;
     accepted.reserve(relations.size());
     std::scoped_lock lock(mMutex);
@@ -239,7 +249,12 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::updateCameraRelationsI
         {
             continue;
         }
-        auto it = mRelations.find(relation->getChildId());
+        const std::string relationId = relation->getRelationId();
+        if (relationId.empty())
+        {
+            continue;
+        }
+        auto it = mRelations.find(relationId);
         if (it == mRelations.end())
         {
             continue;
@@ -251,16 +266,16 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::updateCameraRelationsI
     return accepted;
 }
 
-std::vector<std::string> CameraDirectoryModel::removeCameraRelationsInMemory(const std::vector<std::string>& childIds)
+std::vector<std::string> CameraDirectoryModel::removeCameraRelationsInMemory(const std::vector<std::string>& relationIds)
 {
     std::vector<std::string> accepted;
-    accepted.reserve(childIds.size());
+    accepted.reserve(relationIds.size());
     std::scoped_lock lock(mMutex);
-    for (const auto& childId : childIds)
+    for (const auto& relationId : relationIds)
     {
-        if (mRelations.erase(childId) > 0)
+        if (mRelations.erase(relationId) > 0)
         {
-            accepted.push_back(childId);
+            accepted.push_back(relationId);
         }
     }
     return accepted;
@@ -395,12 +410,12 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::updateCameraRelations(
     return accepted;
 }
 
-std::vector<std::string> CameraDirectoryModel::removeCameraRelations(const std::vector<std::string>& childIds)
+std::vector<std::string> CameraDirectoryModel::removeCameraRelations(const std::vector<std::string>& relationIds)
 {
-    auto accepted = removeCameraRelationsInMemory(childIds);
-    for (const auto& childId : accepted)
+    auto accepted = removeCameraRelationsInMemory(relationIds);
+    for (const auto& relationId : accepted)
     {
-        mCameraDirectoryDBAccess->deleteCameraRelation(childId);
+        mCameraDirectoryDBAccess->deleteCameraRelation(relationId);
     }
     if (!accepted.empty())
     {

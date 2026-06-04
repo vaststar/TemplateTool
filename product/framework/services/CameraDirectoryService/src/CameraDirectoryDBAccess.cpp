@@ -282,6 +282,7 @@ void CameraDirectoryDBAccess::loadCameraRelations(LoadRelationsCallback callback
         dbId,
         db::schema::CameraDirectoryRelationTable::TableName,
         {
+            db::schema::CameraDirectoryRelationTable::RelationIdField,
             db::schema::CameraDirectoryRelationTable::ParentIdField,
             db::schema::CameraDirectoryRelationTable::ChildIdField,
             db::schema::CameraDirectoryRelationTable::RelationTypeField
@@ -293,15 +294,16 @@ void CameraDirectoryDBAccess::loadCameraRelations(LoadRelationsCallback callback
             relations.reserve(results.size());
             for (const auto& record : results)
             {
-                const std::string parentId = record.getColumnData(db::schema::CameraDirectoryRelationTable::ParentIdField).getStringValue();
-                const std::string childId  = record.getColumnData(db::schema::CameraDirectoryRelationTable::ChildIdField).getStringValue();
-                const auto        type     = static_cast<model::ICameraDirectoryRelation::RelationType>(
+                const std::string relationId = record.getColumnData(db::schema::CameraDirectoryRelationTable::RelationIdField).getStringValue();
+                const std::string parentId   = record.getColumnData(db::schema::CameraDirectoryRelationTable::ParentIdField).getStringValue();
+                const std::string childId    = record.getColumnData(db::schema::CameraDirectoryRelationTable::ChildIdField).getStringValue();
+                const auto        type       = static_cast<model::ICameraDirectoryRelation::RelationType>(
                                                 record.getColumnData(db::schema::CameraDirectoryRelationTable::RelationTypeField).getIntValue());
-                if (parentId.empty() || childId.empty())
+                if (relationId.empty() || parentId.empty() || childId.empty())
                 {
                     continue;
                 }
-                relations.push_back(std::make_shared<model::CameraDirectoryRelationImpl>(parentId, childId, type));
+                relations.push_back(std::make_shared<model::CameraDirectoryRelationImpl>(relationId, parentId, childId, type));
             }
             SERVICE_LOG_DEBUG("DBAccess loaded " << relations.size() << " camera relations");
             if (cb)
@@ -572,6 +574,7 @@ void CameraDirectoryDBAccess::insertCameraRelations(const model::CameraDirectory
     for (const auto& r : relations)
     {
         values.emplace_back(model::DBDataValues{
+            r->getRelationId(),
             r->getChildId(),
             r->getParentId(),
             static_cast<int>(r->getRelationType())
@@ -581,6 +584,7 @@ void CameraDirectoryDBAccess::insertCameraRelations(const model::CameraDirectory
         dbId,
         db::schema::CameraDirectoryRelationTable::TableName,
         {
+            db::schema::CameraDirectoryRelationTable::RelationIdField,
             db::schema::CameraDirectoryRelationTable::ChildIdField,
             db::schema::CameraDirectoryRelationTable::ParentIdField,
             db::schema::CameraDirectoryRelationTable::RelationTypeField
@@ -623,11 +627,11 @@ void CameraDirectoryDBAccess::updateCameraRelation(const model::ICameraDirectory
         },
         values,
         {
-            {db::schema::CameraDirectoryRelationTable::ChildIdField, relation->getChildId(), model::DBOperatorType::Equal}
+            {db::schema::CameraDirectoryRelationTable::RelationIdField, relation->getRelationId(), model::DBOperatorType::Equal}
         });
 }
 
-void CameraDirectoryDBAccess::deleteCameraRelation(const std::string& childId) const
+void CameraDirectoryDBAccess::deleteCameraRelation(const std::string& relationId) const
 {
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
@@ -649,7 +653,7 @@ void CameraDirectoryDBAccess::deleteCameraRelation(const std::string& childId) c
         dbId,
         db::schema::CameraDirectoryRelationTable::TableName,
         {
-            {db::schema::CameraDirectoryRelationTable::ChildIdField, childId, model::DBOperatorType::Equal}
+            {db::schema::CameraDirectoryRelationTable::RelationIdField, relationId, model::DBOperatorType::Equal}
         });
 }
 

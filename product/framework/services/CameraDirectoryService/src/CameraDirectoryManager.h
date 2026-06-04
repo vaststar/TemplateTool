@@ -48,7 +48,7 @@ public:
 
     model::CameraDirectoryRelationArray addCameraRelations(const model::CameraDirectoryRelationArray& relations);
     model::CameraDirectoryRelationArray updateCameraRelations(const model::CameraDirectoryRelationArray& relations);
-    std::vector<std::string>            removeCameraRelations(const std::vector<std::string>& childIds);
+    std::vector<std::string>            removeCameraRelations(const std::vector<std::string>& relationIds);
 
     // ===== Lifecycle =====
     void bindDatabase(const std::string& databaseId);

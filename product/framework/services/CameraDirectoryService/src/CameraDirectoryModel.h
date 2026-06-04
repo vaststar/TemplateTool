@@ -51,7 +51,7 @@ public:
 
     model::CameraDirectoryRelationArray addCameraRelations(const model::CameraDirectoryRelationArray& relations);
     model::CameraDirectoryRelationArray updateCameraRelations(const model::CameraDirectoryRelationArray& relations);
-    std::vector<std::string>            removeCameraRelations(const std::vector<std::string>& childIds);
+    std::vector<std::string>            removeCameraRelations(const std::vector<std::string>& relationIds);
 
     // ===== Lifecycle =====
     // Bind the database id only; does not start any load. Idempotent.
@@ -79,7 +79,7 @@ private:
     std::vector<std::string>            removeCamerasInMemory(const std::vector<std::string>& nodeIds);
     model::CameraDirectoryRelationArray addCameraRelationsInMemory(const model::CameraDirectoryRelationArray& relations);
     model::CameraDirectoryRelationArray updateCameraRelationsInMemory(const model::CameraDirectoryRelationArray& relations);
-    std::vector<std::string>            removeCameraRelationsInMemory(const std::vector<std::string>& childIds);
+    std::vector<std::string>            removeCameraRelationsInMemory(const std::vector<std::string>& relationIds);
 
     // Single exit points that emit the load-finished / load-failed notification
     // (thread-safe; fires exactly once per load).
@@ -98,6 +98,7 @@ private:
     mutable std::mutex mMutex;
     std::unordered_map<std::string, std::shared_ptr<model::CameraGroupImpl>>             mGroups;
     std::unordered_map<std::string, std::shared_ptr<model::CameraEntryImpl>>             mCameras;
+    // Keyed by the relation's surrogate primary key (RELATION_ID, UUID).
     std::unordered_map<std::string, std::shared_ptr<model::CameraDirectoryRelationImpl>> mRelations;
 
     const std::unique_ptr<CameraDirectoryDBAccess> mCameraDirectoryDBAccess;

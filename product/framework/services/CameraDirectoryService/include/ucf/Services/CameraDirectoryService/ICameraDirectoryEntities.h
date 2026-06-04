@@ -31,10 +31,6 @@ using ICameraDirectoryNodePtr = std::shared_ptr<ICameraDirectoryNode>;
 // Group node (e.g. Local / Remote / Family / Yard).
 class SERVICE_EXPORT ICameraGroup : public ICameraDirectoryNode
 {
-public:
-    static std::shared_ptr<ICameraGroup> createInstance(std::string nodeId,
-                                                        std::string displayName,
-                                                        CameraNodeStatus status = CameraNodeStatus::Active);
 };
 using ICameraGroupPtr   = std::shared_ptr<ICameraGroup>;
 using CameraGroupArray  = std::vector<ICameraGroupPtr>;
@@ -44,11 +40,6 @@ class SERVICE_EXPORT ICameraEntry : public ICameraDirectoryNode
 {
 public:
     virtual media::CameraSource getSource() const = 0;
-
-    static std::shared_ptr<ICameraEntry> createInstance(std::string nodeId,
-                                                        std::string displayName,
-                                                        media::CameraSource source,
-                                                        CameraNodeStatus status = CameraNodeStatus::Active);
 };
 using ICameraEntryPtr   = std::shared_ptr<ICameraEntry>;
 using CameraEntryArray  = std::vector<ICameraEntryPtr>;
@@ -63,13 +54,12 @@ public:
 
     virtual ~ICameraDirectoryRelation() = default;
 
+    // Surrogate primary key (UUID). Empty when callers issue an "add" request and
+    // expect the service layer to mint a new id.
+    virtual std::string getRelationId() const = 0;
     virtual std::string getParentId() const = 0;
     virtual std::string getChildId() const = 0;
     virtual RelationType getRelationType() const = 0;
-
-    static std::shared_ptr<ICameraDirectoryRelation> createInstance(std::string parentId,
-                                                                    std::string childId,
-                                                                    RelationType type = RelationType::Containment);
 };
 using ICameraDirectoryRelationPtr   = std::shared_ptr<ICameraDirectoryRelation>;
 using CameraDirectoryRelationArray  = std::vector<ICameraDirectoryRelationPtr>;

@@ -53,6 +53,8 @@ public:
     // ===== Incremental relation events. =====
     virtual void onCameraRelationsAdded(const std::vector<model::CameraDirectoryRelationData>& /*relations*/) {}
     virtual void onCameraRelationsUpdated(const std::vector<model::CameraDirectoryRelationData>& /*relations*/) {}
+    // childIds covers only the relations that belonged to this VM slice; the VM has
+    // translated the service-emitted relationIds back to childIds before firing.
     virtual void onCameraRelationsRemoved(const std::vector<std::string>& /*childIds*/) {}
 
     // The VM-owned current selection changed. Empty nodeId means selection was cleared
@@ -109,6 +111,19 @@ public:
     virtual void addRelation(const std::string& parentId, const std::string& childId) = 0;
     virtual void updateRelation(const std::string& parentId, const std::string& childId) = 0;
     virtual void removeRelations(const std::vector<std::string>& childIds) = 0;
+
+    // ===== Drag-drop / re-parent =====
+    // Pre-flight check for a drag-drop reparent. Returns true when moving `childId` to
+    // become a direct child of `newParentId` would produce a legal tree. Empty
+    // `newParentId` means "move to root" and is always allowed for a known node.
+    // Rejects: unknown ids, no-op moves (already at that parent), cycles (newParentId
+    // is a descendant of childId), and dropping a node onto itself.
+    [[nodiscard]] virtual bool canMoveCameraNode(const std::string& childId,
+                                                 const std::string& newParentId) const = 0;
+    // Apply the move. Internally routes to addRelation / updateRelation /
+    // removeRelations depending on the current parent and `newParentId`. No-op when
+    // canMoveCameraNode returns false.
+    virtual void moveCameraNode(const std::string& childId, const std::string& newParentId) = 0;
 
     // ===== Selection =====
     // Set the current selected camera node. Pass an empty string to clear selection.

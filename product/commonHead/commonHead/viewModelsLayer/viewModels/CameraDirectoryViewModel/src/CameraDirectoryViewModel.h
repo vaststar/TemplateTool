@@ -61,6 +61,10 @@ public:
     void updateRelation(const std::string& parentId, const std::string& childId) override;
     void removeRelations(const std::vector<std::string>& childIds) override;
 
+    // ICameraDirectoryViewModel - drag-drop / re-parent
+    bool canMoveCameraNode(const std::string& childId, const std::string& newParentId) const override;
+    void moveCameraNode(const std::string& childId, const std::string& newParentId) override;
+
     // ICameraDirectoryViewModel - selection
     void selectCamera(const std::string& nodeId) override;
 
@@ -75,7 +79,7 @@ public:
     void onCamerasRemoved(const std::vector<std::string>& nodeIds) override;
     void onCameraRelationsAdded(const ucf::service::model::CameraDirectoryRelationArray& relations) override;
     void onCameraRelationsUpdated(const ucf::service::model::CameraDirectoryRelationArray& relations) override;
-    void onCameraRelationsRemoved(const std::vector<std::string>& childIds) override;
+    void onCameraRelationsRemoved(const std::vector<std::string>& relationIds) override;
 
 protected:
     void init() override;

@@ -178,9 +178,9 @@ void CameraDirectoryService::updateCameraRelations(const model::CameraDirectoryR
     mDataPrivate->getManager().updateCameraRelations(relations);
 }
 
-void CameraDirectoryService::removeCameraRelations(const std::vector<std::string>& childIds)
+void CameraDirectoryService::removeCameraRelations(const std::vector<std::string>& relationIds)
 {
-    mDataPrivate->getManager().removeCameraRelations(childIds);
+    mDataPrivate->getManager().removeCameraRelations(relationIds);
 }
 
 // ===== Lifecycle =====
@@ -235,9 +235,9 @@ void CameraDirectoryService::onRelationsUpdated(const model::CameraDirectoryRela
     fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsUpdated, relations);
 }
 
-void CameraDirectoryService::onRelationsRemoved(const std::vector<std::string>& childIds, CameraDirectoryNotificationSource /*src*/)
+void CameraDirectoryService::onRelationsRemoved(const std::vector<std::string>& relationIds, CameraDirectoryNotificationSource /*src*/)
 {
-    fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsRemoved, childIds);
+    fireNotification(&ICameraDirectoryServiceCallback::onCameraRelationsRemoved, relationIds);
 }
 
 void CameraDirectoryService::onDirectoryLoaded()

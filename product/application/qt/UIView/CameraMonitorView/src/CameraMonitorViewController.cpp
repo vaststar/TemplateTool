@@ -70,31 +70,9 @@ void CameraMonitorViewController::init()
     QObject::connect(e, &Emitter::signals_onCameraRelationsUpdated,  this, &CameraMonitorViewController::onCameraRelationsUpdated);
     QObject::connect(e, &Emitter::signals_onCameraRelationsRemoved,  this, &CameraMonitorViewController::onCameraRelationsRemoved);
 
-    // Register the emitter BEFORE probing isCameraDirectoryReady(): if the VM transitions
-    // between the probe and the registration we would otherwise miss the Ready / change
-    // events that arrive in that window.
     mCameraDirectoryViewModel->registerCallback(mCameraDirectoryEmitter);
     mCameraDirectoryViewModel->initViewModel();
 
-    // if (mCameraDirectoryViewModel->isCameraDirectoryReady())
-    // {
-    //     // VM already loaded (we joined late); pull the snapshot synchronously.
-    //     UIVIEW_LOG_DEBUG("CameraDirectoryViewModel already ready on init, pulling snapshot");
-    //     mCameraTreeModel->resetFromTree(mCameraDirectoryViewModel->getCameraTree());
-    //     setLoadState(Ready);
-    // }
-    // else
-    // {
-    //     // Wait for onCameraDirectoryReady / onCameraDirectoryLoadFailed.
-    //     UIVIEW_LOG_DEBUG("CameraDirectoryViewModel not ready yet, waiting for load notification");
-    //     setLoadState(Loading);
-    // }
-
-    // // Pull initial selection in case a sibling VM consumer already set one before we joined.
-    // if (const auto initialId = mCameraDirectoryViewModel->getCurrentCameraId(); !initialId.empty())
-    // {
-    //     onCurrentCameraChanged(QString::fromStdString(initialId));
-    // }
 }
 
 void CameraMonitorViewController::selectNode(const QString& nodeId)
@@ -103,10 +81,25 @@ void CameraMonitorViewController::selectNode(const QString& nodeId)
     {
         return;
     }
-    // Pure forward: VM owns the selection state. The mirror is updated when the VM fires
-    // onCurrentCameraChanged back to us. The VM also validates that the id refers to a
-    // real camera and dedupes against the current value.
     mCameraDirectoryViewModel->selectCamera(nodeId.toStdString());
+}
+
+bool CameraMonitorViewController::canDropOnNode(const QString& srcId, const QString& targetParentId) const
+{
+    if (!mCameraDirectoryViewModel)
+    {
+        return false;
+    }
+    return mCameraDirectoryViewModel->canMoveCameraNode(srcId.toStdString(), targetParentId.toStdString());
+}
+
+void CameraMonitorViewController::moveCameraNode(const QString& srcId, const QString& targetParentId)
+{
+    if (!mCameraDirectoryViewModel)
+    {
+        return;
+    }
+    mCameraDirectoryViewModel->moveCameraNode(srcId.toStdString(), targetParentId.toStdString());
 }
 
 void CameraMonitorViewController::onCurrentCameraChanged(const QString& nodeId)

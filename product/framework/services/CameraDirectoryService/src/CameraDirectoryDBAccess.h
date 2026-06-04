@@ -49,7 +49,7 @@ public:
 
     void insertCameraRelations(const model::CameraDirectoryRelationArray& relations) const;
     void updateCameraRelation(const model::ICameraDirectoryRelationPtr& relation) const;
-    void deleteCameraRelation(const std::string& childId) const;
+    void deleteCameraRelation(const std::string& relationId) const;
 
 private:
     std::string resolveDatabaseId() const;

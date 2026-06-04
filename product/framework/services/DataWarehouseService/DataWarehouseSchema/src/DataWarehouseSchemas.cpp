@@ -91,7 +91,8 @@ CameraTable::CameraTable()
 
 CameraDirectoryRelationTable::CameraDirectoryRelationTable()
     : ucf::service::model::DBTableModel(TableName,{
-        {ChildIdField,      "TEXT UNIQUE NOT NULL"},
+        {RelationIdField,   "TEXT UNIQUE NOT NULL"},
+        {ChildIdField,      "TEXT NOT NULL"},
         {ParentIdField,     "TEXT NOT NULL"},
         {RelationTypeField, "INTEGER NOT NULL"}
     })

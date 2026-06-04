@@ -46,7 +46,7 @@ public:
     // Relation events.
     virtual void onCameraRelationsAdded(const model::CameraDirectoryRelationArray& /*relations*/) {}
     virtual void onCameraRelationsUpdated(const model::CameraDirectoryRelationArray& /*relations*/) {}
-    virtual void onCameraRelationsRemoved(const std::vector<std::string>& /*childIds*/) {}
+    virtual void onCameraRelationsRemoved(const std::vector<std::string>& /*relationIds*/) {}
 };
 
 } // namespace ucf::service

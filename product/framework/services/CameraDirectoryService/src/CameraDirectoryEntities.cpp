@@ -4,30 +4,6 @@
 
 namespace ucf::service::model {
 
-// ===== Interface factories =====
-
-ICameraGroupPtr ICameraGroup::createInstance(std::string nodeId,
-                                             std::string displayName,
-                                             CameraNodeStatus status)
-{
-    return std::make_shared<CameraGroupImpl>(std::move(nodeId), std::move(displayName), status);
-}
-
-ICameraEntryPtr ICameraEntry::createInstance(std::string nodeId,
-                                             std::string displayName,
-                                             media::CameraSource source,
-                                             CameraNodeStatus status)
-{
-    return std::make_shared<CameraEntryImpl>(std::move(nodeId), std::move(displayName), status, std::move(source));
-}
-
-ICameraDirectoryRelationPtr ICameraDirectoryRelation::createInstance(std::string parentId,
-                                                                     std::string childId,
-                                                                     RelationType type)
-{
-    return std::make_shared<CameraDirectoryRelationImpl>(std::move(parentId), std::move(childId), type);
-}
-
 // ===== CameraGroupImpl =====
 
 CameraGroupImpl::CameraGroupImpl(std::string nodeId,
@@ -124,13 +100,20 @@ void CameraEntryImpl::setSource(const media::CameraSource& source)
 
 // ===== CameraDirectoryRelationImpl =====
 
-CameraDirectoryRelationImpl::CameraDirectoryRelationImpl(std::string parentId,
+CameraDirectoryRelationImpl::CameraDirectoryRelationImpl(std::string relationId,
+                                                         std::string parentId,
                                                          std::string childId,
                                                          RelationType type)
-    : mParentId(std::move(parentId))
+    : mRelationId(std::move(relationId))
+    , mParentId(std::move(parentId))
     , mChildId(std::move(childId))
     , mRelationType(type)
 {
+}
+
+std::string CameraDirectoryRelationImpl::getRelationId() const
+{
+    return mRelationId;
 }
 
 std::string CameraDirectoryRelationImpl::getParentId() const

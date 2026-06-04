@@ -128,12 +128,12 @@ CAMERAS = [
     ("seed_cam_backyard", "Backyard",        SOURCE_TYPE_NETWORK, 0, "rtsp://192.168.1.11:554/stream1",   "tcp",  5000, 5000),
 ]
 
-# child -> parent
+# (relationId, childId, parentId)
 CAMERA_RELATIONS = [
-    ("seed_cam_local_0",  "seed_cgroup_local"),
-    ("seed_cam_local_1",  "seed_cgroup_local"),
-    ("seed_cam_front",    "seed_cgroup_remote"),
-    ("seed_cam_backyard", "seed_cgroup_remote"),
+    ("seed_rel_cam_local_0",  "seed_cam_local_0",  "seed_cgroup_local"),
+    ("seed_rel_cam_local_1",  "seed_cam_local_1",  "seed_cgroup_local"),
+    ("seed_rel_cam_front",    "seed_cam_front",    "seed_cgroup_remote"),
+    ("seed_rel_cam_backyard", "seed_cam_backyard", "seed_cgroup_remote"),
 ]
 
 
@@ -163,6 +163,27 @@ def _migrate_contact_relation_schema(cur: sqlite3.Cursor) -> None:
     cur.execute(f"DROP TABLE {T_CONTACT_REL}")
 
 
+def _migrate_camera_directory_relation_schema(cur: sqlite3.Cursor) -> None:
+    """Bring CameraDirectoryRelation onto the RELATION_ID surrogate-PK schema.
+    If the table is missing or on the old schema we (re)create it here so this
+    same seed run can populate it — otherwise insert_cameras would skip the
+    relation rows and the tree would render flat until the next app launch.
+    Must mirror the C++ schema in DataWarehouseSchemas.cpp.
+    """
+    if _table_exists(cur, T_CAMERA_REL) and _column_exists(cur, T_CAMERA_REL, "RELATION_ID"):
+        return
+    if _table_exists(cur, T_CAMERA_REL):
+        print(f"[migrate] {T_CAMERA_REL} is on the old schema (no RELATION_ID); dropping and recreating.")
+        cur.execute(f"DROP TABLE {T_CAMERA_REL}")
+    cur.execute(
+        f"CREATE TABLE IF NOT EXISTS {T_CAMERA_REL} ("
+        "RELATION_ID TEXT UNIQUE NOT NULL, "
+        "CHILD_ID TEXT NOT NULL, "
+        "PARENT_ID TEXT NOT NULL, "
+        "RELATION_TYPE INTEGER NOT NULL)"
+    )
+
+
 def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
     """Remove rows we previously inserted (matched by `seed_` id prefix)."""
     if _table_exists(cur, T_CONTACT_REL):
@@ -174,7 +195,10 @@ def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
     cur.execute(f"DELETE FROM {T_USER_CONTACT}  WHERE CONTACT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_GROUP_CONTACT} WHERE GROUP_ID   LIKE 'seed_%'")
     if _table_exists(cur, T_CAMERA_REL):
-        cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+        if _column_exists(cur, T_CAMERA_REL, "RELATION_ID"):
+            cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE RELATION_ID LIKE 'seed_%' OR CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
+        else:
+            cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE CHILD_ID  LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
     if _table_exists(cur, T_CAMERA):
         cur.execute(f"DELETE FROM {T_CAMERA}        WHERE NODE_ID    LIKE 'seed_%'")
     if _table_exists(cur, T_CAMERA_GROUP):
@@ -215,10 +239,14 @@ def insert_cameras(cur: sqlite3.Cursor) -> None:
         [(nid, name, STATUS_ACTIVE, st, idx, url, transport, ot, rt)
          for (nid, name, st, idx, url, transport, ot, rt) in CAMERAS],
     )
-    cur.executemany(
-        f"INSERT OR REPLACE INTO {T_CAMERA_REL} (CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?)",
-        [(child, parent, CAMERA_RELATION_CONT) for child, parent in CAMERA_RELATIONS],
-    )
+    if _table_exists(cur, T_CAMERA_REL):
+        if not _column_exists(cur, T_CAMERA_REL, "RELATION_ID"):
+            print(f"[skip] {T_CAMERA_REL} is missing RELATION_ID; skipping camera relation seed. Launch the app once to let it recreate the table, then re-run this script.")
+        else:
+            cur.executemany(
+                f"INSERT OR REPLACE INTO {T_CAMERA_REL} (RELATION_ID, CHILD_ID, PARENT_ID, RELATION_TYPE) VALUES (?, ?, ?, ?)",
+                [(rid, child, parent, CAMERA_RELATION_CONT) for rid, child, parent in CAMERA_RELATIONS],
+            )
 
 
 def main() -> int:
@@ -242,6 +270,7 @@ def main() -> int:
     try:
         cur = conn.cursor()
         _migrate_contact_relation_schema(cur)
+        _migrate_camera_directory_relation_schema(cur)
         if args.wipe:
             print("[info] wiping previously seeded rows...")
             wipe_seed_rows(cur)

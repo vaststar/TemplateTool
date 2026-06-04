@@ -95,7 +95,9 @@ struct SERVICE_EXPORT CameraDirectoryRelationTable: public ucf::service::model::
 {
     CameraDirectoryRelationTable();
     static constexpr auto TableName         = "CameraDirectoryRelation";
-    static constexpr auto ChildIdField      = "CHILD_ID";       // 主键，每个节点只挂在一个父下
+    // 主键为 RELATION_ID（UUID）；(CHILD_ID, PARENT_ID, RELATION_TYPE) 作为业务唯一约束由应用层保证。
+    static constexpr auto RelationIdField   = "RELATION_ID";
+    static constexpr auto ChildIdField      = "CHILD_ID";
     static constexpr auto ParentIdField     = "PARENT_ID";
     static constexpr auto RelationTypeField = "RELATION_TYPE";
 };

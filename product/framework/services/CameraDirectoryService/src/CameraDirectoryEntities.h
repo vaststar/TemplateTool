@@ -57,10 +57,12 @@ private:
 class CameraDirectoryRelationImpl : public ICameraDirectoryRelation
 {
 public:
-    CameraDirectoryRelationImpl(std::string parentId,
+    CameraDirectoryRelationImpl(std::string relationId,
+                                std::string parentId,
                                 std::string childId,
                                 RelationType type);
 
+    std::string getRelationId() const override;
     std::string getParentId() const override;
     std::string getChildId() const override;
     RelationType getRelationType() const override;
@@ -70,6 +72,7 @@ public:
 
 private:
     mutable std::mutex mMutex;
+    const std::string mRelationId;
     std::string mParentId;
     const std::string mChildId;
     RelationType mRelationType;

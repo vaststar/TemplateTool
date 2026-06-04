@@ -107,6 +107,16 @@ std::vector<std::shared_ptr<CameraDirectoryTreeNode>> CameraDirectoryTreeNode::t
     return out;
 }
 
+std::string CameraDirectoryTreeNode::getRelationId() const
+{
+    return m_relationId;
+}
+
+void CameraDirectoryTreeNode::setRelationId(std::string relationId)
+{
+    m_relationId = std::move(relationId);
+}
+
 
 // ---------------- CameraDirectoryTree ----------------
 
@@ -166,6 +176,7 @@ void CameraDirectoryTree::buildRelations(const ucf::service::model::CameraDirect
         auto itChild = m_nodes.find(childId);
         if (itChild == m_nodes.end() || !itChild->second) continue;
         itParent->second->addChild(itChild->second);
+        itChild->second->setRelationId(rel->getRelationId());
     }
 }
 
@@ -256,23 +267,25 @@ void CameraDirectoryTree::removeNode(const std::string& nodeId)
     m_nodes.erase(it);
 }
 
-void CameraDirectoryTree::setRelation(const std::string& parentId, const std::string& childId)
+void CameraDirectoryTree::setRelation(const CameraDirectoryRelationData& relation)
 {
-    auto itChild = m_nodes.find(childId);
+    auto itChild = m_nodes.find(relation.childId);
     if (itChild == m_nodes.end() || !itChild->second) return;
     auto child = itChild->second;
 
     detachFromParent(child);
 
-    auto itParent = m_nodes.find(parentId);
+    auto itParent = m_nodes.find(relation.parentId);
     if (itParent != m_nodes.end() && itParent->second && itParent->second != child)
     {
         itParent->second->addChild(child);
+        child->setRelationId(relation.id);
     }
     else
     {
-        // Parent unknown / invalid: park on virtual root.
+        // Parent unknown / invalid: park on virtual root (no relation row).
         m_root->addChild(child);
+        child->setRelationId(std::string{});
     }
 }
 
@@ -283,6 +296,7 @@ void CameraDirectoryTree::clearRelation(const std::string& childId)
     auto child = it->second;
     detachFromParent(child);
     m_root->addChild(child);
+    child->setRelationId(std::string{});
 }
 
 // ===== Batch variants =====
@@ -303,17 +317,41 @@ void CameraDirectoryTree::removeNodes(const std::vector<std::string>& nodeIds)
     for (const auto& id : nodeIds) removeNode(id);
 }
 
-void CameraDirectoryTree::setRelations(const std::vector<std::pair<std::string, std::string>>& parentChildPairs)
+void CameraDirectoryTree::setRelations(const std::vector<CameraDirectoryRelationData>& relations)
 {
-    for (const auto& [parentId, childId] : parentChildPairs)
+    for (const auto& r : relations)
     {
-        setRelation(parentId, childId);
+        setRelation(r);
     }
 }
 
 void CameraDirectoryTree::clearRelations(const std::vector<std::string>& childIds)
 {
     for (const auto& id : childIds) clearRelation(id);
+}
+
+std::string CameraDirectoryTree::getRelationIdByChildId(const std::string& childId) const
+{
+    auto it = m_nodes.find(childId);
+    if (it == m_nodes.end() || !it->second) return {};
+    return it->second->getRelationId();
+}
+
+std::string CameraDirectoryTree::takeChildIdByRelationId(const std::string& relationId)
+{
+    if (relationId.empty()) return {};
+    // Linear scan is acceptable here: relation removals are rare and only the small set
+    // of nodes currently parented in this VM's slice is examined. Adding a reverse index
+    // would double bookkeeping cost on every setRelation for no real win.
+    for (auto& [childId, node] : m_nodes)
+    {
+        if (node && node->getRelationId() == relationId)
+        {
+            node->setRelationId(std::string{});
+            return childId;
+        }
+    }
+    return {};
 }
 
 }

@@ -94,9 +94,9 @@ model::CameraDirectoryRelationArray CameraDirectoryManager::updateCameraRelation
     return mCameraDirectoryModel->updateCameraRelations(relations);
 }
 
-std::vector<std::string> CameraDirectoryManager::removeCameraRelations(const std::vector<std::string>& childIds)
+std::vector<std::string> CameraDirectoryManager::removeCameraRelations(const std::vector<std::string>& relationIds)
 {
-    return mCameraDirectoryModel->removeCameraRelations(childIds);
+    return mCameraDirectoryModel->removeCameraRelations(relationIds);
 }
 
 // ===== Lifecycle =====

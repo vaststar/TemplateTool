@@ -31,11 +31,15 @@ struct COMMONHEAD_EXPORT CameraDirectoryNodeData
     CameraNodeStatus status      = CameraNodeStatus::Active;
 };
 
-// VM-level relation payload: parent/child node id pair.
+// VM-level relation payload: parent/child node id pair plus the surrogate primary key.
 // VM-side projection of the service's ICameraDirectoryRelation, used as the payload of
 // incremental relation callbacks.
 struct COMMONHEAD_EXPORT CameraDirectoryRelationData
 {
+    // The relation's surrogate primary key (RELATION_ID, UUID). May be empty when the
+    // caller is issuing a brand-new "addRelation" request and asks the service to mint
+    // one. After a successful add/update round-trip this field is populated.
+    std::string id;
     std::string parentId;
     std::string childId;
 };

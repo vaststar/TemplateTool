@@ -44,7 +44,7 @@ public:
 
     virtual void onRelationsAdded  (const model::CameraDirectoryRelationArray& relations, CameraDirectoryNotificationSource src) = 0;
     virtual void onRelationsUpdated(const model::CameraDirectoryRelationArray& relations, CameraDirectoryNotificationSource src) = 0;
-    virtual void onRelationsRemoved(const std::vector<std::string>& childIds,             CameraDirectoryNotificationSource src) = 0;
+    virtual void onRelationsRemoved(const std::vector<std::string>& relationIds,             CameraDirectoryNotificationSource src) = 0;
 
     // Load-finished notification (fires exactly once after loadCameraDirectory has populated
     // all three categories).

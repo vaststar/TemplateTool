@@ -46,6 +46,14 @@ public:
 public slots:
     Q_INVOKABLE void selectNode(const QString& nodeId);
 
+    // ===== Drag-drop / re-parent =====
+    // Pre-flight: returns true when dragging `srcId` onto `targetParentId` would
+    // produce a valid move. Empty `targetParentId` means "drop on root".
+    Q_INVOKABLE bool canDropOnNode(const QString& srcId, const QString& targetParentId) const;
+    // Apply the move. Forwards to the VM; the change becomes visible through the
+    // usual relation-callback round-trip.
+    Q_INVOKABLE void moveCameraNode(const QString& srcId, const QString& targetParentId);
+
 signals:
     void cameraTreeModelChanged();
     void currentCameraChanged();

@@ -47,7 +47,7 @@ public:
 
     virtual void addCameraRelations(const model::CameraDirectoryRelationArray& relations) = 0;
     virtual void updateCameraRelations(const model::CameraDirectoryRelationArray& relations) = 0;
-    virtual void removeCameraRelations(const std::vector<std::string>& childIds) = 0;
+    virtual void removeCameraRelations(const std::vector<std::string>& relationIds) = 0;
 
     // ===== Lifecycle =====
     // Explicitly trigger "load camera directory data from the database".

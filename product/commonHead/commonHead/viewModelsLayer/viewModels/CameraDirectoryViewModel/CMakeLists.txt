@@ -8,6 +8,8 @@ list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraDirectoryTreeModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraDirectoryViewModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraDirectoryViewModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraDirectoryViewModelUtils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/CameraDirectoryViewModelUtils.cpp
 )
 list(APPEND MODULE_BUILD_PRIVATE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

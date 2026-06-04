@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <utility>
-#include <variant>
 
 #include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
 #include <ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h>
@@ -12,141 +11,9 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 
+#include "CameraDirectoryViewModelUtils.h"
+
 namespace commonHead::viewModels {
-
-namespace {
-
-ucf::service::media::CameraSource toServiceSource(const model::CameraSource& vm)
-{
-    return std::visit([](auto&& s) -> ucf::service::media::CameraSource {
-        using T = std::decay_t<decltype(s)>;
-        if constexpr (std::is_same_v<T, model::LocalCameraSource>)
-        {
-            return ucf::service::media::LocalCameraSource{s.index};
-        }
-        else
-        {
-            return ucf::service::media::NetworkCameraSource{
-                s.url, s.transport, s.openTimeoutMs, s.readTimeoutMs};
-        }
-    }, vm);
-}
-
-model::CameraSource toVMSource(const ucf::service::media::CameraSource& svc)
-{
-    return std::visit([](auto&& s) -> model::CameraSource {
-        using T = std::decay_t<decltype(s)>;
-        if constexpr (std::is_same_v<T, ucf::service::media::LocalCameraSource>)
-        {
-            return model::LocalCameraSource{s.index};
-        }
-        else
-        {
-            return model::NetworkCameraSource{
-                s.url, s.transport, s.openTimeoutMs, s.readTimeoutMs};
-        }
-    }, svc);
-}
-
-model::CameraNodeStatus toVMStatus(ucf::service::model::CameraNodeStatus s)
-{
-    return static_cast<model::CameraNodeStatus>(static_cast<int>(s));
-}
-
-model::CameraDirectoryLoadError toVMLoadError(ucf::service::CameraDirectoryLoadError e)
-{
-    switch (e)
-    {
-    case ucf::service::CameraDirectoryLoadError::DatabaseNotBound:
-        return model::CameraDirectoryLoadError::DatabaseNotBound;
-    case ucf::service::CameraDirectoryLoadError::DatabaseReadFailed:
-        return model::CameraDirectoryLoadError::DatabaseReadFailed;
-    case ucf::service::CameraDirectoryLoadError::Unknown:
-    default:
-        return model::CameraDirectoryLoadError::Unknown;
-    }
-}
-
-model::CameraDirectoryNodeData toVMNodeData(const ucf::service::model::ICameraGroupPtr& g)
-{
-    model::CameraDirectoryNodeData d;
-    if (g)
-    {
-        d.id          = g->getNodeId();
-        d.displayName = g->getDisplayName();
-        d.type        = model::CameraDirectoryNodeType::Group;
-        d.status      = toVMStatus(g->getNodeStatus());
-    }
-    return d;
-}
-
-model::CameraDirectoryNodeData toVMNodeData(const ucf::service::model::ICameraEntryPtr& c)
-{
-    model::CameraDirectoryNodeData d;
-    if (c)
-    {
-        d.id          = c->getNodeId();
-        d.displayName = c->getDisplayName();
-        d.type        = model::CameraDirectoryNodeType::Camera;
-        d.status      = toVMStatus(c->getNodeStatus());
-    }
-    return d;
-}
-
-model::CameraDirectoryRelationData toVMRelation(const ucf::service::model::ICameraDirectoryRelationPtr& r)
-{
-    model::CameraDirectoryRelationData d;
-    if (r)
-    {
-        d.parentId = r->getParentId();
-        d.childId  = r->getChildId();
-    }
-    return d;
-}
-
-std::vector<model::CameraDirectoryNodeData> toVMNodeDatas(const ucf::service::model::CameraGroupArray& groups)
-{
-    std::vector<model::CameraDirectoryNodeData> out;
-    out.reserve(groups.size());
-    for (const auto& g : groups)
-    {
-        if (g)
-        {
-            out.push_back(toVMNodeData(g));
-        }
-    }
-    return out;
-}
-
-std::vector<model::CameraDirectoryNodeData> toVMNodeDatas(const ucf::service::model::CameraEntryArray& cameras)
-{
-    std::vector<model::CameraDirectoryNodeData> out;
-    out.reserve(cameras.size());
-    for (const auto& c : cameras)
-    {
-        if (c)
-        {
-            out.push_back(toVMNodeData(c));
-        }
-    }
-    return out;
-}
-
-std::vector<model::CameraDirectoryRelationData> toVMRelations(const ucf::service::model::CameraDirectoryRelationArray& relations)
-{
-    std::vector<model::CameraDirectoryRelationData> out;
-    out.reserve(relations.size());
-    for (const auto& r : relations)
-    {
-        if (r)
-        {
-            out.push_back(toVMRelation(r));
-        }
-    }
-    return out;
-}
-
-}
 
 std::shared_ptr<ICameraDirectoryViewModel> ICameraDirectoryViewModel::createInstance(
     commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
@@ -268,7 +135,7 @@ std::optional<model::CameraSource> CameraDirectoryViewModel::getCameraSource(con
     {
         return std::nullopt;
     }
-    return toVMSource(entry->getSource());
+    return utils::toVMSource(entry->getSource());
 }
 
 bool CameraDirectoryViewModel::isCameraDirectoryReady() const
@@ -323,7 +190,7 @@ void CameraDirectoryViewModel::addCameraGroup(const std::string& nodeId, const s
     }
     COMMONHEAD_LOG_DEBUG("addCameraGroup, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraGroupArray groups{
-        ucf::service::model::ICameraGroup::createInstance(nodeId, displayName)
+        std::make_shared<utils::VMCameraGroup>(nodeId, displayName)
     };
     service->addCameraGroups(groups);
 }
@@ -338,7 +205,7 @@ void CameraDirectoryViewModel::updateCameraGroup(const std::string& nodeId, cons
     }
     COMMONHEAD_LOG_DEBUG("updateCameraGroup, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraGroupArray groups{
-        ucf::service::model::ICameraGroup::createInstance(nodeId, displayName)
+        std::make_shared<utils::VMCameraGroup>(nodeId, displayName)
     };
     service->updateCameraGroups(groups);
 }
@@ -369,9 +236,9 @@ void CameraDirectoryViewModel::addCamera(const std::string& nodeId,
     }
     COMMONHEAD_LOG_DEBUG("addCamera, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraEntryArray cameras{
-        ucf::service::model::ICameraEntry::createInstance(
+        std::make_shared<utils::VMCameraEntry>(
             nodeId, displayName,
-            toServiceSource(source))
+            utils::toServiceSource(source))
     };
     service->addCameras(cameras);
 }
@@ -388,9 +255,9 @@ void CameraDirectoryViewModel::updateCamera(const std::string& nodeId,
     }
     COMMONHEAD_LOG_DEBUG("updateCamera, nodeId:" << nodeId << ", displayName:" << displayName);
     ucf::service::model::CameraEntryArray cameras{
-        ucf::service::model::ICameraEntry::createInstance(
+        std::make_shared<utils::VMCameraEntry>(
             nodeId, displayName,
-            toServiceSource(source))
+            utils::toServiceSource(source))
     };
     service->updateCameras(cameras);
 }
@@ -418,8 +285,9 @@ void CameraDirectoryViewModel::addRelation(const std::string& parentId, const st
         return;
     }
     COMMONHEAD_LOG_DEBUG("addRelation, parentId:" << parentId << ", childId:" << childId);
+    // relationId left empty: the service mints a UUID for the brand-new row.
     ucf::service::model::CameraDirectoryRelationArray relations{
-        ucf::service::model::ICameraDirectoryRelation::createInstance(parentId, childId)
+        std::make_shared<utils::VMCameraDirectoryRelation>(std::string{}, parentId, childId)
     };
     service->addCameraRelations(relations);
 }
@@ -432,9 +300,27 @@ void CameraDirectoryViewModel::updateRelation(const std::string& parentId, const
         COMMONHEAD_LOG_ERROR("updateRelation ignored: service not available, childId:" << childId);
         return;
     }
-    COMMONHEAD_LOG_DEBUG("updateRelation, parentId:" << parentId << ", childId:" << childId);
+    // The service identifies relation rows by RELATION_ID; look up the surrogate key
+    // that the tree already remembers for this child.
+    std::string relationId;
+    {
+        std::scoped_lock lk(mTreeMutex);
+        if (mTree)
+        {
+            relationId = mTree->getRelationIdByChildId(childId);
+        }
+    }
+    if (relationId.empty())
+    {
+        COMMONHEAD_LOG_WARN("updateRelation: no existing relation for childId:" << childId
+                            << ", routing to addRelation instead");
+        addRelation(parentId, childId);
+        return;
+    }
+    COMMONHEAD_LOG_DEBUG("updateRelation, relationId:" << relationId
+                         << ", parentId:" << parentId << ", childId:" << childId);
     ucf::service::model::CameraDirectoryRelationArray relations{
-        ucf::service::model::ICameraDirectoryRelation::createInstance(parentId, childId)
+        std::make_shared<utils::VMCameraDirectoryRelation>(relationId, parentId, childId)
     };
     service->updateCameraRelations(relations);
 }
@@ -447,8 +333,119 @@ void CameraDirectoryViewModel::removeRelations(const std::vector<std::string>& c
         COMMONHEAD_LOG_ERROR("removeRelations ignored: service not available, count:" << childIds.size());
         return;
     }
-    COMMONHEAD_LOG_DEBUG("removeRelations, count:" << childIds.size());
-    service->removeCameraRelations(childIds);
+    // Translate childIds known to this VM into the RELATION_IDs the service expects.
+    // Unknown childIds (already at root, or owned by a sibling VM) are silently skipped.
+    std::vector<std::string> relationIds;
+    relationIds.reserve(childIds.size());
+    {
+        std::scoped_lock lk(mTreeMutex);
+        if (mTree)
+        {
+            for (const auto& childId : childIds)
+            {
+                auto rid = mTree->getRelationIdByChildId(childId);
+                if (!rid.empty())
+                {
+                    relationIds.push_back(std::move(rid));
+                }
+            }
+        }
+    }
+    COMMONHEAD_LOG_DEBUG("removeRelations, childIds:" << childIds.size()
+                         << ", resolved relationIds:" << relationIds.size());
+    if (relationIds.empty())
+    {
+        return;
+    }
+    service->removeCameraRelations(relationIds);
+}
+
+// ===== Drag-drop / re-parent =====
+
+bool CameraDirectoryViewModel::canMoveCameraNode(const std::string& childId,
+                                                 const std::string& newParentId) const
+{
+    if (childId.empty() || childId == newParentId)
+    {
+        return false;
+    }
+    std::scoped_lock lk(mTreeMutex);
+    if (!mTree)
+    {
+        return false;
+    }
+    auto child = mTree->findNodeById(childId);
+    if (!child)
+    {
+        return false;
+    }
+    // Empty newParentId = move to root, always allowed for any known node.
+    if (!newParentId.empty())
+    {
+        auto parent = mTree->findNodeById(newParentId);
+        if (!parent)
+        {
+            return false;
+        }
+        // Only groups can contain other nodes.
+        if (parent->getNodeData().type != model::CameraDirectoryNodeType::Group)
+        {
+            return false;
+        }
+        // Reject cycle: newParent must not be a descendant of child.
+        if (utils::isAncestorOf(mTree, childId, newParentId))
+        {
+            return false;
+        }
+    }
+    // No-op move (already at requested parent) -> reject so caller doesn't issue a
+    // wasted update round-trip.
+    auto currentParent = child->getParent().lock();
+    const std::string currentParentId = currentParent ? currentParent->getNodeData().id : std::string{};
+    if (currentParentId == newParentId)
+    {
+        return false;
+    }
+    return true;
+}
+
+void CameraDirectoryViewModel::moveCameraNode(const std::string& childId, const std::string& newParentId)
+{
+    if (!canMoveCameraNode(childId, newParentId))
+    {
+        COMMONHEAD_LOG_DEBUG("moveCameraNode rejected, childId:" << childId
+                             << ", newParentId:" << (newParentId.empty() ? "<root>" : newParentId));
+        return;
+    }
+    // Decide which write primitive to use based on current state.
+    std::string currentRelationId;
+    {
+        std::scoped_lock lk(mTreeMutex);
+        if (mTree)
+        {
+            currentRelationId = mTree->getRelationIdByChildId(childId);
+        }
+    }
+    COMMONHEAD_LOG_INFO("moveCameraNode, childId:" << childId
+                        << ", newParentId:" << (newParentId.empty() ? "<root>" : newParentId)
+                        << ", existingRelationId:" << (currentRelationId.empty() ? "<none>" : currentRelationId));
+    if (newParentId.empty())
+    {
+        // Move to root = drop the relation row entirely. removeRelations does the
+        // child->relationId translation internally.
+        removeRelations({childId});
+        return;
+    }
+    if (currentRelationId.empty())
+    {
+        // Currently at root, no relation row yet -> add one.
+        addRelation(newParentId, childId);
+    }
+    else
+    {
+        // Re-parent the existing relation row.
+        updateRelation(newParentId, childId);
+    }
 }
 
 // ===== ICameraDirectoryServiceCallback: apply incremental updates then forward to VM subscribers =====
@@ -463,12 +460,12 @@ void CameraDirectoryViewModel::onCameraDirectoryReady()
 void CameraDirectoryViewModel::onCameraDirectoryLoadFailed(ucf::service::CameraDirectoryLoadError error)
 {
     COMMONHEAD_LOG_ERROR("onCameraDirectoryLoadFailed received from service, error:" << static_cast<int>(error));
-    fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryLoadFailed, toVMLoadError(error));
+    fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryLoadFailed, utils::toVMLoadError(error));
 }
 
 void CameraDirectoryViewModel::onCameraGroupsAdded(const ucf::service::model::CameraGroupArray& groups)
 {
-    auto vmGroups = toVMNodeDatas(groups);
+    auto vmGroups = utils::toVMNodeDatas(groups);
     if (ensureTreeBuilt())
     {
         // Snapshot rebuilt; the delta is already included. Surface as Ready so subscribers
@@ -487,7 +484,7 @@ void CameraDirectoryViewModel::onCameraGroupsAdded(const ucf::service::model::Ca
 
 void CameraDirectoryViewModel::onCameraGroupsUpdated(const ucf::service::model::CameraGroupArray& groups)
 {
-    auto vmGroups = toVMNodeDatas(groups);
+    auto vmGroups = utils::toVMNodeDatas(groups);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onCameraGroupsUpdated arrived before tree was built (count:" << vmGroups.size()
@@ -520,7 +517,7 @@ void CameraDirectoryViewModel::onCameraGroupsRemoved(const std::vector<std::stri
 
 void CameraDirectoryViewModel::onCamerasAdded(const ucf::service::model::CameraEntryArray& cameras)
 {
-    auto vmCameras = toVMNodeDatas(cameras);
+    auto vmCameras = utils::toVMNodeDatas(cameras);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onCamerasAdded arrived before tree was built (count:" << vmCameras.size()
@@ -537,7 +534,7 @@ void CameraDirectoryViewModel::onCamerasAdded(const ucf::service::model::CameraE
 
 void CameraDirectoryViewModel::onCamerasUpdated(const ucf::service::model::CameraEntryArray& cameras)
 {
-    auto vmCameras = toVMNodeDatas(cameras);
+    auto vmCameras = utils::toVMNodeDatas(cameras);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onCamerasUpdated arrived before tree was built (count:" << vmCameras.size()
@@ -587,7 +584,7 @@ void CameraDirectoryViewModel::onCamerasRemoved(const std::vector<std::string>& 
 
 void CameraDirectoryViewModel::onCameraRelationsAdded(const ucf::service::model::CameraDirectoryRelationArray& relations)
 {
-    auto vmRelations = toVMRelations(relations);
+    auto vmRelations = utils::toVMRelations(relations);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onCameraRelationsAdded arrived before tree was built (count:" << vmRelations.size()
@@ -595,19 +592,16 @@ void CameraDirectoryViewModel::onCameraRelationsAdded(const ucf::service::model:
         fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
         return;
     }
-    std::vector<std::pair<std::string, std::string>> pairs;
-    pairs.reserve(vmRelations.size());
-    for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->setRelations(pairs);
+        if (mTree) mTree->setRelations(vmRelations);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraRelationsAdded, vmRelations);
 }
 
 void CameraDirectoryViewModel::onCameraRelationsUpdated(const ucf::service::model::CameraDirectoryRelationArray& relations)
 {
-    auto vmRelations = toVMRelations(relations);
+    auto vmRelations = utils::toVMRelations(relations);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onCameraRelationsUpdated arrived before tree was built (count:" << vmRelations.size()
@@ -615,28 +609,45 @@ void CameraDirectoryViewModel::onCameraRelationsUpdated(const ucf::service::mode
         fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
         return;
     }
-    std::vector<std::pair<std::string, std::string>> pairs;
-    pairs.reserve(vmRelations.size());
-    for (const auto& r : vmRelations) pairs.emplace_back(r.parentId, r.childId);
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->setRelations(pairs);
+        if (mTree) mTree->setRelations(vmRelations);
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraRelationsUpdated, vmRelations);
 }
 
-void CameraDirectoryViewModel::onCameraRelationsRemoved(const std::vector<std::string>& childIds)
+void CameraDirectoryViewModel::onCameraRelationsRemoved(const std::vector<std::string>& relationIds)
 {
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onCameraRelationsRemoved arrived before tree was built (count:" << childIds.size()
+        COMMONHEAD_LOG_WARN("onCameraRelationsRemoved arrived before tree was built (count:" << relationIds.size()
                             << "); fired onCameraDirectoryReady instead of delta");
         fireNotification(&ICameraDirectoryViewModelCallback::onCameraDirectoryReady);
         return;
     }
+    // Service emits a flat list of relationIds. Translate each back to the childId that
+    // belongs to this VM (unknown ids are silently dropped) so subscribers continue to
+    // work in their familiar childId vocabulary.
+    std::vector<std::string> childIds;
     {
         std::scoped_lock lk(mTreeMutex);
-        if (mTree) mTree->clearRelations(childIds);
+        if (mTree)
+        {
+            childIds.reserve(relationIds.size());
+            for (const auto& rid : relationIds)
+            {
+                auto childId = mTree->takeChildIdByRelationId(rid);
+                if (!childId.empty())
+                {
+                    childIds.push_back(std::move(childId));
+                }
+            }
+            mTree->clearRelations(childIds);
+        }
+    }
+    if (childIds.empty())
+    {
+        return;
     }
     fireNotification(&ICameraDirectoryViewModelCallback::onCameraRelationsRemoved, childIds);
 }

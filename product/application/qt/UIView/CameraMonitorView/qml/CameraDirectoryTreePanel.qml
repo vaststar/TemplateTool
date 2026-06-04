@@ -46,6 +46,7 @@ Item {
         }
         model: controller.cameraTreeModel
         visible: controller.loadState === CameraMonitorViewController.Ready
+        expandAll: true
 
         onItemInvoked: function(idx) {
             var nodeId = treeView.model.data(idx, Qt.UserRole + 1);
@@ -53,6 +54,7 @@ Item {
         }
 
         delegate: Item {
+            id: rowItem
             implicitWidth: treeView.width
             implicitHeight: label.implicitHeight * 1.8
             z: (current && treeView.activeFocus) ? 1 : 0
@@ -68,6 +70,33 @@ Item {
             required property int row
             required property int column
             required property bool current
+
+            // ----- Drag source -----
+            Drag.active: dragHandler.active
+            Drag.dragType: Drag.Automatic
+            Drag.supportedActions: Qt.MoveAction
+            Drag.mimeData: { "text/x-camera-node-id": model.id }
+            Drag.hotSpot.x: 8
+            Drag.hotSpot.y: 8
+
+            TapHandler {
+                id: pressTap
+                acceptedButtons: Qt.LeftButton
+                onPressedChanged: {
+                    if (pressed) {
+                        rowItem.grabToImage(function(result) {
+                            rowItem.Drag.imageSource = result.url;
+                        });
+                    }
+                }
+            }
+
+            DragHandler {
+                id: dragHandler
+                target: null
+                dragThreshold: 6
+                grabPermissions: PointerHandler.CanTakeOverFromAnything
+            }
 
             property Animation indicatorAnimation: NumberAnimation {
                 target: indicator
@@ -134,6 +163,70 @@ Item {
             UTFocusItem {
                 delegateFocused: current && treeContainer.treeView.activeFocus
             }
+
+            // Per-row drop target: drop onto this node to make it the new parent.
+            DropArea {
+                anchors.fill: parent
+
+                onEntered: (drag) => {
+                    if (drag.formats.indexOf("text/x-camera-node-id") < 0) {
+                        drag.accepted = false;
+                        return;
+                    }
+                    const srcId = drag.getDataAsString("text/x-camera-node-id");
+                    drag.accepted = controller.canDropOnNode(srcId, model.id);
+                }
+                onDropped: (drop) => {
+                    const srcId = drop.getDataAsString("text/x-camera-node-id");
+                    const ok = controller.canDropOnNode(srcId, model.id);
+                    if (!ok) { drop.accepted = false; return; }
+                    controller.moveCameraNode(srcId, model.id);
+                    // Expand the drop target so the user can immediately see the
+                    // newly-arrived child instead of having to click the chevron.
+                    if (!expanded) {
+                        treeView.expand(row);
+                    }
+                    drop.accepted = true;
+                }
+            }
+        }
+    }
+
+    // Root-level drop target: dropping in empty area below / between rows moves to root.
+    DropArea {
+        id: rootDropArea
+        anchors.fill: treeContainer
+        z: -1
+
+        // Returns true if the cursor (given drag/drop event) is currently over a real
+        // row of the TreeView. We use this to suppress root acceptance so the row's own
+        // DropArea handles it instead.
+        function isOverRow(drag) {
+            const tv = treeContainer.treeView;
+            if (!tv) return false;
+            const p = mapToItem(tv, drag.x, drag.y);
+            const cell = tv.cellAtPosition(p.x + tv.contentX, p.y + tv.contentY);
+            return cell.x >= 0 && cell.y >= 0;
+        }
+
+        onEntered: (drag) => {
+            if (drag.formats.indexOf("text/x-camera-node-id") < 0) { drag.accepted = false; return; }
+            if (isOverRow(drag))                                   { drag.accepted = false; return; }
+            const srcId = drag.getDataAsString("text/x-camera-node-id");
+            drag.accepted = controller.canDropOnNode(srcId, "");
+        }
+        onPositionChanged: (drag) => {
+            if (isOverRow(drag)) { drag.accepted = false; return; }
+            const srcId = drag.getDataAsString("text/x-camera-node-id");
+            drag.accepted = controller.canDropOnNode(srcId, "");
+        }
+        onDropped: (drop) => {
+            if (isOverRow(drop)) { drop.accepted = false; return; }
+            const srcId = drop.getDataAsString("text/x-camera-node-id");
+            const ok = controller.canDropOnNode(srcId, "");
+            if (!ok) { drop.accepted = false; return; }
+            controller.moveCameraNode(srcId, "");
+            drop.accepted = true;
         }
     }
 
