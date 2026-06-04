@@ -113,6 +113,20 @@ QVariantMap ContactsPageController::getContactInfo(const QString& contactId) con
     return result;
 }
 
+bool ContactsPageController::canDropOn(const QString& srcId, const QString& targetParentId) const
+{
+    if (!mContactListViewModel) return false;
+    return mContactListViewModel->canMoveContact(srcId.toStdString(),
+                                                 targetParentId.toStdString());
+}
+
+void ContactsPageController::moveContact(const QString& srcId, const QString& targetParentId)
+{
+    if (!mContactListViewModel) return;
+    mContactListViewModel->moveContact(srcId.toStdString(),
+                                       targetParentId.toStdString());
+}
+
 // ---- Thin forwarding slots: VM callback → model mutation method ----
 
 void ContactsPageController::onContactDirectoryReady()

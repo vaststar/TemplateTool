@@ -8,6 +8,8 @@ list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModelUtils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModelUtils.cpp
 )
 list(APPEND MODULE_BUILD_PRIVATE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

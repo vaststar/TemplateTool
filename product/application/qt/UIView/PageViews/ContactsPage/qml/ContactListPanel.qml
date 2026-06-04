@@ -58,6 +58,7 @@ Item {
         }
 
         delegate: Item {
+            id: rowItem
             implicitWidth: treeView.width
             implicitHeight: label.implicitHeight * 1.8
             z: (current && treeView.activeFocus) ? 1 : 0
@@ -74,6 +75,32 @@ Item {
             required property int row
             required property int column
             required property bool current
+
+            Drag.active: dragHandler.active
+            Drag.dragType: Drag.Automatic
+            Drag.supportedActions: Qt.MoveAction
+            Drag.mimeData: { "text/x-contact-id": model.id }
+            Drag.hotSpot.x: 8
+            Drag.hotSpot.y: 8
+
+            TapHandler {
+                id: pressTap
+                acceptedButtons: Qt.LeftButton
+                onPressedChanged: {
+                    if (pressed) {
+                        rowItem.grabToImage(function(result) {
+                            rowItem.Drag.imageSource = result.url;
+                        });
+                    }
+                }
+            }
+
+            DragHandler {
+                id: dragHandler
+                target: null
+                dragThreshold: 6
+                grabPermissions: PointerHandler.CanTakeOverFromAnything
+            }
 
             property Animation indicatorAnimation: NumberAnimation {
                 target: indicator
@@ -142,6 +169,63 @@ Item {
             UTFocusItem {
                 delegateFocused: current && treeContainer.treeView.activeFocus
             }
+
+            DropArea {
+                anchors.fill: parent
+
+                onEntered: (drag) => {
+                    if (drag.formats.indexOf("text/x-contact-id") < 0) {
+                        drag.accepted = false;
+                        return;
+                    }
+                    const srcId = drag.getDataAsString("text/x-contact-id");
+                    drag.accepted = controller.canDropOn(srcId, model.id);
+                }
+                onDropped: (drop) => {
+                    const srcId = drop.getDataAsString("text/x-contact-id");
+                    const ok = controller.canDropOn(srcId, model.id);
+                    if (!ok) { drop.accepted = false; return; }
+                    controller.moveContact(srcId, model.id);
+                    drop.accepted = true;
+                }
+            }
+        }
+    }
+
+    DropArea {
+        id: rootDropArea
+        anchors.fill: treeContainer
+        z: -1
+
+        // Returns true if the cursor (given drag/drop event) is currently over
+        // a real row of the TreeView. We use this to suppress root acceptance
+        // so the row's own DropArea handles it instead.
+        function isOverRow(drag) {
+            const tv = treeContainer.treeView;
+            if (!tv) return false;
+            const p = mapToItem(tv, drag.x, drag.y);
+            const cell = tv.cellAtPosition(p.x + tv.contentX, p.y + tv.contentY);
+            return cell.x >= 0 && cell.y >= 0;
+        }
+
+        onEntered: (drag) => {
+            if (drag.formats.indexOf("text/x-contact-id") < 0) { drag.accepted = false; return; }
+            if (isOverRow(drag))                               { drag.accepted = false; return; }
+            const srcId = drag.getDataAsString("text/x-contact-id");
+            drag.accepted = controller.canDropOn(srcId, "");
+        }
+        onPositionChanged: (drag) => {
+            if (isOverRow(drag)) { drag.accepted = false; return; }
+            const srcId = drag.getDataAsString("text/x-contact-id");
+            drag.accepted = controller.canDropOn(srcId, "");
+        }
+        onDropped: (drop) => {
+            if (isOverRow(drop)) { drop.accepted = false; return; }
+            const srcId = drop.getDataAsString("text/x-contact-id");
+            const ok = controller.canDropOn(srcId, "");
+            if (!ok) { drop.accepted = false; return; }
+            controller.moveContact(srcId, "");
+            drop.accepted = true;
         }
     }
 

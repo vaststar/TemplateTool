@@ -10,95 +10,10 @@
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 
 #include "ContactListModel.h"
+#include "ContactListViewModelUtils.h"
 
 
 namespace commonHead::viewModels{
-
-namespace {
-
-model::ContactNodeData toVMNodeData(const ucf::service::model::IPersonContactPtr& p)
-{
-    model::ContactNodeData d;
-    if (p)
-    {
-        d.id          = p->getContactId();
-        d.displayName = p->getPersonName();
-        d.type        = model::ContactNodeType::Person;
-    }
-    return d;
-}
-
-model::ContactNodeData toVMNodeData(const ucf::service::model::IGroupContactPtr& g)
-{
-    model::ContactNodeData d;
-    if (g)
-    {
-        d.id          = g->getContactId();
-        d.displayName = g->getGroupName();
-        d.type        = model::ContactNodeType::Group;
-    }
-    return d;
-}
-
-model::ContactRelationData toVMRelation(const ucf::service::model::IContactRelationPtr& r)
-{
-    model::ContactRelationData d;
-    if (r)
-    {
-        d.parentId = r->getParentId();
-        d.childId  = r->getChildId();
-    }
-    return d;
-}
-
-model::ContactDirectoryLoadError toVMLoadError(ucf::service::ContactDirectoryLoadError e)
-{
-    switch (e)
-    {
-    case ucf::service::ContactDirectoryLoadError::DatabaseNotBound:
-        return model::ContactDirectoryLoadError::DatabaseNotBound;
-    case ucf::service::ContactDirectoryLoadError::DatabaseReadFailed:
-        return model::ContactDirectoryLoadError::DatabaseReadFailed;
-    case ucf::service::ContactDirectoryLoadError::Unknown:
-    default:
-        return model::ContactDirectoryLoadError::Unknown;
-    }
-}
-
-std::vector<model::ContactNodeData> toVMNodeDatas(const ucf::service::model::PersonContactArray& persons)
-{
-    std::vector<model::ContactNodeData> out;
-    out.reserve(persons.size());
-    for (const auto& p : persons)
-    {
-        if (p) { out.push_back(toVMNodeData(p)); }
-    }
-    return out;
-}
-
-std::vector<model::ContactNodeData> toVMNodeDatas(const ucf::service::model::GroupContactArray& groups)
-{
-    std::vector<model::ContactNodeData> out;
-    out.reserve(groups.size());
-    for (const auto& g : groups)
-    {
-        if (g) { out.push_back(toVMNodeData(g)); }
-    }
-    return out;
-}
-
-std::vector<model::ContactRelationData> toVMRelations(const ucf::service::model::ContactRelationArray& relations)
-{
-    std::vector<model::ContactRelationData> out;
-    out.reserve(relations.size());
-    for (const auto& r : relations)
-    {
-        if (r) { out.push_back(toVMRelation(r)); }
-    }
-    return out;
-}
-
-} // anonymous namespace
 
 std::shared_ptr<IContactListViewModel> IContactListViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
@@ -245,6 +160,91 @@ void ContactListViewModel::selectContact(const std::string& contactId)
     fireNotification(&IContactListViewModelCallback::onCurrentContactChanged, contactId);
 }
 
+bool ContactListViewModel::canMoveContact(const std::string& childId,
+                                          const std::string& newParentId) const
+{
+    if (childId.empty())        return false;
+    if (childId == newParentId) return false;
+
+    std::shared_ptr<model::ContactTree> snapshot;
+    {
+        std::scoped_lock lk(mTreeMutex);
+        snapshot = mTree;
+    }
+    if (!snapshot) return false;
+
+    auto childNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(childId);
+    if (!childNode) return false;
+
+    // Noop if the current parent already matches the target.
+    auto curParent = childNode->getParent().lock();
+    const std::string curParentId = curParent ? curParent->getNodeData().id : std::string{};
+    if (curParentId == newParentId) return false;
+
+    if (!newParentId.empty())
+    {
+        auto parentNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(newParentId);
+        if (!parentNode) return false;
+        if (utils::isAncestorOf(snapshot, childId, newParentId)) return false;
+    }
+    return true;
+}
+
+void ContactListViewModel::moveContact(const std::string& childId,
+                                       const std::string& newParentId)
+{
+    if (!canMoveContact(childId, newParentId))
+    {
+        COMMONHEAD_LOG_WARN("moveContact rejected: childId=" << childId
+                            << ", newParentId=" << (newParentId.empty() ? "<root>" : newParentId));
+        return;
+    }
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("moveContact failed: service not available");
+        return;
+    }
+
+    // Resolve current parent at service level. The VM tree attaches root-less nodes to a
+    // virtual root whose id is empty; service-level relation rows only exist when the
+    // parent is real (non-empty). So we dispatch to add/update/remove accordingly.
+    std::string curParentId;
+    {
+        std::shared_ptr<model::ContactTree> snapshot;
+        {
+            std::scoped_lock lk(mTreeMutex);
+            snapshot = mTree;
+        }
+        auto childNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(childId);
+        if (auto curParent = childNode ? childNode->getParent().lock() : nullptr)
+        {
+            curParentId = curParent->getNodeData().id;
+        }
+    }
+
+    COMMONHEAD_LOG_INFO("moveContact: childId=" << childId
+                        << ", from=" << (curParentId.empty() ? "<root>" : curParentId)
+                        << ", to="   << (newParentId.empty() ? "<root>" : newParentId));
+
+    if (newParentId.empty())
+    {
+        // A -> root : drop the relation row entirely.
+        service->removeContactRelations({childId});
+    }
+    else if (curParentId.empty())
+    {
+        // root -> B : no row exists yet, add one.
+        service->addContactRelations({std::make_shared<utils::VMContactRelation>(childId, newParentId)});
+    }
+    else
+    {
+        // A -> B : update existing row.
+        service->updateContactRelations({std::make_shared<utils::VMContactRelation>(childId, newParentId)});
+    }
+    // Do not mutate local tree here; rely on onContactRelations* callbacks for refresh.
+}
+
 // ===== IContactServiceCallback: apply incremental updates then forward to VM subscribers =====
 
 void ContactListViewModel::onContactDirectoryReady()
@@ -257,12 +257,12 @@ void ContactListViewModel::onContactDirectoryReady()
 void ContactListViewModel::onContactDirectoryLoadFailed(ucf::service::ContactDirectoryLoadError error)
 {
     COMMONHEAD_LOG_ERROR("onContactDirectoryLoadFailed received from service, error:" << static_cast<int>(error));
-    fireNotification(&IContactListViewModelCallback::onContactDirectoryLoadFailed, toVMLoadError(error));
+    fireNotification(&IContactListViewModelCallback::onContactDirectoryLoadFailed, utils::toVMLoadError(error));
 }
 
 void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons)
 {
-    auto vmNodes = toVMNodeDatas(persons);
+    auto vmNodes = utils::toVMNodeDatas(persons);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onPersonContactsAdded arrived before tree was built (count:" << vmNodes.size()
@@ -279,7 +279,7 @@ void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::Pers
 
 void ContactListViewModel::onPersonContactsUpdated(const ucf::service::model::PersonContactArray& persons)
 {
-    auto vmNodes = toVMNodeDatas(persons);
+    auto vmNodes = utils::toVMNodeDatas(persons);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onPersonContactsUpdated arrived before tree was built (count:" << vmNodes.size()
@@ -327,7 +327,7 @@ void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string
 
 void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::GroupContactArray& groups)
 {
-    auto vmNodes = toVMNodeDatas(groups);
+    auto vmNodes = utils::toVMNodeDatas(groups);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsAdded arrived before tree was built (count:" << vmNodes.size()
@@ -344,7 +344,7 @@ void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::Group
 
 void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::GroupContactArray& groups)
 {
-    auto vmNodes = toVMNodeDatas(groups);
+    auto vmNodes = utils::toVMNodeDatas(groups);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsUpdated arrived before tree was built (count:" << vmNodes.size()
@@ -392,7 +392,7 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
 
 void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations)
 {
-    auto vmRelations = toVMRelations(relations);
+    auto vmRelations = utils::toVMRelations(relations);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onContactRelationsAdded arrived before tree was built (count:" << vmRelations.size()
@@ -412,7 +412,7 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
 
 void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::ContactRelationArray& relations)
 {
-    auto vmRelations = toVMRelations(relations);
+    auto vmRelations = utils::toVMRelations(relations);
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onContactRelationsUpdated arrived before tree was built (count:" << vmRelations.size()

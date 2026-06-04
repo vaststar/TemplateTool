@@ -36,6 +36,8 @@ public:
     bool isContactDirectoryReady() const override;
     std::string getCurrentContactId() const override;
     void selectContact(const std::string& contactId) override;
+    bool canMoveContact(const std::string& childId, const std::string& newParentId) const override;
+    void moveContact(const std::string& childId, const std::string& newParentId) override;
 
 protected:
     virtual void init() override;

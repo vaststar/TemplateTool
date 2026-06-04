@@ -50,6 +50,8 @@ public slots:
     void buttonClicked();
     Q_INVOKABLE void selectContact(const QString& contactId);
     Q_INVOKABLE QVariantMap getContactInfo(const QString& contactId) const;
+    Q_INVOKABLE bool canDropOn(const QString& srcId, const QString& targetParentId) const;
+    Q_INVOKABLE void moveContact(const QString& srcId, const QString& targetParentId);
 
 protected:
     void init() override;

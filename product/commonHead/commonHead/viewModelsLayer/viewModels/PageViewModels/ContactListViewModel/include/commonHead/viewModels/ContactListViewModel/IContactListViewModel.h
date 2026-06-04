@@ -72,6 +72,25 @@ public:
     // Successful changes fire onCurrentContactChanged; this is the single funnel point
     // for selection metrics / analytics.
     virtual void selectContact(const std::string& contactId) = 0;
+
+    // ===== Move / Reparent =====
+    // Reparent childId under newParentId. An empty newParentId moves the node to root.
+    // VM does not mutate the local tree directly; on success the change is forwarded to
+    // the service and the resulting onContactRelationsUpdated callback drives UI refresh,
+    // keeping the service as the single source of truth.
+    //
+    // canMoveContact is a pure validity probe (no side effects); UI may call it during
+    // drag-hover to render accept/reject feedback. Rejection reasons:
+    //   - empty childId
+    //   - srcId == newParentId (self)
+    //   - srcId or newParentId not found in tree
+    //   - newParentId is a Person (only Group can hold children)
+    //   - newParentId is a descendant of srcId (cycle)
+    //   - srcId's current parent already equals newParentId (noop)
+    [[nodiscard]] virtual bool canMoveContact(const std::string& childId,
+                                              const std::string& newParentId) const = 0;
+    virtual void moveContact(const std::string& childId,
+                             const std::string& newParentId) = 0;
 public:
     static std::shared_ptr<IContactListViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };
