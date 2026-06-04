@@ -46,6 +46,8 @@ from pathlib import Path
 # ----- Schema constants (mirror DataWarehouseSchemas.h) -----
 T_USER_CONTACT     = "UserContact"
 T_GROUP_CONTACT    = "GroupContact"
+T_DEPARTMENT_GROUP = "DepartmentGroup"
+T_TEAM_GROUP       = "TeamGroup"
 T_CONTACT_REL      = "ContactRelation"
 T_CAMERA_GROUP     = "CameraGroup"
 T_CAMERA           = "Camera"
@@ -89,6 +91,18 @@ CONTACT_GROUPS = [
     ("seed_group_eng",     "Engineering",  GROUP_TYPE_DEPARTMENT),
     ("seed_group_backend", "Backend Team", GROUP_TYPE_TEAM),
     ("seed_group_sales",   "Sales",        GROUP_TYPE_DEPARTMENT),
+]
+
+# CTI sub-table rows. Each row's GROUP_ID must match a GROUP_TYPE_DEPARTMENT /
+# GROUP_TYPE_TEAM row in CONTACT_GROUPS above.
+# (group_id, manager_id, headcount)
+DEPARTMENT_GROUP_ROWS = [
+    ("seed_group_eng",   "seed_person_alice", 50),
+    ("seed_group_sales", "seed_person_eve",   12),
+]
+# (group_id, team_lead_id, mission)
+TEAM_GROUP_ROWS = [
+    ("seed_group_backend", "seed_person_bob", "Own the backend service platform."),
 ]
 
 # (relationId, child, parent, relationType)
@@ -194,6 +208,10 @@ def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
             cur.execute(f"DELETE FROM {T_CONTACT_REL} WHERE CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_USER_CONTACT}  WHERE CONTACT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_GROUP_CONTACT} WHERE GROUP_ID   LIKE 'seed_%'")
+    if _table_exists(cur, T_DEPARTMENT_GROUP):
+        cur.execute(f"DELETE FROM {T_DEPARTMENT_GROUP} WHERE GROUP_ID LIKE 'seed_%'")
+    if _table_exists(cur, T_TEAM_GROUP):
+        cur.execute(f"DELETE FROM {T_TEAM_GROUP}       WHERE GROUP_ID LIKE 'seed_%'")
     if _table_exists(cur, T_CAMERA_REL):
         if _column_exists(cur, T_CAMERA_REL, "RELATION_ID"):
             cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE RELATION_ID LIKE 'seed_%' OR CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
@@ -214,6 +232,23 @@ def insert_contacts(cur: sqlite3.Cursor) -> None:
         f"INSERT OR REPLACE INTO {T_GROUP_CONTACT} (GROUP_ID, GROUP_NAME, GROUP_TYPE, CONTACT_STATUS) VALUES (?, ?, ?, ?)",
         [(gid, name, gtype, STATUS_ACTIVE) for gid, name, gtype in CONTACT_GROUPS],
     )
+    # CTI sub-tables. They may not exist on a DB created before the CTI migration;
+    # in that case ask the user to launch the app once so the C++ schema layer can
+    # create them, then re-run this script.
+    if _table_exists(cur, T_DEPARTMENT_GROUP):
+        cur.executemany(
+            f"INSERT OR REPLACE INTO {T_DEPARTMENT_GROUP} (GROUP_ID, MANAGER_ID, HEADCOUNT) VALUES (?, ?, ?)",
+            DEPARTMENT_GROUP_ROWS,
+        )
+    else:
+        print(f"[skip] {T_DEPARTMENT_GROUP} table missing; launch the app once to create CTI tables, then re-run.")
+    if _table_exists(cur, T_TEAM_GROUP):
+        cur.executemany(
+            f"INSERT OR REPLACE INTO {T_TEAM_GROUP} (GROUP_ID, TEAM_LEAD_ID, MISSION) VALUES (?, ?, ?)",
+            TEAM_GROUP_ROWS,
+        )
+    else:
+        print(f"[skip] {T_TEAM_GROUP} table missing; launch the app once to create CTI tables, then re-run.")
     if _table_exists(cur, T_CONTACT_REL):
         if not _column_exists(cur, T_CONTACT_REL, "RELATION_ID"):
             print(f"[skip] {T_CONTACT_REL} is missing RELATION_ID; skipping relation seed. Launch the app once to let it recreate the table, then re-run this script.")
@@ -284,7 +319,7 @@ def main() -> int:
             return cur.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
 
         print("[done] table row counts:")
-        for t in (T_USER_CONTACT, T_GROUP_CONTACT, T_CONTACT_REL,
+        for t in (T_USER_CONTACT, T_GROUP_CONTACT, T_DEPARTMENT_GROUP, T_TEAM_GROUP, T_CONTACT_REL,
                   T_CAMERA, T_CAMERA_GROUP, T_CAMERA_REL):
             if _table_exists(cur, t):
                 print(f"  {t:30s} {count(t)}")

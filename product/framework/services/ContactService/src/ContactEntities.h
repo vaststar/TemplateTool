@@ -42,7 +42,8 @@ public:
 
     virtual IContact::ContactStatus getContactStatus() const override;
     void setContactStatus(IContact::ContactStatus status);
-private:
+
+protected:
     mutable std::mutex mDataMutex;
     const std::string mContactId;
     IContact::ContactStatus mStatus{IContact::ContactStatus::Active};
@@ -50,6 +51,54 @@ private:
     IGroupContact::GroupType mGroupType{IGroupContact::GroupType::Department};
 };
 using GroupContactPtr = std::shared_ptr<GroupContact>;
+
+// Department-typed concrete group; adds org-chart fields stored in its own sub-table.
+class DepartmentGroupContact: public GroupContact, public IDepartmentGroup
+{
+public:
+    explicit DepartmentGroupContact(const std::string& id);
+
+    // Disambiguate the diamond by routing IGroupContact / IContact methods through
+    // the GroupContact base; getGroupType() is hardcoded to Department so this
+    // class always reports its own type regardless of any setGroupType() call on
+    // the base.
+    std::string                 getContactId()      const override { return GroupContact::getContactId(); }
+    std::string                 getGroupName()      const override { return GroupContact::getGroupName(); }
+    IGroupContact::GroupType    getGroupType()      const override { return IGroupContact::GroupType::Department; }
+    IContact::ContactStatus     getContactStatus()  const override { return GroupContact::getContactStatus(); }
+
+    std::string getManagerId() const override;
+    int         getHeadcount() const override;
+    void setManagerId(const std::string& managerId);
+    void setHeadcount(int headcount);
+
+private:
+    std::string mManagerId;
+    int         mHeadcount{0};
+};
+using DepartmentGroupContactPtr = std::shared_ptr<DepartmentGroupContact>;
+
+// Team-typed concrete group; adds team-charter fields stored in its own sub-table.
+class TeamGroupContact: public GroupContact, public ITeamGroup
+{
+public:
+    explicit TeamGroupContact(const std::string& id);
+
+    std::string                 getContactId()      const override { return GroupContact::getContactId(); }
+    std::string                 getGroupName()      const override { return GroupContact::getGroupName(); }
+    IGroupContact::GroupType    getGroupType()      const override { return IGroupContact::GroupType::Team; }
+    IContact::ContactStatus     getContactStatus()  const override { return GroupContact::getContactStatus(); }
+
+    std::string getTeamLeadId() const override;
+    std::string getMission()    const override;
+    void setTeamLeadId(const std::string& teamLeadId);
+    void setMission(const std::string& mission);
+
+private:
+    std::string mTeamLeadId;
+    std::string mMission;
+};
+using TeamGroupContactPtr = std::shared_ptr<TeamGroupContact>;
 
 class ContactRelation: public IContactRelation
 {

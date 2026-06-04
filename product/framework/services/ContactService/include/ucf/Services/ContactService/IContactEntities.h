@@ -37,6 +37,11 @@ using PersonContactArray = std::vector<IPersonContactPtr>;
 // Represents a contact for a group, which can be used to store group information.
 // A group must declare its semantic kind via GroupType so that views (org chart, project
 // list, etc.) can filter for only the groups they care about.
+//
+// CTI (Class Table Inheritance): IGroupContact is the common base; concrete typed
+// variants (IDepartmentGroup, ITeamGroup) extend it with type-specific fields and
+// live in their own sub-tables. Project / Custom currently have no typed fields and
+// are represented by plain IGroupContact instances.
 class SERVICE_EXPORT IGroupContact: public IContact
 {
 public:
@@ -51,6 +56,28 @@ public:
 };
 using IGroupContactPtr  = std::shared_ptr<IGroupContact>;
 using GroupContactArray = std::vector<IGroupContactPtr>;
+
+// Department-typed group. Carries org-chart fields stored in its own sub-table.
+class SERVICE_EXPORT IDepartmentGroup: public IGroupContact
+{
+public:
+    // Contact id of the person managing this department; empty if unassigned.
+    virtual std::string getManagerId() const = 0;
+    // Authorised / target headcount for this department; 0 if unspecified.
+    virtual int         getHeadcount() const = 0;
+};
+using IDepartmentGroupPtr = std::shared_ptr<IDepartmentGroup>;
+
+// Team-typed group. Carries team-charter fields stored in its own sub-table.
+class SERVICE_EXPORT ITeamGroup: public IGroupContact
+{
+public:
+    // Contact id of the team lead; empty if unassigned.
+    virtual std::string getTeamLeadId() const = 0;
+    // Free-form short statement of what the team does.
+    virtual std::string getMission()    const = 0;
+};
+using ITeamGroupPtr = std::shared_ptr<ITeamGroup>;
 
 class SERVICE_EXPORT IContactRelation
 {

@@ -119,6 +119,12 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
         return;
     }
 
+    // CTI load: 3 sequential fetches (main + 2 sub-tables) merged in memory.
+    // Fetch callbacks are synchronous inside fetchFromDatabase, so this chain
+    // resolves before loadGroupContacts() returns.
+    auto groupsById = std::make_shared<std::unordered_map<std::string, model::GroupContactPtr>>();
+
+    // 1) Main GroupContact rows: create the right concrete subclass per row.
     dataWarehouseService->fetchFromDatabase(
         dbId,
         db::schema::GroupContactTable::TableName,
@@ -129,10 +135,8 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
             db::schema::GroupContactTable::ContactStatusField
         },
         {},
-        [cb = std::move(callback)](const model::DatabaseDataRecords& results)
+        [groupsById](const model::DatabaseDataRecords& results)
         {
-            model::GroupContactArray groups;
-            groups.reserve(results.size());
             for (const auto& record : results)
             {
                 const std::string groupId = record.getColumnData(db::schema::GroupContactTable::GroupIdField).getStringValue();
@@ -142,20 +146,106 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
                 const auto        status  = static_cast<model::IContact::ContactStatus>(record.getColumnData(db::schema::GroupContactTable::ContactStatusField).getIntValue());
                 if (groupId.empty())
                 {
+                    SERVICE_LOG_WARN("GroupContact row skipped: empty GROUP_ID");
                     continue;
                 }
-                auto group = std::make_shared<model::GroupContact>(groupId);
+                model::GroupContactPtr group;
+                switch (type)
+                {
+                case model::IGroupContact::GroupType::Department:
+                    group = std::make_shared<model::DepartmentGroupContact>(groupId);
+                    break;
+                case model::IGroupContact::GroupType::Team:
+                    group = std::make_shared<model::TeamGroupContact>(groupId);
+                    break;
+                default:
+                    // Project / Custom: no typed sub-table yet, plain base row.
+                    group = std::make_shared<model::GroupContact>(groupId);
+                    group->setGroupType(type);
+                    break;
+                }
                 group->setGroupName(name);
-                group->setGroupType(type);
                 group->setContactStatus(status);
-                groups.push_back(group);
-            }
-            SERVICE_LOG_DEBUG("DBAccess loaded " << groups.size() << " group contacts");
-            if (cb)
-            {
-                cb(groups);
+                groupsById->emplace(groupId, group);
             }
         });
+
+    // 2) DepartmentGroup sub-rows: merge typed fields into matching main rows.
+    dataWarehouseService->fetchFromDatabase(
+        dbId,
+        db::schema::DepartmentGroupTable::TableName,
+        {
+            db::schema::DepartmentGroupTable::GroupIdField,
+            db::schema::DepartmentGroupTable::ManagerIdField,
+            db::schema::DepartmentGroupTable::HeadcountField
+        },
+        {},
+        [groupsById](const model::DatabaseDataRecords& results)
+        {
+            for (const auto& record : results)
+            {
+                const std::string groupId = record.getColumnData(db::schema::DepartmentGroupTable::GroupIdField).getStringValue();
+                auto it = groupsById->find(groupId);
+                if (it == groupsById->end())
+                {
+                    SERVICE_LOG_WARN("DepartmentGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
+                    continue;
+                }
+                auto dept = std::dynamic_pointer_cast<model::DepartmentGroupContact>(it->second);
+                if (!dept)
+                {
+                    SERVICE_LOG_WARN("DepartmentGroup row " << groupId << " does not match a Department-typed main row; ignored");
+                    continue;
+                }
+                dept->setManagerId(record.getColumnData(db::schema::DepartmentGroupTable::ManagerIdField).getStringValue());
+                dept->setHeadcount(static_cast<int>(record.getColumnData(db::schema::DepartmentGroupTable::HeadcountField).getIntValue()));
+            }
+        });
+
+    // 3) TeamGroup sub-rows.
+    dataWarehouseService->fetchFromDatabase(
+        dbId,
+        db::schema::TeamGroupTable::TableName,
+        {
+            db::schema::TeamGroupTable::GroupIdField,
+            db::schema::TeamGroupTable::TeamLeadIdField,
+            db::schema::TeamGroupTable::MissionField
+        },
+        {},
+        [groupsById](const model::DatabaseDataRecords& results)
+        {
+            for (const auto& record : results)
+            {
+                const std::string groupId = record.getColumnData(db::schema::TeamGroupTable::GroupIdField).getStringValue();
+                auto it = groupsById->find(groupId);
+                if (it == groupsById->end())
+                {
+                    SERVICE_LOG_WARN("TeamGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
+                    continue;
+                }
+                auto team = std::dynamic_pointer_cast<model::TeamGroupContact>(it->second);
+                if (!team)
+                {
+                    SERVICE_LOG_WARN("TeamGroup row " << groupId << " does not match a Team-typed main row; ignored");
+                    continue;
+                }
+                team->setTeamLeadId(record.getColumnData(db::schema::TeamGroupTable::TeamLeadIdField).getStringValue());
+                team->setMission(record.getColumnData(db::schema::TeamGroupTable::MissionField).getStringValue());
+            }
+        });
+
+    // 4) Hand the merged snapshot back to the caller.
+    model::GroupContactArray groups;
+    groups.reserve(groupsById->size());
+    for (auto& [_, g] : *groupsById)
+    {
+        groups.push_back(g);
+    }
+    SERVICE_LOG_DEBUG("DBAccess loaded " << groups.size() << " group contacts (CTI merged)");
+    if (callback)
+    {
+        callback(groups);
+    }
 }
 
 void ContactDBAccess::loadContactRelations(LoadRelationsCallback callback) const
@@ -345,27 +435,84 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
         return;
     }
 
-    model::ListOfDBValues values;
-    values.reserve(groups.size());
+    // Main GroupContact rows (every group writes one).
+    model::ListOfDBValues mainValues;
+    mainValues.reserve(groups.size());
     for (const auto& g : groups)
     {
-        values.emplace_back(model::DBDataValues{
+        mainValues.emplace_back(model::DBDataValues{
             g->getContactId(),
             g->getGroupName(),
             static_cast<int>(g->getGroupType()),
             static_cast<int>(g->getContactStatus())
         });
     }
-    dataWarehouseService->insertIntoDatabase(
-        dbId,
-        db::schema::GroupContactTable::TableName,
+
+    // Split typed sub-rows by concrete kind.
+    model::ListOfDBValues deptValues;
+    model::ListOfDBValues teamValues;
+    for (const auto& g : groups)
+    {
+        if (auto dept = std::dynamic_pointer_cast<model::IDepartmentGroup>(g))
         {
-            db::schema::GroupContactTable::GroupIdField,
-            db::schema::GroupContactTable::GroupNameField,
-            db::schema::GroupContactTable::GroupTypeField,
-            db::schema::GroupContactTable::ContactStatusField
-        },
-        values);
+            deptValues.emplace_back(model::DBDataValues{
+                dept->getContactId(),
+                dept->getManagerId(),
+                dept->getHeadcount()
+            });
+        }
+        else if (auto team = std::dynamic_pointer_cast<model::ITeamGroup>(g))
+        {
+            teamValues.emplace_back(model::DBDataValues{
+                team->getContactId(),
+                team->getTeamLeadId(),
+                team->getMission()
+            });
+        }
+        // Project / Custom: no sub-row.
+    }
+
+    // CTI write: main + sub rows must commit together.
+    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+        if (!dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::GroupContactTable::TableName,
+                {
+                    db::schema::GroupContactTable::GroupIdField,
+                    db::schema::GroupContactTable::GroupNameField,
+                    db::schema::GroupContactTable::GroupTypeField,
+                    db::schema::GroupContactTable::ContactStatusField
+                },
+                mainValues))
+        {
+            return false;
+        }
+        if (!deptValues.empty() && !dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::DepartmentGroupTable::TableName,
+                {
+                    db::schema::DepartmentGroupTable::GroupIdField,
+                    db::schema::DepartmentGroupTable::ManagerIdField,
+                    db::schema::DepartmentGroupTable::HeadcountField
+                },
+                deptValues))
+        {
+            return false;
+        }
+        if (!teamValues.empty() && !dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::TeamGroupTable::TableName,
+                {
+                    db::schema::TeamGroupTable::GroupIdField,
+                    db::schema::TeamGroupTable::TeamLeadIdField,
+                    db::schema::TeamGroupTable::MissionField
+                },
+                teamValues))
+        {
+            return false;
+        }
+        return true;
+    });
 }
 
 void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) const
@@ -390,23 +537,63 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
         return;
     }
 
-    model::DBDataValues values{
-        group->getGroupName(),
-        static_cast<int>(group->getGroupType()),
-        static_cast<int>(group->getContactStatus())
-    };
-    dataWarehouseService->updateInDatabase(
-        dbId,
-        db::schema::GroupContactTable::TableName,
+    // CTI update: main row UPDATE + sub-row UPSERT, atomically. The sub-row uses
+    // insertIntoDatabase (INSERT OR REPLACE) deliberately: a pure UPDATE would
+    // silently 0-affect when the sub-row doesn't exist yet (e.g. a Department
+    // group whose typed fields are being set for the first time, or a row
+    // created before the CTI sub-tables existed).
+    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+        model::DBDataValues mainValues{
+            group->getGroupName(),
+            static_cast<int>(group->getGroupType()),
+            static_cast<int>(group->getContactStatus())
+        };
+        if (dataWarehouseService->updateInDatabase(
+                dbId,
+                db::schema::GroupContactTable::TableName,
+                {
+                    db::schema::GroupContactTable::GroupNameField,
+                    db::schema::GroupContactTable::GroupTypeField,
+                    db::schema::GroupContactTable::ContactStatusField
+                },
+                mainValues,
+                {
+                    {db::schema::GroupContactTable::GroupIdField, group->getContactId(), model::DBOperatorType::Equal}
+                }) < 0)
         {
-            db::schema::GroupContactTable::GroupNameField,
-            db::schema::GroupContactTable::GroupTypeField,
-            db::schema::GroupContactTable::ContactStatusField
-        },
-        values,
+            return false;
+        }
+
+        if (auto dept = std::dynamic_pointer_cast<model::IDepartmentGroup>(group))
         {
-            {db::schema::GroupContactTable::GroupIdField, group->getContactId(), model::DBOperatorType::Equal}
-        });
+            return dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::DepartmentGroupTable::TableName,
+                {
+                    db::schema::DepartmentGroupTable::GroupIdField,
+                    db::schema::DepartmentGroupTable::ManagerIdField,
+                    db::schema::DepartmentGroupTable::HeadcountField
+                },
+                model::ListOfDBValues{model::DBDataValues{
+                    dept->getContactId(), dept->getManagerId(), dept->getHeadcount()
+                }});
+        }
+        if (auto team = std::dynamic_pointer_cast<model::ITeamGroup>(group))
+        {
+            return dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::TeamGroupTable::TableName,
+                {
+                    db::schema::TeamGroupTable::GroupIdField,
+                    db::schema::TeamGroupTable::TeamLeadIdField,
+                    db::schema::TeamGroupTable::MissionField
+                },
+                model::ListOfDBValues{model::DBDataValues{
+                    team->getContactId(), team->getTeamLeadId(), team->getMission()
+                }});
+        }
+        return true;  // Project / Custom: main-only update.
+    });
 }
 
 void ContactDBAccess::deleteGroupContact(const std::string& contactId) const
@@ -427,12 +614,33 @@ void ContactDBAccess::deleteGroupContact(const std::string& contactId) const
         return;
     }
 
-    dataWarehouseService->deleteFromDatabase(
-        dbId,
-        db::schema::GroupContactTable::TableName,
-        {
+    // CTI delete: remove from main + both sub-tables atomically. We don't read the
+    // type first; deleting from a sub-table that has no row is a harmless no-op.
+    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+        const auto where = model::ListsOfWhereCondition{
             {db::schema::GroupContactTable::GroupIdField, contactId, model::DBOperatorType::Equal}
-        });
+        };
+        if (dataWarehouseService->deleteFromDatabase(
+                dbId, db::schema::GroupContactTable::TableName, where) < 0)
+        {
+            return false;
+        }
+        if (dataWarehouseService->deleteFromDatabase(
+                dbId,
+                db::schema::DepartmentGroupTable::TableName,
+                {{db::schema::DepartmentGroupTable::GroupIdField, contactId, model::DBOperatorType::Equal}}) < 0)
+        {
+            return false;
+        }
+        if (dataWarehouseService->deleteFromDatabase(
+                dbId,
+                db::schema::TeamGroupTable::TableName,
+                {{db::schema::TeamGroupTable::GroupIdField, contactId, model::DBOperatorType::Equal}}) < 0)
+        {
+            return false;
+        }
+        return true;
+    });
 }
 
 void ContactDBAccess::insertContactRelations(const model::ContactRelationArray& relations) const

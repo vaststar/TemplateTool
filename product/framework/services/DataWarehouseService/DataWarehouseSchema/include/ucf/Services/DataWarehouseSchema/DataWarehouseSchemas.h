@@ -22,6 +22,27 @@ struct SERVICE_EXPORT GroupContactTable: public ucf::service::model::DBTableMode
     static constexpr auto ContactStatusField = "CONTACT_STATUS";
 };
 
+// CTI sub-table for IGroupContact::GroupType::Department. GROUP_ID is the same id as
+// the main GroupContact row; presence of a row here means the group is a Department.
+struct SERVICE_EXPORT DepartmentGroupTable: public ucf::service::model::DBTableModel
+{
+    DepartmentGroupTable();
+    static constexpr auto TableName       = "DepartmentGroup";
+    static constexpr auto GroupIdField    = "GROUP_ID";
+    static constexpr auto ManagerIdField  = "MANAGER_ID";
+    static constexpr auto HeadcountField  = "HEADCOUNT";
+};
+
+// CTI sub-table for IGroupContact::GroupType::Team.
+struct SERVICE_EXPORT TeamGroupTable: public ucf::service::model::DBTableModel
+{
+    TeamGroupTable();
+    static constexpr auto TableName       = "TeamGroup";
+    static constexpr auto GroupIdField    = "GROUP_ID";
+    static constexpr auto TeamLeadIdField = "TEAM_LEAD_ID";
+    static constexpr auto MissionField    = "MISSION";
+};
+
 struct SERVICE_EXPORT ContactRelationTable: public ucf::service::model::DBTableModel
 {
     ContactRelationTable();

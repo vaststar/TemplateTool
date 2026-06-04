@@ -165,10 +165,40 @@ model::GroupContactArray ContactModel::addGroupContactsInMemory(const model::Gro
         {
             continue;
         }
-        auto impl = std::make_shared<model::GroupContact>(contactId);
+        // CTI: build the concrete subclass matching g->getGroupType(), then copy
+        // typed sub-fields when the caller passed in a typed interface.
+        model::GroupContactPtr impl;
+        switch (g->getGroupType())
+        {
+        case model::IGroupContact::GroupType::Department:
+            impl = std::make_shared<model::DepartmentGroupContact>(contactId);
+            break;
+        case model::IGroupContact::GroupType::Team:
+            impl = std::make_shared<model::TeamGroupContact>(contactId);
+            break;
+        default:
+            impl = std::make_shared<model::GroupContact>(contactId);
+            impl->setGroupType(g->getGroupType());
+            break;
+        }
         impl->setGroupName(g->getGroupName());
-        impl->setGroupType(g->getGroupType());
         impl->setContactStatus(g->getContactStatus());
+        if (auto srcDept = std::dynamic_pointer_cast<model::IDepartmentGroup>(g))
+        {
+            if (auto dstDept = std::dynamic_pointer_cast<model::DepartmentGroupContact>(impl))
+            {
+                dstDept->setManagerId(srcDept->getManagerId());
+                dstDept->setHeadcount(srcDept->getHeadcount());
+            }
+        }
+        else if (auto srcTeam = std::dynamic_pointer_cast<model::ITeamGroup>(g))
+        {
+            if (auto dstTeam = std::dynamic_pointer_cast<model::TeamGroupContact>(impl))
+            {
+                dstTeam->setTeamLeadId(srcTeam->getTeamLeadId());
+                dstTeam->setMission(srcTeam->getMission());
+            }
+        }
         mGroupContacts.emplace(contactId, impl);
         accepted.push_back(impl);
     }
@@ -191,9 +221,31 @@ model::GroupContactArray ContactModel::updateGroupContactsInMemory(const model::
         {
             continue;
         }
+        // We don't support changing GroupType on update (would require swapping the
+        // concrete subclass + migrating between sub-tables); skip those silently.
+        if (it->second->getGroupType() != g->getGroupType())
+        {
+            SERVICE_LOG_WARN("updateGroupContactsInMemory: GroupType change not supported, contactId=" << g->getContactId());
+            continue;
+        }
         it->second->setGroupName(g->getGroupName());
-        it->second->setGroupType(g->getGroupType());
         it->second->setContactStatus(g->getContactStatus());
+        if (auto srcDept = std::dynamic_pointer_cast<model::IDepartmentGroup>(g))
+        {
+            if (auto dstDept = std::dynamic_pointer_cast<model::DepartmentGroupContact>(it->second))
+            {
+                dstDept->setManagerId(srcDept->getManagerId());
+                dstDept->setHeadcount(srcDept->getHeadcount());
+            }
+        }
+        else if (auto srcTeam = std::dynamic_pointer_cast<model::ITeamGroup>(g))
+        {
+            if (auto dstTeam = std::dynamic_pointer_cast<model::TeamGroupContact>(it->second))
+            {
+                dstTeam->setTeamLeadId(srcTeam->getTeamLeadId());
+                dstTeam->setMission(srcTeam->getMission());
+            }
+        }
         accepted.push_back(it->second);
     }
     return accepted;

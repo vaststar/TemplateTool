@@ -88,6 +88,68 @@ void GroupContact::setContactStatus(ContactStatus status)
     mStatus = status;
 }
 
+// ===== DepartmentGroupContact =====
+
+DepartmentGroupContact::DepartmentGroupContact(const std::string& id)
+    : GroupContact(id)
+{
+}
+
+std::string DepartmentGroupContact::getManagerId() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mManagerId;
+}
+
+int DepartmentGroupContact::getHeadcount() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mHeadcount;
+}
+
+void DepartmentGroupContact::setManagerId(const std::string& managerId)
+{
+    std::scoped_lock lock(mDataMutex);
+    mManagerId = managerId;
+}
+
+void DepartmentGroupContact::setHeadcount(int headcount)
+{
+    std::scoped_lock lock(mDataMutex);
+    mHeadcount = headcount;
+}
+
+// ===== TeamGroupContact =====
+
+TeamGroupContact::TeamGroupContact(const std::string& id)
+    : GroupContact(id)
+{
+}
+
+std::string TeamGroupContact::getTeamLeadId() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mTeamLeadId;
+}
+
+std::string TeamGroupContact::getMission() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mMission;
+}
+
+void TeamGroupContact::setTeamLeadId(const std::string& teamLeadId)
+{
+    std::scoped_lock lock(mDataMutex);
+    mTeamLeadId = teamLeadId;
+}
+
+void TeamGroupContact::setMission(const std::string& mission)
+{
+    std::scoped_lock lock(mDataMutex);
+    mMission = mission;
+}
+
 ContactRelation::ContactRelation(const std::string& relationId,
                                  const std::string& childId,
                                  const std::string& parentId)

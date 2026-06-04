@@ -44,6 +44,7 @@ public:
 
     // IClientInfoService - App Initialization
     MAKE_MOCK0(initializeAppClient, void(), override);
+    MAKE_CONST_MOCK0(isClientInfoReady, bool(), override);
 
     // IClientInfoService - Paths
     MAKE_CONST_MOCK0(getAppDataStoragePath, std::string(), override);

@@ -20,6 +20,24 @@ GroupContactTable::GroupContactTable()
 {
 }
 
+DepartmentGroupTable::DepartmentGroupTable()
+    : ucf::service::model::DBTableModel(TableName,{
+        {GroupIdField,    "TEXT UNIQUE NOT NULL"},
+        {ManagerIdField,  "TEXT"},
+        {HeadcountField,  "INTEGER"}
+    })
+{
+}
+
+TeamGroupTable::TeamGroupTable()
+    : ucf::service::model::DBTableModel(TableName,{
+        {GroupIdField,    "TEXT UNIQUE NOT NULL"},
+        {TeamLeadIdField, "TEXT"},
+        {MissionField,    "TEXT"}
+    })
+{
+}
+
 ContactRelationTable::ContactRelationTable()
     : ucf::service::model::DBTableModel(TableName,{
         // RELATION_ID 为代理主键（UUID）；(CHILD_ID, PARENT_ID, RELATION_TYPE) 由应用层维护业务唯一性。

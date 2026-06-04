@@ -126,6 +126,8 @@ void ClientInfoManager::initializeAppClient()
     std::vector<ucf::service::model::DBTableModel> tables{
         db::schema::UserContactTable{},
         db::schema::GroupContactTable{},
+        db::schema::DepartmentGroupTable{},
+        db::schema::TeamGroupTable{},
         db::schema::ContactRelationTable{},
         db::schema::SettingsTable{},
         db::schema::ScreenshotSettingsTable{},
