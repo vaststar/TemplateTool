@@ -58,38 +58,82 @@ Item {
             if (contactId) controller.selectContact(contactId);
         }
 
-        delegate: Item {
+        delegate: TreeViewDelegate {
             id: rowItem
             implicitWidth: treeView.width
-            implicitHeight: label.implicitHeight * 1.8
-            z: (current && treeView.activeFocus) ? 1 : 0
+            indentation: 16
+            leftMargin: 8
+            spacing: 6
+            topPadding: 6
+            bottomPadding: 6
+            focusPolicy: Qt.NoFocus
+            z: (treeView.currentRow === row && treeView.activeFocus) ? 1 : 0
 
-            readonly property real indentation: 16
-            readonly property real padding: 8
+            readonly property string nodeId: model.id
+            readonly property bool isSelected: nodeId === controller.currentContactId
 
-            // Assigned to by TreeView:
-            required property TreeView treeView
-            required property bool isTreeNode
-            required property bool expanded
-            required property bool hasChildren
-            required property int depth
-            required property int row
-            required property int column
-            required property bool current
+            // Off-screen chip used as the drag thumbnail.
+            Item {
+                id: dragPreview
+                width: previewLabel.implicitWidth + 16
+                height: previewLabel.implicitHeight + 8
+                visible: false
+                layer.enabled: true
+                Rectangle {
+                    anchors.fill: parent
+                    radius: 4
+                    color: UTComponentUtil.getPlainUIColor(
+                        UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
+                    opacity: 0.9
+                }
+                UTLabel {
+                    id: previewLabel
+                    anchors.centerIn: parent
+                    text: model.displayName
+                    fontEnum: UIFontToken.Body_Text
+                    colorEnum: UIColorToken.Sidebar_Item_Text
+                    colorState: UIColorState.Selected
+                }
+            }
+
+            indicator: UTLabel {
+                x: rowItem.leftMargin + rowItem.depth * rowItem.indentation
+                text: "▶"
+                fontEnum: UIFontToken.Caption_Text
+                colorEnum: UIColorToken.Sidebar_Item_Text
+                rotation: rowItem.expanded ? 90 : 0
+                visible: rowItem.hasChildren
+            }
+
+            contentItem: UTLabel {
+                text: model.displayName
+                fontEnum: UIFontToken.Body_Text
+                colorEnum: UIColorToken.Sidebar_Item_Text
+                colorState: rowItem.isSelected ? UIColorState.Selected : UIColorState.Normal
+            }
+
+            background: Rectangle {
+                color: rowItem.isSelected
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
+                    : rowItem.hovered
+                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+                        : "transparent"
+            }
+
+            onClicked: controller.selectContact(nodeId)
 
             Drag.active: dragHandler.active
             Drag.dragType: Drag.Automatic
             Drag.supportedActions: Qt.MoveAction
-            Drag.mimeData: { "text/x-contact-id": model.id }
-            Drag.hotSpot.x: 8
-            Drag.hotSpot.y: 8
+            Drag.mimeData: { "text/x-contact-id": nodeId }
+            Drag.hotSpot.x: 12
+            Drag.hotSpot.y: dragPreview.height / 2
 
             TapHandler {
-                id: pressTap
                 acceptedButtons: Qt.LeftButton
                 onPressedChanged: {
                     if (pressed) {
-                        rowItem.grabToImage(function(result) {
+                        dragPreview.grabToImage(function(result) {
                             rowItem.Drag.imageSource = result.url;
                         });
                     }
@@ -103,60 +147,9 @@ Item {
                 grabPermissions: PointerHandler.CanTakeOverFromAnything
             }
 
-            HoverHandler { id: hoverHandler }
-
-            Rectangle {
-                id: background
-                anchors.fill: parent
-                color: model.id === controller.currentContactId
-                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-                    : hoverHandler.hovered
-                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                        : "transparent"
-            }
-
-            UTLabel {
-                id: indicator
-                x: padding + (depth * indentation)
-                anchors.verticalCenter: parent.verticalCenter
-                visible: isTreeNode && hasChildren
-                text: "▶"
-                fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Sidebar_Item_Text
-                rotation: expanded ? 90 : 0
-
-                TapHandler {
-                    onSingleTapped: {
-                        const idx = treeView.index(row, column);
-                        treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
-                        controller.selectContact(model.id);
-                        treeView.toggleExpanded(row);
-                    }
-                }
-            }
-
-            UTLabel {
-                id: label
-                x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - padding - x
-                text: model.displayName
-                fontEnum: UIFontToken.Body_Text
-                colorEnum: UIColorToken.Sidebar_Item_Text
-                colorState: model.id === controller.currentContactId ? UIColorState.Selected : UIColorState.Normal
-            }
-
-            // Click to select
-            TapHandler {
-                onSingleTapped: {
-                    const idx = treeView.index(row, column);
-                    treeView.selectionModel.setCurrentIndex(idx, ItemSelectionModel.NoUpdate);
-                    controller.selectContact(model.id);
-                }
-            }
-
             UTFocusItem {
-                delegateFocused: current && treeContainer.treeView.activeFocus
+                delegateFocused: rowItem.treeView.currentRow === rowItem.row
+                                 && rowItem.treeView.activeFocus
             }
         }
     }
