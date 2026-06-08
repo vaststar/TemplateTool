@@ -10,8 +10,7 @@
 
 namespace UIVMSignalEmitter {
 
-// 一一对应 IContactListViewModelCallback 的事件，透传 payload，
-// 让消费方可以按需做差量 UI 更新。
+// Qt-signal bridge for IContactListViewModelCallback.
 class ContactListViewModelEmitter
     : public QObject
     , public commonHead::viewModels::IContactListViewModelCallback
@@ -51,9 +50,6 @@ public:
     void onContactRelationsRemoved(const std::vector<std::string>& ids) override
     { emit signals_onContactRelationsRemoved(ids); }
 
-    void onCurrentContactChanged(const std::string& contactId) override
-    { emit signals_onCurrentContactChanged(contactId); }
-
 signals:
     void signals_onContactDirectoryReady();
     void signals_onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error);
@@ -69,8 +65,6 @@ signals:
     void signals_onContactRelationsAdded(const std::vector<RelationData>& relations);
     void signals_onContactRelationsUpdated(const std::vector<RelationData>& relations);
     void signals_onContactRelationsRemoved(const std::vector<std::string>& ids);
-
-    void signals_onCurrentContactChanged(const std::string& contactId);
 };
 
 } // namespace UIVMSignalEmitter

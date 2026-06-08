@@ -1,6 +1,5 @@
 #include "ContactListViewModel.h"
 
-#include <algorithm>
 #include <mutex>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ContactService/IContactEntities.h>
@@ -49,23 +48,16 @@ void ContactListViewModel::init()
         COMMONHEAD_LOG_ERROR("ContactListViewModel init: service not available");
         return;
     }
-    // Register first so we do not miss any change event arriving between the isReady
-    // probe and the read below.
+    // Register first so we do not miss change events between the isReady probe and the read.
     service->registerCallback(
         std::static_pointer_cast<ucf::service::IContactServiceCallback>(shared_from_this()));
 
     if (service->isContactDirectoryReady())
     {
-        COMMONHEAD_LOG_DEBUG("ContactListViewModel init: service already ready, rebuilding tree synchronously");
         rebuildTreeFromService();
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
     }
-    else
-    {
-        // VM does NOT trigger loadContactDirectory(); the Service owns load lifecycle and
-        // will call us back through the sink as soon as the DB is bound and loaded.
-        COMMONHEAD_LOG_DEBUG("ContactListViewModel init: waiting for service to become ready");
-    }
+    // else: service owns load lifecycle; it will call us back when ready.
 }
 
 std::shared_ptr<ucf::service::IContactService> ContactListViewModel::lockService() const
@@ -88,10 +80,8 @@ void ContactListViewModel::rebuildTreeFromService()
         COMMONHEAD_LOG_ERROR("rebuildTreeFromService skipped: service not available");
         return;
     }
-    // Pull only the slice this VM cares about. Persons are common to every slice;
-    // groups depend on the slice (Department -> Department groups, Project -> Project
-    // groups, Reporting/Mentor/Collaboration -> no groups). The mapping lives in
-    // utils::groupTypeFor so adding a new RelationType only requires touching one place.
+    // Persons are common to every slice; groups only exist for slices that map to a
+    // GroupType (see utils::groupTypeFor).
     const auto relType   = serviceRelationType();
     const auto groupType = utils::groupTypeFor(mInterestedRelationType);
 
@@ -127,10 +117,8 @@ bool ContactListViewModel::ensureTreeBuilt()
             return false;
         }
     }
-    // Out-of-order safety net: incremental event arrived before our tree was built.
-    // Pull a full snapshot now so VM state stays self-consistent; callers surface a Ready
-    // notification instead of the original delta (the delta is already in the snapshot).
-    COMMONHEAD_LOG_DEBUG("ensureTreeBuilt: tree is null on incremental event, rebuilding full snapshot");
+    // Incremental event arrived before tree was built; rebuild full snapshot instead.
+    COMMONHEAD_LOG_DEBUG("ensureTreeBuilt: rebuilding full snapshot");
     rebuildTreeFromService();
     return true;
 }
@@ -147,40 +135,10 @@ bool ContactListViewModel::isContactDirectoryReady() const
     return static_cast<bool>(mTree);
 }
 
-std::string ContactListViewModel::getCurrentContactId() const
-{
-    std::scoped_lock lk(mSelectionMutex);
-    return mCurrentContactId;
-}
-
 void ContactListViewModel::selectContact(const std::string& contactId)
 {
-    // Empty id is a valid "clear" command; non-empty must resolve to an actual contact
-    // node currently in the tree (Person or Group).
-    if (!contactId.empty())
-    {
-        std::shared_ptr<model::ContactTree> treeSnapshot;
-        {
-            std::scoped_lock lk(mTreeMutex);
-            treeSnapshot = mTree;
-        }
-        if (!treeSnapshot || !treeSnapshot->findNodeById(contactId))
-        {
-            COMMONHEAD_LOG_WARN("selectContact ignored: not a known contact, contactId:" << contactId);
-            return;
-        }
-    }
-
-    {
-        std::scoped_lock lk(mSelectionMutex);
-        if (mCurrentContactId == contactId)
-        {
-            return;
-        }
-        mCurrentContactId = contactId;
-    }
+    // Fire-and-forget metrics hook; selection state lives in the UI.
     COMMONHEAD_LOG_INFO("selectContact: contactId:" << (contactId.empty() ? "<cleared>" : contactId));
-    fireNotification(&IContactListViewModelCallback::onCurrentContactChanged, contactId);
 }
 
 bool ContactListViewModel::canMoveContact(const std::string& childId,
@@ -211,10 +169,9 @@ bool ContactListViewModel::canMoveContact(const std::string& childId,
         return false;
     }
 
-    // Noop if the current parent already matches the target.
     auto curParent = childNode->getParent().lock();
     const std::string curParentId = curParent ? curParent->getNodeData().id : std::string{};
-    if (curParentId == newParentId)
+    if (curParentId == newParentId) // noop
     {
         return false;
     }
@@ -250,9 +207,8 @@ void ContactListViewModel::moveContact(const std::string& childId,
         return;
     }
 
-    // Resolve current parent at service level. The VM tree attaches root-less nodes to a
-    // virtual root whose id is empty; service-level relation rows only exist when the
-    // parent is real (non-empty). So we dispatch to add/update/remove accordingly.
+    // Service-level relation rows only exist when the parent is real (non-empty); the
+    // VM tree attaches root-less nodes to a virtual empty-id root. Dispatch accordingly.
     std::string curParentId;
     {
         std::shared_ptr<model::ContactTree> snapshot;
@@ -296,7 +252,7 @@ void ContactListViewModel::moveContact(const std::string& childId,
     }
     else if (existingRelationId.empty())
     {
-        // root -> B : no row exists yet; let the service mint a UUID by passing empty id.
+        // root -> B: no row yet, let the service mint a UUID.
         service->addContactRelations({
             std::make_shared<utils::VMContactRelation>(std::string{}, childId, newParentId, relType)
         });
@@ -309,7 +265,7 @@ void ContactListViewModel::moveContact(const std::string& childId,
     }
 }
 
-// ===== IContactServiceCallback: apply incremental updates then forward to VM subscribers =====
+// ===== IContactServiceCallback: apply service delta, then forward to subscribers =====
 
 void ContactListViewModel::onContactDirectoryReady()
 {
@@ -380,29 +336,13 @@ void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string
             mTree->removeNodes(contactIds);
         }
     }
-    bool clearedSelection = false;
-    {
-        std::scoped_lock lk(mSelectionMutex);
-        if (!mCurrentContactId.empty()
-            && std::find(contactIds.begin(), contactIds.end(), mCurrentContactId) != contactIds.end())
-        {
-            mCurrentContactId.clear();
-            clearedSelection = true;
-        }
-    }
     fireNotification(&IContactListViewModelCallback::onPersonContactsRemoved, contactIds);
-    if (clearedSelection)
-    {
-        COMMONHEAD_LOG_INFO("selectContact auto-cleared: selected person was removed");
-        fireNotification(&IContactListViewModelCallback::onCurrentContactChanged, std::string{});
-    }
 }
 
 void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::GroupContactArray& groups)
 {
-    // Filter to this VM's GroupType slice. Slices whose parent is a Person (Reporting /
-    // Mentor / Collaboration) declare std::nullopt and have no groups at all in the
-    // tree, so we drop the whole event.
+    // Filter to this VM's group slice; slices with no group type (Reporting/Mentor/...)
+    // drop the whole event.
     const auto groupType = utils::groupTypeFor(mInterestedRelationType);
     if (!groupType.has_value())
     {
@@ -485,8 +425,7 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
 
 void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>& contactIds)
 {
-    // Removed events do not carry the GroupType, so we apply optimistically: removing a
-    // node id that is not in our tree is a no-op inside ContactTree, which is safe.
+    // Removed events do not carry GroupType; removing an unknown id is a no-op in the tree.
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsRemoved arrived before tree was built (count:" << contactIds.size()
@@ -501,28 +440,12 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
             mTree->removeNodes(contactIds);
         }
     }
-    bool clearedSelection = false;
-    {
-        std::scoped_lock lk(mSelectionMutex);
-        if (!mCurrentContactId.empty()
-            && std::find(contactIds.begin(), contactIds.end(), mCurrentContactId) != contactIds.end())
-        {
-            mCurrentContactId.clear();
-            clearedSelection = true;
-        }
-    }
     fireNotification(&IContactListViewModelCallback::onGroupContactsRemoved, contactIds);
-    if (clearedSelection)
-    {
-        COMMONHEAD_LOG_INFO("selectContact auto-cleared: selected group was removed");
-        fireNotification(&IContactListViewModelCallback::onCurrentContactChanged, std::string{});
-    }
 }
 
 void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations)
 {
-    // Only relations of this VM's RelationType slice are interesting; others belong to
-    // sibling VM instances (Reporting, Project, ...).
+    // Drop relations from sibling slices.
     const auto wanted = serviceRelationType();
     ucf::service::model::ContactRelationArray filtered;
     filtered.reserve(relations.size());
@@ -593,9 +516,8 @@ void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::
 
 void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::string>& relationIds)
 {
-    // Service emits a flat list of relationIds covering every slice. Ask the tree to
-    // translate each id back to the childId that belongs to this slice; unknown ids
-    // (those owned by sibling VMs) are skipped automatically.
+    // Service emits a flat id list across slices; translate to childIds via the tree and
+    // skip ids that belong to sibling VMs.
     std::vector<std::string> childIds;
     std::vector<std::string> matchedRelationIds;
     {

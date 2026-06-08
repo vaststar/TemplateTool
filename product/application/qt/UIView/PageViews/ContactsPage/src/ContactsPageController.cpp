@@ -8,6 +8,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <QVariantMap>
+#include <algorithm>
 
 ContactsPageController::ContactsPageController(QObject* parent)
     : UIViewController(parent)
@@ -40,7 +41,6 @@ void ContactsPageController::init()
     auto* e = mContactListEmitter.get();
     QObject::connect(e, &Emitter::signals_onContactDirectoryReady,      this, &ContactsPageController::onContactDirectoryReady);
     QObject::connect(e, &Emitter::signals_onContactDirectoryLoadFailed, this, &ContactsPageController::onContactDirectoryLoadFailed);
-    QObject::connect(e, &Emitter::signals_onCurrentContactChanged,      this, &ContactsPageController::onCurrentContactChanged);
     QObject::connect(e, &Emitter::signals_onPersonContactsAdded,      this, &ContactsPageController::onPersonContactsAdded);
     QObject::connect(e, &Emitter::signals_onPersonContactsUpdated,    this, &ContactsPageController::onPersonContactsUpdated);
     QObject::connect(e, &Emitter::signals_onPersonContactsRemoved,    this, &ContactsPageController::onPersonContactsRemoved);
@@ -54,16 +54,10 @@ void ContactsPageController::init()
     mOrgTreeModel = new ContactListItemModel(this);
     emit orgTreeModelChanged();
 
-    // VM init contract: registerCallback may synchronously fire onContactDirectoryReady
-    // (when the directory is already loaded) or onContactDirectoryLoadFailed.
-    // Otherwise initViewModel() kicks off the async load, and the result arrives
-    // later via the emitter -> Qt signal. No need for a local sync probe here.
+    // registerCallback may synchronously fire Ready/LoadFailed; otherwise the result
+    // arrives later via the emitter -> Qt signal.
     mContactListViewModel->registerCallback(mContactListEmitter);
     mContactListViewModel->initViewModel();
-
-    // Seed selection cache from VM (typically empty on fresh init, but late-binding
-    // scenarios may already have a selection).
-    m_currentContactId = QString::fromStdString(mContactListViewModel->getCurrentContactId());
 }
 
 void ContactsPageController::buttonClicked()
@@ -88,9 +82,12 @@ void ContactsPageController::setLoadState(LoadState s)
 
 void ContactsPageController::selectContact(const QString& contactId)
 {
-    // Forward to VM; the VM validates, dedupes, and (on a real change) fires
-    // onCurrentContactChanged back through the emitter, where our slot updates the
-    // cached QString and emits the property NOTIFY signal.
+    // Selection is UI state: update locally, then notify VM purely for metrics.
+    if (m_currentContactId != contactId)
+    {
+        m_currentContactId = contactId;
+        emit currentContactIdChanged();
+    }
     if (mContactListViewModel)
     {
         mContactListViewModel->selectContact(contactId.toStdString());
@@ -129,7 +126,7 @@ void ContactsPageController::moveContact(const QString& srcId, const QString& ta
                                        targetParentId.toStdString());
 }
 
-// ---- Thin forwarding slots: VM callback → model mutation method ----
+// ---- VM callback slots ----
 
 void ContactsPageController::onContactDirectoryReady()
 {
@@ -147,15 +144,6 @@ void ContactsPageController::onContactDirectoryLoadFailed(commonHead::viewModels
     setLoadState(Error);
 }
 
-void ContactsPageController::onCurrentContactChanged(const std::string& contactId)
-{
-    auto qId = QString::fromStdString(contactId);
-    if (m_currentContactId == qId) return;
-    m_currentContactId = qId;
-    UIVIEW_LOG_DEBUG("onCurrentContactChanged: " << (contactId.empty() ? std::string("<cleared>") : contactId));
-    emit currentContactIdChanged();
-}
-
 void ContactsPageController::onPersonContactsAdded(const std::vector<commonHead::viewModels::model::ContactNodeData>& v)
 { if (mOrgTreeModel) mOrgTreeModel->insertNodes(v); }
 
@@ -163,7 +151,15 @@ void ContactsPageController::onPersonContactsUpdated(const std::vector<commonHea
 { if (mOrgTreeModel) mOrgTreeModel->updateNodes(v); }
 
 void ContactsPageController::onPersonContactsRemoved(const std::vector<std::string>& v)
-{ if (mOrgTreeModel) mOrgTreeModel->removeNodes(v); }
+{
+    if (mOrgTreeModel) mOrgTreeModel->removeNodes(v);
+    if (!m_currentContactId.isEmpty()
+        && std::find(v.begin(), v.end(), m_currentContactId.toStdString()) != v.end())
+    {
+        m_currentContactId.clear();
+        emit currentContactIdChanged();
+    }
+}
 
 void ContactsPageController::onGroupContactsAdded(const std::vector<commonHead::viewModels::model::ContactNodeData>& v)
 { if (mOrgTreeModel) mOrgTreeModel->insertNodes(v); }
@@ -172,7 +168,15 @@ void ContactsPageController::onGroupContactsUpdated(const std::vector<commonHead
 { if (mOrgTreeModel) mOrgTreeModel->updateNodes(v); }
 
 void ContactsPageController::onGroupContactsRemoved(const std::vector<std::string>& v)
-{ if (mOrgTreeModel) mOrgTreeModel->removeNodes(v); }
+{
+    if (mOrgTreeModel) mOrgTreeModel->removeNodes(v);
+    if (!m_currentContactId.isEmpty()
+        && std::find(v.begin(), v.end(), m_currentContactId.toStdString()) != v.end())
+    {
+        m_currentContactId.clear();
+        emit currentContactIdChanged();
+    }
+}
 
 void ContactsPageController::onContactRelationsAdded(const std::vector<commonHead::viewModels::model::ContactRelationData>& v)
 {

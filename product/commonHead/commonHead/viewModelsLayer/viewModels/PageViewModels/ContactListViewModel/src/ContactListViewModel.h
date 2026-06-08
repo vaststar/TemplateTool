@@ -36,7 +36,6 @@ public:
     virtual model::ContactTreePtr getContactList() const override;
     model::RelationType getRelationType() const override;
     bool isContactDirectoryReady() const override;
-    std::string getCurrentContactId() const override;
     void selectContact(const std::string& contactId) override;
     bool canMoveContact(const std::string& childId, const std::string& newParentId) const override;
     void moveContact(const std::string& childId, const std::string& newParentId) override;
@@ -60,24 +59,14 @@ protected:
 private:
     std::shared_ptr<ucf::service::IContactService> lockService() const;
     void rebuildTreeFromService();
-    // Returns true when the tree was just rebuilt (because it was null); callers should
-    // skip the incremental apply because the rebuilt snapshot already contains the delta.
+    // Returns true if the tree was just rebuilt; callers should skip the incremental apply.
     bool ensureTreeBuilt();
-
-    // Returns the service-level RelationType this VM is interested in, derived once from
-    // mInterestedRelationType.
     ucf::service::model::IContactRelation::RelationType serviceRelationType() const;
 
 private:
     mutable std::mutex mTreeMutex;
     std::shared_ptr<model::ContactTree> mTree;
 
-    mutable std::mutex mSelectionMutex;
-    std::string mCurrentContactId;
-
-    // The relation slice this VM instance is bound to. Today the factory only constructs
-    // Department VMs (matches legacy behaviour); a future factory overload will let UI
-    // construct VMs for other slices without touching this class.
     model::RelationType mInterestedRelationType{model::RelationType::Department};
 };
 }
