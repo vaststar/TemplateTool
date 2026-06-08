@@ -99,6 +99,8 @@ void CameraMonitorViewController::moveCameraNode(const QString& srcId, const QSt
     {
         return;
     }
+    mHasPendingMove    = true;
+    mPendingMoveParent = targetParentId;
     mCameraDirectoryViewModel->moveCameraNode(srcId.toStdString(), targetParentId.toStdString());
 }
 
@@ -177,6 +179,13 @@ void CameraMonitorViewController::onCameraRelationsUpdated(const std::vector<com
     pairs.reserve(v.size());
     for (const auto& r : v) pairs.emplace_back(r.parentId, r.childId);
     mCameraTreeModel->setParents(pairs);
+    if (mHasPendingMove)
+    {
+        const QString p = mPendingMoveParent;
+        mHasPendingMove = false;
+        mPendingMoveParent.clear();
+        emit nodeMoved(p);
+    }
 }
 
 void CameraMonitorViewController::onCameraRelationsRemoved(const std::vector<std::string>& v)

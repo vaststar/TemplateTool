@@ -150,6 +150,13 @@ void CameraDirectoryItemModel::clearParents(const std::vector<std::string>& chil
     }
 }
 
+QModelIndex CameraDirectoryItemModel::indexOfId(const QString& id) const
+{
+    Node* n = findNode(id.toStdString());
+    if (!n || n == getRoot()) return {};
+    return indexFor(n);
+}
+
 // ---------------- QAbstractItemModel ----------------
 
 QVariant CameraDirectoryItemModel::data(const QModelIndex& index, int role) const

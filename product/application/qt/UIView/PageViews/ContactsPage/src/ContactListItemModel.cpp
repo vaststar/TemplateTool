@@ -155,6 +155,13 @@ void ContactListItemModel::clearParents(const std::vector<std::string>& childIds
     }
 }
 
+QModelIndex ContactListItemModel::indexOfId(const QString& id) const
+{
+    Node* n = findNode(id.toStdString());
+    if (!n || n == getRoot()) return {};
+    return indexFor(n);
+}
+
 // ---------------- QAbstractItemModel ----------------
 
 QVariant ContactListItemModel::data(const QModelIndex& index, int role) const

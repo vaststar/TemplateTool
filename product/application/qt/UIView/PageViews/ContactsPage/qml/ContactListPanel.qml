@@ -103,19 +103,6 @@ Item {
                 grabPermissions: PointerHandler.CanTakeOverFromAnything
             }
 
-            property Animation indicatorAnimation: NumberAnimation {
-                target: indicator
-                property: "rotation"
-                from: expanded ? 0 : 90
-                to: expanded ? 90 : 0
-                duration: 100
-                easing.type: Easing.OutQuart
-            }
-
-            TableView.onPooled: indicatorAnimation.complete()
-            TableView.onReused: if (current) indicatorAnimation.start()
-            onExpandedChanged: indicator.rotation = expanded ? 90 : 0
-
             HoverHandler { id: hoverHandler }
 
             Rectangle {
@@ -136,6 +123,7 @@ Item {
                 text: "▶"
                 fontEnum: UIFontToken.Caption_Text
                 colorEnum: UIColorToken.Sidebar_Item_Text
+                rotation: expanded ? 90 : 0
 
                 TapHandler {
                     onSingleTapped: {
@@ -173,10 +161,7 @@ Item {
         }
     }
 
-    // Single unified drop target: hit-test the cursor position to find the
-    // target contact id (or "" for the virtual root). One DropArea avoids the
-    // Qt deactivate-on-reject behaviour that used to require dragging out of
-    // the window and back in before a root drop would register.
+    // Drop target for drag-reparent.
     DropArea {
         id: rootDropArea
         anchors.fill: treeContainer
@@ -190,18 +175,7 @@ Item {
             const idx = tv.modelIndex(cell);
             return tv.model.data(idx, Qt.UserRole + 1) || "";
         }
-        function cellAt(x, y) {
-            const tv = treeContainer.treeView;
-            if (!tv) return Qt.point(-1, -1);
-            const p = mapToItem(tv, x, y);
-            return tv.cellAtPosition(p.x + tv.contentX, p.y + tv.contentY);
-        }
 
-        // Always accept here as long as mime matches; rejecting in
-        // onEntered (e.g. when cursor starts on the source row, so
-        // target == source) permanently deactivates the DropArea for the
-        // rest of the drag. The real accept state is computed every frame
-        // in onPositionChanged.
         onEntered: (drag) => {
             drag.accepted = drag.formats.indexOf("text/x-contact-id") >= 0;
         }
@@ -217,12 +191,20 @@ Item {
                 return;
             }
             controller.moveContact(srcId, tgtId);
-            // Expand the drop target so the newly-arrived child is visible.
-            if (tgtId !== "") {
-                const cell = cellAt(drop.x, drop.y);
-                if (cell.y >= 0) treeContainer.treeView.expand(cell.y);
-            }
             drop.accepted = true;
+        }
+    }
+
+    // Expand the new parent once the move has been applied to the model.
+    Connections {
+        target: root.controller
+        function onNodeMoved(newParentId) {
+            if (newParentId === "") return;
+            const tv = treeContainer.treeView;
+            if (!tv) return;
+            const idx = tv.model.indexOfId(newParentId);
+            const r = tv.rowAtIndex(idx);
+            if (r >= 0) tv.expand(r);
         }
     }
 

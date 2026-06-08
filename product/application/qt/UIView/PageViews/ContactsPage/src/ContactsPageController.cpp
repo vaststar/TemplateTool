@@ -123,6 +123,8 @@ bool ContactsPageController::canDropOn(const QString& srcId, const QString& targ
 void ContactsPageController::moveContact(const QString& srcId, const QString& targetParentId)
 {
     if (!mContactListViewModel) return;
+    mHasPendingMove    = true;
+    mPendingMoveParent = targetParentId;
     mContactListViewModel->moveContact(srcId.toStdString(),
                                        targetParentId.toStdString());
 }
@@ -188,6 +190,13 @@ void ContactsPageController::onContactRelationsUpdated(const std::vector<commonH
     pairs.reserve(v.size());
     for (const auto& r : v) pairs.emplace_back(r.parentId, r.childId);
     mOrgTreeModel->setParents(pairs);
+    if (mHasPendingMove)
+    {
+        const QString p = mPendingMoveParent;
+        mHasPendingMove = false;
+        mPendingMoveParent.clear();
+        emit nodeMoved(p);
+    }
 }
 
 void ContactsPageController::onContactRelationsRemoved(const std::vector<std::string>& v)

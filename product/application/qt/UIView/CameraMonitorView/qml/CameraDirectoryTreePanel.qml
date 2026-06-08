@@ -60,7 +60,7 @@ Item {
             z: (current && treeView.activeFocus) ? 1 : 0
 
             readonly property real indentation: 16
-            readonly property real padding: 8
+            readonly property real padding: 12
 
             required property TreeView treeView
             required property bool isTreeNode
@@ -98,18 +98,6 @@ Item {
                 grabPermissions: PointerHandler.CanTakeOverFromAnything
             }
 
-            property Animation indicatorAnimation: NumberAnimation {
-                target: indicator
-                property: "rotation"
-                from: expanded ? 0 : 90
-                to: expanded ? 90 : 0
-                duration: 100
-                easing.type: Easing.OutQuart
-            }
-            TableView.onPooled: indicatorAnimation.complete()
-            TableView.onReused: if (current) indicatorAnimation.start()
-            onExpandedChanged: indicator.rotation = expanded ? 90 : 0
-
             HoverHandler { id: hoverHandler }
 
             Rectangle {
@@ -130,6 +118,7 @@ Item {
                 text: "▶"
                 fontEnum: UIFontToken.Caption_Text
                 colorEnum: UIColorToken.Sidebar_Item_Text
+                rotation: expanded ? 90 : 0
 
                 TapHandler {
                     onSingleTapped: {
@@ -166,16 +155,11 @@ Item {
         }
     }
 
-    // Single unified drop target: hit-test the cursor position to find the
-    // target node id (or "" for the virtual root). Doing everything in one
-    // DropArea avoids the Qt behaviour where rejecting in onEntered
-    // permanently deactivates the area for the rest of the drag session
-    // (which used to cause root drops to need a window-exit-and-re-enter).
+    // Drop target for drag-reparent.
     DropArea {
         id: rootDropArea
         anchors.fill: treeContainer
 
-        // "" means root drop.
         function targetIdAt(x, y) {
             const tv = treeContainer.treeView;
             if (!tv) return "";
@@ -185,19 +169,7 @@ Item {
             const idx = tv.modelIndex(cell);
             return tv.model.data(idx, Qt.UserRole + 1) || "";
         }
-        function cellAt(x, y) {
-            const tv = treeContainer.treeView;
-            if (!tv) return Qt.point(-1, -1);
-            const p = mapToItem(tv, x, y);
-            return tv.cellAtPosition(p.x + tv.contentX, p.y + tv.contentY);
-        }
 
-        // NOTE: must always accept here as long as the mime type matches.
-        // If we reject in onEntered (e.g. when the cursor starts on top of
-        // the dragged row itself, making target == source), Qt deactivates
-        // this DropArea for the rest of the drag and onPositionChanged
-        // will never fire again. The real accept state is computed in
-        // onPositionChanged on every frame.
         onEntered: (drag) => {
             drag.accepted = drag.formats.indexOf("text/x-camera-node-id") >= 0;
         }
@@ -214,13 +186,20 @@ Item {
                 return;
             }
             controller.moveCameraNode(srcId, tgtId);
-            // Expand the drop target so the user can immediately see the
-            // newly-arrived child instead of having to click the chevron.
-            if (tgtId !== "") {
-                const cell = cellAt(drop.x, drop.y);
-                if (cell.y >= 0) treeContainer.treeView.expand(cell.y);
-            }
             drop.accepted = true;
+        }
+    }
+
+    // Expand the new parent once the move has been applied to the model.
+    Connections {
+        target: root.controller
+        function onNodeMoved(newParentId) {
+            if (newParentId === "") return;
+            const tv = treeContainer.treeView;
+            if (!tv) return;
+            const idx = tv.model.indexOfId(newParentId);
+            const r = tv.rowAtIndex(idx);
+            if (r >= 0) tv.expand(r);
         }
     }
 

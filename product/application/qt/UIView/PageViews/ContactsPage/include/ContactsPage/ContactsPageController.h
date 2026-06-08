@@ -74,6 +74,7 @@ signals:
     void orgTreeModelChanged();
     void currentContactIdChanged();
     void loadStateChanged();
+    void nodeMoved(QString newParentId);
 
 private:
     void setLoadState(LoadState s);
@@ -84,4 +85,6 @@ private:
     ContactListItemModel* mOrgTreeModel = nullptr;
     QString m_currentContactId;
     LoadState m_loadState = Loading;
+    bool    mHasPendingMove = false;
+    QString mPendingMoveParent;
 };

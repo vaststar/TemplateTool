@@ -43,6 +43,8 @@ public:
     void setParents(const std::vector<std::pair<std::string, std::string>>& pairs);
     void clearParents(const std::vector<std::string>& childIds);
 
+    Q_INVOKABLE QModelIndex indexOfId(const QString& id) const;
+
     // --- QAbstractItemModel ---
     QVariant      data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;

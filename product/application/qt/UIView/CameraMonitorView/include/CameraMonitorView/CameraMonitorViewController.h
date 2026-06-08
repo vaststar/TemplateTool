@@ -58,6 +58,7 @@ signals:
     void cameraTreeModelChanged();
     void currentCameraChanged();
     void loadStateChanged();
+    void nodeMoved(QString newParentId);
 
 protected:
     void init() override;
@@ -87,4 +88,6 @@ private:
     QString   mCurrentCameraId;
     QString   mCurrentCameraName;
     LoadState mLoadState = Loading;
+    bool      mHasPendingMove = false;
+    QString   mPendingMoveParent;
 };
