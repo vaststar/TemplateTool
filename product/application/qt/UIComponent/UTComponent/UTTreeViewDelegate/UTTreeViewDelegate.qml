@@ -8,7 +8,7 @@ BaseTreeViewDelegate {
     id: control
 
     implicitWidth: treeView ? treeView.width : 1
-    indentation: 16
+    indentation: 8
     leftMargin: 8
     spacing: 6
     topPadding: 6
