@@ -43,6 +43,11 @@ void SideBarViewModel::init()
 {
     COMMONHEAD_LOG_DEBUG("SideBarViewModel::init");
     initDefaultNavItems();
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_ready = true;
+    }
+    fireNotification(&ISideBarViewModelCallback::onSideBarReady);
 }
 
 // ==================== Initialization ====================
@@ -142,8 +147,6 @@ void SideBarViewModel::initDefaultNavItems()
             }
         },
     };
-
-    m_currentPageId = model::PageId::Home;
 }
 
 // ==================== Helper method ====================
@@ -207,10 +210,21 @@ std::vector<model::NavItemData> SideBarViewModel::getBottomNavItems() const
     return result;
 }
 
-model::PageId SideBarViewModel::getCurrentPageId() const
+std::vector<model::NavItemData> SideBarViewModel::getNavItems() const
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-    return m_currentPageId;
+    return m_navItems;
+}
+
+bool SideBarViewModel::isSideBarReady() const
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_ready;
+}
+
+model::PageId SideBarViewModel::getDefaultPageId() const
+{
+    return model::PageId::Home;
 }
 
 model::NavItemData SideBarViewModel::getNavItem(model::PageId pageId) const
@@ -228,71 +242,53 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
         return false;
     }
 
-    // Check if this nav item has a submenu — show popup instead of navigating
-    {
-        std::vector<model::SubMenuItem> subItems;
-        {
-            std::lock_guard<std::mutex> lock(m_mutex);
-            const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
-                [pageId](const auto& item) { return item.pageId == pageId; });
+    // Submenu items are intercepted and turned into onSubMenuRequested (return false).
+    std::vector<model::SubMenuItem> subItems;
+    bool exists = false;
+    bool enabled = false;
+    bool visible = false;
 
-            if (it != m_navItems.end() && it->hasSubMenu())
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
+            [pageId](const auto& item) { return item.pageId == pageId; });
+
+        if (it != m_navItems.end())
+        {
+            exists = true;
+            enabled = it->isEnabled();
+            visible = it->isVisible();
+            if (it->hasSubMenu())
             {
                 subItems = it->subMenuItems;
             }
         }
-
-        if (!subItems.empty())
-        {
-            fireNotification(&ISideBarViewModelCallback::onSubMenuRequested, pageId, subItems);
-            return true;
-        }
     }
 
-    model::PageChangeEvent event;
-
+    if (!subItems.empty())
     {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
-        const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
-            [pageId](const auto& item) { return item.pageId == pageId; });
-
-        if (it == m_navItems.end())
-        {
-            COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " not found");
-            return false;
-        }
-
-        if (!it->isEnabled())
-        {
-            COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " is disabled");
-            return false;
-        }
-
-        if (!it->isVisible())
-        {
-            COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " is hidden");
-            return false;
-        }
-
-        if (m_currentPageId == pageId)
-        {
-            return true;
-        }
-
-        event.fromPageId = m_currentPageId;
-        event.toPageId = pageId;
-        event.isUserAction = isUserAction;
-        m_currentPageId = pageId;
+        fireNotification(&ISideBarViewModelCallback::onSubMenuRequested, pageId, subItems);
+        return false;
     }
 
-    // Fire notification outside of lock to avoid deadlock
-    fireNotification(&ISideBarViewModelCallback::onCurrentPageChanged, event);
+    if (!exists)
+    {
+        COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " not found");
+        return false;
+    }
+    if (!enabled)
+    {
+        COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " is disabled");
+        return false;
+    }
+    if (!visible)
+    {
+        COMMONHEAD_LOG_WARN("navigateTo: pageId " << magic_enum::enum_name(pageId) << " is hidden");
+        return false;
+    }
 
-    COMMONHEAD_LOG_DEBUG("Navigate: " << magic_enum::enum_name(event.fromPageId)
-        << " -> " << magic_enum::enum_name(event.toPageId)
-        << " (userAction=" << isUserAction << ")");
-
+    COMMONHEAD_LOG_DEBUG("navigateTo: pageId=" << magic_enum::enum_name(pageId)
+        << " approved (userAction=" << isUserAction << ")");
     return true;
 }
 
@@ -328,7 +324,8 @@ void SideBarViewModel::updateBadge(model::PageId pageId, int32_t badge)
     }
 
     // Fire notification outside of lock to avoid deadlock
-    fireNotification(&ISideBarViewModelCallback::onNavItemUpdated, updatedItem);
+    fireNotification(&ISideBarViewModelCallback::onNavItemsUpdated,
+                     std::vector<model::NavItemData>{updatedItem});
     COMMONHEAD_LOG_DEBUG("Badge updated: pageId=" << magic_enum::enum_name(pageId) << ", badge=" << badge);
 }
 
@@ -364,7 +361,8 @@ void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState
     }
 
     // Fire notification outside of lock to avoid deadlock
-    fireNotification(&ISideBarViewModelCallback::onNavItemUpdated, updatedItem);
+    fireNotification(&ISideBarViewModelCallback::onNavItemsUpdated,
+                     std::vector<model::NavItemData>{updatedItem});
     COMMONHEAD_LOG_DEBUG("NavItem state updated: pageId=" << magic_enum::enum_name(pageId)
         << ", state=" << magic_enum::enum_name(state));
 }
@@ -373,29 +371,65 @@ void SideBarViewModel::reloadNavConfig()
 {
     COMMONHEAD_LOG_DEBUG("reloadNavConfig");
 
-    model::PageId savedPageId;
+    // Diff old vs new to fire fine-grained added/updated/removed.
+    std::vector<model::PageId> oldPageIds;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        savedPageId = m_currentPageId;
+        oldPageIds.reserve(m_navItems.size());
+        for (const auto& item : m_navItems)
+        {
+            oldPageIds.push_back(item.pageId);
+        }
     }
 
     initDefaultNavItems();
 
-    std::vector<model::NavItemData> items;
+    std::vector<model::NavItemData> newItems;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        // Restore saved page if it still exists, otherwise keep Home (set by initDefaultNavItems)
-        const auto it = std::find_if(m_navItems.begin(), m_navItems.end(),
-            [savedPageId](const auto& item) { return item.pageId == savedPageId; });
-        if (it != m_navItems.end())
-        {
-            m_currentPageId = savedPageId;
-        }
-        items = m_navItems;
+        newItems = m_navItems;
     }
 
-    // Fire notification outside of lock to avoid deadlock
-    fireNotification(&ISideBarViewModelCallback::onNavItemsChanged, items);
+    std::vector<model::NavItemData> added;
+    std::vector<model::NavItemData> updated;
+    std::vector<model::PageId>      removed;
+
+    for (const auto& item : newItems)
+    {
+        const bool wasPresent = std::find(oldPageIds.begin(), oldPageIds.end(), item.pageId)
+                                != oldPageIds.end();
+        if (wasPresent)
+        {
+            updated.push_back(item);
+        }
+        else
+        {
+            added.push_back(item);
+        }
+    }
+    for (const auto& oldId : oldPageIds)
+    {
+        const bool stillPresent = std::find_if(newItems.begin(), newItems.end(),
+            [oldId](const auto& item) { return item.pageId == oldId; }) != newItems.end();
+        if (!stillPresent)
+        {
+            removed.push_back(oldId);
+        }
+    }
+
+    // Fire notifications outside of lock to avoid deadlock
+    if (!removed.empty())
+    {
+        fireNotification(&ISideBarViewModelCallback::onNavItemsRemoved, removed);
+    }
+    if (!added.empty())
+    {
+        fireNotification(&ISideBarViewModelCallback::onNavItemsAdded, added);
+    }
+    if (!updated.empty())
+    {
+        fireNotification(&ISideBarViewModelCallback::onNavItemsUpdated, updated);
+    }
 }
 
 void SideBarViewModel::handleSubMenuAction(model::MenuActionId actionId)

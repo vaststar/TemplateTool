@@ -16,19 +16,24 @@ public:
     {
     }
 
-    void onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items) override
+    void onSideBarReady() override
     {
-        emit signals_onNavItemsChanged(items);
+        emit signals_onSideBarReady();
     }
 
-    void onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event) override
+    void onNavItemsAdded(const std::vector<commonHead::viewModels::model::NavItemData>& items) override
     {
-        emit signals_onCurrentPageChanged(event);
+        emit signals_onNavItemsAdded(items);
     }
 
-    void onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item) override
+    void onNavItemsUpdated(const std::vector<commonHead::viewModels::model::NavItemData>& items) override
     {
-        emit signals_onNavItemUpdated(item);
+        emit signals_onNavItemsUpdated(items);
+    }
+
+    void onNavItemsRemoved(const std::vector<commonHead::viewModels::model::PageId>& pageIds) override
+    {
+        emit signals_onNavItemsRemoved(pageIds);
     }
 
     void onSubMenuRequested(commonHead::viewModels::model::PageId pageId,
@@ -43,9 +48,10 @@ public:
     }
 
 signals:
-    void signals_onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items);
-    void signals_onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event);
-    void signals_onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item);
+    void signals_onSideBarReady();
+    void signals_onNavItemsAdded(const std::vector<commonHead::viewModels::model::NavItemData>& items);
+    void signals_onNavItemsUpdated(const std::vector<commonHead::viewModels::model::NavItemData>& items);
+    void signals_onNavItemsRemoved(const std::vector<commonHead::viewModels::model::PageId>& pageIds);
     void signals_onSubMenuRequested(int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items);
     void signals_onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId);
 };

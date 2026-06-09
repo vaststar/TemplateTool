@@ -50,14 +50,17 @@ protected:
     void onLanguageChanged() override;
 
 private slots:
-    void onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items);
-    void onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event);
-    void onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item);
+    void onSideBarReady();
+    void onNavItemsAdded  (const std::vector<commonHead::viewModels::model::NavItemData>& items);
+    void onNavItemsUpdated(const std::vector<commonHead::viewModels::model::NavItemData>& items);
+    void onNavItemsRemoved(const std::vector<commonHead::viewModels::model::PageId>& pageIds);
     void onSubMenuRequested(int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items);
     void onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId);
 
 private:
-    void refreshNavItems();
+    void seedFromSnapshot();
+    void ensureValidSelection();
+    void navigateToInternal(int pageId, bool isUserAction);
 
     std::shared_ptr<commonHead::viewModels::ISideBarViewModel> m_sideBarViewModel;
     std::shared_ptr<UIVMSignalEmitter::SideBarViewModelEmitter> m_viewModelEmitter;

@@ -110,14 +110,4 @@ struct COMMONHEAD_EXPORT NavItemData
     }
 };
 
-/**
- * @brief Page change event data
- */
-struct COMMONHEAD_EXPORT PageChangeEvent
-{
-    PageId fromPageId = PageId::Unknown;
-    PageId toPageId = PageId::Unknown;
-    bool isUserAction = false;
-};
-
 } // namespace commonHead::viewModels::model

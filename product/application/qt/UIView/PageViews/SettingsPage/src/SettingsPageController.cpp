@@ -34,23 +34,10 @@ void SettingsPageController::init()
     m_treeModel = new SettingsTreeModel(this);
     emit treeModelChanged();
 
-    // Create ViewModel, register callback first, then init. If the VM populates
-    // synchronously during initViewModel() we still get the onSettingsTreeReady
-    // notification on the wire; if it populated even earlier, the snapshot
-    // path below catches it.
     m_settingsViewModel = getAppContext()->getViewModelFactory()->createSettingsViewModelInstance();
     m_settingsViewModel->registerCallback(m_viewModelEmitter);
+    UIVIEW_LOG_DEBUG("SettingsPageController::init ViewModel created, initializing");
     m_settingsViewModel->initViewModel();
-
-    // Late-subscriber safety net: if the VM was already ready before we
-    // registered, the onSettingsTreeReady callback won't be re-fired, so we
-    // snapshot here.
-    // if (m_settingsViewModel->isSettingsTreeReady() && m_treeModel->rowCount() == 0)
-    // {
-    //     m_treeModel->resetFromTree(m_settingsViewModel->getSettingsTree());
-    //     ensureValidSelection();
-    // }
-
     UIVIEW_LOG_DEBUG("SettingsPageController::init done");
 }
 

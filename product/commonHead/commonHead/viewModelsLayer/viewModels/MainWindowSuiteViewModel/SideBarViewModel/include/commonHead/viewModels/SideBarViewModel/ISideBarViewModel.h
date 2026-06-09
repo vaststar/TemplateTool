@@ -30,36 +30,19 @@ public:
     virtual ~ISideBarViewModelCallback() = default;
 
 public:
-    /**
-     * @brief Called when navigation items list changed (full list)
-     * @param items All navigation items
-     */
-    virtual void onNavItemsChanged(const std::vector<model::NavItemData>& items) = 0;
+    // Fired once after the initial nav config is built. Late subscribers
+    // should consult isSideBarReady() and seed from getNavItems().
+    virtual void onSideBarReady() {}
 
-    /**
-     * @brief Called when current page changed
-     * @param event Page change event
-     */
-    virtual void onCurrentPageChanged(const model::PageChangeEvent& event) = 0;
+    virtual void onNavItemsAdded(const std::vector<model::NavItemData>& /*items*/) {}
+    virtual void onNavItemsUpdated(const std::vector<model::NavItemData>& /*items*/) {}
+    virtual void onNavItemsRemoved(const std::vector<model::PageId>& /*pageIds*/) {}
 
-    /**
-     * @brief Called when single navigation item updated (badge or state changed)
-     * @param item Updated navigation item data
-     */
-    virtual void onNavItemUpdated(const model::NavItemData& item) = 0;
-
-    /**
-     * @brief Called when a nav item with submenu is clicked — UI should show popup
-     * @param pageId  The nav item that was clicked
-     * @param items   Submenu items to display
-     */
+    // Nav item with submenu was clicked — UI should show the popup.
     virtual void onSubMenuRequested(model::PageId pageId,
                                     const std::vector<model::SubMenuItem>& items) = 0;
 
-    /**
-     * @brief Called when a submenu action needs UI-layer handling
-     * @param actionId The menu action that was triggered
-     */
+    // Submenu action needs UI-layer handling.
     virtual void onMenuActionClicked(model::MenuActionId actionId) = 0;
 };
 
@@ -83,55 +66,28 @@ public:
 
     virtual std::string getViewModelName() const override = 0;
 
-    /**
-     * @brief Get top navigation items (sorted)
-     */
     virtual std::vector<model::NavItemData> getTopNavItems() const = 0;
-
-    /**
-     * @brief Get bottom navigation items (sorted)
-     */
     virtual std::vector<model::NavItemData> getBottomNavItems() const = 0;
 
-    /**
-     * @brief Get current selected page ID
-     */
-    virtual model::PageId getCurrentPageId() const = 0;
+    // Full snapshot for late subscribers (unsorted, top + bottom).
+    virtual std::vector<model::NavItemData> getNavItems() const = 0;
 
-    /**
-     * @brief Get navigation item data for specified page
-     * @param pageId Page ID
-     * @return Navigation item data, returns Unknown if not exists
-     */
+    [[nodiscard]] virtual bool isSideBarReady() const = 0;
+
+    // Default page id for controller seeding. VM owns no UI selection state.
+    virtual model::PageId getDefaultPageId() const = 0;
+
     virtual model::NavItemData getNavItem(model::PageId pageId) const = 0;
 
     // ========== Operations ==========
 
-    /**
-     * @brief Navigate to specified page
-     * @param pageId Target page ID
-     * @param isUserAction Whether this is a user-initiated action
-     * @return Whether navigation succeeded
-     */
+    // Validation gate — does NOT mutate any selection state (controller owns it).
+    // Returns true if the controller should switch to pageId. Submenu items fire
+    // onSubMenuRequested and return false.
     virtual bool navigateTo(model::PageId pageId, bool isUserAction = true) = 0;
 
-    /**
-     * @brief Update badge for specified page
-     * @param pageId Page ID
-     * @param badge Badge value (0 to clear)
-     */
     virtual void updateBadge(model::PageId pageId, int32_t badge) = 0;
-
-    /**
-     * @brief Set navigation item state
-     * @param pageId Page ID
-     * @param state New state
-     */
     virtual void setNavItemState(model::PageId pageId, model::NavItemState state) = 0;
-
-    /**
-     * @brief Reload navigation configuration
-     */
     virtual void reloadNavConfig() = 0;
 
     /**

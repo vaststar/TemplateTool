@@ -31,12 +31,14 @@ void MainWindowSideBarController::init()
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init start");
 
     // Connect signals from ViewModel emitter
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsChanged,
-            this, &MainWindowSideBarController::onNavItemsChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onCurrentPageChanged,
-            this, &MainWindowSideBarController::onCurrentPageChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemUpdated,
-            this, &MainWindowSideBarController::onNavItemUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onSideBarReady,
+            this, &MainWindowSideBarController::onSideBarReady);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsAdded,
+            this, &MainWindowSideBarController::onNavItemsAdded);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsUpdated,
+            this, &MainWindowSideBarController::onNavItemsUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsRemoved,
+            this, &MainWindowSideBarController::onNavItemsRemoved);
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onSubMenuRequested,
             this, &MainWindowSideBarController::onSubMenuRequested);
     connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onMenuActionClicked,
@@ -44,7 +46,6 @@ void MainWindowSideBarController::init()
 
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init signals connected, creating ViewModel");
 
-    // Create ViewModel and register callback
     m_sideBarViewModel = getAppContext()->getViewModelFactory()->createSideBarViewModelInstance();
     if (!m_sideBarViewModel)
     {
@@ -52,16 +53,10 @@ void MainWindowSideBarController::init()
         return;
     }
 
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init ViewModel created, initializing");
-    m_sideBarViewModel->initViewModel();
-
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init registering callback");
     m_sideBarViewModel->registerCallback(m_viewModelEmitter);
 
-    // Load initial data
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init refreshing nav items");
-    refreshNavItems();
-
+    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init ViewModel created, initializing");
+    m_sideBarViewModel->initViewModel();
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init done");
 }
 
@@ -82,10 +77,27 @@ int MainWindowSideBarController::currentPageId() const
 
 void MainWindowSideBarController::navigateTo(int pageId)
 {
-    if (m_sideBarViewModel)
+    navigateToInternal(pageId, /*isUserAction=*/true);
+}
+
+void MainWindowSideBarController::navigateToInternal(int pageId, bool isUserAction)
+{
+    if (!m_sideBarViewModel || pageId == m_currentPageId)
     {
-        m_sideBarViewModel->navigateTo(static_cast<commonHead::viewModels::model::PageId>(pageId));
+        return;
     }
+
+    // VM validation gate — false means "don't switch" (unknown/disabled/hidden/submenu).
+    if (!m_sideBarViewModel->navigateTo(
+            static_cast<commonHead::viewModels::model::PageId>(pageId), isUserAction))
+    {
+        return;
+    }
+
+    const int from = m_currentPageId;
+    m_currentPageId = pageId;
+    emit currentPageIdChanged(m_currentPageId);
+    emit pageChanged(from, m_currentPageId, isUserAction);
 }
 
 void MainWindowSideBarController::handleSubMenuAction(int actionId)
@@ -112,46 +124,85 @@ void MainWindowSideBarController::onMenuActionClicked(commonHead::viewModels::mo
     }
 }
 
-void MainWindowSideBarController::refreshNavItems()
+void MainWindowSideBarController::seedFromSnapshot()
 {
     if (!m_sideBarViewModel)
     {
         return;
     }
 
-    m_topNavItems->setItems(m_sideBarViewModel->getTopNavItems());
-    m_bottomNavItems->setItems(m_sideBarViewModel->getBottomNavItems());
+    m_topNavItems->resetItems(m_sideBarViewModel->getTopNavItems());
+    m_bottomNavItems->resetItems(m_sideBarViewModel->getBottomNavItems());
 
-    if (const int newPageId = static_cast<int>(m_sideBarViewModel->getCurrentPageId()); m_currentPageId != newPageId)
-    {
-        m_currentPageId = newPageId;
-        emit currentPageIdChanged(m_currentPageId);
-    }
+    navigateToInternal(
+        static_cast<int>(m_sideBarViewModel->getDefaultPageId()),
+        /*isUserAction=*/false);
+
+    ensureValidSelection();
 }
 
-void MainWindowSideBarController::onNavItemsChanged(const std::vector<commonHead::viewModels::model::NavItemData>& items)
+void MainWindowSideBarController::ensureValidSelection()
 {
-    Q_UNUSED(items);
-    refreshNavItems();
+    if (!m_sideBarViewModel)
+    {
+        return;
+    }
+    if (m_topNavItems->contains(m_currentPageId) || m_bottomNavItems->contains(m_currentPageId))
+    {
+        return;
+    }
+    navigateToInternal(
+        static_cast<int>(m_sideBarViewModel->getDefaultPageId()),
+        /*isUserAction=*/false);
 }
 
-void MainWindowSideBarController::onCurrentPageChanged(const commonHead::viewModels::model::PageChangeEvent& event)
+void MainWindowSideBarController::onSideBarReady()
 {
-    m_currentPageId = static_cast<int>(event.toPageId);
-    emit currentPageIdChanged(m_currentPageId);
-    emit pageChanged(static_cast<int>(event.fromPageId), static_cast<int>(event.toPageId), event.isUserAction);
+    UIVIEW_LOG_DEBUG("MainWindowSideBarController::onSideBarReady");
+    seedFromSnapshot();
 }
 
-void MainWindowSideBarController::onNavItemUpdated(const commonHead::viewModels::model::NavItemData& item)
+void MainWindowSideBarController::onNavItemsAdded(
+    const std::vector<commonHead::viewModels::model::NavItemData>& items)
 {
-    if (item.isTopItem())
+    if (items.empty())
     {
-        m_topNavItems->updateItem(item);
+        return;
     }
-    else
+    std::vector<commonHead::viewModels::model::NavItemData> top;
+    std::vector<commonHead::viewModels::model::NavItemData> bottom;
+    for (const auto& item : items)
     {
-        m_bottomNavItems->updateItem(item);
+        (item.isTopItem() ? top : bottom).push_back(item);
     }
+    if (!top.empty())    { m_topNavItems->insertItems(top); }
+    if (!bottom.empty()) { m_bottomNavItems->insertItems(bottom); }
+    ensureValidSelection();
+}
+
+void MainWindowSideBarController::onNavItemsUpdated(
+    const std::vector<commonHead::viewModels::model::NavItemData>& items)
+{
+    if (items.empty())
+    {
+        return;
+    }
+    // Each model ignores items it doesn't own — hand the batch to both.
+    m_topNavItems->updateItems(items);
+    m_bottomNavItems->updateItems(items);
+    ensureValidSelection();
+}
+
+void MainWindowSideBarController::onNavItemsRemoved(
+    const std::vector<commonHead::viewModels::model::PageId>& pageIds)
+{
+    if (pageIds.empty())
+    {
+        return;
+    }
+    m_topNavItems->removeItems(pageIds);
+    m_bottomNavItems->removeItems(pageIds);
+    ensureValidSelection();
 }
 
 void MainWindowSideBarController::onSubMenuRequested(

@@ -22,7 +22,9 @@ public:
     // ISideBarViewModel - Data access
     std::vector<model::NavItemData> getTopNavItems() const override;
     std::vector<model::NavItemData> getBottomNavItems() const override;
-    model::PageId getCurrentPageId() const override;
+    std::vector<model::NavItemData> getNavItems() const override;
+    [[nodiscard]] bool isSideBarReady() const override;
+    model::PageId getDefaultPageId() const override;
     model::NavItemData getNavItem(model::PageId pageId) const override;
 
     // ISideBarViewModel - Operations
@@ -45,7 +47,7 @@ private:
 private:
     mutable std::mutex m_mutex;
     std::vector<model::NavItemData> m_navItems;
-    model::PageId m_currentPageId = model::PageId::Home;
+    bool m_ready = false;
 };
 
 } // namespace commonHead::viewModels

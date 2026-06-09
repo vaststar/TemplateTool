@@ -36,11 +36,9 @@ void ToolsPageController::init()
     m_treeModel = new ToolsTreeModel(this);
     emit treeModelChanged();
 
-    // Create ViewModel, register callback first, then init. If the VM populates
-    // synchronously during initViewModel() we still get the onToolsTreeReady
-    // notification on the wire.
     m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->registerCallback(m_viewModelEmitter);
+    UIVIEW_LOG_DEBUG("ToolsPageController::init ViewModel created, initializing");
     m_toolsViewModel->initViewModel();
 
     UIVIEW_LOG_DEBUG("ToolsPageController::init done");

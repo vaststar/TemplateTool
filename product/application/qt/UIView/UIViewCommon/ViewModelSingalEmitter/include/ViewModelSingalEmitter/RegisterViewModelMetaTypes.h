@@ -11,8 +11,9 @@
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 
 Q_DECLARE_METATYPE(commonHead::viewModels::model::NavItemData)
-Q_DECLARE_METATYPE(commonHead::viewModels::model::PageChangeEvent)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::NavItemData>)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::PageId)
+Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::PageId>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::SubMenuItem)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::SubMenuItem>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::VideoFrame)
@@ -39,8 +40,9 @@ namespace UIVMSignalEmitter {
 inline void registerAllViewModelMetaTypes()
 {
     qRegisterMetaType<commonHead::viewModels::model::NavItemData>();
-    qRegisterMetaType<commonHead::viewModels::model::PageChangeEvent>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::NavItemData>>();
+    qRegisterMetaType<commonHead::viewModels::model::PageId>();
+    qRegisterMetaType<std::vector<commonHead::viewModels::model::PageId>>();
     qRegisterMetaType<commonHead::viewModels::model::SubMenuItem>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::SubMenuItem>>();
     qRegisterMetaType<commonHead::viewModels::model::VideoFrame>();
