@@ -46,16 +46,9 @@ public:
      * @param nodeId The node whose data was updated
      */
     virtual void onSettingsTreeItemUpdated(const std::string& nodeId) = 0;
-
-    /**
-     * @brief Called when the current selected node changed
-     * @param nodeId Node ID of the newly selected node
-     * @param panelType Panel type of the newly selected node
-     */
-    virtual void onCurrentSettingsNodeChanged(const std::string& nodeId, model::SettingsPanelType panelType) = 0;
 };
 
-class COMMONHEAD_EXPORT ISettingsViewModel 
+class COMMONHEAD_EXPORT ISettingsViewModel
     : public IViewModel
     , public virtual commonHead::utilities::IVMNotificationHelper<ISettingsViewModelCallback>
 {
@@ -73,18 +66,8 @@ public:
     virtual model::SettingsTreePtr getSettingsTree() const = 0;
 
     /**
-     * @brief Get current selected node ID
-     */
-    virtual std::string getCurrentNodeId() const = 0;
-
-    /**
-     * @brief Get current selected panel type
-     */
-    virtual model::SettingsPanelType getCurrentPanelType() const = 0;
-
-    /**
-     * @brief Select a node by ID
-     * @param nodeId Node ID to select
+     * @brief Notify VM that the user selected a node. VM owns no selection state;
+     *        this hook exists purely so metrics/telemetry can be added later.
      */
     virtual void selectNode(const std::string& nodeId) = 0;
 

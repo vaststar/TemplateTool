@@ -15,8 +15,6 @@ public:
     std::string getViewModelName() const override;
 
     model::SettingsTreePtr getSettingsTree() const override;
-    std::string getCurrentNodeId() const override;
-    model::SettingsPanelType getCurrentPanelType() const override;
     void selectNode(const std::string& nodeId) override;
     void reloadTree() override;
 
@@ -26,12 +24,9 @@ protected:
 private:
     void buildSettingsTree();
     void refreshTreeNodeData();
-    std::string findFirstSettingsNodeId() const;
 
 private:
     model::SettingsTreePtr m_settingsTree;
-    std::string m_currentNodeId;
-    model::SettingsPanelType m_currentPanelType = model::SettingsPanelType::None;
 };
 
 } // namespace commonHead::viewModels

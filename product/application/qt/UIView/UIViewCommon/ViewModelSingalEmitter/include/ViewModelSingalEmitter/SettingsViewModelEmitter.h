@@ -35,19 +35,11 @@ public:
         emit signals_onSettingsTreeItemUpdated(QString::fromStdString(nodeId));
     }
 
-    void onCurrentSettingsNodeChanged(const std::string& nodeId,
-                                      commonHead::viewModels::model::SettingsPanelType panelType) override
-    {
-        emit signals_onCurrentSettingsNodeChanged(
-            QString::fromStdString(nodeId), static_cast<int>(panelType));
-    }
-
 signals:
     void signals_onSettingsTreeChanged(const commonHead::viewModels::model::SettingsTreePtr& tree);
     void signals_onSettingsTreeStructureChanged(const commonHead::viewModels::model::SettingsTreeNodeChange& change);
     void signals_onSettingsTreeItemsUpdated();
     void signals_onSettingsTreeItemUpdated(const QString& nodeId);
-    void signals_onCurrentSettingsNodeChanged(const QString& nodeId, int panelType);
 };
 
 } // namespace UIVMSignalEmitter

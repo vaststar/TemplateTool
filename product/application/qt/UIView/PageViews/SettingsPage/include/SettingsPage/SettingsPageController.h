@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include <QObject>
 #include <QtQml>
 #include "UIViewBase/UIViewController.h"
@@ -10,7 +12,9 @@ namespace commonHead::viewModels {
     class ISettingsViewModel;
 }
 namespace commonHead::viewModels::model {
+    class ISettingsTree;
     struct SettingsTreeNodeChange;
+    enum class SettingsPanelType : uint8_t;
 }
 
 class SettingsPageController : public UIViewController
@@ -45,10 +49,12 @@ private slots:
     void onSettingsTreeStructureChanged(const commonHead::viewModels::model::SettingsTreeNodeChange& change);
     void onSettingsTreeItemsUpdated();
     void onSettingsTreeItemUpdated(const QString& nodeId);
-    void onCurrentSettingsNodeChanged(const QString& nodeId, int panelType);
 
 private:
-    QString mapPanelTypeToQml(int panelType) const;
+    QString mapPanelTypeToQml(commonHead::viewModels::model::SettingsPanelType panelType) const;
+    commonHead::viewModels::model::SettingsPanelType panelTypeOf(const std::string& nodeId) const;
+    std::string findFirstSelectableNodeId() const;
+    void ensureValidSelection();
 
     std::shared_ptr<commonHead::viewModels::ISettingsViewModel> m_settingsViewModel;
     std::shared_ptr<UIVMSignalEmitter::SettingsViewModelEmitter> m_viewModelEmitter;

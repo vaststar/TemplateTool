@@ -38,12 +38,6 @@ void SettingsViewModel::init()
 {
     COMMONHEAD_LOG_DEBUG("SettingsViewModel::init");
     buildSettingsTree();
-
-    // Select first settings node by default
-    std::string firstId = findFirstSettingsNodeId();
-    if (!firstId.empty()) {
-        selectNode(firstId);
-    }
 }
 
 // ==================== Public methods ====================
@@ -53,33 +47,11 @@ model::SettingsTreePtr SettingsViewModel::getSettingsTree() const
     return m_settingsTree;
 }
 
-std::string SettingsViewModel::getCurrentNodeId() const
-{
-    return m_currentNodeId;
-}
-
-model::SettingsPanelType SettingsViewModel::getCurrentPanelType() const
-{
-    return m_currentPanelType;
-}
-
 void SettingsViewModel::selectNode(const std::string& nodeId)
 {
-    if (!m_settingsTree)
-        return;
-
-    auto node = m_settingsTree->findNodeById(nodeId);
-    if (!node)
-        return;
-
-    auto nodeData = node->getNodeData();
-
-    // Only update if the node has a panel (not a category)
-    if (nodeData.panelType != model::SettingsPanelType::None) {
-        m_currentNodeId = nodeId;
-        m_currentPanelType = nodeData.panelType;
-        fireNotification(&ISettingsViewModelCallback::onCurrentSettingsNodeChanged, m_currentNodeId, m_currentPanelType);
-    }
+    // VM owns no selection state; controller is the source of truth.
+    // Keep this hook so future metrics/telemetry can be added in one place.
+    COMMONHEAD_LOG_DEBUG("SettingsViewModel::selectNode: " << nodeId);
 }
 
 void SettingsViewModel::reloadTree()
@@ -94,11 +66,6 @@ void SettingsViewModel::reloadTree()
         // L4: first-time build
         buildSettingsTree();
         fireNotification(&ISettingsViewModelCallback::onSettingsTreeChanged, m_settingsTree);
-
-        std::string firstId = findFirstSettingsNodeId();
-        if (!firstId.empty()) {
-            selectNode(firstId);
-        }
     }
 }
 
@@ -154,40 +121,8 @@ void SettingsViewModel::buildSettingsTree()
     });
 
     m_settingsTree = tree;
-    
+
     COMMONHEAD_LOG_DEBUG("SettingsViewModel::buildSettingsTree completed");
-}
-
-std::string SettingsViewModel::findFirstSettingsNodeId() const
-{
-    if (!m_settingsTree)
-        return "";
-
-    auto root = m_settingsTree->getRoot();
-    if (!root || root->getChildCount() == 0)
-        return "";
-
-    // DFS to find first node with a panel (not a category)
-    std::function<std::string(const model::SettingsTreeNodePtr&)> findFirst;
-    findFirst = [&findFirst](const model::SettingsTreeNodePtr& node) -> std::string {
-        if (!node)
-            return "";
-
-        auto data = node->getNodeData();
-        if (data.panelType != model::SettingsPanelType::None) {
-            return data.nodeId;
-        }
-
-        for (std::size_t i = 0; i < node->getChildCount(); ++i) {
-            auto child = node->getChild(i);
-            auto result = findFirst(child);
-            if (!result.empty())
-                return result;
-        }
-        return "";
-    };
-
-    return findFirst(root);
 }
 
 } // namespace commonHead::viewModels
