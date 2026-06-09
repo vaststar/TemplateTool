@@ -38,6 +38,8 @@ void SettingsViewModel::init()
 {
     COMMONHEAD_LOG_DEBUG("SettingsViewModel::init");
     buildSettingsTree();
+    m_ready = true;
+    fireNotification(&ISettingsViewModelCallback::onSettingsTreeReady);
 }
 
 // ==================== Public methods ====================
@@ -45,6 +47,11 @@ void SettingsViewModel::init()
 model::SettingsTreePtr SettingsViewModel::getSettingsTree() const
 {
     return m_settingsTree;
+}
+
+bool SettingsViewModel::isSettingsTreeReady() const
+{
+    return m_ready;
 }
 
 void SettingsViewModel::selectNode(const std::string& nodeId)
@@ -58,15 +65,19 @@ void SettingsViewModel::reloadTree()
 {
     COMMONHEAD_LOG_DEBUG("SettingsViewModel::reloadTree");
 
-    if (m_settingsTree) {
-        // L2: in-place refresh of all node titles/properties
-        refreshTreeNodeData();
-        fireNotification(&ISettingsViewModelCallback::onSettingsTreeItemsUpdated);
-    } else {
-        // L4: first-time build
+    if (!m_settingsTree) {
+        // First-time build path: act like init().
         buildSettingsTree();
-        fireNotification(&ISettingsViewModelCallback::onSettingsTreeChanged, m_settingsTree);
+        m_ready = true;
+        fireNotification(&ISettingsViewModelCallback::onSettingsTreeReady);
+        return;
     }
+
+    // In-place refresh of all node titles/properties; ids and parent links stay
+    // stable, so the UI can patch its mirror without any structural change.
+    refreshTreeNodeData();
+    fireNotification(&ISettingsViewModelCallback::onSettingsNodesUpdated,
+                     snapshotAllNodes());
 }
 
 void SettingsViewModel::refreshTreeNodeData()
@@ -89,6 +100,32 @@ void SettingsViewModel::refreshTreeNodeData()
     }
 }
 
+std::vector<model::SettingsNodeData> SettingsViewModel::snapshotAllNodes() const
+{
+    std::vector<model::SettingsNodeData> out;
+    if (!m_settingsTree) {
+        return out;
+    }
+    auto root = m_settingsTree->getRoot();
+    if (!root) {
+        return out;
+    }
+
+    std::function<void(const model::SettingsTreeNodePtr&)> dfs;
+    dfs = [&](const model::SettingsTreeNodePtr& node) {
+        if (!node) return;
+        const std::size_t n = node->getChildCount();
+        for (std::size_t i = 0; i < n; ++i) {
+            auto child = node->getChild(i);
+            if (!child) continue;
+            out.push_back(child->getNodeData());
+            dfs(child);
+        }
+    };
+    dfs(root);
+    return out;
+}
+
 // ==================== Private methods ====================
 
 void SettingsViewModel::buildSettingsTree()
@@ -99,6 +136,7 @@ void SettingsViewModel::buildSettingsTree()
     // General category (empty parentId means add to virtual root)
     tree->addNode("", {
         "general",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::SettingsCategoryGeneral),
         commonHead::model::AssetImageToken::Nav_Settings,
         model::SettingsPanelType::None
@@ -107,6 +145,7 @@ void SettingsViewModel::buildSettingsTree()
     // General > Appearance
     tree->addNode("general", {
         "general.appearance",
+        "general",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::SettingsAppearance),
         commonHead::model::AssetImageToken::None,
         model::SettingsPanelType::Appearance
@@ -115,6 +154,7 @@ void SettingsViewModel::buildSettingsTree()
     // General > Language
     tree->addNode("general", {
         "general.language",
+        "general",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::SettingsLanguage),
         commonHead::model::AssetImageToken::None,
         model::SettingsPanelType::Language

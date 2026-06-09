@@ -9,23 +9,6 @@
 namespace commonHead::viewModels::model {
 
 /**
- * @brief Describes a single structural change (insert/remove) in the settings tree.
- */
-struct COMMONHEAD_EXPORT SettingsTreeNodeChange
-{
-    enum class Type : uint8_t
-    {
-        Inserted,   ///< A new node was added
-        Removed,    ///< An existing node was removed
-    };
-
-    Type type;
-    std::string parentNodeId;   ///< Parent node that owns the affected child
-    std::string nodeId;         ///< The inserted / removed node ID
-    std::size_t index;          ///< Row position within the parent's children
-};
-
-/**
  * @brief Settings panel type - UI layer maps to specific QML file
  */
 enum class COMMONHEAD_EXPORT SettingsPanelType : uint8_t
@@ -36,11 +19,12 @@ enum class COMMONHEAD_EXPORT SettingsPanelType : uint8_t
 };
 
 /**
- * @brief Settings node data
+ * @brief Settings node data. parentId == "" means the node hangs off the virtual root.
  */
 struct COMMONHEAD_EXPORT SettingsNodeData
 {
     std::string nodeId;
+    std::string parentId;
     std::string title;
     commonHead::model::AssetImageToken icon = commonHead::model::AssetImageToken::None;
     SettingsPanelType panelType = SettingsPanelType::None;

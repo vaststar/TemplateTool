@@ -18,7 +18,8 @@ Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::SubMenuItem>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::VideoFrame)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreePtr)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsTreePtr)
-Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsTreeNodeChange)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsNodeData)
+Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::SettingsNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreeNodeChange)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>)
@@ -44,7 +45,8 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<commonHead::viewModels::model::VideoFrame>();
     qRegisterMetaType<commonHead::viewModels::model::ToolsTreePtr>();
     qRegisterMetaType<commonHead::viewModels::model::SettingsTreePtr>();
-    qRegisterMetaType<commonHead::viewModels::model::SettingsTreeNodeChange>();
+    qRegisterMetaType<commonHead::viewModels::model::SettingsNodeData>();
+    qRegisterMetaType<std::vector<commonHead::viewModels::model::SettingsNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::ToolsTreeNodeChange>();
     qRegisterMetaType<commonHead::viewModels::model::CameraDirectoryNodeData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>>();

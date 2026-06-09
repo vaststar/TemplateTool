@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
 
@@ -15,6 +17,7 @@ public:
     std::string getViewModelName() const override;
 
     model::SettingsTreePtr getSettingsTree() const override;
+    bool isSettingsTreeReady() const override;
     void selectNode(const std::string& nodeId) override;
     void reloadTree() override;
 
@@ -24,9 +27,12 @@ protected:
 private:
     void buildSettingsTree();
     void refreshTreeNodeData();
+    // DFS-collect the full node list (excluding the virtual root), in pre-order.
+    std::vector<model::SettingsNodeData> snapshotAllNodes() const;
 
 private:
     model::SettingsTreePtr m_settingsTree;
+    bool m_ready = false;
 };
 
 } // namespace commonHead::viewModels

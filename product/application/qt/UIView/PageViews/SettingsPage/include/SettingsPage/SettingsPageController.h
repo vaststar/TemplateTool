@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
 #include <QObject>
 #include <QtQml>
@@ -13,7 +15,7 @@ namespace commonHead::viewModels {
 }
 namespace commonHead::viewModels::model {
     class ISettingsTree;
-    struct SettingsTreeNodeChange;
+    struct SettingsNodeData;
     enum class SettingsPanelType : uint8_t;
 }
 
@@ -45,10 +47,10 @@ signals:
     void currentNodeIdChanged();
 
 private slots:
-    void onSettingsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree);
-    void onSettingsTreeStructureChanged(const commonHead::viewModels::model::SettingsTreeNodeChange& change);
-    void onSettingsTreeItemsUpdated();
-    void onSettingsTreeItemUpdated(const QString& nodeId);
+    void onSettingsTreeReady();
+    void onSettingsNodesAdded(const std::vector<commonHead::viewModels::model::SettingsNodeData>& nodes);
+    void onSettingsNodesUpdated(const std::vector<commonHead::viewModels::model::SettingsNodeData>& nodes);
+    void onSettingsNodesRemoved(const std::vector<std::string>& nodeIds);
 
 private:
     QString mapPanelTypeToQml(commonHead::viewModels::model::SettingsPanelType panelType) const;

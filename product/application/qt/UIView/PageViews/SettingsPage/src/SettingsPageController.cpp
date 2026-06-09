@@ -22,27 +22,34 @@ void SettingsPageController::init()
     UIVIEW_LOG_DEBUG("SettingsPageController::init");
 
     // Connect signals from ViewModel emitter
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeChanged,
-            this, &SettingsPageController::onSettingsTreeChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeStructureChanged,
-            this, &SettingsPageController::onSettingsTreeStructureChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeItemsUpdated,
-            this, &SettingsPageController::onSettingsTreeItemsUpdated);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeItemUpdated,
-            this, &SettingsPageController::onSettingsTreeItemUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeReady,
+            this, &SettingsPageController::onSettingsTreeReady);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsNodesAdded,
+            this, &SettingsPageController::onSettingsNodesAdded);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsNodesUpdated,
+            this, &SettingsPageController::onSettingsNodesUpdated);
+    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsNodesRemoved,
+            this, &SettingsPageController::onSettingsNodesRemoved);
 
-    // Create ViewModel, init, and register callback
-    m_settingsViewModel = getAppContext()->getViewModelFactory()->createSettingsViewModelInstance();
-    m_settingsViewModel->initViewModel();
-    m_settingsViewModel->registerCallback(m_viewModelEmitter);
-
-    // Load initial data
     m_treeModel = new SettingsTreeModel(this);
-    m_treeModel->setTree(m_settingsViewModel->getSettingsTree());
     emit treeModelChanged();
 
-    // Controller owns selection; pick the first selectable node.
-    selectNode(QString::fromStdString(findFirstSelectableNodeId()));
+    // Create ViewModel, register callback first, then init. If the VM populates
+    // synchronously during initViewModel() we still get the onSettingsTreeReady
+    // notification on the wire; if it populated even earlier, the snapshot
+    // path below catches it.
+    m_settingsViewModel = getAppContext()->getViewModelFactory()->createSettingsViewModelInstance();
+    m_settingsViewModel->registerCallback(m_viewModelEmitter);
+    m_settingsViewModel->initViewModel();
+
+    // Late-subscriber safety net: if the VM was already ready before we
+    // registered, the onSettingsTreeReady callback won't be re-fired, so we
+    // snapshot here.
+    // if (m_settingsViewModel->isSettingsTreeReady() && m_treeModel->rowCount() == 0)
+    // {
+    //     m_treeModel->resetFromTree(m_settingsViewModel->getSettingsTree());
+    //     ensureValidSelection();
+    // }
 
     UIVIEW_LOG_DEBUG("SettingsPageController::init done");
 }
@@ -98,41 +105,40 @@ void SettingsPageController::onLanguageChanged()
     if (m_settingsViewModel) {
         m_settingsViewModel->reloadTree();
     }
-    // L2 path keeps node IDs stable; selection survives without intervention.
-    // L4 path goes through onSettingsTreeChanged, which calls ensureValidSelection().
+    // Title refresh keeps node IDs stable, so selection survives without help.
 }
 
-void SettingsPageController::onSettingsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::ISettingsTree>& tree)
+void SettingsPageController::onSettingsTreeReady()
 {
-    if (!m_treeModel) return;
-    m_treeModel->setTree(tree);
-    emit treeModelChanged();
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeReady");
+    if (!m_treeModel || !m_settingsViewModel) return;
+    m_treeModel->resetFromTree(m_settingsViewModel->getSettingsTree());
     ensureValidSelection();
 }
 
-void SettingsPageController::onSettingsTreeStructureChanged(
-    const commonHead::viewModels::model::SettingsTreeNodeChange& change)
+void SettingsPageController::onSettingsNodesAdded(
+    const std::vector<commonHead::viewModels::model::SettingsNodeData>& nodes)
 {
-    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeStructureChanged");
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsNodesAdded count=" << nodes.size());
     if (!m_treeModel) return;
-    m_treeModel->applyStructureChange(change);
+    m_treeModel->insertNodes(nodes);
     ensureValidSelection();
 }
 
-void SettingsPageController::onSettingsTreeItemsUpdated()
+void SettingsPageController::onSettingsNodesUpdated(
+    const std::vector<commonHead::viewModels::model::SettingsNodeData>& nodes)
 {
-    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeItemsUpdated");
-    if (m_treeModel) {
-        m_treeModel->notifyAllItemsChanged();
-    }
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsNodesUpdated count=" << nodes.size());
+    if (!m_treeModel) return;
+    m_treeModel->updateNodes(nodes);
 }
 
-void SettingsPageController::onSettingsTreeItemUpdated(const QString& nodeId)
+void SettingsPageController::onSettingsNodesRemoved(const std::vector<std::string>& nodeIds)
 {
-    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsTreeItemUpdated: " << nodeId.toStdString());
-    if (m_treeModel) {
-        m_treeModel->notifyItemChanged(nodeId.toStdString());
-    }
+    UIVIEW_LOG_DEBUG("SettingsPageController::onSettingsNodesRemoved count=" << nodeIds.size());
+    if (!m_treeModel) return;
+    m_treeModel->removeNodes(nodeIds);
+    ensureValidSelection();
 }
 
 QString SettingsPageController::mapPanelTypeToQml(
@@ -152,36 +158,35 @@ commonHead::viewModels::model::SettingsPanelType
 SettingsPageController::panelTypeOf(const std::string& nodeId) const
 {
     using commonHead::viewModels::model::SettingsPanelType;
-    if (nodeId.empty() || !m_settingsViewModel) return SettingsPanelType::None;
-    auto tree = m_settingsViewModel->getSettingsTree();
-    if (!tree) return SettingsPanelType::None;
-    auto node = tree->findNodeById(nodeId);
-    if (!node) return SettingsPanelType::None;
-    return node->getNodeData().panelType;
+    if (nodeId.empty() || !m_treeModel) return SettingsPanelType::None;
+    const QModelIndex idx = m_treeModel->indexOfId(QString::fromStdString(nodeId));
+    if (!idx.isValid()) return SettingsPanelType::None;
+    return static_cast<SettingsPanelType>(
+        m_treeModel->data(idx, SettingsTreeModel::PanelTypeRole).toInt());
 }
 
 std::string SettingsPageController::findFirstSelectableNodeId() const
 {
-    if (!m_settingsViewModel) return "";
-    auto tree = m_settingsViewModel->getSettingsTree();
-    if (!tree) return "";
-    auto root = tree->getRoot();
-    if (!root) return "";
+    using commonHead::viewModels::model::SettingsPanelType;
+    if (!m_treeModel) return "";
 
-    std::function<std::string(const commonHead::viewModels::model::SettingsTreeNodePtr&)> dfs;
-    dfs = [&dfs](const commonHead::viewModels::model::SettingsTreeNodePtr& node) -> std::string {
-        if (!node) return "";
-        auto data = node->getNodeData();
-        if (data.panelType != commonHead::viewModels::model::SettingsPanelType::None) {
-            return data.nodeId;
-        }
-        for (std::size_t i = 0; i < node->getChildCount(); ++i) {
-            auto r = dfs(node->getChild(i));
+    std::function<std::string(const QModelIndex&)> dfs;
+    dfs = [&](const QModelIndex& parent) -> std::string {
+        const int n = m_treeModel->rowCount(parent);
+        for (int i = 0; i < n; ++i) {
+            const QModelIndex idx = m_treeModel->index(i, 0, parent);
+            const auto panelType = static_cast<SettingsPanelType>(
+                m_treeModel->data(idx, SettingsTreeModel::PanelTypeRole).toInt());
+            if (panelType != SettingsPanelType::None) {
+                return m_treeModel->data(idx, SettingsTreeModel::NodeIdRole)
+                    .toString().toStdString();
+            }
+            auto r = dfs(idx);
             if (!r.empty()) return r;
         }
         return "";
     };
-    return dfs(root);
+    return dfs(QModelIndex());
 }
 
 void SettingsPageController::ensureValidSelection()

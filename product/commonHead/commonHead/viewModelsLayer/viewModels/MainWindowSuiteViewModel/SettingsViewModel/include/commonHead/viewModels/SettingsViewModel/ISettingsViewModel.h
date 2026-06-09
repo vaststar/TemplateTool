@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
@@ -11,7 +12,11 @@
 namespace commonHead::viewModels {
 
 /**
- * @brief Settings ViewModel callback interface
+ * @brief Settings ViewModel callback interface.
+ *
+ * Modeled after IContactListViewModelCallback: VM emits value-typed batch
+ * notifications so the UI layer can maintain its own mirror without ever
+ * touching the VM's internal tree object.
  */
 class COMMONHEAD_EXPORT ISettingsViewModelCallback
 {
@@ -25,27 +30,27 @@ public:
 
 public:
     /**
-     * @brief L4: Called when the entire settings tree is replaced (e.g. init, profile switch)
-     * @param tree New settings tree
+     * @brief Fired once when the initial tree has been built. Late subscribers
+     *        won't get this; they should consult isSettingsTreeReady() and
+     *        snapshot via getSettingsTree().
      */
-    virtual void onSettingsTreeChanged(const model::SettingsTreePtr& tree) = 0;
+    virtual void onSettingsTreeReady() {}
 
     /**
-     * @brief L3: Called when a node is inserted or removed (same tree object)
-     * @param change Describes the structural change (insert/remove, parent, index)
+     * @brief A batch of new nodes was added. Each NodeData carries its parentId.
      */
-    virtual void onSettingsTreeStructureChanged(const model::SettingsTreeNodeChange& change) = 0;
+    virtual void onSettingsNodesAdded(const std::vector<model::SettingsNodeData>& /*nodes*/) {}
 
     /**
-     * @brief L2: Called when all node properties are refreshed in-place (e.g. language change)
+     * @brief A batch of existing nodes had their data refreshed in-place
+     *        (parent and id are stable). E.g. language change refreshes titles.
      */
-    virtual void onSettingsTreeItemsUpdated() = 0;
+    virtual void onSettingsNodesUpdated(const std::vector<model::SettingsNodeData>& /*nodes*/) {}
 
     /**
-     * @brief L1: Called when a single node's properties changed in-place
-     * @param nodeId The node whose data was updated
+     * @brief A batch of nodes was removed.
      */
-    virtual void onSettingsTreeItemUpdated(const std::string& nodeId) = 0;
+    virtual void onSettingsNodesRemoved(const std::vector<std::string>& /*nodeIds*/) {}
 };
 
 class COMMONHEAD_EXPORT ISettingsViewModel
@@ -63,7 +68,18 @@ public:
 public:
     virtual std::string getViewModelName() const = 0;
 
+    /**
+     * @brief Snapshot accessor; kept so callers (controller init, late
+     *        subscribers) can grab the current tree without waiting for
+     *        the onSettingsTreeReady callback.
+     */
     virtual model::SettingsTreePtr getSettingsTree() const = 0;
+
+    /**
+     * @brief True once the tree has been populated. onSettingsTreeReady will
+     *        not be re-fired for late subscribers.
+     */
+    [[nodiscard]] virtual bool isSettingsTreeReady() const = 0;
 
     /**
      * @brief Notify VM that the user selected a node. VM owns no selection state;
@@ -72,7 +88,8 @@ public:
     virtual void selectNode(const std::string& nodeId) = 0;
 
     /**
-     * @brief 重新构建设置树（语言切换后刷新本地化字符串）
+     * @brief Refresh localized strings after a language switch. VM will emit
+     *        onSettingsNodesUpdated with the full node list.
      */
     virtual void reloadTree() = 0;
 

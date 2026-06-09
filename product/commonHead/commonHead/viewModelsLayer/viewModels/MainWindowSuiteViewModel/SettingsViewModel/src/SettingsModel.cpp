@@ -134,9 +134,14 @@ std::shared_ptr<SettingsTreeNode> SettingsTree::addNode(
         }
     }
 
-    auto node = std::make_shared<SettingsTreeNode>(data);
+    // Stamp the parentId into the node data so consumers (UI mirror, etc.)
+    // can read the parent relationship without walking weak_ptrs.
+    SettingsNodeData stamped = data;
+    stamped.parentId = parentId;
+
+    auto node = std::make_shared<SettingsTreeNode>(stamped);
     parent->addChild(node);
-    m_index[data.nodeId] = node;
+    m_index[stamped.nodeId] = node;
     return node;
 }
 
