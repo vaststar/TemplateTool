@@ -59,6 +59,7 @@ set(MODULE_QML_TARGET_FILES
     BaseToolButton/BaseToolButton.qml
     BaseToolTip/BaseToolTip.qml
     BaseTreeView/BaseTreeView.qml
+    BaseTreeViewDelegate/BaseTreeViewDelegate.qml
     BaseListView/BaseListView.qml
     BaseGridView/BaseGridView.qml
     BaseTextField/BaseTextField.qml

@@ -67,6 +67,7 @@ set(MODULE_QML_TARGET_FILES
     UTToolButton/UTToolButton.qml
     UTToolTip/UTToolTip.qml
     UTTreeView/UTTreeView.qml
+    UTTreeViewDelegate/UTTreeViewDelegate.qml
     UTListView/UTListView.qml
     UTGridView/UTGridView.qml
     UTTextField/UTTextField.qml

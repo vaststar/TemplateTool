@@ -58,133 +58,22 @@ Item {
             if (contactId) controller.selectContact(contactId);
         }
 
-        delegate: TreeViewDelegate {
-            id: rowItem
-            implicitWidth: treeView.width
-            indentation: 16
-            leftMargin: 8
-            spacing: 6
-            topPadding: 6
-            bottomPadding: 6
-            focusPolicy: Qt.NoFocus
-            z: (treeView.currentRow === row && treeView.activeFocus) ? 1 : 0
-
-            readonly property string nodeId: model.id
-            readonly property bool isSelected: nodeId === controller.currentContactId
-
-            // Off-screen chip used as the drag thumbnail.
-            Item {
-                id: dragPreview
-                width: previewLabel.implicitWidth + 16
-                height: previewLabel.implicitHeight + 8
-                visible: false
-                layer.enabled: true
-                Rectangle {
-                    anchors.fill: parent
-                    radius: 4
-                    color: UTComponentUtil.getPlainUIColor(
-                        UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-                    opacity: 0.9
-                }
-                UTLabel {
-                    id: previewLabel
-                    anchors.centerIn: parent
-                    text: model.displayName
-                    fontEnum: UIFontToken.Body_Text
-                    colorEnum: UIColorToken.Sidebar_Item_Text
-                    colorState: UIColorState.Selected
-                }
-            }
-
-            indicator: UTLabel {
-                x: rowItem.leftMargin + rowItem.depth * rowItem.indentation
-                text: "▶"
-                fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Sidebar_Item_Text
-                rotation: rowItem.expanded ? 90 : 0
-                visible: rowItem.hasChildren
-            }
-
-            contentItem: UTLabel {
-                text: model.displayName
-                fontEnum: UIFontToken.Body_Text
-                colorEnum: UIColorToken.Sidebar_Item_Text
-                colorState: rowItem.isSelected ? UIColorState.Selected : UIColorState.Normal
-            }
-
-            background: Rectangle {
-                color: rowItem.isSelected
-                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-                    : rowItem.hovered
-                        ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                        : "transparent"
-            }
-
-            onClicked: controller.selectContact(nodeId)
-
-            Drag.active: dragHandler.active
-            Drag.dragType: Drag.Automatic
-            Drag.supportedActions: Qt.MoveAction
-            Drag.mimeData: { "text/x-contact-id": nodeId }
-            Drag.hotSpot.x: 12
-            Drag.hotSpot.y: dragPreview.height / 2
-
-            TapHandler {
-                acceptedButtons: Qt.LeftButton
-                onPressedChanged: {
-                    if (pressed) {
-                        dragPreview.grabToImage(function(result) {
-                            rowItem.Drag.imageSource = result.url;
-                        });
-                    }
-                }
-            }
-
-            DragHandler {
-                id: dragHandler
-                target: null
-                dragThreshold: 6
-                grabPermissions: PointerHandler.CanTakeOverFromAnything
-            }
-
-            UTFocusItem {
-                delegateFocused: rowItem.treeView.currentRow === rowItem.row
-                                 && rowItem.treeView.activeFocus
-            }
+        // Drag-reparent: declare what we accept and how to validate.
+        acceptedMimeTypes: ["text/x-contact-id"]
+        dropValidate: function(_mt, data, idx) {
+            const targetId = idx.valid ? (treeView.model.data(idx, Qt.UserRole + 1) || "") : "";
+            return controller.canDropOn(data, targetId);
         }
-    }
-
-    // Drop target for drag-reparent.
-    DropArea {
-        id: rootDropArea
-        anchors.fill: treeContainer
-
-        function targetIdAt(x, y) {
-            const tv = treeContainer.treeView;
-            if (!tv) return "";
-            const p = mapToItem(tv, x, y);
-            const cell = tv.cellAtPosition(p.x + tv.contentX, p.y + tv.contentY);
-            if (cell.x < 0 || cell.y < 0) return "";
-            const idx = tv.modelIndex(cell);
-            return tv.model.data(idx, Qt.UserRole + 1) || "";
+        onDropAccepted: function(_mt, data, idx) {
+            const targetId = idx.valid ? (treeView.model.data(idx, Qt.UserRole + 1) || "") : "";
+            controller.moveContact(data, targetId);
         }
 
-        onEntered: (drag) => {
-            drag.accepted = drag.formats.indexOf("text/x-contact-id") >= 0;
-        }
-        onPositionChanged: (drag) => {
-            const srcId = drag.getDataAsString("text/x-contact-id");
-            drag.accepted = controller.canDropOn(srcId, targetIdAt(drag.x, drag.y));
-        }
-        onDropped: (drop) => {
-            const srcId = drop.getDataAsString("text/x-contact-id");
-            const tgtId = targetIdAt(drop.x, drop.y);
-            if (!controller.canDropOn(srcId, tgtId)) {
-                drop.accepted = false;
-                return;
-            }
-            controller.moveContact(srcId, tgtId);
-            drop.accepted = true;
+        delegate: UTTreeViewDelegate {
+            text: model.displayName
+            highlighted: model.id === controller.currentContactId
+            dragMimeData: ({ "text/x-contact-id": model.id })
+            onClicked: controller.selectContact(model.id)
         }
     }
 
