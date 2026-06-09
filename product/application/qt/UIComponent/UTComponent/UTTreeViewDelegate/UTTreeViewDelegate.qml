@@ -8,14 +8,19 @@ BaseTreeViewDelegate {
     id: control
 
     implicitWidth: treeView ? treeView.width : 1
+    implicitHeight: Math.max(
+        contentItem ? contentItem.implicitHeight : 0,
+        indicator   ? indicator.implicitHeight   : 0
+    ) + topPadding + bottomPadding
     indentation: 8
     leftMargin: 8
     spacing: 6
-    topPadding: 6
-    bottomPadding: 6
+    topPadding: 4
+    bottomPadding: 4
 
     indicator: UTLabel {
         x: control.leftMargin + control.depth * control.indentation
+        anchors.verticalCenter: parent.verticalCenter
         text: "\u25B6"
         fontEnum: UIFontToken.Caption_Text
         colorEnum: UIColorToken.Sidebar_Item_Text
