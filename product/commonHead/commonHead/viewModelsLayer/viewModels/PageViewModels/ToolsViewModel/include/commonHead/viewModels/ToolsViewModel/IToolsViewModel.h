@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
@@ -11,7 +12,11 @@
 namespace commonHead::viewModels {
 
 /**
- * @brief Tools ViewModel callback interface
+ * @brief Tools ViewModel callback interface.
+ *
+ * Modeled after IContactListViewModelCallback: VM emits value-typed batch
+ * notifications so the UI layer can maintain its own mirror without ever
+ * touching the VM's internal tree object.
  */
 class COMMONHEAD_EXPORT IToolsViewModelCallback
 {
@@ -25,34 +30,27 @@ public:
 
 public:
     /**
-     * @brief L4: Called when the entire tools tree is replaced (e.g. init, profile switch)
-     * @param tree New tools tree
+     * @brief Fired once when the initial tree has been built. Late subscribers
+     *        won't get this; they should consult isToolsTreeReady() and
+     *        snapshot via getToolsTree().
      */
-    virtual void onToolsTreeChanged(const model::ToolsTreePtr& tree) = 0;
+    virtual void onToolsTreeReady() {}
 
     /**
-     * @brief L3: Called when a node is inserted or removed (same tree object)
-     * @param change Describes the structural change (insert/remove, parent, index)
+     * @brief A batch of new nodes was added. Each NodeData carries its parentId.
      */
-    virtual void onToolsTreeStructureChanged(const model::ToolsTreeNodeChange& change) = 0;
+    virtual void onToolsNodesAdded(const std::vector<model::ToolNodeData>& /*nodes*/) {}
 
     /**
-     * @brief L2: Called when all node properties are refreshed in-place (e.g. language change)
+     * @brief A batch of existing nodes had their data refreshed in-place
+     *        (parent and id are stable). E.g. language change refreshes titles.
      */
-    virtual void onToolsTreeItemsUpdated() = 0;
+    virtual void onToolsNodesUpdated(const std::vector<model::ToolNodeData>& /*nodes*/) {}
 
     /**
-     * @brief L1: Called when a single node's properties changed in-place
-     * @param nodeId The node whose data was updated
+     * @brief A batch of nodes was removed.
      */
-    virtual void onToolsTreeItemUpdated(const std::string& nodeId) = 0;
-
-    /**
-     * @brief Called when the current selected node changed
-     * @param nodeId Node ID of the newly selected node
-     * @param panelType Panel type of the newly selected node
-     */
-    virtual void onCurrentToolNodeChanged(const std::string& nodeId, model::ToolPanelType panelType) = 0;
+    virtual void onToolsNodesRemoved(const std::vector<std::string>& /*nodeIds*/) {}
 };
 
 /**
@@ -87,7 +85,7 @@ struct COMMONHEAD_EXPORT TimestampResult {
 /**
  * @brief 工具 ViewModel 接口
  */
-class COMMONHEAD_EXPORT IToolsViewModel 
+class COMMONHEAD_EXPORT IToolsViewModel
     : public IViewModel
     , public virtual commonHead::utilities::IVMNotificationHelper<IToolsViewModelCallback>
 {
@@ -105,26 +103,29 @@ public:
     //========================================
     // 工具树导航
     //========================================
+    /**
+     * @brief Snapshot accessor; kept so callers (controller init, late
+     *        subscribers) can grab the current tree without waiting for
+     *        the onToolsTreeReady callback.
+     */
     virtual model::ToolsTreePtr getToolsTree() const = 0;
 
     /**
-     * @brief Get current selected node ID
+     * @brief True once the tree has been populated. onToolsTreeReady will
+     *        not be re-fired for late subscribers.
      */
-    virtual std::string getCurrentNodeId() const = 0;
+    [[nodiscard]] virtual bool isToolsTreeReady() const = 0;
 
     /**
-     * @brief Get current selected panel type
-     */
-    virtual model::ToolPanelType getCurrentPanelType() const = 0;
-
-    /**
-     * @brief Select a node by ID
-     * @param nodeId Node ID to select
+     * @brief Notify VM that the user selected a node. VM owns no selection
+     *        state; this hook exists purely so metrics/telemetry can be
+     *        added later.
      */
     virtual void selectNode(const std::string& nodeId) = 0;
 
     /**
-     * @brief 重新构建工具树（语言切换后刷新本地化字符串）
+     * @brief Refresh localized strings after a language switch. VM will emit
+     *        onToolsNodesUpdated with the full node list.
      */
     virtual void reloadTree() = 0;
 

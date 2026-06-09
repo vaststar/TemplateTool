@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
 
@@ -18,8 +20,7 @@ public:
     // 工具树导航
     //========================================
     model::ToolsTreePtr getToolsTree() const override;
-    std::string getCurrentNodeId() const override;
-    model::ToolPanelType getCurrentPanelType() const override;
+    bool isToolsTreeReady() const override;
     void selectNode(const std::string& nodeId) override;
     void reloadTree() override;
 
@@ -55,12 +56,12 @@ protected:
 private:
     void buildToolsTree();
     void refreshTreeNodeData();
-    std::string findFirstToolNodeId() const;
+    // DFS-collect the full node list (excluding the virtual root), in pre-order.
+    std::vector<model::ToolNodeData> snapshotAllNodes() const;
 
 private:
     model::ToolsTreePtr m_toolsTree;
-    std::string m_currentNodeId;
-    model::ToolPanelType m_currentPanelType = model::ToolPanelType::None;
+    bool m_ready = false;
 };
 
 } // namespace commonHead::viewModels

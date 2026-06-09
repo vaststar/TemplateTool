@@ -1,145 +1,256 @@
 #include "ToolsPage/common/ToolsTreeModel.h"
 
-#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
+#include <functional>
+
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+
+namespace {
+constexpr const char* kRootId = "";
+} // namespace
 
 ToolsTreeModel::ToolsTreeModel(QObject* parent)
     : QAbstractItemModel(parent)
 {
+    resetMirror();
 }
 
-ToolsTreeModel::~ToolsTreeModel()
-{
-}
+ToolsTreeModel::~ToolsTreeModel() = default;
 
-void ToolsTreeModel::setTree(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree)
+// ---------------- Public mutation API ----------------
+
+void ToolsTreeModel::resetFromTree(const TreePtr& tree)
 {
-    if (m_tree == tree) {
-        return;
-    }
     beginResetModel();
-    m_tree = tree;
+    resetMirror();
+    if (tree)
+    {
+        if (auto srcRoot = tree->getRoot())
+        {
+            const std::size_t n = srcRoot->getChildCount();
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                walkPopulate(srcRoot->getChild(i), kRootId);
+            }
+        }
+    }
     endResetModel();
 }
 
+void ToolsTreeModel::insertNodes(const std::vector<NodeData>& datas)
+{
+    // Group fresh nodes by parentId so we can fire one beginInsertRows per
+    // parent. Unknown parents and duplicate ids are dropped.
+    std::unordered_map<std::string, std::vector<NodeData>> bucketByParent;
+    for (const auto& d : datas)
+    {
+        if (d.nodeId.empty() || m_nodes.count(d.nodeId))
+        {
+            continue;
+        }
+        if (!findNode(d.parentId))
+        {
+            UIVIEW_LOG_WARN("insertNodes: unknown parent "
+                            << d.parentId << " for node " << d.nodeId);
+            continue;
+        }
+        bucketByParent[d.parentId].push_back(d);
+    }
+
+    for (auto& [parentId, fresh] : bucketByParent)
+    {
+        Node* parentNode = findNode(parentId);
+        if (!parentNode || fresh.empty())
+        {
+            continue;
+        }
+        const int start = static_cast<int>(parentNode->childIds.size());
+        const int end   = start + static_cast<int>(fresh.size()) - 1;
+        QModelIndex parentIdx = indexFor(parentNode);
+        beginInsertRows(parentIdx, start, end);
+        for (const auto& d : fresh)
+        {
+            auto node = std::make_unique<Node>();
+            node->data = d;
+            node->parentId = parentId;
+            node->rowInParent = static_cast<int>(parentNode->childIds.size());
+            parentNode->childIds.push_back(d.nodeId);
+            m_nodes.emplace(d.nodeId, std::move(node));
+        }
+        endInsertRows();
+    }
+}
+
+void ToolsTreeModel::updateNodes(const std::vector<NodeData>& datas)
+{
+    for (const auto& d : datas)
+    {
+        Node* node = findNode(d.nodeId);
+        if (!node || node == getRoot())
+        {
+            continue;
+        }
+        // updateNodes is for in-place property refresh; parent/id are stable.
+        // If parentId changed, ignore it here — a real reparent would be a
+        // remove + insert sequence.
+        const std::string keepParent = node->parentId;
+        node->data = d;
+        node->data.parentId = keepParent;
+
+        QModelIndex idx = indexFor(node);
+        if (idx.isValid())
+        {
+            emit dataChanged(idx, idx);
+        }
+    }
+}
+
+void ToolsTreeModel::removeNodes(const std::vector<std::string>& ids)
+{
+    for (const auto& id : ids)
+    {
+        if (id.empty())
+        {
+            continue;
+        }
+        Node* node = findNode(id);
+        if (!node || node == getRoot())
+        {
+            continue;
+        }
+
+        // Strict tree on UI side; if a category gets removed we drop the
+        // whole subtree rather than re-parenting orphans (no drag/drop).
+        std::vector<std::string> subtree;
+        std::function<void(Node*)> gather = [&](Node* n) {
+            for (const auto& cid : n->childIds)
+            {
+                if (Node* c = findNode(cid))
+                {
+                    gather(c);
+                    subtree.push_back(cid);
+                }
+            }
+        };
+        gather(node);
+
+        Node* parentNode = findNode(node->parentId);
+        if (!parentNode)
+        {
+            m_nodes.erase(id);
+            continue;
+        }
+        const int row = node->rowInParent;
+        QModelIndex parentIdx = indexFor(parentNode);
+        beginRemoveRows(parentIdx, row, row);
+        parentNode->childIds.erase(parentNode->childIds.begin() + row);
+        for (int i = row; i < static_cast<int>(parentNode->childIds.size()); ++i)
+        {
+            if (Node* sib = findNode(parentNode->childIds[i]))
+            {
+                sib->rowInParent = i;
+            }
+        }
+        for (const auto& descendantId : subtree)
+        {
+            m_nodes.erase(descendantId);
+        }
+        m_nodes.erase(id);
+        endRemoveRows();
+    }
+}
+
+QModelIndex ToolsTreeModel::indexOfId(const QString& id) const
+{
+    Node* n = findNode(id.toStdString());
+    if (!n || n == getRoot()) return {};
+    return indexFor(n);
+}
+
+// ---------------- QAbstractItemModel ----------------
+
 QVariant ToolsTreeModel::data(const QModelIndex& index, int role) const
 {
-    if (!m_tree || !index.isValid()) {
+    if (!index.isValid())
+    {
         return {};
     }
-
-    auto* node = nodeFromIndex(index);
-    if (!node) {
+    Node* node = nodeFromIndex(index);
+    if (!node || node == getRoot())
+    {
         return {};
     }
-
-    auto nodeData = node->getNodeData();
-
-    switch (role) {
+    const auto& d = node->data;
+    switch (role)
+    {
     case Qt::DisplayRole:
     case TitleRole:
-        return QString::fromStdString(nodeData.title);
+        return QString::fromStdString(d.title);
     case NodeIdRole:
-        return QString::fromStdString(nodeData.nodeId);
+        return QString::fromStdString(d.nodeId);
     case IconRole:
-        return QString::fromStdString(nodeData.icon);
+        return QString::fromStdString(d.icon);
     case PanelTypeRole:
-        return static_cast<int>(nodeData.panelType);
+        return static_cast<int>(d.panelType);
     default:
-        break;
+        return {};
     }
-
-    return {};
 }
 
 Qt::ItemFlags ToolsTreeModel::flags(const QModelIndex& index) const
 {
-    if (!index.isValid()) {
-        return Qt::NoItemFlags;
-    }
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    return index.isValid() ? (Qt::ItemIsEnabled | Qt::ItemIsSelectable)
+                           : Qt::NoItemFlags;
 }
 
 QModelIndex ToolsTreeModel::index(int row, int column, const QModelIndex& parent) const
 {
-    if (!m_tree || row < 0 || column < 0 || column >= columnCount()) {
+    if (row < 0 || column < 0 || column >= columnCount(parent))
+    {
         return {};
     }
-
-    auto* parentNode = nodeFromIndex(parent);
-    if (!parentNode) {
+    Node* parentNode = nodeFromIndex(parent);
+    if (!parentNode || row >= static_cast<int>(parentNode->childIds.size()))
+    {
         return {};
     }
-
-    if (static_cast<std::size_t>(row) >= parentNode->getChildCount()) {
+    Node* child = findNode(parentNode->childIds[row]);
+    if (!child)
+    {
         return {};
     }
-
-    auto child = parentNode->getChild(static_cast<std::size_t>(row));
-    if (!child) {
-        return {};
-    }
-
-    return createIndex(row, column, static_cast<void*>(child.get()));
+    return createIndex(row, column, static_cast<void*>(child));
 }
 
 QModelIndex ToolsTreeModel::parent(const QModelIndex& index) const
 {
-    if (!m_tree || !index.isValid()) {
+    if (!index.isValid())
+    {
         return {};
     }
-
-    auto root = m_tree->getRoot();
-    if (!root) {
+    Node* child = static_cast<Node*>(index.internalPointer());
+    if (!child || child->parentId == kRootId)
+    {
         return {};
     }
-
-    auto* node = nodeFromIndex(index);
-    if (!node) {
+    Node* parentNode = findNode(child->parentId);
+    if (!parentNode || parentNode == getRoot())
+    {
         return {};
     }
-
-    auto parentWeak = node->getParent();
-    auto parentShared = parentWeak.lock();
-    if (!parentShared) {
-        return {};
-    }
-
-    if (parentShared == root) {
-        return {};
-    }
-
-    auto grandparentWeak = parentShared->getParent();
-    auto grandparent = grandparentWeak.lock();
-    if (!grandparent) {
-        return {};
-    }
-
-    const std::size_t count = grandparent->getChildCount();
-    for (std::size_t i = 0; i < count; ++i) {
-        auto child = grandparent->getChild(i);
-        if (child && child.get() == parentShared.get()) {
-            return createIndex(static_cast<int>(i), 0, static_cast<void*>(parentShared.get()));
-        }
-    }
-
-    return {};
+    return createIndex(parentNode->rowInParent, 0, static_cast<void*>(parentNode));
 }
 
 int ToolsTreeModel::rowCount(const QModelIndex& parent) const
 {
-    if (!m_tree || (parent.isValid() && parent.column() != 0)) {
+    if (parent.isValid() && parent.column() != 0)
+    {
         return 0;
     }
-
-    auto* parentNode = nodeFromIndex(parent);
-    if (!parentNode) {
-        return 0;
-    }
-
-    return static_cast<int>(parentNode->getChildCount());
+    Node* parentNode = nodeFromIndex(parent);
+    return parentNode ? static_cast<int>(parentNode->childIds.size()) : 0;
 }
 
-int ToolsTreeModel::columnCount(const QModelIndex&) const
+int ToolsTreeModel::columnCount(const QModelIndex& /*parent*/) const
 {
     return 1;
 }
@@ -154,77 +265,78 @@ QHash<int, QByteArray> ToolsTreeModel::roleNames() const
     return roles;
 }
 
-commonHead::viewModels::model::IToolsTreeNode*
-ToolsTreeModel::nodeFromIndex(const QModelIndex& index) const
+// ---------------- Internal helpers ----------------
+
+ToolsTreeModel::Node* ToolsTreeModel::getRoot() const
 {
-    if (!m_tree) {
-        return nullptr;
-    }
-
-    auto root = m_tree->getRoot();
-    if (!root) {
-        return nullptr;
-    }
-
-    if (!index.isValid()) {
-        return root.get();
-    }
-
-    return static_cast<commonHead::viewModels::model::IToolsTreeNode*>(index.internalPointer());
+    auto it = m_nodes.find(std::string(kRootId));
+    return (it != m_nodes.end()) ? it->second.get() : nullptr;
 }
 
-QModelIndex ToolsTreeModel::indexForNodeId(const std::string& nodeId) const
+ToolsTreeModel::Node* ToolsTreeModel::findNode(const std::string& id) const
 {
-    if (!m_tree) return {};
+    auto it = m_nodes.find(id);
+    return (it != m_nodes.end()) ? it->second.get() : nullptr;
+}
 
-    auto node = m_tree->findNodeById(nodeId);
-    if (!node) return {};
-
-    auto root = m_tree->getRoot();
-    if (node == root) return {};
-
-    auto parent = node->getParent().lock();
-    if (!parent) return {};
-
-    for (std::size_t i = 0; i < parent->getChildCount(); ++i) {
-        if (parent->getChild(i).get() == node.get()) {
-            return createIndex(static_cast<int>(i), 0,
-                               static_cast<void*>(node.get()));
-        }
+ToolsTreeModel::Node* ToolsTreeModel::nodeFromIndex(const QModelIndex& idx) const
+{
+    if (!idx.isValid())
+    {
+        return getRoot();
     }
-    return {};
+    return static_cast<Node*>(idx.internalPointer());
 }
 
-void ToolsTreeModel::notifyItemChanged(const std::string& nodeId)
+QModelIndex ToolsTreeModel::indexFor(Node* node) const
 {
-    QModelIndex idx = indexForNodeId(nodeId);
-    if (idx.isValid()) {
-        emit dataChanged(idx, idx);
+    if (!node || node == getRoot())
+    {
+        return {};
     }
+    return createIndex(node->rowInParent, 0, static_cast<void*>(node));
 }
 
-void ToolsTreeModel::notifyAllItemsChanged()
+void ToolsTreeModel::resetMirror()
 {
-    emit layoutAboutToBeChanged();
-    emit layoutChanged();
+    m_nodes.clear();
+    auto root = std::make_unique<Node>();
+    root->parentId = kRootId;
+    root->rowInParent = -1;
+    m_nodes.emplace(std::string(kRootId), std::move(root));
 }
 
-void ToolsTreeModel::applyStructureChange(
-    const commonHead::viewModels::model::ToolsTreeNodeChange& change)
+void ToolsTreeModel::walkPopulate(const TreeNodePtr& src,
+                                  const std::string& parentId)
 {
-    int row = static_cast<int>(change.index);
-    QModelIndex parentIdx = indexForNodeId(change.parentNodeId);
+    if (!src)
+    {
+        return;
+    }
+    auto data = src->getNodeData();
+    if (data.nodeId.empty() || m_nodes.count(data.nodeId))
+    {
+        return;
+    }
+    Node* parentNode = findNode(parentId);
+    if (!parentNode)
+    {
+        return;
+    }
+    // Make sure the mirror's parentId field always matches where we hung the
+    // node, even if the source forgot to set it.
+    data.parentId = parentId;
 
-    switch (change.type) {
-    case commonHead::viewModels::model::ToolsTreeNodeChange::Type::Inserted:
-        // Data already added to tree by ViewModel
-        beginInsertRows(parentIdx, row, row);
-        endInsertRows();
-        break;
-    case commonHead::viewModels::model::ToolsTreeNodeChange::Type::Removed:
-        // Data not yet removed — ViewModel removes after this returns
-        beginRemoveRows(parentIdx, row, row);
-        endRemoveRows();
-        break;
+    auto node = std::make_unique<Node>();
+    node->data = data;
+    node->parentId = parentId;
+    node->rowInParent = static_cast<int>(parentNode->childIds.size());
+    parentNode->childIds.push_back(data.nodeId);
+    m_nodes.emplace(data.nodeId, std::move(node));
+
+    const std::size_t n = src->getChildCount();
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        walkPopulate(src->getChild(i), data.nodeId);
     }
 }

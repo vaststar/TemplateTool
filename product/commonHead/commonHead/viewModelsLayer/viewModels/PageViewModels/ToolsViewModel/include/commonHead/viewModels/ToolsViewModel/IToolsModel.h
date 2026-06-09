@@ -9,23 +9,6 @@
 namespace commonHead::viewModels::model {
 
 /**
- * @brief Describes a single structural change (insert/remove) in the tools tree.
- */
-struct COMMONHEAD_EXPORT ToolsTreeNodeChange
-{
-    enum class Type : uint8_t
-    {
-        Inserted,   ///< A new node was added
-        Removed,    ///< An existing node was removed
-    };
-
-    Type type;
-    std::string parentNodeId;   ///< Parent node that owns the affected child
-    std::string nodeId;         ///< The inserted / removed node ID
-    std::size_t index;          ///< Row position within the parent's children
-};
-
-/**
  * @brief 工具面板类型 - UI 层映射到具体 QML 文件
  */
 enum class COMMONHEAD_EXPORT ToolPanelType : uint8_t
@@ -41,11 +24,12 @@ enum class COMMONHEAD_EXPORT ToolPanelType : uint8_t
 };
 
 /**
- * @brief 工具节点数据
+ * @brief 工具节点数据. parentId == "" 表示节点挂在 virtual root 下.
  */
 struct COMMONHEAD_EXPORT ToolNodeData
 {
     std::string nodeId;
+    std::string parentId;
     std::string title;
     std::string icon;
     ToolPanelType panelType = ToolPanelType::None;

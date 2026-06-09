@@ -2,14 +2,18 @@
 
 #include <QAbstractItemModel>
 #include <QtQml>
+
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
-namespace commonHead::viewModels::model {
-    class IToolsTree;
-    class IToolsTreeNode;
-    struct ToolsTreeNodeChange;
-}
+#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
 
+// Pure tree model. Owns its own mirror of nodes; exposes coarse mutation
+// methods so callers (controller) can translate VM callbacks into proper
+// QAbstractItemModel structural changes. Mirrors SettingsTreeModel exactly
+// (strict tree, no drag/drop).
 class ToolsTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -20,36 +24,50 @@ public:
         NodeIdRole = Qt::UserRole + 1,
         TitleRole,
         IconRole,
-        PanelTypeRole
+        PanelTypeRole,
     };
+
+    using NodeData    = commonHead::viewModels::model::ToolNodeData;
+    using TreePtr     = std::shared_ptr<commonHead::viewModels::model::IToolsTree>;
+    using TreeNodePtr = std::shared_ptr<commonHead::viewModels::model::IToolsTreeNode>;
 
     explicit ToolsTreeModel(QObject* parent = nullptr);
     ~ToolsTreeModel() override;
 
-    /// L4: Replace entire tree
-    void setTree(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree);
+    // --- Mutation API (each method emits the proper begin/end pair(s)) ---
+    void resetFromTree(const TreePtr& tree);                   // beginResetModel/endResetModel
+    void insertNodes(const std::vector<NodeData>& datas);      // beginInsertRows per parent
+    void updateNodes(const std::vector<NodeData>& datas);      // dataChanged
+    void removeNodes(const std::vector<std::string>& ids);     // beginRemoveRows
 
-    /// L3: Apply a single structural change (insert/remove)
-    void applyStructureChange(const commonHead::viewModels::model::ToolsTreeNodeChange& change);
+    Q_INVOKABLE QModelIndex indexOfId(const QString& id) const;
 
-    /// L2: Notify that all item properties changed in-place
-    void notifyAllItemsChanged();
-
-    /// L1: Notify that a single item's properties changed in-place
-    void notifyItemChanged(const std::string& nodeId);
-
-    // QAbstractItemModel interface
-    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    // --- QAbstractItemModel ---
+    QVariant      data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
-    QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex& index) const override;
-    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    QModelIndex   index(int row, int column,
+                        const QModelIndex& parent = {}) const override;
+    QModelIndex   parent(const QModelIndex& index) const override;
+    int           rowCount(const QModelIndex& parent = {}) const override;
+    int           columnCount(const QModelIndex& parent = {}) const override;
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    commonHead::viewModels::model::IToolsTreeNode* nodeFromIndex(const QModelIndex& index) const;
-    QModelIndex indexForNodeId(const std::string& nodeId) const;
+    struct Node {
+        NodeData    data;
+        std::string parentId;              // "" = root sentinel
+        int         rowInParent = -1;      // -1 for root
+        std::vector<std::string> childIds; // ordered
+    };
 
-    std::shared_ptr<commonHead::viewModels::model::IToolsTree> m_tree;
+    Node* getRoot() const;
+    Node* findNode(const std::string& id) const;
+    Node* nodeFromIndex(const QModelIndex& idx) const;
+    QModelIndex indexFor(Node* node) const;
+
+    void resetMirror();
+    void walkPopulate(const TreeNodePtr& src, const std::string& parentId);
+
+private:
+    std::unordered_map<std::string, std::unique_ptr<Node>> m_nodes; // includes "" → root
 };

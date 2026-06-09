@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <functional>
 #include <iomanip>
 #include <sstream>
 
@@ -47,12 +48,8 @@ void ToolsViewModel::init()
 {
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::init");
     buildToolsTree();
-
-    // Select first tool node by default
-    std::string firstId = findFirstToolNodeId();
-    if (!firstId.empty()) {
-        selectNode(firstId);
-    }
+    m_ready = true;
+    fireNotification(&IToolsViewModelCallback::onToolsTreeReady);
 }
 
 // ==================== Public methods ====================
@@ -62,53 +59,35 @@ model::ToolsTreePtr ToolsViewModel::getToolsTree() const
     return m_toolsTree;
 }
 
-std::string ToolsViewModel::getCurrentNodeId() const
+bool ToolsViewModel::isToolsTreeReady() const
 {
-    return m_currentNodeId;
-}
-
-model::ToolPanelType ToolsViewModel::getCurrentPanelType() const
-{
-    return m_currentPanelType;
+    return m_ready;
 }
 
 void ToolsViewModel::selectNode(const std::string& nodeId)
 {
-    if (!m_toolsTree)
-        return;
-
-    auto node = m_toolsTree->findNodeById(nodeId);
-    if (!node)
-        return;
-
-    auto nodeData = node->getNodeData();
-
-    // Only update if the node has a panel (not a category)
-    if (nodeData.panelType != model::ToolPanelType::None) {
-        m_currentNodeId = nodeId;
-        m_currentPanelType = nodeData.panelType;
-        fireNotification(&IToolsViewModelCallback::onCurrentToolNodeChanged, m_currentNodeId, m_currentPanelType);
-    }
+    // VM owns no selection state; controller is the source of truth.
+    // Keep this hook so future metrics/telemetry can be added in one place.
+    COMMONHEAD_LOG_DEBUG("ToolsViewModel::selectNode: " << nodeId);
 }
 
 void ToolsViewModel::reloadTree()
 {
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::reloadTree");
 
-    if (m_toolsTree) {
-        // L2: in-place refresh of all node titles/properties
-        refreshTreeNodeData();
-        fireNotification(&IToolsViewModelCallback::onToolsTreeItemsUpdated);
-    } else {
-        // L4: first-time build
+    if (!m_toolsTree) {
+        // First-time build path: act like init().
         buildToolsTree();
-        fireNotification(&IToolsViewModelCallback::onToolsTreeChanged, m_toolsTree);
-
-        std::string firstId = findFirstToolNodeId();
-        if (!firstId.empty()) {
-            selectNode(firstId);
-        }
+        m_ready = true;
+        fireNotification(&IToolsViewModelCallback::onToolsTreeReady);
+        return;
     }
+
+    // In-place refresh of all node titles/properties; ids and parent links stay
+    // stable, so the UI can patch its mirror without any structural change.
+    refreshTreeNodeData();
+    fireNotification(&IToolsViewModelCallback::onToolsNodesUpdated,
+                     snapshotAllNodes());
 }
 
 void ToolsViewModel::refreshTreeNodeData()
@@ -138,6 +117,32 @@ void ToolsViewModel::refreshTreeNodeData()
             node->setNodeData(data);
         }
     }
+}
+
+std::vector<model::ToolNodeData> ToolsViewModel::snapshotAllNodes() const
+{
+    std::vector<model::ToolNodeData> out;
+    if (!m_toolsTree) {
+        return out;
+    }
+    auto root = m_toolsTree->getRoot();
+    if (!root) {
+        return out;
+    }
+
+    std::function<void(const model::ToolsTreeNodePtr&)> dfs;
+    dfs = [&](const model::ToolsTreeNodePtr& node) {
+        if (!node) return;
+        const std::size_t n = node->getChildCount();
+        for (std::size_t i = 0; i < n; ++i) {
+            auto child = node->getChild(i);
+            if (!child) continue;
+            out.push_back(child->getNodeData());
+            dfs(child);
+        }
+    };
+    dfs(root);
+    return out;
 }
 
 // ==================== Base64 工具 ====================
@@ -340,9 +345,14 @@ void ToolsViewModel::buildToolsTree()
 
     auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
 
+    // Note: ToolsTree::addNode() stamps the parentId argument into the node data;
+    // we still pass an explicit empty string here so the initializer matches the
+    // 5-field ToolNodeData aggregate (nodeId, parentId, title, icon, panelType).
+
     // Text Processing category
     tree->addNode("", {
         "text",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryText),
         "",
         model::ToolPanelType::None
@@ -351,6 +361,7 @@ void ToolsViewModel::buildToolsTree()
     // Text Processing > Base64 Encode/Decode
     tree->addNode("text", {
         "text.base64",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsBase64),
         "",
         model::ToolPanelType::Base64
@@ -359,6 +370,7 @@ void ToolsViewModel::buildToolsTree()
     // Text Processing > JSON Formatter
     tree->addNode("text", {
         "text.json",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsJson),
         "",
         model::ToolPanelType::Json
@@ -367,6 +379,7 @@ void ToolsViewModel::buildToolsTree()
     // Date & Time category
     tree->addNode("", {
         "time",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryTime),
         "",
         model::ToolPanelType::None
@@ -375,6 +388,7 @@ void ToolsViewModel::buildToolsTree()
     // Date & Time > Timestamp Converter
     tree->addNode("time", {
         "time.timestamp",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsTimestamp),
         "",
         model::ToolPanelType::Timestamp
@@ -383,6 +397,7 @@ void ToolsViewModel::buildToolsTree()
     // Generators category
     tree->addNode("", {
         "generator",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryGenerator),
         "",
         model::ToolPanelType::None
@@ -391,6 +406,7 @@ void ToolsViewModel::buildToolsTree()
     // Generators > UUID Generator
     tree->addNode("generator", {
         "generator.uuid",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsUuid),
         "",
         model::ToolPanelType::Uuid
@@ -399,6 +415,7 @@ void ToolsViewModel::buildToolsTree()
     // Network category
     tree->addNode("", {
         "network",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryNetwork),
         "",
         model::ToolPanelType::None
@@ -407,6 +424,7 @@ void ToolsViewModel::buildToolsTree()
     // Network > Network Proxy
     tree->addNode("network", {
         "network.proxy",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsNetworkProxy),
         "",
         model::ToolPanelType::NetworkProxy
@@ -415,6 +433,7 @@ void ToolsViewModel::buildToolsTree()
     // Media category
     tree->addNode("", {
         "media",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsCategoryMedia),
         "",
         model::ToolPanelType::None
@@ -423,6 +442,7 @@ void ToolsViewModel::buildToolsTree()
     // Media > Screenshot
     tree->addNode("media", {
         "media.screenshot",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsScreenshot),
         "",
         model::ToolPanelType::Screenshot
@@ -431,6 +451,7 @@ void ToolsViewModel::buildToolsTree()
     // Media > Screen Recording
     tree->addNode("media", {
         "media.recording",
+        "",
         resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsScreenRecording),
         "",
         model::ToolPanelType::ScreenRecording
@@ -439,38 +460,6 @@ void ToolsViewModel::buildToolsTree()
     m_toolsTree = tree;
 
     COMMONHEAD_LOG_DEBUG("ToolsViewModel::buildToolsTree completed");
-}
-
-std::string ToolsViewModel::findFirstToolNodeId() const
-{
-    if (!m_toolsTree)
-        return "";
-
-    auto root = m_toolsTree->getRoot();
-    if (!root)
-        return "";
-
-    // DFS to find first node with a panel (not a category)
-    std::function<std::string(const model::ToolsTreeNodePtr&)> findFirst;
-    findFirst = [&findFirst](const model::ToolsTreeNodePtr& node) -> std::string {
-        if (!node)
-            return "";
-
-        auto data = node->getNodeData();
-        if (data.panelType != model::ToolPanelType::None) {
-            return data.nodeId;
-        }
-
-        for (std::size_t i = 0; i < node->getChildCount(); ++i) {
-            auto child = node->getChild(i);
-            auto result = findFirst(child);
-            if (!result.empty())
-                return result;
-        }
-        return "";
-    };
-
-    return findFirst(root);
 }
 
 } // namespace commonHead::viewModels

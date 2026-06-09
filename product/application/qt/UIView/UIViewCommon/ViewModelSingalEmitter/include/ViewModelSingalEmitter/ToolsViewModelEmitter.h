@@ -15,39 +15,31 @@ public:
     {
     }
 
-    void onToolsTreeChanged(const commonHead::viewModels::model::ToolsTreePtr& tree) override
+    void onToolsTreeReady() override
     {
-        emit signals_onToolsTreeChanged(tree);
+        emit signals_onToolsTreeReady();
     }
 
-    void onToolsTreeStructureChanged(const commonHead::viewModels::model::ToolsTreeNodeChange& change) override
+    void onToolsNodesAdded(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes) override
     {
-        emit signals_onToolsTreeStructureChanged(change);
+        emit signals_onToolsNodesAdded(nodes);
     }
 
-    void onToolsTreeItemsUpdated() override
+    void onToolsNodesUpdated(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes) override
     {
-        emit signals_onToolsTreeItemsUpdated();
+        emit signals_onToolsNodesUpdated(nodes);
     }
 
-    void onToolsTreeItemUpdated(const std::string& nodeId) override
+    void onToolsNodesRemoved(const std::vector<std::string>& nodeIds) override
     {
-        emit signals_onToolsTreeItemUpdated(QString::fromStdString(nodeId));
-    }
-
-    void onCurrentToolNodeChanged(const std::string& nodeId,
-                                  commonHead::viewModels::model::ToolPanelType panelType) override
-    {
-        emit signals_onCurrentToolNodeChanged(
-            QString::fromStdString(nodeId), static_cast<int>(panelType));
+        emit signals_onToolsNodesRemoved(nodeIds);
     }
 
 signals:
-    void signals_onToolsTreeChanged(const commonHead::viewModels::model::ToolsTreePtr& tree);
-    void signals_onToolsTreeStructureChanged(const commonHead::viewModels::model::ToolsTreeNodeChange& change);
-    void signals_onToolsTreeItemsUpdated();
-    void signals_onToolsTreeItemUpdated(const QString& nodeId);
-    void signals_onCurrentToolNodeChanged(const QString& nodeId, int panelType);
+    void signals_onToolsTreeReady();
+    void signals_onToolsNodesAdded(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes);
+    void signals_onToolsNodesUpdated(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes);
+    void signals_onToolsNodesRemoved(const std::vector<std::string>& nodeIds);
 };
 
 } // namespace UIVMSignalEmitter

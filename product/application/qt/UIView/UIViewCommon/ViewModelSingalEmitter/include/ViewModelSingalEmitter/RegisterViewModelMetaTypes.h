@@ -20,7 +20,8 @@ Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreePtr)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsTreePtr)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::SettingsNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::SettingsNodeData>)
-Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolsTreeNodeChange)
+Q_DECLARE_METATYPE(commonHead::viewModels::model::ToolNodeData)
+Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::ToolNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryNodeData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>)
 Q_DECLARE_METATYPE(commonHead::viewModels::model::CameraDirectoryRelationData)
@@ -47,7 +48,8 @@ inline void registerAllViewModelMetaTypes()
     qRegisterMetaType<commonHead::viewModels::model::SettingsTreePtr>();
     qRegisterMetaType<commonHead::viewModels::model::SettingsNodeData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::SettingsNodeData>>();
-    qRegisterMetaType<commonHead::viewModels::model::ToolsTreeNodeChange>();
+    qRegisterMetaType<commonHead::viewModels::model::ToolNodeData>();
+    qRegisterMetaType<std::vector<commonHead::viewModels::model::ToolNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::CameraDirectoryNodeData>();
     qRegisterMetaType<std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>>();
     qRegisterMetaType<commonHead::viewModels::model::CameraDirectoryRelationData>();

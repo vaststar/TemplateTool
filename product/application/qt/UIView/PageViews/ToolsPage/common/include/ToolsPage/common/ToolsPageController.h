@@ -2,6 +2,10 @@
 
 #include <QObject>
 #include <QtQml>
+
+#include <string>
+#include <vector>
+
 #include "UIViewBase/UIViewController.h"
 #include "ToolsTreeModel.h"
 #include "ToolsPanelRegistry.h"
@@ -11,7 +15,8 @@ namespace commonHead::viewModels {
     class IToolsViewModel;
 }
 namespace commonHead::viewModels::model {
-    struct ToolsTreeNodeChange;
+    struct ToolNodeData;
+    enum class ToolPanelType : std::uint8_t;
 }
 
 class ToolsPageController : public UIViewController
@@ -45,17 +50,22 @@ signals:
     void currentNodeIdChanged();
 
 private slots:
-    void onToolsTreeChanged(const std::shared_ptr<commonHead::viewModels::model::IToolsTree>& tree);
-    void onToolsTreeStructureChanged(const commonHead::viewModels::model::ToolsTreeNodeChange& change);
-    void onToolsTreeItemsUpdated();
-    void onToolsTreeItemUpdated(const QString& nodeId);
-    void onCurrentToolNodeChanged(const QString& nodeId, int panelType);
+    void onToolsTreeReady();
+    void onToolsNodesAdded(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes);
+    void onToolsNodesUpdated(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes);
+    void onToolsNodesRemoved(const std::vector<std::string>& nodeIds);
+
+private:
+    // Mirror-reading helpers (do NOT touch the VM's tree object).
+    commonHead::viewModels::model::ToolPanelType panelTypeOf(const std::string& nodeId) const;
+    std::string findFirstSelectableNodeId() const;
+    void        ensureValidSelection();
 
 private:
     std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
     std::shared_ptr<UIVMSignalEmitter::ToolsViewModelEmitter> m_viewModelEmitter;
     ToolsTreeModel* m_treeModel = nullptr;
     ToolsPanelRegistry* m_panelRegistry = nullptr;
-    int m_currentPanelType = 0;
+    int m_currentPanelType = 0;     // 0 == ToolPanelType::None
     QString m_currentNodeId;
 };
