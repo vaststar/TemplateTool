@@ -128,12 +128,12 @@
     <message>
         <location filename="../../UIView/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="32"/>
         <source>Cameras</source>
-        <translation type="unfinished"></translation>
+        <translation>攝影機</translation>
     </message>
     <message>
         <location filename="../../UIView/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="105"/>
         <source>Failed to load camera directory</source>
-        <translation type="unfinished"></translation>
+        <translation>載入攝影機目錄失敗</translation>
     </message>
 </context>
 <context>
@@ -141,7 +141,7 @@
     <message>
         <location filename="../../UIView/CameraMonitorView/qml/CameraMonitorView.qml" line="14"/>
         <source>Camera Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>攝影機監控</translation>
     </message>
 </context>
 <context>
@@ -149,7 +149,7 @@
     <message>
         <location filename="../../UIView/CameraMonitorView/qml/CameraPreviewPanel.qml" line="100"/>
         <source>Slot %1 — empty</source>
-        <translation type="unfinished"></translation>
+        <translation>槽位 %1 — 空</translation>
     </message>
 </context>
 <context>
@@ -167,7 +167,7 @@
     <message>
         <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="64"/>
         <source>Open Camera Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>開啟攝影機監控</translation>
     </message>
 </context>
 <context>
@@ -268,12 +268,12 @@
     <message>
         <location filename="../../UIView/MediaCameraView/qml/MediaCameraView.qml" line="45"/>
         <source>Opening…</source>
-        <translation type="unfinished"></translation>
+        <translation>開啟中…</translation>
     </message>
     <message>
         <location filename="../../UIView/MediaCameraView/qml/MediaCameraView.qml" line="72"/>
         <source>Failed to open camera</source>
-        <translation type="unfinished"></translation>
+        <translation>開啟攝影機失敗</translation>
     </message>
 </context>
 <context>
