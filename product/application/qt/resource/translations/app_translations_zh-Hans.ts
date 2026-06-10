@@ -147,7 +147,7 @@
 <context>
     <name>CameraPreviewPanel</name>
     <message>
-        <location filename="../../UIView/CameraMonitorView/qml/CameraPreviewPanel.qml" line="98"/>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraPreviewPanel.qml" line="100"/>
         <source>Slot %1 — empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -271,7 +271,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MediaCameraView/qml/MediaCameraView.qml" line="67"/>
+        <location filename="../../UIView/MediaCameraView/qml/MediaCameraView.qml" line="72"/>
         <source>Failed to open camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1689,27 +1689,27 @@ Press ESC to cancel</source>
         <translation>%1 个窗口</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="318"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="317"/>
         <source>Click to Capture</source>
         <translation>点击捕获</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="329"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="328"/>
         <source>Unnamed Window</source>
         <translation>未命名窗口</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="391"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="390"/>
         <source>No windows found</source>
         <translation>未找到窗口</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="413"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="412"/>
         <source>Hover to preview, click to capture</source>
         <translation>悬停预览，点击捕获</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="421"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="420"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -2075,42 +2075,42 @@ Press ESC to cancel</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="84"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="83"/>
         <source>%1%</source>
         <translation>%1%</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="104"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="103"/>
         <source>You are using the latest version.</source>
         <translation>当前已是最新版本。</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="121"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="120"/>
         <source>Background</source>
         <translation>后台</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="127"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="126"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="137"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="136"/>
         <source>Install &amp;&amp; Restart</source>
         <translation>安装并重启</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="145"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="144"/>
         <source>Download &amp;&amp; Install</source>
         <translation>下载并安装</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="153"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="152"/>
         <source>Later</source>
         <translation>稍后</translation>
     </message>
     <message>
-        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="153"/>
+        <location filename="../../UIView/AppUpgrade/qml/UpgradeDialog.qml" line="152"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>

@@ -18,7 +18,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "black"
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal)
     }
 
     VideoOutput {
@@ -50,23 +50,28 @@ Item {
         id: errorOverlay
         anchors.fill: parent
         visible: root.controller && root.controller.openFailed
-        color: "#80000000"
+        // Semi-transparent overlay tied to the themed card background.
+        color: Qt.rgba(
+            UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal).r,
+            UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal).g,
+            UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal).b,
+            0.5)
 
         Column {
             anchors.centerIn: parent
             spacing: 6
 
-            Text {
+            UTText {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "\u26A0"   // warning sign
-                color: "#ffcc66"
-                font.pixelSize: 28
+                colorEnum: UIColorToken.Content_Error_Text
+                fontEnum: UIFontToken.Heading_Text
             }
-            Text {
+            UTText {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Failed to open camera")
-                color: "#ffcccc"
-                font.pixelSize: 14
+                colorEnum: UIColorToken.Content_Error_Text
+                fontEnum: UIFontToken.Body_Text
             }
         }
     }

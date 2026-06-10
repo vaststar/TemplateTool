@@ -38,6 +38,8 @@ FocusScope {
         animate: false
         selectionModel: ItemSelectionModel {}
 
+        property int dropTargetRow: -1
+
         onWidthChanged: forceLayout()
 
         Timer {
@@ -87,11 +89,15 @@ FocusScope {
         onEntered: (drag) => { drag.accepted = _pickMime(drag.formats) !== "" }
         onPositionChanged: (drag) => {
             const mt = _pickMime(drag.formats)
-            if (mt === "") { drag.accepted = false; return }
-            drag.accepted = root.dropValidate(mt, drag.getDataAsString(mt),
-                                              _indexAt(drag.x, drag.y))
+            if (mt === "") { drag.accepted = false; treeView.dropTargetRow = -1; return }
+            const idx = _indexAt(drag.x, drag.y)
+            const ok = root.dropValidate(mt, drag.getDataAsString(mt), idx)
+            drag.accepted = ok
+            treeView.dropTargetRow = ok ? treeView.rowAtIndex(idx) : -1
         }
+        onExited: { treeView.dropTargetRow = -1 }
         onDropped: (drop) => {
+            treeView.dropTargetRow = -1
             const mt = _pickMime(drop.formats)
             if (mt === "") { drop.accepted = false; return }
             const data = drop.getDataAsString(mt)

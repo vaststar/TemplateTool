@@ -61,11 +61,10 @@ UTDialog {
         }
 
         // Checking / Verifying spinner
-        BusyIndicator {
+        UTBusyIndicator {
             visible: dialog.controller.checking || dialog.controller.verifying
             running: visible
             Layout.alignment: Qt.AlignHCenter
-            palette.dark: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
         }
 
         // Download progress

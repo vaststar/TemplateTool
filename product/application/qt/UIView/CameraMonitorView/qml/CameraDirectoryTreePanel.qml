@@ -93,7 +93,7 @@ Item {
         }
         visible: controller.loadState !== CameraMonitorViewController.Ready
 
-        BusyIndicator {
+        UTBusyIndicator {
             anchors.centerIn: parent
             running: controller.loadState === CameraMonitorViewController.Loading
             visible: running

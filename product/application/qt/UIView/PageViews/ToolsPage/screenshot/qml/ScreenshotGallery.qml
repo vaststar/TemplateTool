@@ -298,11 +298,10 @@ FocusScope {
                                         color: "#555555"
                                         Layout.alignment: Qt.AlignHCenter
                                     }
-                                    BusyIndicator {
+                                    UTBusyIndicator {
                                         running: true
                                         Layout.alignment: Qt.AlignHCenter
-                                        width: 20
-                                        height: 20
+                                        indicatorSize: 20
                                     }
                                 }
 

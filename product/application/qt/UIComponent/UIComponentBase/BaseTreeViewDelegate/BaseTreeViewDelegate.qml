@@ -13,6 +13,10 @@ TreeViewDelegate {
 
     readonly property bool dragActive: _dragHandler.active
 
+    // True when this row is the current drop target (set by BaseTreeView).
+    // Subclasses bind their background/border to render the drop highlight.
+    readonly property bool isDropTarget: treeView && treeView.dropTargetRow === row
+
     focusPolicy: Qt.NoFocus
     z: (current && treeView.activeFocus) ? 1 : 0
 

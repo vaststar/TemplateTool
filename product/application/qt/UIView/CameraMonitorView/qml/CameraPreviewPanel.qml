@@ -51,9 +51,11 @@ Item {
 
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "black"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal)
                 border.width: dropArea.containsDrag ? 2 : 1
-                border.color: dropArea.containsDrag ? "#80aaffaa" : "#33ffffff"
+                border.color: dropArea.containsDrag
+                    ? UTComponentUtil.getPlainUIColor(UIColorToken.Focus_Outline, UIColorState.Normal)
+                    : UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
                 radius: 4
 
                 // Inline Component so the Loader resolves the cross-folder type.
@@ -96,7 +98,7 @@ Item {
                     UTText {
                         anchors.centerIn: parent
                         text: qsTr("Slot %1 — empty").arg(slot.slotIndex + 1)
-                        color: "#888888"
+                        colorEnum: UIColorToken.Content_Secondary_Text
                         fontEnum: UIFontToken.Body_Text
                     }
                 }
