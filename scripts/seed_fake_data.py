@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import platform
 import sqlite3
 import sys
 from pathlib import Path
@@ -68,11 +69,18 @@ GROUP_TYPE_CUSTOM          = 3
 
 
 def default_db_path(release: bool) -> Path:
-    base = os.environ.get("LOCALAPPDATA") or os.environ.get("USERPROFILE")
-    if not base:
-        raise RuntimeError("Cannot resolve LOCALAPPDATA / USERPROFILE")
+    system = platform.system()
     folder = "TemplateToolApp" if release else "TemplateToolAppDebug"
-    return Path(base) / folder / "app_data" / "shared_database.db"
+    
+    if system == "Windows":
+        base = os.environ.get("LOCALAPPDATA") or os.environ.get("USERPROFILE")
+        if not base:
+            raise RuntimeError("Cannot resolve LOCALAPPDATA / USERPROFILE")
+        return Path(base) / folder / "app_data" / "shared_database.db"
+    elif system == "Darwin":  # macOS
+        return Path.home() / "Library" / "Application Support" / folder / "app_data" / "shared_database.db"
+    else:  # Linux and others
+        return Path.home() / ".local" / "share" / folder / "app_data" / "shared_database.db"
 
 
 # ----- Fake data -----
