@@ -84,6 +84,11 @@ void MediaCameraViewModel::openCamera(const model::CameraSource& source)
             }
         }
     }
+    // Empty camera id == open failed; notify listeners.
+    if (mCameraId.empty())
+    {
+        fireNotification(&IMediaCameraViewModelCallback::onCameraOpenFailed);
+    }
 }
 
 bool MediaCameraViewModel::isOpened() const

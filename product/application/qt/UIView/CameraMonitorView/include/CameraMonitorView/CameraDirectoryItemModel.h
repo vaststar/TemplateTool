@@ -11,9 +11,8 @@
 
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
 
-// Pure tree model. Owns its own mirror of nodes; exposes coarse mutation
-// methods so callers (controller) can translate VM callbacks into proper
-// QAbstractItemModel structural changes.
+// Tree model with an internal node mirror. Mutation methods translate VM
+// callbacks into proper QAbstractItemModel structural changes.
 class CameraDirectoryItemModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -35,7 +34,7 @@ public:
     explicit CameraDirectoryItemModel(QObject* parent = nullptr);
     ~CameraDirectoryItemModel() override;
 
-    // --- Mutation API (each method emits the proper begin/end pair(s)) ---
+    // Each mutator emits the proper begin/end signal pairs.
     void resetFromTree(const TreePtr& tree);
     void insertNodes(const std::vector<NodeData>& datas);
     void updateNodes(const std::vector<NodeData>& datas);
@@ -45,7 +44,6 @@ public:
 
     Q_INVOKABLE QModelIndex indexOfId(const QString& id) const;
 
-    // --- QAbstractItemModel ---
     QVariant      data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QVariant      headerData(int section, Qt::Orientation orientation,
@@ -62,7 +60,7 @@ private:
         NodeData    data;
         std::string parentId;              // "" = root sentinel
         int         rowInParent = -1;      // -1 for root
-        std::vector<std::string> childIds; // ordered
+        std::vector<std::string> childIds;
     };
 
     Node* getRoot() const;

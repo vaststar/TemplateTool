@@ -14,8 +14,6 @@ CameraDirectoryItemModel::CameraDirectoryItemModel(QObject* parent)
 
 CameraDirectoryItemModel::~CameraDirectoryItemModel() = default;
 
-// ---------------- Public mutation API ----------------
-
 void CameraDirectoryItemModel::resetFromTree(const TreePtr& tree)
 {
     beginResetModel();
@@ -79,7 +77,7 @@ void CameraDirectoryItemModel::updateNodes(const std::vector<NodeData>& datas)
         {
             continue;
         }
-        // Preserve id / type identity; only refresh display fields.
+        // Preserve identity; refresh display-only fields.
         node->data.displayName = d.displayName;
         node->data.status      = d.status;
         QModelIndex idx = indexFor(node);
@@ -104,7 +102,7 @@ void CameraDirectoryItemModel::removeNodes(const std::vector<std::string>& ids)
             continue;
         }
 
-        // Re-parent children to root first; moveNodeToParent mutates childIds.
+        // Re-parent children to root (moveNodeToParent mutates childIds).
         std::vector<std::string> orphans = node->childIds;
         for (const auto& cid : orphans)
         {
@@ -156,8 +154,6 @@ QModelIndex CameraDirectoryItemModel::indexOfId(const QString& id) const
     if (!n || n == getRoot()) return {};
     return indexFor(n);
 }
-
-// ---------------- QAbstractItemModel ----------------
 
 QVariant CameraDirectoryItemModel::data(const QModelIndex& index, int role) const
 {
@@ -260,8 +256,6 @@ QHash<int, QByteArray> CameraDirectoryItemModel::roleNames() const
     roles[StatusRole]      = "status";
     return roles;
 }
-
-// ---------------- Internal helpers ----------------
 
 CameraDirectoryItemModel::Node* CameraDirectoryItemModel::getRoot() const
 {

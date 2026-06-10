@@ -26,6 +26,8 @@ public:
     virtual ~IMediaCameraViewModelCallback() = default;
 public:
     virtual void onCameraFrameReceived(const model::VideoFrame& /*frame*/) {};
+    // Fired when openCamera() finishes without acquiring a valid handle.
+    virtual void onCameraOpenFailed() {};
 };
 
 class COMMONHEAD_EXPORT IMediaCameraViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IMediaCameraViewModelCallback>

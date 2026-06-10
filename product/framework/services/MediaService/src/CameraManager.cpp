@@ -23,36 +23,53 @@ CameraManager::~CameraManager()
 std::string CameraManager::openCamera(const media::CameraSource& source)
 {
     const std::string key = media::toKey(source);
-    std::scoped_lock loc(mCamerasMutex);
-    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [&key](const auto& camera) {
-        return camera->getSourceKey() == key;
-    });
 
-    if (iter != mCamerasList.end())
     {
-        if ((*iter)->isOpened())
+        std::scoped_lock loc(mCamerasMutex);
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [&key](const auto& camera) {
+            return camera->getSourceKey() == key;
+        });
+
+        if (iter != mCamerasList.end())
         {
-            SERVICE_LOG_DEBUG("camera already opened, source:" << key);
-            (*iter)->addDeviceRef();
-            return (*iter)->getCameraId();
-        }
-        else
-        {
+            if ((*iter)->isOpened())
+            {
+                SERVICE_LOG_DEBUG("camera already opened, source:" << key);
+                (*iter)->addDeviceRef();
+                return (*iter)->getCameraId();
+            }
             SERVICE_LOG_DEBUG("camera not opened, removing stale entry, source:" << key);
             mCamerasList.erase(iter);
         }
     }
 
-    if (auto camera = std::make_unique<CameraVideoCapture>(source); camera->isOpened())
-    {
-        SERVICE_LOG_DEBUG("camera opened, source: " << key << ", id: " << camera->getCameraId());
-        mCamerasList.emplace_back(std::move(camera));
-        return mCamerasList.back()->getCameraId();
-    }
-    else
+    // Open outside mCamerasMutex: the ctor may block for openTimeoutMs.
+    auto camera = std::make_unique<CameraVideoCapture>(source);
+    if (!camera->isOpened())
     {
         SERVICE_LOG_DEBUG("failed to open camera, source:" << key);
         return {};
+    }
+
+    {
+        std::scoped_lock loc(mCamerasMutex);
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [&key](const auto& cam) {
+            return cam->getSourceKey() == key;
+        });
+        if (iter != mCamerasList.end() && (*iter)->isOpened())
+        {
+            SERVICE_LOG_DEBUG("race: camera was opened by another thread, source:" << key
+                << ", discarding duplicate");
+            (*iter)->addDeviceRef();
+            return (*iter)->getCameraId();
+        }
+        if (iter != mCamerasList.end())
+        {
+            mCamerasList.erase(iter);
+        }
+        SERVICE_LOG_DEBUG("camera opened, source: " << key << ", id: " << camera->getCameraId());
+        mCamerasList.emplace_back(std::move(camera));
+        return mCamerasList.back()->getCameraId();
     }
 }
 

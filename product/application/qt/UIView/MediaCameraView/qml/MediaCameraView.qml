@@ -4,18 +4,23 @@ import QtQuick.Layouts
 import QtMultimedia
 import UIView 1.0
 import UTComponent 1.0
+import UIResourceLoader 1.0
 
-ApplicationWindow
-{
+// Item-rooted, embeddable camera preview. One instance == one ViewModel.
+// Host drives the lifecycle via controller.openLocalCamera / openNetworkCamera
+// after calling initializeController(appContext).
+Item {
     id: root
-    property MediaCameraViewController controller: MediaCameraViewController{
+    property MediaCameraViewController controller: MediaCameraViewController {}
+
+    implicitWidth: 758
+    implicitHeight: 576
+
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
     }
 
-    width: 758 
-    height: 576
-    color: "red"
-    visible: controller.visible
-    
     VideoOutput {
         id: videoOutput
         anchors.fill: parent
@@ -23,33 +28,63 @@ ApplicationWindow
         antialiasing: true
     }
 
+    UTBusyIndicator {
+        id: openingSpinner
+        anchors.centerIn: parent
+        z: 1
+        visible: root.controller && root.controller.isOpening
+        running: visible
+    }
+
+    UTText {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: openingSpinner.bottom
+        anchors.topMargin: 8
+        z: 1
+        visible: openingSpinner.visible
+        text: qsTr("Opening…")
+        fontEnum: UIFontToken.Body_Text
+    }
+
+    Rectangle {
+        id: errorOverlay
+        anchors.fill: parent
+        visible: root.controller && root.controller.openFailed
+        color: "#80000000"
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 6
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "\u26A0"   // warning sign
+                color: "#ffcc66"
+                font.pixelSize: 28
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Failed to open camera")
+                color: "#ffcccc"
+                font.pixelSize: 14
+            }
+        }
+    }
+
     Connections {
-        target: controller
-        
+        target: root.controller
+
         function onControllerInitialized() {
-            cameraHandlers.onControllerInitialized()
+            root.controller.logInfo("MediaCameraView controller initialized")
         }
 
         function onShowCameraImage(img) {
-            cameraHandlers.onShowCameraImage(img)
+            // Hook kept for future per-frame handling; intentionally a no-op.
         }
     }
 
-    Component.onCompleted:{
-        controller.logInfo("qml load onCompleted")
-        controller.videoSink = videoOutput.videoSink
-        // ControllerInitializer.initializeController(controller)
-    }
-
-    QtObject {
-        id: cameraHandlers
-        
-        function onControllerInitialized() {
-            controller.logInfo("MediaCameraView controller initialized")
-        }
-
-        function onShowCameraImage(img) {
-            controller.logInfo("Camera frame received")
-        }
+    Component.onCompleted: {
+        root.controller.logInfo("MediaCameraView qml load onCompleted")
+        root.controller.videoSink = videoOutput.videoSink
     }
 }

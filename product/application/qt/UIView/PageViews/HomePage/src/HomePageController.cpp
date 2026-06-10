@@ -48,7 +48,7 @@ void HomePageController::openCamera()
         return;
     }
 
-    auto win = ctx->getViewFactory()->createQmlWindow(
+    auto win = ctx->getViewFactory()->createQmlItemWindow(
         QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
     if (!win)
     {
@@ -58,6 +58,8 @@ void HomePageController::openCamera()
     if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
     {
         mediaController->initializeController(ctx.data());
+        // Standalone entry: default to local camera 0.
+        mediaController->openLocalCamera(0);
     }
     UIView::UIViewHelper::centerOnParentWhenShown(win);
     win->show();

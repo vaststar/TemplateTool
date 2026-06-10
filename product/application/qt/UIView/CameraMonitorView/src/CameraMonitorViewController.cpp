@@ -1,10 +1,14 @@
 #include "CameraMonitorView/CameraMonitorViewController.h"
 
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
+#include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
+#include <UIFabrication/IUIViewFactory.h>
 
+#include "MediaCameraView/MediaCameraViewController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "UIViewHelper/UIViewHelper.h"
 #include "ViewModelSingalEmitter/CameraDirectoryViewModelEmitter.h"
 
 CameraMonitorViewController::CameraMonitorViewController(QObject* parent)
@@ -51,7 +55,7 @@ void CameraMonitorViewController::init()
         return;
     }
 
-    // Create the tree model first so QML can bind to it while we are still loading.
+    // Create the tree model before QML binds to it.
     mCameraTreeModel = new CameraDirectoryItemModel(this);
     emit cameraTreeModelChanged();
 
@@ -104,6 +108,88 @@ void CameraMonitorViewController::moveCameraNode(const QString& srcId, const QSt
     mCameraDirectoryViewModel->moveCameraNode(srcId.toStdString(), targetParentId.toStdString());
 }
 
+QVariantMap CameraMonitorViewController::cameraSourceForNode(const QString& nodeId) const
+{
+    QVariantMap result;
+    if (!mCameraDirectoryViewModel || nodeId.isEmpty())
+    {
+        return result;
+    }
+    auto srcOpt = mCameraDirectoryViewModel->getCameraSource(nodeId.toStdString());
+    if (!srcOpt)
+    {
+        return result;
+    }
+    std::visit([&result](auto&& s) {
+        using T = std::decay_t<decltype(s)>;
+        if constexpr (std::is_same_v<T, commonHead::viewModels::model::LocalCameraSource>)
+        {
+            result.insert(QStringLiteral("kind"),  QStringLiteral("local"));
+            result.insert(QStringLiteral("index"), s.index);
+        }
+        else if constexpr (std::is_same_v<T, commonHead::viewModels::model::NetworkCameraSource>)
+        {
+            result.insert(QStringLiteral("kind"),          QStringLiteral("network"));
+            result.insert(QStringLiteral("url"),           QString::fromStdString(s.url));
+            result.insert(QStringLiteral("transport"),     QString::fromStdString(s.transport));
+            result.insert(QStringLiteral("openTimeoutMs"), s.openTimeoutMs);
+            result.insert(QStringLiteral("readTimeoutMs"), s.readTimeoutMs);
+        }
+    }, *srcOpt);
+    return result;
+}
+
+void CameraMonitorViewController::openCameraWindow(const QString& nodeId)
+{
+    if (!mCameraDirectoryViewModel || nodeId.isEmpty())
+    {
+        return;
+    }
+    auto srcOpt = mCameraDirectoryViewModel->getCameraSource(nodeId.toStdString());
+    if (!srcOpt)
+    {
+        UIVIEW_LOG_WARN("openCameraWindow ignored: no source for nodeId=" << nodeId.toStdString());
+        return;
+    }
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        UIVIEW_LOG_WARN("openCameraWindow: no AppContext");
+        return;
+    }
+    auto win = ctx->getViewFactory()->createQmlItemWindow(
+        QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
+    if (!win)
+    {
+        UIVIEW_LOG_WARN("openCameraWindow: failed to create window");
+        return;
+    }
+    auto* mc = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win.data());
+    if (!mc)
+    {
+        UIVIEW_LOG_WARN("openCameraWindow: window has no MediaCameraViewController");
+        win->show();
+        return;
+    }
+    mc->initializeController(ctx);
+    std::visit([mc](auto&& s) {
+        using T = std::decay_t<decltype(s)>;
+        if constexpr (std::is_same_v<T, commonHead::viewModels::model::LocalCameraSource>)
+        {
+            mc->openLocalCamera(s.index);
+        }
+        else if constexpr (std::is_same_v<T, commonHead::viewModels::model::NetworkCameraSource>)
+        {
+            mc->openNetworkCamera(QString::fromStdString(s.url),
+                                  QString::fromStdString(s.transport),
+                                  s.openTimeoutMs,
+                                  s.readTimeoutMs);
+        }
+    }, *srcOpt);
+    UIView::UIViewHelper::centerOnParentWhenShown(win.data());
+    win->show();
+}
+
 void CameraMonitorViewController::onCurrentCameraChanged(const QString& nodeId)
 {
     QString displayName;
@@ -127,7 +213,7 @@ void CameraMonitorViewController::onCurrentCameraChanged(const QString& nodeId)
     emit currentCameraChanged();
 }
 
-// ---- Thin forwarding slots ----
+// ---- Forwarding slots ----
 
 void CameraMonitorViewController::onCameraDirectoryReady()
 {

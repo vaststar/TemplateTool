@@ -480,6 +480,19 @@
       }
     },
     {
+      "token": "busy-indicator-track",
+      "color": {
+        "normal": "neutral-600"
+      }
+    },
+    {
+      "token": "busy-indicator-progress",
+      "color": {
+        "normal": "blue-500",
+        "disabled": "neutral-600"
+      }
+    },
+    {
       "token": "popup-background",
       "color": {
         "normal": "neutral-800"

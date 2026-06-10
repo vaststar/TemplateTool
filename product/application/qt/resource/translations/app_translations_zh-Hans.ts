@@ -147,7 +147,7 @@
 <context>
     <name>CameraPreviewPanel</name>
     <message>
-        <location filename="../../UIView/CameraMonitorView/qml/CameraPreviewPanel.qml" line="56"/>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraPreviewPanel.qml" line="98"/>
         <source>Slot %1 — empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -261,6 +261,19 @@
         <location filename="../../UIView/MainWindowSuite/MainWindowSystemTray/qml/MainWindowSystemTray.qml" line="23"/>
         <source>Quit</source>
         <translation>退出</translation>
+    </message>
+</context>
+<context>
+    <name>MediaCameraView</name>
+    <message>
+        <location filename="../../UIView/MediaCameraView/qml/MediaCameraView.qml" line="45"/>
+        <source>Opening…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/MediaCameraView/qml/MediaCameraView.qml" line="67"/>
+        <source>Failed to open camera</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

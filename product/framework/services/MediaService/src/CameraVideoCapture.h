@@ -66,8 +66,9 @@ private:
     std::vector<Subscription> mSubscriptions;
     std::mutex mSubscriptionMutex;
 
-    // 捕获线程
     std::thread mCaptureThread;
     std::atomic<bool> mCapturing{false};
+    // Serializes start/stop of mCaptureThread. Never held by captureLoop.
+    std::mutex mCaptureThreadMutex;
 };
 }

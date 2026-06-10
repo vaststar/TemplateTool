@@ -75,6 +75,7 @@ set(MODULE_QML_TARGET_FILES
     UTScrollView/UTScrollView.qml
     UTSlider/UTSlider.qml
     UTProgressBar/UTProgressBar.qml
+    UTBusyIndicator/UTBusyIndicator.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

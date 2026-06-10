@@ -76,14 +76,14 @@ void MainWindowController::openCamera()
     getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
 
-    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+    auto win = getAppContext()->getViewFactory()->createQmlItemWindow(
         QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
     if (!win) return;
     if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
     {
-        UIVIEW_LOG_DEBUG("MediaCameraView.qml load done, will start init MediaCameraViewController");
         mediaController->initializeController(getAppContext());
-        UIVIEW_LOG_DEBUG("MediaCameraViewController init done");
+        // Standalone entry: default to local camera 0.
+        mediaController->openLocalCamera(0);
     }
     UIView::UIViewHelper::centerOnParentWhenShown(win);
     win->show();

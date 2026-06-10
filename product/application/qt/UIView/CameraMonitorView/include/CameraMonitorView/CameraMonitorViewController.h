@@ -4,13 +4,13 @@
 
 #include <QObject>
 #include <QString>
+#include <QVariantMap>
 #include <QtQml>
 
 #include "UIViewBase/UIViewController.h"
 #include "CameraDirectoryItemModel.h"
-// Pull in Q_DECLARE_METATYPE specializations BEFORE moc generates code for
-// our slot signatures — otherwise QMetaTypeId<T> gets primary-instantiated
-// and the explicit specialization later fails with C2908.
+// Must precede moc-generated slot signatures so the Q_DECLARE_METATYPE
+// specializations win over the primary template (avoids C2908).
 #include "ViewModelSingalEmitter/RegisterViewModelMetaTypes.h"
 
 namespace commonHead::viewModels {
@@ -21,8 +21,8 @@ namespace UIVMSignalEmitter {
     class CameraDirectoryViewModelEmitter;
 }
 
-// Thin controller: 9 个回调槽都只把 VM payload 转给 CameraDirectoryItemModel
-// 的对应 mutation 方法，让 model 自己发 begin/end insert/update/remove/move 信号。
+// Thin controller: VM callbacks are forwarded to CameraDirectoryItemModel,
+// which owns the begin/end model-change signaling.
 class CameraMonitorViewController : public UIViewController
 {
     Q_OBJECT
@@ -46,13 +46,19 @@ public:
 public slots:
     Q_INVOKABLE void selectNode(const QString& nodeId);
 
-    // ===== Drag-drop / re-parent =====
-    // Pre-flight: returns true when dragging `srcId` onto `targetParentId` would
-    // produce a valid move. Empty `targetParentId` means "drop on root".
+    // Drag-drop / re-parent.
     Q_INVOKABLE bool canDropOnNode(const QString& srcId, const QString& targetParentId) const;
-    // Apply the move. Forwards to the VM; the change becomes visible through the
-    // usual relation-callback round-trip.
     Q_INVOKABLE void moveCameraNode(const QString& srcId, const QString& targetParentId);
+
+    // Preview-panel helpers (consumed by CameraPreviewPanel.qml).
+    // Returns {} for unknown / non-camera nodes; otherwise:
+    //   { "kind": "local",   "index": int }
+    //   { "kind": "network", "url": str, "transport": str,
+    //                        "openTimeoutMs": int, "readTimeoutMs": int }
+    Q_INVOKABLE QVariantMap cameraSourceForNode(const QString& nodeId) const;
+
+    // Pops a standalone preview window for nodeId. No-op for unknown ids.
+    Q_INVOKABLE void openCameraWindow(const QString& nodeId);
 
 signals:
     void cameraTreeModelChanged();

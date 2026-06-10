@@ -83,7 +83,7 @@ Item {
         }
     }
 
-    // Status overlay shown while loading or after a load failure.
+    // Status overlay while loading or after a load failure.
     Item {
         anchors {
             left: parent.left

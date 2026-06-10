@@ -19,7 +19,12 @@ public:
         emit signals_onCameraFrameReceived(frame);
     };
 
+    virtual void onCameraOpenFailed() override {
+        emit signals_onCameraOpenFailed();
+    };
+
 signals:
     void signals_onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame);
+    void signals_onCameraOpenFailed();
 };
 }

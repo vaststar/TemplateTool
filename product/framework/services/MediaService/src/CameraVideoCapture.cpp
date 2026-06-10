@@ -152,6 +152,11 @@ std::string CameraVideoCapture::addSubscription(VideoFrameCallback callback)
 
     if (shouldStart)
     {
+        std::scoped_lock lifecycleLock(mCaptureThreadMutex);
+        if (mCaptureThread.joinable())
+        {
+            mCaptureThread.join();
+        }
         mCapturing = true;
         mCaptureThread = std::thread(&CameraVideoCapture::captureLoop, this);
         SERVICE_LOG_DEBUG("capture started, cameraId: " << mCameraId);
@@ -193,6 +198,7 @@ void CameraVideoCapture::removeSubscription(const std::string& subscriptionId)
 
     if (shouldStop)
     {
+        std::scoped_lock lifecycleLock(mCaptureThreadMutex);
         if (mCaptureThread.joinable())
         {
             mCaptureThread.join();
