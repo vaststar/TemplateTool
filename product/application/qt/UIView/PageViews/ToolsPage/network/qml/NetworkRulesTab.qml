@@ -385,7 +385,7 @@ Item {
 
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    Rectangle { width: 14; height: 14; radius: 7; color: "#4CAF50"; anchors.verticalCenter: parent.verticalCenter }
+                                    Rectangle { Layout.alignment: Qt.AlignVCenter; Layout.preferredWidth: 14; Layout.preferredHeight: 14; radius: 7; color: "#4CAF50" }
                                     UTText { Layout.fillWidth: true; text: modelData; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTButton {
                                         text: "✕"; implicitWidth: 28; implicitHeight: 24
