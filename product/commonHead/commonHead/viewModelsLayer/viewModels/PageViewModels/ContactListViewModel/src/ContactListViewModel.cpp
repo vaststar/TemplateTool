@@ -35,6 +35,23 @@ model::RelationType ContactListViewModel::getRelationType() const
     return mInterestedRelationType;
 }
 
+void ContactListViewModel::setRelationType(model::RelationType type)
+{
+    if (mInterestedRelationType == type)
+    {
+        return;
+    }
+    COMMONHEAD_LOG_DEBUG("setRelationType from " << static_cast<int>(mInterestedRelationType)
+                         << " to " << static_cast<int>(type));
+    mInterestedRelationType = type;
+
+    if (auto service = lockService(); service && service->isContactDirectoryReady())
+    {
+        rebuildTreeFromService();
+        fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
+    }
+}
+
 ucf::service::model::IContactRelation::RelationType ContactListViewModel::serviceRelationType() const
 {
     return utils::toServiceRelationType(mInterestedRelationType);
@@ -57,7 +74,6 @@ void ContactListViewModel::init()
         rebuildTreeFromService();
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
     }
-    // else: service owns load lifecycle; it will call us back when ready.
 }
 
 std::shared_ptr<ucf::service::IContactService> ContactListViewModel::lockService() const
@@ -80,8 +96,7 @@ void ContactListViewModel::rebuildTreeFromService()
         COMMONHEAD_LOG_ERROR("rebuildTreeFromService skipped: service not available");
         return;
     }
-    // Persons are common to every slice; groups only exist for slices that map to a
-    // GroupType (see utils::groupTypeFor).
+
     const auto relType   = serviceRelationType();
     const auto groupType = utils::groupTypeFor(mInterestedRelationType);
 
@@ -269,20 +284,23 @@ void ContactListViewModel::moveContact(const std::string& childId,
 
 void ContactListViewModel::onContactDirectoryReady()
 {
-    COMMONHEAD_LOG_DEBUG("onContactDirectoryReady received from service");
+    COMMONHEAD_LOG_DEBUG("onContactDirectoryReady received from service, slice:" << static_cast<int>(mInterestedRelationType));
     rebuildTreeFromService();
     fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
 }
 
 void ContactListViewModel::onContactDirectoryLoadFailed(ucf::service::ContactDirectoryLoadError error)
 {
-    COMMONHEAD_LOG_ERROR("onContactDirectoryLoadFailed received from service, error:" << static_cast<int>(error));
+    COMMONHEAD_LOG_ERROR("onContactDirectoryLoadFailed received from service, slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", error:" << static_cast<int>(error));
     fireNotification(&IContactListViewModelCallback::onContactDirectoryLoadFailed, utils::toVMLoadError(error));
 }
 
 void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons)
 {
     auto vmNodes = utils::toVMNodeDatas(persons);
+    COMMONHEAD_LOG_DEBUG("onPersonContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", count:" << vmNodes.size());
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onPersonContactsAdded arrived before tree was built (count:" << vmNodes.size()
@@ -303,6 +321,8 @@ void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::Pers
 void ContactListViewModel::onPersonContactsUpdated(const ucf::service::model::PersonContactArray& persons)
 {
     auto vmNodes = utils::toVMNodeDatas(persons);
+    COMMONHEAD_LOG_DEBUG("onPersonContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", count:" << vmNodes.size());
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onPersonContactsUpdated arrived before tree was built (count:" << vmNodes.size()
@@ -322,6 +342,8 @@ void ContactListViewModel::onPersonContactsUpdated(const ucf::service::model::Pe
 
 void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string>& contactIds)
 {
+    COMMONHEAD_LOG_DEBUG("onPersonContactsRemoved slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", count:" << contactIds.size());
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onPersonContactsRemoved arrived before tree was built (count:" << contactIds.size()
@@ -341,11 +363,11 @@ void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string
 
 void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::GroupContactArray& groups)
 {
-    // Filter to this VM's group slice; slices with no group type (Reporting/Mentor/...)
-    // drop the whole event.
     const auto groupType = utils::groupTypeFor(mInterestedRelationType);
     if (!groupType.has_value())
     {
+        COMMONHEAD_LOG_DEBUG("onGroupContactsAdded dropped (slice has no group type), slice:"
+                             << static_cast<int>(mInterestedRelationType) << ", raw count:" << groups.size());
         return;
     }
     const auto wantedGroupType = utils::toServiceGroupType(*groupType);
@@ -359,6 +381,8 @@ void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::Group
             filtered.push_back(g);
         }
     }
+    COMMONHEAD_LOG_DEBUG("onGroupContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", raw:" << groups.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
         return;
@@ -387,6 +411,8 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
     const auto groupType = utils::groupTypeFor(mInterestedRelationType);
     if (!groupType.has_value())
     {
+        COMMONHEAD_LOG_DEBUG("onGroupContactsUpdated dropped (slice has no group type), slice:"
+                             << static_cast<int>(mInterestedRelationType) << ", raw count:" << groups.size());
         return;
     }
     const auto wantedGroupType = utils::toServiceGroupType(*groupType);
@@ -400,6 +426,8 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
             filtered.push_back(g);
         }
     }
+    COMMONHEAD_LOG_DEBUG("onGroupContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", raw:" << groups.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
         return;
@@ -425,7 +453,8 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
 
 void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>& contactIds)
 {
-    // Removed events do not carry GroupType; removing an unknown id is a no-op in the tree.
+    COMMONHEAD_LOG_DEBUG("onGroupContactsRemoved slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", count:" << contactIds.size());
     if (ensureTreeBuilt())
     {
         COMMONHEAD_LOG_WARN("onGroupContactsRemoved arrived before tree was built (count:" << contactIds.size()
@@ -445,7 +474,6 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
 
 void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations)
 {
-    // Drop relations from sibling slices.
     const auto wanted = serviceRelationType();
     ucf::service::model::ContactRelationArray filtered;
     filtered.reserve(relations.size());
@@ -456,6 +484,8 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
             filtered.push_back(r);
         }
     }
+    COMMONHEAD_LOG_DEBUG("onContactRelationsAdded slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", raw:" << relations.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
         return;
@@ -476,6 +506,10 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
             mTree->setRelations(vmRelations);
         }
     }
+    for (const auto& r : vmRelations)
+    {
+        COMMONHEAD_LOG_DEBUG("  relation+ id:" << r.id << ", parent:" << r.parentId << ", child:" << r.childId);
+    }
     fireNotification(&IContactListViewModelCallback::onContactRelationsAdded, vmRelations);
 }
 
@@ -491,6 +525,8 @@ void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::
             filtered.push_back(r);
         }
     }
+    COMMONHEAD_LOG_DEBUG("onContactRelationsUpdated slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", raw:" << relations.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
         return;
@@ -511,38 +547,52 @@ void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::
             mTree->setRelations(vmRelations);
         }
     }
+    for (const auto& r : vmRelations)
+    {
+        COMMONHEAD_LOG_DEBUG("  relation~ id:" << r.id << ", parent:" << r.parentId << ", child:" << r.childId);
+    }
     fireNotification(&IContactListViewModelCallback::onContactRelationsUpdated, vmRelations);
 }
 
 void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::string>& relationIds)
 {
-    // Service emits a flat id list across slices; translate to childIds via the tree and
-    // skip ids that belong to sibling VMs.
-    std::vector<std::string> childIds;
-    std::vector<std::string> matchedRelationIds;
+    COMMONHEAD_LOG_DEBUG("onContactRelationsRemoved slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", incoming relationIds count:" << relationIds.size());
+    if (ensureTreeBuilt())
+    {
+        COMMONHEAD_LOG_WARN("onContactRelationsRemoved arrived before tree was built (count:" << relationIds.size()
+                            << "); fired onContactDirectoryReady instead of delta");
+        fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
+        return;
+    }
+
+    std::vector<model::RemovedRelationInfo> removed;
     {
         std::scoped_lock lk(mTreeMutex);
         if (mTree)
         {
-            for (const auto& rid : relationIds)
-            {
-                auto childId = mTree->takeChildIdByRelationId(rid);
-                if (childId.empty())
-                {
-                    continue;
-                }
-                childIds.push_back(std::move(childId));
-                matchedRelationIds.push_back(rid);
-            }
-            mTree->clearRelations(childIds);
+            removed = mTree->removeRelationsByIds(relationIds);
         }
     }
-    if (childIds.empty())
+    COMMONHEAD_LOG_DEBUG("onContactRelationsRemoved matched in this slice:" << removed.size()
+                         << " of " << relationIds.size());
+    if (removed.empty())
     {
         return;
     }
 
-    fireNotification(&IContactListViewModelCallback::onContactRelationsRemoved, matchedRelationIds);
+    std::vector<model::ContactRelationData> payload;
+    payload.reserve(removed.size());
+    for (auto& r : removed)
+    {
+        COMMONHEAD_LOG_DEBUG("  relation- id:" << r.relationId << ", oldParent:" << r.oldParentId
+                             << ", child:" << r.childId);
+        payload.push_back({std::move(r.relationId),
+                           std::move(r.oldParentId),
+                           std::move(r.childId),
+                           mInterestedRelationType});
+    }
+    fireNotification(&IContactListViewModelCallback::onContactRelationsRemoved, payload);
 }
 
 }

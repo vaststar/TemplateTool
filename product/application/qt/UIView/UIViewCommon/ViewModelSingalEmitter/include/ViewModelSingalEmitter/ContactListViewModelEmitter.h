@@ -47,8 +47,8 @@ public:
     { emit signals_onContactRelationsAdded(relations); }
     void onContactRelationsUpdated(const std::vector<RelationData>& relations) override
     { emit signals_onContactRelationsUpdated(relations); }
-    void onContactRelationsRemoved(const std::vector<std::string>& ids) override
-    { emit signals_onContactRelationsRemoved(ids); }
+    void onContactRelationsRemoved(const std::vector<RelationData>& removed) override
+    { emit signals_onContactRelationsRemoved(removed); }
 
 signals:
     void signals_onContactDirectoryReady();
@@ -64,7 +64,7 @@ signals:
 
     void signals_onContactRelationsAdded(const std::vector<RelationData>& relations);
     void signals_onContactRelationsUpdated(const std::vector<RelationData>& relations);
-    void signals_onContactRelationsRemoved(const std::vector<std::string>& ids);
+    void signals_onContactRelationsRemoved(const std::vector<RelationData>& removed);
 };
 
 } // namespace UIVMSignalEmitter

@@ -80,13 +80,14 @@ ucf::service::model::IContactRelation::RelationType toServiceRelationType(model:
     using S = ucf::service::model::IContactRelation::RelationType;
     switch (type)
     {
+    case model::RelationType::Folder:        return S::Folder;
     case model::RelationType::Department:    return S::Department;
     case model::RelationType::Reporting:     return S::Reporting;
     case model::RelationType::Project:       return S::Project;
     case model::RelationType::Mentor:        return S::Mentor;
     case model::RelationType::Collaboration: return S::Collaboration;
     }
-    return S::Department;
+    return S::Folder;
 }
 
 model::RelationType toVMRelationType(ucf::service::model::IContactRelation::RelationType type)
@@ -94,13 +95,14 @@ model::RelationType toVMRelationType(ucf::service::model::IContactRelation::Rela
     using S = ucf::service::model::IContactRelation::RelationType;
     switch (type)
     {
+    case S::Folder:        return model::RelationType::Folder;
     case S::Department:    return model::RelationType::Department;
     case S::Reporting:     return model::RelationType::Reporting;
     case S::Project:       return model::RelationType::Project;
     case S::Mentor:        return model::RelationType::Mentor;
     case S::Collaboration: return model::RelationType::Collaboration;
     }
-    return model::RelationType::Department;
+    return model::RelationType::Folder;
 }
 
 ucf::service::model::IGroupContact::GroupType toServiceGroupType(model::GroupType type)
@@ -112,8 +114,9 @@ ucf::service::model::IGroupContact::GroupType toServiceGroupType(model::GroupTyp
     case model::GroupType::Project:    return S::Project;
     case model::GroupType::Team:       return S::Team;
     case model::GroupType::Custom:     return S::Custom;
+    case model::GroupType::Folder:     return S::Folder;
     }
-    return S::Department;
+    return S::Folder;
 }
 
 model::GroupType toVMGroupType(ucf::service::model::IGroupContact::GroupType type)
@@ -125,14 +128,16 @@ model::GroupType toVMGroupType(ucf::service::model::IGroupContact::GroupType typ
     case S::Project:    return model::GroupType::Project;
     case S::Team:       return model::GroupType::Team;
     case S::Custom:     return model::GroupType::Custom;
+    case S::Folder:     return model::GroupType::Folder;
     }
-    return model::GroupType::Department;
+    return model::GroupType::Folder;
 }
 
 std::optional<model::GroupType> groupTypeFor(model::RelationType relationType)
 {
     switch (relationType)
     {
+    case model::RelationType::Folder:        return model::GroupType::Folder;
     case model::RelationType::Department:    return model::GroupType::Department;
     case model::RelationType::Project:       return model::GroupType::Project;
     case model::RelationType::Reporting:     return std::nullopt;

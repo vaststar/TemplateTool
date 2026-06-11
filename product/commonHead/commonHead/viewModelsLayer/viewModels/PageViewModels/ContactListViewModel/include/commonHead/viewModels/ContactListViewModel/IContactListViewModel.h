@@ -35,7 +35,11 @@ public:
     virtual void onGroupContactsRemoved(const std::vector<std::string>& contactIds) {}
     virtual void onContactRelationsAdded(const std::vector<model::ContactRelationData>& relations) {}
     virtual void onContactRelationsUpdated(const std::vector<model::ContactRelationData>& relations) {}
-    virtual void onContactRelationsRemoved(const std::vector<std::string>& relationIds) {}
+    // Carries (relationId, childId, oldParentId, type) for every relation row removed in
+    // this slice. Subscribers should re-parent each childId locally (commonly to root in
+    // single-parent trees) and may use oldParentId / type for diagnostics or to support
+    // multi-parent / edge-precise UIs in the future.
+    virtual void onContactRelationsRemoved(const std::vector<model::ContactRelationData>& removed) {}
 };
 
 class COMMONHEAD_EXPORT IContactListViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IContactListViewModelCallback>
@@ -53,6 +57,7 @@ public:
 
     // Relation slice this VM is bound to (Department / Reporting / ...).
     [[nodiscard]] virtual model::RelationType getRelationType() const = 0;
+    virtual void setRelationType(model::RelationType type) = 0;
 
     // True once the tree has been populated. onContactDirectoryReady will not be re-fired
     // for late subscribers.
@@ -61,9 +66,6 @@ public:
     // Fire-and-forget metrics hook; VM does not store selection.
     virtual void selectContact(const std::string& contactId) = 0;
 
-    // canMoveContact: pure validity probe, safe for drag-hover. Rejects empty/self/
-    // unknown/Person-parent/cycle/noop.
-    // moveContact: forwards to service; UI refresh arrives via onContactRelationsUpdated.
     [[nodiscard]] virtual bool canMoveContact(const std::string& childId,
                                               const std::string& newParentId) const = 0;
     virtual void moveContact(const std::string& childId,

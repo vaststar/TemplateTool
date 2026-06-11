@@ -71,29 +71,26 @@ public:
     void updateNode(const ContactNodeData& data);
     void removeNode(const std::string& id);
     void setRelation(const ContactRelationData& relation);
-    void clearRelation(const std::string& childId);
 
     // Batch variants (preferred for callback payloads)
     void addNodes(const std::vector<ContactNodeData>& datas);
     void updateNodes(const std::vector<ContactNodeData>& datas);
     void removeNodes(const std::vector<std::string>& ids);
     void setRelations(const std::vector<ContactRelationData>& relations);
-    void clearRelations(const std::vector<std::string>& childIds);
 
     // ===== Relation row identity lookups =====
     // Each child has at most one relation row in this tree (the slice the VM owns).
-    // These helpers let callers translate between the in-tree childId and the service
-    // layer's surrogate relationId without having to maintain a parallel map.
 
     // Returns the relationId associated with childId, or empty if the child is at the
     // virtual root (no parent relation row).
     std::string getRelationIdByChildId(const std::string& childId) const;
 
-    // Looks up the childId for relationId, removes the mapping atomically, and returns
-    // the childId (empty if relationId is unknown). The tree node itself is not moved;
-    // callers typically follow this with clearRelations(childIds) to reparent the node
-    // under the virtual root.
-    std::string takeChildIdByRelationId(const std::string& relationId);
+    // Resolves each relationId to its child, captures the pre-detach parentId, detaches
+    // the node, clears its relationId, and re-parents it under the virtual root. Returns
+    // one entry per relationId that matched a node in this tree; relationIds belonging
+    // to sibling slices (not found here) are silently skipped.
+    std::vector<RemovedRelationInfo>
+    removeRelationsByIds(const std::vector<std::string>& relationIds);
 
 private:
     void buildNodes(const std::vector<ucf::service::model::IContactPtr>& contacts);

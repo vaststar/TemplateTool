@@ -10,6 +10,18 @@ UserContactTable::UserContactTable()
 {
 }
 
+PersonContactTable::PersonContactTable()
+    : ucf::service::model::DBTableModel(TableName,{
+        {ContactIdField, "TEXT UNIQUE NOT NULL"},
+        {FirstNameField, "TEXT"},
+        {LastNameField,  "TEXT"},
+        {GenderField,    "INTEGER"},
+        {PhoneField,     "TEXT"},
+        {EmailField,     "TEXT"}
+    })
+{
+}
+
 GroupContactTable::GroupContactTable()
     : ucf::service::model::DBTableModel(TableName,{
         {GroupIdField,         "TEXT UNIQUE NOT NULL"},
@@ -34,6 +46,13 @@ TeamGroupTable::TeamGroupTable()
         {GroupIdField,    "TEXT UNIQUE NOT NULL"},
         {TeamLeadIdField, "TEXT"},
         {MissionField,    "TEXT"}
+    })
+{
+}
+
+FolderGroupTable::FolderGroupTable()
+    : ucf::service::model::DBTableModel(TableName,{
+        {GroupIdField, "TEXT UNIQUE NOT NULL"}
     })
 {
 }

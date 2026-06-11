@@ -56,7 +56,7 @@ public:
     VMContactRelation(std::string relationId,
                       std::string childId,
                       std::string parentId,
-                      RelationType relationType = RelationType::Department);
+                      RelationType relationType = RelationType::Folder);
 
     std::string  getRelationId()   const override;
     std::string  getChildId()      const override;

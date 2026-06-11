@@ -12,6 +12,23 @@ struct SERVICE_EXPORT UserContactTable: public ucf::service::model::DBTableModel
     static constexpr auto ContactStatusField   = "CONTACT_STATUS";
 };
 
+// CTI sub-table that hangs off UserContact and carries the per-person profile
+// fields (name parts, contact methods, gender). One row per person; CONTACT_ID
+// is the foreign key into UserContact and is the natural key here as well.
+// Rows may be absent for legacy persons that pre-date this table — readers must
+// tolerate missing sub-rows and treat them as empty profile.
+struct SERVICE_EXPORT PersonContactTable: public ucf::service::model::DBTableModel
+{
+    PersonContactTable();
+    static constexpr auto TableName      = "PersonContact";
+    static constexpr auto ContactIdField = "CONTACT_ID";
+    static constexpr auto FirstNameField = "FIRST_NAME";
+    static constexpr auto LastNameField  = "LAST_NAME";
+    static constexpr auto GenderField    = "GENDER";   // 0=Unspecified, 1=Male, 2=Female, 3=Other
+    static constexpr auto PhoneField     = "PHONE";
+    static constexpr auto EmailField     = "EMAIL";
+};
+
 struct SERVICE_EXPORT GroupContactTable: public ucf::service::model::DBTableModel
 {
     GroupContactTable();
@@ -41,6 +58,19 @@ struct SERVICE_EXPORT TeamGroupTable: public ucf::service::model::DBTableModel
     static constexpr auto GroupIdField    = "GROUP_ID";
     static constexpr auto TeamLeadIdField = "TEAM_LEAD_ID";
     static constexpr auto MissionField    = "MISSION";
+};
+
+// CTI sub-table for IGroupContact::GroupType::Folder. Currently carries no typed
+// fields beyond GROUP_ID -- presence of a row serves as a positive marker that
+// the matching GroupContact main row is intentionally a folder (vs. an accidental
+// GROUP_TYPE=0 default). Reserves space for future per-folder fields (icon, color,
+// sort order, ...) so adding them later is a column-add migration rather than a
+// new-table migration.
+struct SERVICE_EXPORT FolderGroupTable: public ucf::service::model::DBTableModel
+{
+    FolderGroupTable();
+    static constexpr auto TableName    = "FolderGroup";
+    static constexpr auto GroupIdField = "GROUP_ID";
 };
 
 struct SERVICE_EXPORT ContactRelationTable: public ucf::service::model::DBTableModel

@@ -67,7 +67,7 @@ private slots:
     void onGroupContactsRemoved  (const std::vector<std::string>& v);
     void onContactRelationsAdded  (const std::vector<commonHead::viewModels::model::ContactRelationData>& v);
     void onContactRelationsUpdated(const std::vector<commonHead::viewModels::model::ContactRelationData>& v);
-    void onContactRelationsRemoved(const std::vector<std::string>& v);
+    void onContactRelationsRemoved(const std::vector<commonHead::viewModels::model::ContactRelationData>& v);
 
 signals:
     void orgTreeModelChanged();

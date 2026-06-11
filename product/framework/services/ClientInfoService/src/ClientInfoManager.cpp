@@ -125,9 +125,11 @@ void ClientInfoManager::initializeAppClient()
     SERVICE_LOG_DEBUG("initializeAppClient with dbId:" << dbConfig.getDBId() << ", dbFilePath:" << dbConfig.getDBFilePath());
     std::vector<ucf::service::model::DBTableModel> tables{
         db::schema::UserContactTable{},
+        db::schema::PersonContactTable{},
         db::schema::GroupContactTable{},
         db::schema::DepartmentGroupTable{},
         db::schema::TeamGroupTable{},
+        db::schema::FolderGroupTable{},
         db::schema::ContactRelationTable{},
         db::schema::SettingsTable{},
         db::schema::ScreenshotSettingsTable{},

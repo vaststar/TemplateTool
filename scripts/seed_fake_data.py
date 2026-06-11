@@ -46,32 +46,42 @@ from pathlib import Path
 
 # ----- Schema constants (mirror DataWarehouseSchemas.h) -----
 T_USER_CONTACT     = "UserContact"
+T_PERSON_CONTACT   = "PersonContact"
 T_GROUP_CONTACT    = "GroupContact"
 T_DEPARTMENT_GROUP = "DepartmentGroup"
 T_TEAM_GROUP       = "TeamGroup"
+T_FOLDER_GROUP     = "FolderGroup"
 T_CONTACT_REL      = "ContactRelation"
 T_CAMERA_GROUP     = "CameraGroup"
 T_CAMERA           = "Camera"
 T_CAMERA_REL       = "CameraDirectoryRelation"
 
+# IPersonContact::Gender
+GENDER_UNSPECIFIED         = 0
+GENDER_MALE                = 1
+GENDER_FEMALE              = 2
+GENDER_OTHER               = 3
+
 STATUS_ACTIVE              = 0   # ContactStatus::Active / CameraNodeStatus::Active
 CAMERA_RELATION_CONT       = 0   # CameraDirectoryRelation::RelationType::Containment
-CONTACT_RELATION_DEPARTMENT = 0  # IContactRelation::RelationType::Department
-CONTACT_RELATION_REPORTING  = 1  # IContactRelation::RelationType::Reporting
+CONTACT_RELATION_FOLDER     = 0  # IContactRelation::RelationType::Folder
+CONTACT_RELATION_DEPARTMENT = 1  # IContactRelation::RelationType::Department
+CONTACT_RELATION_REPORTING  = 2  # IContactRelation::RelationType::Reporting
 SOURCE_TYPE_LOCAL          = 0
 SOURCE_TYPE_NETWORK        = 1
 
 # IGroupContact::GroupType
-GROUP_TYPE_DEPARTMENT      = 0
-GROUP_TYPE_PROJECT         = 1
-GROUP_TYPE_TEAM            = 2
-GROUP_TYPE_CUSTOM          = 3
+GROUP_TYPE_FOLDER          = 0
+GROUP_TYPE_DEPARTMENT      = 1
+GROUP_TYPE_PROJECT         = 2
+GROUP_TYPE_TEAM            = 3
+GROUP_TYPE_CUSTOM          = 4
 
 
 def default_db_path(release: bool) -> Path:
     system = platform.system()
     folder = "TemplateToolApp" if release else "TemplateToolAppDebug"
-    
+
     if system == "Windows":
         base = os.environ.get("LOCALAPPDATA") or os.environ.get("USERPROFILE")
         if not base:
@@ -94,11 +104,25 @@ CONTACT_PERSONS = [
     ("seed_person_eve",    "Eve Sun"),
 ]
 
+# CTI sub-table rows for UserContact. One row per CONTACT_PERSONS entry.
+# (contact_id, first_name, last_name, gender, phone, email)
+PERSON_CONTACT_ROWS = [
+    ("seed_person_alice", "Alice", "Chen",  GENDER_FEMALE, "+86 13800000001", "alice.chen@example.com"),
+    ("seed_person_bob",   "Bob",   "Liu",   GENDER_MALE,   "+86 13800000002", "bob.liu@example.com"),
+    ("seed_person_cathy", "Cathy", "Wang",  GENDER_FEMALE, "+86 13800000003", "cathy.wang@example.com"),
+    ("seed_person_david", "David", "Zhang", GENDER_MALE,   "+86 13800000004", "david.zhang@example.com"),
+    ("seed_person_eve",   "Eve",   "Sun",   GENDER_FEMALE, "+86 13800000005", "eve.sun@example.com"),
+]
+
 CONTACT_GROUPS = [
     # (id, name, group_type)
     ("seed_group_eng",     "Engineering",  GROUP_TYPE_DEPARTMENT),
     ("seed_group_backend", "Backend Team", GROUP_TYPE_TEAM),
     ("seed_group_sales",   "Sales",        GROUP_TYPE_DEPARTMENT),
+    # Personal-contact folders: only a name, no sub-table fields.
+    ("seed_group_family",  "Family",       GROUP_TYPE_FOLDER),
+    ("seed_group_friends", "Friends",      GROUP_TYPE_FOLDER),
+    ("seed_group_college", "College",      GROUP_TYPE_FOLDER),
 ]
 
 # CTI sub-table rows. Each row's GROUP_ID must match a GROUP_TYPE_DEPARTMENT /
@@ -111,6 +135,12 @@ DEPARTMENT_GROUP_ROWS = [
 # (group_id, team_lead_id, mission)
 TEAM_GROUP_ROWS = [
     ("seed_group_backend", "seed_person_bob", "Own the backend service platform."),
+]
+# (group_id,) -- FolderGroup sub-row carries only GROUP_ID; presence is the marker.
+FOLDER_GROUP_ROWS = [
+    ("seed_group_family",),
+    ("seed_group_friends",),
+    ("seed_group_college",),
 ]
 
 # (relationId, child, parent, relationType)
@@ -126,6 +156,16 @@ CONTACT_RELATIONS = [
     ("seed_rel_dep_cathy",   "seed_person_cathy",  "seed_group_backend", CONTACT_RELATION_DEPARTMENT),
     ("seed_rel_dep_david",   "seed_person_david",  "seed_group_backend", CONTACT_RELATION_DEPARTMENT),
     ("seed_rel_dep_eve",     "seed_person_eve",    "seed_group_sales",   CONTACT_RELATION_DEPARTMENT),
+    # ---- Folders (个人通讯录整理夹) ----
+    # College is a sub-folder of Friends; Cathy and David are filed under it;
+    # Alice and Bob sit directly under Family. Persons can appear in multiple
+    # parents because each row is an independent relation.
+    ("seed_rel_dep_college",     "seed_group_college", "seed_group_friends", CONTACT_RELATION_FOLDER),
+    ("seed_rel_dep_fam_alice",   "seed_person_alice",  "seed_group_family",  CONTACT_RELATION_FOLDER),
+    ("seed_rel_dep_fam_bob",     "seed_person_bob",    "seed_group_family",  CONTACT_RELATION_FOLDER),
+    ("seed_rel_dep_col_cathy",   "seed_person_cathy",  "seed_group_college", CONTACT_RELATION_FOLDER),
+    ("seed_rel_dep_col_david",   "seed_person_david",  "seed_group_college", CONTACT_RELATION_FOLDER),
+    ("seed_rel_dep_fri_eve",     "seed_person_eve",    "seed_group_friends", CONTACT_RELATION_FOLDER),
     # ---- Reporting (上下级) ----
     # Alice (CTO) and Eve (Sales Director) sit at the virtual root, so they have
     # no reporting row of their own here.
@@ -215,11 +255,15 @@ def wipe_seed_rows(cur: sqlite3.Cursor) -> None:
             # Old-schema fallback: no RELATION_ID column yet.
             cur.execute(f"DELETE FROM {T_CONTACT_REL} WHERE CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_USER_CONTACT}  WHERE CONTACT_ID LIKE 'seed_%'")
+    if _table_exists(cur, T_PERSON_CONTACT):
+        cur.execute(f"DELETE FROM {T_PERSON_CONTACT} WHERE CONTACT_ID LIKE 'seed_%'")
     cur.execute(f"DELETE FROM {T_GROUP_CONTACT} WHERE GROUP_ID   LIKE 'seed_%'")
     if _table_exists(cur, T_DEPARTMENT_GROUP):
         cur.execute(f"DELETE FROM {T_DEPARTMENT_GROUP} WHERE GROUP_ID LIKE 'seed_%'")
     if _table_exists(cur, T_TEAM_GROUP):
         cur.execute(f"DELETE FROM {T_TEAM_GROUP}       WHERE GROUP_ID LIKE 'seed_%'")
+    if _table_exists(cur, T_FOLDER_GROUP):
+        cur.execute(f"DELETE FROM {T_FOLDER_GROUP}     WHERE GROUP_ID LIKE 'seed_%'")
     if _table_exists(cur, T_CAMERA_REL):
         if _column_exists(cur, T_CAMERA_REL, "RELATION_ID"):
             cur.execute(f"DELETE FROM {T_CAMERA_REL}    WHERE RELATION_ID LIKE 'seed_%' OR CHILD_ID LIKE 'seed_%' OR PARENT_ID LIKE 'seed_%'")
@@ -236,6 +280,14 @@ def insert_contacts(cur: sqlite3.Cursor) -> None:
         f"INSERT OR REPLACE INTO {T_USER_CONTACT} (CONTACT_ID, CONTACT_FULL_NAME, CONTACT_STATUS) VALUES (?, ?, ?)",
         [(cid, name, STATUS_ACTIVE) for cid, name in CONTACT_PERSONS],
     )
+    if _table_exists(cur, T_PERSON_CONTACT):
+        cur.executemany(
+            f"INSERT OR REPLACE INTO {T_PERSON_CONTACT} "
+            "(CONTACT_ID, FIRST_NAME, LAST_NAME, GENDER, PHONE, EMAIL) VALUES (?, ?, ?, ?, ?, ?)",
+            PERSON_CONTACT_ROWS,
+        )
+    else:
+        print(f"[skip] {T_PERSON_CONTACT} table missing; launch the app once to create the CTI table, then re-run.")
     cur.executemany(
         f"INSERT OR REPLACE INTO {T_GROUP_CONTACT} (GROUP_ID, GROUP_NAME, GROUP_TYPE, CONTACT_STATUS) VALUES (?, ?, ?, ?)",
         [(gid, name, gtype, STATUS_ACTIVE) for gid, name, gtype in CONTACT_GROUPS],
@@ -257,6 +309,13 @@ def insert_contacts(cur: sqlite3.Cursor) -> None:
         )
     else:
         print(f"[skip] {T_TEAM_GROUP} table missing; launch the app once to create CTI tables, then re-run.")
+    if _table_exists(cur, T_FOLDER_GROUP):
+        cur.executemany(
+            f"INSERT OR REPLACE INTO {T_FOLDER_GROUP} (GROUP_ID) VALUES (?)",
+            FOLDER_GROUP_ROWS,
+        )
+    else:
+        print(f"[skip] {T_FOLDER_GROUP} table missing; launch the app once to create CTI tables, then re-run.")
     if _table_exists(cur, T_CONTACT_REL):
         if not _column_exists(cur, T_CONTACT_REL, "RELATION_ID"):
             print(f"[skip] {T_CONTACT_REL} is missing RELATION_ID; skipping relation seed. Launch the app once to let it recreate the table, then re-run this script.")
@@ -327,7 +386,7 @@ def main() -> int:
             return cur.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
 
         print("[done] table row counts:")
-        for t in (T_USER_CONTACT, T_GROUP_CONTACT, T_DEPARTMENT_GROUP, T_TEAM_GROUP, T_CONTACT_REL,
+        for t in (T_USER_CONTACT, T_PERSON_CONTACT, T_GROUP_CONTACT, T_DEPARTMENT_GROUP, T_TEAM_GROUP, T_FOLDER_GROUP, T_CONTACT_REL,
                   T_CAMERA, T_CAMERA_GROUP, T_CAMERA_REL):
             if _table_exists(cur, t):
                 print(f"  {t:30s} {count(t)}")

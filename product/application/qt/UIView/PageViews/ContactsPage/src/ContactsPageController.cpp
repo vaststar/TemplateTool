@@ -203,5 +203,14 @@ void ContactsPageController::onContactRelationsUpdated(const std::vector<commonH
     }
 }
 
-void ContactsPageController::onContactRelationsRemoved(const std::vector<std::string>& v)
-{ if (mOrgTreeModel) mOrgTreeModel->clearParents(v); }
+void ContactsPageController::onContactRelationsRemoved(const std::vector<commonHead::viewModels::model::ContactRelationData>& v)
+{
+    if (!mOrgTreeModel) return;
+    // The UI item model is keyed by childId. The VM payload carries the relation row
+    // (relationId/oldParentId/childId/type) so we only need to forward the childIds to
+    // detach them from their previous parent in the UI tree.
+    std::vector<std::string> childIds;
+    childIds.reserve(v.size());
+    for (const auto& r : v) childIds.push_back(r.childId);
+    mOrgTreeModel->clearParents(childIds);
+}

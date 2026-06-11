@@ -18,12 +18,32 @@ public:
     virtual std::string getPersonName() const override;
     void setPersonName(const std::string& name);
 
+    virtual std::string getFirstName() const override;
+    void setFirstName(const std::string& firstName);
+
+    virtual std::string getLastName() const override;
+    void setLastName(const std::string& lastName);
+
+    virtual Gender getGender() const override;
+    void setGender(Gender gender);
+
+    virtual std::string getPhone() const override;
+    void setPhone(const std::string& phone);
+
+    virtual std::string getEmail() const override;
+    void setEmail(const std::string& email);
+
     virtual IContact::ContactStatus getContactStatus() const override;
     void setContactStatus(IContact::ContactStatus status);
 private:
     mutable std::mutex mDataMutex;
     const std::string mContactId;
     std::string mPersonName;
+    std::string mFirstName;
+    std::string mLastName;
+    Gender      mGender{Gender::Unspecified};
+    std::string mPhone;
+    std::string mEmail;
     IContact::ContactStatus mStatus{IContact::ContactStatus::Active};
 };
 using PersonContactPtr = std::shared_ptr<PersonContact>;
@@ -48,7 +68,7 @@ protected:
     const std::string mContactId;
     IContact::ContactStatus mStatus{IContact::ContactStatus::Active};
     std::string mGroupName;
-    IGroupContact::GroupType mGroupType{IGroupContact::GroupType::Department};
+    IGroupContact::GroupType mGroupType{IGroupContact::GroupType::Folder};
 };
 using GroupContactPtr = std::shared_ptr<GroupContact>;
 
@@ -100,6 +120,21 @@ private:
 };
 using TeamGroupContactPtr = std::shared_ptr<TeamGroupContact>;
 
+// Folder-typed concrete group. Carries no typed fields beyond what GroupContact
+// already provides; exists as a distinct type tag so callers can dynamic_pointer_cast
+// to identify a folder. No DB sub-table.
+class FolderGroupContact: public GroupContact, public IFolderGroup
+{
+public:
+    explicit FolderGroupContact(const std::string& id);
+
+    std::string                 getContactId()      const override { return GroupContact::getContactId(); }
+    std::string                 getGroupName()      const override { return GroupContact::getGroupName(); }
+    IGroupContact::GroupType    getGroupType()      const override { return IGroupContact::GroupType::Folder; }
+    IContact::ContactStatus     getContactStatus()  const override { return GroupContact::getContactStatus(); }
+};
+using FolderGroupContactPtr = std::shared_ptr<FolderGroupContact>;
+
 class ContactRelation: public IContactRelation
 {
 public:
@@ -124,7 +159,7 @@ private:
     const std::string mRelationId;
     const std::string mChildId;
     std::string mParentId;
-    IContactRelation::RelationType mRelationType{IContactRelation::RelationType::Department};
+    IContactRelation::RelationType mRelationType{IContactRelation::RelationType::Folder};
 };
 
 using ContactRelationPtr = std::shared_ptr<ContactRelation>;

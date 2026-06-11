@@ -176,6 +176,9 @@ model::GroupContactArray ContactModel::addGroupContactsInMemory(const model::Gro
         case model::IGroupContact::GroupType::Team:
             impl = std::make_shared<model::TeamGroupContact>(contactId);
             break;
+        case model::IGroupContact::GroupType::Folder:
+            impl = std::make_shared<model::FolderGroupContact>(contactId);
+            break;
         default:
             impl = std::make_shared<model::GroupContact>(contactId);
             impl->setGroupType(g->getGroupType());

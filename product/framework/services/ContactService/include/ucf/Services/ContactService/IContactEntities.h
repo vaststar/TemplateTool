@@ -12,44 +12,51 @@ class SERVICE_EXPORT IContact
 {
 public:
     enum class ContactStatus {
-        Active = 0,      // 活跃
-        Inactive = 1,    // 非活跃（暂时停用）
-        Deleted = 2,     // 已删除（软删除）
-        Archived = 3     // 已归档
+        Active = 0,
+        Inactive = 1,
+        Deleted = 2,
+        Archived = 3
     };
     virtual ~IContact() = default;
 
-    // Returns the unique identifier of the contact, only used for identification purposes.
     virtual std::string getContactId() const = 0;
     virtual ContactStatus getContactStatus() const = 0;
 };
 using IContactPtr = std::shared_ptr<IContact>;
 
-// Represents a contact for a person, which can be used to store personal information.
+// Person contact. Profile fields (first/last/gender/phone/email) live in the
+// PersonContact CTI sub-table and may be empty for legacy rows without a sub-row.
 class SERVICE_EXPORT IPersonContact: public IContact
 {
 public:
+    enum class Gender {
+        Unspecified = 0,
+        Male        = 1,
+        Female      = 2,
+        Other       = 3,
+    };
+
     virtual std::string getPersonName() const = 0;
+    virtual std::string getFirstName()  const = 0;
+    virtual std::string getLastName()   const = 0;
+    virtual Gender      getGender()     const = 0;
+    virtual std::string getPhone()      const = 0;
+    virtual std::string getEmail()      const = 0;
 };
 using IPersonContactPtr  = std::shared_ptr<IPersonContact>;
 using PersonContactArray = std::vector<IPersonContactPtr>;
 
-// Represents a contact for a group, which can be used to store group information.
-// A group must declare its semantic kind via GroupType so that views (org chart, project
-// list, etc.) can filter for only the groups they care about.
-//
-// CTI (Class Table Inheritance): IGroupContact is the common base; concrete typed
-// variants (IDepartmentGroup, ITeamGroup) extend it with type-specific fields and
-// live in their own sub-tables. Project / Custom currently have no typed fields and
-// are represented by plain IGroupContact instances.
+// Group contact base. Concrete variants (IDepartmentGroup, ITeamGroup, IFolderGroup)
+// add typed fields via their own CTI sub-tables; Project / Custom have no sub-row.
 class SERVICE_EXPORT IGroupContact: public IContact
 {
 public:
     enum class GroupType {
-        Department = 0, // 部门：组织架构中的一个部门
-        Project    = 1, // 项目组：一个具体项目
-        Team       = 2, // 临时/职能小组
-        Custom     = 3, // 用户自定义分组
+        Folder     = 0, // 整理夹
+        Department = 1, // 部门
+        Project    = 2, // 项目组
+        Team       = 3, // 临时/职能小组
+        Custom     = 4, // 用户自定义
     };
     virtual std::string getGroupName() const = 0;
     virtual GroupType   getGroupType() const = 0;
@@ -57,46 +64,46 @@ public:
 using IGroupContactPtr  = std::shared_ptr<IGroupContact>;
 using GroupContactArray = std::vector<IGroupContactPtr>;
 
-// Department-typed group. Carries org-chart fields stored in its own sub-table.
+// Department-typed group.
 class SERVICE_EXPORT IDepartmentGroup: public IGroupContact
 {
 public:
-    // Contact id of the person managing this department; empty if unassigned.
     virtual std::string getManagerId() const = 0;
-    // Authorised / target headcount for this department; 0 if unspecified.
     virtual int         getHeadcount() const = 0;
 };
 using IDepartmentGroupPtr = std::shared_ptr<IDepartmentGroup>;
 
-// Team-typed group. Carries team-charter fields stored in its own sub-table.
+// Team-typed group.
 class SERVICE_EXPORT ITeamGroup: public IGroupContact
 {
 public:
-    // Contact id of the team lead; empty if unassigned.
     virtual std::string getTeamLeadId() const = 0;
-    // Free-form short statement of what the team does.
     virtual std::string getMission()    const = 0;
 };
 using ITeamGroupPtr = std::shared_ptr<ITeamGroup>;
+
+// Folder-typed group. Marker interface; presence of the FolderGroup sub-row is
+// the only typed state today.
+class SERVICE_EXPORT IFolderGroup: public IGroupContact
+{
+};
+using IFolderGroupPtr = std::shared_ptr<IFolderGroup>;
 
 class SERVICE_EXPORT IContactRelation
 {
 public:
     enum class RelationType {
-        Department    = 0,  // 部门关系：员工属于部门
-        Reporting     = 1,  // 汇报关系：下级向上级汇报
-        Project       = 2,  // 项目关系：项目组成员
-        Mentor        = 3,  // 导师关系：导师-学员
-        Collaboration = 4,  // 协作关系：跨部门协作
+        Folder        = 0, // 整理夹成员关系
+        Department    = 1, // 部门关系
+        Reporting     = 2, // 汇报关系
+        Project       = 3, // 项目关系
+        Mentor        = 4, // 导师关系
+        Collaboration = 5, // 协作关系
     };
     virtual ~IContactRelation() = default;
 
-    // Stable surrogate primary key for this relation row. The triple
-    // (childId, parentId, relationType) is a UNIQUE business key, but the row is
-    // identified by its own id so that updates (e.g. moving a child to a new parent)
-    // are real UPDATE operations rather than DELETE + INSERT. May be empty when a
-    // caller submits a freshly-created relation through addContactRelations(); the
-    // service then assigns a UUID before persisting.
+    // Surrogate primary key. May be empty on freshly-created relations; the
+    // service assigns a UUID before persisting.
     virtual std::string getRelationId() const = 0;
 
     virtual std::string getChildId() const = 0;

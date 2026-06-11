@@ -314,19 +314,6 @@ void ContactTree::setRelation(const ContactRelationData& relation)
     childNode->setRelationId(relation.id);
 }
 
-void ContactTree::clearRelation(const std::string& childId)
-{
-    auto itChild = m_nodes.find(childId);
-    if (itChild == m_nodes.end() || !itChild->second)
-    {
-        return;
-    }
-    auto childNode = itChild->second;
-    detachFromParent(childNode);
-    childNode->setRelationId({});
-    m_root->addChild(childNode);
-}
-
 // ===== Batch variants =====
 
 void ContactTree::addNodes(const std::vector<ContactNodeData>& datas)
@@ -362,14 +349,6 @@ void ContactTree::setRelations(const std::vector<ContactRelationData>& relations
     }
 }
 
-void ContactTree::clearRelations(const std::vector<std::string>& childIds)
-{
-    for (const auto& id : childIds)
-    {
-        clearRelation(id);
-    }
-}
-
 // ===== Relation row identity lookups =====
 
 std::string ContactTree::getRelationIdByChildId(const std::string& childId) const
@@ -382,21 +361,52 @@ std::string ContactTree::getRelationIdByChildId(const std::string& childId) cons
     return it->second->getRelationId();
 }
 
-std::string ContactTree::takeChildIdByRelationId(const std::string& relationId)
+std::vector<RemovedRelationInfo>
+ContactTree::removeRelationsByIds(const std::vector<std::string>& relationIds)
 {
-    if (relationId.empty())
+    std::vector<RemovedRelationInfo> removed;
+    removed.reserve(relationIds.size());
+    for (const auto& rid : relationIds)
     {
-        return {};
-    }
-    for (const auto& [childId, node] : m_nodes)
-    {
-        if (node && node->getRelationId() == relationId)
+        if (rid.empty())
         {
-            node->setRelationId({});
-            return childId;
+            continue;
         }
+        // O(N) scan over m_nodes; relationIds live only on tree nodes today and the
+        // slice size is small. Add a reverse map later if a profile shows it matters.
+        std::shared_ptr<ContactTreeNode> childNode;
+        std::string                       childId;
+        for (const auto& [cid, node] : m_nodes)
+        {
+            if (node && node->getRelationId() == rid)
+            {
+                childId   = cid;
+                childNode = node;
+                break;
+            }
+        }
+        if (!childNode)
+        {
+            continue;  // sibling-slice relationId, not in this tree
+        }
+
+        // Capture parentId before mutating the tree.
+        std::string oldParentId;
+        if (auto p = std::dynamic_pointer_cast<ContactTreeNode>(childNode->getParent().lock()))
+        {
+            if (p != m_root)
+            {
+                oldParentId = p->getNodeData().id;
+            }
+        }
+
+        detachFromParent(childNode);
+        childNode->setRelationId({});
+        m_root->addChild(childNode);
+
+        removed.push_back({rid, std::move(childId), std::move(oldParentId)});
     }
-    return {};
+    return removed;
 }
 
 }

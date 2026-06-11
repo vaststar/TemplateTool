@@ -1,5 +1,10 @@
 #include "ContactDBAccess.h"
 
+#include <atomic>
+#include <mutex>
+#include <sstream>
+#include <unordered_map>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
@@ -66,7 +71,17 @@ void ContactDBAccess::loadPersonContacts(LoadPersonsCallback callback) const
         return;
     }
 
-    dataWarehouseService->fetchFromDatabase(
+    struct LoadCtx
+    {
+        std::shared_ptr<IDataWarehouseService> dws;
+        std::unordered_map<std::string, model::PersonContactPtr> personsById;
+        LoadPersonsCallback callback;
+    };
+    auto ctx = std::make_shared<LoadCtx>();
+    ctx->dws      = dataWarehouseService;
+    ctx->callback = std::move(callback);
+
+    ctx->dws->fetchFromDatabase(
         dbId,
         db::schema::UserContactTable::TableName,
         {
@@ -75,11 +90,14 @@ void ContactDBAccess::loadPersonContacts(LoadPersonsCallback callback) const
             db::schema::UserContactTable::ContactStatusField
         },
         {},
-        [cb = std::move(callback)](const model::DatabaseDataRecords& results)
+        [ctx, dbId](const model::DatabaseDataRecords& mainRows)
         {
-            model::PersonContactArray persons;
-            persons.reserve(results.size());
-            for (const auto& record : results)
+            {
+                std::ostringstream ids;
+                for (const auto& r : mainRows) ids << r.getColumnData(db::schema::UserContactTable::ContactIdField).getStringValue() << ',';
+                SERVICE_LOG_DEBUG("loadPersonContacts UserContact rows=" << mainRows.size() << " ids=[" << ids.str() << "]");
+            }
+            for (const auto& record : mainRows)
             {
                 const std::string contactId = record.getColumnData(db::schema::UserContactTable::ContactIdField).getStringValue();
                 const std::string name      = record.getColumnData(db::schema::UserContactTable::ContactFullNameField).getStringValue();
@@ -91,13 +109,56 @@ void ContactDBAccess::loadPersonContacts(LoadPersonsCallback callback) const
                 auto person = std::make_shared<model::PersonContact>(contactId);
                 person->setPersonName(name);
                 person->setContactStatus(status);
-                persons.push_back(person);
+                ctx->personsById.emplace(contactId, person);
             }
-            SERVICE_LOG_DEBUG("DBAccess loaded " << persons.size() << " person contacts");
-            if (cb)
-            {
-                cb(persons);
-            }
+
+            ctx->dws->fetchFromDatabase(
+                dbId,
+                db::schema::PersonContactTable::TableName,
+                {
+                    db::schema::PersonContactTable::ContactIdField,
+                    db::schema::PersonContactTable::FirstNameField,
+                    db::schema::PersonContactTable::LastNameField,
+                    db::schema::PersonContactTable::GenderField,
+                    db::schema::PersonContactTable::PhoneField,
+                    db::schema::PersonContactTable::EmailField
+                },
+                {},
+                [ctx](const model::DatabaseDataRecords& subRows)
+                {
+                    {
+                        std::ostringstream ids;
+                        for (const auto& r : subRows) ids << r.getColumnData(db::schema::PersonContactTable::ContactIdField).getStringValue() << ',';
+                        SERVICE_LOG_DEBUG("loadPersonContacts PersonContact rows=" << subRows.size() << " ids=[" << ids.str() << "]");
+                    }
+                    for (const auto& record : subRows)
+                    {
+                        const std::string contactId = record.getColumnData(db::schema::PersonContactTable::ContactIdField).getStringValue();
+                        auto it = ctx->personsById.find(contactId);
+                        if (it == ctx->personsById.end())
+                        {
+                            SERVICE_LOG_WARN("PersonContact orphan sub-row: no matching UserContact main row for CONTACT_ID=" << contactId);
+                            continue;
+                        }
+                        it->second->setFirstName(record.getColumnData(db::schema::PersonContactTable::FirstNameField).getStringValue());
+                        it->second->setLastName (record.getColumnData(db::schema::PersonContactTable::LastNameField ).getStringValue());
+                        it->second->setGender(static_cast<model::IPersonContact::Gender>(
+                            record.getColumnData(db::schema::PersonContactTable::GenderField).getIntValue()));
+                        it->second->setPhone(record.getColumnData(db::schema::PersonContactTable::PhoneField).getStringValue());
+                        it->second->setEmail(record.getColumnData(db::schema::PersonContactTable::EmailField).getStringValue());
+                    }
+
+                    model::PersonContactArray persons;
+                    persons.reserve(ctx->personsById.size());
+                    for (auto& [_, p] : ctx->personsById)
+                    {
+                        persons.push_back(p);
+                    }
+                    if (ctx->callback)
+                    {
+                        ctx->callback(persons);
+                    }
+                });
         });
 }
 
@@ -119,13 +180,23 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
         return;
     }
 
-    // CTI load: 3 sequential fetches (main + 2 sub-tables) merged in memory.
-    // Fetch callbacks are synchronous inside fetchFromDatabase, so this chain
-    // resolves before loadGroupContacts() returns.
-    auto groupsById = std::make_shared<std::unordered_map<std::string, model::GroupContactPtr>>();
+    // Sub-tables are independent of each other (each merges into ctx->groupsById
+    // by GROUP_ID); they only depend on the main fetch having seeded the map.
+    // So: main fetch is a chain step, the 3 sub-table fetches fan out in parallel,
+    // and the last one to complete (atomic counter) assembles + emits.
+    struct LoadCtx
+    {
+        std::shared_ptr<IDataWarehouseService> dws;
+        std::mutex                                                mutex;  // protects groupsById against parallel sub-table merges
+        std::unordered_map<std::string, model::GroupContactPtr>   groupsById;
+        std::atomic<int>                                          remainingSubTables{0};
+        LoadGroupsCallback                                        callback;
+    };
+    auto ctx = std::make_shared<LoadCtx>();
+    ctx->dws      = dataWarehouseService;
+    ctx->callback = std::move(callback);
 
-    // 1) Main GroupContact rows: create the right concrete subclass per row.
-    dataWarehouseService->fetchFromDatabase(
+    ctx->dws->fetchFromDatabase(
         dbId,
         db::schema::GroupContactTable::TableName,
         {
@@ -135,9 +206,15 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
             db::schema::GroupContactTable::ContactStatusField
         },
         {},
-        [groupsById](const model::DatabaseDataRecords& results)
+        [ctx, dbId](const model::DatabaseDataRecords& mainRows)
         {
-            for (const auto& record : results)
+            {
+                std::ostringstream ids;
+                for (const auto& r : mainRows) ids << r.getColumnData(db::schema::GroupContactTable::GroupIdField).getStringValue() << ',';
+                SERVICE_LOG_DEBUG("loadGroupContacts GroupContact rows=" << mainRows.size() << " ids=[" << ids.str() << "]");
+            }
+            // Single-threaded so far: only this callback writes groupsById.
+            for (const auto& record : mainRows)
             {
                 const std::string groupId = record.getColumnData(db::schema::GroupContactTable::GroupIdField).getStringValue();
                 const std::string name    = record.getColumnData(db::schema::GroupContactTable::GroupNameField).getStringValue();
@@ -158,94 +235,163 @@ void ContactDBAccess::loadGroupContacts(LoadGroupsCallback callback) const
                 case model::IGroupContact::GroupType::Team:
                     group = std::make_shared<model::TeamGroupContact>(groupId);
                     break;
+                case model::IGroupContact::GroupType::Folder:
+                    group = std::make_shared<model::FolderGroupContact>(groupId);
+                    break;
                 default:
-                    // Project / Custom: no typed sub-table yet, plain base row.
                     group = std::make_shared<model::GroupContact>(groupId);
                     group->setGroupType(type);
                     break;
                 }
                 group->setGroupName(name);
                 group->setContactStatus(status);
-                groupsById->emplace(groupId, group);
+                ctx->groupsById.emplace(groupId, group);
             }
-        });
 
-    // 2) DepartmentGroup sub-rows: merge typed fields into matching main rows.
-    dataWarehouseService->fetchFromDatabase(
-        dbId,
-        db::schema::DepartmentGroupTable::TableName,
-        {
-            db::schema::DepartmentGroupTable::GroupIdField,
-            db::schema::DepartmentGroupTable::ManagerIdField,
-            db::schema::DepartmentGroupTable::HeadcountField
-        },
-        {},
-        [groupsById](const model::DatabaseDataRecords& results)
-        {
-            for (const auto& record : results)
-            {
-                const std::string groupId = record.getColumnData(db::schema::DepartmentGroupTable::GroupIdField).getStringValue();
-                auto it = groupsById->find(groupId);
-                if (it == groupsById->end())
-                {
-                    SERVICE_LOG_WARN("DepartmentGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
-                    continue;
-                }
-                auto dept = std::dynamic_pointer_cast<model::DepartmentGroupContact>(it->second);
-                if (!dept)
-                {
-                    SERVICE_LOG_WARN("DepartmentGroup row " << groupId << " does not match a Department-typed main row; ignored");
-                    continue;
-                }
-                dept->setManagerId(record.getColumnData(db::schema::DepartmentGroupTable::ManagerIdField).getStringValue());
-                dept->setHeadcount(static_cast<int>(record.getColumnData(db::schema::DepartmentGroupTable::HeadcountField).getIntValue()));
-            }
-        });
+            // Fan out: kick off the 3 typed sub-table fetches in parallel. The last
+            // one to finish (atomic counter hits 0) assembles + emits.
+            constexpr int kSubTableCount = 3;
+            ctx->remainingSubTables.store(kSubTableCount, std::memory_order_release);
 
-    // 3) TeamGroup sub-rows.
-    dataWarehouseService->fetchFromDatabase(
-        dbId,
-        db::schema::TeamGroupTable::TableName,
-        {
-            db::schema::TeamGroupTable::GroupIdField,
-            db::schema::TeamGroupTable::TeamLeadIdField,
-            db::schema::TeamGroupTable::MissionField
-        },
-        {},
-        [groupsById](const model::DatabaseDataRecords& results)
-        {
-            for (const auto& record : results)
-            {
-                const std::string groupId = record.getColumnData(db::schema::TeamGroupTable::GroupIdField).getStringValue();
-                auto it = groupsById->find(groupId);
-                if (it == groupsById->end())
+            auto emitIfDone = [ctx]() {
+                // fetch_sub returns the value BEFORE the decrement; "was 1" means
+                // we just brought it to 0 and are the last completion.
+                if (ctx->remainingSubTables.fetch_sub(1, std::memory_order_acq_rel) != 1)
                 {
-                    SERVICE_LOG_WARN("TeamGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
-                    continue;
+                    return;
                 }
-                auto team = std::dynamic_pointer_cast<model::TeamGroupContact>(it->second);
-                if (!team)
+                model::GroupContactArray groups;
                 {
-                    SERVICE_LOG_WARN("TeamGroup row " << groupId << " does not match a Team-typed main row; ignored");
-                    continue;
+                    std::scoped_lock lk(ctx->mutex);
+                    groups.reserve(ctx->groupsById.size());
+                    for (auto& [_, g] : ctx->groupsById)
+                    {
+                        groups.push_back(g);
+                    }
                 }
-                team->setTeamLeadId(record.getColumnData(db::schema::TeamGroupTable::TeamLeadIdField).getStringValue());
-                team->setMission(record.getColumnData(db::schema::TeamGroupTable::MissionField).getStringValue());
-            }
-        });
+                if (ctx->callback)
+                {
+                    ctx->callback(groups);
+                }
+            };
 
-    // 4) Hand the merged snapshot back to the caller.
-    model::GroupContactArray groups;
-    groups.reserve(groupsById->size());
-    for (auto& [_, g] : *groupsById)
-    {
-        groups.push_back(g);
-    }
-    SERVICE_LOG_DEBUG("DBAccess loaded " << groups.size() << " group contacts (CTI merged)");
-    if (callback)
-    {
-        callback(groups);
-    }
+            // --- Department ---
+            ctx->dws->fetchFromDatabase(
+                dbId,
+                db::schema::DepartmentGroupTable::TableName,
+                {
+                    db::schema::DepartmentGroupTable::GroupIdField,
+                    db::schema::DepartmentGroupTable::ManagerIdField,
+                    db::schema::DepartmentGroupTable::HeadcountField
+                },
+                {},
+                [ctx, emitIfDone](const model::DatabaseDataRecords& deptRows)
+                {
+                    {
+                        std::ostringstream ids;
+                        for (const auto& r : deptRows) ids << r.getColumnData(db::schema::DepartmentGroupTable::GroupIdField).getStringValue() << ',';
+                        SERVICE_LOG_DEBUG("loadGroupContacts DepartmentGroup rows=" << deptRows.size() << " ids=[" << ids.str() << "]");
+                    }
+                    {
+                        std::scoped_lock lk(ctx->mutex);
+                        for (const auto& record : deptRows)
+                        {
+                            const std::string groupId = record.getColumnData(db::schema::DepartmentGroupTable::GroupIdField).getStringValue();
+                            auto it = ctx->groupsById.find(groupId);
+                            if (it == ctx->groupsById.end())
+                            {
+                                SERVICE_LOG_WARN("DepartmentGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
+                                continue;
+                            }
+                            auto dept = std::dynamic_pointer_cast<model::DepartmentGroupContact>(it->second);
+                            if (!dept)
+                            {
+                                SERVICE_LOG_WARN("DepartmentGroup row " << groupId << " does not match a Department-typed main row; ignored");
+                                continue;
+                            }
+                            dept->setManagerId(record.getColumnData(db::schema::DepartmentGroupTable::ManagerIdField).getStringValue());
+                            dept->setHeadcount(static_cast<int>(record.getColumnData(db::schema::DepartmentGroupTable::HeadcountField).getIntValue()));
+                        }
+                    }
+                    emitIfDone();
+                });
+
+            // --- Team ---
+            ctx->dws->fetchFromDatabase(
+                dbId,
+                db::schema::TeamGroupTable::TableName,
+                {
+                    db::schema::TeamGroupTable::GroupIdField,
+                    db::schema::TeamGroupTable::TeamLeadIdField,
+                    db::schema::TeamGroupTable::MissionField
+                },
+                {},
+                [ctx, emitIfDone](const model::DatabaseDataRecords& teamRows)
+                {
+                    {
+                        std::ostringstream ids;
+                        for (const auto& r : teamRows) ids << r.getColumnData(db::schema::TeamGroupTable::GroupIdField).getStringValue() << ',';
+                        SERVICE_LOG_DEBUG("loadGroupContacts TeamGroup rows=" << teamRows.size() << " ids=[" << ids.str() << "]");
+                    }
+                    {
+                        std::scoped_lock lk(ctx->mutex);
+                        for (const auto& record : teamRows)
+                        {
+                            const std::string groupId = record.getColumnData(db::schema::TeamGroupTable::GroupIdField).getStringValue();
+                            auto it = ctx->groupsById.find(groupId);
+                            if (it == ctx->groupsById.end())
+                            {
+                                SERVICE_LOG_WARN("TeamGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
+                                continue;
+                            }
+                            auto team = std::dynamic_pointer_cast<model::TeamGroupContact>(it->second);
+                            if (!team)
+                            {
+                                SERVICE_LOG_WARN("TeamGroup row " << groupId << " does not match a Team-typed main row; ignored");
+                                continue;
+                            }
+                            team->setTeamLeadId(record.getColumnData(db::schema::TeamGroupTable::TeamLeadIdField).getStringValue());
+                            team->setMission(record.getColumnData(db::schema::TeamGroupTable::MissionField).getStringValue());
+                        }
+                    }
+                    emitIfDone();
+                });
+
+            // --- Folder (marker sub-table; only validates symmetry) ---
+            ctx->dws->fetchFromDatabase(
+                dbId,
+                db::schema::FolderGroupTable::TableName,
+                {
+                    db::schema::FolderGroupTable::GroupIdField
+                },
+                {},
+                [ctx, emitIfDone](const model::DatabaseDataRecords& folderRows)
+                {
+                    {
+                        std::ostringstream ids;
+                        for (const auto& r : folderRows) ids << r.getColumnData(db::schema::FolderGroupTable::GroupIdField).getStringValue() << ',';
+                        SERVICE_LOG_DEBUG("loadGroupContacts FolderGroup rows=" << folderRows.size() << " ids=[" << ids.str() << "]");
+                    }
+                    {
+                        std::scoped_lock lk(ctx->mutex);
+                        for (const auto& record : folderRows)
+                        {
+                            const std::string groupId = record.getColumnData(db::schema::FolderGroupTable::GroupIdField).getStringValue();
+                            auto it = ctx->groupsById.find(groupId);
+                            if (it == ctx->groupsById.end())
+                            {
+                                SERVICE_LOG_WARN("FolderGroup orphan sub-row: no matching GroupContact main row for GROUP_ID=" << groupId);
+                                continue;
+                            }
+                            if (!std::dynamic_pointer_cast<model::FolderGroupContact>(it->second))
+                            {
+                                SERVICE_LOG_WARN("FolderGroup row " << groupId << " does not match a Folder-typed main row; ignored");
+                            }
+                        }
+                    }
+                    emitIfDone();
+                });
+        });
 }
 
 void ContactDBAccess::loadContactRelations(LoadRelationsCallback callback) const
@@ -337,15 +483,55 @@ void ContactDBAccess::insertPersonContacts(const model::PersonContactArray& pers
             static_cast<int>(p->getContactStatus())
         });
     }
-    dataWarehouseService->insertIntoDatabase(
-        dbId,
-        db::schema::UserContactTable::TableName,
+
+    // Profile sub-rows: one per person. Always written (even if all fields are
+    // blank) so loadPersonContacts can rely on the sub-row existing for every
+    // person added via this code path.
+    model::ListOfDBValues profileValues;
+    profileValues.reserve(persons.size());
+    for (const auto& p : persons)
+    {
+        profileValues.emplace_back(model::DBDataValues{
+            p->getContactId(),
+            p->getFirstName(),
+            p->getLastName(),
+            static_cast<int>(p->getGender()),
+            p->getPhone(),
+            p->getEmail()
+        });
+    }
+
+    // CTI write: main + sub rows must commit together.
+    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+        if (!dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::UserContactTable::TableName,
+                {
+                    db::schema::UserContactTable::ContactIdField,
+                    db::schema::UserContactTable::ContactFullNameField,
+                    db::schema::UserContactTable::ContactStatusField
+                },
+                values))
         {
-            db::schema::UserContactTable::ContactIdField,
-            db::schema::UserContactTable::ContactFullNameField,
-            db::schema::UserContactTable::ContactStatusField
-        },
-        values);
+            return false;
+        }
+        if (!dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::PersonContactTable::TableName,
+                {
+                    db::schema::PersonContactTable::ContactIdField,
+                    db::schema::PersonContactTable::FirstNameField,
+                    db::schema::PersonContactTable::LastNameField,
+                    db::schema::PersonContactTable::GenderField,
+                    db::schema::PersonContactTable::PhoneField,
+                    db::schema::PersonContactTable::EmailField
+                },
+                profileValues))
+        {
+            return false;
+        }
+        return true;
+    });
 }
 
 void ContactDBAccess::updatePersonContact(const model::IPersonContactPtr& person) const
@@ -370,21 +556,49 @@ void ContactDBAccess::updatePersonContact(const model::IPersonContactPtr& person
         return;
     }
 
-    model::DBDataValues values{
-        person->getPersonName(),
-        static_cast<int>(person->getContactStatus())
-    };
-    dataWarehouseService->updateInDatabase(
-        dbId,
-        db::schema::UserContactTable::TableName,
+    // CTI update: main row UPDATE + sub-row UPSERT, atomically. The sub-row uses
+    // insertIntoDatabase (INSERT OR REPLACE) deliberately so that legacy persons
+    // whose profile sub-row does not exist yet get one created on first edit.
+    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+        model::DBDataValues mainValues{
+            person->getPersonName(),
+            static_cast<int>(person->getContactStatus())
+        };
+        if (dataWarehouseService->updateInDatabase(
+                dbId,
+                db::schema::UserContactTable::TableName,
+                {
+                    db::schema::UserContactTable::ContactFullNameField,
+                    db::schema::UserContactTable::ContactStatusField
+                },
+                mainValues,
+                {
+                    {db::schema::UserContactTable::ContactIdField, person->getContactId(), model::DBOperatorType::Equal}
+                }) < 0)
         {
-            db::schema::UserContactTable::ContactFullNameField,
-            db::schema::UserContactTable::ContactStatusField
-        },
-        values,
-        {
-            {db::schema::UserContactTable::ContactIdField, person->getContactId(), model::DBOperatorType::Equal}
-        });
+            return false;
+        }
+
+        return dataWarehouseService->insertIntoDatabase(
+            dbId,
+            db::schema::PersonContactTable::TableName,
+            {
+                db::schema::PersonContactTable::ContactIdField,
+                db::schema::PersonContactTable::FirstNameField,
+                db::schema::PersonContactTable::LastNameField,
+                db::schema::PersonContactTable::GenderField,
+                db::schema::PersonContactTable::PhoneField,
+                db::schema::PersonContactTable::EmailField
+            },
+            model::ListOfDBValues{model::DBDataValues{
+                person->getContactId(),
+                person->getFirstName(),
+                person->getLastName(),
+                static_cast<int>(person->getGender()),
+                person->getPhone(),
+                person->getEmail()
+            }});
+    });
 }
 
 void ContactDBAccess::deletePersonContact(const std::string& contactId) const
@@ -405,12 +619,21 @@ void ContactDBAccess::deletePersonContact(const std::string& contactId) const
         return;
     }
 
-    dataWarehouseService->deleteFromDatabase(
-        dbId,
-        db::schema::UserContactTable::TableName,
+    // CTI delete: main + sub rows atomically. Deleting a sub-row that does not
+    // exist is a harmless no-op.
+    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+        if (dataWarehouseService->deleteFromDatabase(
+                dbId,
+                db::schema::UserContactTable::TableName,
+                {{db::schema::UserContactTable::ContactIdField, contactId, model::DBOperatorType::Equal}}) < 0)
         {
-            {db::schema::UserContactTable::ContactIdField, contactId, model::DBOperatorType::Equal}
-        });
+            return false;
+        }
+        return dataWarehouseService->deleteFromDatabase(
+                   dbId,
+                   db::schema::PersonContactTable::TableName,
+                   {{db::schema::PersonContactTable::ContactIdField, contactId, model::DBOperatorType::Equal}}) >= 0;
+    });
 }
 
 void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups) const
@@ -451,6 +674,7 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
     // Split typed sub-rows by concrete kind.
     model::ListOfDBValues deptValues;
     model::ListOfDBValues teamValues;
+    model::ListOfDBValues folderValues;
     for (const auto& g : groups)
     {
         if (auto dept = std::dynamic_pointer_cast<model::IDepartmentGroup>(g))
@@ -467,6 +691,13 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
                 team->getContactId(),
                 team->getTeamLeadId(),
                 team->getMission()
+            });
+        }
+        else if (auto folder = std::dynamic_pointer_cast<model::IFolderGroup>(g))
+        {
+            // Folder sub-row carries only GROUP_ID; presence is the marker.
+            folderValues.emplace_back(model::DBDataValues{
+                folder->getContactId()
             });
         }
         // Project / Custom: no sub-row.
@@ -508,6 +739,16 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
                     db::schema::TeamGroupTable::MissionField
                 },
                 teamValues))
+        {
+            return false;
+        }
+        if (!folderValues.empty() && !dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::FolderGroupTable::TableName,
+                {
+                    db::schema::FolderGroupTable::GroupIdField
+                },
+                folderValues))
         {
             return false;
         }
@@ -592,6 +833,20 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
                     team->getContactId(), team->getTeamLeadId(), team->getMission()
                 }});
         }
+        if (auto folder = std::dynamic_pointer_cast<model::IFolderGroup>(group))
+        {
+            // Folder sub-row carries only GROUP_ID; upsert so a previously
+            // sub-row-less folder gains its marker row on first update.
+            return dataWarehouseService->insertIntoDatabase(
+                dbId,
+                db::schema::FolderGroupTable::TableName,
+                {
+                    db::schema::FolderGroupTable::GroupIdField
+                },
+                model::ListOfDBValues{model::DBDataValues{
+                    folder->getContactId()
+                }});
+        }
         return true;  // Project / Custom: main-only update.
     });
 }
@@ -614,7 +869,7 @@ void ContactDBAccess::deleteGroupContact(const std::string& contactId) const
         return;
     }
 
-    // CTI delete: remove from main + both sub-tables atomically. We don't read the
+    // CTI delete: remove from main + all sub-tables atomically. We don't read the
     // type first; deleting from a sub-table that has no row is a harmless no-op.
     dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         const auto where = model::ListsOfWhereCondition{
@@ -636,6 +891,13 @@ void ContactDBAccess::deleteGroupContact(const std::string& contactId) const
                 dbId,
                 db::schema::TeamGroupTable::TableName,
                 {{db::schema::TeamGroupTable::GroupIdField, contactId, model::DBOperatorType::Equal}}) < 0)
+        {
+            return false;
+        }
+        if (dataWarehouseService->deleteFromDatabase(
+                dbId,
+                db::schema::FolderGroupTable::TableName,
+                {{db::schema::FolderGroupTable::GroupIdField, contactId, model::DBOperatorType::Equal}}) < 0)
         {
             return false;
         }

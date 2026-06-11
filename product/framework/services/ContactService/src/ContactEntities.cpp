@@ -30,6 +30,66 @@ void PersonContact::setPersonName(const std::string& name)
     mPersonName = name;
 }
 
+std::string PersonContact::getFirstName() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mFirstName;
+}
+
+void PersonContact::setFirstName(const std::string& firstName)
+{
+    std::scoped_lock lock(mDataMutex);
+    mFirstName = firstName;
+}
+
+std::string PersonContact::getLastName() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mLastName;
+}
+
+void PersonContact::setLastName(const std::string& lastName)
+{
+    std::scoped_lock lock(mDataMutex);
+    mLastName = lastName;
+}
+
+IPersonContact::Gender PersonContact::getGender() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mGender;
+}
+
+void PersonContact::setGender(Gender gender)
+{
+    std::scoped_lock lock(mDataMutex);
+    mGender = gender;
+}
+
+std::string PersonContact::getPhone() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mPhone;
+}
+
+void PersonContact::setPhone(const std::string& phone)
+{
+    std::scoped_lock lock(mDataMutex);
+    mPhone = phone;
+}
+
+std::string PersonContact::getEmail() const
+{
+    std::scoped_lock lock(mDataMutex);
+    return mEmail;
+}
+
+void PersonContact::setEmail(const std::string& email)
+{
+    std::scoped_lock lock(mDataMutex);
+    mEmail = email;
+}
+
 IContact::ContactStatus PersonContact::getContactStatus() const
 {
     std::scoped_lock lock(mDataMutex);
@@ -148,6 +208,13 @@ void TeamGroupContact::setMission(const std::string& mission)
 {
     std::scoped_lock lock(mDataMutex);
     mMission = mission;
+}
+
+// ===== FolderGroupContact =====
+
+FolderGroupContact::FolderGroupContact(const std::string& id)
+    : GroupContact(id)
+{
 }
 
 ContactRelation::ContactRelation(const std::string& relationId,

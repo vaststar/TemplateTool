@@ -17,20 +17,22 @@ enum class COMMONHEAD_EXPORT ContactNodeType
 // across the boundary.
 enum class COMMONHEAD_EXPORT GroupType
 {
-    Department = 0,
-    Project    = 1,
-    Team       = 2,
-    Custom     = 3,
+    Folder     = 0,
+    Department = 1,
+    Project    = 2,
+    Team       = 3,
+    Custom     = 4,
 };
 
 // Mirrors ucf::service::model::IContactRelation::RelationType.
 enum class COMMONHEAD_EXPORT RelationType
 {
-    Department    = 0,
-    Reporting     = 1,
-    Project       = 2,
-    Mentor        = 3,
-    Collaboration = 4,
+    Folder        = 0,
+    Department    = 1,
+    Reporting     = 2,
+    Project       = 3,
+    Mentor        = 4,
+    Collaboration = 5,
 };
 
 struct COMMONHEAD_EXPORT ContactNodeData
@@ -39,8 +41,8 @@ struct COMMONHEAD_EXPORT ContactNodeData
     std::string     displayName;
     ContactNodeType type;
     // Only meaningful when type == Group. For Person nodes the value is unused
-    // (default-initialized to Department).
-    GroupType       groupType{GroupType::Department};
+    // (default-initialized to Folder).
+    GroupType       groupType{GroupType::Folder};
 };
 
 struct COMMONHEAD_EXPORT ContactRelationData
@@ -50,7 +52,18 @@ struct COMMONHEAD_EXPORT ContactRelationData
     std::string  id;
     std::string  parentId;
     std::string  childId;
-    RelationType type{RelationType::Department};
+    RelationType type{RelationType::Folder};
+};
+
+// Returned by ContactTree::removeRelationsByIds. Carries the ids the tree needed to
+// re-locate the node, plus the parentId captured before the detach so downstream
+// consumers (UI item models, callback payloads, ...) can describe the edge that was
+// removed without having to query a now-mutated tree.
+struct COMMONHEAD_EXPORT RemovedRelationInfo
+{
+    std::string relationId;
+    std::string childId;
+    std::string oldParentId;  // empty if the child was at the virtual root
 };
 
 enum class COMMONHEAD_EXPORT ContactDirectoryLoadError

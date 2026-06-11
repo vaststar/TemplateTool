@@ -35,6 +35,7 @@ public:
     virtual std::string getViewModelName() const override;
     virtual model::ContactTreePtr getContactList() const override;
     model::RelationType getRelationType() const override;
+    void setRelationType(model::RelationType type) override;
     bool isContactDirectoryReady() const override;
     void selectContact(const std::string& contactId) override;
     bool canMoveContact(const std::string& childId, const std::string& newParentId) const override;
@@ -67,6 +68,6 @@ private:
     mutable std::mutex mTreeMutex;
     std::shared_ptr<model::ContactTree> mTree;
 
-    model::RelationType mInterestedRelationType{model::RelationType::Department};
+    model::RelationType mInterestedRelationType{model::RelationType::Folder};
 };
 }
