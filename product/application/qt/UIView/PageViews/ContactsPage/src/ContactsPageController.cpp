@@ -185,6 +185,13 @@ void ContactsPageController::onContactRelationsAdded(const std::vector<commonHea
     pairs.reserve(v.size());
     for (const auto& r : v) pairs.emplace_back(r.parentId, r.childId);
     mOrgTreeModel->setParents(pairs);
+    if (mHasPendingMove)
+    {
+        const QString p = mPendingMoveParent;
+        mHasPendingMove = false;
+        mPendingMoveParent.clear();
+        emit nodeMoved(p);
+    }
 }
 
 void ContactsPageController::onContactRelationsUpdated(const std::vector<commonHead::viewModels::model::ContactRelationData>& v)
