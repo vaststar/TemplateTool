@@ -15,9 +15,6 @@
 
 namespace commonHead::viewModels {
 
-using namespace ucf::utilities::screencapture;
-using namespace ucf::utilities::imageprocess;
-
 // ============================================================================
 // Factory
 // ============================================================================
@@ -95,12 +92,12 @@ void ScreenshotViewModel::setState(model::ScreenshotState newState)
 
 bool ScreenshotViewModel::hasPermission() const
 {
-    return ScreenCaptureUtils::hasScreenCapturePermission();
+    return ucf::utilities::screencapture::ScreenCaptureUtils::hasScreenCapturePermission();
 }
 
 void ScreenshotViewModel::requestPermission()
 {
-    ScreenCaptureUtils::requestScreenCapturePermission();
+    ucf::utilities::screencapture::ScreenCaptureUtils::requestScreenCapturePermission();
 }
 
 // ============================================================================
@@ -109,7 +106,7 @@ void ScreenshotViewModel::requestPermission()
 
 std::vector<model::DisplayInfoVM> ScreenshotViewModel::getDisplayList() const
 {
-    auto displays = ScreenCaptureUtils::getDisplayList();
+    auto displays = ucf::utilities::screencapture::ScreenCaptureUtils::getDisplayList();
     std::vector<model::DisplayInfoVM> result;
     result.reserve(displays.size());
     for (const auto& d : displays) {
@@ -129,7 +126,7 @@ std::vector<model::DisplayInfoVM> ScreenshotViewModel::getDisplayList() const
 
 std::vector<model::WindowInfoVM> ScreenshotViewModel::getWindowList() const
 {
-    auto windows = ScreenCaptureUtils::getWindowList();
+    auto windows = ucf::utilities::screencapture::ScreenCaptureUtils::getWindowList();
     std::vector<model::WindowInfoVM> result;
     result.reserve(windows.size());
     for (const auto& w : windows) {
@@ -144,20 +141,20 @@ std::vector<model::WindowInfoVM> ScreenshotViewModel::getWindowList() const
 
 std::string ScreenshotViewModel::getWindowThumbnailBase64(int64_t windowId) const
 {
-    auto captured = ScreenCaptureUtils::captureWindow(windowId);
+    auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureWindow(windowId);
     if (captured.pixels.empty()) return {};
 
-    auto rgbaImage = ImageProcessUtils::bgraToRgba(
+    auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
         captured.pixels, captured.width, captured.height, captured.bytesPerRow);
 
-    return ImageProcessUtils::toBase64Png(rgbaImage);
+    return ucf::utilities::imageprocess::ImageProcessUtils::toBase64Png(rgbaImage);
 }
 
 // ============================================================================
 // Capture
 // ============================================================================
 
-void ScreenshotViewModel::onCaptureCompleted(ImageData image, int scaleFactor)
+void ScreenshotViewModel::onCaptureCompleted(ucf::utilities::imageprocess::ImageData image, int scaleFactor)
 {
     if (!image.isValid()) {
         fireNotification(&IScreenshotViewModelCallback::onError,
@@ -178,7 +175,7 @@ void ScreenshotViewModel::onCaptureCompleted(ImageData image, int scaleFactor)
 
         width = m_capturedImage.width;
         height = m_capturedImage.height;
-        base64 = ImageProcessUtils::toBase64Png(m_capturedImage);
+        base64 = ucf::utilities::imageprocess::ImageProcessUtils::toBase64Png(m_capturedImage);
     }
 
     setState(model::ScreenshotState::Captured);
@@ -187,10 +184,10 @@ void ScreenshotViewModel::onCaptureCompleted(ImageData image, int scaleFactor)
 
 void ScreenshotViewModel::captureFullScreen()
 {
-    auto captured = ScreenCaptureUtils::captureAllDisplays();
+    auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureAllDisplays();
     int scale = captured.scaleFactor;
 
-    auto rgbaImage = ImageProcessUtils::bgraToRgba(
+    auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
         captured.pixels, captured.width, captured.height, captured.bytesPerRow);
 
     onCaptureCompleted(std::move(rgbaImage), scale);
@@ -198,10 +195,10 @@ void ScreenshotViewModel::captureFullScreen()
 
 void ScreenshotViewModel::captureDisplay(int displayIndex)
 {
-    auto captured = ScreenCaptureUtils::captureDisplay(displayIndex);
+    auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureDisplay(displayIndex);
     int scale = captured.scaleFactor;
 
-    auto rgbaImage = ImageProcessUtils::bgraToRgba(
+    auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
         captured.pixels, captured.width, captured.height, captured.bytesPerRow);
 
     onCaptureCompleted(std::move(rgbaImage), scale);
@@ -209,10 +206,10 @@ void ScreenshotViewModel::captureDisplay(int displayIndex)
 
 void ScreenshotViewModel::captureWindow(int64_t windowId)
 {
-    auto captured = ScreenCaptureUtils::captureWindow(windowId);
+    auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureWindow(windowId);
     int scale = captured.scaleFactor;
 
-    auto rgbaImage = ImageProcessUtils::bgraToRgba(
+    auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
         captured.pixels, captured.width, captured.height, captured.bytesPerRow);
 
     onCaptureCompleted(std::move(rgbaImage), scale);
@@ -226,7 +223,7 @@ void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double
 {
     setState(model::ScreenshotState::Saving);
 
-    ImageData cropped;
+    ucf::utilities::imageprocess::ImageData cropped;
     double effectiveScale;
     {
         std::lock_guard lock(m_mutex);
@@ -234,13 +231,13 @@ void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double
         effectiveScale = scaleFactor;
 
         // Scale logical coordinates to physical pixels
-        Rect region;
+        ucf::utilities::imageprocess::Rect region;
         region.x = static_cast<int>(std::round(x * effectiveScale));
         region.y = static_cast<int>(std::round(y * effectiveScale));
         region.width = static_cast<int>(std::round(w * effectiveScale));
         region.height = static_cast<int>(std::round(h * effectiveScale));
 
-        cropped = ImageProcessUtils::cropRegion(m_capturedImage, region);
+        cropped = ucf::utilities::imageprocess::ImageProcessUtils::cropRegion(m_capturedImage, region);
     }
 
     if (!cropped.isValid()) {
@@ -304,7 +301,7 @@ void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double
         filePath = dir + "/" + generateFilename();
     }
 
-    bool saved = ImageProcessUtils::saveToFile(cropped, filePath);
+    bool saved = ucf::utilities::imageprocess::ImageProcessUtils::saveToFile(cropped, filePath);
     if (saved) {
         setState(model::ScreenshotState::Idle);
         fireNotification(&IScreenshotViewModelCallback::onScreenshotSaved, filePath);
@@ -446,7 +443,7 @@ bool ScreenshotViewModel::canRedo() const
 
 std::string ScreenshotViewModel::saveScreenshot()
 {
-    ImageData imageToSave;
+    ucf::utilities::imageprocess::ImageData imageToSave;
     std::string filePath;
     {
         std::lock_guard lock(m_mutex);
@@ -474,7 +471,7 @@ std::string ScreenshotViewModel::saveScreenshot()
         filePath = dir + "/" + generateFilename();
     }
 
-    if (ImageProcessUtils::saveToFile(imageToSave, filePath)) {
+    if (ucf::utilities::imageprocess::ImageProcessUtils::saveToFile(imageToSave, filePath)) {
         setState(model::ScreenshotState::Idle);
         fireNotification(&IScreenshotViewModelCallback::onScreenshotSaved, filePath);
         return filePath;
@@ -491,7 +488,7 @@ std::string ScreenshotViewModel::getBase64Png() const
     if (!m_capturedImage.isValid()) return {};
 
     auto rendered = renderAnnotationsOnImage(m_capturedImage);
-    return ImageProcessUtils::toBase64Png(rendered);
+    return ucf::utilities::imageprocess::ImageProcessUtils::toBase64Png(rendered);
 }
 
 // ============================================================================
@@ -541,39 +538,39 @@ std::string ScreenshotViewModel::generateFilename() const
     return "Screenshot_" + timestamp + "." + m_settings.imageFormat;
 }
 
-ImageData ScreenshotViewModel::renderAnnotationsOnImage(const ImageData& source) const
+ucf::utilities::imageprocess::ImageData ScreenshotViewModel::renderAnnotationsOnImage(const ucf::utilities::imageprocess::ImageData& source) const
 {
     if (m_annotations.empty()) {
         return source;
     }
 
     // Convert AnnotationData → Utilities Annotation
-    std::vector<Annotation> utilsAnnotations;
+    std::vector<ucf::utilities::imageprocess::Annotation> utilsAnnotations;
     utilsAnnotations.reserve(m_annotations.size());
     for (const auto& ann : m_annotations) {
         utilsAnnotations.push_back(toUtilsAnnotation(ann));
     }
 
     // Make a copy and draw annotations
-    ImageData result = source;
-    ImageProcessUtils::drawAnnotations(result, utilsAnnotations);
+    ucf::utilities::imageprocess::ImageData result = source;
+    ucf::utilities::imageprocess::ImageProcessUtils::drawAnnotations(result, utilsAnnotations);
     return result;
 }
 
-Annotation ScreenshotViewModel::toUtilsAnnotation(const model::AnnotationData& ann)
+ucf::utilities::imageprocess::Annotation ScreenshotViewModel::toUtilsAnnotation(const model::AnnotationData& ann)
 {
-    Annotation a;
+    ucf::utilities::imageprocess::Annotation a;
 
     // Map type string to enum
-    if (ann.type == "rectangle")       a.type = AnnotationType::Rectangle;
-    else if (ann.type == "ellipse")    a.type = AnnotationType::Ellipse;
-    else if (ann.type == "arrow")      a.type = AnnotationType::Arrow;
-    else if (ann.type == "line")       a.type = AnnotationType::Line;
-    else if (ann.type == "freehand")   a.type = AnnotationType::FreehandLine;
-    else if (ann.type == "text")       a.type = AnnotationType::Text;
-    else if (ann.type == "mosaic")     a.type = AnnotationType::Mosaic;
-    else if (ann.type == "filledrect") a.type = AnnotationType::FilledRect;
-    else                               a.type = AnnotationType::Rectangle;
+    if (ann.type == "rectangle")       a.type = ucf::utilities::imageprocess::AnnotationType::Rectangle;
+    else if (ann.type == "ellipse")    a.type = ucf::utilities::imageprocess::AnnotationType::Ellipse;
+    else if (ann.type == "arrow")      a.type = ucf::utilities::imageprocess::AnnotationType::Arrow;
+    else if (ann.type == "line")       a.type = ucf::utilities::imageprocess::AnnotationType::Line;
+    else if (ann.type == "freehand")   a.type = ucf::utilities::imageprocess::AnnotationType::FreehandLine;
+    else if (ann.type == "text")       a.type = ucf::utilities::imageprocess::AnnotationType::Text;
+    else if (ann.type == "mosaic")     a.type = ucf::utilities::imageprocess::AnnotationType::Mosaic;
+    else if (ann.type == "filledrect") a.type = ucf::utilities::imageprocess::AnnotationType::FilledRect;
+    else                               a.type = ucf::utilities::imageprocess::AnnotationType::Rectangle;
 
     a.color = {ann.r, ann.g, ann.b, ann.a};
     a.thickness = ann.thickness;
@@ -594,7 +591,7 @@ Annotation ScreenshotViewModel::toUtilsAnnotation(const model::AnnotationData& a
     return a;
 }
 
-void ScreenshotViewModel::addTimestampWatermark(ImageData& image) const
+void ScreenshotViewModel::addTimestampWatermark(ucf::utilities::imageprocess::ImageData& image) const
 {
     if (!image.isValid()) return;
 
@@ -613,24 +610,24 @@ void ScreenshotViewModel::addTimestampWatermark(ImageData& image) const
     int textY = image.height - padding - fontSize;
 
     // Draw shadow (dark offset) for readability
-    Annotation shadowAnnotation;
-    shadowAnnotation.type = AnnotationType::Text;
+    ucf::utilities::imageprocess::Annotation shadowAnnotation;
+    shadowAnnotation.type = ucf::utilities::imageprocess::AnnotationType::Text;
     shadowAnnotation.rect = {textX + 1, textY + 1, 0, 0};
     shadowAnnotation.text = timestampText;
     shadowAnnotation.fontSize = fontSize;
     shadowAnnotation.color = {0, 0, 0, 180};
     shadowAnnotation.thickness = 1;
-    ImageProcessUtils::drawAnnotation(image, shadowAnnotation);
+    ucf::utilities::imageprocess::ImageProcessUtils::drawAnnotation(image, shadowAnnotation);
 
     // Draw main text (white)
-    Annotation textAnnotation;
-    textAnnotation.type = AnnotationType::Text;
+    ucf::utilities::imageprocess::Annotation textAnnotation;
+    textAnnotation.type = ucf::utilities::imageprocess::AnnotationType::Text;
     textAnnotation.rect = {textX, textY, 0, 0};
     textAnnotation.text = timestampText;
     textAnnotation.fontSize = fontSize;
     textAnnotation.color = {255, 255, 255, 230};
     textAnnotation.thickness = 1;
-    ImageProcessUtils::drawAnnotation(image, textAnnotation);
+    ucf::utilities::imageprocess::ImageProcessUtils::drawAnnotation(image, textAnnotation);
 }
 
 } // namespace commonHead::viewModels

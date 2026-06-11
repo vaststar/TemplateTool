@@ -14,9 +14,6 @@
 #include <QCoreApplication>
 #include <QUrl>
 
-using namespace commonHead::viewModels;
-using namespace commonHead::viewModels::model;
-
 // ============================================================================
 // Construction
 // ============================================================================
@@ -87,7 +84,7 @@ void RecordingController::init()
         QDir().mkpath(m_outputDirectory);
 
         // Push default back to ViewModel
-        RecordingSettings s = settings;
+        commonHead::viewModels::model::RecordingSettings s = settings;
         s.outputDirectory = m_outputDirectory.toStdString();
         m_viewModel->updateSettings(s);
     }
@@ -367,7 +364,7 @@ void RecordingController::refreshAudioDevices()
         QVariantMap item;
         item["id"] = QString::fromStdString(dev.id);
         item["displayName"] = QString::fromStdString(dev.displayName);
-        if (dev.deviceType == AudioDeviceType::Microphone) {
+        if (dev.deviceType == commonHead::viewModels::model::AudioDeviceType::Microphone) {
             m_micDevices.append(item);
         } else {
             // LoopbackCapture + OutputDevice both go into system audio list
@@ -448,14 +445,14 @@ void RecordingController::openFile(const QString& filePath)
 
 void RecordingController::onVMStateChanged(int state)
 {
-    auto newState = static_cast<RecordingState>(state);
+    auto newState = static_cast<commonHead::viewModels::model::RecordingState>(state);
     bool wasRecording = m_isRecording;
     bool wasPaused = m_isPaused;
 
-    m_isRecording = (newState == RecordingState::Recording || newState == RecordingState::Paused);
-    m_isPaused = (newState == RecordingState::Paused);
+    m_isRecording = (newState == commonHead::viewModels::model::RecordingState::Recording || newState == commonHead::viewModels::model::RecordingState::Paused);
+    m_isPaused = (newState == commonHead::viewModels::model::RecordingState::Paused);
 
-    if (newState == RecordingState::Idle) {
+    if (newState == commonHead::viewModels::model::RecordingState::Idle) {
         m_recordingDuration = 0;
     }
 
@@ -488,7 +485,7 @@ void RecordingController::onVMThumbnailFailed(const QString& videoPath, const QS
     emit thumbnailFailed(videoPath, errorMessage);
 }
 
-void RecordingController::onVMSettingsChanged(const RecordingSettings& settings)
+void RecordingController::onVMSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings)
 {
     bool changed = false;
     QString newDir = QString::fromStdString(settings.outputDirectory);

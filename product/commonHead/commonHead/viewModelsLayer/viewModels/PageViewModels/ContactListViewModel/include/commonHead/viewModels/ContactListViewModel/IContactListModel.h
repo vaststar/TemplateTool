@@ -1,9 +1,10 @@
 #pragma once
 #include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace commonHead::viewModels::model{
 enum class COMMONHEAD_EXPORT ContactNodeType
@@ -64,6 +65,71 @@ struct COMMONHEAD_EXPORT RemovedRelationInfo
     std::string relationId;
     std::string childId;
     std::string oldParentId;  // empty if the child was at the virtual root
+};
+
+// ===== Detail-view payload =====
+// The tree model only carries id/displayName/type so it stays cheap to broadcast. The
+// detail panel needs richer fields; ContactDetail is the one-shot payload returned by
+// IContactListViewModel::getContactDetail for a single contact.
+
+enum class COMMONHEAD_EXPORT ContactStatus
+{
+    Active   = 0,
+    Inactive = 1,
+    Deleted  = 2,
+    Archived = 3,
+};
+
+enum class COMMONHEAD_EXPORT Gender
+{
+    Unspecified = 0,
+    Male        = 1,
+    Female      = 2,
+    Other       = 3,
+};
+
+struct COMMONHEAD_EXPORT PersonContactDetail
+{
+    std::string firstName;
+    std::string lastName;
+    Gender      gender{Gender::Unspecified};
+    std::string phone;
+    std::string email;
+};
+
+// Sub-row of a Department-typed group. managerDisplayName is a best-effort lookup
+// against the person directory; empty when the manager id does not resolve.
+struct COMMONHEAD_EXPORT DepartmentGroupDetail
+{
+    std::string managerId;
+    std::string managerDisplayName;
+    int         headcount{0};
+};
+
+// Sub-row of a Team-typed group. teamLeadDisplayName is best-effort, same as above.
+struct COMMONHEAD_EXPORT TeamGroupDetail
+{
+    std::string teamLeadId;
+    std::string teamLeadDisplayName;
+    std::string mission;
+};
+
+// Variant-style aggregate. (type, groupType) selects which optional is engaged:
+//   type==Person                                 -> person
+//   type==Group  + groupType==Department         -> department
+//   type==Group  + groupType==Team               -> team
+//   type==Group  + groupType==Folder/Project/Custom -> none (base info only)
+struct COMMONHEAD_EXPORT ContactDetail
+{
+    std::string     id;
+    std::string     displayName;
+    ContactNodeType type{ContactNodeType::Person};
+    GroupType       groupType{GroupType::Folder};
+    ContactStatus   status{ContactStatus::Active};
+
+    std::optional<PersonContactDetail>    person;
+    std::optional<DepartmentGroupDetail>  department;
+    std::optional<TeamGroupDetail>        team;
 };
 
 enum class COMMONHEAD_EXPORT ContactDirectoryLoadError

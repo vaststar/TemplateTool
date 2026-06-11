@@ -11,13 +11,12 @@
 #include <string>
 #include <thread>
 
-using namespace ucf::utilities;
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Test callback that records events
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-class TestProcessCallback : public IProcessBridgeCallback
+class TestProcessCallback : public ucf::utilities::IProcessBridgeCallback
 {
 public:
     void onProcessStarted(int64_t pid) override
@@ -101,27 +100,27 @@ private:
 
 TEST_CASE("ProcessBridge creation", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     REQUIRE(bridge != nullptr);
-    REQUIRE(bridge->state() == ProcessState::Idle);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Idle);
     REQUIRE_FALSE(bridge->isRunning());
     REQUIRE(bridge->processPid() == 0);
 }
 
 TEST_CASE("ProcessBridge error on invalid executable", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "/non/existent/path/no_such_executable_12345";
 
     bool result = bridge->start(config);
 #ifdef _WIN32
     // Windows: CreateProcess fails immediately
     REQUIRE_FALSE(result);
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 #else
     // Unix: fork() succeeds but execvp fails â€” child exits with code 127
     REQUIRE(result);
@@ -134,11 +133,11 @@ TEST_CASE("ProcessBridge error on invalid executable", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge launches and stops cmd.exe", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo hello"};
 
@@ -156,11 +155,11 @@ TEST_CASE("ProcessBridge launches and stops cmd.exe", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge captures stderr on cmd.exe", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo errmsg 1>&2"};
 
@@ -173,11 +172,11 @@ TEST_CASE("ProcessBridge captures stderr on cmd.exe", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge stop kills long-running process", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "ping -n 30 127.0.0.1 > nul"};
     config.stopTimeoutMs = 500;
@@ -189,7 +188,7 @@ TEST_CASE("ProcessBridge stop kills long-running process", "[ProcessBridge]")
 
     bridge->stop();
 
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
     REQUIRE_FALSE(bridge->isRunning());
 }
 
@@ -197,11 +196,11 @@ TEST_CASE("ProcessBridge stop kills long-running process", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge launches and captures stdout on Unix", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "/bin/echo";
     config.arguments = {"hello"};
 
@@ -214,11 +213,11 @@ TEST_CASE("ProcessBridge launches and captures stdout on Unix", "[ProcessBridge]
 
 TEST_CASE("ProcessBridge captures stderr on Unix", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "/bin/sh";
     config.arguments = {"-c", "echo errmsg >&2"};
 
@@ -231,11 +230,11 @@ TEST_CASE("ProcessBridge captures stderr on Unix", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge stop kills long-running process on Unix", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "/bin/sleep";
     config.arguments = {"30"};
     config.stopTimeoutMs = 500;
@@ -246,17 +245,17 @@ TEST_CASE("ProcessBridge stop kills long-running process on Unix", "[ProcessBrid
 
     bridge->stop();
 
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
     REQUIRE_FALSE(bridge->isRunning());
 }
 
 TEST_CASE("ProcessBridge passes arguments with spaces on Unix", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
     config.executablePath = "/bin/echo";
     config.arguments = {"hello world", "foo bar"};
 
@@ -272,9 +271,9 @@ TEST_CASE("ProcessBridge passes arguments with spaces on Unix", "[ProcessBridge]
 
 TEST_CASE("ProcessBridge double start returns false", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "ping -n 10 127.0.0.1 > nul"};
@@ -294,7 +293,7 @@ TEST_CASE("ProcessBridge double start returns false", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge callback weak_ptr safety", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
 
     {
         auto callback = std::make_shared<TestProcessCallback>();
@@ -303,7 +302,7 @@ TEST_CASE("ProcessBridge callback weak_ptr safety", "[ProcessBridge]")
     }
 
     // Starting after callback is destroyed should not crash
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo safe"};
@@ -323,12 +322,12 @@ TEST_CASE("ProcessBridge callback weak_ptr safety", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge restart after Terminated", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
     // First run
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo first"};
@@ -339,7 +338,7 @@ TEST_CASE("ProcessBridge restart after Terminated", "[ProcessBridge]")
 
     REQUIRE(bridge->start(config));
     REQUIRE(callback->waitForStopped(5000));
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 
     // Reset callback state
     callback->started = false;
@@ -360,11 +359,11 @@ TEST_CASE("ProcessBridge restart after Terminated", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge natural exit with non-zero code", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "exit 42"};
@@ -377,17 +376,17 @@ TEST_CASE("ProcessBridge natural exit with non-zero code", "[ProcessBridge]")
     REQUIRE(callback->waitForStopped(5000));
     REQUIRE(callback->stoppedExitCode == 42);
     REQUIRE(callback->stoppedCrashed == true);
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
     REQUIRE_FALSE(bridge->isRunning());
     REQUIRE(bridge->processPid() == 0);
 }
 
 TEST_CASE("ProcessBridge stop on idle is no-op", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
-    REQUIRE(bridge->state() == ProcessState::Idle);
+    auto bridge = ucf::utilities::IProcessBridge::create();
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Idle);
     bridge->stop();  // should not crash or change state
-    REQUIRE(bridge->state() == ProcessState::Idle);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Idle);
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -396,11 +395,11 @@ TEST_CASE("ProcessBridge stop on idle is no-op", "[ProcessBridge]")
 
 TEST_CASE("ProcessBridge stop on Running reports clean termination", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "ping -n 30 127.0.0.1 > nul"};
@@ -417,16 +416,16 @@ TEST_CASE("ProcessBridge stop on Running reports clean termination", "[ProcessBr
 
     REQUIRE(callback->waitForStopped(5000));
     REQUIRE(callback->stoppedCrashed == false);
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 }
 
 TEST_CASE("ProcessBridge stop on Terminated is no-op", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo hi"};
@@ -437,20 +436,20 @@ TEST_CASE("ProcessBridge stop on Terminated is no-op", "[ProcessBridge]")
 
     REQUIRE(bridge->start(config));
     REQUIRE(callback->waitForStopped(5000));
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 
     // stop() on Terminated should not crash or change state
     bridge->stop();
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 }
 
 TEST_CASE("ProcessBridge captureStdout=false suppresses stdout callback", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo suppressed"};
@@ -467,11 +466,11 @@ TEST_CASE("ProcessBridge captureStdout=false suppresses stdout callback", "[Proc
 
 TEST_CASE("ProcessBridge captureStderr=false suppresses stderr callback", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "echo suppressed 1>&2"};
@@ -491,9 +490,9 @@ TEST_CASE("ProcessBridge stop from onStdout callback (deferred cleanup)", "[Proc
     // Simulate stop() being called from inside a callback (on the monitor thread).
     // This exercises the self-join detection + deferred terminate/cleanup path.
 
-    struct StopOnOutputCallback : public IProcessBridgeCallback
+    struct StopOnOutputCallback : public ucf::utilities::IProcessBridgeCallback
     {
-        IProcessBridge* bridge{nullptr};
+        ucf::utilities::IProcessBridge* bridge{nullptr};
         std::mutex mtx;
         std::condition_variable cv;
         std::atomic<bool> stopped{false};
@@ -526,12 +525,12 @@ TEST_CASE("ProcessBridge stop from onStdout callback (deferred cleanup)", "[Proc
         }
     };
 
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto cb = std::make_shared<StopOnOutputCallback>();
     cb->bridge = bridge.get();
     bridge->registerCallback(cb);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     // Use a command that outputs something and keeps running
     config.executablePath = "cmd.exe";
@@ -544,16 +543,16 @@ TEST_CASE("ProcessBridge stop from onStdout callback (deferred cleanup)", "[Proc
 
     REQUIRE(bridge->start(config));
     REQUIRE(cb->waitForStopped(15000));
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 }
 
 TEST_CASE("ProcessBridge concurrent stop from two threads", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
-    ProcessBridgeConfig config;
+    ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
     config.executablePath = "cmd.exe";
     config.arguments = {"/C", "ping -n 30 127.0.0.1 > nul"};
@@ -572,12 +571,12 @@ TEST_CASE("ProcessBridge concurrent stop from two threads", "[ProcessBridge]")
     t1.join();
     t2.join();
 
-    REQUIRE(bridge->state() == ProcessState::Terminated);
+    REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 }
 
 TEST_CASE("ProcessBridge multiple restart cycles", "[ProcessBridge]")
 {
-    auto bridge = IProcessBridge::create();
+    auto bridge = ucf::utilities::IProcessBridge::create();
     auto callback = std::make_shared<TestProcessCallback>();
     bridge->registerCallback(callback);
 
@@ -587,7 +586,7 @@ TEST_CASE("ProcessBridge multiple restart cycles", "[ProcessBridge]")
         callback->stopped = false;
         callback->stdoutData.clear();
 
-        ProcessBridgeConfig config;
+        ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
         config.executablePath = "cmd.exe";
         config.arguments = {"/C", "echo cycle" + std::to_string(i)};
@@ -598,7 +597,7 @@ TEST_CASE("ProcessBridge multiple restart cycles", "[ProcessBridge]")
 
         REQUIRE(bridge->start(config));
         REQUIRE(callback->waitForStopped(5000));
-        REQUIRE(bridge->state() == ProcessState::Terminated);
+        REQUIRE(bridge->state() == ucf::utilities::ProcessState::Terminated);
 
         std::string expected = "cycle" + std::to_string(i);
         REQUIRE(callback->stdoutData.find(expected) != std::string::npos);
@@ -612,11 +611,11 @@ TEST_CASE("ProcessBridge concurrent start and immediate stop", "[ProcessBridge]"
     // must ensure no data race on mHandle/mMonitorThread.
     for (int i = 0; i < 10; ++i)
     {
-        auto bridge = IProcessBridge::create();
+        auto bridge = ucf::utilities::IProcessBridge::create();
         auto callback = std::make_shared<TestProcessCallback>();
         bridge->registerCallback(callback);
 
-        ProcessBridgeConfig config;
+        ucf::utilities::ProcessBridgeConfig config;
 #ifdef _WIN32
         config.executablePath = "cmd.exe";
         config.arguments = {"/C", "ping -n 10 127.0.0.1 > nul"};
@@ -642,7 +641,7 @@ TEST_CASE("ProcessBridge concurrent start and immediate stop", "[ProcessBridge]"
 
         // Must end in a terminal state, no crash, no hanging thread
         auto finalState = bridge->state();
-        REQUIRE((finalState == ProcessState::Terminated
-                 || finalState == ProcessState::Idle));
+        REQUIRE((finalState == ucf::utilities::ProcessState::Terminated
+                 || finalState == ucf::utilities::ProcessState::Idle));
     }
 }

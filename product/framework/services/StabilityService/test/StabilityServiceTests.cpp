@@ -12,19 +12,16 @@
 #include <vector>
 #include <memory>
 
-using namespace ucf::service;
-using namespace ucf::framework::fakes;
-using namespace ucf::service::fakes;
 using trompeloeil::_;
 
 namespace {
 
 // Testable subclass that exposes initService
-class TestableStabilityService : public StabilityService
+class TestableStabilityService : public ucf::service::StabilityService
 {
 public:
-    using StabilityService::StabilityService;
-    using StabilityService::initService;  // Expose protected method
+    using ucf::service::StabilityService::StabilityService;
+    using ucf::service::StabilityService::initService;  // Expose protected method
 };
 
 // Helper to create a temporary test directory
@@ -36,16 +33,16 @@ public:
         mPath = std::filesystem::temp_directory_path() / (prefix + std::to_string(std::rand()));
         std::filesystem::create_directories(mPath);
     }
-    
+
     ~TempDirectory()
     {
         std::error_code ec;
         std::filesystem::remove_all(mPath, ec);
     }
-    
+
     const std::filesystem::path& path() const { return mPath; }
     std::string pathString() const { return mPath.string(); }
-    
+
 private:
     std::filesystem::path mPath;
 };
@@ -98,49 +95,49 @@ public:
         , mHangDir{"hang_test_"}
         , mCrashDirPath(mCrashDir.pathString())
         , mHangDirPath(mHangDir.pathString())
-        , mFakeCoreFramework(std::make_shared<FakeCoreFramework>())
-        , mFakeClientInfoService(std::make_shared<FakeClientInfoService>())
+        , mFakeCoreFramework(std::make_shared<ucf::framework::fakes::FakeCoreFramework>())
+        , mFakeClientInfoService(std::make_shared<ucf::service::fakes::FakeClientInfoService>())
     {
         // Use NAMED_ALLOW_CALL to store expectations that persist
         mExpectations.push_back(
             NAMED_ALLOW_CALL(*mFakeCoreFramework, getServiceInternal(ANY(std::type_index)))
-                .WITH(_1 == std::type_index(typeid(IClientInfoService)))
+                .WITH(_1 == std::type_index(typeid(ucf::service::IClientInfoService)))
                 .LR_RETURN(mFakeClientInfoService));
-        
+
         mExpectations.push_back(
             NAMED_ALLOW_CALL(*mFakeClientInfoService, getAppCrashStoragePath())
                 .LR_RETURN(mCrashDirPath));
-        
+
         mExpectations.push_back(
             NAMED_ALLOW_CALL(*mFakeClientInfoService, getAppHangStoragePath())
                 .LR_RETURN(mHangDirPath));
-        
+
         mExpectations.push_back(
             NAMED_ALLOW_CALL(*mFakeClientInfoService, getApplicationVersion())
-                .RETURN(model::Version{"1", "0", "0", "0"}));
-        
+                .RETURN(ucf::service::model::Version{"1", "0", "0", "0"}));
+
         mExpectations.push_back(
             NAMED_ALLOW_CALL(*mFakeClientInfoService, getProductInfo())
-                .RETURN(model::ProductInfo{"TestCompany", "Copyright", "TestProduct", "Description"}));
+                .RETURN(ucf::service::model::ProductInfo{"TestCompany", "Copyright", "TestProduct", "Description"}));
     }
-    
+
     std::shared_ptr<TestableStabilityService> createService()
     {
         auto service = std::make_shared<TestableStabilityService>(mFakeCoreFramework);
         service->initService();  // Initialize managers
         return service;
     }
-    
+
     const std::filesystem::path& crashDir() const { return mCrashDir.path(); }
     const std::filesystem::path& hangDir() const { return mHangDir.path(); }
-    
+
 protected:
     TempDirectory mCrashDir;
     TempDirectory mHangDir;
     std::string mCrashDirPath;
     std::string mHangDirPath;
-    std::shared_ptr<FakeCoreFramework> mFakeCoreFramework;
-    std::shared_ptr<FakeClientInfoService> mFakeClientInfoService;
+    std::shared_ptr<ucf::framework::fakes::FakeCoreFramework> mFakeCoreFramework;
+    std::shared_ptr<ucf::service::fakes::FakeClientInfoService> mFakeClientInfoService;
     std::vector<std::unique_ptr<trompeloeil::expectation>> mExpectations;
 };
 
@@ -152,7 +149,7 @@ TEST_CASE("StabilityService can be created", "[StabilityService]")
 {
     StabilityServiceTestFixture fixture;
     auto service = fixture.createService();
-    
+
     REQUIRE(service != nullptr);
     REQUIRE(service->getServiceName() == "StabilityService");
 }
@@ -165,7 +162,7 @@ TEST_CASE("StabilityService - no pending crash report when directory is empty", 
 {
     StabilityServiceTestFixture fixture;
     auto service = fixture.createService();
-    
+
     REQUIRE_FALSE(service->hasPendingCrashReport());
     REQUIRE(service->getCrashReportFiles().empty());
     REQUIRE_FALSE(service->getLastCrashInfo().has_value());
@@ -174,12 +171,12 @@ TEST_CASE("StabilityService - no pending crash report when directory is empty", 
 TEST_CASE("StabilityService - detects pending crash report", "[StabilityService][Crash]")
 {
     StabilityServiceTestFixture fixture;
-    
+
     // Write a crash log before creating service
     writeTestLog(fixture.crashDir(), "crash_2026-02-03_103000.crash", kSampleCrashLog);
-    
+
     auto service = fixture.createService();
-    
+
     REQUIRE(service->hasPendingCrashReport());
     REQUIRE(service->getCrashReportFiles().size() == 1);
 }
@@ -187,18 +184,18 @@ TEST_CASE("StabilityService - detects pending crash report", "[StabilityService]
 TEST_CASE("StabilityService - clearAllCrashReports removes all files", "[StabilityService][Crash]")
 {
     StabilityServiceTestFixture fixture;
-    
+
     // Write crash logs
     writeTestLog(fixture.crashDir(), "crash_2026-02-01_100000.crash", kSampleCrashLog);
     writeTestLog(fixture.crashDir(), "crash_2026-02-02_100000.crash", kSampleCrashLog);
-    
+
     auto service = fixture.createService();
-    
+
     REQUIRE(service->hasPendingCrashReport());
     REQUIRE(service->getCrashReportFiles().size() == 2);
-    
+
     service->clearAllCrashReports();
-    
+
     REQUIRE_FALSE(service->hasPendingCrashReport());
     REQUIRE(service->getCrashReportFiles().empty());
 }
@@ -211,7 +208,7 @@ TEST_CASE("StabilityService - no pending hang report when directory is empty", "
 {
     StabilityServiceTestFixture fixture;
     auto service = fixture.createService();
-    
+
     REQUIRE_FALSE(service->hasPendingHangReport());
     REQUIRE(service->getHangReportFiles().empty());
     REQUIRE_FALSE(service->getLastHangInfo().has_value());
@@ -220,12 +217,12 @@ TEST_CASE("StabilityService - no pending hang report when directory is empty", "
 TEST_CASE("StabilityService - detects pending hang report", "[StabilityService][Hang]")
 {
     StabilityServiceTestFixture fixture;
-    
+
     // Write a hang log before creating service
     writeTestLog(fixture.hangDir(), "hang_2026-02-03_103000.hang", kSampleHangLog);
-    
+
     auto service = fixture.createService();
-    
+
     REQUIRE(service->hasPendingHangReport());
     REQUIRE(service->getHangReportFiles().size() == 1);
 }
@@ -233,18 +230,18 @@ TEST_CASE("StabilityService - detects pending hang report", "[StabilityService][
 TEST_CASE("StabilityService - clearAllHangReports removes all files", "[StabilityService][Hang]")
 {
     StabilityServiceTestFixture fixture;
-    
+
     // Write hang logs
     writeTestLog(fixture.hangDir(), "hang_2026-02-01_100000.hang", kSampleHangLog);
     writeTestLog(fixture.hangDir(), "hang_2026-02-02_100000.hang", kSampleHangLog);
-    
+
     auto service = fixture.createService();
-    
+
     REQUIRE(service->hasPendingHangReport());
     REQUIRE(service->getHangReportFiles().size() == 2);
-    
+
     service->clearAllHangReports();
-    
+
     REQUIRE_FALSE(service->hasPendingHangReport());
     REQUIRE(service->getHangReportFiles().empty());
 }
@@ -257,7 +254,7 @@ TEST_CASE("StabilityService - reportHeartbeat does not crash", "[StabilityServic
 {
     StabilityServiceTestFixture fixture;
     auto service = fixture.createService();
-    
+
     // Simply verify it doesn't throw
     REQUIRE_NOTHROW(service->reportHeartbeat());
     REQUIRE_NOTHROW(service->reportHeartbeat());

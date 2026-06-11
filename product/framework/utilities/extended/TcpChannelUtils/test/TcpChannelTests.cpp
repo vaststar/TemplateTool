@@ -48,7 +48,6 @@
     }
 #endif
 
-using namespace ucf::utilities;
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 //  Helper: connect a raw client socket to localhost:port
@@ -80,7 +79,7 @@ static SocketType connectToLocal(int port)
 //  Test callback that records events
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-class TestTcpCallback : public ITcpChannelCallback
+class TestTcpCallback : public ucf::utilities::ITcpChannelCallback
 {
 public:
     void onClientConnected() override
@@ -150,7 +149,7 @@ private:
 
 TEST_CASE("TcpChannel creation", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     REQUIRE(channel != nullptr);
     REQUIRE_FALSE(channel->isListening());
     REQUIRE_FALSE(channel->isConnected());
@@ -159,9 +158,9 @@ TEST_CASE("TcpChannel creation", "[TcpChannel]")
 
 TEST_CASE("TcpChannel listen on ephemeral port", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;  // let OS pick
     config.maxConnections = 1;
@@ -176,9 +175,9 @@ TEST_CASE("TcpChannel listen on ephemeral port", "[TcpChannel]")
 
 TEST_CASE("TcpChannel double start returns false", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -191,11 +190,11 @@ TEST_CASE("TcpChannel double start returns false", "[TcpChannel]")
 
 TEST_CASE("TcpChannel client connect and send data", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<TestTcpCallback>();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -224,11 +223,11 @@ TEST_CASE("TcpChannel client connect and send data", "[TcpChannel]")
 
 TEST_CASE("TcpChannel server sends data to client", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<TestTcpCallback>();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -255,11 +254,11 @@ TEST_CASE("TcpChannel server sends data to client", "[TcpChannel]")
 
 TEST_CASE("TcpChannel stop closes connection", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<TestTcpCallback>();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -285,9 +284,9 @@ TEST_CASE("TcpChannel stop closes connection", "[TcpChannel]")
 
 TEST_CASE("TcpChannel send without client returns false", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -304,7 +303,7 @@ TEST_CASE("TcpChannel send without client returns false", "[TcpChannel]")
 
 TEST_CASE("TcpChannel stop on idle is no-op", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     REQUIRE_FALSE(channel->isListening());
     channel->stop();  // should not crash
     REQUIRE_FALSE(channel->isListening());
@@ -312,9 +311,9 @@ TEST_CASE("TcpChannel stop on idle is no-op", "[TcpChannel]")
 
 TEST_CASE("TcpChannel double stop is no-op", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -331,11 +330,11 @@ TEST_CASE("TcpChannel double stop is no-op", "[TcpChannel]")
 
 TEST_CASE("TcpChannel restart after stop preserves functionality", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<TestTcpCallback>();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -387,9 +386,9 @@ TEST_CASE("TcpChannel stop from onDataReceived callback (deferred cleanup)", "[T
     // Simulate stop() being called from within a callback on the I/O thread.
     // This exercises self-join detection + deferred cleanup in ioLoop exit.
 
-    struct StopOnDataCallback : public ITcpChannelCallback
+    struct StopOnDataCallback : public ucf::utilities::ITcpChannelCallback
     {
-        ITcpChannel* channel{nullptr};
+        ucf::utilities::ITcpChannel* channel{nullptr};
         std::mutex mtx;
         std::condition_variable cv;
         std::atomic<bool> stopCalled{false};
@@ -419,12 +418,12 @@ TEST_CASE("TcpChannel stop from onDataReceived callback (deferred cleanup)", "[T
         }
     };
 
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<StopOnDataCallback>();
     cb->channel = channel.get();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -455,9 +454,9 @@ TEST_CASE("TcpChannel stop from onDataReceived callback (deferred cleanup)", "[T
 
 TEST_CASE("TcpChannel stop from onClientConnected callback", "[TcpChannel]")
 {
-    struct StopOnConnectCallback : public ITcpChannelCallback
+    struct StopOnConnectCallback : public ucf::utilities::ITcpChannelCallback
     {
-        ITcpChannel* channel{nullptr};
+        ucf::utilities::ITcpChannel* channel{nullptr};
         std::mutex mtx;
         std::condition_variable cv;
         std::atomic<bool> done{false};
@@ -484,12 +483,12 @@ TEST_CASE("TcpChannel stop from onClientConnected callback", "[TcpChannel]")
         }
     };
 
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<StopOnConnectCallback>();
     cb->channel = channel.get();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -511,9 +510,9 @@ TEST_CASE("TcpChannel stop from onClientConnected callback", "[TcpChannel]")
 
 TEST_CASE("TcpChannel concurrent stop from two threads", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -531,9 +530,9 @@ TEST_CASE("TcpChannel concurrent stop from two threads", "[TcpChannel]")
 
 TEST_CASE("TcpChannel multiple restart cycles", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -550,11 +549,11 @@ TEST_CASE("TcpChannel multiple restart cycles", "[TcpChannel]")
 
 TEST_CASE("TcpChannel rejects second client connection", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<TestTcpCallback>();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 2;  // backlog allows queueing but only 1 accepted
@@ -583,7 +582,7 @@ TEST_CASE("TcpChannel rejects second client connection", "[TcpChannel]")
 
 TEST_CASE("TcpChannel callback weak_ptr safety", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
 
     {
         auto cb = std::make_shared<TestTcpCallback>();
@@ -591,7 +590,7 @@ TEST_CASE("TcpChannel callback weak_ptr safety", "[TcpChannel]")
         // cb goes out of scope â€” weak_ptr should handle gracefully
     }
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "127.0.0.1";
     config.listenPort = 0;
     config.maxConnections = 1;
@@ -621,9 +620,9 @@ TEST_CASE("TcpChannel concurrent start and immediate stop", "[TcpChannel]")
     // ensure no data race on mServerSocket/mIoThread.
     for (int i = 0; i < 10; ++i)
     {
-        auto channel = ITcpChannel::create();
+        auto channel = ucf::utilities::ITcpChannel::create();
 
-        TcpChannelConfig config;
+        ucf::utilities::TcpChannelConfig config;
         config.listenAddress = "127.0.0.1";
         config.listenPort = 0;
         config.maxConnections = 1;
@@ -649,11 +648,11 @@ TEST_CASE("TcpChannel concurrent start and immediate stop", "[TcpChannel]")
 
 TEST_CASE("TcpChannel listen on invalid address fails", "[TcpChannel]")
 {
-    auto channel = ITcpChannel::create();
+    auto channel = ucf::utilities::ITcpChannel::create();
     auto cb = std::make_shared<TestTcpCallback>();
     channel->registerCallback(cb);
 
-    TcpChannelConfig config;
+    ucf::utilities::TcpChannelConfig config;
     config.listenAddress = "999.999.999.999";  // invalid address
     config.listenPort = 0;
     config.maxConnections = 1;

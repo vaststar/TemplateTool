@@ -90,7 +90,6 @@ void ContactAdapter::testFunc()
 {
     if (auto networkManager = mDataPrivate->getHttpManager().lock())
     {
-        using namespace ucf::service::network::http; 
         //test post rest api
             ucf::service::network::http::HttpRestRequest postRestRequest{ucf::service::network::http::HTTPMethod::POST, "https://cisco.webex.com/wbxappapi/v1/meetingInfo", {{"Accept","application/json"}, {"Content-Type","application/json"}, {"Transfer-Encoding",""}}, R"({"sipUrl":"thzhu@cisco.webex.com"})", 30};
             auto postRestCallback = [](const ucf::service::network::http::HttpRestResponse& httpResponse){
@@ -124,8 +123,8 @@ void ContactAdapter::testFunc()
         //     SERVICE_LOG_DEBUG("start download to content Raw");
         // networkManager->downloadContentToMemory(DownloadToMemoryRequest, downloadMemoryCallBack);
 
-        HttpDownloadToFileRequest downloadToFileRequest("https://ash-speed.hetzner.com/100MB.bin",{},3000,"scf_test_file");
-        auto downloadFileCallBack = [](const HttpDownloadToFileResponse& downloadContent){
+        ucf::service::network::http::HttpDownloadToFileRequest downloadToFileRequest("https://ash-speed.hetzner.com/100MB.bin",{},3000,"scf_test_file");
+        auto downloadFileCallBack = [](const ucf::service::network::http::HttpDownloadToFileResponse& downloadContent){
             SERVICE_LOG_DEBUG("download body, current:" << downloadContent.getCurrentSize() << ", total:" << downloadContent.getTotalSize());
         };
             SERVICE_LOG_DEBUG("start download to file");

@@ -7,8 +7,6 @@
 
 #include <magic_enum/magic_enum.hpp>
 
-using namespace ucf::utilities::screenrecording;
-
 namespace ucf::agents {
 
 // ============================================================================
@@ -141,9 +139,8 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
     }
 
     auto lowLevelConfig = toRecordingConfig(config);
-
     // Pre-check screen recording permission to fail fast with a clear error
-    if (!IScreenRecorder::hasScreenRecordingPermission())
+    if (!ucf::utilities::screenrecording::IScreenRecorder::hasScreenRecordingPermission())
     {
         m_state.store(State::Idle, std::memory_order_release);
         fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
@@ -167,7 +164,7 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 
     {
         std::lock_guard lock(m_sessionMutex);
-        m_recorder = IScreenRecorder::create();
+        m_recorder = ucf::utilities::screenrecording::IScreenRecorder::create();
         if (!m_recorder || !m_recorder->start(lowLevelConfig))
         {
             m_recorder.reset();
@@ -249,7 +246,7 @@ void ScreenRecordingAgent::stop()
 
         stopDurationTimer();
 
-        RecordingResult result;
+        ucf::utilities::screenrecording::RecordingResult result;
         {
             std::lock_guard lock(m_sessionMutex);
             if (m_recorder && m_recorder->isActive())
@@ -273,7 +270,7 @@ void ScreenRecordingAgent::stop()
         if (isGif && result.success)
         {
             SRA_LOG_INFO("Converting recording to GIF: " << gifOutputPath);
-            bool gifOk = IScreenRecorder::convertToGif(
+            bool gifOk = ucf::utilities::screenrecording::IScreenRecorder::convertToGif(
                 ffmpegPath, result.outputPath, gifOutputPath, gifFps);
 
             // Delete temporary mp4
@@ -410,17 +407,17 @@ int ScreenRecordingAgent::duration() const
 
 std::vector<AudioDeviceInfo> ScreenRecordingAgent::getAudioDevices() const
 {
-    return IScreenRecorder::enumerateAudioDevices();
+    return ucf::utilities::screenrecording::IScreenRecorder::enumerateAudioDevices();
 }
 
 bool ScreenRecordingAgent::hasMicrophonePermission() const
 {
-    return IScreenRecorder::hasMicrophonePermission();
+    return ucf::utilities::screenrecording::IScreenRecorder::hasMicrophonePermission();
 }
 
 void ScreenRecordingAgent::requestMicrophonePermission(std::function<void(bool)> callback)
 {
-    IScreenRecorder::requestMicrophonePermission(std::move(callback));
+    ucf::utilities::screenrecording::IScreenRecorder::requestMicrophonePermission(std::move(callback));
 }
 
 // ============================================================================
@@ -486,7 +483,7 @@ void ScreenRecordingAgent::stopDurationTimer()
 ucf::utilities::screenrecording::RecordingConfig ScreenRecordingAgent::toRecordingConfig(
     const RecordingAgentConfig& cfg)
 {
-    RecordingConfig rc;
+    ucf::utilities::screenrecording::RecordingConfig rc;
     rc.ffmpegPath = cfg.ffmpegPath;
     rc.outputPath = cfg.outputPath;
     rc.videoFormat = cfg.videoFormat;

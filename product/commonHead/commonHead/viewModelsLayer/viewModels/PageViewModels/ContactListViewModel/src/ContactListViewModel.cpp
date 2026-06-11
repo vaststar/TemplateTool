@@ -156,6 +156,86 @@ void ContactListViewModel::selectContact(const std::string& contactId)
     COMMONHEAD_LOG_INFO("selectContact: contactId:" << (contactId.empty() ? "<cleared>" : contactId));
 }
 
+std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const std::string& contactId) const
+{
+    if (contactId.empty())
+    {
+        return std::nullopt;
+    }
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("getContactDetail failed: service not available, id:" << contactId);
+        return std::nullopt;
+    }
+
+    auto toVMStatus = [](ucf::service::model::IContact::ContactStatus s) {
+        return static_cast<model::ContactStatus>(static_cast<int>(s));
+    };
+    auto toVMGender = [](ucf::service::model::IPersonContact::Gender g) {
+        return static_cast<model::Gender>(static_cast<int>(g));
+    };
+    auto resolvePersonName = [&](const std::string& id) -> std::string {
+        if (id.empty()) return {};
+        if (auto p = service->getPersonContact(id))
+        {
+            return p->getPersonName();
+        }
+        return {};
+    };
+
+    if (auto person = service->getPersonContact(contactId))
+    {
+        model::ContactDetail d;
+        d.id          = person->getContactId();
+        d.displayName = person->getPersonName();
+        d.type        = model::ContactNodeType::Person;
+        d.status      = toVMStatus(person->getContactStatus());
+        d.person      = model::PersonContactDetail{
+            person->getFirstName(),
+            person->getLastName(),
+            toVMGender(person->getGender()),
+            person->getPhone(),
+            person->getEmail(),
+        };
+        return d;
+    }
+
+    if (auto group = service->getGroupContact(contactId))
+    {
+        model::ContactDetail d;
+        d.id          = group->getContactId();
+        d.displayName = group->getGroupName();
+        d.type        = model::ContactNodeType::Group;
+        d.groupType   = static_cast<model::GroupType>(static_cast<int>(group->getGroupType()));
+        d.status      = toVMStatus(group->getContactStatus());
+
+        // Concrete sub-types fill an extra optional. dynamic_pointer_cast is safe: each
+        // typed sub-row is its own interface; missing sub-row simply leaves the optional
+        // empty.
+        if (auto dept = std::dynamic_pointer_cast<ucf::service::model::IDepartmentGroup>(group))
+        {
+            d.department = model::DepartmentGroupDetail{
+                dept->getManagerId(),
+                resolvePersonName(dept->getManagerId()),
+                dept->getHeadcount(),
+            };
+        }
+        else if (auto team = std::dynamic_pointer_cast<ucf::service::model::ITeamGroup>(group))
+        {
+            d.team = model::TeamGroupDetail{
+                team->getTeamLeadId(),
+                resolvePersonName(team->getTeamLeadId()),
+                team->getMission(),
+            };
+        }
+        return d;
+    }
+
+    COMMONHEAD_LOG_WARN("getContactDetail: unknown contactId:" << contactId);
+    return std::nullopt;
+}
+
 bool ContactListViewModel::canMoveContact(const std::string& childId,
                                           const std::string& newParentId) const
 {

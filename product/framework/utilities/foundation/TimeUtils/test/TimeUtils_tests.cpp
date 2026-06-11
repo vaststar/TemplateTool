@@ -8,14 +8,12 @@
 #include <chrono>
 #include <thread>
 
-using namespace ucf::utilities;
-using namespace std::chrono_literals;
 
 // =================== LocalDate ===================
 
 TEST_CASE("LocalDate - construct and accessors", "[LocalDate]")
 {
-    LocalDate d{2026, 5, 21};
+    ucf::utilities::LocalDate d{2026, 5, 21};
     REQUIRE(d.isValid());
     REQUIRE(d.year() == 2026);
     REQUIRE(d.month() == 5);
@@ -25,41 +23,41 @@ TEST_CASE("LocalDate - construct and accessors", "[LocalDate]")
 
 TEST_CASE("LocalDate - invalid date", "[LocalDate]")
 {
-    LocalDate bad{2026, 2, 30};
+    ucf::utilities::LocalDate bad{2026, 2, 30};
     REQUIRE_FALSE(bad.isValid());
 }
 
 TEST_CASE("LocalDate::parse", "[LocalDate][Parse]")
 {
-    REQUIRE(LocalDate::parse("2026-05-21").has_value());
-    REQUIRE(LocalDate::parse("2026-05-21")->toString() == "2026-05-21");
-    REQUIRE_FALSE(LocalDate::parse("2026-5-21").has_value());     // strict width
-    REQUIRE_FALSE(LocalDate::parse("2026/05/21").has_value());    // wrong separator
-    REQUIRE_FALSE(LocalDate::parse("2026-13-01").has_value());    // bad month
-    REQUIRE_FALSE(LocalDate::parse("").has_value());
-    REQUIRE_FALSE(LocalDate::parse("abcd-ef-gh").has_value());
+    REQUIRE(ucf::utilities::LocalDate::parse("2026-05-21").has_value());
+    REQUIRE(ucf::utilities::LocalDate::parse("2026-05-21")->toString() == "2026-05-21");
+    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("2026-5-21").has_value());     // strict width
+    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("2026/05/21").has_value());    // wrong separator
+    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("2026-13-01").has_value());    // bad month
+    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("").has_value());
+    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("abcd-ef-gh").has_value());
 }
 
 TEST_CASE("LocalDate - weekday and dayOfYear", "[LocalDate]")
 {
     // 2026-05-21 is a Thursday → ISO weekday 4.
-    LocalDate d{2026, 5, 21};
+    ucf::utilities::LocalDate d{2026, 5, 21};
     REQUIRE(d.weekday() == 4);
     // Jan 1 + 31 + 28 + 31 + 30 + 21 = 141.
     REQUIRE(d.dayOfYear() == 141);
 
-    LocalDate jan1{2026, 1, 1};
+    ucf::utilities::LocalDate jan1{2026, 1, 1};
     REQUIRE(jan1.dayOfYear() == 1);
 }
 
 TEST_CASE("LocalDate - arithmetic", "[LocalDate]")
 {
-    LocalDate base{2026, 5, 21};
+    ucf::utilities::LocalDate base{2026, 5, 21};
     auto next = base + std::chrono::days{10};
-    REQUIRE(next == LocalDate{2026, 5, 31});
+    REQUIRE(next == ucf::utilities::LocalDate{2026, 5, 31});
 
     auto rollover = base + std::chrono::days{11};
-    REQUIRE(rollover == LocalDate{2026, 6, 1});
+    REQUIRE(rollover == ucf::utilities::LocalDate{2026, 6, 1});
 
     REQUIRE((next - base) == std::chrono::days{10});
     REQUIRE((base - next) == std::chrono::days{-10});
@@ -67,9 +65,9 @@ TEST_CASE("LocalDate - arithmetic", "[LocalDate]")
 
 TEST_CASE("LocalDate - ordering", "[LocalDate]")
 {
-    LocalDate a{2026, 5, 21};
-    LocalDate b{2026, 5, 22};
-    LocalDate c{2026, 6, 1};
+    ucf::utilities::LocalDate a{2026, 5, 21};
+    ucf::utilities::LocalDate b{2026, 5, 22};
+    ucf::utilities::LocalDate c{2026, 6, 1};
 
     REQUIRE(a < b);
     REQUIRE(b < c);
@@ -82,8 +80,8 @@ TEST_CASE("LocalDate - ordering", "[LocalDate]")
 
 TEST_CASE("LocalDateTime - construct and accessors", "[LocalDateTime]")
 {
-    LocalDateTime dt{LocalDate{2026, 5, 21}, 10, 30, 45, 123};
-    REQUIRE(dt.date() == LocalDate{2026, 5, 21});
+    ucf::utilities::LocalDateTime dt{ucf::utilities::LocalDate{2026, 5, 21}, 10, 30, 45, 123};
+    REQUIRE(dt.date() == ucf::utilities::LocalDate{2026, 5, 21});
     REQUIRE(dt.hour() == 10);
     REQUIRE(dt.minute() == 30);
     REQUIRE(dt.second() == 45);
@@ -92,16 +90,16 @@ TEST_CASE("LocalDateTime - construct and accessors", "[LocalDateTime]")
 
 TEST_CASE("LocalDateTime - format including %f", "[LocalDateTime][Format]")
 {
-    LocalDateTime dt{LocalDate{2026, 5, 21}, 10, 30, 45, 7};
+    ucf::utilities::LocalDateTime dt{ucf::utilities::LocalDate{2026, 5, 21}, 10, 30, 45, 7};
     REQUIRE(dt.format("%Y-%m-%d %H:%M:%S") == "2026-05-21 10:30:45");
     REQUIRE(dt.format("%Y-%m-%d %H:%M:%S.%f") == "2026-05-21 10:30:45.007");
 }
 
 TEST_CASE("LocalDateTime - ordering", "[LocalDateTime][Compare]")
 {
-    LocalDateTime a{LocalDate{2026, 5, 21}, 10, 0, 0, 0};
-    LocalDateTime b{LocalDate{2026, 5, 21}, 10, 0, 0, 1};
-    LocalDateTime c{LocalDate{2026, 5, 21}, 10, 0, 1, 0};
+    ucf::utilities::LocalDateTime a{ucf::utilities::LocalDate{2026, 5, 21}, 10, 0, 0, 0};
+    ucf::utilities::LocalDateTime b{ucf::utilities::LocalDate{2026, 5, 21}, 10, 0, 0, 1};
+    ucf::utilities::LocalDateTime c{ucf::utilities::LocalDate{2026, 5, 21}, 10, 0, 1, 0};
 
     REQUIRE(a < b);
     REQUIRE(b < c);
@@ -111,39 +109,39 @@ TEST_CASE("LocalDateTime - ordering", "[LocalDateTime][Compare]")
 
 TEST_CASE("Instant - unix milliseconds roundtrip", "[Instant]")
 {
-    auto t = Instant::fromUnixMilliseconds(1747843845123LL);
+    auto t = ucf::utilities::Instant::fromUnixMilliseconds(1747843845123LL);
     REQUIRE(t.toUnixMilliseconds() == 1747843845123LL);
     REQUIRE(t.toUnixSeconds() == 1747843845LL);
 }
 
 TEST_CASE("Instant - ISO 8601 roundtrip", "[Instant][ISO8601]")
 {
-    auto t = Instant::fromUnixMilliseconds(1747843845123LL);
+    auto t = ucf::utilities::Instant::fromUnixMilliseconds(1747843845123LL);
     auto s = t.toISO8601();
     REQUIRE(s == "2025-05-21T16:10:45.123Z");
 
-    auto back = Instant::parseISO8601(s);
+    auto back = ucf::utilities::Instant::parseISO8601(s);
     REQUIRE(back.has_value());
     REQUIRE(*back == t);
 }
 
 TEST_CASE("Instant::parseISO8601 - acceptance", "[Instant][ISO8601]")
 {
-    REQUIRE(Instant::parseISO8601("2026-05-21T10:30:00Z").has_value());
-    REQUIRE(Instant::parseISO8601("2026-05-21T10:30:00.5Z").has_value());
-    REQUIRE(Instant::parseISO8601("2026-05-21T10:30:00.123Z").has_value());
+    REQUIRE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00Z").has_value());
+    REQUIRE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00.5Z").has_value());
+    REQUIRE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00.123Z").has_value());
 
-    REQUIRE_FALSE(Instant::parseISO8601("2026-05-21T10:30:00").has_value());
-    REQUIRE_FALSE(Instant::parseISO8601("2026-05-21 10:30:00Z").has_value());
-    REQUIRE_FALSE(Instant::parseISO8601("2026/05/21T10:30:00Z").has_value());
-    REQUIRE_FALSE(Instant::parseISO8601("2026-05-21T10:30:00.1234Z").has_value());
-    REQUIRE_FALSE(Instant::parseISO8601("").has_value());
+    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00").has_value());
+    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026-05-21 10:30:00Z").has_value());
+    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026/05/21T10:30:00Z").has_value());
+    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00.1234Z").has_value());
+    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("").has_value());
 }
 
 TEST_CASE("Instant - ordering and arithmetic", "[Instant][Compare]")
 {
-    auto a = Instant::fromUnixMilliseconds(1000);
-    auto b = Instant::fromUnixMilliseconds(2500);
+    auto a = ucf::utilities::Instant::fromUnixMilliseconds(1000);
+    auto b = ucf::utilities::Instant::fromUnixMilliseconds(2500);
 
     REQUIRE(a < b);
     REQUIRE(b - a == std::chrono::milliseconds{1500});
@@ -153,17 +151,17 @@ TEST_CASE("Instant - ordering and arithmetic", "[Instant][Compare]")
 
 TEST_CASE("Instant - now monotonicity within a thread", "[Instant]")
 {
-    auto a = Instant::now();
-    std::this_thread::sleep_for(2ms);
-    auto b = Instant::now();
+    auto a = ucf::utilities::Instant::now();
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    auto b = ucf::utilities::Instant::now();
     REQUIRE(b >= a);
 }
 
 TEST_CASE("Instant - toUTCDateTime", "[Instant]")
 {
-    auto t = Instant::fromUnixMilliseconds(1747843845123LL);
+    auto t = ucf::utilities::Instant::fromUnixMilliseconds(1747843845123LL);
     auto dt = t.toUTCDateTime();
-    REQUIRE(dt.date() == LocalDate{2025, 5, 21});
+    REQUIRE(dt.date() == ucf::utilities::LocalDate{2025, 5, 21});
     REQUIRE(dt.hour() == 16);
     REQUIRE(dt.minute() == 10);
     REQUIRE(dt.second() == 45);
@@ -174,48 +172,48 @@ TEST_CASE("Instant - toUTCDateTime", "[Instant]")
 
 TEST_CASE("TimeUtils::formatSecondsToHMS", "[TimeUtils][Duration]")
 {
-    REQUIRE(TimeUtils::formatSecondsToHMS(0) == "00:00:00");
-    REQUIRE(TimeUtils::formatSecondsToHMS(3661) == "01:01:01");
-    REQUIRE(TimeUtils::formatSecondsToHMS(-5) == "00:00:00");
+    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToHMS(0) == "00:00:00");
+    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToHMS(3661) == "01:01:01");
+    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToHMS(-5) == "00:00:00");
 }
 
 TEST_CASE("TimeUtils::formatSecondsToMS", "[TimeUtils][Duration]")
 {
-    REQUIRE(TimeUtils::formatSecondsToMS(0) == "00:00");
-    REQUIRE(TimeUtils::formatSecondsToMS(125) == "02:05");
-    REQUIRE(TimeUtils::formatSecondsToMS(-1) == "00:00");
+    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToMS(0) == "00:00");
+    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToMS(125) == "02:05");
+    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToMS(-1) == "00:00");
 }
 
 TEST_CASE("TimeUtils::formatDuration", "[TimeUtils][Duration]")
 {
-    REQUIRE(TimeUtils::formatDuration(0ms) == "00:00:00.000");
-    REQUIRE(TimeUtils::formatDuration(123ms) == "00:00:00.123");
-    REQUIRE(TimeUtils::formatDuration(1000ms) == "00:00:01.000");
-    REQUIRE(TimeUtils::formatDuration(3661050ms) == "01:01:01.050");
-    REQUIRE(TimeUtils::formatDuration(-100ms) == "00:00:00.000");
+    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(0)) == "00:00:00.000");
+    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(123)) == "00:00:00.123");
+    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(1000)) == "00:00:01.000");
+    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(3661050)) == "01:01:01.050");
+    REQUIRE(ucf::utilities::TimeUtils::formatDuration(-std::chrono::milliseconds(100)) == "00:00:00.000");
 }
 
 TEST_CASE("TimeUtils::formatDurationHuman", "[TimeUtils][Duration]")
 {
-    REQUIRE(TimeUtils::formatDurationHuman(0ms) == "0 ms");
-    REQUIRE(TimeUtils::formatDurationHuman(500ms) == "500 ms");
-    REQUIRE(TimeUtils::formatDurationHuman(1000ms) == "1s");
-    REQUIRE(TimeUtils::formatDurationHuman(125000ms) == "2m 5s");
-    REQUIRE(TimeUtils::formatDurationHuman(3661000ms) == "1h 1m 1s");
-    REQUIRE(TimeUtils::formatDurationHuman(-100ms) == "0 ms");
+    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(0)) == "0 ms");
+    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(500)) == "500 ms");
+    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(1000)) == "1s");
+    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(125000)) == "2m 5s");
+    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(3661000)) == "1h 1m 1s");
+    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(-std::chrono::milliseconds(100)) == "0 ms");
 }
 
 TEST_CASE("TimeUtils::formatUTCTime - fixed pattern", "[TimeUtils][Format]")
 {
     std::time_t t = static_cast<std::time_t>(1747843845);  // 2025-05-21 16:10:45 UTC
-    REQUIRE(TimeUtils::formatUTCTime(t, "%Y-%m-%d %H:%M:%S") == "2025-05-21 16:10:45");
-    REQUIRE(TimeUtils::formatUTCTime(t, "").empty());
+    REQUIRE(ucf::utilities::TimeUtils::formatUTCTime(t, "%Y-%m-%d %H:%M:%S") == "2025-05-21 16:10:45");
+    REQUIRE(ucf::utilities::TimeUtils::formatUTCTime(t, "").empty());
 }
 
 TEST_CASE("TimeUtils - current time round-trip consistency", "[TimeUtils]")
 {
-    auto ms = TimeUtils::getCurrentUTCMilliseconds();
-    auto sec = TimeUtils::getCurrentUTCSeconds();
+    auto ms = ucf::utilities::TimeUtils::getCurrentUTCMilliseconds();
+    auto sec = ucf::utilities::TimeUtils::getCurrentUTCSeconds();
     REQUIRE(ms >= sec * 1000);
     REQUIRE(ms <  sec * 1000 + 5000);   // wall-clock skew tolerance
 }

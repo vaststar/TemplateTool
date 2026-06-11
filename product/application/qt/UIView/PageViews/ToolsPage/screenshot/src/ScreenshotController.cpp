@@ -19,9 +19,6 @@
 #include <QWindow>
 #include <QTimer>
 
-using namespace commonHead::viewModels;
-using namespace commonHead::viewModels::model;
-
 // ============================================================================
 // Helper: parse "#RRGGBB" or "#AARRGGBB" color string → r,g,b,a
 // ============================================================================
@@ -92,7 +89,7 @@ void ScreenshotController::init()
         QDir().mkpath(m_outputDirectory);
 
         // Push default back to ViewModel
-        ScreenshotSettings s = settings;
+        commonHead::viewModels::model::ScreenshotSettings s = settings;
         s.outputDirectory = m_outputDirectory.toStdString();
         m_viewModel->updateSettings(s);
     }
@@ -271,7 +268,7 @@ QString ScreenshotController::getWindowThumbnailBase64(qint64 windowId)
 void ScreenshotController::addRectangle(int x, int y, int w, int h,
                                          const QString& color, int thickness)
 {
-    AnnotationData ann;
+    commonHead::viewModels::model::AnnotationData ann;
     ann.type = "rectangle";
     ann.x = x; ann.y = y; ann.w = w; ann.h = h;
     parseColor(color, ann.r, ann.g, ann.b, ann.a);
@@ -282,7 +279,7 @@ void ScreenshotController::addRectangle(int x, int y, int w, int h,
 void ScreenshotController::addEllipse(int x, int y, int w, int h,
                                        const QString& color, int thickness)
 {
-    AnnotationData ann;
+    commonHead::viewModels::model::AnnotationData ann;
     ann.type = "ellipse";
     ann.x = x; ann.y = y; ann.w = w; ann.h = h;
     parseColor(color, ann.r, ann.g, ann.b, ann.a);
@@ -293,7 +290,7 @@ void ScreenshotController::addEllipse(int x, int y, int w, int h,
 void ScreenshotController::addArrow(int x1, int y1, int x2, int y2,
                                      const QString& color, int thickness)
 {
-    AnnotationData ann;
+    commonHead::viewModels::model::AnnotationData ann;
     ann.type = "arrow";
     ann.startX = x1; ann.startY = y1;
     ann.endX = x2; ann.endY = y2;
@@ -305,7 +302,7 @@ void ScreenshotController::addArrow(int x1, int y1, int x2, int y2,
 void ScreenshotController::addText(int x, int y, const QString& text,
                                     const QString& color, int fontSize)
 {
-    AnnotationData ann;
+    commonHead::viewModels::model::AnnotationData ann;
     ann.type = "text";
     ann.x = x; ann.y = y;
     ann.text = text.toStdString();
@@ -317,7 +314,7 @@ void ScreenshotController::addText(int x, int y, const QString& text,
 void ScreenshotController::addFreehand(const QVariantList& points,
                                         const QString& color, int thickness)
 {
-    AnnotationData ann;
+    commonHead::viewModels::model::AnnotationData ann;
     ann.type = "freehand";
     parseColor(color, ann.r, ann.g, ann.b, ann.a);
     ann.thickness = thickness;
@@ -332,7 +329,7 @@ void ScreenshotController::addFreehand(const QVariantList& points,
 
 void ScreenshotController::addMosaic(int x, int y, int w, int h, int blockSize)
 {
-    AnnotationData ann;
+    commonHead::viewModels::model::AnnotationData ann;
     ann.type = "mosaic";
     ann.x = x; ann.y = y; ann.w = w; ann.h = h;
     ann.mosaicBlockSize = blockSize;
@@ -438,7 +435,7 @@ QVariantMap ScreenshotController::saveRegionScreenshot(int x, int y, int w, int 
     m_viewModel->clearAnnotations();
     for (const QVariant& annVar : annotations) {
         QVariantMap map = annVar.toMap();
-        AnnotationData ann;
+        commonHead::viewModels::model::AnnotationData ann;
         ann.type = map["type"].toString().toStdString();
 
         uint8_t r, g, b, a;
@@ -588,7 +585,7 @@ void ScreenshotController::onVMStateChanged(int state)
     UIVIEW_LOG_DEBUG("onVMStateChanged: " << state);
     if (m_state != state) {
         m_state = state;
-        m_hasScreenshot = (state != static_cast<int>(ScreenshotState::Idle));
+        m_hasScreenshot = (state != static_cast<int>(commonHead::viewModels::model::ScreenshotState::Idle));
         emit stateChanged();
         emit screenshotChanged();
     }
@@ -615,7 +612,7 @@ void ScreenshotController::onVMScreenshotSaved(const QString& filePath)
     emit captureCompleted(filePath);
 }
 
-void ScreenshotController::onVMSettingsChanged(const ScreenshotSettings& settings)
+void ScreenshotController::onVMSettingsChanged(const commonHead::viewModels::model::ScreenshotSettings& settings)
 {
     bool changed = false;
     QString newDir = QString::fromStdString(settings.outputDirectory);

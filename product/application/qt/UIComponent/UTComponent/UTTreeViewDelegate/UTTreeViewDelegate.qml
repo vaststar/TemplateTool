@@ -44,7 +44,6 @@ BaseTreeViewDelegate {
         border.width: control.isDropTarget ? 2 : 0
         border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Focus_Outline, UIColorState.Normal)
         radius: 2
-        Behavior on color { ColorAnimation { duration: 120 } }
     }
 
     UTFocusItem {

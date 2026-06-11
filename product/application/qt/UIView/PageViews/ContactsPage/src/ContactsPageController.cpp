@@ -1,4 +1,5 @@
 #include "ContactsPage/ContactsPageController.h"
+#include "ContactsPageDetailMapper.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
 #include "ViewModelSingalEmitter/ContactListViewModelEmitter.h"
@@ -96,18 +97,16 @@ void ContactsPageController::selectContact(const QString& contactId)
 
 QVariantMap ContactsPageController::getContactInfo(const QString& contactId) const
 {
-    QVariantMap result;
-    if (contactId.isEmpty() || !mContactListViewModel) return result;
-    auto tree = mContactListViewModel->getContactList();
-    if (!tree) return result;
-    if (auto node = tree->findNodeById(contactId.toStdString()))
+    if (contactId.isEmpty() || !mContactListViewModel)
     {
-        auto data = node->getNodeData();
-        result["id"]   = QString::fromStdString(data.id);
-        result["name"] = QString::fromStdString(data.displayName);
-        result["type"] = static_cast<int>(data.type);
+        return {};
     }
-    return result;
+    auto detail = mContactListViewModel->getContactDetail(contactId.toStdString());
+    if (!detail)
+    {
+        return {};
+    }
+    return ContactsPage::DetailMapper::toVariantMap(*detail);
 }
 
 bool ContactsPageController::canDropOn(const QString& srcId, const QString& targetParentId) const

@@ -38,6 +38,7 @@ public:
     void setRelationType(model::RelationType type) override;
     bool isContactDirectoryReady() const override;
     void selectContact(const std::string& contactId) override;
+    std::optional<model::ContactDetail> getContactDetail(const std::string& contactId) const override;
     bool canMoveContact(const std::string& childId, const std::string& newParentId) const override;
     void moveContact(const std::string& childId, const std::string& newParentId) override;
 

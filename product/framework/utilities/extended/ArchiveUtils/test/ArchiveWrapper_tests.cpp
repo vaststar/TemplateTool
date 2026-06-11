@@ -7,7 +7,6 @@
 #include <thread>
 #include <chrono>
 
-using namespace ucf::utilities;
 
 //============================================
 // Test Fixture - Helper class for test setup
@@ -83,7 +82,7 @@ public:
 //============================================
 TEST_CASE("ArchiveWrapper - Create archive with single file", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "single.zip";
     std::vector<std::string> files = {
@@ -92,14 +91,14 @@ TEST_CASE("ArchiveWrapper - Create archive with single file", "[ArchiveUtils][Cr
     
     auto error = archiver.create(zipPath.string(), files);
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(std::filesystem::exists(zipPath));
     REQUIRE(std::filesystem::file_size(zipPath) > 0);
 }
 
 TEST_CASE("ArchiveWrapper - Create archive with multiple files", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "multiple.zip";
     std::vector<std::string> files = {
@@ -110,7 +109,7 @@ TEST_CASE("ArchiveWrapper - Create archive with multiple files", "[ArchiveUtils]
     
     auto error = archiver.create(zipPath.string(), files);
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     
     // Verify entries
     auto entries = archiver.list(zipPath.string());
@@ -119,7 +118,7 @@ TEST_CASE("ArchiveWrapper - Create archive with multiple files", "[ArchiveUtils]
 
 TEST_CASE("ArchiveWrapper - Create archive from directory", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "directory.zip";
     
@@ -127,7 +126,7 @@ TEST_CASE("ArchiveWrapper - Create archive from directory", "[ArchiveUtils][Crea
         auto error = archiver.createFromDirectory(zipPath.string(), 
                                                    (fixture.testDir / "subdir").string(),
                                                    false);
-        REQUIRE(error == ArchiveError::Success);
+        REQUIRE(error == ucf::utilities::ArchiveError::Success);
         
         auto entries = archiver.list(zipPath.string());
         REQUIRE(entries.size() >= 2);
@@ -137,13 +136,13 @@ TEST_CASE("ArchiveWrapper - Create archive from directory", "[ArchiveUtils][Crea
         auto error = archiver.createFromDirectory(zipPath.string(),
                                                    (fixture.testDir / "subdir").string(),
                                                    true);
-        REQUIRE(error == ArchiveError::Success);
+        REQUIRE(error == ucf::utilities::ArchiveError::Success);
     }
 }
 
 TEST_CASE("ArchiveWrapper - Create archive with empty file", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "with_empty.zip";
     std::vector<std::string> files = {
@@ -152,7 +151,7 @@ TEST_CASE("ArchiveWrapper - Create archive with empty file", "[ArchiveUtils][Cre
     
     auto error = archiver.create(zipPath.string(), files);
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     
     auto entries = archiver.list(zipPath.string());
     REQUIRE(entries.size() == 1);
@@ -161,7 +160,7 @@ TEST_CASE("ArchiveWrapper - Create archive with empty file", "[ArchiveUtils][Cre
 
 TEST_CASE("ArchiveWrapper - Create archive with large file", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "large.zip";
     std::vector<std::string> files = {
@@ -170,7 +169,7 @@ TEST_CASE("ArchiveWrapper - Create archive with large file", "[ArchiveUtils][Cre
     
     auto error = archiver.create(zipPath.string(), files);
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     
     // Verify compression happened (compressed size < original size)
     auto entries = archiver.list(zipPath.string());
@@ -180,7 +179,7 @@ TEST_CASE("ArchiveWrapper - Create archive with large file", "[ArchiveUtils][Cre
 
 TEST_CASE("ArchiveWrapper - Create archive from memory", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "memory.zip";
     std::string content = "Data from memory buffer";
@@ -190,13 +189,13 @@ TEST_CASE("ArchiveWrapper - Create archive from memory", "[ArchiveUtils][Create]
                                          reinterpret_cast<const uint8_t*>(content.data()),
                                          content.size());
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(archiver.hasEntry(zipPath.string(), "memory_file.txt"));
 }
 
 TEST_CASE("ArchiveWrapper - Create archive with compression levels", "[ArchiveUtils][Create]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPathFast = fixture.testDir / "fast.zip";
     auto zipPathBest = fixture.testDir / "best.zip";
@@ -206,13 +205,13 @@ TEST_CASE("ArchiveWrapper - Create archive with compression levels", "[ArchiveUt
     };
     
     // Fast compression
-    ArchiveOptions optsFast;
+    ucf::utilities::ArchiveOptions optsFast;
     optsFast.compressionLevel = 1;
     archiver.setOptions(optsFast);
     archiver.create(zipPathFast.string(), files);
     
     // Best compression
-    ArchiveOptions optsBest;
+    ucf::utilities::ArchiveOptions optsBest;
     optsBest.compressionLevel = 9;
     archiver.setOptions(optsBest);
     archiver.create(zipPathBest.string(), files);
@@ -226,7 +225,7 @@ TEST_CASE("ArchiveWrapper - Create archive with compression levels", "[ArchiveUt
 //============================================
 TEST_CASE("ArchiveWrapper - Extract all entries", "[ArchiveUtils][Extract]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create archive first
     auto zipPath = fixture.testDir / "extract_all.zip";
@@ -240,7 +239,7 @@ TEST_CASE("ArchiveWrapper - Extract all entries", "[ArchiveUtils][Extract]") {
     auto extractDir = fixture.testDir / "extracted_all";
     auto error = archiver.extractAll(zipPath.string(), extractDir.string());
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(std::filesystem::exists(extractDir / "file1.txt"));
     REQUIRE(std::filesystem::exists(extractDir / "file2.txt"));
     
@@ -251,7 +250,7 @@ TEST_CASE("ArchiveWrapper - Extract all entries", "[ArchiveUtils][Extract]") {
 
 TEST_CASE("ArchiveWrapper - Extract single entry", "[ArchiveUtils][Extract]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create archive
     auto zipPath = fixture.testDir / "extract_single.zip";
@@ -265,14 +264,14 @@ TEST_CASE("ArchiveWrapper - Extract single entry", "[ArchiveUtils][Extract]") {
     auto destPath = fixture.testDir / "extracted_single.txt";
     auto error = archiver.extractEntry(zipPath.string(), "file1.txt", destPath.string());
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(std::filesystem::exists(destPath));
     REQUIRE(fixture.readFile(destPath) == "Hello World");
 }
 
 TEST_CASE("ArchiveWrapper - Extract to memory", "[ArchiveUtils][Extract]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create archive
     auto zipPath = fixture.testDir / "extract_memory.zip";
@@ -285,7 +284,7 @@ TEST_CASE("ArchiveWrapper - Extract to memory", "[ArchiveUtils][Extract]") {
     std::vector<uint8_t> data;
     auto error = archiver.extractToMemory(zipPath.string(), "file1.txt", data);
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(data.size() == 11); // "Hello World"
     
     std::string content(data.begin(), data.end());
@@ -294,7 +293,7 @@ TEST_CASE("ArchiveWrapper - Extract to memory", "[ArchiveUtils][Extract]") {
 
 TEST_CASE("ArchiveWrapper - Extract binary file", "[ArchiveUtils][Extract]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create archive with binary file
     auto zipPath = fixture.testDir / "binary_extract.zip";
@@ -316,7 +315,7 @@ TEST_CASE("ArchiveWrapper - Extract binary file", "[ArchiveUtils][Extract]") {
 
 TEST_CASE("ArchiveWrapper - Extract to non-existent directory", "[ArchiveUtils][Extract]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create archive
     auto zipPath = fixture.testDir / "extract_newdir.zip";
@@ -329,7 +328,7 @@ TEST_CASE("ArchiveWrapper - Extract to non-existent directory", "[ArchiveUtils][
     auto extractDir = fixture.testDir / "new" / "deep" / "path";
     auto error = archiver.extractAll(zipPath.string(), extractDir.string());
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(std::filesystem::exists(extractDir / "file1.txt"));
 }
 
@@ -338,7 +337,7 @@ TEST_CASE("ArchiveWrapper - Extract to non-existent directory", "[ArchiveUtils][
 //============================================
 TEST_CASE("ArchiveWrapper - List entries", "[ArchiveUtils][Query]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "list.zip";
     std::vector<std::string> files = {
@@ -361,7 +360,7 @@ TEST_CASE("ArchiveWrapper - List entries", "[ArchiveUtils][Query]") {
 
 TEST_CASE("ArchiveWrapper - Check entry exists", "[ArchiveUtils][Query]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "has_entry.zip";
     std::vector<std::string> files = {
@@ -375,7 +374,7 @@ TEST_CASE("ArchiveWrapper - Check entry exists", "[ArchiveUtils][Query]") {
 
 TEST_CASE("ArchiveWrapper - Get entry info", "[ArchiveUtils][Query]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "entry_info.zip";
     std::vector<std::string> files = {
@@ -383,10 +382,10 @@ TEST_CASE("ArchiveWrapper - Get entry info", "[ArchiveUtils][Query]") {
     };
     archiver.create(zipPath.string(), files);
     
-    ArchiveEntry entry;
+    ucf::utilities::ArchiveEntry entry;
     auto error = archiver.getEntryInfo(zipPath.string(), "file1.txt", entry);
     
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     REQUIRE(entry.name == "file1.txt");
     REQUIRE(entry.uncompressedSize == 11); // "Hello World"
     REQUIRE_FALSE(entry.isDirectory);
@@ -395,7 +394,7 @@ TEST_CASE("ArchiveWrapper - Get entry info", "[ArchiveUtils][Query]") {
 
 TEST_CASE("ArchiveWrapper - Validate archive", "[ArchiveUtils][Query]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create valid archive
     auto zipPath = fixture.testDir / "valid.zip";
@@ -405,17 +404,17 @@ TEST_CASE("ArchiveWrapper - Validate archive", "[ArchiveUtils][Query]") {
     archiver.create(zipPath.string(), files);
     
     SECTION("Valid archive") {
-        REQUIRE(ArchiveWrapper::isValidArchive(zipPath.string()));
+        REQUIRE(ucf::utilities::ArchiveWrapper::isValidArchive(zipPath.string()));
     }
     
     SECTION("Non-existent file") {
-        REQUIRE_FALSE(ArchiveWrapper::isValidArchive("nonexistent.zip"));
+        REQUIRE_FALSE(ucf::utilities::ArchiveWrapper::isValidArchive("nonexistent.zip"));
     }
     
     SECTION("Invalid archive (text file)") {
         auto textFile = fixture.testDir / "not_a_zip.zip";
         fixture.createFile(textFile, "This is not a zip file");
-        REQUIRE_FALSE(ArchiveWrapper::isValidArchive(textFile.string()));
+        REQUIRE_FALSE(ucf::utilities::ArchiveWrapper::isValidArchive(textFile.string()));
     }
 }
 
@@ -423,11 +422,11 @@ TEST_CASE("ArchiveWrapper - Validate archive", "[ArchiveUtils][Query]") {
 // Error Handling Tests
 //============================================
 TEST_CASE("ArchiveWrapper - Error handling: Invalid path", "[ArchiveUtils][Error]") {
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     SECTION("Empty archive path") {
         auto error = archiver.create("", {"file.txt"});
-        REQUIRE(error == ArchiveError::InvalidPath);
+        REQUIRE(error == ucf::utilities::ArchiveError::InvalidPath);
     }
     
     SECTION("Empty entry name for memory add") {
@@ -435,16 +434,16 @@ TEST_CASE("ArchiveWrapper - Error handling: Invalid path", "[ArchiveUtils][Error
         auto error = archiver.addFromMemory("test.zip", "",
                                              reinterpret_cast<const uint8_t*>(data.data()),
                                              data.size());
-        REQUIRE(error == ArchiveError::InvalidPath);
+        REQUIRE(error == ucf::utilities::ArchiveError::InvalidPath);
     }
 }
 
 TEST_CASE("ArchiveWrapper - Error handling: File not found", "[ArchiveUtils][Error]") {
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     SECTION("Extract non-existent archive") {
         auto error = archiver.extractAll("nonexistent.zip", "output");
-        REQUIRE(error == ArchiveError::FileNotFound);
+        REQUIRE(error == ucf::utilities::ArchiveError::FileNotFound);
     }
     
     SECTION("List non-existent archive") {
@@ -455,7 +454,7 @@ TEST_CASE("ArchiveWrapper - Error handling: File not found", "[ArchiveUtils][Err
 
 TEST_CASE("ArchiveWrapper - Error handling: Entry not found", "[ArchiveUtils][Error]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "entry_not_found.zip";
     std::vector<std::string> files = {
@@ -467,25 +466,25 @@ TEST_CASE("ArchiveWrapper - Error handling: Entry not found", "[ArchiveUtils][Er
         auto error = archiver.extractEntry(zipPath.string(), 
                                             "nonexistent.txt",
                                             (fixture.testDir / "out.txt").string());
-        REQUIRE(error == ArchiveError::EntryNotFound);
+        REQUIRE(error == ucf::utilities::ArchiveError::EntryNotFound);
     }
     
     SECTION("Extract to memory non-existent entry") {
         std::vector<uint8_t> data;
         auto error = archiver.extractToMemory(zipPath.string(), "nonexistent.txt", data);
-        REQUIRE(error == ArchiveError::EntryNotFound);
+        REQUIRE(error == ucf::utilities::ArchiveError::EntryNotFound);
     }
     
     SECTION("Get info for non-existent entry") {
-        ArchiveEntry entry;
+        ucf::utilities::ArchiveEntry entry;
         auto error = archiver.getEntryInfo(zipPath.string(), "nonexistent.txt", entry);
-        REQUIRE(error == ArchiveError::EntryNotFound);
+        REQUIRE(error == ucf::utilities::ArchiveError::EntryNotFound);
     }
 }
 
 TEST_CASE("ArchiveWrapper - Skips non-existent source files", "[ArchiveUtils][Error]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "skip_missing.zip";
     std::vector<std::string> files = {
@@ -496,7 +495,7 @@ TEST_CASE("ArchiveWrapper - Skips non-existent source files", "[ArchiveUtils][Er
     
     // Should succeed, skipping the non-existent file
     auto error = archiver.create(zipPath.string(), files);
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     
     auto entries = archiver.list(zipPath.string());
     REQUIRE(entries.size() == 2);
@@ -506,9 +505,9 @@ TEST_CASE("ArchiveWrapper - Skips non-existent source files", "[ArchiveUtils][Er
 // Options Tests
 //============================================
 TEST_CASE("ArchiveWrapper - Options get/set", "[ArchiveUtils][Options]") {
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
-    ArchiveOptions opts;
+    ucf::utilities::ArchiveOptions opts;
     opts.compressionLevel = 9;
     opts.password = "secret";
     opts.comment = "Test archive";
@@ -523,7 +522,7 @@ TEST_CASE("ArchiveWrapper - Options get/set", "[ArchiveUtils][Options]") {
 
 TEST_CASE("ArchiveWrapper - Progress callback", "[ArchiveUtils][Options]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "progress.zip";
     std::vector<std::string> files = {
@@ -546,7 +545,7 @@ TEST_CASE("ArchiveWrapper - Progress callback", "[ArchiveUtils][Options]") {
 
 TEST_CASE("ArchiveWrapper - Progress callback cancel", "[ArchiveUtils][Options]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "cancel.zip";
     std::vector<std::string> files = {
@@ -563,7 +562,7 @@ TEST_CASE("ArchiveWrapper - Progress callback cancel", "[ArchiveUtils][Options]"
     
     auto error = archiver.create(zipPath.string(), files);
     
-    REQUIRE(error == ArchiveError::Success); // Cancelled is still success
+    REQUIRE(error == ucf::utilities::ArchiveError::Success); // Cancelled is still success
     REQUIRE(callCount == 2);
 }
 
@@ -571,17 +570,17 @@ TEST_CASE("ArchiveWrapper - Progress callback cancel", "[ArchiveUtils][Options]"
 // Utility Method Tests
 //============================================
 TEST_CASE("ArchiveWrapper - Backend info", "[ArchiveUtils][Utility]") {
-    REQUIRE(ArchiveWrapper::getBackendName() == "minizip-ng");
-    REQUIRE_FALSE(ArchiveWrapper::getBackendVersion().empty());
+    REQUIRE(ucf::utilities::ArchiveWrapper::getBackendName() == "minizip-ng");
+    REQUIRE_FALSE(ucf::utilities::ArchiveWrapper::getBackendVersion().empty());
 }
 
 TEST_CASE("ArchiveWrapper - Error to string", "[ArchiveUtils][Utility]") {
-    REQUIRE(std::string(ArchiveWrapper::errorToString(ArchiveError::Success)) == "Success");
-    REQUIRE(std::string(ArchiveWrapper::errorToString(ArchiveError::FileNotFound)) == "File not found");
-    REQUIRE(std::string(ArchiveWrapper::errorToString(ArchiveError::InvalidPath)) == "Invalid path");
-    REQUIRE(std::string(ArchiveWrapper::errorToString(ArchiveError::ArchiveCorrupted)) == "Archive is corrupted");
-    REQUIRE(std::string(ArchiveWrapper::errorToString(ArchiveError::EntryNotFound)) == "Entry not found");
-    REQUIRE(std::string(ArchiveWrapper::errorToString(ArchiveError::UnknownError)) == "Unknown error");
+    REQUIRE(std::string(ucf::utilities::ArchiveWrapper::errorToString(ucf::utilities::ArchiveError::Success)) == "Success");
+    REQUIRE(std::string(ucf::utilities::ArchiveWrapper::errorToString(ucf::utilities::ArchiveError::FileNotFound)) == "File not found");
+    REQUIRE(std::string(ucf::utilities::ArchiveWrapper::errorToString(ucf::utilities::ArchiveError::InvalidPath)) == "Invalid path");
+    REQUIRE(std::string(ucf::utilities::ArchiveWrapper::errorToString(ucf::utilities::ArchiveError::ArchiveCorrupted)) == "Archive is corrupted");
+    REQUIRE(std::string(ucf::utilities::ArchiveWrapper::errorToString(ucf::utilities::ArchiveError::EntryNotFound)) == "Entry not found");
+    REQUIRE(std::string(ucf::utilities::ArchiveWrapper::errorToString(ucf::utilities::ArchiveError::UnknownError)) == "Unknown error");
 }
 
 //============================================
@@ -600,11 +599,11 @@ TEST_CASE("Convenience functions", "[ArchiveUtils][Convenience]") {
     
     // Create using convenience function
     auto createError = createZipArchive(zipPath.string(), files);
-    REQUIRE(createError == ArchiveError::Success);
+    REQUIRE(createError == ucf::utilities::ArchiveError::Success);
     
     // Extract using convenience function
     auto extractError = extractZipArchive(zipPath.string(), extractDir.string());
-    REQUIRE(extractError == ArchiveError::Success);
+    REQUIRE(extractError == ucf::utilities::ArchiveError::Success);
     
     REQUIRE(std::filesystem::exists(extractDir / "file1.txt"));
     REQUIRE(std::filesystem::exists(extractDir / "file2.txt"));
@@ -615,7 +614,7 @@ TEST_CASE("Convenience functions", "[ArchiveUtils][Convenience]") {
 //============================================
 TEST_CASE("ArchiveWrapper - Special characters in filename", "[ArchiveUtils][EdgeCase]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create file with special characters
     auto specialFile = fixture.testDir / "special file (1).txt";
@@ -625,12 +624,12 @@ TEST_CASE("ArchiveWrapper - Special characters in filename", "[ArchiveUtils][Edg
     std::vector<std::string> files = { specialFile.string() };
     
     auto error = archiver.create(zipPath.string(), files);
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
 }
 
 TEST_CASE("ArchiveWrapper - Unicode filename", "[ArchiveUtils][EdgeCase]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     // Create file with unicode name
     auto unicodeFile = fixture.testDir / u8"文件.txt";
@@ -640,36 +639,36 @@ TEST_CASE("ArchiveWrapper - Unicode filename", "[ArchiveUtils][EdgeCase]") {
     std::vector<std::string> files = { unicodeFile.string() };
     
     auto error = archiver.create(zipPath.string(), files);
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
 }
 
 TEST_CASE("ArchiveWrapper - Empty file list", "[ArchiveUtils][EdgeCase]") {
     TestFixture fixture;
-    ArchiveWrapper archiver;
+    ucf::utilities::ArchiveWrapper archiver;
     
     auto zipPath = fixture.testDir / "empty_list.zip";
     std::vector<std::string> files = {};
     
     auto error = archiver.create(zipPath.string(), files);
-    REQUIRE(error == ArchiveError::Success);
+    REQUIRE(error == ucf::utilities::ArchiveError::Success);
     
     auto entries = archiver.list(zipPath.string());
     REQUIRE(entries.empty());
 }
 
 TEST_CASE("ArchiveWrapper - Move semantics", "[ArchiveUtils][EdgeCase]") {
-    ArchiveWrapper archiver1;
+    ucf::utilities::ArchiveWrapper archiver1;
     
-    ArchiveOptions opts;
+    ucf::utilities::ArchiveOptions opts;
     opts.compressionLevel = 9;
     archiver1.setOptions(opts);
     
     // Move constructor
-    ArchiveWrapper archiver2(std::move(archiver1));
+    ucf::utilities::ArchiveWrapper archiver2(std::move(archiver1));
     REQUIRE(archiver2.getOptions().compressionLevel == 9);
     
     // Move assignment
-    ArchiveWrapper archiver3;
+    ucf::utilities::ArchiveWrapper archiver3;
     archiver3 = std::move(archiver2);
     REQUIRE(archiver3.getOptions().compressionLevel == 9);
 }

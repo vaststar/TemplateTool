@@ -2,8 +2,6 @@
 
 #include <commonHead/viewModels/JsonTreeViewModel/IJsonTreeModel.h>
 
-using namespace commonHead::viewModels::model;
-
 JsonTreeItemModel::JsonTreeItemModel(QObject* parent)
     : QAbstractItemModel(parent)
 {
@@ -11,7 +9,7 @@ JsonTreeItemModel::JsonTreeItemModel(QObject* parent)
 
 JsonTreeItemModel::~JsonTreeItemModel() = default;
 
-void JsonTreeItemModel::setTree(const std::shared_ptr<IJsonTree>& tree)
+void JsonTreeItemModel::setTree(const std::shared_ptr<commonHead::viewModels::model::IJsonTree>& tree)
 {
     if (m_tree == tree)
     {
@@ -56,7 +54,7 @@ QVariant JsonTreeItemModel::data(const QModelIndex& index, int role) const
         return static_cast<int>(nodeData.childCount);
     case ShowCommaRole:
     {
-        if (nodeData.type == JsonNodeType::ClosingBracket)
+        if (nodeData.type == commonHead::viewModels::model::JsonNodeType::ClosingBracket)
         {
             auto parentWeak = node->getParent();
             auto parent = parentWeak.lock();
@@ -69,7 +67,7 @@ QVariant JsonTreeItemModel::data(const QModelIndex& index, int role) const
                 return false;
 
             auto gpData = grandparent->getNodeData();
-            if (gpData.type != JsonNodeType::Object && gpData.type != JsonNodeType::Array)
+            if (gpData.type != commonHead::viewModels::model::JsonNodeType::Object && gpData.type != commonHead::viewModels::model::JsonNodeType::Array)
                 return false;
 
             std::size_t gpChildCount = grandparent->getChildCount();
@@ -90,7 +88,7 @@ QVariant JsonTreeItemModel::data(const QModelIndex& index, int role) const
             return false;
 
         auto parentData = parent->getNodeData();
-        if (parentData.type != JsonNodeType::Object && parentData.type != JsonNodeType::Array)
+        if (parentData.type != commonHead::viewModels::model::JsonNodeType::Object && parentData.type != commonHead::viewModels::model::JsonNodeType::Array)
             return false;
 
         std::size_t parentChildCount = parent->getChildCount();
@@ -153,8 +151,7 @@ QModelIndex JsonTreeItemModel::index(int row, int column, const QModelIndex& par
     return createIndex(row, column, static_cast<void*>(child.get()));
 }
 
-QModelIndex JsonTreeItemModel::parent(const QModelIndex& index) const
-{
+QModelIndex JsonTreeItemModel::parent(const QModelIndex& index) const{
     if (!m_tree || !index.isValid())
     {
         return {};
@@ -237,7 +234,7 @@ QHash<int, QByteArray> JsonTreeItemModel::roleNames() const
     return roles;
 }
 
-IJsonTreeNode* JsonTreeItemModel::nodeFromIndex(const QModelIndex& index) const
+commonHead::viewModels::model::IJsonTreeNode* JsonTreeItemModel::nodeFromIndex(const QModelIndex& index) const
 {
     if (!m_tree)
     {
@@ -255,5 +252,5 @@ IJsonTreeNode* JsonTreeItemModel::nodeFromIndex(const QModelIndex& index) const
         return root.get();
     }
 
-    return static_cast<IJsonTreeNode*>(index.internalPointer());
+    return static_cast<commonHead::viewModels::model::IJsonTreeNode*>(index.internalPointer());
 }

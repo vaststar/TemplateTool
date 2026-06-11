@@ -11,8 +11,6 @@
 #include <filesystem>
 #include <sstream>
 
-using namespace ucf::utilities::screenrecording;
-
 namespace commonHead::viewModels {
 
 // ============================================================================
@@ -55,7 +53,7 @@ void RecordingViewModel::init()
     // Auto-discover FFmpeg at startup
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_ffmpegPath = IScreenRecorder::findFFmpegPath();
+        m_ffmpegPath = ucf::utilities::screenrecording::IScreenRecorder::findFFmpegPath();
     }
 
     // Load settings from FeatureSettingsService if available
@@ -108,7 +106,7 @@ std::string RecordingViewModel::getFFmpegPath() const
 
 bool RecordingViewModel::hasScreenRecordingPermission() const
 {
-    return IScreenRecorder::hasScreenRecordingPermission();
+    return ucf::utilities::screenrecording::IScreenRecorder::hasScreenRecordingPermission();
 }
 
 // ============================================================================
@@ -203,7 +201,7 @@ void RecordingViewModel::convertToGif(const std::string& inputPath, const std::s
         outPath = ucf::utilities::FilePathUtils::utf8FromPath(p);
     }
 
-    bool ok = IScreenRecorder::convertToGif(ffmpeg, inputPath, outPath, 10);
+    bool ok = ucf::utilities::screenrecording::IScreenRecorder::convertToGif(ffmpeg, inputPath, outPath, 10);
     if (ok) {
         fireNotification(&IRecordingViewModelCallback::onRecordingCompleted, outPath);
     } else {
@@ -250,7 +248,7 @@ void RecordingViewModel::requestThumbnail(const std::string& inputPath)
     std::weak_ptr<RecordingViewModel> weakSelf =
         std::static_pointer_cast<RecordingViewModel>(shared_from_this());
     m_thumbnailThreadPool.submit([weakSelf, inputPath, ffmpegPath, outputPath]() {
-        const bool ok = IScreenRecorder::extractThumbnail(
+        const bool ok = ucf::utilities::screenrecording::IScreenRecorder::extractThumbnail(
             ffmpegPath,
             inputPath,
             outputPath,

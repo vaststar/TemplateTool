@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 #include <memory>
 
@@ -65,6 +66,9 @@ public:
 
     // Fire-and-forget metrics hook; VM does not store selection.
     virtual void selectContact(const std::string& contactId) = 0;
+
+    [[nodiscard]] virtual std::optional<model::ContactDetail>
+    getContactDetail(const std::string& contactId) const = 0;
 
     [[nodiscard]] virtual bool canMoveContact(const std::string& childId,
                                               const std::string& newParentId) const = 0;
