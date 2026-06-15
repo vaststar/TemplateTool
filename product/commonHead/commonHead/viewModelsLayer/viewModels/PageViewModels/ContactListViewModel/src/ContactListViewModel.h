@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
@@ -69,6 +71,20 @@ private:
     // Returns true if the tree was just rebuilt; callers should skip the incremental apply.
     bool ensureTreeBuilt();
     ucf::service::model::IContactRelation::RelationType serviceRelationType() const;
+
+    // Returns a shared snapshot of the current tree under the tree mutex (may be null).
+    std::shared_ptr<model::ContactTree> snapshotTree() const;
+    // Looks up a node by id in the given tree snapshot (null-safe).
+    model::ContactTreeNodePtr findNode(const std::shared_ptr<model::ContactTree>& tree,
+                                       const std::string& id) const;
+
+    // Keeps only the groups whose type matches this slice; std::nullopt means the slice
+    // carries no group type at all and the whole event should be dropped.
+    std::optional<ucf::service::model::GroupContactArray>
+        filterGroupsForSlice(const ucf::service::model::GroupContactArray& groups) const;
+    // Keeps only the relations whose type matches this slice.
+    ucf::service::model::ContactRelationArray
+        filterRelationsForSlice(const ucf::service::model::ContactRelationArray& relations) const;
 
 private:
     mutable std::mutex mTreeMutex;

@@ -58,6 +58,60 @@ ucf::service::model::IContactRelation::RelationType ContactListViewModel::servic
     return utils::toServiceRelationType(mInterestedRelationType);
 }
 
+std::shared_ptr<model::ContactTree> ContactListViewModel::snapshotTree() const
+{
+    std::scoped_lock lk(mTreeMutex);
+    return mTree;
+}
+
+model::ContactTreeNodePtr ContactListViewModel::findNode(const std::shared_ptr<model::ContactTree>& tree,
+                                                         const std::string& id) const
+{
+    if (!tree)
+    {
+        return nullptr;
+    }
+    return std::static_pointer_cast<model::IContactTree>(tree)->findNodeById(id);
+}
+
+std::optional<ucf::service::model::GroupContactArray>
+ContactListViewModel::filterGroupsForSlice(const ucf::service::model::GroupContactArray& groups) const
+{
+    const auto groupType = utils::groupTypeFor(mInterestedRelationType);
+    if (!groupType.has_value())
+    {
+        return std::nullopt;
+    }
+    const auto wantedGroupType = utils::toServiceGroupType(*groupType);
+
+    ucf::service::model::GroupContactArray filtered;
+    filtered.reserve(groups.size());
+    for (const auto& g : groups)
+    {
+        if (g && g->getGroupType() == wantedGroupType)
+        {
+            filtered.push_back(g);
+        }
+    }
+    return filtered;
+}
+
+ucf::service::model::ContactRelationArray
+ContactListViewModel::filterRelationsForSlice(const ucf::service::model::ContactRelationArray& relations) const
+{
+    const auto wanted = serviceRelationType();
+    ucf::service::model::ContactRelationArray filtered;
+    filtered.reserve(relations.size());
+    for (const auto& r : relations)
+    {
+        if (r && r->getRelationType() == wanted)
+        {
+            filtered.push_back(r);
+        }
+    }
+    return filtered;
+}
+
 void ContactListViewModel::init()
 {
     auto service = lockService();
@@ -249,17 +303,13 @@ bool ContactListViewModel::canMoveContact(const std::string& childId,
         return false;
     }
 
-    std::shared_ptr<model::ContactTree> snapshot;
-    {
-        std::scoped_lock lk(mTreeMutex);
-        snapshot = mTree;
-    }
+    std::shared_ptr<model::ContactTree> snapshot = snapshotTree();
     if (!snapshot)
     {
         return false;
     }
 
-    auto childNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(childId);
+    auto childNode = findNode(snapshot, childId);
     if (!childNode)
     {
         return false;
@@ -274,8 +324,13 @@ bool ContactListViewModel::canMoveContact(const std::string& childId,
 
     if (!newParentId.empty())
     {
-        auto parentNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(newParentId);
+        auto parentNode = findNode(snapshot, newParentId);
         if (!parentNode)
+        {
+            return false;
+        }
+        // Only group nodes can hold children; a person can never be a parent.
+        if (parentNode->getNodeData().type != model::ContactNodeType::Group)
         {
             return false;
         }
@@ -307,12 +362,7 @@ void ContactListViewModel::moveContact(const std::string& childId,
     // VM tree attaches root-less nodes to a virtual empty-id root. Dispatch accordingly.
     std::string curParentId;
     {
-        std::shared_ptr<model::ContactTree> snapshot;
-        {
-            std::scoped_lock lk(mTreeMutex);
-            snapshot = mTree;
-        }
-        auto childNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(childId);
+        auto childNode = findNode(snapshotTree(), childId);
         if (auto curParent = childNode ? childNode->getParent().lock() : nullptr)
         {
             curParentId = curParent->getNodeData().id;
@@ -380,16 +430,12 @@ bool ContactListViewModel::canAddContact(const std::string& parentId, model::Con
     {
         return true;
     }
-    std::shared_ptr<model::ContactTree> snapshot;
-    {
-        std::scoped_lock lk(mTreeMutex);
-        snapshot = mTree;
-    }
+    std::shared_ptr<model::ContactTree> snapshot = snapshotTree();
     if (!snapshot)
     {
         return false;
     }
-    auto parentNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(parentId);
+    auto parentNode = findNode(snapshot, parentId);
     if (!parentNode)
     {
         return false;
@@ -462,18 +508,10 @@ void ContactListViewModel::updateContact(const model::ContactNodeData& data)
     // regardless of what the caller put in data.type.
     model::ContactNodeData node = data;
     {
-        std::shared_ptr<model::ContactTree> snapshot;
+        if (auto n = findNode(snapshotTree(), data.id))
         {
-            std::scoped_lock lk(mTreeMutex);
-            snapshot = mTree;
-        }
-        if (snapshot)
-        {
-            if (auto n = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(data.id))
-            {
-                node.type      = n->getNodeData().type;
-                node.groupType = n->getNodeData().groupType;
-            }
+            node.type      = n->getNodeData().type;
+            node.groupType = n->getNodeData().groupType;
         }
     }
 
@@ -523,11 +561,7 @@ void ContactListViewModel::removeContact(const std::string& contactId)
         return;
     }
 
-    std::shared_ptr<model::ContactTree> snapshot;
-    {
-        std::scoped_lock lk(mTreeMutex);
-        snapshot = mTree;
-    }
+    std::shared_ptr<model::ContactTree> snapshot = snapshotTree();
     auto node = snapshot ? snapshot->findNodeById(contactId) : nullptr;
     if (!node)
     {
@@ -655,24 +689,14 @@ void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string
 
 void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::GroupContactArray& groups)
 {
-    const auto groupType = utils::groupTypeFor(mInterestedRelationType);
-    if (!groupType.has_value())
+    auto filteredOpt = filterGroupsForSlice(groups);
+    if (!filteredOpt.has_value())
     {
         COMMONHEAD_LOG_DEBUG("onGroupContactsAdded dropped (slice has no group type), slice:"
                              << static_cast<int>(mInterestedRelationType) << ", raw count:" << groups.size());
         return;
     }
-    const auto wantedGroupType = utils::toServiceGroupType(*groupType);
-
-    ucf::service::model::GroupContactArray filtered;
-    filtered.reserve(groups.size());
-    for (const auto& g : groups)
-    {
-        if (g && g->getGroupType() == wantedGroupType)
-        {
-            filtered.push_back(g);
-        }
-    }
+    const auto& filtered = *filteredOpt;
     COMMONHEAD_LOG_DEBUG("onGroupContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << groups.size() << ", kept:" << filtered.size());
     if (filtered.empty())
@@ -700,24 +724,14 @@ void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::Group
 
 void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::GroupContactArray& groups)
 {
-    const auto groupType = utils::groupTypeFor(mInterestedRelationType);
-    if (!groupType.has_value())
+    auto filteredOpt = filterGroupsForSlice(groups);
+    if (!filteredOpt.has_value())
     {
         COMMONHEAD_LOG_DEBUG("onGroupContactsUpdated dropped (slice has no group type), slice:"
                              << static_cast<int>(mInterestedRelationType) << ", raw count:" << groups.size());
         return;
     }
-    const auto wantedGroupType = utils::toServiceGroupType(*groupType);
-
-    ucf::service::model::GroupContactArray filtered;
-    filtered.reserve(groups.size());
-    for (const auto& g : groups)
-    {
-        if (g && g->getGroupType() == wantedGroupType)
-        {
-            filtered.push_back(g);
-        }
-    }
+    const auto& filtered = *filteredOpt;
     COMMONHEAD_LOG_DEBUG("onGroupContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << groups.size() << ", kept:" << filtered.size());
     if (filtered.empty())
@@ -766,16 +780,7 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
 
 void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations)
 {
-    const auto wanted = serviceRelationType();
-    ucf::service::model::ContactRelationArray filtered;
-    filtered.reserve(relations.size());
-    for (const auto& r : relations)
-    {
-        if (r && r->getRelationType() == wanted)
-        {
-            filtered.push_back(r);
-        }
-    }
+    auto filtered = filterRelationsForSlice(relations);
     COMMONHEAD_LOG_DEBUG("onContactRelationsAdded slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << relations.size() << ", kept:" << filtered.size());
     if (filtered.empty())
@@ -807,16 +812,7 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
 
 void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::ContactRelationArray& relations)
 {
-    const auto wanted = serviceRelationType();
-    ucf::service::model::ContactRelationArray filtered;
-    filtered.reserve(relations.size());
-    for (const auto& r : relations)
-    {
-        if (r && r->getRelationType() == wanted)
-        {
-            filtered.push_back(r);
-        }
-    }
+    auto filtered = filterRelationsForSlice(relations);
     COMMONHEAD_LOG_DEBUG("onContactRelationsUpdated slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << relations.size() << ", kept:" << filtered.size());
     if (filtered.empty())
