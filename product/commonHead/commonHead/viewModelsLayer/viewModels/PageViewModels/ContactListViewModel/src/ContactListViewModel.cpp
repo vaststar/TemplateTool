@@ -3,6 +3,7 @@
 #include <mutex>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ContactService/IContactEntities.h>
+#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
@@ -357,6 +358,217 @@ void ContactListViewModel::moveContact(const std::string& childId,
         service->updateContactRelations({
             std::make_shared<utils::VMContactRelation>(existingRelationId, childId, newParentId, relType)
         });
+    }
+}
+
+// ===== Create / edit / delete =====
+
+bool ContactListViewModel::canAddContact(const std::string& parentId, model::ContactNodeType type) const
+{
+    auto service = lockService();
+    if (!service)
+    {
+        return false;
+    }
+    // A Group node can only be created in a slice that actually shows groups.
+    if (type == model::ContactNodeType::Group && !utils::groupTypeFor(mInterestedRelationType).has_value())
+    {
+        return false;
+    }
+    // Root is always a valid parent.
+    if (parentId.empty())
+    {
+        return true;
+    }
+    std::shared_ptr<model::ContactTree> snapshot;
+    {
+        std::scoped_lock lk(mTreeMutex);
+        snapshot = mTree;
+    }
+    if (!snapshot)
+    {
+        return false;
+    }
+    auto parentNode = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(parentId);
+    if (!parentNode)
+    {
+        return false;
+    }
+    // Only group nodes can hold children.
+    return parentNode->getNodeData().type == model::ContactNodeType::Group;
+}
+
+std::string ContactListViewModel::addContact(const std::string& parentId, const model::ContactNodeData& data)
+{
+    if (!canAddContact(parentId, data.type))
+    {
+        COMMONHEAD_LOG_WARN("addContact rejected: parentId=" << (parentId.empty() ? "<root>" : parentId)
+                            << ", type=" << static_cast<int>(data.type));
+        return {};
+    }
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("addContact failed: service not available");
+        return {};
+    }
+
+    const std::string newId = ucf::utilities::UUIDUtils::generateUUID();
+    COMMONHEAD_LOG_INFO("addContact: id=" << newId << ", name=" << data.displayName
+                        << ", type=" << static_cast<int>(data.type)
+                        << ", parent=" << (parentId.empty() ? "<root>" : parentId));
+
+    if (data.type == model::ContactNodeType::Person)
+    {
+        service->addPersonContacts({
+            std::make_shared<utils::VMPersonContact>(newId, data.displayName)
+        });
+    }
+    else
+    {
+        // Force the slice's group type so the new node is not filtered out of this view;
+        // canAddContact has already guaranteed the slice carries a group type.
+        const auto groupType = utils::groupTypeFor(mInterestedRelationType).value_or(data.groupType);
+        service->addGroupContacts({
+            std::make_shared<utils::VMGroupContact>(newId, data.displayName,
+                                                    utils::toServiceGroupType(groupType))
+        });
+    }
+
+    // Attach to a real parent; root-level nodes carry no relation row.
+    if (!parentId.empty())
+    {
+        service->addContactRelations({
+            std::make_shared<utils::VMContactRelation>(std::string{}, newId, parentId, serviceRelationType())
+        });
+    }
+    return newId;
+}
+
+void ContactListViewModel::updateContact(const model::ContactNodeData& data)
+{
+    if (data.id.empty())
+    {
+        return;
+    }
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("updateContact failed: service not available");
+        return;
+    }
+
+    // Resolve the node type from the current tree so we route to the correct write path
+    // regardless of what the caller put in data.type.
+    model::ContactNodeData node = data;
+    {
+        std::shared_ptr<model::ContactTree> snapshot;
+        {
+            std::scoped_lock lk(mTreeMutex);
+            snapshot = mTree;
+        }
+        if (snapshot)
+        {
+            if (auto n = std::static_pointer_cast<model::IContactTree>(snapshot)->findNodeById(data.id))
+            {
+                node.type      = n->getNodeData().type;
+                node.groupType = n->getNodeData().groupType;
+            }
+        }
+    }
+
+    COMMONHEAD_LOG_INFO("updateContact: id=" << node.id << ", name=" << node.displayName
+                        << ", type=" << static_cast<int>(node.type));
+
+    if (node.type == model::ContactNodeType::Person)
+    {
+        service->updatePersonContacts({
+            std::make_shared<utils::VMPersonContact>(node.id, node.displayName)
+        });
+    }
+    else
+    {
+        service->updateGroupContacts({
+            std::make_shared<utils::VMGroupContact>(node.id, node.displayName,
+                                                    utils::toServiceGroupType(node.groupType))
+        });
+    }
+}
+
+bool ContactListViewModel::canRemoveContact(const std::string& contactId) const
+{
+    if (contactId.empty())
+    {
+        return false;
+    }
+    std::scoped_lock lk(mTreeMutex);
+    if (!mTree)
+    {
+        return false;
+    }
+    return std::static_pointer_cast<model::IContactTree>(mTree)->findNodeById(contactId) != nullptr;
+}
+
+void ContactListViewModel::removeContact(const std::string& contactId)
+{
+    if (!canRemoveContact(contactId))
+    {
+        COMMONHEAD_LOG_WARN("removeContact rejected: contactId=" << contactId);
+        return;
+    }
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("removeContact failed: service not available");
+        return;
+    }
+
+    std::shared_ptr<model::ContactTree> snapshot;
+    {
+        std::scoped_lock lk(mTreeMutex);
+        snapshot = mTree;
+    }
+    auto node = snapshot ? snapshot->findNodeById(contactId) : nullptr;
+    if (!node)
+    {
+        return;
+    }
+    const bool isPerson = node->getNodeData().type == model::ContactNodeType::Person;
+
+    // Gather the relation rows referencing this node: its own parent link plus the links
+    // to each direct child (which the tree will fall back to the virtual root).
+    std::vector<std::string> relationIds;
+    if (auto ownRel = snapshot->getRelationIdByChildId(contactId); !ownRel.empty())
+    {
+        relationIds.push_back(ownRel);
+    }
+    const std::size_t childCount = node->getChildCount();
+    for (std::size_t i = 0; i < childCount; ++i)
+    {
+        if (auto child = node->getChild(i))
+        {
+            if (auto rel = snapshot->getRelationIdByChildId(child->getNodeData().id); !rel.empty())
+            {
+                relationIds.push_back(rel);
+            }
+        }
+    }
+
+    COMMONHEAD_LOG_INFO("removeContact: id=" << contactId << ", isPerson=" << isPerson
+                        << ", relations=" << relationIds.size());
+
+    // Detach relations first so children re-home to the virtual root, then drop the node.
+    if (!relationIds.empty())
+    {
+        service->removeContactRelations(relationIds);
+    }
+    if (isPerson)
+    {
+        service->removePersonContacts({contactId});
+    }
+    else
+    {
+        service->removeGroupContacts({contactId});
     }
 }
 

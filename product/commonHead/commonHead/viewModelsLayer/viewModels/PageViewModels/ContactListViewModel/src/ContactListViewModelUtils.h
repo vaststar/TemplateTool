@@ -70,4 +70,49 @@ private:
     RelationType mRelationType;
 };
 
+// Minimal ucf::service::IPersonContact impl owned by the VM so add/updateContact can
+// synthesize person rows to push down to the service without pulling in the
+// service-private ContactEntities.h. Only the fields the service write path consumes
+// (id / name / status) are carried; profile sub-fields are reported empty.
+class VMPersonContact final : public ucf::service::model::IPersonContact
+{
+public:
+    VMPersonContact(std::string contactId, std::string personName,
+                    ContactStatus status = ContactStatus::Active);
+
+    std::string   getContactId()     const override;
+    ContactStatus getContactStatus() const override;
+    std::string   getPersonName()    const override;
+    std::string   getFirstName()     const override;
+    std::string   getLastName()      const override;
+    Gender        getGender()        const override;
+    std::string   getPhone()         const override;
+    std::string   getEmail()         const override;
+
+private:
+    std::string   mContactId;
+    std::string   mPersonName;
+    ContactStatus mStatus;
+};
+
+// Minimal ucf::service::IGroupContact impl owned by the VM. The service add path inspects
+// getGroupType() to build the matching concrete sub-class; typed sub-fields stay default.
+class VMGroupContact final : public ucf::service::model::IGroupContact
+{
+public:
+    VMGroupContact(std::string contactId, std::string groupName, GroupType groupType,
+                   ContactStatus status = ContactStatus::Active);
+
+    std::string   getContactId()     const override;
+    ContactStatus getContactStatus() const override;
+    std::string   getGroupName()     const override;
+    GroupType     getGroupType()     const override;
+
+private:
+    std::string   mContactId;
+    std::string   mGroupName;
+    GroupType     mGroupType;
+    ContactStatus mStatus;
+};
+
 } // namespace commonHead::viewModels::utils

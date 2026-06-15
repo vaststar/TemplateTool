@@ -1,11 +1,14 @@
-#include "ContactsPageDetailMapper.h"
+#include "ContactsPageUtils.h"
 
-namespace ContactsPage::DetailMapper {
+namespace ContactsPage::Utils {
 
 QString kindKey(commonHead::viewModels::model::ContactNodeType nodeType,
                 commonHead::viewModels::model::GroupType groupType)
 {
-    if (nodeType == commonHead::viewModels::model::ContactNodeType::Person) return QStringLiteral("person");
+    if (nodeType == commonHead::viewModels::model::ContactNodeType::Person)
+    {
+        return QStringLiteral("person");
+    }
     switch (groupType)
     {
         case commonHead::viewModels::model::GroupType::Folder:     return QStringLiteral("folder");
@@ -20,7 +23,10 @@ QString kindKey(commonHead::viewModels::model::ContactNodeType nodeType,
 QString kindLabel(commonHead::viewModels::model::ContactNodeType nodeType,
                   commonHead::viewModels::model::GroupType groupType)
 {
-    if (nodeType == commonHead::viewModels::model::ContactNodeType::Person) return QStringLiteral("联系人");
+    if (nodeType == commonHead::viewModels::model::ContactNodeType::Person)
+    {
+        return QStringLiteral("联系人");
+    }
     switch (groupType)
     {
         case commonHead::viewModels::model::GroupType::Folder:     return QStringLiteral("整理夹");
@@ -98,10 +104,33 @@ QVariantMap toVariantMap(const commonHead::viewModels::model::ContactDetail& det
     result["kindLabel"] = kindLabel(detail.type, detail.groupType);
     result["status"]    = statusLabel(detail.status);
 
-    if (detail.person)     result["person"]     = toPersonMap(*detail.person);
-    if (detail.department) result["department"] = toDepartmentMap(*detail.department);
-    if (detail.team)       result["team"]       = toTeamMap(*detail.team);
+    if (detail.person)
+    {
+        result["person"]     = toPersonMap(*detail.person);
+    }
+    if (detail.department)
+    {
+        result["department"] = toDepartmentMap(*detail.department);
+    }
+    if (detail.team)
+    {
+        result["team"]       = toTeamMap(*detail.team);
+    }
     return result;
 }
 
-} // namespace ContactsPage::DetailMapper
+commonHead::viewModels::model::ContactNodeData toNodeData(const QString& id, const QVariantMap& fields)
+{
+    using namespace commonHead::viewModels::model;
+    ContactNodeData data;
+    data.id          = id.toStdString();
+    data.displayName = fields.value(QStringLiteral("displayName")).toString().toStdString();
+    data.type        = fields.value(QStringLiteral("nodeType")).toInt() == 1
+                           ? ContactNodeType::Group
+                           : ContactNodeType::Person;
+    data.groupType   = static_cast<GroupType>(fields.value(QStringLiteral("groupType"),
+                                               static_cast<int>(GroupType::Folder)).toInt());
+    return data;
+}
+
+} // namespace ContactsPage::Utils

@@ -158,7 +158,10 @@ void ContactListItemModel::clearParents(const std::vector<std::string>& childIds
 QModelIndex ContactListItemModel::indexOfId(const QString& id) const
 {
     Node* n = findNode(id.toStdString());
-    if (!n || n == getRoot()) return {};
+    if (!n || n == getRoot())
+    {
+        return {};
+    }
     return indexFor(n);
 }
 

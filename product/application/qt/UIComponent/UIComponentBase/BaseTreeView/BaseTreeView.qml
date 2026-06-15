@@ -14,6 +14,10 @@ FocusScope {
     property var dropValidate: function(_mimeType, _data, _targetIndex) { return false }
     signal dropAccepted(string mimeType, string data, var targetIndex)
 
+    // Emitted on a right-click. modelIndex is the hit row (invalid when the click lands on
+    // empty space); pos is in this view's coordinate space, suitable for popup placement.
+    signal contextRequested(var modelIndex, point pos)
+
     clip: true
     activeFocusOnTab: true
 
@@ -64,6 +68,20 @@ FocusScope {
 
         function _emitActivated() {
             if (currentRow >= 0) root.itemInvoked(index(currentRow, 0));
+        }
+
+        TapHandler {
+            acceptedButtons: Qt.RightButton
+            onTapped: function(eventPoint) {
+                const p = eventPoint.position
+                const cell = treeView.cellAtPosition(p.x + treeView.contentX,
+                                                      p.y + treeView.contentY)
+                const idx = (cell.x < 0 || cell.y < 0)
+                          ? treeView.index(-1, -1)
+                          : treeView.modelIndex(cell)
+                const mapped = treeView.mapToItem(root, p.x, p.y)
+                root.contextRequested(idx, Qt.point(mapped.x, mapped.y))
+            }
         }
     }
 

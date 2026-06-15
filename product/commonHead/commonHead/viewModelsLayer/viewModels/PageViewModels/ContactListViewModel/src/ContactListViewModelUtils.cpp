@@ -192,4 +192,29 @@ std::string                     VMContactRelation::getChildId()      const { ret
 std::string                     VMContactRelation::getParentId()     const { return mParentId;     }
 VMContactRelation::RelationType VMContactRelation::getRelationType() const { return mRelationType; }
 
+VMPersonContact::VMPersonContact(std::string contactId, std::string personName, ContactStatus status)
+    : mContactId(std::move(contactId))
+    , mPersonName(std::move(personName))
+    , mStatus(status) {}
+
+std::string                  VMPersonContact::getContactId()     const { return mContactId; }
+VMPersonContact::ContactStatus VMPersonContact::getContactStatus() const { return mStatus; }
+std::string                  VMPersonContact::getPersonName()    const { return mPersonName; }
+std::string                  VMPersonContact::getFirstName()     const { return {}; }
+std::string                  VMPersonContact::getLastName()      const { return {}; }
+VMPersonContact::Gender      VMPersonContact::getGender()        const { return Gender::Unspecified; }
+std::string                  VMPersonContact::getPhone()         const { return {}; }
+std::string                  VMPersonContact::getEmail()         const { return {}; }
+
+VMGroupContact::VMGroupContact(std::string contactId, std::string groupName, GroupType groupType, ContactStatus status)
+    : mContactId(std::move(contactId))
+    , mGroupName(std::move(groupName))
+    , mGroupType(groupType)
+    , mStatus(status) {}
+
+std::string                  VMGroupContact::getContactId()     const { return mContactId; }
+VMGroupContact::ContactStatus VMGroupContact::getContactStatus() const { return mStatus; }
+std::string                  VMGroupContact::getGroupName()     const { return mGroupName; }
+VMGroupContact::GroupType    VMGroupContact::getGroupType()     const { return mGroupType; }
+
 } // namespace commonHead::viewModels::utils

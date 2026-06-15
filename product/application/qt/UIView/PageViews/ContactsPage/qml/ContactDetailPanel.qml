@@ -12,9 +12,7 @@ Item {
 
     required property ContactsPageController controller
 
-    readonly property var info: controller && controller.currentContactId !== ""
-        ? controller.getContactInfo(controller.currentContactId)
-        : null
+    readonly property var info: controller ? controller.currentContactInfo : null
     readonly property bool hasInfo: info && info.id !== undefined
 
     UTText {

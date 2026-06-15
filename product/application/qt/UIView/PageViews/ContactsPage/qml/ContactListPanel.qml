@@ -58,6 +58,13 @@ Item {
             if (contactId) controller.selectContact(contactId);
         }
 
+        // Right-click: resolve the hit node and open the context menu.
+        onContextRequested: function(idx, pos) {
+            const id   = idx.valid ? (treeView.model.data(idx, Qt.UserRole + 1) || "") : "";
+            const type = idx.valid ? treeView.model.data(idx, Qt.UserRole + 3) : -1;
+            contextMenu.openFor(id, type, pos);
+        }
+
         // Drag-reparent: declare what we accept and how to validate.
         acceptedMimeTypes: ["text/x-contact-id"]
         dropValidate: function(_mt, data, idx) {
@@ -88,6 +95,37 @@ Item {
             const r = tv.rowAtIndex(idx);
             if (r >= 0) tv.expand(r);
         }
+        // Once a freshly-added node exists in the model, expand its parent and select it.
+        function onContactAdded(newId, parentId) {
+            const tv = treeContainer.treeView;
+            if (!tv) return;
+            if (parentId !== "") {
+                const pidx = tv.model.indexOfId(parentId);
+                const pr = tv.rowAtIndex(pidx);
+                if (pr >= 0) tv.expand(pr);
+            }
+            controller.selectContact(newId);
+        }
+    }
+
+    // ---- Context menu ----
+    // The controller owns the menu model (built from real add/remove permissions) and
+    // decides which dialog an action opens. The panel only forwards the user's choice.
+    UTDynamicMenu {
+        id: contextMenu
+        parent: treeContainer
+
+        property string targetId: ""
+        property int    targetType: -1   // -1 = blank/root, 0 = Person, 1 = Group
+
+        function openFor(id, type, pos) {
+            targetId = id;
+            targetType = type;
+            model = root.controller.contextMenuModel(id, type);
+            popup(pos.x, pos.y);
+        }
+
+        onItemTriggered: action => root.controller.handleContextAction(action, targetId, targetType)
     }
 
     // Loading / error overlay (shown when tree is not Ready)

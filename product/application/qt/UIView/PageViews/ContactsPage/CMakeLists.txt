@@ -1,14 +1,16 @@
 list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ContactsPage/ContactListItemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ContactsPage/ContactsPageController.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactsPageDetailMapper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactsPageUtils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListItemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactsPageController.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactsPageDetailMapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactsPageUtils.cpp
 )
 list(APPEND MODULE_QML_TARGET_FILES
     PageViews/ContactsPage/qml/ContactsPage.qml
     PageViews/ContactsPage/qml/ContactListPanel.qml
+    PageViews/ContactsPage/qml/ContactEditDialog.qml
+    PageViews/ContactsPage/qml/ContactDeleteDialog.qml
     PageViews/ContactsPage/qml/ContactDetailPanel.qml
     PageViews/ContactsPage/qml/DetailFieldRow.qml
     PageViews/ContactsPage/qml/DetailHeader.qml

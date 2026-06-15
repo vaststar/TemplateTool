@@ -74,6 +74,30 @@ public:
                                               const std::string& newParentId) const = 0;
     virtual void moveContact(const std::string& childId,
                              const std::string& newParentId) = 0;
+
+    // ===== Create / edit / delete =====
+    // Whether a node of the given type may be created directly under parentId. An empty
+    // parentId means the virtual root. Mirrors canMoveContact: the rule lives in the VM
+    // so the UI does not have to re-encode business constraints.
+    [[nodiscard]] virtual bool canAddContact(const std::string& parentId,
+                                             model::ContactNodeType type) const = 0;
+
+    // Create a new contact (Person or Group) under parentId. The VM mints the contact id
+    // and, when parentId is non-empty, attaches the node to the parent in the slice this
+    // VM owns. Returns the freshly-minted contact id (empty on failure) so callers can
+    // track the node once the add callbacks arrive.
+    virtual std::string addContact(const std::string& parentId,
+                                   const model::ContactNodeData& data) = 0;
+
+    // Rename / re-state an existing contact. Only fields the slice understands are applied;
+    // changing a group's groupType is not supported.
+    virtual void updateContact(const model::ContactNodeData& data) = 0;
+
+    [[nodiscard]] virtual bool canRemoveContact(const std::string& contactId) const = 0;
+
+    // Remove the contact and detach the relation rows that reference it (its own parent
+    // link plus the links to its children, which fall back to the virtual root).
+    virtual void removeContact(const std::string& contactId) = 0;
 public:
     static std::shared_ptr<IContactListViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };
