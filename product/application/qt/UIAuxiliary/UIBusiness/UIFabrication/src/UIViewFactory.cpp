@@ -124,11 +124,8 @@ QPointer<QQuickWindow> UIViewFactory::createQmlItemWindow(const QString& qmlReso
 
     const QString actualQmlResource = generateQmlResourcePath(qmlResource);
 
-    // QQuickView shares the provided engine (its import paths, singletons,
-    // etc.). setInitialProperties() must be called BEFORE setSource() so the
-    // values are visible inside the root Item's Component.onCompleted.
     auto* view = new QQuickView(mQmlEngine.get(), /*parent*/ nullptr);
-    view->setResizeMode(QQuickView::SizeViewToRootObject);
+    view->setResizeMode(QQuickView::SizeRootObjectToView);
     if (!initialProperties.isEmpty())
     {
         view->setInitialProperties(initialProperties);
@@ -168,6 +165,16 @@ QPointer<QQuickWindow> UIViewFactory::createQmlItemWindow(const QString& qmlReso
 
     UIFabrication_LOG_DEBUG("item-window created: " << actualQmlResource.toStdString()
                           << ", rootObjectName: " << root->objectName().toStdString());
+
+    // SizeRootObjectToView lets the root Item follow the window on resize/maximize,
+    // but no longer adopts the root's implicit size, so seed the initial window size.
+    const int implicitW = static_cast<int>(root->implicitWidth());
+    const int implicitH = static_cast<int>(root->implicitHeight());
+    if (implicitW > 0 && implicitH > 0)
+    {
+        view->resize(implicitW, implicitH);
+    }
+
     installCloseHandler(view);
     return view;
 }
