@@ -4,87 +4,16 @@
 #include <windows.h>
 #endif
 
+#include <thread>
+
 namespace ucf::service {
 
-WindowsCPUMonitor::WindowsCPUMonitor(std::chrono::milliseconds sampleInterval)
-    : mSampleInterval(sampleInterval)
-{
-}
-
-WindowsCPUMonitor::~WindowsCPUMonitor()
-{
-    stop();
-}
-
-void WindowsCPUMonitor::start()
-{
-    if (mRunning.exchange(true))
-    {
-        return;
-    }
-    
-    mSampleThread = std::thread(&WindowsCPUMonitor::sampleLoop, this);
-}
-
-void WindowsCPUMonitor::stop()
-{
-    if (!mRunning.exchange(false))
-    {
-        return;
-    }
-    
-    if (mSampleThread.joinable())
-    {
-        mSampleThread.join();
-    }
-}
-
-double WindowsCPUMonitor::getCPUUsage() const
-{
-    return mCPUUsage.load();
-}
-
-unsigned int WindowsCPUMonitor::getCPUCoreCount() const
+unsigned int WindowsCPUMonitor::getCpuCoreCount() const
 {
     return std::thread::hardware_concurrency();
 }
 
-void WindowsCPUMonitor::sampleLoop()
-{
-    uint64_t prevCPUTime = getProcessCPUTime();
-    auto prevWallTime = std::chrono::steady_clock::now();
-    
-    while (mRunning.load())
-    {
-        std::this_thread::sleep_for(mSampleInterval);
-        
-        if (!mRunning.load())
-        {
-            break;
-        }
-        
-        uint64_t currCPUTime = getProcessCPUTime();
-        auto currWallTime = std::chrono::steady_clock::now();
-        
-        uint64_t cpuTimeDelta = currCPUTime - prevCPUTime;
-        auto wallTimeDelta = std::chrono::duration_cast<std::chrono::microseconds>(
-            currWallTime - prevWallTime).count();
-        
-        if (wallTimeDelta > 0)
-        {
-            // cpuTimeDelta is in 100-nanosecond intervals, convert to microseconds
-            double cpuTimeMicros = static_cast<double>(cpuTimeDelta) / 10.0;
-            double usage = (cpuTimeMicros / static_cast<double>(wallTimeDelta)) * 100.0;
-            
-            mCPUUsage.store(usage);
-        }
-        
-        prevCPUTime = currCPUTime;
-        prevWallTime = currWallTime;
-    }
-}
-
-uint64_t WindowsCPUMonitor::getProcessCPUTime() const
+uint64_t WindowsCPUMonitor::getProcessCpuTimeMicros() const
 {
 #ifdef _WIN32
     FILETIME createTime, exitTime, kernelTime, userTime;
@@ -96,11 +25,39 @@ uint64_t WindowsCPUMonitor::getProcessCPUTime() const
         kernel.HighPart = kernelTime.dwHighDateTime;
         user.LowPart = userTime.dwLowDateTime;
         user.HighPart = userTime.dwHighDateTime;
-        
-        return kernel.QuadPart + user.QuadPart;
+
+        // Convert 100-ns intervals to microseconds
+        return (kernel.QuadPart + user.QuadPart) / 10;
     }
 #endif
     return 0;
+}
+
+SystemCpuTimes WindowsCPUMonitor::getSystemCpuTimes() const
+{
+    SystemCpuTimes times;
+#ifdef _WIN32
+    FILETIME idleTime, kernelTime, userTime;
+    if (GetSystemTimes(&idleTime, &kernelTime, &userTime))
+    {
+        // All FILETIME are in 100-ns intervals. kernelTime already includes idleTime.
+        ULARGE_INTEGER idle, kernel, user;
+        idle.LowPart = idleTime.dwLowDateTime;
+        idle.HighPart = idleTime.dwHighDateTime;
+        kernel.LowPart = kernelTime.dwLowDateTime;
+        kernel.HighPart = kernelTime.dwHighDateTime;
+        user.LowPart = userTime.dwLowDateTime;
+        user.HighPart = userTime.dwHighDateTime;
+
+        uint64_t total = kernel.QuadPart + user.QuadPart;  // busy + idle (idle is inside kernel)
+        uint64_t busy = total - idle.QuadPart;
+
+        // Convert 100-ns intervals to microseconds
+        times.totalMicros = total / 10;
+        times.busyMicros = busy / 10;
+    }
+#endif
+    return times;
 }
 
 } // namespace ucf::service

@@ -12,9 +12,13 @@ class IPerformanceServiceCallback
 {
 public:
     virtual ~IPerformanceServiceCallback() = default;
-    
+
     /// Called when memory usage exceeds the warning threshold
-    virtual void onMemoryWarning(const MemoryInfo& memoryInfo) = 0;
+    virtual void onMemoryWarning(const MemoryInfo& memoryInfo) {}
+
+    /// Called when CPU usage exceeds the warning threshold.
+    /// Default empty implementation so existing implementers are not forced to change.
+    virtual void onCpuWarning(double /*cpuPercent*/) {}
 };
 
 using IPerformanceServiceCallbackPtr = std::shared_ptr<IPerformanceServiceCallback>;

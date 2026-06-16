@@ -10,14 +10,14 @@
 
 namespace ucf::service {
 
-std::unique_ptr<ICPUMonitor> ICPUMonitor::create(std::chrono::milliseconds sampleInterval)
+std::unique_ptr<ICPUMonitor> ICPUMonitor::create()
 {
 #if defined(__APPLE__)
-    return std::make_unique<MacOSCPUMonitor>(sampleInterval);
+    return std::make_unique<MacOSCPUMonitor>();
 #elif defined(__linux__)
-    return std::make_unique<LinuxCPUMonitor>(sampleInterval);
+    return std::make_unique<LinuxCPUMonitor>();
 #elif defined(_WIN32)
-    return std::make_unique<WindowsCPUMonitor>(sampleInterval);
+    return std::make_unique<WindowsCPUMonitor>();
 #else
     return nullptr;
 #endif

@@ -76,6 +76,11 @@ PerformanceService::~PerformanceService()
 
 void PerformanceService::initService()
 {
+    // Inject sink before starting the monitoring loop so no early events are lost.
+    auto self = shared_from_this();
+    mDataPrivate->getPerformanceManager().setNotificationSink(
+        std::static_pointer_cast<IPerformanceNotificationSink>(self));
+
     mDataPrivate->getPerformanceManager().initialize();
     PERFORMANCE_LOG_INFO("PerformanceService initialized");
 }
@@ -106,6 +111,16 @@ uint64_t PerformanceService::getMemoryWarningThreshold() const
 double PerformanceService::getCPUUsage() const
 {
     return mDataPrivate->getPerformanceManager().getCPUUsage();
+}
+
+void PerformanceService::setCpuWarningThreshold(double percent)
+{
+    mDataPrivate->getPerformanceManager().setCpuWarningThreshold(percent);
+}
+
+double PerformanceService::getCpuWarningThreshold() const
+{
+    return mDataPrivate->getPerformanceManager().getCpuWarningThreshold();
 }
 
 // ==========================================
@@ -154,6 +169,20 @@ std::string PerformanceService::exportReportAsJson() const
 void PerformanceService::exportReportToFile(const std::filesystem::path& path) const
 {
     mDataPrivate->getPerformanceManager().exportReportToFile(path);
+}
+
+// ==========================================
+// IPerformanceNotificationSink
+// ==========================================
+
+void PerformanceService::onMemoryWarning(const MemoryInfo& memoryInfo)
+{
+    fireNotification(&IPerformanceServiceCallback::onMemoryWarning, memoryInfo);
+}
+
+void PerformanceService::onCpuWarning(double cpuPercent)
+{
+    fireNotification(&IPerformanceServiceCallback::onCpuWarning, cpuPercent);
 }
 
 } // namespace ucf::service

@@ -4,6 +4,8 @@
 
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
 
+#include "PerformanceNotificationSink.h"
+
 #include <memory>
 
 namespace ucf::framework {
@@ -14,6 +16,7 @@ namespace ucf::service {
 
 class SERVICE_EXPORT PerformanceService : public virtual IPerformanceService,
                            public virtual ucf::utilities::NotificationHelper<IPerformanceServiceCallback>,
+                           public IPerformanceNotificationSink,
                            public std::enable_shared_from_this<PerformanceService>
 {
 public:
@@ -30,6 +33,8 @@ public:
 
     // CPU Monitoring
     [[nodiscard]] double getCPUUsage() const override;
+    void setCpuWarningThreshold(double percent) override;
+    [[nodiscard]] double getCpuWarningThreshold() const override;
 
     // Timing
     [[nodiscard]] TimingToken beginTiming(const std::string& operationName) override;
@@ -47,6 +52,10 @@ public:
 
 protected:
     void initService() override;
+
+    // IPerformanceNotificationSink — translates internal threshold events to outward callbacks
+    void onMemoryWarning(const MemoryInfo& memoryInfo) override;
+    void onCpuWarning(double cpuPercent) override;
 
 private:
     class DataPrivate;

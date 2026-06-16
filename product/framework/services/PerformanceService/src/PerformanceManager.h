@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <atomic>
+#include <thread>
+#include <chrono>
 #include <filesystem>
 
 namespace ucf::framework {
@@ -16,13 +18,14 @@ namespace ucf::service {
 class IMemoryMonitor;
 class ICPUMonitor;
 class TimingTracker;
+class IPerformanceNotificationSink;
 
 class PerformanceManager final
 {
 public:
     explicit PerformanceManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ~PerformanceManager();
-    
+
     PerformanceManager(const PerformanceManager&) = delete;
     PerformanceManager(PerformanceManager&&) = delete;
     PerformanceManager& operator=(const PerformanceManager&) = delete;
@@ -30,6 +33,9 @@ public:
 
 public:
     void initialize();
+
+    /// Inject the sink that receives threshold-exceeded notifications.
+    void setNotificationSink(std::weak_ptr<IPerformanceNotificationSink> sink);
 
 public:
     // Memory Monitoring
@@ -39,8 +45,8 @@ public:
 
     // CPU Monitoring
     [[nodiscard]] double getCPUUsage() const;
-    void startCPUMonitoring();
-    void stopCPUMonitoring();
+    void setCpuWarningThreshold(double percent);
+    [[nodiscard]] double getCpuWarningThreshold() const;
 
     // Timing
     [[nodiscard]] TimingToken beginTiming(const std::string& operationName);
@@ -55,12 +61,27 @@ public:
     void exportReportToFile(const std::filesystem::path& path) const;
 
 private:
+    void startMonitoring();
+    void stopMonitoring();
+    void monitorLoop();
+
+private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     std::unique_ptr<IMemoryMonitor> mMemoryMonitor;
     std::unique_ptr<ICPUMonitor> mCPUMonitor;
     std::unique_ptr<TimingTracker> mTimingTracker;
-    
+
+    std::weak_ptr<IPerformanceNotificationSink> mNotificationSink;
+
     std::atomic<uint64_t> mMemoryWarningThreshold{0};  // 0 = disabled
+    std::atomic<double> mCpuWarningThreshold{0.0};      // 0 or negative = disabled
+    std::atomic<double> mCpuUsage{0.0};                 // last computed process CPU usage %
+    std::atomic<double> mSystemCpuUsage{0.0};           // last computed system-wide CPU usage %
+
+    std::chrono::milliseconds mSampleInterval{1000}; //ms between samples in monitoring loop
+    std::chrono::milliseconds mReportInterval{30000};  // ms periodic usage log cadence
+    std::atomic<bool> mMonitorRunning{false};
+    std::thread mMonitorThread;
 };
 
 } // namespace ucf::service
