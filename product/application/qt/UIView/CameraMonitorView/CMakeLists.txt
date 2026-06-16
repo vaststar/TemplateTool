@@ -8,6 +8,8 @@ list(APPEND MODULE_QML_TARGET_FILES
     CameraMonitorView/qml/CameraMonitorView.qml
     CameraMonitorView/qml/CameraDirectoryTreePanel.qml
     CameraMonitorView/qml/CameraPreviewPanel.qml
+    CameraMonitorView/qml/CameraEditDialog.qml
+    CameraMonitorView/qml/CameraDeleteDialog.qml
 )
 set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
 set(MODULE_QML_TARGET_FILES ${MODULE_QML_TARGET_FILES} PARENT_SCOPE)

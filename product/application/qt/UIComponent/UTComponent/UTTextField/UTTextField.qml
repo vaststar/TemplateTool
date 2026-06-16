@@ -25,6 +25,9 @@ BaseTextField {
     placeholderTextColor: control.placeholderColor
     font: UTComponentUtil.getUIFont(control.fontEnum)
 
+    selectionColor: control.borderFocused
+    selectedTextColor: control.textColor
+
     background: Rectangle {
         radius: control.borderRadius
         color: control.bgColor

@@ -93,6 +93,17 @@ public:
     // shared but does not store selection.
     [[nodiscard]] virtual std::string getCurrentCameraId() const = 0;
 
+    // ===== Create / remove permissions =====
+    // Whether a node of the given type may be created directly under parentId. An empty
+    // parentId means the virtual root. Mirrors canMoveCameraNode: the rule lives in the VM
+    // so the UI does not have to re-encode business constraints. Only Group nodes can hold
+    // children, so a non-empty parentId must resolve to a known Group.
+    [[nodiscard]] virtual bool canAddCameraNode(const std::string& parentId,
+                                                model::CameraDirectoryNodeType type) const = 0;
+
+    // Whether the node may be removed. False for unknown ids and the virtual root.
+    [[nodiscard]] virtual bool canRemoveCameraNode(const std::string& nodeId) const = 0;
+
     // ===== Write: Groups =====
     virtual void addCameraGroup(const std::string& nodeId, const std::string& displayName) = 0;
     virtual void updateCameraGroup(const std::string& nodeId, const std::string& displayName) = 0;

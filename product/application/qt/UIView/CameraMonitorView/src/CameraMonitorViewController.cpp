@@ -1,5 +1,7 @@
 #include "CameraMonitorView/CameraMonitorViewController.h"
 
+#include <QUuid>
+
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
 #include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
@@ -106,6 +108,296 @@ void CameraMonitorViewController::moveCameraNode(const QString& srcId, const QSt
     mHasPendingMove    = true;
     mPendingMoveParent = targetParentId;
     mCameraDirectoryViewModel->moveCameraNode(srcId.toStdString(), targetParentId.toStdString());
+}
+
+// ---- Context menu + CRUD ----
+
+bool CameraMonitorViewController::canAddUnder(const QString& parentId, int nodeType) const
+{
+    if (!mCameraDirectoryViewModel)
+    {
+        return false;
+    }
+    using commonHead::viewModels::model::CameraDirectoryNodeType;
+    const auto type = (nodeType == 1) ? CameraDirectoryNodeType::Camera : CameraDirectoryNodeType::Group;
+    return mCameraDirectoryViewModel->canAddCameraNode(parentId.toStdString(), type);
+}
+
+bool CameraMonitorViewController::canRemove(const QString& nodeId) const
+{
+    if (!mCameraDirectoryViewModel)
+    {
+        return false;
+    }
+    return mCameraDirectoryViewModel->canRemoveCameraNode(nodeId.toStdString());
+}
+
+QString CameraMonitorViewController::nodeName(const QString& nodeId) const
+{
+    if (nodeId.isEmpty() || !mCameraDirectoryViewModel)
+    {
+        return {};
+    }
+    if (auto tree = mCameraDirectoryViewModel->getCameraTree())
+    {
+        if (auto node = tree->findNodeById(nodeId.toStdString()))
+        {
+            return QString::fromStdString(node->getNodeData().displayName);
+        }
+    }
+    return {};
+}
+
+QVariantList CameraMonitorViewController::contextMenuModel(const QString& nodeId, int nodeType) const
+{
+    QVariantList items;
+    const bool isRoot  = nodeId.isEmpty();
+    const bool isGroup = (nodeType == 0);
+
+    // New nodes may be created on blank space or under a group.
+    if (isRoot || isGroup)
+    {
+        if (canAddUnder(nodeId, 0))
+        {
+            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("新增分组")},
+                                     {QStringLiteral("action"), QStringLiteral("add_group")}});
+        }
+        if (canAddUnder(nodeId, 1))
+        {
+            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("新增摄像头")},
+                                     {QStringLiteral("action"), QStringLiteral("add_camera")}});
+        }
+    }
+    if (!isRoot)
+    {
+        if (!items.isEmpty())
+        {
+            items.append(QVariantMap{{QStringLiteral("separator"), true}});
+        }
+        items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("重命名")},
+                                 {QStringLiteral("action"), QStringLiteral("edit")}});
+        if (canRemove(nodeId))
+        {
+            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("删除")},
+                                     {QStringLiteral("action"), QStringLiteral("delete")}});
+        }
+    }
+    return items;
+}
+
+void CameraMonitorViewController::handleContextAction(const QString& action, const QString& nodeId, int nodeType)
+{
+    if (action == QLatin1String("add_group"))
+    {
+        openEditDialog(QStringLiteral("add_group"), nodeId, QString{}, 0, QString{});
+    }
+    else if (action == QLatin1String("add_camera"))
+    {
+        openEditDialog(QStringLiteral("add_camera"), nodeId, QString{}, 1, QString{});
+    }
+    else if (action == QLatin1String("edit"))
+    {
+        openEditDialog(QStringLiteral("edit"), QString{}, nodeId, nodeType, nodeName(nodeId));
+    }
+    else if (action == QLatin1String("delete"))
+    {
+        openDeleteDialog(nodeId);
+    }
+}
+
+void CameraMonitorViewController::openEditDialog(const QString& mode, const QString& parentId,
+                                                 const QString& editId, int nodeType, const QString& initialName)
+{
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        return;
+    }
+    auto win = ctx->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/CameraMonitorView/qml/CameraEditDialog.qml"),
+        {
+            { QStringLiteral("controller"),  QVariant::fromValue<QObject*>(this) },
+            { QStringLiteral("mode"),        mode },
+            { QStringLiteral("parentId"),    parentId },
+            { QStringLiteral("editId"),      editId },
+            { QStringLiteral("nodeType"),    nodeType },
+            { QStringLiteral("initialName"), initialName },
+        });
+    if (!win)
+    {
+        return;
+    }
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
+}
+
+void CameraMonitorViewController::openDeleteDialog(const QString& nodeId)
+{
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        return;
+    }
+    auto win = ctx->getViewFactory()->createQmlWindow(
+        QStringLiteral("UIView/CameraMonitorView/qml/CameraDeleteDialog.qml"),
+        {
+            { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) },
+            { QStringLiteral("targetId"),   nodeId },
+        });
+    if (!win)
+    {
+        return;
+    }
+    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    win->show();
+}
+
+void CameraMonitorViewController::addGroup(const QString& parentId, const QVariantMap& fields)
+{
+    if (!mCameraDirectoryViewModel)
+    {
+        return;
+    }
+    const QString name = fields.value(QStringLiteral("displayName")).toString().trimmed();
+    if (name.isEmpty() || !canAddUnder(parentId, 0))
+    {
+        return;
+    }
+    const QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    mPendingAddId     = newId;
+    mPendingAddParent = parentId;
+    mCameraDirectoryViewModel->addCameraGroup(newId.toStdString(), name.toStdString());
+    if (!parentId.isEmpty())
+    {
+        mCameraDirectoryViewModel->addRelation(parentId.toStdString(), newId.toStdString());
+    }
+}
+
+void CameraMonitorViewController::addCamera(const QString& parentId, const QVariantMap& fields)
+{
+    if (!mCameraDirectoryViewModel)
+    {
+        return;
+    }
+    const QString name = fields.value(QStringLiteral("displayName")).toString().trimmed();
+    if (name.isEmpty() || !canAddUnder(parentId, 1))
+    {
+        return;
+    }
+
+    // Build the camera source from the (deliberately minimal) dialog fields.
+    using commonHead::viewModels::model::CameraSource;
+    using commonHead::viewModels::model::LocalCameraSource;
+    using commonHead::viewModels::model::NetworkCameraSource;
+    CameraSource source;
+    if (fields.value(QStringLiteral("sourceKind")).toString() == QLatin1String("network"))
+    {
+        NetworkCameraSource net;
+        net.url = fields.value(QStringLiteral("url")).toString().trimmed().toStdString();
+        source  = net;
+    }
+    else
+    {
+        LocalCameraSource local;
+        local.index = fields.value(QStringLiteral("index"), 0).toInt();
+        source      = local;
+    }
+
+    const QString newId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    mPendingAddId     = newId;
+    mPendingAddParent = parentId;
+    mCameraDirectoryViewModel->addCamera(newId.toStdString(), name.toStdString(), source);
+    if (!parentId.isEmpty())
+    {
+        mCameraDirectoryViewModel->addRelation(parentId.toStdString(), newId.toStdString());
+    }
+}
+
+void CameraMonitorViewController::updateNode(const QString& nodeId, const QVariantMap& fields)
+{
+    if (!mCameraDirectoryViewModel || nodeId.isEmpty())
+    {
+        return;
+    }
+    const QString name = fields.value(QStringLiteral("displayName")).toString().trimmed();
+    if (name.isEmpty())
+    {
+        return;
+    }
+    auto tree = mCameraDirectoryViewModel->getCameraTree();
+    if (!tree)
+    {
+        return;
+    }
+    auto node = tree->findNodeById(nodeId.toStdString());
+    if (!node)
+    {
+        return;
+    }
+    using commonHead::viewModels::model::CameraDirectoryNodeType;
+    if (node->getNodeData().type == CameraDirectoryNodeType::Group)
+    {
+        mCameraDirectoryViewModel->updateCameraGroup(nodeId.toStdString(), name.toStdString());
+    }
+    else
+    {
+        // Rename only: keep the existing source intact.
+        auto srcOpt = mCameraDirectoryViewModel->getCameraSource(nodeId.toStdString());
+        if (!srcOpt)
+        {
+            return;
+        }
+        mCameraDirectoryViewModel->updateCamera(nodeId.toStdString(), name.toStdString(), *srcOpt);
+    }
+}
+
+void CameraMonitorViewController::removeNode(const QString& nodeId)
+{
+    if (!mCameraDirectoryViewModel || nodeId.isEmpty())
+    {
+        return;
+    }
+    auto tree = mCameraDirectoryViewModel->getCameraTree();
+    if (!tree)
+    {
+        return;
+    }
+    auto node = tree->findNodeById(nodeId.toStdString());
+    if (!node)
+    {
+        return;
+    }
+    using commonHead::viewModels::model::CameraDirectoryNodeType;
+    if (node->getNodeData().type == CameraDirectoryNodeType::Group)
+    {
+        mCameraDirectoryViewModel->removeCameraGroups({ nodeId.toStdString() });
+    }
+    else
+    {
+        mCameraDirectoryViewModel->removeCameras({ nodeId.toStdString() });
+    }
+}
+
+void CameraMonitorViewController::maybeEmitNodeAdded(
+    const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
+{
+    // Root-level adds surface here (no relation row). Parented adds are handled in
+    // onCameraRelationsAdded instead.
+    if (mPendingAddId.isEmpty() || !mPendingAddParent.isEmpty())
+    {
+        return;
+    }
+    for (const auto& d : v)
+    {
+        if (QString::fromStdString(d.id) == mPendingAddId)
+        {
+            const QString id = mPendingAddId;
+            mPendingAddId.clear();
+            mPendingAddParent.clear();
+            emit nodeAdded(id, QString{});
+            break;
+        }
+    }
 }
 
 QVariantMap CameraMonitorViewController::cameraSourceForNode(const QString& nodeId) const
@@ -232,7 +524,7 @@ void CameraMonitorViewController::onCameraDirectoryLoadFailed(commonHead::viewMo
 }
 
 void CameraMonitorViewController::onCameraGroupsAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
-{ if (mCameraTreeModel) mCameraTreeModel->insertNodes(v); }
+{ if (mCameraTreeModel) mCameraTreeModel->insertNodes(v); maybeEmitNodeAdded(v); }
 
 void CameraMonitorViewController::onCameraGroupsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
 { if (mCameraTreeModel) mCameraTreeModel->updateNodes(v); }
@@ -241,7 +533,7 @@ void CameraMonitorViewController::onCameraGroupsRemoved(const std::vector<std::s
 { if (mCameraTreeModel) mCameraTreeModel->removeNodes(v); }
 
 void CameraMonitorViewController::onCamerasAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
-{ if (mCameraTreeModel) mCameraTreeModel->insertNodes(v); }
+{ if (mCameraTreeModel) mCameraTreeModel->insertNodes(v); maybeEmitNodeAdded(v); }
 
 void CameraMonitorViewController::onCamerasUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v)
 { if (mCameraTreeModel) mCameraTreeModel->updateNodes(v); }
@@ -256,6 +548,22 @@ void CameraMonitorViewController::onCameraRelationsAdded(const std::vector<commo
     pairs.reserve(v.size());
     for (const auto& r : v) pairs.emplace_back(r.parentId, r.childId);
     mCameraTreeModel->setParents(pairs);
+    // Parented adds materialise once the relation row arrives.
+    if (!mPendingAddId.isEmpty() && !mPendingAddParent.isEmpty())
+    {
+        for (const auto& r : v)
+        {
+            if (QString::fromStdString(r.childId) == mPendingAddId)
+            {
+                const QString id     = mPendingAddId;
+                const QString parent = mPendingAddParent;
+                mPendingAddId.clear();
+                mPendingAddParent.clear();
+                emit nodeAdded(id, parent);
+                break;
+            }
+        }
+    }
 }
 
 void CameraMonitorViewController::onCameraRelationsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>& v)

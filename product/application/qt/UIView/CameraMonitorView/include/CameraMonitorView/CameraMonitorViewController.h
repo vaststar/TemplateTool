@@ -50,6 +50,20 @@ public slots:
     Q_INVOKABLE bool canDropOnNode(const QString& srcId, const QString& targetParentId) const;
     Q_INVOKABLE void moveCameraNode(const QString& srcId, const QString& targetParentId);
 
+    // Right-click context menu. The panel asks for the menu model (built from the real
+    // add/remove permissions) and then reports back the chosen action; the controller
+    // decides which dialog to open. nodeType: -1 = blank/root, 0 = Group, 1 = Camera.
+    Q_INVOKABLE QVariantList contextMenuModel(const QString& nodeId, int nodeType) const;
+    Q_INVOKABLE void handleContextAction(const QString& action, const QString& nodeId, int nodeType);
+
+    // Dialog commands, invoked by the edit / delete dialog windows. fields carries
+    // {displayName} for a group, {displayName, sourceKind, index, url} for a camera, and
+    // {displayName} for edit (rename).
+    Q_INVOKABLE void addGroup(const QString& parentId, const QVariantMap& fields);
+    Q_INVOKABLE void addCamera(const QString& parentId, const QVariantMap& fields);
+    Q_INVOKABLE void updateNode(const QString& nodeId, const QVariantMap& fields);
+    Q_INVOKABLE void removeNode(const QString& nodeId);
+
     // Preview-panel helpers (consumed by CameraPreviewPanel.qml).
     // Returns {} for unknown / non-camera nodes; otherwise:
     //   { "kind": "local",   "index": int }
@@ -65,6 +79,9 @@ signals:
     void currentCameraChanged();
     void loadStateChanged();
     void nodeMoved(QString newParentId);
+    // Fired once a freshly-added node has materialised in the tree model, so the view
+    // can expand its parent and select it.
+    void nodeAdded(QString newId, QString parentId);
 
 protected:
     void init() override;
@@ -85,6 +102,18 @@ private slots:
 
 private:
     void setLoadState(LoadState s);
+    bool canAddUnder(const QString& parentId, int nodeType) const;
+    bool canRemove(const QString& nodeId) const;
+    // Display name of an existing node (empty if unknown).
+    QString nodeName(const QString& nodeId) const;
+    // Spawn the standalone dialog windows (created via the view factory, centered on the
+    // app window) and inject this controller plus the initial field values.
+    void openEditDialog(const QString& mode, const QString& parentId, const QString& editId,
+                        int nodeType, const QString& initialName);
+    void openDeleteDialog(const QString& nodeId);
+    // If a just-added node id matches the pending add, fire nodeAdded and clear the pending
+    // bookkeeping. parentMatched selects the root (parent empty) vs parented branch.
+    void maybeEmitNodeAdded(const std::vector<commonHead::viewModels::model::CameraDirectoryNodeData>& v);
 
 private:
     std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> mCameraDirectoryViewModel;
@@ -96,4 +125,6 @@ private:
     LoadState mLoadState = Loading;
     bool      mHasPendingMove = false;
     QString   mPendingMoveParent;
+    QString   mPendingAddId;
+    QString   mPendingAddParent;
 };

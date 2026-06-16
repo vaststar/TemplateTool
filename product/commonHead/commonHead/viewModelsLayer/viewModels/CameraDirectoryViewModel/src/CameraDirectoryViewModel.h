@@ -42,11 +42,15 @@ public:
     bool isCameraDirectoryReady() const override;
     std::string getCurrentCameraId() const override;
 
+    // ICameraDirectoryViewModel - create / remove permissions
+    bool canAddCameraNode(const std::string& parentId,
+                          model::CameraDirectoryNodeType type) const override;
+    bool canRemoveCameraNode(const std::string& nodeId) const override;
+
     // ICameraDirectoryViewModel - write groups
     void addCameraGroup(const std::string& nodeId, const std::string& displayName) override;
     void updateCameraGroup(const std::string& nodeId, const std::string& displayName) override;
     void removeCameraGroups(const std::vector<std::string>& nodeIds) override;
-
     // ICameraDirectoryViewModel - write cameras
     void addCamera(const std::string& nodeId,
                    const std::string& displayName,
@@ -91,6 +95,12 @@ private:
     // the incremental apply should be skipped because the rebuilt tree already contains
     // the event's effect.
     bool ensureTreeBuilt();
+    // Snapshot the current tree under lock (may be null before the first load); callers
+    // then operate on the snapshot without holding mTreeMutex.
+    std::shared_ptr<model::CameraDirectoryTree> snapshotTree() const;
+    // Find a node by id within the given snapshot; a null tree or unknown id yields nullptr.
+    model::CameraDirectoryTreeNodePtr findNode(const std::shared_ptr<model::CameraDirectoryTree>& tree,
+                                               const std::string& id) const;
 
 private:
     mutable std::mutex mTreeMutex;

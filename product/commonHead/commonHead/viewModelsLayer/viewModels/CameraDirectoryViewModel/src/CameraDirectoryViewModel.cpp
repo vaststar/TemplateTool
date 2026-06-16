@@ -115,6 +115,22 @@ bool CameraDirectoryViewModel::ensureTreeBuilt()
     return true;
 }
 
+std::shared_ptr<model::CameraDirectoryTree> CameraDirectoryViewModel::snapshotTree() const
+{
+    std::scoped_lock lk(mTreeMutex);
+    return mTree;
+}
+
+model::CameraDirectoryTreeNodePtr CameraDirectoryViewModel::findNode(
+    const std::shared_ptr<model::CameraDirectoryTree>& tree, const std::string& id) const
+{
+    if (!tree)
+    {
+        return nullptr;
+    }
+    return tree->findNodeById(id);
+}
+
 // ===== Read =====
 
 model::CameraDirectoryTreePtr CameraDirectoryViewModel::getCameraTree() const
@@ -176,6 +192,34 @@ void CameraDirectoryViewModel::selectCamera(const std::string& nodeId)
     // Single funnel for selection metrics / analytics hooks.
     COMMONHEAD_LOG_INFO("selectCamera: nodeId:" << (nodeId.empty() ? "<cleared>" : nodeId));
     fireNotification(&ICameraDirectoryViewModelCallback::onCurrentCameraChanged, nodeId);
+}
+
+// ===== Create / remove permissions =====
+
+bool CameraDirectoryViewModel::canAddCameraNode(const std::string& parentId,
+                                                model::CameraDirectoryNodeType /*type*/) const
+{
+    // Root is always a valid parent for either node type.
+    if (parentId.empty())
+    {
+        return true;
+    }
+    auto parent = findNode(snapshotTree(), parentId);
+    if (!parent)
+    {
+        return false;
+    }
+    // Only group nodes can hold children.
+    return parent->getNodeData().type == model::CameraDirectoryNodeType::Group;
+}
+
+bool CameraDirectoryViewModel::canRemoveCameraNode(const std::string& nodeId) const
+{
+    if (nodeId.empty())
+    {
+        return false;
+    }
+    return findNode(snapshotTree(), nodeId) != nullptr;
 }
 
 // ===== Write: Groups =====
@@ -369,12 +413,8 @@ bool CameraDirectoryViewModel::canMoveCameraNode(const std::string& childId,
     {
         return false;
     }
-    std::scoped_lock lk(mTreeMutex);
-    if (!mTree)
-    {
-        return false;
-    }
-    auto child = mTree->findNodeById(childId);
+    auto snapshot = snapshotTree();
+    auto child = findNode(snapshot, childId);
     if (!child)
     {
         return false;
@@ -382,7 +422,7 @@ bool CameraDirectoryViewModel::canMoveCameraNode(const std::string& childId,
     // Empty newParentId = move to root, always allowed for any known node.
     if (!newParentId.empty())
     {
-        auto parent = mTree->findNodeById(newParentId);
+        auto parent = findNode(snapshot, newParentId);
         if (!parent)
         {
             return false;
@@ -393,7 +433,7 @@ bool CameraDirectoryViewModel::canMoveCameraNode(const std::string& childId,
             return false;
         }
         // Reject cycle: newParent must not be a descendant of child.
-        if (utils::isAncestorOf(mTree, childId, newParentId))
+        if (utils::isAncestorOf(snapshot, childId, newParentId))
         {
             return false;
         }

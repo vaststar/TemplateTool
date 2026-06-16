@@ -131,7 +131,7 @@
         <translation>Cameras</translation>
     </message>
     <message>
-        <location filename="../../UIView/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="105"/>
+        <location filename="../../UIView/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="143"/>
         <source>Failed to load camera directory</source>
         <translation>Failed to load camera directory</translation>
     </message>
