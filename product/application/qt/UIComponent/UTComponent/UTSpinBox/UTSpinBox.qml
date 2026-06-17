@@ -121,10 +121,24 @@ BaseSpinBox {
         color: UTComponentUtil.getPlainUIColor(
                    control.backgroundColorEnum,
                    control.enabled ? UIColorState.Normal : UIColorState.Disabled)
+    }
+
+    // Border drawn ABOVE the +/- buttons. The background's own border would be
+    // occluded on the left/right by the opaque button rectangles, leaving only
+    // the centre segment visible around the edit — which reads as a second,
+    // inner focus frame. Painting the border here keeps it a single clean
+    // rounded rect around the whole control in every state.
+    Rectangle {
+        z: 5
+        anchors.fill: parent
+        enabled: false
+        radius: control.borderRadius
+        color: "transparent"
         border.width: 1
         border.color: UTComponentUtil.getPlainUIColor(
                           control.borderColorEnum,
                           control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
+        Behavior on border.color { ColorAnimation { duration: 100 } }
     }
 
     UTFocusItem {
