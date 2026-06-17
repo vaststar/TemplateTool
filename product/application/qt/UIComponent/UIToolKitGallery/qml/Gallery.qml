@@ -66,27 +66,77 @@ ApplicationWindow {
         }
     }
 
-    // ── Reusable section header inside a category page ──
-    component Section: ColumnLayout {
-        property alias title: header.text
+    // ── A labelled showcase card. The component's type name sits right next
+    //    to the live element, so it is always obvious which UTComponent /
+    //    UTComposite widget is being looked at. ──
+    component Demo: Rectangle {
+        default property alias content: demoRow.data
+        property string name: ""   // component type, e.g. "UTButton"
+        property string note: ""   // optional variant hint, e.g. "Primary / Disabled"
+
         Layout.fillWidth: true
-        spacing: 10
-        UTLabel {
-            id: header
-            fontEnum: UIFontToken.Body_Text_Medium
-            colorEnum: UIColorToken.Content_Heading
+        implicitHeight: Math.max(demoId.implicitHeight, demoRow.implicitHeight) + 24
+        radius: 8
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
+        border.width: 1
+        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 16
+
+            // Identity column — fixed width so every element lines up.
+            ColumnLayout {
+                id: demoId
+                Layout.preferredWidth: 168
+                Layout.alignment: Qt.AlignTop
+                spacing: 2
+                UTLabel {
+                    text: name
+                    fontEnum: UIFontToken.Body_Text_Medium
+                    colorEnum: UIColorToken.Content_Section_Title
+                }
+                UTLabel {
+                    visible: note.length > 0
+                    text: note
+                    colorEnum: UIColorToken.Content_Secondary_Text
+                }
+            }
+
+            // Divider between the name and the live element.
+            Rectangle {
+                Layout.preferredWidth: 1
+                Layout.fillHeight: true
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
+            }
+
+            // Live element(s) — the same component, optionally in several states.
+            RowLayout {
+                id: demoRow
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 16
+            }
         }
     }
 
-    // ── Each category page is a scrollable column ──
+    // ── Each category page: a heading plus a scrollable column of Demo cards. ──
     component Page: ScrollView {
         default property alias content: pageColumn.data
+        property alias title: pageHeading.text
         contentWidth: availableWidth
         clip: true
         ColumnLayout {
             id: pageColumn
             width: window.width - sidebar.width - 48
-            spacing: 28
+            spacing: 14
+            UTLabel {
+                id: pageHeading
+                fontEnum: UIFontToken.Heading_Text
+                colorEnum: UIColorToken.Content_Heading
+                Layout.bottomMargin: 4
+            }
         }
     }
 
@@ -152,51 +202,63 @@ ApplicationWindow {
 
             // 0 ─ Buttons
             Page {
-                Section {
-                    title: qsTr("Buttons")
-                    RowLayout {
-                        spacing: 12
-                        UTButton { text: qsTr("Primary") }
-                        UTButton { text: qsTr("Disabled"); enabled: false }
-                        UTToolButton { text: qsTr("Tool") }
-                    }
+                title: qsTr("Buttons")
+                Demo {
+                    name: "UTButton"
+                    note: qsTr("Primary / Disabled")
+                    UTButton { text: qsTr("Primary") }
+                    UTButton { text: qsTr("Disabled"); enabled: false }
+                }
+                Demo {
+                    name: "UTToolButton"
+                    UTToolButton { text: qsTr("Tool") }
                 }
             }
 
             // 1 ─ Toggles
             Page {
-                Section {
-                    title: qsTr("Check / Switch")
-                    RowLayout {
-                        spacing: 24
-                        UTCheckBox { text: qsTr("Check me"); checked: true }
-                        UTSwitch { checked: true }
-                        UTSwitch { checked: false }
-                        UTSwitch { checked: true; enabled: false }
-                    }
+                title: qsTr("Toggles")
+                Demo {
+                    name: "UTCheckBox"
+                    UTCheckBox { text: qsTr("Check me"); checked: true }
+                    UTCheckBox { text: qsTr("Unchecked"); checked: false }
+                }
+                Demo {
+                    name: "UTSwitch"
+                    note: qsTr("On / Off / Disabled")
+                    UTSwitch { checked: true }
+                    UTSwitch { checked: false }
+                    UTSwitch { checked: true; enabled: false }
                 }
             }
 
             // 2 ─ Inputs
             Page {
-                Section {
-                    title: qsTr("Text fields")
+                title: qsTr("Inputs")
+                Demo {
+                    name: "UTTextField"
                     UTTextField {
-                        Layout.preferredWidth: 340
+                        Layout.preferredWidth: 320
                         placeholderText: qsTr("Single line...")
                     }
+                }
+                Demo {
+                    name: "UTTextArea"
                     UTTextArea {
-                        Layout.preferredWidth: 340
+                        Layout.preferredWidth: 320
                         Layout.preferredHeight: 90
                         placeholderText: qsTr("Multi-line text...")
                     }
                 }
-                Section {
-                    title: qsTr("Selection / Number")
+                Demo {
+                    name: "UTComboBox"
                     UTComboBox {
-                        Layout.preferredWidth: 340
+                        Layout.preferredWidth: 320
                         model: [qsTr("Option A"), qsTr("Option B"), qsTr("Option C")]
                     }
+                }
+                Demo {
+                    name: "UTSpinBox"
                     UTSpinBox {
                         from: 0; to: 100; value: 4
                     }
@@ -205,18 +267,19 @@ ApplicationWindow {
 
             // 3 ─ Pickers
             Page {
-                Section {
-                    title: qsTr("Time picker")
+                title: qsTr("Pickers")
+                Demo {
+                    name: "UTTimePicker"
                     UTTimePicker { hours: 9; minutes: 30 }
                 }
-                Section {
-                    title: qsTr("Date picker")
+                Demo {
+                    name: "UTDatePicker"
                     UTDatePicker {}
                 }
-                Section {
-                    title: qsTr("Slider")
+                Demo {
+                    name: "UTSlider"
                     UTSlider {
-                        Layout.preferredWidth: 340
+                        Layout.preferredWidth: 320
                         value: 0.4
                     }
                 }
@@ -224,27 +287,33 @@ ApplicationWindow {
 
             // 4 ─ Display
             Page {
-                Section {
-                    title: qsTr("Labels")
+                title: qsTr("Display")
+                Demo {
+                    name: "UTLabel"
+                    note: qsTr("Primary / Secondary")
                     UTLabel { text: qsTr("Body text sample"); colorEnum: UIColorToken.Content_Text }
                     UTLabel { text: qsTr("Secondary text sample"); colorEnum: UIColorToken.Content_Secondary_Text }
                 }
-                Section {
-                    title: qsTr("Progress / Busy")
+                Demo {
+                    name: "UTProgressBar"
                     UTProgressBar {
-                        Layout.preferredWidth: 340
+                        Layout.preferredWidth: 320
                         value: 0.65
                     }
+                }
+                Demo {
+                    name: "UTBusyIndicator"
                     UTBusyIndicator { running: true }
                 }
             }
 
             // 5 ─ Containers
             Page {
-                Section {
-                    title: qsTr("Group box")
+                title: qsTr("Containers")
+                Demo {
+                    name: "UTGroupBox"
                     UTGroupBox {
-                        Layout.preferredWidth: 360
+                        Layout.preferredWidth: 320
                         title: qsTr("Settings")
                         ColumnLayout {
                             anchors.fill: parent

@@ -23,10 +23,15 @@ BaseSlider {
 
     property int trackHeight: 4
     property int handleSize: 16
+    property int handleBorderWidth: 1
 
     property var trackColorEnum: UIColorToken.Slider_Track
     property var progressColorEnum: UIColorToken.Slider_Progress
     property var handleColorEnum: UIColorToken.Slider_Handle
+    // The handle fill is intentionally light (near-white in the light theme,
+    // mirroring switch-thumb). On a light background a borderless white circle
+    // is invisible, so delineate it with a themed border.
+    property var handleBorderColorEnum: UIColorToken.Content_Input_Border
 
     implicitWidth: 200
     implicitHeight: handleSize + 8
@@ -65,6 +70,11 @@ BaseSlider {
                 return UTComponentUtil.getPlainUIColor(control.handleColorEnum, UIColorState.Hovered)
             return UTComponentUtil.getPlainUIColor(control.handleColorEnum, UIColorState.Normal)
         }
+
+        border.width: control.handleBorderWidth
+        border.color: UTComponentUtil.getPlainUIColor(
+                          control.handleBorderColorEnum,
+                          control.enabled ? UIColorState.Normal : UIColorState.Disabled)
 
         Behavior on color { ColorAnimation { duration: 100 } }
     }
