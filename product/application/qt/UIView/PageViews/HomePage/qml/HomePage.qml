@@ -64,5 +64,20 @@ Item {
             text: qsTr("Open Camera Monitor")
             onClicked: homePage.controller.openCameraMonitor()
         }
+
+        UTTimePicker {
+            id: timePicker
+            anchors.horizontalCenter: parent.horizontalCenter
+            hours: 9
+            minutes: 30
+            showSeconds: true
+        }
+
+        UTText {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("已选时间: ") + timePicker.timeValue
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Sidebar_Item_Text
+        }
     }
 }

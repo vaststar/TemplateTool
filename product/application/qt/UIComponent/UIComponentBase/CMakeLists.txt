@@ -55,6 +55,7 @@ set(MODULE_QML_TARGET_FILES
     BaseSpinBox/BaseSpinBox.qml
     BaseSwitch/BaseSwitch.qml
     BaseTextArea/BaseTextArea.qml
+    BaseTimePicker/BaseTimePicker.qml
     BaseGroupBox/BaseGroupBox.qml
     BaseToolButton/BaseToolButton.qml
     BaseToolTip/BaseToolTip.qml

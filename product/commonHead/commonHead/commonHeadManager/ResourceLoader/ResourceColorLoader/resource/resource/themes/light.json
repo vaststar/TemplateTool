@@ -279,6 +279,33 @@
       }
     },
     {
+      "token": "timepicker-background",
+      "color": {
+        "normal": "gray-100",
+        "hovered": "gray-200",
+        "pressed": "gray-300"
+      }
+    },
+    {
+      "token": "timepicker-text",
+      "color": {
+        "normal": "gray-700"
+      }
+    },
+    {
+      "token": "timepicker-border",
+      "color": {
+        "normal": "gray-300"
+      }
+    },
+    {
+      "token": "timepicker-column-background",
+      "color": {
+        "normal": "gray-50",
+        "selected": "blue-50"
+      }
+    },
+    {
       "token": "tab-bar-background",
       "color": {
         "normal": "gray-100"

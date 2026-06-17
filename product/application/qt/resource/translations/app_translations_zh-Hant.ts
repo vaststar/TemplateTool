@@ -169,6 +169,11 @@
         <source>Open Camera Monitor</source>
         <translation>開啟攝影機監控</translation>
     </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="78"/>
+        <source>已选时间: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>JsonPanel</name>
