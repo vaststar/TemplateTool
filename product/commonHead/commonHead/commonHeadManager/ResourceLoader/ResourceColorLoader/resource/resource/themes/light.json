@@ -478,9 +478,9 @@
     {
       "token": "spinbox-button",
       "color": {
-        "normal": "gray-100",
-        "hovered": "gray-200",
-        "pressed": "gray-300",
+        "normal": "gray-200",
+        "hovered": "gray-300",
+        "pressed": "gray-400",
         "disabled": "gray-100"
       }
     },

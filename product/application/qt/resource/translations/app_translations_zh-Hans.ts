@@ -153,6 +153,144 @@
     </message>
 </context>
 <context>
+    <name>Gallery</name>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="24"/>
+        <source>UIComponent Gallery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="50"/>
+        <source>Theme: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="50"/>
+        <source>Dark</source>
+        <translation type="unfinished">深色</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="50"/>
+        <source>Light</source>
+        <translation type="unfinished">浅色</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="55"/>
+        <source>切换主题</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="148"/>
+        <source>Buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="151"/>
+        <source>Primary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="152"/>
+        <source>Disabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="153"/>
+        <source>Tool</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="161"/>
+        <source>Check / Switch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="205"/>
+        <source>Slider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="221"/>
+        <source>Progress / Busy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="233"/>
+        <source>Group box</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="236"/>
+        <source>Settings</source>
+        <translation type="unfinished">设置</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="240"/>
+        <source>Enable feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="164"/>
+        <source>Check me</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="175"/>
+        <source>Text fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="178"/>
+        <source>Single line...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="183"/>
+        <source>Multi-line text...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="187"/>
+        <source>Selection / Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="201"/>
+        <source>Time picker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="190"/>
+        <source>Option A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="190"/>
+        <source>Option B</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="190"/>
+        <source>Option C</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="216"/>
+        <source>Labels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="217"/>
+        <source>Body text sample</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="218"/>
+        <source>Secondary text sample</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>HomePage</name>
     <message>
         <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="48"/>

@@ -1,3 +1,5 @@
 add_subdirectory(UIComponentBase)
 add_subdirectory(UTComponent)
 add_subdirectory(UTComposite)
+
+add_subdirectory(componentGallery)

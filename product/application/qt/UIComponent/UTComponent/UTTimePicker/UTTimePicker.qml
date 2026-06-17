@@ -32,8 +32,20 @@ BaseTimePicker {
     property int columnWidth: 56
     property int wheelHeight: 160
     property int visibleRows: 5
+    property int wheelSpacing: 6
+    property int colonWidth: 10
 
-    implicitWidth: 150
+    // Number of wheel columns / colon separators currently shown.
+    readonly property int wheelCount: showSeconds ? 3 : 2
+    readonly property int colonCount: wheelCount - 1
+    // Column width that makes the wheels fill the popup width evenly.
+    readonly property real autoColumnWidth: {
+        var inner = popup.availableWidth
+        var used = colonCount * colonWidth + wheelSpacing * (wheelCount + colonCount - 1)
+        return Math.max(36, (inner - used) / wheelCount)
+    }
+
+    implicitWidth: 180
     implicitHeight: 32
     padding: 0
 
@@ -81,7 +93,7 @@ BaseTimePicker {
     component WheelColumn: Tumbler {
         id: wheel
         property int valueCount: 60
-        width: control.columnWidth
+        width: control.autoColumnWidth
         height: control.wheelHeight
         visibleItemCount: control.visibleRows
         wrap: true
@@ -113,6 +125,7 @@ BaseTimePicker {
     }
 
     // === Drop-down wheels ===
+    popup.width: control.width
     popup.padding: 8
     popup.background: Rectangle {
         radius: control.borderRadius
@@ -122,7 +135,6 @@ BaseTimePicker {
     }
 
     popup.contentItem: Item {
-        implicitWidth: wheelRow.implicitWidth
         implicitHeight: control.wheelHeight
 
         // Highlight band marking the centered selection row (behind the wheels).
@@ -138,7 +150,7 @@ BaseTimePicker {
         Row {
             id: wheelRow
             anchors.centerIn: parent
-            spacing: 2
+            spacing: control.wheelSpacing
 
             WheelColumn {
                 valueCount: 24
@@ -147,7 +159,9 @@ BaseTimePicker {
             }
 
             UTText {
+                width: control.colonWidth
                 text: ":"
+                horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
                 color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
             }
@@ -160,7 +174,9 @@ BaseTimePicker {
 
             UTText {
                 visible: control.showSeconds
+                width: control.colonWidth
                 text: ":"
+                horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
                 color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
             }
