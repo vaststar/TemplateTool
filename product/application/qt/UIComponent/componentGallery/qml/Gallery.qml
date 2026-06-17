@@ -202,6 +202,10 @@ ApplicationWindow {
                     UTTimePicker { hours: 9; minutes: 30 }
                 }
                 Section {
+                    title: qsTr("Date picker")
+                    UTDatePicker {}
+                }
+                Section {
                     title: qsTr("Slider")
                     UTSlider {
                         Layout.preferredWidth: 340

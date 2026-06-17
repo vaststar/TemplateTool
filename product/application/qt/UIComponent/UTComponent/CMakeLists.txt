@@ -63,6 +63,7 @@ set(MODULE_QML_TARGET_FILES
     UTSwitch/UTSwitch.qml
     UTTextArea/UTTextArea.qml
     UTTimePicker/UTTimePicker.qml
+    UTDatePicker/UTDatePicker.qml
     UTGroupBox/UTGroupBox.qml
     UTText/UTText.qml
     UTToolButton/UTToolButton.qml

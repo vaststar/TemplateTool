@@ -306,6 +306,40 @@
       }
     },
     {
+      "token": "datepicker-background",
+      "color": {
+        "normal": "neutral-800",
+        "hovered": "neutral-700",
+        "pressed": "neutral-600"
+      }
+    },
+    {
+      "token": "datepicker-text",
+      "color": {
+        "normal": "neutral-200",
+        "disabled": "neutral-500"
+      }
+    },
+    {
+      "token": "datepicker-border",
+      "color": {
+        "normal": "neutral-600"
+      }
+    },
+    {
+      "token": "datepicker-today-background",
+      "color": {
+        "normal": "neutral-700"
+      }
+    },
+    {
+      "token": "datepicker-selected-background",
+      "color": {
+        "normal": "blue-500",
+        "selected": "blue-500"
+      }
+    },
+    {
       "token": "tab-bar-background",
       "color": {
         "normal": "neutral-800"

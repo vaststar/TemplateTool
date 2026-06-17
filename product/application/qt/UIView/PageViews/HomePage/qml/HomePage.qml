@@ -79,5 +79,20 @@ Item {
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
         }
+
+        UTDatePicker {
+            id: datePicker
+            anchors.horizontalCenter: parent.horizontalCenter
+            // 可选范围：过去 10 年 ~ 未来 10 年
+            minDate: new Date(new Date().getFullYear() - 10, 0, 1)
+            maxDate: new Date(new Date().getFullYear() + 10, 11, 31)
+        }
+
+        UTText {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("已选日期: ") + datePicker.dateValue
+            fontEnum: UIFontToken.Body_Text
+            colorEnum: UIColorToken.Sidebar_Item_Text
+        }
     }
 }

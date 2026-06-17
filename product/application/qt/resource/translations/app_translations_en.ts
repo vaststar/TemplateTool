@@ -206,26 +206,31 @@
     </message>
     <message>
         <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="205"/>
+        <source>Date picker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="209"/>
         <source>Slider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="221"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="225"/>
         <source>Progress / Busy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="233"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="237"/>
         <source>Group box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="236"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="240"/>
         <source>Settings</source>
         <translation type="unfinished">Settings</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="240"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="244"/>
         <source>Enable feature</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,17 +280,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="216"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="220"/>
         <source>Labels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="217"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="221"/>
         <source>Body text sample</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="218"/>
+        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="222"/>
         <source>Secondary text sample</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,6 +315,11 @@
     <message>
         <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="78"/>
         <source>已选时间: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="93"/>
+        <source>已选日期: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2097,6 +2107,20 @@ Press ESC to cancel</translation>
         <location filename="../../UIView/PageViews/ToolsPage/textprocess/src/TimestampToolController.cpp" line="225"/>
         <source>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</source>
         <translation>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</translation>
+    </message>
+</context>
+<context>
+    <name>UTDatePicker</name>
+    <message>
+        <location filename="../../UIComponent/UTComponent/UTDatePicker/UTDatePicker.qml" line="116"/>
+        <location filename="../../UIComponent/UTComponent/UTDatePicker/UTDatePicker.qml" line="118"/>
+        <source>年</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComponent/UTDatePicker/UTDatePicker.qml" line="116"/>
+        <source>月</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
