@@ -155,142 +155,142 @@
 <context>
     <name>Gallery</name>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="24"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="24"/>
         <source>UIComponent Gallery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="50"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="58"/>
         <source>Theme: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="50"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="58"/>
         <source>Dark</source>
         <translation type="unfinished">深色</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="50"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="58"/>
         <source>Light</source>
         <translation type="unfinished">浅色</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="55"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="63"/>
         <source>切换主题</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="148"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="156"/>
         <source>Buttons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="151"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="159"/>
         <source>Primary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="152"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="160"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="153"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="161"/>
         <source>Tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="161"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="169"/>
         <source>Check / Switch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="205"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="213"/>
         <source>Date picker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="209"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="217"/>
         <source>Slider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="225"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="233"/>
         <source>Progress / Busy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="237"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="245"/>
         <source>Group box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="240"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="248"/>
         <source>Settings</source>
         <translation type="unfinished">设置</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="244"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="252"/>
         <source>Enable feature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="164"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="172"/>
         <source>Check me</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="175"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="183"/>
         <source>Text fields</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="178"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="186"/>
         <source>Single line...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="183"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="191"/>
         <source>Multi-line text...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="187"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="195"/>
         <source>Selection / Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="201"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="209"/>
         <source>Time picker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="190"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="198"/>
         <source>Option A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="190"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="198"/>
         <source>Option B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="190"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="198"/>
         <source>Option C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="220"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="228"/>
         <source>Labels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="221"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="229"/>
         <source>Body text sample</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/componentGallery/qml/Gallery.qml" line="222"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="230"/>
         <source>Secondary text sample</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1279,7 +1279,7 @@ Double-click a rule to view details.</source>
         <translation>我的测试窗口标题栏</translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="66"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="72"/>
         <source>my test window aa</source>
         <translation>我的测试窗口 aa</translation>
     </message>
@@ -1294,17 +1294,17 @@ Double-click a rule to view details.</source>
         <translation>我的软件</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="33"/>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="39"/>
         <source>Test Message</source>
         <translation>测试消息</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="34"/>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="40"/>
         <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
         <translation>这是 UIViewMessageBoxHelper::showOkCancel 的测试。</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="38"/>
+        <location filename="../../UIView/PageViews/HomePage/src/HomePageController.cpp" line="44"/>
         <source>Click any button to dismiss the dialog.</source>
         <translation>点击任意按钮关闭对话框。</translation>
     </message>

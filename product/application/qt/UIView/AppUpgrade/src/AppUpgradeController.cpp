@@ -10,6 +10,11 @@
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
+namespace {
+// QML resource paths used by this controller.
+const QString kUpgradeDialogQml = QStringLiteral("UIView/AppUpgrade/qml/UpgradeDialog.qml");
+}
+
 AppUpgradeController::AppUpgradeController(QObject* parent)
     : UIViewController(parent)
     , m_emitter(std::make_shared<UIVMSignalEmitter::UpgradeViewModelEmitter>())
@@ -271,7 +276,7 @@ void AppUpgradeController::showUpgradeDialog()
     UIVIEW_LOG_DEBUG("showUpgradeDialog");
     m_dialogOpen = true;
     auto win = getAppContext()->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/AppUpgrade/qml/UpgradeDialog.qml"),
+        kUpgradeDialogQml,
         { { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) } });
     if (!win)
     {

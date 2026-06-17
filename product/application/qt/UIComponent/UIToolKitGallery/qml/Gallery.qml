@@ -42,6 +42,14 @@ ApplicationWindow {
 
     header: ToolBar {
         height: 52
+
+        // Themed background so the toolbar follows Light/Dark (otherwise the
+        // default Controls style stays white and the heading text disappears
+        // in dark theme).
+        background: Rectangle {
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Background, UIColorState.Normal)
+        }
+
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 16

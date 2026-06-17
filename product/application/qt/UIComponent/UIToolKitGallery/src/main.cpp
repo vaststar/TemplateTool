@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     UTComponent::registerUTComponent();   // also registers UIComponentBase
     UTComposite::registerUTComposite();
 
-    engine.loadFromModule("ComponentGallery", "Gallery");
+    engine.loadFromModule("UIToolKitGallery", "Gallery");
     if (engine.rootObjects().isEmpty())
     {
         return -1;

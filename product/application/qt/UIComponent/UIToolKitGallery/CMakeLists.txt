@@ -1,10 +1,10 @@
 # ==========================================
-# componentGallery - standalone UIComponent debug executable
+# UIToolKitGallery - standalone UIComponent debug executable
 # Enable with: -DBUILD_COMPONENT_GALLERY=ON
 # ==========================================
-project(componentGallery LANGUAGES CXX)
+project(UIToolKitGallery LANGUAGES CXX)
 
-set(GALLERY_TARGET componentGallery)
+set(GALLERY_TARGET UIToolKitGallery)
 
 qt_add_executable(${GALLERY_TARGET}
     src/main.cpp
@@ -19,7 +19,7 @@ set_target_properties(${GALLERY_TARGET} PROPERTIES
 )
 
 qt_add_qml_module(${GALLERY_TARGET}
-    URI ComponentGallery
+    URI UIToolKitGallery
     VERSION 1.0
     QML_FILES
         qml/Gallery.qml
@@ -50,5 +50,5 @@ if(WIN32)
 endif()
 
 set_target_properties(${GALLERY_TARGET} PROPERTIES
-    FOLDER UI/UIComponent/componentGallery
+    FOLDER UI/UIComponent/UIToolKitGallery
 )

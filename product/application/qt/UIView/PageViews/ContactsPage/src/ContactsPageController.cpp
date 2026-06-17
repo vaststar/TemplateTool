@@ -12,6 +12,13 @@
 #include <QVariantList>
 #include <algorithm>
 
+namespace {
+// QML resource paths used by this controller.
+const QString kUTWindowQml            = QStringLiteral("UTComponent/UTWindow/UTWindow.qml");
+const QString kContactEditDialogQml   = QStringLiteral("UIView/PageViews/ContactsPage/qml/ContactEditDialog.qml");
+const QString kContactDeleteDialogQml = QStringLiteral("UIView/PageViews/ContactsPage/qml/ContactDeleteDialog.qml");
+}
+
 ContactsPageController::ContactsPageController(QObject* parent)
     : UIViewController(parent)
     , mContactListEmitter(std::make_shared<UIVMSignalEmitter::ContactListViewModelEmitter>())
@@ -65,7 +72,7 @@ void ContactsPageController::init()
 void ContactsPageController::buttonClicked()
 {
     auto win = getAppContext()->getViewFactory()->createQmlWindow(
-        QStringLiteral("UTComponent/UTWindow/UTWindow.qml"));
+        kUTWindowQml);
     if (!win)
     {
         return;
@@ -244,7 +251,7 @@ void ContactsPageController::openEditDialog(const QString& mode, const QString& 
         return;
     }
     auto win = ctx->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/PageViews/ContactsPage/qml/ContactEditDialog.qml"),
+        kContactEditDialogQml,
         {
             { QStringLiteral("controller"),  QVariant::fromValue<QObject*>(this) },
             { QStringLiteral("mode"),        mode },
@@ -269,7 +276,7 @@ void ContactsPageController::openDeleteDialog(const QString& contactId)
         return;
     }
     auto win = ctx->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/PageViews/ContactsPage/qml/ContactDeleteDialog.qml"),
+        kContactDeleteDialogQml,
         {
             { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) },
             { QStringLiteral("targetId"),   contactId },

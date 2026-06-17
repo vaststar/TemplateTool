@@ -8,6 +8,12 @@
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
 
+namespace {
+// QML resource paths used by this controller.
+const QString kMediaCameraViewQml   = QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml");
+const QString kCameraMonitorViewQml = QStringLiteral("UIView/CameraMonitorView/qml/CameraMonitorView.qml");
+}
+
 HomePageController::HomePageController(QObject* parent)
     : UIViewController(parent)
 {
@@ -49,7 +55,7 @@ void HomePageController::openCamera()
     }
 
     auto win = ctx->getViewFactory()->createQmlItemWindow(
-        QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
+        kMediaCameraViewQml);
     if (!win)
     {
         UIVIEW_LOG_WARN("failed to create MediaCameraView window");
@@ -76,7 +82,7 @@ void HomePageController::openCameraMonitor()
     }
 
     auto win = ctx->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/CameraMonitorView/qml/CameraMonitorView.qml"));
+        kCameraMonitorViewQml);
     if (!win)
     {
         UIVIEW_LOG_WARN("failed to create CameraMonitorView window");

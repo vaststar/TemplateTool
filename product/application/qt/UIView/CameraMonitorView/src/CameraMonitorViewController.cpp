@@ -13,6 +13,13 @@
 #include "UIViewHelper/UIViewHelper.h"
 #include "ViewModelSingalEmitter/CameraDirectoryViewModelEmitter.h"
 
+namespace {
+// QML resource paths used by this controller.
+const QString kCameraEditDialogQml   = QStringLiteral("UIView/CameraMonitorView/qml/CameraEditDialog.qml");
+const QString kCameraDeleteDialogQml = QStringLiteral("UIView/CameraMonitorView/qml/CameraDeleteDialog.qml");
+const QString kMediaCameraViewQml    = QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml");
+}
+
 CameraMonitorViewController::CameraMonitorViewController(QObject* parent)
     : UIViewController(parent)
     , mCameraDirectoryEmitter(std::make_shared<UIVMSignalEmitter::CameraDirectoryViewModelEmitter>())
@@ -214,7 +221,7 @@ void CameraMonitorViewController::openEditDialog(const QString& mode, const QStr
         return;
     }
     auto win = ctx->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/CameraMonitorView/qml/CameraEditDialog.qml"),
+        kCameraEditDialogQml,
         {
             { QStringLiteral("controller"),  QVariant::fromValue<QObject*>(this) },
             { QStringLiteral("mode"),        mode },
@@ -239,7 +246,7 @@ void CameraMonitorViewController::openDeleteDialog(const QString& nodeId)
         return;
     }
     auto win = ctx->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/CameraMonitorView/qml/CameraDeleteDialog.qml"),
+        kCameraDeleteDialogQml,
         {
             { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) },
             { QStringLiteral("targetId"),   nodeId },
@@ -450,7 +457,7 @@ void CameraMonitorViewController::openCameraWindow(const QString& nodeId)
         return;
     }
     auto win = ctx->getViewFactory()->createQmlItemWindow(
-        QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
+        kMediaCameraViewQml);
     if (!win)
     {
         UIVIEW_LOG_WARN("openCameraWindow: failed to create window");

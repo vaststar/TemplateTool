@@ -24,6 +24,11 @@
 #include "UIStabilityMonitor.h"
 
 
+namespace {
+// QML resource paths used by this controller.
+const QString kMainWindowQml = QStringLiteral("UIView/MainWindowSuite/MainWindow/qml/MainWindow.qml");
+}
+
 AppUIController::AppUIController(QObject* parent)
     : UIViewController(parent)
 {
@@ -97,7 +102,7 @@ void AppUIController::showMainWindow()
 {
     UIVIEW_LOG_DEBUG("start load main qml");
     auto win = getAppContext()->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/MainWindowSuite/MainWindow/qml/MainWindow.qml"));
+        kMainWindowQml);
     if (!win)
     {
         UIVIEW_LOG_WARN("failed to create main window");

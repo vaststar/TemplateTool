@@ -12,6 +12,11 @@
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
+namespace {
+// QML resource path for the shared message dialog.
+const QString kUTMessageDialogQml = QStringLiteral("UTComposite/UTMessageDialog/UTMessageDialog.qml");
+}
+
 namespace UIView {
 
 void UIViewMessageBoxHelper::showMessageAsync(AppContext& appContext,
@@ -38,7 +43,7 @@ void UIViewMessageBoxHelper::showMessageAsync(AppContext& appContext,
     // do NOT pass any initialProperties. The window owns the controller via
     // the QML object tree; both die together when the window closes.
     QPointer<QQuickWindow> win = factory->createQmlWindow(
-        QStringLiteral("UTComposite/UTMessageDialog/UTMessageDialog.qml"));
+        kUTMessageDialogQml);
     if (!win)
     {
         UIVIEW_LOG_WARN("UIViewMessageBoxHelper::showMessageAsync: failed to create UTMessageDialog");

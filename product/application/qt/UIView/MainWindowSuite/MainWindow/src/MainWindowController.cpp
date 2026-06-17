@@ -29,6 +29,12 @@
 #include "UIEvents/UIAboutEvent.h"
 #include "UIEvents/UIMainWindowEvent.h"
 
+namespace {
+// QML resource paths used by this controller.
+const QString kMediaCameraViewQml = QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml");
+const QString kAboutDialogQml     = QStringLiteral("UIView/PageViews/AboutPage/qml/AboutDialog.qml");
+}
+
 MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
     , m_pageRegistry(new MainWindowContentPageRegistry(this))
@@ -77,7 +83,7 @@ void MainWindowController::openCamera()
     emit titleChanged();
 
     auto win = getAppContext()->getViewFactory()->createQmlItemWindow(
-        QStringLiteral("UIView/MediaCameraView/qml/MediaCameraView.qml"));
+        kMediaCameraViewQml);
     if (!win) return;
     if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
     {
@@ -154,7 +160,7 @@ void MainWindowController::showAboutDialog()
 {
     UIVIEW_LOG_DEBUG("showAboutDialog");
     auto win = getAppContext()->getViewFactory()->createQmlWindow(
-        QStringLiteral("UIView/PageViews/AboutPage/qml/AboutDialog.qml"));
+        kAboutDialogQml);
     if (!win) return;
     if (auto* aboutController = UIView::UIViewHelper::controllerOf<UIViewController>(win))
     {
