@@ -55,7 +55,7 @@ ApplicationWindow {
             anchors.leftMargin: 16
             anchors.rightMargin: 16
             UTLabel {
-                text: qsTr("Theme: ") + (GalleryTheme.isDark ? qsTr("Dark") : qsTr("Light"))
+                text: qsTr("Theme: ") + ((GalleryTheme && GalleryTheme.isDark) ? qsTr("Dark") : qsTr("Light"))
                 colorEnum: UIColorToken.Content_Heading
             }
             Item { Layout.fillWidth: true }
@@ -126,6 +126,10 @@ ApplicationWindow {
         default property alias content: pageColumn.data
         property alias title: pageHeading.text
         contentWidth: availableWidth
+        // The page only scrolls vertically; binding contentWidth to availableWidth
+        // with an active horizontal scrollbar triggers a "visible" binding loop in
+        // the Windows ScrollView style, so disable the horizontal bar explicitly.
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         ColumnLayout {
             id: pageColumn

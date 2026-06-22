@@ -31,9 +31,12 @@ BaseDatePicker {
     property var todayColorEnum:      UIColorToken.Datepicker_Today_Background
     property var selectedColorEnum:   UIColorToken.Datepicker_Selected_Background
 
+    property var calendarLocale: Qt.locale(Qt.uiLanguage)
+
     // === Geometry ===
-    property int popupWidth: 280
     property int cellSize: 34
+    property int popupPadding: 10
+    property int popupWidth: cellSize * 7 + popupPadding * 2
 
     implicitWidth: 180
     implicitHeight: 32
@@ -81,7 +84,7 @@ BaseDatePicker {
 
     // === Drop-down calendar ===
     popup.width: control.popupWidth
-    popup.padding: 10
+    popup.padding: control.popupPadding
     popup.background: Rectangle {
         radius: control.borderRadius
         color: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
@@ -143,14 +146,23 @@ BaseDatePicker {
 
             DayOfWeekRow {
                 Layout.fillWidth: true
-                locale: Qt.locale()
+                locale: control.calendarLocale
 
-                delegate: UTText {
+                delegate: Item {
                     required property var model
-                    text: model.shortName
-                    horizontalAlignment: Text.AlignHCenter
-                    color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
-                    opacity: 0.7
+                    implicitWidth: control.cellSize
+                    implicitHeight: control.cellSize
+
+                    UTText {
+                        anchors.centerIn: parent
+                        width: parent.width
+                        text: model.shortName
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideNone
+                        color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
+                        opacity: 0.7
+                    }
                 }
             }
 
@@ -159,7 +171,7 @@ BaseDatePicker {
                 Layout.fillWidth: true
                 month: control.displayMonth
                 year: control.displayYear
-                locale: Qt.locale()
+                locale: control.calendarLocale
 
                 delegate: Item {
                     required property var model
@@ -220,7 +232,7 @@ BaseDatePicker {
                 model: 12
                 delegate: Item {
                     required property int index
-                    width: (control.popupWidth - 20 - 12) / 3
+                    width: (control.popupWidth - control.popupPadding * 2 - 12) / 3
                     height: control.cellSize + 10
 
                     readonly property bool isSelected: index === control.displayMonth
@@ -248,7 +260,7 @@ BaseDatePicker {
 
                         UTText {
                             anchors.centerIn: parent
-                            text: Qt.locale().standaloneMonthName(index, Locale.ShortFormat)
+                            text: control.calendarLocale.standaloneMonthName(index, Locale.ShortFormat)
                             color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
                             opacity: parent.parent.allowed ? 1.0 : 0.3
                         }
@@ -274,7 +286,7 @@ BaseDatePicker {
                 delegate: Item {
                     required property int index
                     readonly property int year: control.yearBlockStart + index
-                    width: (control.popupWidth - 20 - 12) / 3
+                    width: (control.popupWidth - control.popupPadding * 2 - 12) / 3
                     height: control.cellSize + 10
 
                     readonly property bool isSelected: year === control.selectedDate.getFullYear()

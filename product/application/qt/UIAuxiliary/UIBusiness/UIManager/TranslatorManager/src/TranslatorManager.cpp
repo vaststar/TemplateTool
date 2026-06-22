@@ -68,6 +68,7 @@ void TranslatorManager::loadTranslation(const QString& language)
 
     if (mQmlEngine)
     {
+        mQmlEngine->setUiLanguage(language);
         mQmlEngine->retranslate();
     }
     emit languageChanged(language);
