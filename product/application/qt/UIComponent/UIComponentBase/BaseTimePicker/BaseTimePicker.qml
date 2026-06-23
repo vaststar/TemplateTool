@@ -141,4 +141,9 @@ Control {
     Keys.onEscapePressed:function(e) {
         if (popup.visible) { e.accepted = true; popup.close() }
     }
+    // Tab/Backtab moves focus out of the picker; close the wheels first but let
+    // the default focus navigation proceed. Named key signals default
+    // e.accepted to true, so we must clear it explicitly or focus won't move.
+    Keys.onTabPressed:    function(e) { if (popup.visible) popup.close(); e.accepted = false }
+    Keys.onBacktabPressed:function(e) { if (popup.visible) popup.close(); e.accepted = false }
 }
