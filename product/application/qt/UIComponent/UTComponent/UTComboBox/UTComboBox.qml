@@ -1,11 +1,30 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Layouts
 import UIComponentBase 1.0
 import UIResourceLoader 1.0
 import UTComponent 1.0
 
 BaseComboBox {
     id: control
+
+    // Model role holding the icon source (URL / qrc path / data: base64).
+    // Empty => text-only (unchanged legacy behaviour).
+    property string iconRole: ""
+    property int iconSize: 20
+
+    // Icon source for the currently selected item (collapsed display).
+    // contentItem is not in a delegate context, so resolve it from the model.
+    readonly property string currentIconSource: {
+        if (iconRole === "" || currentIndex < 0)
+            return ""
+        const m = control.model
+        if (m && typeof m.get === "function")        // ListModel
+            return m.get(currentIndex)[iconRole] ?? ""
+        if (Array.isArray(m))                         // JS array of objects
+            return (m[currentIndex] && m[currentIndex][iconRole]) ?? ""
+        return ""
+    }
 
     // === Theme colors (new tokens) ===
     readonly property color bgColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Background, UIColorState.Normal)
@@ -28,27 +47,40 @@ BaseComboBox {
     }
 
     // === ComboBox text (using font token) ===
-    contentItem: UTText {
-        id: contentText
-        leftPadding: 12
-        rightPadding: control.indicator.width + control.spacing
-        text: control.displayText
-        fontEnum: UIFontToken.Combobox_Text
-        color: control.textColor
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-
-        HoverHandler {
-            id: contentHoverHandler
+    contentItem: RowLayout {
+        spacing: 8
+        Image {
+            Layout.leftMargin: 12
+            Layout.alignment: Qt.AlignVCenter
+            visible: control.iconRole !== "" && status === Image.Ready
+            source: control.currentIconSource
+            sourceSize: Qt.size(control.iconSize, control.iconSize)
+            fillMode: Image.PreserveAspectFit
         }
-
-        UTToolTip {
-            parent: contentText
+        UTText {
+            id: contentText
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
+            leftPadding: control.iconRole !== "" ? 0 : 12
+            rightPadding: control.indicator.width + control.spacing
             text: control.displayText
-            visible: contentText.truncated && contentHoverHandler.hovered
-            delay: 500
-            cursorX: contentHoverHandler.point.position.x
-            cursorY: contentHoverHandler.point.position.y
+            fontEnum: UIFontToken.Combobox_Text
+            color: control.textColor
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+
+            HoverHandler {
+                id: contentHoverHandler
+            }
+
+            UTToolTip {
+                parent: contentText
+                text: control.displayText
+                visible: contentText.truncated && contentHoverHandler.hovered
+                delay: 500
+                cursorX: contentHoverHandler.point.position.x
+                cursorY: contentHoverHandler.point.position.y
+            }
         }
     }
 
@@ -89,6 +121,7 @@ BaseComboBox {
     delegate: ItemDelegate {
         id: delegateItem
         required property int index
+        required property var model
 
         width: control.width - 8
         height: control.itemHeight
@@ -97,26 +130,39 @@ BaseComboBox {
         readonly property bool isHighlighted: control.focusedItemIndex === index
         highlighted: isHighlighted
 
-        contentItem: UTText {
-            id: delegateText
-            leftPadding: 12
-            text: control.textAt(delegateItem.index)
-            fontEnum: UIFontToken.Combobox_Text
-            color: control.textColor
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-
-            HoverHandler {
-                id: delegateHoverHandler
+        contentItem: RowLayout {
+            spacing: 8
+            Image {
+                Layout.leftMargin: 12
+                Layout.alignment: Qt.AlignVCenter
+                visible: control.iconRole !== "" && status === Image.Ready
+                source: control.iconRole !== "" ? (delegateItem.model[control.iconRole] ?? "") : ""
+                sourceSize: Qt.size(control.iconSize, control.iconSize)
+                fillMode: Image.PreserveAspectFit
             }
+            UTText {
+                id: delegateText
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                leftPadding: control.iconRole !== "" ? 0 : 12
+                text: control.textAt(delegateItem.index)
+                fontEnum: UIFontToken.Combobox_Text
+                color: control.textColor
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
 
-            UTToolTip {
-                parent: delegateText
-                text: delegateText.text
-                visible: delegateText.truncated && delegateHoverHandler.hovered
-                delay: 500
-                cursorX: delegateHoverHandler.point.position.x
-                cursorY: delegateHoverHandler.point.position.y
+                HoverHandler {
+                    id: delegateHoverHandler
+                }
+
+                UTToolTip {
+                    parent: delegateText
+                    text: delegateText.text
+                    visible: delegateText.truncated && delegateHoverHandler.hovered
+                    delay: 500
+                    cursorX: delegateHoverHandler.point.position.x
+                    cursorY: delegateHoverHandler.point.position.y
+                }
             }
         }
 
