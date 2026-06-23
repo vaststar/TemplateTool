@@ -93,16 +93,50 @@ BaseTimePicker {
     component WheelColumn: Tumbler {
         id: wheel
         property int valueCount: 60
+        // Position of this column (0=hours, 1=minutes, 2=seconds) used to sync
+        // with the control's keyboard-driven active column.
+        property int columnIndex: 0
+        // Source-of-truth value coming from the control. Kept separate from
+        // currentIndex so external (keyboard) changes can reposition the wheel
+        // without fighting a two-way binding.
+        property int value: 0
+        signal valuePicked(int v)
+        readonly property bool active: control.popupIsOpen && control.activeColumn === columnIndex
         width: control.autoColumnWidth
         height: control.wheelHeight
         visibleItemCount: control.visibleRows
         wrap: true
         model: valueCount
 
+        // External value -> wheel: imperatively move the Tumbler (guarded so the
+        // resulting onCurrentIndexChanged does not loop back).
+        onValueChanged: if (currentIndex !== value) currentIndex = value
+        Component.onCompleted: currentIndex = value
+        // Wheel -> control: report user-driven changes only.
+        onCurrentIndexChanged: if (currentIndex !== value) valuePicked(currentIndex)
+
+        // Outline marking the column the keyboard is currently driving.
+        Rectangle {
+            anchors.fill: parent
+            z: 5
+            color: "transparent"
+            radius: control.borderRadius - 2
+            visible: wheel.active && control.activeFocus
+            border.width: 2
+            border.color: UTComponentUtil.getPlainUIColor(
+                              control.borderColorEnum, UIColorState.Focused)
+        }
+
+        // Clicking a column makes it the keyboard-active one.
+        TapHandler {
+            onTapped: control.activeColumn = wheel.columnIndex
+        }
+
         // Mouse wheel scrolling (Tumbler does not handle this by default).
         WheelHandler {
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
             onWheel: function(event) {
+                control.activeColumn = wheel.columnIndex
                 var step = event.angleDelta.y > 0 ? -1 : 1
                 wheel.currentIndex = (wheel.currentIndex + step + wheel.count) % wheel.count
             }
@@ -154,8 +188,9 @@ BaseTimePicker {
 
             WheelColumn {
                 valueCount: 24
-                currentIndex: control.hours
-                onCurrentIndexChanged: control.setHours(currentIndex)
+                columnIndex: 0
+                value: control.hours
+                onValuePicked: function(v) { control.setHours(v) }
             }
 
             UTText {
@@ -168,8 +203,9 @@ BaseTimePicker {
 
             WheelColumn {
                 valueCount: 60
-                currentIndex: control.minutes
-                onCurrentIndexChanged: control.setMinutes(currentIndex)
+                columnIndex: 1
+                value: control.minutes
+                onValuePicked: function(v) { control.setMinutes(v) }
             }
 
             UTText {
@@ -184,8 +220,9 @@ BaseTimePicker {
             WheelColumn {
                 visible: control.showSeconds
                 valueCount: 60
-                currentIndex: control.seconds
-                onCurrentIndexChanged: control.setSeconds(currentIndex)
+                columnIndex: 2
+                value: control.seconds
+                onValuePicked: function(v) { control.setSeconds(v) }
             }
         }
     }
