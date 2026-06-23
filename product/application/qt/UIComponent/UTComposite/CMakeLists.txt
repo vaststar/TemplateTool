@@ -55,6 +55,7 @@ set(MODULE_QML_TARGET_FILES
     UTFolderView/UTFolderGridDelegate.qml
     UTFolderView/UTFolderDetailDelegate.qml
     UTMessageDialog/UTMessageDialog.qml
+    UTDateTimeRangePicker/UTDateTimeRangePicker.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

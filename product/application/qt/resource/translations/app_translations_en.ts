@@ -155,147 +155,147 @@
 <context>
     <name>Gallery</name>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="24"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="25"/>
         <source>UIComponent Gallery</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="59"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="60"/>
         <source>Theme: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="59"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="60"/>
         <source>Dark</source>
         <translation type="unfinished">Dark</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="59"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="60"/>
         <source>Light</source>
         <translation type="unfinished">Light</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="65"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="66"/>
         <source>Language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="84"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="85"/>
         <source>切换主题</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="230"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="231"/>
         <source>Buttons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="233"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="234"/>
         <source>Primary / Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="234"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="235"/>
         <source>Primary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="235"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="236"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="239"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="240"/>
         <source>Tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="245"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="246"/>
         <source>Toggles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="249"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="250"/>
         <source>Unchecked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="253"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="254"/>
         <source>On / Off / Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="262"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="263"/>
         <source>Inputs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="295"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="328"/>
         <source>Pickers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="315"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="360"/>
         <source>Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="318"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="363"/>
         <source>Primary / Secondary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="337"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="382"/>
         <source>Containers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="342"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="387"/>
         <source>Settings</source>
         <translation type="unfinished">Settings</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="346"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="391"/>
         <source>Enable feature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="248"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="249"/>
         <source>Check me</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="267"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="268"/>
         <source>Single line...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="275"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="276"/>
         <source>Multi-line text...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="282"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="283"/>
         <source>Option A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="282"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="283"/>
         <source>Option B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="282"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="283"/>
         <source>Option C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="319"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="364"/>
         <source>Body text sample</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="320"/>
+        <location filename="../../UIComponent/UIToolKitGallery/qml/Gallery.qml" line="365"/>
         <source>Secondary text sample</source>
         <translation type="unfinished"></translation>
     </message>

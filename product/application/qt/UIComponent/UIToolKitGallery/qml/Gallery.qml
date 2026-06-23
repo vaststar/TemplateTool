@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import UTComponent 1.0
+import UTComposite 1.0
 import UIResourceLoader 1.0
 
 /**
@@ -332,6 +333,18 @@ ApplicationWindow {
                 Demo {
                     name: "UTDatePicker"
                     UTDatePicker {}
+                }
+                Demo {
+                    name: "UTDateTimeRangePicker"
+                    UTDateTimeRangePicker {
+                        mode: UTDateTimeRangePicker.DateTime
+                    }
+                }
+                Demo {
+                    name: "UTDateTimeRangePicker (Date)"
+                    UTDateTimeRangePicker {
+                        mode: UTDateTimeRangePicker.Date
+                    }
                 }
                 Demo {
                     name: "UTSlider"
