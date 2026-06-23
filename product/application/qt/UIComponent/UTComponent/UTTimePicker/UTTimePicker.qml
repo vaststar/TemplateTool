@@ -115,16 +115,13 @@ BaseTimePicker {
         // Wheel -> control: report user-driven changes only.
         onCurrentIndexChanged: if (currentIndex !== value) valuePicked(currentIndex)
 
-        // Outline marking the column the keyboard is currently driving.
-        Rectangle {
-            anchors.fill: parent
-            z: 5
-            color: "transparent"
-            radius: control.borderRadius - 2
-            visible: wheel.active && control.activeFocus
-            border.width: 2
-            border.color: UTComponentUtil.getPlainUIColor(
-                              control.borderColorEnum, UIColorState.Focused)
+        // Blue focus outline for the keyboard-driven column. Driven by the same
+        // KeyboardFocusTracker as UTFocusItem, so it only shows during keyboard
+        // navigation and stays hidden for mouse interaction.
+        UTFocusItem {
+            target: wheel
+            delegateFocused: wheel.active && control.activeFocus
+            focusRadius: control.borderRadius - 2
         }
 
         // Clicking a column makes it the keyboard-active one.
