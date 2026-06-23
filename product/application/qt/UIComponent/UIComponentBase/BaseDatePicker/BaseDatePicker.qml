@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Window
 
 /**
  * BaseDatePicker - Unstyled date picker behavior.
@@ -140,12 +141,30 @@ Control {
     }
 
     // === Drop-down container (styling provided by UT layer) ===
+    function updatePopupPosition() {
+        const ph = popup.height > 0 ? popup.height : popup.implicitHeight
+        const scenePos = control.mapToItem(null, 0, 0)
+        const winHeight = control.Window.height
+        const spaceBelow = winHeight - (scenePos.y + control.height)
+        popup.y = (spaceBelow < ph && scenePos.y >= ph) ? -ph : control.height
+    }
+
     property Popup popup: Popup {
-        y: control.height
+        id: dropdown
+        parent: control
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        onAboutToShow: control.resetView()
+        onAboutToShow: {
+            control.resetView()
+            control.updatePopupPosition()
+        }
+        onHeightChanged: if (visible) control.updatePopupPosition()
         onOpened: control.popupIsOpen = true
         onClosed: control.popupIsOpen = false
+
+        Connections {
+            target: control.Window.window
+            function onHeightChanged() { if (dropdown.visible) control.updatePopupPosition() }
+        }
     }
 
     // === Keyboard support ===

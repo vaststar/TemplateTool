@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Window
 
 ComboBox {
     id: control
@@ -65,6 +66,23 @@ ComboBox {
             activated(focusedItemIndex)
         }
         popup.close()
+    }
+
+    // === Popup placement: flip above when there isn't room below ===
+    function updatePopupPosition() {
+        const ph = popup.height > 0 ? popup.height : popup.implicitHeight
+        const scenePos = control.mapToItem(null, 0, 0)
+        const winHeight = control.Window.height
+        const spaceBelow = winHeight - (scenePos.y + control.height)
+        popup.y = (spaceBelow < ph && scenePos.y >= ph) ? -ph : control.height
+    }
+
+    popup.onAboutToShow: updatePopupPosition()
+    popup.onHeightChanged: if (popup.visible) updatePopupPosition()
+
+    Connections {
+        target: control.Window.window
+        function onHeightChanged() { if (control.popup.visible) control.updatePopupPosition() }
     }
 
     // === Popup state sync ===
