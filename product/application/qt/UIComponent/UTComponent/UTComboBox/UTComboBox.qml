@@ -88,7 +88,6 @@ BaseComboBox {
     // === Delegate with focus ring ===
     delegate: ItemDelegate {
         id: delegateItem
-        required property var modelData
         required property int index
 
         width: control.width - 8
@@ -101,9 +100,7 @@ BaseComboBox {
         contentItem: UTText {
             id: delegateText
             leftPadding: 12
-            text: control.textRole
-                  ? (delegateItem.modelData[control.textRole] ?? delegateItem.modelData)
-                  : delegateItem.modelData
+            text: control.textAt(delegateItem.index)
             fontEnum: UIFontToken.Combobox_Text
             color: control.textColor
             verticalAlignment: Text.AlignVCenter

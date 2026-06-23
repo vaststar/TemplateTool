@@ -54,11 +54,32 @@ ApplicationWindow {
             anchors.fill: parent
             anchors.leftMargin: 16
             anchors.rightMargin: 16
+            spacing: 12
             UTLabel {
                 text: qsTr("Theme: ") + ((GalleryTheme && GalleryTheme.isDark) ? qsTr("Dark") : qsTr("Light"))
                 colorEnum: UIColorToken.Content_Heading
             }
             Item { Layout.fillWidth: true }
+
+            UTLabel {
+                text: qsTr("Language:")
+                colorEnum: UIColorToken.Content_Heading
+            }
+            UTComboBox {
+                Layout.preferredWidth: 140
+                textRole: "name"
+                valueRole: "code"
+                model: ListModel {
+                    ListElement { name: "English";  code: "en" }
+                    ListElement { name: "中文";      code: "zh_CN" }
+                    ListElement { name: "日本語";    code: "ja" }
+                    ListElement { name: "한국어";    code: "ko" }
+                    ListElement { name: "Français";  code: "fr" }
+                    ListElement { name: "Deutsch";   code: "de" }
+                }
+                onActivated: Qt.uiLanguage = currentValue
+            }
+
             UTButton {
                 text: qsTr("切换主题")
                 onClicked: GalleryTheme.toggleTheme()

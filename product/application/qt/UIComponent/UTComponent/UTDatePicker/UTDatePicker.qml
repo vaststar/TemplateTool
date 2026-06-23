@@ -115,11 +115,17 @@ BaseDatePicker {
                 Layout.preferredHeight: control.cellSize
                 backgroundColorEnum: UIColorToken.Datepicker_Background
                 fontColorEnum: control.textColorEnum
-                text: control.viewMode === control.daysView
-                          ? control.displayYear + qsTr("年") + " " + (control.displayMonth + 1) + qsTr("月")
-                      : control.viewMode === control.monthsView
-                          ? control.displayYear + qsTr("年")
-                      : control.yearBlockStart + " - " + (control.yearBlockStart + 11)
+                text: {
+                    if (control.viewMode === control.monthsView)
+                        return control.displayYear
+                    if (control.viewMode === control.yearsView)
+                        return control.yearBlockStart + " - " + (control.yearBlockStart + 11)
+                    const monthName = control.calendarLocale.standaloneMonthName(control.displayMonth, Locale.LongFormat)
+                    const lang = control.calendarLocale.name
+                    const yearFirst = lang.startsWith("zh") || lang.startsWith("ja") || lang.startsWith("ko")
+                    return yearFirst ? (control.displayYear + " " + monthName)
+                                     : (monthName + " " + control.displayYear)
+                }
                 onClicked: {
                     if (control.viewMode === control.daysView)
                         control.showMonths()
@@ -146,6 +152,7 @@ BaseDatePicker {
 
             DayOfWeekRow {
                 Layout.fillWidth: true
+                spacing: 0
                 locale: control.calendarLocale
 
                 delegate: Item {
@@ -169,6 +176,7 @@ BaseDatePicker {
             MonthGrid {
                 id: grid
                 Layout.fillWidth: true
+                spacing: 0
                 month: control.displayMonth
                 year: control.displayYear
                 locale: control.calendarLocale
