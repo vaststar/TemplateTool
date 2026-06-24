@@ -28,13 +28,6 @@ Control {
     // === Popup state (for subclass styling) ===
     property bool popupIsOpen: false
 
-    // Index of the wheel column the keyboard currently drives while the popup
-    // is open: 0 = hours, 1 = minutes, 2 = seconds. Subclasses use it to
-    // highlight the active column.
-    property int activeColumn: 0
-    // Number of wheel columns currently shown (seconds is optional).
-    readonly property int columnCount: showSeconds ? 3 : 2
-
     focusPolicy: Qt.StrongFocus
 
     // === Read-only formatted output, convenient for bindings ===
@@ -75,22 +68,6 @@ Control {
             popup.open()
     }
 
-    // Move the keyboard focus between wheel columns (wraps around).
-    function moveActiveColumn(delta) {
-        var n = columnCount
-        activeColumn = ((activeColumn + delta) % n + n) % n
-    }
-
-    // Step the value of the column the keyboard is currently driving.
-    function stepActiveColumn(delta) {
-        if (activeColumn === 0)
-            setHours(hours + delta)
-        else if (activeColumn === 1)
-            setMinutes(minutes + delta * minuteStep)
-        else
-            setSeconds(seconds + delta)
-    }
-
     // === Drop-down container (styling provided by UT layer) ===
     function updatePopupPosition() {
         const ph = popup.height > 0 ? popup.height : popup.implicitHeight
@@ -103,10 +80,15 @@ Control {
     property Popup popup: Popup {
         id: dropdown
         parent: control
+        // Modal (without the dim) so a press outside that closes the popup is
+        // consumed by the overlay instead of passing through to whatever sits
+        // below (e.g. an adjacent date picker would otherwise open its popup).
+        modal: true
+        dim: false
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         onAboutToShow: control.updatePopupPosition()
         onHeightChanged: if (visible) control.updatePopupPosition()
-        onOpened: { control.activeColumn = 0; control.popupIsOpen = true }
+        onOpened: control.popupIsOpen = true
         onClosed: control.popupIsOpen = false
 
         Connections {
@@ -116,24 +98,14 @@ Control {
     }
 
     // === Keyboard support ===
-    // Closed: Up/Down nudges the minutes, Space/Enter opens the wheels.
-    // Open:   Left/Right pick a column, Up/Down change its value,
-    //         Space/Enter confirm and close, Esc cancels.
+    // Closed: Up/Down nudges the minutes, Space/Enter opens the wheels. While
+    // open, focus lives in the popup; the wheel columns handle Up/Down and the
+    // UT layer handles Left/Right (column focus) and confirm/close.
     Keys.onUpPressed: function(e) {
-        e.accepted = true
-        if (popupIsOpen) stepActiveColumn(1)
-        else setMinutes(minutes + minuteStep)
+        if (!popupIsOpen) { e.accepted = true; setMinutes(minutes + minuteStep) }
     }
     Keys.onDownPressed: function(e) {
-        e.accepted = true
-        if (popupIsOpen) stepActiveColumn(-1)
-        else setMinutes(minutes - minuteStep)
-    }
-    Keys.onLeftPressed: function(e) {
-        if (popupIsOpen) { e.accepted = true; moveActiveColumn(-1) }
-    }
-    Keys.onRightPressed: function(e) {
-        if (popupIsOpen) { e.accepted = true; moveActiveColumn(1) }
+        if (!popupIsOpen) { e.accepted = true; setMinutes(minutes - minuteStep) }
     }
     Keys.onSpacePressed: function(e) { e.accepted = true; togglePopup() }
     Keys.onReturnPressed:function(e) { e.accepted = true; togglePopup() }

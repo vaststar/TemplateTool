@@ -3,36 +3,24 @@ import QtQuick.Controls.Basic
 import QtQuick.Window
 
 /**
- * BaseDatePicker - Unstyled date picker behavior.
+ * BaseDatePicker - Unstyled date picker state core.
  *
- * Holds the selected date, the currently browsed year/month, month navigation
- * and optional min/max range checks, plus an (unstyled) drop-down Popup that
- * the UT layer fills with a calendar grid. No colors / fonts here; the
- * UTComponent layer applies design tokens, matching the Base + UT pattern used
- * by BaseTimePicker / UTTimePicker.
+ * Holds only the selected date, optional [minDate, maxDate] range and the
+ * (unstyled) drop-down Popup container. No presentation (formatting), no
+ * calendar-browsing notions (browsed month, page navigation, view modes) and
+ * no colors / fonts - those belong to the UT layer that renders a concrete
+ * style (calendar grid in UTDatePicker, scrolling wheels in UTDateWheelPicker).
+ *
+ * Shared by every date-picker style; each UT subclass fills popup.contentItem
+ * with its own editor and reads back through selectDate().
  */
 Control {
     id: control
 
     // === State ===
     property date selectedDate: new Date()
-    property string displayFormat: "yyyy-MM-dd"
     property var minDate: undefined   // Date or undefined
     property var maxDate: undefined   // Date or undefined
-    property int firstDayOfWeek: Qt.Sunday
-
-    // Currently browsed month (may differ from selectedDate's month).
-    property int displayYear: selectedDate.getFullYear()
-    property int displayMonth: selectedDate.getMonth()   // 0-11
-
-    // Calendar view: 0 = days, 1 = months, 2 = years.
-    property int viewMode: 0
-    readonly property int daysView: 0
-    readonly property int monthsView: 1
-    readonly property int yearsView: 2
-
-    // First year shown in the 12-year block of the year view.
-    readonly property int yearBlockStart: displayYear - (displayYear % 12)
 
     // === Configuration ===
     property int borderRadius: 6
@@ -42,21 +30,28 @@ Control {
 
     focusPolicy: Qt.StrongFocus
 
-    // === Read-only formatted output, convenient for bindings ===
-    readonly property string dateValue: Qt.formatDate(selectedDate, displayFormat)
-
     signal dateChanged()
+    // Emitted just before the popup shows, so a style can sync its editor to
+    // selectedDate (e.g. the calendar resets its browsed month / view).
+    signal popupAboutToShow()
 
-    // Keep the browsed month in sync when selectedDate is set externally.
-    onSelectedDateChanged: {
-        displayYear = selectedDate.getFullYear()
-        displayMonth = selectedDate.getMonth()
-    }
-
+    // === Core date logic ===
     function isInRange(d) {
         if (minDate !== undefined && d < minDate)
             return false
         if (maxDate !== undefined && d > maxDate)
+            return false
+        return true
+    }
+
+    // Whether the inclusive interval [from, to] overlaps [minDate, maxDate].
+    // Use this to decide if a whole month/year contains any selectable day,
+    // instead of probing a few sample dates (which misses partially-valid
+    // months/years at a boundary).
+    function rangeOverlaps(from, to) {
+        if (maxDate !== undefined && from > maxDate)
+            return false
+        if (minDate !== undefined && to < minDate)
             return false
         return true
     }
@@ -74,63 +69,15 @@ Control {
         dateChanged()
     }
 
-    // === Month navigation (day view) ===
-    function prevMonth() {
-        if (displayMonth === 0) {
-            displayMonth = 11
-            displayYear--
-        } else {
-            displayMonth--
-        }
+    // === Neutral date math (useful to any style) ===
+    // Number of days in the given (year, 0-based month).
+    function daysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate()
     }
 
-    function nextMonth() {
-        if (displayMonth === 11) {
-            displayMonth = 0
-            displayYear++
-        } else {
-            displayMonth++
-        }
-    }
-
-    // === Context-aware prev/next for the arrow buttons ===
-    function navigatePrev() {
-        if (viewMode === daysView)
-            prevMonth()
-        else if (viewMode === monthsView)
-            displayYear--
-        else
-            displayYear -= 12
-    }
-
-    function navigateNext() {
-        if (viewMode === daysView)
-            nextMonth()
-        else if (viewMode === monthsView)
-            displayYear++
-        else
-            displayYear += 12
-    }
-
-    // === View switching ===
-    function showMonths() { viewMode = monthsView }
-    function showYears()  { viewMode = yearsView }
-
-    function pickMonth(m) {
-        displayMonth = m
-        viewMode = daysView
-    }
-
-    function pickYear(y) {
-        displayYear = y
-        viewMode = monthsView
-    }
-
-    // Reset the browsed month/view to the selected date.
-    function resetView() {
-        displayYear = selectedDate.getFullYear()
-        displayMonth = selectedDate.getMonth()
-        viewMode = daysView
+    // Clamp a day-of-month to the last valid day of (year, month).
+    function clampDay(year, month, day) {
+        return Math.min(day, daysInMonth(year, month))
     }
 
     function togglePopup() {
@@ -152,9 +99,14 @@ Control {
     property Popup popup: Popup {
         id: dropdown
         parent: control
+        // Modal (without the dim) so a press outside that closes the popup is
+        // consumed by the overlay instead of passing through to whatever sits
+        // below (e.g. an adjacent time picker would otherwise open its popup).
+        modal: true
+        dim: false
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         onAboutToShow: {
-            control.resetView()
+            control.popupAboutToShow()
             control.updatePopupPosition()
         }
         onHeightChanged: if (visible) control.updatePopupPosition()
@@ -167,7 +119,7 @@ Control {
         }
     }
 
-    // === Keyboard support ===
+    // === Keyboard support (popup open/close only; styles add navigation) ===
     Keys.onSpacePressed:  function(e) { e.accepted = true; togglePopup() }
     Keys.onReturnPressed: function(e) { e.accepted = true; togglePopup() }
     Keys.onEscapePressed: function(e) {

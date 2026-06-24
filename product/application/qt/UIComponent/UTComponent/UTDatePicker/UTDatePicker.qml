@@ -33,6 +33,91 @@ BaseDatePicker {
 
     property var calendarLocale: Qt.locale(Qt.uiLanguage)
 
+    // === Presentation (collapsed box text) ===
+    property string displayFormat: "yyyy-MM-dd"
+    readonly property string dateValue: Qt.formatDate(selectedDate, displayFormat)
+
+    // === Calendar browsing state (this style only) ===
+    // Currently browsed month (may differ from selectedDate's month).
+    property int displayYear: selectedDate.getFullYear()
+    property int displayMonth: selectedDate.getMonth()   // 0-11
+
+    // Calendar view: 0 = days, 1 = months, 2 = years.
+    property int viewMode: 0
+    readonly property int daysView: 0
+    readonly property int monthsView: 1
+    readonly property int yearsView: 2
+
+    // First year shown in the 12-year block of the year view.
+    readonly property int yearBlockStart: displayYear - (displayYear % 12)
+
+    // Keep the browsed month in sync when selectedDate is set externally.
+    onSelectedDateChanged: {
+        displayYear = selectedDate.getFullYear()
+        displayMonth = selectedDate.getMonth()
+    }
+
+    // Reset the browsed month/view to the selected date when the popup opens.
+    onPopupAboutToShow: resetView()
+
+    // === Month navigation (day view) ===
+    function prevMonth() {
+        if (displayMonth === 0) {
+            displayMonth = 11
+            displayYear--
+        } else {
+            displayMonth--
+        }
+    }
+
+    function nextMonth() {
+        if (displayMonth === 11) {
+            displayMonth = 0
+            displayYear++
+        } else {
+            displayMonth++
+        }
+    }
+
+    // === Context-aware prev/next for the arrow buttons ===
+    function navigatePrev() {
+        if (viewMode === daysView)
+            prevMonth()
+        else if (viewMode === monthsView)
+            displayYear--
+        else
+            displayYear -= 12
+    }
+
+    function navigateNext() {
+        if (viewMode === daysView)
+            nextMonth()
+        else if (viewMode === monthsView)
+            displayYear++
+        else
+            displayYear += 12
+    }
+
+    // === View switching ===
+    function showMonths() { viewMode = monthsView }
+    function showYears()  { viewMode = yearsView }
+
+    function pickMonth(m) {
+        displayMonth = m
+        viewMode = daysView
+    }
+
+    function pickYear(y) {
+        displayYear = y
+        viewMode = monthsView
+    }
+
+    function resetView() {
+        displayYear = selectedDate.getFullYear()
+        displayMonth = selectedDate.getMonth()
+        viewMode = daysView
+    }
+
     // === Geometry ===
     property int cellSize: 34
     property int popupPadding: 10
@@ -78,8 +163,11 @@ BaseDatePicker {
                           control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
     }
 
-    TapHandler {
-        onTapped: control.togglePopup()
+    // MouseArea (not TapHandler) so another picker's modal popup overlay blocks
+    // the click - a TapHandler would still fire through the overlay.
+    MouseArea {
+        anchors.fill: parent
+        onClicked: control.togglePopup()
     }
 
     // === Drop-down calendar ===
@@ -246,10 +334,9 @@ BaseDatePicker {
                     readonly property bool isSelected: index === control.displayMonth
                         && control.displayYear === control.selectedDate.getFullYear()
                     // Allowed if any day of the month falls within range.
-                    readonly property bool allowed:
-                        control.isInRange(new Date(control.displayYear, index + 1, 0))
-                        && control.isInRange(new Date(control.displayYear, index, 1))
-                        || control.isInRange(new Date(control.displayYear, index, 15))
+                    readonly property bool allowed: control.rangeOverlaps(
+                        new Date(control.displayYear, index, 1),
+                        new Date(control.displayYear, index + 1, 0, 23, 59, 59, 999))
 
                     HoverHandler {
                         id: monthHover
@@ -298,10 +385,9 @@ BaseDatePicker {
                     height: control.cellSize + 10
 
                     readonly property bool isSelected: year === control.selectedDate.getFullYear()
-                    readonly property bool allowed:
-                        control.isInRange(new Date(year, 11, 31))
-                        && control.isInRange(new Date(year, 0, 1))
-                        || control.isInRange(new Date(year, 6, 1))
+                    readonly property bool allowed: control.rangeOverlaps(
+                        new Date(year, 0, 1),
+                        new Date(year, 11, 31, 23, 59, 59, 999))
 
                     HoverHandler {
                         id: yearHover

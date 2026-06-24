@@ -85,79 +85,18 @@ BaseTimePicker {
                           control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
     }
 
-    TapHandler {
-        onTapped: control.togglePopup()
-    }
-
-    // === Reusable wheel column component ===
-    component WheelColumn: Tumbler {
-        id: wheel
-        property int valueCount: 60
-        // Position of this column (0=hours, 1=minutes, 2=seconds) used to sync
-        // with the control's keyboard-driven active column.
-        property int columnIndex: 0
-        // Source-of-truth value coming from the control. Kept separate from
-        // currentIndex so external (keyboard) changes can reposition the wheel
-        // without fighting a two-way binding.
-        property int value: 0
-        signal valuePicked(int v)
-        readonly property bool active: control.popupIsOpen && control.activeColumn === columnIndex
-        width: control.autoColumnWidth
-        height: control.wheelHeight
-        visibleItemCount: control.visibleRows
-        wrap: true
-        model: valueCount
-
-        // External value -> wheel: imperatively move the Tumbler (guarded so the
-        // resulting onCurrentIndexChanged does not loop back).
-        onValueChanged: if (currentIndex !== value) currentIndex = value
-        Component.onCompleted: currentIndex = value
-        // Wheel -> control: report user-driven changes only.
-        onCurrentIndexChanged: if (currentIndex !== value) valuePicked(currentIndex)
-
-        // Blue focus outline for the keyboard-driven column. Driven by the same
-        // KeyboardFocusTracker as UTFocusItem, so it only shows during keyboard
-        // navigation and stays hidden for mouse interaction.
-        UTFocusItem {
-            target: wheel
-            delegateFocused: wheel.active && control.activeFocus
-            focusRadius: control.borderRadius - 2
-        }
-
-        // Clicking a column makes it the keyboard-active one.
-        TapHandler {
-            onTapped: control.activeColumn = wheel.columnIndex
-        }
-
-        // Mouse wheel scrolling (Tumbler does not handle this by default).
-        WheelHandler {
-            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-            onWheel: function(event) {
-                control.activeColumn = wheel.columnIndex
-                var step = event.angleDelta.y > 0 ? -1 : 1
-                wheel.currentIndex = (wheel.currentIndex + step + wheel.count) % wheel.count
-            }
-        }
-
-        delegate: Component {
-            UTText {
-                required property int index
-                required property var modelData
-                text: (modelData < 10 ? "0" : "") + modelData
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
-                // Centered row is crisp; neighbours fade with distance.
-                opacity: 1.0 - Math.min(0.6, Math.abs(Tumbler.displacement) * 0.28)
-                font.pixelSize: Tumbler.displacement === 0 ? 18 : 14
-                font.bold: Tumbler.displacement === 0
-            }
-        }
+    // MouseArea (not TapHandler) so another picker's modal popup overlay blocks
+    // the click - a TapHandler would still fire through the overlay.
+    MouseArea {
+        anchors.fill: parent
+        onClicked: control.togglePopup()
     }
 
     // === Drop-down wheels ===
     popup.width: control.width
     popup.padding: 8
+    // Let the popup hold keyboard focus so its wheel columns receive keys.
+    popup.focus: true
     popup.background: Rectangle {
         radius: control.borderRadius
         color: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
@@ -165,8 +104,32 @@ BaseTimePicker {
         border.color: UTComponentUtil.getPlainUIColor(control.borderColorEnum, UIColorState.Normal)
     }
 
-    popup.contentItem: Item {
+    popup.contentItem: FocusScope {
         implicitHeight: control.wheelHeight
+
+        // Focus the first column when the wheels open; hand focus back to the
+        // box when they close.
+        Connections {
+            target: control.popup
+            function onOpened() { hourCol.forceActiveFocus() }
+            function onClosed() { control.forceActiveFocus() }
+        }
+
+        // Move keyboard focus between columns. Bubbled up from the focused
+        // wheel, which leaves Left/Right unhandled on purpose.
+        function moveColumn(delta) {
+            var cols = [hourCol, minCol]
+            if (control.showSeconds) cols.push(secCol)
+            var idx = 0
+            for (var i = 0; i < cols.length; ++i)
+                if (cols[i].activeFocus) { idx = i; break }
+            cols[((idx + delta) % cols.length + cols.length) % cols.length].forceActiveFocus()
+        }
+        Keys.onLeftPressed:  function(e) { moveColumn(-1); e.accepted = true }
+        Keys.onRightPressed: function(e) { moveColumn(1);  e.accepted = true }
+        Keys.onSpacePressed: function(e) { control.popup.close(); e.accepted = true }
+        Keys.onReturnPressed:function(e) { control.popup.close(); e.accepted = true }
+        Keys.onEnterPressed: function(e) { control.popup.close(); e.accepted = true }
 
         // Highlight band marking the centered selection row (behind the wheels).
         Rectangle {
@@ -183,9 +146,16 @@ BaseTimePicker {
             anchors.centerIn: parent
             spacing: control.wheelSpacing
 
-            WheelColumn {
+            UTWheelColumn {
+                id: hourCol
+                width: control.autoColumnWidth
+                height: control.wheelHeight
+                visibleRows: control.visibleRows
+                wrap: true
+                textColorEnum: control.textColorEnum
+                borderColorEnum: control.borderColorEnum
+                borderRadius: control.borderRadius
                 valueCount: 24
-                columnIndex: 0
                 value: control.hours
                 onValuePicked: function(v) { control.setHours(v) }
             }
@@ -198,9 +168,16 @@ BaseTimePicker {
                 color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
             }
 
-            WheelColumn {
+            UTWheelColumn {
+                id: minCol
+                width: control.autoColumnWidth
+                height: control.wheelHeight
+                visibleRows: control.visibleRows
+                wrap: true
+                textColorEnum: control.textColorEnum
+                borderColorEnum: control.borderColorEnum
+                borderRadius: control.borderRadius
                 valueCount: 60
-                columnIndex: 1
                 value: control.minutes
                 onValuePicked: function(v) { control.setMinutes(v) }
             }
@@ -214,10 +191,17 @@ BaseTimePicker {
                 color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
             }
 
-            WheelColumn {
+            UTWheelColumn {
+                id: secCol
                 visible: control.showSeconds
+                width: control.autoColumnWidth
+                height: control.wheelHeight
+                visibleRows: control.visibleRows
+                wrap: true
+                textColorEnum: control.textColorEnum
+                borderColorEnum: control.borderColorEnum
+                borderRadius: control.borderRadius
                 valueCount: 60
-                columnIndex: 2
                 value: control.seconds
                 onValuePicked: function(v) { control.setSeconds(v) }
             }

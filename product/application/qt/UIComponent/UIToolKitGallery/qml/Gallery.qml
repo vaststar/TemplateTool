@@ -335,6 +335,10 @@ ApplicationWindow {
                     UTDatePicker {}
                 }
                 Demo {
+                    name: "UTDateWheelPicker"
+                    UTDateWheelPicker {}
+                }
+                Demo {
                     name: "UTDateTimeRangePicker"
                     UTDateTimeRangePicker {
                         mode: UTDateTimeRangePicker.DateTime
@@ -344,6 +348,13 @@ ApplicationWindow {
                     name: "UTDateTimeRangePicker (Date)"
                     UTDateTimeRangePicker {
                         mode: UTDateTimeRangePicker.Date
+                    }
+                }
+                Demo {
+                    name: "UTDateTimeRangePicker (Wheel)"
+                    UTDateTimeRangePicker {
+                        mode: UTDateTimeRangePicker.DateTime
+                        datePickerStyle: UTDateTimeRangePicker.Wheel
                     }
                 }
                 Demo {
