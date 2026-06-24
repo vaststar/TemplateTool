@@ -7,6 +7,11 @@ else()
 endif()
 
 file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "${TRANSLATION_CODE_DIR}/*.cpp" "${TRANSLATION_CODE_DIR}/*.qml")
+
+# Exclude the developer-only gallery (UIToolKitGallery) from translation
+# extraction: its strings are demo content and should not ship in the .ts files.
+list(FILTER ALL_TRANSLATION_SOURCE_FILES EXCLUDE REGEX "/UIToolKitGallery/")
+
 set(GENERATED_CPP_FILES ${GLOBAL_RESOURCE_STRING_CPP_OUTPUT_PATH})
 list(APPEND ALL_TRANSLATION_SOURCE_FILES ${GENERATED_CPP_FILES})
 
