@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.11)
-
 include(BuildUnitTestModule)
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -7,7 +5,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 BuildUnitTestModule(
-    MODULE_NAME 
+    MODULE_NAME
         StabilityServiceTests
     TARGET_SOURCE
         ${TARGET_SOURCE_FILES_PRIVATE}

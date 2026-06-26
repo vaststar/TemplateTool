@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.11)
-
 add_subdirectory(fakes)
 include(BuildUnitTestModule)
 
@@ -8,7 +6,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 )
 
 BuildUnitTestModule(
-    MODULE_NAME 
+    MODULE_NAME
         CoreFrameworkTests
     TARGET_SOURCE
         ${TARGET_SOURCE_FILES_PRIVATE}

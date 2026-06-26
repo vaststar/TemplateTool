@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.23)
-
 set(ProjectName "ToolFramework")
 set(ProjectDesc "ToolFramework for app")
 

@@ -1,0 +1,7 @@
+#include <fakes/ucf/Services/FakeNetworkService.h>
+
+namespace ucf::service::fakes {
+
+// FakeNetworkService 目前只需要头文件中的 mock 定义
+
+} // namespace ucf::service::fakes

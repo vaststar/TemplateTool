@@ -213,7 +213,7 @@ TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService]
     REQUIRE(softResetCalled);
 }
 
-TEST_CASE("FSM: Verifying -> ReadyToInstall on EvVerifyOk", "[UpgradeService][FSM]")
+TEST_CASE("FSM: Verifying -> Extracting -> ReadyToInstall", "[UpgradeService][FSM]")
 {
     auto ctx = makeTestContext();
     ctx.availableUpgrade = makeSampleUpgradeInfo();
@@ -224,6 +224,10 @@ TEST_CASE("FSM: Verifying -> ReadyToInstall on EvVerifyOk", "[UpgradeService][FS
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
     fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.zip"});
     fsm.processEvent(ucf::service::upgrade::EvVerifyOk{});
+
+    REQUIRE(fsm.template isIn<ucf::service::upgrade::Extracting>());
+
+    fsm.processEvent(ucf::service::upgrade::EvExtractOk{.stagingDir = "/tmp/staging"});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::ReadyToInstall>());
 }
@@ -239,6 +243,7 @@ TEST_CASE("FSM: ReadyToInstall -> Installing on EvInstallStart", "[UpgradeServic
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
     fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.zip"});
     fsm.processEvent(ucf::service::upgrade::EvVerifyOk{});
+    fsm.processEvent(ucf::service::upgrade::EvExtractOk{.stagingDir = "/tmp/staging"});
     fsm.processEvent(ucf::service::upgrade::EvInstallStart{});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Installing>());

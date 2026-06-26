@@ -95,12 +95,14 @@
     {
       "name": "windows-msvc-debug",
       "configurePreset": "windows-msvc-debug",
-      "inherits": "test-base"
+      "inherits": "test-base",
+      "configuration": "Debug"
     },
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
-      "inherits": "test-base"
+      "inherits": "test-base",
+      "configuration": "Release"
     },
     {
       "name": "windows-mingw-debug",
