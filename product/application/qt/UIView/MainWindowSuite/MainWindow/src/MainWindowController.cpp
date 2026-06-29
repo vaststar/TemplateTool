@@ -28,6 +28,7 @@
 #include "AboutPage/AboutPageController.h"
 #include "UIEvents/UIAboutEvent.h"
 #include "UIEvents/UIMainWindowEvent.h"
+#include "UIEvents/UIScreenChangedEvent.h"
 
 namespace {
 // QML resource paths used by this controller.
@@ -52,7 +53,7 @@ void MainWindowController::init()
     UIVIEW_LOG_DEBUG("");
 
     // Listen for events from EventBus
-    listenUIEvents<UIMainWindowEvent, UIAboutEvent>();
+    listenUIEvents<UIMainWindowEvent, UIAboutEvent, UIScreenChangedEvent>();
 
     mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
     mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
@@ -189,6 +190,11 @@ bool MainWindowController::startSystemResize(QWindow *window, int edges)
     return false;
 }
 
+QRect MainWindowController::fitToScreen(int x, int y, int width, int height) const
+{
+    return UIView::UIViewHelper::fitRect(QRect(x, y, width, height));
+}
+
 bool MainWindowController::event(QEvent* event)
 {
     if (event->type() == UIAboutEvent::type)
@@ -240,6 +246,12 @@ bool MainWindowController::event(QEvent* event)
             UIVIEW_LOG_DEBUG("UIMainWindowEvent::UnknownAction");
             break;
         }
+        return true;
+    }
+    if (event->type() == UIScreenChangedEvent::type)
+    {
+        UIVIEW_LOG_DEBUG("UIScreenChangedEvent: ask QML to re-fit window into available screen area");
+        emit screenChanged();
         return true;
     }
     return UIViewController::event(event);

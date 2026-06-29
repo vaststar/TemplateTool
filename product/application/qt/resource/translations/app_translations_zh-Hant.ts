@@ -1151,7 +1151,7 @@ Double-click a rule to view details.</source>
         <translation>我的測試視窗標題列</translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="72"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="73"/>
         <source>my test window aa</source>
         <translation>我的測試視窗 aa</translation>
     </message>

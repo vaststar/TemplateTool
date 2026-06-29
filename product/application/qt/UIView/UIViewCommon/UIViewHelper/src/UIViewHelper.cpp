@@ -110,4 +110,44 @@ void UIViewHelper::centerOnScreen(QWindow* window, QScreen* screen)
     positionCenter(window, s->availableGeometry());
 }
 
+QRect UIViewHelper::fitRect(const QRect& windowRect, QScreen* screen)
+{
+    QScreen* s = screen ? screen : QGuiApplication::screenAt(windowRect.center());
+    if (!s)
+    {
+        s = QGuiApplication::primaryScreen();
+    }
+    if (!s)
+    {
+        return windowRect;
+    }
+
+    const QRect available = s->availableGeometry();
+
+    const int width = qMin(windowRect.width(), available.width());
+    const int height = qMin(windowRect.height(), available.height());
+
+    const int x = qBound(available.left(), windowRect.x(), available.right() - width + 1);
+    const int y = qBound(available.top(), windowRect.y(), available.bottom() - height + 1);
+    return QRect(x, y, width, height);
+}
+
+void UIViewHelper::clampIntoScreen(QWindow* window, QScreen* screen)
+{
+    if (!window)
+    {
+        return;
+    }
+    QScreen* s = screen ? screen : window->screen();
+    const QRect fitted = fitRect(window->geometry(), s);
+    if (fitted.size() != window->size())
+    {
+        window->resize(fitted.size());
+    }
+    if (fitted.topLeft() != window->position())
+    {
+        window->setPosition(fitted.topLeft());
+    }
+}
+
 } // namespace UIView

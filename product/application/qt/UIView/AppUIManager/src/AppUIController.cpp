@@ -22,6 +22,7 @@
 #include "ViewModelSingalEmitter/AppUIViewModelEmitter.h"
 #include "UIIPCServerHelper.h"
 #include "UIStabilityMonitor.h"
+#include "UIScreenMonitor.h"
 
 
 namespace {
@@ -56,6 +57,11 @@ void AppUIController::init()
 
     mStabilityMonitor = std::make_unique<UIStabilityMonitor>(appContext, this);
     mStabilityMonitor->start();
+
+    // Watch for runtime screen/DPI changes and broadcast UIScreenChangedEvent so
+    // window controllers can re-fit their windows into the available area.
+    mScreenMonitor = std::make_unique<UIScreenMonitor>(appContext, this);
+    mScreenMonitor->start();
 
     // Defer application initialization to the first event loop iteration,
     // ensuring QApplication::exec() is running before async callbacks fire.
@@ -114,6 +120,11 @@ void AppUIController::showMainWindow()
         mainController->initializeController(getAppContext());
         UIVIEW_LOG_DEBUG("MainWindowController init done");
     }
+
+    // First placement: fit into the screen's available area, then center.
+    UIView::UIViewHelper::clampIntoScreen(win.data());
+    UIView::UIViewHelper::centerOnScreen(win.data());
+
     win->show();
     UIVIEW_LOG_DEBUG("finish load main qml");
 }

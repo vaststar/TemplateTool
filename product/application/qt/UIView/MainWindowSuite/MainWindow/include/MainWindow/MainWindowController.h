@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QObject>
+#include <QRect>
 #include <QWindow>
 #include <QtQml>
 
@@ -43,6 +44,9 @@ public:
     Q_INVOKABLE void componentCompleted();
     Q_INVOKABLE bool startSystemResize(QWindow *window, int edges);
 
+    // Returns the geometry fitted into the available screen area; QML applies it.
+    Q_INVOKABLE QRect fitToScreen(int x, int y, int width, int height) const;
+
     MainWindowContentPageRegistry* pageRegistry() const;
 signals:
     void titleChanged();
@@ -51,6 +55,8 @@ signals:
     void hideWindow();
     void showWindow();
     void minimizeWindow();
+    // Emitted on screen config change; QML re-fits via fitToScreen().
+    void screenChanged();
 public slots:
     void openCamera();
     void testFunc();

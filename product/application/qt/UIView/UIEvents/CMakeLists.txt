@@ -5,6 +5,8 @@ list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UIUpgradeEvent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/UIEvents/UIAboutEvent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/UIAboutEvent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/UIEvents/UIScreenChangedEvent.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/UIScreenChangedEvent.cpp
 )
 set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
 

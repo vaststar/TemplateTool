@@ -43,6 +43,13 @@ public:
     // primary screen, in that order of preference.
     static void centerOnScreen(QWindow* window, QScreen* screen = nullptr);
 
+    // Pure: returns `windowRect` adjusted to fit inside the screen's available
+    // area (shrink, then position-preserving push-back). Callable from QML.
+    static QRect fitRect(const QRect& windowRect, QScreen* screen = nullptr);
+
+    // Applies fitRect() to `window` in place.
+    static void clampIntoScreen(QWindow* window, QScreen* screen = nullptr);
+
     // ---------- Controller extraction ----------
 
     // Reads the QML `controller` property from `window` and qobject_casts to T.

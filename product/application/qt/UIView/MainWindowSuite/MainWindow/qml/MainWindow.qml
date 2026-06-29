@@ -84,6 +84,14 @@ ApplicationWindow
         function onMinimizeWindow() {
             root.showMinimized()
         }
+
+        function onScreenChanged() {
+            var r = root.controller.fitToScreen(root.x, root.y, root.width, root.height)
+            root.width = r.width
+            root.height = r.height
+            root.x = r.x
+            root.y = r.y
+        }
     }
 
     function onMainControllerInitialized(){
