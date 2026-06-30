@@ -2,6 +2,11 @@
 
 #include <memory>
 
+#include <QGuiApplication>
+#include <QScreen>
+#include <QSysInfo>
+#include <QCoreApplication>
+
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include <UIAppCore/UIApplication.h>
@@ -47,6 +52,25 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     UIVIEW_LOG_INFO("===========================================");
     UIVIEW_LOG_INFO("===========create AppUIManagerImpl=========");
     UIVIEW_LOG_INFO("Qt Version: " << qVersion());
+    UIVIEW_LOG_INFO("Qt Build ABI: " << QSysInfo::buildAbi().toStdString());
+    UIVIEW_LOG_INFO("Qt Platform Plugin: " << QGuiApplication::platformName().toStdString());
+    UIVIEW_LOG_INFO("Application PID: " << QCoreApplication::applicationPid());
+    UIVIEW_LOG_INFO("Device Pixel Ratio: " << qApp->devicePixelRatio());
+    const auto screens = QGuiApplication::screens();
+    UIVIEW_LOG_INFO("Screen Count: " << screens.size());
+    for (const QScreen* screen : screens)
+    {
+        if (!screen)
+        {
+            continue;
+        }
+        const QRect geometry = screen->geometry();
+        UIVIEW_LOG_INFO("Screen [" << screen->name().toStdString() << "]"
+            << " resolution: " << geometry.width() << "x" << geometry.height()
+            << ", dpr: " << screen->devicePixelRatio()
+            << ", logicalDPI: " << screen->logicalDotsPerInch()
+            << ", refreshRate: " << screen->refreshRate() << "Hz");
+    }
     registerQmlTypes();
     UIVIEW_LOG_INFO("===========create AppUIManagerImpl done====");
     UIVIEW_LOG_INFO("===========================================");

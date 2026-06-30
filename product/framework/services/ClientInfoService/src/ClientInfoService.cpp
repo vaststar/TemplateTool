@@ -105,6 +105,11 @@ std::string ClientInfoService::getServiceName() const
     return "ClientInfoService";
 }
 
+std::vector<std::type_index> ClientInfoService::dependencies() const
+{
+    return { std::type_index(typeid(IDataWarehouseService)) };
+}
+
 void ClientInfoService::onServiceInitialized()
 {
     SERVICE_LOG_DEBUG("");
@@ -131,6 +136,8 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("===========ClientInfo=============");
     SERVICE_LOG_DEBUG("app data storage path: " << getAppDataStoragePath());
     SERVICE_LOG_DEBUG("app log storage path: " << getAppLogStoragePath());
+    SERVICE_LOG_DEBUG("app crash storage path: " << getAppCrashStoragePath());
+    SERVICE_LOG_DEBUG("app hang storage path: " << getAppHangStoragePath());
     SERVICE_LOG_DEBUG("app cache storage path: " << getAppCacheStoragePath());
     SERVICE_LOG_DEBUG("app temp storage path: " << getAppTempStoragePath());
     SERVICE_LOG_DEBUG("executable path: " << getExecutablePath());
@@ -144,6 +151,7 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os platform: " << ucf::utilities::OSUtils::getOSTypeName());
     SERVICE_LOG_DEBUG("os version: " << ucf::utilities::OSUtils::getOSVersion());
     SERVICE_LOG_DEBUG("os cpu core: " << std::to_string(ucf::utilities::OSUtils::getCPUCoreCount()));
+    SERVICE_LOG_DEBUG("os cpu arch: " << ucf::utilities::OSUtils::getCPUArch());
     SERVICE_LOG_DEBUG("os cpu info: " << ucf::utilities::OSUtils::getCPUInfo());
     SERVICE_LOG_DEBUG("os local language: " << ucf::utilities::OSUtils::getSystemLanguage());
     SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZoneName());
@@ -158,6 +166,12 @@ void ClientInfoService::printClientInfo() const
 void ClientInfoService::printBuildInfo() const
 {
     SERVICE_LOG_DEBUG("===========BuildInfo=============");
+    #ifdef NDEBUG
+        SERVICE_LOG_DEBUG("build type: Release");
+    #else
+        SERVICE_LOG_DEBUG("build type: Debug");
+    #endif
+    SERVICE_LOG_DEBUG("build timestamp: " << __DATE__ << " " << __TIME__);
     #ifdef CMAKE_VERSION_STR
         SERVICE_LOG_DEBUG("CMake version: " << CMAKE_VERSION_STR);
     #else

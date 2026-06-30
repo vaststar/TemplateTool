@@ -2,6 +2,7 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include "FeatureSettingsManager.h"
 #include "FeatureSettingsServiceLogger.h"
@@ -83,6 +84,14 @@ void FeatureSettingsService::initService()
 std::string FeatureSettingsService::getServiceName() const
 {
     return "FeatureSettingsService";
+}
+
+std::vector<std::type_index> FeatureSettingsService::dependencies() const
+{
+    return {
+        std::type_index(typeid(IDataWarehouseService)),
+        std::type_index(typeid(IClientInfoService))
+    };
 }
 
 void FeatureSettingsService::onServiceInitialized()

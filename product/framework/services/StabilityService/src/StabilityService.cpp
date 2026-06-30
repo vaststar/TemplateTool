@@ -4,6 +4,7 @@
 #include "StabilityServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 namespace ucf::service {
 
@@ -17,12 +18,12 @@ class StabilityService::DataPrivate
 {
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
-    
+
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-    
+
     CrashManager& getCrashManager();
     const CrashManager& getCrashManager() const;
-    
+
     HangManager& getHangManager();
     const HangManager& getHangManager() const;
 
@@ -97,12 +98,17 @@ StabilityService::~StabilityService()
 void StabilityService::initService()
 {
     CRASHHANDLER_LOG_INFO("StabilityService::initService() called");
-    
+
     // Initialize crash manager
     mDataPrivate->getCrashManager().initialize();
-    
+
     // Initialize hang detection
     mDataPrivate->getHangManager().initialize();
+}
+
+std::vector<std::type_index> StabilityService::dependencies() const
+{
+    return { std::type_index(typeid(IClientInfoService)) };
 }
 
 // ==========================================

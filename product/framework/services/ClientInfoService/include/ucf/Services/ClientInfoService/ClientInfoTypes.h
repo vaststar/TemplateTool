@@ -24,14 +24,6 @@ struct ProductInfo
     std::string productDescription;
 };
 
-enum class OSType
-{
-    Windows32,
-    Windows64,
-    OSX,
-    Linux
-};
-
 enum class LanguageType {
     ENGLISH,
     CHINESE_SIMPLIFIED,

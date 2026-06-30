@@ -3,6 +3,8 @@
 #include "UpgradeManager.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 namespace ucf::service {
 
@@ -89,6 +91,14 @@ void UpgradeService::initService()
 std::string UpgradeService::getServiceName() const
 {
     return "UpgradeService";
+}
+
+std::vector<std::type_index> UpgradeService::dependencies() const
+{
+    return {
+        std::type_index(typeid(INetworkService)),
+        std::type_index(typeid(IClientInfoService))
+    };
 }
 
 void UpgradeService::onServiceInitialized()

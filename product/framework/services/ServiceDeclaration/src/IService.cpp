@@ -8,4 +8,10 @@ void IService::initComponent()
         initService();
     });
 }
+
+std::vector<std::type_index> IService::dependencies() const
+{
+    return {};
+}
+
 }

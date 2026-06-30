@@ -2,6 +2,8 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include "ContactManager.h"
 #include "ContactServiceLogger.h"
@@ -98,6 +100,15 @@ void ContactService::initService()
 std::string ContactService::getServiceName() const
 {
     return "ContactService";
+}
+
+std::vector<std::type_index> ContactService::dependencies() const
+{
+    return {
+        std::type_index(typeid(INetworkService)),
+        std::type_index(typeid(IDataWarehouseService)),
+        std::type_index(typeid(IClientInfoService))
+    };
 }
 
 void ContactService::onServiceInitialized()

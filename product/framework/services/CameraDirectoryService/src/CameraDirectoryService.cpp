@@ -2,6 +2,8 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/Services/MediaService/IMediaService.h>
+#include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
 #include "CameraDirectoryManager.h"
 #include "CameraDirectoryServiceLogger.h"
@@ -91,6 +93,15 @@ void CameraDirectoryService::initService()
 std::string CameraDirectoryService::getServiceName() const
 {
     return "CameraDirectoryService";
+}
+
+std::vector<std::type_index> CameraDirectoryService::dependencies() const
+{
+    return {
+        std::type_index(typeid(IMediaService)),
+        std::type_index(typeid(IDataWarehouseService)),
+        std::type_index(typeid(IClientInfoService))
+    };
 }
 
 void CameraDirectoryService::onServiceInitialized()

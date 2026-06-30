@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+#include <typeindex>
 
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
@@ -30,6 +32,7 @@ public:
 public:
     // IService
     virtual std::string getServiceName() const override;
+    virtual std::vector<std::type_index> dependencies() const override;
 
     // ICoreFrameworkCallback
     virtual void onServiceInitialized() override;

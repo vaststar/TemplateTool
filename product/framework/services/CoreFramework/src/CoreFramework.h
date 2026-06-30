@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -27,6 +28,10 @@ public:
     virtual void initCoreFramework() override;
     virtual void initServices() override;
     virtual void exitCoreFramework() override;
+private:
+    // Computes a deterministic, dependency-respecting initialization order.
+    // Returns an empty list when a cyclic or missing dependency is detected.
+    std::vector<ucf::service::IServicePtr> buildInitOrder();
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

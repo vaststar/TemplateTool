@@ -1,4 +1,8 @@
 #include <mutex>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <typeindex>
 
 
 
@@ -144,25 +148,99 @@ std::string CoreFramework::getName() const
     return "CoreFramework";
 }
 
+std::vector<ucf::service::IServicePtr> CoreFramework::buildInitOrder()
+{
+    auto registeredServices = getAllServicesWithType();
+
+    std::unordered_map<std::type_index, ucf::service::IServicePtr> serviceByType;
+    std::unordered_map<std::type_index, int> remainingDependencyCount;
+    std::unordered_map<std::type_index, std::vector<std::type_index>> dependentServices;
+
+    for (const auto& [serviceType, servicePtr] : registeredServices)
+    {
+        serviceByType[serviceType] = servicePtr;
+        remainingDependencyCount[serviceType] = 0;
+    }
+
+    for (const auto& [serviceType, servicePtr] : registeredServices)
+    {
+        for (const auto& dependencyType : servicePtr->dependencies())
+        {
+            if (serviceByType.find(dependencyType) == serviceByType.end())
+            {
+                CORE_LOG_ERROR("missing dependency for service: " << servicePtr->getServiceName()
+                               << ", required type: " << dependencyType.name());
+                return {};
+            }
+            dependentServices[dependencyType].push_back(serviceType);
+            ++remainingDependencyCount[serviceType];
+        }
+    }
+
+    std::vector<ucf::service::IServicePtr> orderedServices;
+    std::unordered_set<std::type_index> initializedTypes;
+
+    // Rescan in registration order each round so that services with no mutual
+    // dependency keep their registration order as a stable tie-break.
+    while (orderedServices.size() < registeredServices.size())
+    {
+        bool madeProgress = false;
+        for (const auto& [serviceType, servicePtr] : registeredServices)
+        {
+            if (initializedTypes.count(serviceType) > 0)
+            {
+                continue;
+            }
+            if (remainingDependencyCount[serviceType] != 0)
+            {
+                continue;
+            }
+
+            orderedServices.push_back(servicePtr);
+            initializedTypes.insert(serviceType);
+            madeProgress = true;
+
+            for (const auto& dependentType : dependentServices[serviceType])
+            {
+                --remainingDependencyCount[dependentType];
+            }
+            break;
+        }
+
+        if (!madeProgress)
+        {
+            CORE_LOG_ERROR("cyclic dependency detected among services, sorted "
+                           << orderedServices.size() << " of " << registeredServices.size());
+            return {};
+        }
+    }
+
+    return orderedServices;
+}
+
 void CoreFramework::initServices()
 {
-    if (mDataPrivate->isRunnable())
-    {
-        auto allServices = getAllServices();
-        std::for_each(allServices.begin(), allServices.end(), [](std::weak_ptr<ucf::service::IService> service){
-            if (auto servicePtr = service.lock())
-            {
-                CORE_LOG_INFO("start init service: " << servicePtr->getServiceName());
-                servicePtr->initComponent();
-                CORE_LOG_INFO("finish init service: " << servicePtr->getServiceName());
-            }
-        }); 
-        fireNotification(&ICoreFrameworkCallback::onServiceInitialized);
-    }
-    else
+    if (!mDataPrivate->isRunnable())
     {
         CORE_LOG_INFO("CoreFramework is not runnable, address:" << this);
+        return;
     }
+
+    auto orderedServices = buildInitOrder();
+    if (orderedServices.empty())
+    {
+        CORE_LOG_ERROR("service init order is empty, abort initServices, address:" << this);
+        return;
+    }
+
+    for (const auto& servicePtr : orderedServices)
+    {
+        CORE_LOG_INFO("start init service: " << servicePtr->getServiceName());
+        servicePtr->initComponent();
+        CORE_LOG_INFO("finish init service: " << servicePtr->getServiceName());
+    }
+
+    fireNotification(&ICoreFrameworkCallback::onServiceInitialized);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

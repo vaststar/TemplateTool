@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>
 #include <mutex>
+#include <vector>
+#include <typeindex>
 
 #include <ucf/Services/ServiceExportMacro/ServiceExport.h>
 
@@ -18,6 +20,9 @@ public:
     virtual ~IService() = default;
 public:
     [[nodiscard]] virtual std::string getServiceName() const = 0;
+
+    [[nodiscard]] virtual std::vector<std::type_index> dependencies() const;
+
     void initComponent();
 protected:
     virtual void initService() = 0;

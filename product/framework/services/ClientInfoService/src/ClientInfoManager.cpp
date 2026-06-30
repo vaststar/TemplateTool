@@ -32,6 +32,7 @@ static constexpr const char* APP_DATA_FOLDER_NAME = "app_data";
 static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
 static constexpr const char* APP_CRASH_FOLDER_NAME = "app_crash";
 static constexpr const char* APP_HANG_FOLDER_NAME = "app_hang";
+static constexpr const char* APP_CACHE_FOLDER_NAME = "app_cache";
 
 ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
@@ -246,12 +247,14 @@ std::string ClientInfoManager::getCacheStoragePath() const
 #if defined(_DEBUG) || !defined(NDEBUG)
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseCacheDir(),
-        APP_INTERNAL_NAME_DEBUG
+        APP_INTERNAL_NAME_DEBUG,
+        APP_CACHE_FOLDER_NAME
     ).string();
 #else
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseCacheDir(),
-        APP_INTERNAL_NAME
+        APP_INTERNAL_NAME,
+        APP_CACHE_FOLDER_NAME
     ).string();
 #endif
 }

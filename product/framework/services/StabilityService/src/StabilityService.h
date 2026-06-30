@@ -2,6 +2,8 @@
 
 #include <ucf/Services/StabilityService/IStabilityService.h>
 #include <memory>
+#include <vector>
+#include <typeindex>
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -17,6 +19,7 @@ public:
 
     // IService
     [[nodiscard]] std::string getServiceName() const override { return "StabilityService"; }
+    [[nodiscard]] std::vector<std::type_index> dependencies() const override;
 
     // IStabilityService - Status
     [[nodiscard]] bool isCrashHandlerInstalled() const override;
