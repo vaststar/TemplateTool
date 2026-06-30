@@ -233,6 +233,7 @@ BaseFolderView {
                 UTText {
                     Layout.alignment: Qt.AlignHCenter
                     text: control.emptyIcon
+                    // emoji glyph size, intentionally not tokenized
                     font.pixelSize: 48
                 }
                 UTText {

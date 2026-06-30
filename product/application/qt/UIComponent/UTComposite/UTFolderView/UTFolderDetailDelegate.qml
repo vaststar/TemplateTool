@@ -69,7 +69,7 @@ Item {
             UTText {
                 Layout.fillWidth: true
                 text: model.fileName
-                font.pixelSize: 12
+                fontEnum: UIFontToken.Body_Text
                 color: root.isSelected ? root._textSelected : root._textNormal
                 elide: Text.ElideRight
             }
@@ -79,7 +79,7 @@ Item {
         UTText {
             Layout.preferredWidth: 160
             text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm:ss")
-            font.pixelSize: 11
+            fontEnum: UIFontToken.Caption_Text
             color: root.isSelected ? root._textNormal : root._secondaryText
             leftPadding: 8
         }
@@ -94,7 +94,7 @@ Item {
                 if (s > 1024) return (s / 1024).toFixed(0) + " KB"
                 return s + " B"
             }
-            font.pixelSize: 11
+            fontEnum: UIFontToken.Caption_Text
             color: root._secondaryText
             horizontalAlignment: Text.AlignRight
             leftPadding: 8
@@ -107,7 +107,7 @@ Item {
                 var ext = model.fileName.split('.').pop()
                 return ext ? ext.toUpperCase() : ""
             }
-            font.pixelSize: 11
+            fontEnum: UIFontToken.Caption_Text
             color: root._secondaryText
             leftPadding: 8
         }
@@ -130,6 +130,7 @@ Item {
         id: _defaultIcon
         Text {
             text: "📄"
+            // emoji glyph size, intentionally not tokenized
             font.pixelSize: 14
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

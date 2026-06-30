@@ -19,7 +19,7 @@ import UIResourceLoader 1.0
 BaseTabButton {
     id: control
 
-    property var fontEnum: UIFontToken.Button_Text
+    property var fontEnum: UIFontToken.Body_Text_Medium
     property var fontColorEnum: UIColorToken.Tab_Button_Text
     property var checkedFontColorEnum: UIColorToken.Tab_Button_Checked_Text
     property var backgroundColorEnum: UIColorToken.Tab_Button_Background

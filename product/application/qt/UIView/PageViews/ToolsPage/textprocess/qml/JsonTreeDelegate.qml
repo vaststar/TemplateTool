@@ -80,6 +80,7 @@ Item {
             id: arrow
             visible: delegateRoot.hasChildren && !delegateRoot._isClosingBracket
             text: delegateRoot.expanded ? "\u25BC" : "\u25B6"
+            // glyph size, intentionally not tokenized
             font.pixelSize: 12
             color: delegateRoot._arrowColor
             anchors.verticalCenter: parent.verticalCenter

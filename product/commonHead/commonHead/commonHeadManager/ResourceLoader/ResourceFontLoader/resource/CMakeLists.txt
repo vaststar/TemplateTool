@@ -7,6 +7,17 @@ set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceFont)
 
 set(RESOURCE_TARGETS )
 
+## Precheck: token ↔ theme ↔ palette 一致性校验
+include(ValidateFontTokens)
+validate_font_tokens(
+    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/resource/validate_font_tokens.py
+    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json
+    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes
+    PALETTE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json
+    PRECHECK_TARGET
+)
+list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
+
 ## FontPalette
 set(FONT_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json)
 set(FONT_OUT_PUT_FILE FontPaletteModel.h)

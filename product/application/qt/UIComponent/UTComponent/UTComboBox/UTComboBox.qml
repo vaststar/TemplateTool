@@ -12,6 +12,7 @@ BaseComboBox {
     // Empty => text-only (unchanged legacy behaviour).
     property string iconRole: ""
     property int iconSize: 20
+    property var fontEnum: UIFontToken.Combobox_Text
 
     // Icon source for the currently selected item (collapsed display).
     // contentItem is not in a delegate context, so resolve it from the model.
@@ -64,7 +65,7 @@ BaseComboBox {
             leftPadding: control.iconRole !== "" ? 0 : 12
             rightPadding: control.indicator.width + control.spacing
             text: control.displayText
-            fontEnum: UIFontToken.Combobox_Text
+            fontEnum: control.fontEnum
             color: control.textColor
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
@@ -89,7 +90,7 @@ BaseComboBox {
         x: control.width - width - 12
         y: (control.height - height) / 2
         text: control.popup.visible ? "\u25B4" : "\u25BE"
-        fontEnum: UIFontToken.Combobox_Text
+        fontEnum: control.fontEnum
         color: control.textColor
     }
 

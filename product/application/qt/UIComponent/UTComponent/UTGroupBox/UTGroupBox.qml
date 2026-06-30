@@ -19,17 +19,18 @@ import UIResourceLoader 1.0
 BaseGroupBox {
     id: control
 
+    property var titleFontEnum: UIFontToken.Section_Title
     property var titleColorEnum: UIColorToken.Content_Section_Title
     property var backgroundColorEnum: UIColorToken.Content_Section_Background
     property var borderColorEnum: UIColorToken.Content_Section_Border
     property int borderRadius: 4
 
-    font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
+    font: UTComponentUtil.getUIFont(control.titleFontEnum)
 
     label: UTText {
         x: control.leftPadding
         text: control.title
-        fontEnum: UIFontToken.Body_Text_Medium
+        fontEnum: control.titleFontEnum
         colorEnum: control.titleColorEnum
     }
 

@@ -96,8 +96,7 @@ UTDialog {
                 UTText {
                     visible: controller.messageText.length > 0
                     text: controller.messageText
-                    font.pixelSize: 16
-                    font.bold: true
+                    fontEnum: UIFontToken.Title_Text
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
                 }
@@ -105,6 +104,7 @@ UTDialog {
                 UTText {
                     visible: controller.detailText.length > 0
                     text: controller.detailText
+                    fontEnum: UIFontToken.Body_Text
                     wrapMode: Text.WordWrap
                     opacity: 0.75
                     Layout.fillWidth: true

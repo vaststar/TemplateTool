@@ -55,6 +55,7 @@ BaseWheelColumn {
             opacity: disabled
                      ? 0.35
                      : 1.0 - Math.min(0.6, Math.abs(Tumbler.displacement) * 0.28)
+            // dynamic wheel displacement effect (focused vs off-center), intentionally not tokenized
             font.pixelSize: Tumbler.displacement === 0 ? 18 : 14
             font.bold: !disabled && Tumbler.displacement === 0
         }

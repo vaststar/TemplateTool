@@ -2,73 +2,64 @@
   "name": "normal",
   "resource": [
     {
-      "token": "window-title",
+      "token": "display-text",
       "font": {
         "fontType": "SansSerif",
-        "fontSize": "Small",
+        "fontSize": "ExtraLarge",
+        "fontWeight": "DemiBold",
+        "italic": false
+      }
+    },
+    {
+      "token": "numeric-large",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Heading",
+        "fontWeight": "DemiBold",
+        "italic": false
+      }
+    },
+    {
+      "token": "heading-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Heading",
         "fontWeight": "Normal",
         "italic": false
       }
     },
     {
-      "token": "window-header",
+      "token": "title-text",
       "font": {
         "fontType": "SansSerif",
         "fontSize": "Medium",
-        "fontWeight": "Bold",
+        "fontWeight": "DemiBold",
         "italic": false
       }
     },
     {
-      "token": "window-body-primary",
+      "token": "subtitle-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Medium",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "section-title",
       "font": {
         "fontType": "SansSerif",
         "fontSize": "MediumSmall",
-        "fontWeight": "Normal",
+        "fontWeight": "DemiBold",
         "italic": false
       }
     },
     {
-      "token": "window-body-secondary",
+      "token": "body-large",
       "font": {
         "fontType": "SansSerif",
         "fontSize": "MediumSmall",
-        "fontWeight": "Normal",
-        "italic": false
-      }
-    },
-    {
-      "token": "button-text",
-      "font": {
-        "fontType": "SansSerif",
-        "fontSize": "Small",
-        "fontWeight": "Normal",
-        "italic": false
-      }
-    },
-    {
-      "token": "badge-text",
-      "font": {
-        "fontType": "SansSerif",
-        "fontSize": "Micro",
-        "fontWeight": "Medium",
-        "italic": false
-      }
-    },
-    {
-      "token": "section-label",
-      "font": {
-        "fontType": "SansSerif",
-        "fontSize": "Mini",
-        "fontWeight": "Bold",
-        "italic": false
-      }
-    },
-    {
-      "token": "caption-text",
-      "font": {
-        "fontType": "SansSerif",
-        "fontSize": "ExtraSmall",
         "fontWeight": "Normal",
         "italic": false
       }
@@ -92,20 +83,74 @@
       }
     },
     {
-      "token": "heading-text",
+      "token": "body-strong",
       "font": {
         "fontType": "SansSerif",
-        "fontSize": "Heading",
+        "fontSize": "Body",
+        "fontWeight": "DemiBold",
+        "italic": false
+      }
+    },
+    {
+      "token": "caption-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "ExtraSmall",
         "fontWeight": "Normal",
         "italic": false
       }
     },
     {
-      "token": "subtitle-text",
+      "token": "caption-strong",
       "font": {
         "fontType": "SansSerif",
-        "fontSize": "Medium",
+        "fontSize": "ExtraSmall",
+        "fontWeight": "DemiBold",
+        "italic": false
+      }
+    },
+    {
+      "token": "helper-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Mini",
         "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "overline-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Mini",
+        "fontWeight": "Bold",
+        "italic": false
+      }
+    },
+    {
+      "token": "badge-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Micro",
+        "fontWeight": "Medium",
+        "italic": false
+      }
+    },
+    {
+      "token": "button-text",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "Small",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "button-large",
+      "font": {
+        "fontType": "SansSerif",
+        "fontSize": "MediumSmall",
+        "fontWeight": "Medium",
         "italic": false
       }
     },
@@ -123,6 +168,24 @@
       "font": {
         "fontType": "Monospace",
         "fontSize": "Body",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "monospace-small",
+      "font": {
+        "fontType": "Monospace",
+        "fontSize": "ExtraSmall",
+        "fontWeight": "Normal",
+        "italic": false
+      }
+    },
+    {
+      "token": "icon-text",
+      "font": {
+        "fontType": "Icon",
+        "fontSize": "MediumSmall",
         "fontWeight": "Normal",
         "italic": false
       }

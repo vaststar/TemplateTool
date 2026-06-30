@@ -43,6 +43,7 @@ Item {
         anchors.centerIn: parent
         text: "Invalid QR Code"
         color: "#999999"
+        // base-layer fallback: UIComponentBase has no access to font tokens (UTComponent/UIResourceLoader sit above it)
         font.pixelSize: 14
         visible: !generator.valid && root.text !== ""
     }

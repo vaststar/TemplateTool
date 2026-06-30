@@ -67,8 +67,8 @@ Item {
                         color: rulesNavRepeater.currentIndex === index ? Qt.alpha(root._accentColor, 0.2) : rnMa.containsMouse ? root._headerHover : "transparent"
                         Row {
                             anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
-                            Text { text: modelData.icon; font.pixelSize: 14; anchors.verticalCenter: parent.verticalCenter }
-                            UTText { text: modelData.label; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.bold: rulesNavRepeater.currentIndex === index; anchors.verticalCenter: parent.verticalCenter }
+                            Text { text: modelData.icon; font.pixelSize: 14; anchors.verticalCenter: parent.verticalCenter } // emoji glyph, not tokenized
+                            UTText { text: modelData.label; fontEnum: rulesNavRepeater.currentIndex === index ? UIFontToken.Body_Strong : UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter }
                         }
                         MouseArea { id: rnMa; anchors.fill: parent; hoverEnabled: true; onClicked: rulesNavRepeater.currentIndex = index }
                     }
@@ -127,7 +127,7 @@ Item {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     Rectangle { width: 40; height: 18; radius: 3; color: root._accentColor; UTText { anchors.centerIn: parent; text: modelData.status_code || "200"; fontEnum: UIFontToken.Caption_Text; color: "white" } }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12 }
+                                    UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12 } // emoji glyph, not tokenized
                                     UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() } }
                                 }
                             }
@@ -203,7 +203,7 @@ Item {
                                     Rectangle {
                                         width: 44; height: 18; radius: 3; anchors.verticalCenter: parent.verticalCenter
                                         color: { switch(model.method) { case "GET": return "#4CAF50"; case "POST": return "#2196F3"; case "PUT": return "#FF9800"; case "DELETE": return "#F44336"; default: return "#757575" } }
-                                        UTText { anchors.centerIn: parent; text: model.method; fontEnum: UIFontToken.Caption_Text; color: "white"; font.bold: true }
+                                        UTText { anchors.centerIn: parent; text: model.method; fontEnum: UIFontToken.Caption_Strong; color: "white" }
                                     }
                                     UTText { Layout.fillWidth: true; text: model.url; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideMiddle }
                                     UTButton {

@@ -294,6 +294,7 @@ FocusScope {
 
                                     Text {
                                         text: "🖥"
+                                        // emoji glyph size, intentionally not tokenized
                                         font.pixelSize: 28
                                         color: "#555555"
                                         Layout.alignment: Qt.AlignHCenter
@@ -315,8 +316,7 @@ FocusScope {
                                     Text {
                                         anchors.centerIn: parent
                                         text: "📷 " + qsTr("Click to Capture")
-                                        font.pixelSize: 13
-                                        font.bold: true
+                                        font: UTComponentUtil.getUIFont(UIFontToken.Body_Strong)
                                         color: "#FFFFFF"
                                     }
                                 }
@@ -326,8 +326,7 @@ FocusScope {
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.name || qsTr("Unnamed Window")
-                                font.pixelSize: 12
-                                font.bold: true
+                                font: UTComponentUtil.getUIFont(UIFontToken.Caption_Strong)
                                 color: windowCardMouse.containsMouse ? "#FFFFFF" : "#DDDDDD"
                                 elide: Text.ElideRight
                                 maximumLineCount: 1
@@ -338,7 +337,7 @@ FocusScope {
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.ownerName || ""
-                                font.pixelSize: 11
+                                font: UTComponentUtil.getUIFont(UIFontToken.Caption_Text)
                                 color: "#888888"
                                 elide: Text.ElideRight
                                 maximumLineCount: 1
@@ -382,6 +381,7 @@ FocusScope {
                 Text {
                     Layout.alignment: Qt.AlignHCenter
                     text: "🖥"
+                    // emoji glyph size, intentionally not tokenized
                     font.pixelSize: 48
                 }
 

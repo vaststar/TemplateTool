@@ -30,9 +30,8 @@ Item {
                 verticalCenter: parent.verticalCenter
             }
             text: qsTr("Cameras")
-            fontEnum: UIFontToken.Body_Text_Medium
+            fontEnum: UIFontToken.Section_Title
             colorEnum: UIColorToken.Sidebar_Item_Text
-            font.bold: true
         }
     }
 

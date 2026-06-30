@@ -168,6 +168,7 @@ FocusScope {
                 visible: thumbnailRoot.thumbnailUrl.length === 0
                 anchors.centerIn: parent
                 text: "🎥"
+                // emoji glyph size, intentionally not tokenized
                 font.pixelSize: 32
                 opacity: 0.6
             }
@@ -188,8 +189,7 @@ FocusScope {
                         var ext = fileName.split('.').pop()
                         return ext ? ext.toUpperCase() : ""
                     }
-                    font.pixelSize: 9
-                    font.bold: true
+                    font: UTComponentUtil.getUIFont(UIFontToken.Badge_Text)
                     color: "#CCCCCC"
                 }
             }
@@ -269,6 +269,7 @@ FocusScope {
                 visible: detailRoot.thumbnailUrl.length === 0
                 anchors.centerIn: parent
                 text: "🎥"
+                // emoji glyph size, intentionally not tokenized
                 font.pixelSize: 14
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter

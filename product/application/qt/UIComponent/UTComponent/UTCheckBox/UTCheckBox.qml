@@ -70,6 +70,7 @@ BaseCheckBox {
         Text {
             anchors.centerIn: parent
             text: "\u2713"
+            // glyph size, intentionally not tokenized
             font.pixelSize: control.checkmarkSize
             font.bold: true
             color: UTComponentUtil.getPlainUIColor(control.checkColorEnum, UIColorState.Normal)

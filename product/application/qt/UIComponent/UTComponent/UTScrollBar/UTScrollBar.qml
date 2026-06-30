@@ -81,6 +81,7 @@ BaseScrollBar {
             Text {
                 anchors.centerIn: parent
                 text: control.horizontal ? "\u2039" : "\u2303"   // ‹ or ⌃
+                // glyph size, intentionally not tokenized
                 font.pixelSize: 12
                 font.bold: true
                 color: UTComponentUtil.getPlainUIColor(control.arrowColorEnum,
@@ -112,6 +113,7 @@ BaseScrollBar {
             Text {
                 anchors.centerIn: parent
                 text: control.horizontal ? "\u203A" : "\u2304"   // › or ⌄
+                // glyph size, intentionally not tokenized
                 font.pixelSize: 12
                 font.bold: true
                 color: UTComponentUtil.getPlainUIColor(control.arrowColorEnum,

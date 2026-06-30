@@ -60,7 +60,7 @@ Item {
             UTText {
                 Layout.fillWidth: true
                 text: model.fileName
-                font.pixelSize: 11
+                fontEnum: UIFontToken.Caption_Text
                 color: root.isSelected ? root._textSelected : root._textNormal
                 elide: Text.ElideMiddle
                 horizontalAlignment: Text.AlignHCenter
@@ -69,7 +69,7 @@ Item {
             UTText {
                 Layout.fillWidth: true
                 text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm")
-                font.pixelSize: 10
+                fontEnum: UIFontToken.Caption_Text
                 color: root.isSelected ? root._textNormal : root._secondaryText
                 horizontalAlignment: Text.AlignHCenter
             }

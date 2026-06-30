@@ -74,7 +74,7 @@ Item {
 
                         RowLayout {
                             anchors.fill: parent; anchors.margins: 12; spacing: 10
-                            Text { text: root.controller.caCertInstalled ? "✅" : "⚠️"; font.pixelSize: 22 }
+                            Text { text: root.controller.caCertInstalled ? "✅" : "⚠️"; font.pixelSize: 22 } // emoji glyph, not tokenized
                             ColumnLayout {
                                 spacing: 2; Layout.fillWidth: true
                                 UTText {
@@ -126,13 +126,13 @@ Item {
                                         RowLayout {
                                             id: installBtnRow; anchors.centerIn: parent; spacing: 8
                                             Text {
-                                                visible: root.controller.certInstalling; text: "⏳"; font.pixelSize: 16
+                                                visible: root.controller.certInstalling; text: "⏳"; font.pixelSize: 16 // emoji glyph, not tokenized
                                                 RotationAnimation on rotation { running: root.controller.certInstalling; from: 0; to: 360; duration: 1200; loops: Animation.Infinite }
                                             }
-                                            Text { visible: !root.controller.certInstalling; text: "🔐"; font.pixelSize: 16 }
+                                            Text { visible: !root.controller.certInstalling; text: "🔐"; font.pixelSize: 16 } // emoji glyph, not tokenized
                                             Text {
                                                 text: root.controller.certInstalling ? qsTr("Installing...") : qsTr("One-Click Install CA Certificate")
-                                                color: "white"; font.pixelSize: 14; font.bold: true
+                                                color: "white"; font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
                                             }
                                         }
 

@@ -81,6 +81,7 @@ BaseSpinBox {
         Text {
             anchors.centerIn: parent
             text: "+"
+            // glyph size, intentionally not tokenized
             font.pixelSize: 14
             font.bold: true
             color: UTComponentUtil.getPlainUIColor(
@@ -108,6 +109,7 @@ BaseSpinBox {
         Text {
             anchors.centerIn: parent
             text: "\u2212"
+            // glyph size, intentionally not tokenized
             font.pixelSize: 14
             font.bold: true
             color: UTComponentUtil.getPlainUIColor(

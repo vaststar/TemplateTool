@@ -96,10 +96,10 @@ Item {
         color: Qt.alpha("#F44336", 0.12); border.color: Qt.alpha("#F44336", 0.4); border.width: 1
         RowLayout {
             anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10; spacing: 6
-            Text { text: "🔴"; font.pixelSize: 12 }
+            Text { text: "🔴"; font.pixelSize: 12 } // emoji glyph, not tokenized
             UTText {
                 text: qsTr("%1 request(s) paused by breakpoint").arg(root.interceptedFlowsModel.count)
-                fontEnum: UIFontToken.Caption_Text; color: "#F44336"; font.bold: true; Layout.fillWidth: true
+                fontEnum: UIFontToken.Caption_Strong; color: "#F44336"; Layout.fillWidth: true
             }
             UTButton {
                 text: qsTr("Go to Breakpoints"); implicitHeight: 24
@@ -159,7 +159,7 @@ Item {
                                         color: allMa.containsMouse ? root._headerHover : "transparent"; radius: 3
                                         Row {
                                             anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
-                                            UTText { text: qsTr("ALL"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.bold: root.selectedMethods.length === 0; anchors.verticalCenter: parent.verticalCenter }
+                                            UTText { text: qsTr("ALL"); fontEnum: root.selectedMethods.length === 0 ? UIFontToken.Body_Strong : UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter }
                                         }
                                         UTText { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; visible: root.selectedMethods.length === 0; text: "✓"; color: root._accentColor; fontEnum: UIFontToken.Body_Text }
                                         MouseArea { id: allMa; anchors.fill: parent; hoverEnabled: true; onClicked: root.selectedMethods = [] }
@@ -175,7 +175,7 @@ Item {
                                                     width: 14; height: 14; radius: 2; anchors.verticalCenter: parent.verticalCenter
                                                     color: root.selectedMethods.indexOf(modelData) >= 0 ? root._accentColor : "transparent"
                                                     border.color: root.selectedMethods.indexOf(modelData) >= 0 ? root._accentColor : root._inputBorder; border.width: 1
-                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedMethods.indexOf(modelData) >= 0 }
+                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedMethods.indexOf(modelData) >= 0 } // glyph, not tokenized
                                                 }
                                                 Rectangle {
                                                     width: 6; height: 6; radius: 3; anchors.verticalCenter: parent.verticalCenter
@@ -215,7 +215,7 @@ Item {
                                         color: allStatusMa.containsMouse ? root._headerHover : "transparent"; radius: 3
                                         Row {
                                             anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
-                                            UTText { text: qsTr("ALL"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.bold: root.selectedStatuses.length === 0; anchors.verticalCenter: parent.verticalCenter }
+                                            UTText { text: qsTr("ALL"); fontEnum: root.selectedStatuses.length === 0 ? UIFontToken.Body_Strong : UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter }
                                         }
                                         UTText { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; visible: root.selectedStatuses.length === 0; text: "✓"; color: root._accentColor; fontEnum: UIFontToken.Body_Text }
                                         MouseArea { id: allStatusMa; anchors.fill: parent; hoverEnabled: true; onClicked: root.selectedStatuses = [] }
@@ -231,7 +231,7 @@ Item {
                                                     width: 14; height: 14; radius: 2; anchors.verticalCenter: parent.verticalCenter
                                                     color: root.selectedStatuses.indexOf(modelData) >= 0 ? root._accentColor : "transparent"
                                                     border.color: root.selectedStatuses.indexOf(modelData) >= 0 ? root._accentColor : root._inputBorder; border.width: 1
-                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedStatuses.indexOf(modelData) >= 0 }
+                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedStatuses.indexOf(modelData) >= 0 } // glyph, not tokenized
                                                 }
                                                 Rectangle {
                                                     width: 6; height: 6; radius: 3; anchors.verticalCenter: parent.verticalCenter
@@ -313,7 +313,7 @@ Item {
                                         color: allProcMa.containsMouse ? root._headerHover : "transparent"; radius: 3
                                         Row {
                                             anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
-                                            UTText { text: qsTr("ALL"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; font.bold: root.selectedProcesses.length === 0; anchors.verticalCenter: parent.verticalCenter }
+                                            UTText { text: qsTr("ALL"); fontEnum: root.selectedProcesses.length === 0 ? UIFontToken.Body_Strong : UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter }
                                         }
                                         UTText { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; visible: root.selectedProcesses.length === 0; text: "✓"; color: root._accentColor; fontEnum: UIFontToken.Body_Text }
                                         MouseArea { id: allProcMa; anchors.fill: parent; hoverEnabled: true; onClicked: root.selectedProcesses = [] }
@@ -331,7 +331,7 @@ Item {
                                                     width: 14; height: 14; radius: 2; anchors.verticalCenter: parent.verticalCenter
                                                     color: root.selectedProcesses.indexOf(model.name) >= 0 ? root._accentColor : "transparent"
                                                     border.color: root.selectedProcesses.indexOf(model.name) >= 0 ? root._accentColor : root._inputBorder; border.width: 1
-                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedProcesses.indexOf(model.name) >= 0 }
+                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedProcesses.indexOf(model.name) >= 0 } // glyph, not tokenized
                                                 }
                                                 UTText { text: model.name; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter; elide: Text.ElideRight; width: parent.width - 32 }
                                             }
@@ -375,12 +375,12 @@ Item {
                             Rectangle {
                                 visible: model.isIntercepted === true
                                 width: 18; height: 18; radius: 9; anchors.verticalCenter: parent.verticalCenter; color: "#F44336"
-                                Text { anchors.centerIn: parent; text: "⏸"; font.pixelSize: 10; color: "white" }
+                                Text { anchors.centerIn: parent; text: "⏸"; font.pixelSize: 10; color: "white" } // glyph, not tokenized
                             }
                             Rectangle {
                                 width: root.colMethodW - 5; height: 18; radius: 3; anchors.verticalCenter: parent.verticalCenter
                                 color: { switch(model.method) { case "GET": return "#4CAF50"; case "POST": return "#2196F3"; case "PUT": return "#FF9800"; case "DELETE": return "#F44336"; case "PATCH": return "#9C27B0"; default: return "#757575" } }
-                                UTText { anchors.centerIn: parent; text: model.method || ""; fontEnum: UIFontToken.Caption_Text; color: "white"; font.bold: true }
+                                UTText { anchors.centerIn: parent; text: model.method || ""; fontEnum: UIFontToken.Caption_Strong; color: "white" }
                             }
                             UTText {
                                 width: root.colStatusW; anchors.verticalCenter: parent.verticalCenter
@@ -447,7 +447,7 @@ Item {
                                 delegate: Rectangle {
                                     width: reqTL.implicitWidth + 16; height: 26; radius: 3
                                     color: root.controller.requestTabIndex === index ? root._accentColor : reqTM.containsMouse ? root._headerHover : "transparent"
-                                    UTText { id: reqTL; anchors.centerIn: parent; text: modelData; fontEnum: UIFontToken.Caption_Text; color: root.controller.requestTabIndex === index ? "white" : root._sectionTitle; font.bold: root.controller.requestTabIndex === index }
+                                    UTText { id: reqTL; anchors.centerIn: parent; text: modelData; fontEnum: root.controller.requestTabIndex === index ? UIFontToken.Caption_Strong : UIFontToken.Caption_Text; color: root.controller.requestTabIndex === index ? "white" : root._sectionTitle }
                                     MouseArea { id: reqTM; anchors.fill: parent; hoverEnabled: true; onClicked: root.controller.requestTabIndex = index }
                                 }
                             }
@@ -485,7 +485,7 @@ Item {
                                 delegate: Rectangle {
                                     width: resTL.implicitWidth + 16; height: 26; radius: 3
                                     color: root.controller.responseTabIndex === index ? root._accentColor : resTM.containsMouse ? root._headerHover : "transparent"
-                                    UTText { id: resTL; anchors.centerIn: parent; text: modelData; fontEnum: UIFontToken.Caption_Text; color: root.controller.responseTabIndex === index ? "white" : root._sectionTitle; font.bold: root.controller.responseTabIndex === index }
+                                    UTText { id: resTL; anchors.centerIn: parent; text: modelData; fontEnum: root.controller.responseTabIndex === index ? UIFontToken.Caption_Strong : UIFontToken.Caption_Text; color: root.controller.responseTabIndex === index ? "white" : root._sectionTitle }
                                     MouseArea { id: resTM; anchors.fill: parent; hoverEnabled: true; onClicked: root.controller.responseTabIndex = index }
                                 }
                             }

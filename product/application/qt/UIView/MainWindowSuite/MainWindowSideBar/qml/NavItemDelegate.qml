@@ -102,7 +102,6 @@ Rectangle {
             text: navItem.badge > 99 ? "99+" : navItem.badge.toString()
             fontEnum: UIFontToken.Badge_Text
             colorEnum: UIColorToken.Sidebar_Badge_Text
-            font.pixelSize: navItem.showText ? 9 : 8
         }
     }
 

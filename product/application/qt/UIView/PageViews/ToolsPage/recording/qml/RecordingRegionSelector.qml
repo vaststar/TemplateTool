@@ -250,8 +250,7 @@ Window {
             Text {
                 text: Math.round(selW) + " × " + Math.round(selH)
                 color: "#AAAAAA"
-                font.pixelSize: 12
-                font.family: "monospace"
+                font: UTComponentUtil.getUIFont(UIFontToken.Monospace_Small)
             }
 
             Rectangle { width: 1; height: 24; color: "#555555" }
@@ -312,7 +311,7 @@ Window {
             anchors.centerIn: parent
             text: qsTr("Click and drag to select recording region\nPress ESC to cancel")
             color: "white"
-            font.pixelSize: 16
+            font: UTComponentUtil.getUIFont(UIFontToken.Body_Large)
             horizontalAlignment: Text.AlignHCenter
         }
     }
@@ -407,8 +406,7 @@ Window {
                 Text {
                     text: formatDuration(controller.recordingDuration)
                     color: "#FFFFFF"
-                    font.pixelSize: 13
-                    font.family: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text).family
+                    font: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
                 }
 
                 Rectangle { width: 1; height: 24; color: "#555555" }

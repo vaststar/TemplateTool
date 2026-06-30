@@ -511,7 +511,7 @@ Window {
                 anchors.centerIn: parent
                 text: qsTr("Click and drag to select region\nPress ESC to cancel")
                 color: "white"
-                font.pixelSize: 16
+                font: UTComponentUtil.getUIFont(UIFontToken.Body_Large)
                 horizontalAlignment: Text.AlignHCenter
             }
         }
