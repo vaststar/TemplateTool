@@ -9,6 +9,17 @@ set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceAsset)
 
 set(RESOURCE_TARGETS )
 
+## Precheck: token ↔ theme 一致性 + 本地资源文件存在性校验
+include(ValidateAssetTokens)
+validate_asset_tokens(
+    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/resource/validate_asset_tokens.py
+    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json
+    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes
+    ASSET_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/resource
+    PRECHECK_TARGET
+)
+list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
+
 ## AssetToken
 set(GLOBAL_ASSET_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE AssetToken.h)

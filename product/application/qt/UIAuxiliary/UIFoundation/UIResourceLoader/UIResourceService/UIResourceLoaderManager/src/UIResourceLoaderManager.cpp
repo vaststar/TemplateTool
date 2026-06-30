@@ -2,6 +2,10 @@
 
 #include <map>
 
+#include <QFont>
+#include <QString>
+#include <QStringList>
+
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 
@@ -100,7 +104,22 @@ QFont UIResourceLoaderManager::getUIFont(UIFontToken::FontToken fontToken)
     {
         auto vmFontToken = UIResource::UIResourceFontLoader::convertUIFontTokenToVMFontToken(fontToken);
         auto vmFont = resourceLoader->getFont(vmFontToken);
-        return QFont(QString::fromStdString(vmFont.fontFamily), vmFont.fontSize, vmFont.fontWeight, vmFont.isItalic);
+
+        QFont font;
+        QStringList families;
+        families.reserve(static_cast<qsizetype>(vmFont.fontFamilies.size()));
+        for (const auto& family : vmFont.fontFamilies)
+        {
+            families.append(QString::fromStdString(family));
+        }
+        if (!families.isEmpty())
+        {
+            font.setFamilies(families);
+        }
+        font.setPointSize(vmFont.fontSize);
+        font.setWeight(static_cast<QFont::Weight>(vmFont.fontWeight));
+        font.setItalic(vmFont.isItalic);
+        return font;
     }
     UIResourceLoaderManager_LOG_WARN("no resourceLoader");
     return QFont();

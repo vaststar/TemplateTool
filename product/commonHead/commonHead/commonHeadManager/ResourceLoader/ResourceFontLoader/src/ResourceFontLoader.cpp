@@ -36,11 +36,11 @@ model::Font ResourceFontLoader::getFont(model::FontToken fontToken, model::FontT
             case ucf::utilities::OSType::WINDOWS:
                 if (!familys.windows.empty())
                 {
-                    font.fontFamily = familys.windows.front();
+                    font.fontFamilies = familys.windows;
                 }
                 else if (!familys.default_.empty())
                 {
-                    font.fontFamily = familys.default_.front();
+                    font.fontFamilies = familys.default_;
                 }
                 else
                 {
@@ -51,11 +51,11 @@ model::Font ResourceFontLoader::getFont(model::FontToken fontToken, model::FontT
             case ucf::utilities::OSType::APPLE_VISION:
                 if (!familys.macosx.empty())
                 {
-                    font.fontFamily = familys.macosx.front();
+                    font.fontFamilies = familys.macosx;
                 }
                 else if (!familys.default_.empty())
                 {
-                    font.fontFamily = familys.default_.front();
+                    font.fontFamilies = familys.default_;
                 }
                 else
                 {
@@ -65,11 +65,11 @@ model::Font ResourceFontLoader::getFont(model::FontToken fontToken, model::FontT
             case ucf::utilities::OSType::IOS:
                 if (!familys.ios.empty())
                 {
-                    font.fontFamily = familys.ios.front();
+                    font.fontFamilies = familys.ios;
                 }
                 else if (!familys.default_.empty())
                 {
-                    font.fontFamily = familys.default_.front();
+                    font.fontFamilies = familys.default_;
                 }
                 else
                 {
@@ -79,11 +79,11 @@ model::Font ResourceFontLoader::getFont(model::FontToken fontToken, model::FontT
             case ucf::utilities::OSType::LINUX:
                 if (!familys.linux.empty())
                 {
-                    font.fontFamily = familys.linux.front();
+                    font.fontFamilies = familys.linux;
                 }
                 else if (!familys.default_.empty())
                 {
-                    font.fontFamily = familys.default_.front();
+                    font.fontFamilies = familys.default_;
                 }
                 else
                 {
@@ -93,11 +93,11 @@ model::Font ResourceFontLoader::getFont(model::FontToken fontToken, model::FontT
             case ucf::utilities::OSType::ANDROID:
                 if (!familys.android.empty())
                 {
-                    font.fontFamily = familys.android.front();
+                    font.fontFamilies = familys.android;
                 }
                 else if (!familys.default_.empty())
                 {
-                    font.fontFamily = familys.default_.front();
+                    font.fontFamilies = familys.default_;
                 }
                 else
                 {
@@ -108,7 +108,7 @@ model::Font ResourceFontLoader::getFont(model::FontToken fontToken, model::FontT
                 COMMONHEAD_LOG_WARN("Unsupported OS type for font loading, OSType: " << ucf::utilities::OSUtils::getOSTypeName());
                 if (!familys.default_.empty())
                 {
-                    font.fontFamily = familys.default_.front();
+                    font.fontFamilies = familys.default_;
                 }
                 else
                 {
