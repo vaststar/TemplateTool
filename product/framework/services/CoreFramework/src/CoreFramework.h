@@ -29,9 +29,8 @@ public:
     virtual void initServices() override;
     virtual void exitCoreFramework() override;
 private:
-    // Computes a deterministic, dependency-respecting initialization order.
-    // Returns an empty list when a cyclic or missing dependency is detected.
-    std::vector<ucf::service::IServicePtr> buildInitOrder();
+    // Tears down services in the exact reverse of initialization order.
+    void deinitServices();
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

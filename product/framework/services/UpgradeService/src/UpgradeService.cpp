@@ -88,16 +88,21 @@ void UpgradeService::initService()
     mDataPrivate->getUpgradeManager().initialize(this);
 }
 
+void UpgradeService::deinitService()
+{
+    UPGRADE_LOG_INFO("UpgradeService::deinitService()");
+}
+
 std::string UpgradeService::getServiceName() const
 {
     return "UpgradeService";
 }
 
-std::vector<std::type_index> UpgradeService::dependencies() const
+std::vector<ServiceDependency> UpgradeService::dependencies() const
 {
     return {
-        std::type_index(typeid(INetworkService)),
-        std::type_index(typeid(IClientInfoService))
+        { std::type_index(typeid(INetworkService)), DependencyKind::Required },
+        { std::type_index(typeid(IClientInfoService)), DependencyKind::Required }
     };
 }
 

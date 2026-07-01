@@ -85,6 +85,11 @@ void PerformanceService::initService()
     PERFORMANCE_LOG_INFO("PerformanceService initialized");
 }
 
+void PerformanceService::deinitService()
+{
+    PERFORMANCE_LOG_INFO("PerformanceService::deinitService()");
+}
+
 // ==========================================
 // Memory Monitoring
 // ==========================================

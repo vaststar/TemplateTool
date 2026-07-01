@@ -25,8 +25,9 @@ public:
 protected:
     //IService
     virtual void initService() override;
+    virtual void deinitService() override;
 
-    
+
     virtual void onServiceInitialized() override{};
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;

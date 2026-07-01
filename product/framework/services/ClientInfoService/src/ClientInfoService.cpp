@@ -100,14 +100,19 @@ void ClientInfoService::initService()
     printClientInfo();
 }
 
+void ClientInfoService::deinitService()
+{
+    SERVICE_LOG_DEBUG("ClientInfoService::deinitService()");
+}
+
 std::string ClientInfoService::getServiceName() const
 {
     return "ClientInfoService";
 }
 
-std::vector<std::type_index> ClientInfoService::dependencies() const
+std::vector<ServiceDependency> ClientInfoService::dependencies() const
 {
-    return { std::type_index(typeid(IDataWarehouseService)) };
+    return { { std::type_index(typeid(IDataWarehouseService)), DependencyKind::Required } };
 }
 
 void ClientInfoService::onServiceInitialized()

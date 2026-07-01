@@ -29,7 +29,7 @@ public:
 public:
     // IService
     virtual std::string getServiceName() const override;
-    virtual std::vector<std::type_index> dependencies() const override;
+    virtual std::vector<ServiceDependency> dependencies() const override;
 
     // ICoreFrameworkCallback
     virtual void onServiceInitialized() override;
@@ -47,6 +47,7 @@ public:
 protected:
     // IService
     virtual void initService() override;
+    virtual void deinitService() override;
 
 private:
     class DataPrivate;

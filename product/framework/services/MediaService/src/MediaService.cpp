@@ -72,6 +72,11 @@ void MediaService::initService()
 
 }
 
+void MediaService::deinitService()
+{
+    SERVICE_LOG_INFO("MediaService::deinitService()");
+}
+
 std::string MediaService::openCamera(const media::CameraSource& source)
 {
     return mDataPrivate->getCameraManager()->openCamera(source);

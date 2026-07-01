@@ -52,6 +52,7 @@ public:
 
 protected:
     void initService() override;
+    void deinitService() override;
 
     // IPerformanceNotificationSink — translates internal threshold events to outward callbacks
     void onMemoryWarning(const MemoryInfo& memoryInfo) override;

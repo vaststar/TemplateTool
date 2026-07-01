@@ -57,7 +57,7 @@ NetworkService::NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     SERVICE_LOG_DEBUG("Create NetworkService, address:" << this);
 }
- 
+
 NetworkService::~NetworkService()
 {
    SERVICE_LOG_DEBUG("");
@@ -76,6 +76,11 @@ void NetworkService::initService()
     //     coreFramework->registerCallback(shared_from_this());
     // }
     SERVICE_LOG_DEBUG("init NetworkService done, address:" << this);
+}
+
+void NetworkService::deinitService()
+{
+    SERVICE_LOG_DEBUG("NetworkService::deinitService()");
 }
 
 std::string NetworkService::getServiceName() const

@@ -97,17 +97,22 @@ void ContactService::initService()
     }
 }
 
+void ContactService::deinitService()
+{
+    SERVICE_LOG_DEBUG("ContactService::deinitService()");
+}
+
 std::string ContactService::getServiceName() const
 {
     return "ContactService";
 }
 
-std::vector<std::type_index> ContactService::dependencies() const
+std::vector<ServiceDependency> ContactService::dependencies() const
 {
     return {
-        std::type_index(typeid(INetworkService)),
-        std::type_index(typeid(IDataWarehouseService)),
-        std::type_index(typeid(IClientInfoService))
+        { std::type_index(typeid(INetworkService)), DependencyKind::Required },
+        { std::type_index(typeid(IDataWarehouseService)), DependencyKind::Required },
+        { std::type_index(typeid(IClientInfoService)), DependencyKind::Required }
     };
 }
 

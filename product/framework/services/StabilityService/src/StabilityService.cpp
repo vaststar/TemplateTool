@@ -106,9 +106,14 @@ void StabilityService::initService()
     mDataPrivate->getHangManager().initialize();
 }
 
-std::vector<std::type_index> StabilityService::dependencies() const
+void StabilityService::deinitService()
 {
-    return { std::type_index(typeid(IClientInfoService)) };
+    CRASHHANDLER_LOG_INFO("StabilityService::deinitService()");
+}
+
+std::vector<ServiceDependency> StabilityService::dependencies() const
+{
+    return { { std::type_index(typeid(IClientInfoService)), DependencyKind::Required } };
 }
 
 // ==========================================

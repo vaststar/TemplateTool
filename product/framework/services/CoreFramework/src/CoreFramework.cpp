@@ -1,10 +1,5 @@
 #include <mutex>
 #include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <typeindex>
-
-
 
 #include <ucf/Services/ServiceDeclaration/IService.h>
 
@@ -132,10 +127,20 @@ void CoreFramework::exitCoreFramework()
     {
         CORE_LOG_DEBUG("about exiting CoreFramework, address:" << this);
         mDataPrivate->onExiting();
+
+        CORE_LOG_DEBUG("fire onCoreFrameworkExit, address:" << this);
         fireNotification(&ICoreFrameworkCallback::onCoreFrameworkExit);
+
+        CORE_LOG_DEBUG("start exiting CoreFramework, address:" << this);
+        deinitServices();
+
+        CORE_LOG_DEBUG("unregister all services, address:" << this);
         unRegisterServices();
-        mDataPrivate->exitFinished();
+
         CORE_LOG_DEBUG("finish exiting CoreFramework, address:" << this);
+        mDataPrivate->exitFinished();
+
+        CORE_LOG_DEBUG("CoreFramework exited, address:" << this);
     }
     else
     {
@@ -148,76 +153,6 @@ std::string CoreFramework::getName() const
     return "CoreFramework";
 }
 
-std::vector<ucf::service::IServicePtr> CoreFramework::buildInitOrder()
-{
-    auto registeredServices = getAllServicesWithType();
-
-    std::unordered_map<std::type_index, ucf::service::IServicePtr> serviceByType;
-    std::unordered_map<std::type_index, int> remainingDependencyCount;
-    std::unordered_map<std::type_index, std::vector<std::type_index>> dependentServices;
-
-    for (const auto& [serviceType, servicePtr] : registeredServices)
-    {
-        serviceByType[serviceType] = servicePtr;
-        remainingDependencyCount[serviceType] = 0;
-    }
-
-    for (const auto& [serviceType, servicePtr] : registeredServices)
-    {
-        for (const auto& dependencyType : servicePtr->dependencies())
-        {
-            if (serviceByType.find(dependencyType) == serviceByType.end())
-            {
-                CORE_LOG_ERROR("missing dependency for service: " << servicePtr->getServiceName()
-                               << ", required type: " << dependencyType.name());
-                return {};
-            }
-            dependentServices[dependencyType].push_back(serviceType);
-            ++remainingDependencyCount[serviceType];
-        }
-    }
-
-    std::vector<ucf::service::IServicePtr> orderedServices;
-    std::unordered_set<std::type_index> initializedTypes;
-
-    // Rescan in registration order each round so that services with no mutual
-    // dependency keep their registration order as a stable tie-break.
-    while (orderedServices.size() < registeredServices.size())
-    {
-        bool madeProgress = false;
-        for (const auto& [serviceType, servicePtr] : registeredServices)
-        {
-            if (initializedTypes.count(serviceType) > 0)
-            {
-                continue;
-            }
-            if (remainingDependencyCount[serviceType] != 0)
-            {
-                continue;
-            }
-
-            orderedServices.push_back(servicePtr);
-            initializedTypes.insert(serviceType);
-            madeProgress = true;
-
-            for (const auto& dependentType : dependentServices[serviceType])
-            {
-                --remainingDependencyCount[dependentType];
-            }
-            break;
-        }
-
-        if (!madeProgress)
-        {
-            CORE_LOG_ERROR("cyclic dependency detected among services, sorted "
-                           << orderedServices.size() << " of " << registeredServices.size());
-            return {};
-        }
-    }
-
-    return orderedServices;
-}
-
 void CoreFramework::initServices()
 {
     if (!mDataPrivate->isRunnable())
@@ -226,21 +161,39 @@ void CoreFramework::initServices()
         return;
     }
 
-    auto orderedServices = buildInitOrder();
-    if (orderedServices.empty())
+    if (!sortServicesByDependency())
     {
-        CORE_LOG_ERROR("service init order is empty, abort initServices, address:" << this);
+        CORE_LOG_ERROR("failed to resolve service init order, abort initServices, address:" << this);
         return;
     }
 
-    for (const auto& servicePtr : orderedServices)
+    for (const auto& weakService : getAllServices())
     {
-        CORE_LOG_INFO("start init service: " << servicePtr->getServiceName());
-        servicePtr->initComponent();
-        CORE_LOG_INFO("finish init service: " << servicePtr->getServiceName());
+        if (auto servicePtr = weakService.lock())
+        {
+            CORE_LOG_INFO("start init service: " << servicePtr->getServiceName());
+            servicePtr->initComponent();
+            CORE_LOG_INFO("finish init service: " << servicePtr->getServiceName());
+        }
     }
 
     fireNotification(&ICoreFrameworkCallback::onServiceInitialized);
+}
+
+void CoreFramework::deinitServices()
+{
+    // The storage is already sorted in initialization order, so shut services
+    // down in its exact reverse: a service is torn down before its dependencies.
+    auto services = getAllServices();
+    for (auto iter = services.rbegin(); iter != services.rend(); ++iter)
+    {
+        if (auto servicePtr = iter->lock())
+        {
+            CORE_LOG_INFO("start deinit service: " << servicePtr->getServiceName());
+            servicePtr->deinitComponent();
+            CORE_LOG_INFO("finish deinit service: " << servicePtr->getServiceName());
+        }
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

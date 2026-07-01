@@ -29,6 +29,7 @@ public:
 
 protected:
     void initService() override {}
+    void deinitService() override {}
 };
 
 } // namespace ucf::service::fakes

@@ -90,17 +90,22 @@ void CameraDirectoryService::initService()
     }
 }
 
+void CameraDirectoryService::deinitService()
+{
+    SERVICE_LOG_DEBUG("CameraDirectoryService::deinitService()");
+}
+
 std::string CameraDirectoryService::getServiceName() const
 {
     return "CameraDirectoryService";
 }
 
-std::vector<std::type_index> CameraDirectoryService::dependencies() const
+std::vector<ServiceDependency> CameraDirectoryService::dependencies() const
 {
     return {
-        std::type_index(typeid(IMediaService)),
-        std::type_index(typeid(IDataWarehouseService)),
-        std::type_index(typeid(IClientInfoService))
+        { std::type_index(typeid(IMediaService)), DependencyKind::Required },
+        { std::type_index(typeid(IDataWarehouseService)), DependencyKind::Required },
+        { std::type_index(typeid(IClientInfoService)), DependencyKind::Required }
     };
 }
 

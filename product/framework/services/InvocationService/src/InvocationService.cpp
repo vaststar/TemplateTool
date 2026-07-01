@@ -79,6 +79,11 @@ void InvocationService::initService()
     }
 }
 
+void InvocationService::deinitService()
+{
+    SERVICE_LOG_DEBUG("InvocationService::deinitService()");
+}
+
 std::string InvocationService::getServiceName() const
 {
     return "InvocationService";

@@ -19,7 +19,7 @@ public:
 
     // IService
     [[nodiscard]] std::string getServiceName() const override { return "StabilityService"; }
-    [[nodiscard]] std::vector<std::type_index> dependencies() const override;
+    [[nodiscard]] std::vector<ServiceDependency> dependencies() const override;
 
     // IStabilityService - Status
     [[nodiscard]] bool isCrashHandlerInstalled() const override;
@@ -46,6 +46,7 @@ public:
 
 protected:
     void initService() override;
+    void deinitService() override;
 
 private:
     class DataPrivate;

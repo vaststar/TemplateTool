@@ -15,6 +15,7 @@ set(MODULE_HEADER_FILES #for include and install header
 set(MODULE_SOURCE_PRIVATE
     src/CoreframeworkLogger.h
     src/ServiceAccessor.h
+    src/ServiceAccessor.cpp
     src/CoreFramework.h
     src/CoreFramework.cpp
 )

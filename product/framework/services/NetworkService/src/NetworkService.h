@@ -33,6 +33,7 @@ public:
 protected:
     //IService
     virtual void initService() override;
+    virtual void deinitService() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

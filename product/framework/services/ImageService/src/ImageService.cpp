@@ -30,4 +30,9 @@ void ImageService::initService()
 {
 
 }
+
+void ImageService::deinitService()
+{
+    SERVICE_LOG_INFO("ImageService::deinitService()");
+}
 }

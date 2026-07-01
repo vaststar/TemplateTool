@@ -81,16 +81,21 @@ void FeatureSettingsService::initService()
     }
 }
 
+void FeatureSettingsService::deinitService()
+{
+    SERVICE_LOG_DEBUG("FeatureSettingsService::deinitService()");
+}
+
 std::string FeatureSettingsService::getServiceName() const
 {
     return "FeatureSettingsService";
 }
 
-std::vector<std::type_index> FeatureSettingsService::dependencies() const
+std::vector<ServiceDependency> FeatureSettingsService::dependencies() const
 {
     return {
-        std::type_index(typeid(IDataWarehouseService)),
-        std::type_index(typeid(IClientInfoService))
+        { std::type_index(typeid(IDataWarehouseService)), DependencyKind::Required },
+        { std::type_index(typeid(IClientInfoService)), DependencyKind::Required }
     };
 }
 

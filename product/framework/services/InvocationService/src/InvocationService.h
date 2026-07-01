@@ -8,7 +8,7 @@
 #include <ucf/Services/InvocationService/IInvocationService.h>
 
 namespace ucf::service{
-class InvocationService final: public virtual IInvocationService, 
+class InvocationService final: public virtual IInvocationService,
                                public virtual ucf::utilities::NotificationHelper<IInvocationServiceCallback>,
                                public ucf::framework::CoreFrameworkCallbackDefault,
                                public std::enable_shared_from_this<InvocationService>
@@ -36,6 +36,7 @@ public:
 protected:
     //IService
     virtual void initService() override;
+    virtual void deinitService() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

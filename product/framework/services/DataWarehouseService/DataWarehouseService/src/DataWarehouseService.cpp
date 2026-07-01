@@ -142,6 +142,11 @@ void DataWarehouseService::initService()
     }
 }
 
+void DataWarehouseService::deinitService()
+{
+    SERVICE_LOG_DEBUG("DataWarehouseService::deinitService()");
+}
+
 void DataWarehouseService::onServiceInitialized()
 {
     SERVICE_LOG_DEBUG("");
