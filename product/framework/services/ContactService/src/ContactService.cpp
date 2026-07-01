@@ -72,7 +72,7 @@ ContactService::~ContactService()
 
 void ContactService::initService()
 {
-    SERVICE_LOG_DEBUG("initService");
+    SERVICE_LOG_DEBUG("ContactService::initService()");
     // Inject sink before registering DB callback so no early events are lost.
     auto self = shared_from_this();
     mDataPrivate->getManager().setNotificationSink(
@@ -100,6 +100,14 @@ void ContactService::initService()
 void ContactService::deinitService()
 {
     SERVICE_LOG_DEBUG("ContactService::deinitService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+        if (auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock())
+        {
+            dataWarehouseService->unRegisterCallback(shared_from_this());
+        }
+    }
 }
 
 std::string ContactService::getServiceName() const

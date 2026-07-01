@@ -2,6 +2,8 @@
 
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
+#include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
+
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
 
 #include "PerformanceNotificationSink.h"
@@ -17,6 +19,7 @@ namespace ucf::service {
 class SERVICE_EXPORT PerformanceService : public virtual IPerformanceService,
                            public virtual ucf::utilities::NotificationHelper<IPerformanceServiceCallback>,
                            public IPerformanceNotificationSink,
+                           public ucf::framework::CoreFrameworkCallbackDefault,
                            public std::enable_shared_from_this<PerformanceService>
 {
 public:
@@ -49,6 +52,9 @@ public:
     void exportReportToFile(const std::filesystem::path& path) const override;
 
     // Callback - uses NotificationHelper::registerCallback/unregisterCallback
+
+    // CoreFrameworkCallbackDefault
+    void onCoreFrameworkExit() override;
 
 protected:
     void initService() override;

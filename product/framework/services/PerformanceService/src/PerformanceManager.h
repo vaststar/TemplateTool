@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 #include <chrono>
 #include <filesystem>
@@ -80,6 +82,11 @@ private:
     std::chrono::milliseconds mReportInterval{30000};  // ms periodic usage log cadence
     std::atomic<bool> mMonitorRunning{false};
     std::thread mMonitorThread;
+
+    // Guards the sample-interval wait so stopMonitoring() can wake the loop immediately
+    // instead of waiting out a full sample interval before the thread observes the stop.
+    std::mutex mMonitorMutex;
+    std::condition_variable mMonitorCv;
 };
 
 } // namespace ucf::service

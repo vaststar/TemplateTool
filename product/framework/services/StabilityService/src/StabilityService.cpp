@@ -97,7 +97,12 @@ StabilityService::~StabilityService()
 
 void StabilityService::initService()
 {
-    CRASHHANDLER_LOG_INFO("StabilityService::initService() called");
+    CRASHHANDLER_LOG_INFO("StabilityService::initService()");
+
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->registerCallback(shared_from_this());
+    }
 
     // Initialize crash manager
     mDataPrivate->getCrashManager().initialize();
@@ -109,6 +114,15 @@ void StabilityService::initService()
 void StabilityService::deinitService()
 {
     CRASHHANDLER_LOG_INFO("StabilityService::deinitService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+    }
+}
+
+void StabilityService::onCoreFrameworkExit()
+{
+    CRASHHANDLER_LOG_INFO("StabilityService::onCoreFrameworkExit()");
 }
 
 std::vector<ServiceDependency> StabilityService::dependencies() const

@@ -136,6 +136,7 @@ std::string DataWarehouseService::getServiceName() const
 
 void DataWarehouseService::initService()
 {
+    SERVICE_LOG_DEBUG("DataWarehouseService::initService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
@@ -145,6 +146,10 @@ void DataWarehouseService::initService()
 void DataWarehouseService::deinitService()
 {
     SERVICE_LOG_DEBUG("DataWarehouseService::deinitService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+    }
 }
 
 void DataWarehouseService::onServiceInitialized()

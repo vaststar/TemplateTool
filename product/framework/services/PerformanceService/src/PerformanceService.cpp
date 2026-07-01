@@ -76,6 +76,12 @@ PerformanceService::~PerformanceService()
 
 void PerformanceService::initService()
 {
+    PERFORMANCE_LOG_INFO("PerformanceService::initService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->registerCallback(shared_from_this());
+    }
+
     // Inject sink before starting the monitoring loop so no early events are lost.
     auto self = shared_from_this();
     mDataPrivate->getPerformanceManager().setNotificationSink(
@@ -88,6 +94,15 @@ void PerformanceService::initService()
 void PerformanceService::deinitService()
 {
     PERFORMANCE_LOG_INFO("PerformanceService::deinitService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+    }
+}
+
+void PerformanceService::onCoreFrameworkExit()
+{
+    PERFORMANCE_LOG_INFO("PerformanceService::onCoreFrameworkExit()");
 }
 
 // ==========================================

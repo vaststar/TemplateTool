@@ -4,6 +4,7 @@
 #include <string>
 #include <ucf/Services/MediaService/IMediaService.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -12,7 +13,9 @@ namespace ucf::framework {
 
 namespace ucf::service {
 class SERVICE_EXPORT MediaService final : public IMediaService,
-                                          public virtual ucf::utilities::NotificationHelper<IMediaServiceCallback>
+                                          public virtual ucf::utilities::NotificationHelper<IMediaServiceCallback>,
+                                          public ucf::framework::CoreFrameworkCallbackDefault,
+                                          public std::enable_shared_from_this<MediaService>
 {
 public:
     MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -37,6 +40,9 @@ public:
     virtual void stopVideoCapture(
         const std::string& cameraId,
         const std::string& subscriptionId) override;
+
+    //CoreFrameworkCallbackDefault
+    virtual void onCoreFrameworkExit() override;
 
 protected:
     //IService

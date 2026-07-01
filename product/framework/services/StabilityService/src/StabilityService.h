@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ucf/Services/StabilityService/IStabilityService.h>
+#include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <memory>
 #include <vector>
 #include <typeindex>
@@ -11,7 +12,9 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class SERVICE_EXPORT StabilityService : public IStabilityService
+class SERVICE_EXPORT StabilityService : public IStabilityService,
+                                        public ucf::framework::CoreFrameworkCallbackDefault,
+                                        public std::enable_shared_from_this<StabilityService>
 {
 public:
     explicit StabilityService(std::shared_ptr<ucf::framework::ICoreFramework> coreFramework);
@@ -43,6 +46,9 @@ public:
     // IStabilityService - Testing
     void forceCrashForTesting() override;
     void forceHangForTesting() override;
+
+    // CoreFrameworkCallbackDefault
+    void onCoreFrameworkExit() override;
 
 protected:
     void initService() override;

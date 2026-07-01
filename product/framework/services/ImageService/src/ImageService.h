@@ -10,7 +10,9 @@ namespace ucf::framework{
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 namespace ucf::service{
-class SERVICE_EXPORT ImageService:public IImageService, public ucf::framework::CoreFrameworkCallbackDefault
+class SERVICE_EXPORT ImageService:public IImageService,
+                                  public ucf::framework::CoreFrameworkCallbackDefault,
+                                  public std::enable_shared_from_this<ImageService>
 {
 public:
     ImageService(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -29,6 +31,7 @@ protected:
 
 
     virtual void onServiceInitialized() override{};
+    virtual void onCoreFrameworkExit() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

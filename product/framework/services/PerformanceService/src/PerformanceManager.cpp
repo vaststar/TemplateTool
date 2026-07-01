@@ -98,6 +98,7 @@ void PerformanceManager::stopMonitoring()
     {
         return;
     }
+    mMonitorCv.notify_all();
     if (mMonitorThread.joinable())
     {
         mMonitorThread.join();
@@ -127,7 +128,11 @@ void PerformanceManager::monitorLoop()
 
     while (mMonitorRunning.load())
     {
-        std::this_thread::sleep_for(mSampleInterval);
+        {
+            // Sleep until the next sample tick, but wake immediately when stopped.
+            std::unique_lock<std::mutex> lock(mMonitorMutex);
+            mMonitorCv.wait_for(lock, mSampleInterval, [this] { return !mMonitorRunning.load(); });
+        }
         if (!mMonitorRunning.load())
         {
             break;

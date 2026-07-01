@@ -28,11 +28,24 @@ std::string ImageService::getServiceName() const
 
 void ImageService::initService()
 {
-
+    SERVICE_LOG_INFO("ImageService::initService()");
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        coreFramework->registerCallback(shared_from_this());
+    }
 }
 
 void ImageService::deinitService()
 {
     SERVICE_LOG_INFO("ImageService::deinitService()");
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+    }
+}
+
+void ImageService::onCoreFrameworkExit()
+{
+    SERVICE_LOG_INFO("ImageService::onCoreFrameworkExit()");
 }
 }
