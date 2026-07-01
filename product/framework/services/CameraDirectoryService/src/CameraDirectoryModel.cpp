@@ -289,10 +289,7 @@ model::CameraGroupArray CameraDirectoryModel::addCameraGroups(const model::Camer
     if (!accepted.empty())
     {
         mCameraDirectoryDBAccess->insertCameraGroups(accepted);
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onGroupsAdded(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onGroupsAdded, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -306,10 +303,7 @@ model::CameraGroupArray CameraDirectoryModel::updateCameraGroups(const model::Ca
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onGroupsUpdated(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onGroupsUpdated, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -323,10 +317,7 @@ std::vector<std::string> CameraDirectoryModel::removeCameraGroups(const std::vec
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onGroupsRemoved(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onGroupsRemoved, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -337,10 +328,7 @@ model::CameraEntryArray CameraDirectoryModel::addCameras(const model::CameraEntr
     if (!accepted.empty())
     {
         mCameraDirectoryDBAccess->insertCameras(accepted);
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onCamerasAdded(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onCamerasAdded, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -354,10 +342,7 @@ model::CameraEntryArray CameraDirectoryModel::updateCameras(const model::CameraE
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onCamerasUpdated(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onCamerasUpdated, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -371,10 +356,7 @@ std::vector<std::string> CameraDirectoryModel::removeCameras(const std::vector<s
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onCamerasRemoved(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onCamerasRemoved, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -385,10 +367,7 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::addCameraRelations(con
     if (!accepted.empty())
     {
         mCameraDirectoryDBAccess->insertCameraRelations(accepted);
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onRelationsAdded(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onRelationsAdded, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -402,10 +381,7 @@ model::CameraDirectoryRelationArray CameraDirectoryModel::updateCameraRelations(
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onRelationsUpdated(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onRelationsUpdated, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
@@ -419,20 +395,12 @@ std::vector<std::string> CameraDirectoryModel::removeCameraRelations(const std::
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onRelationsRemoved(accepted, CameraDirectoryNotificationSource::Local);
-        }
+        notifySink(&ICameraDirectoryNotificationSink::onRelationsRemoved, accepted, CameraDirectoryNotificationSource::Local);
     }
     return accepted;
 }
 
 // ===== Lifecycle =====
-
-void CameraDirectoryModel::setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink)
-{
-    mNotificationSink = std::move(sink);
-}
 
 void CameraDirectoryModel::bindDatabase(const std::string& databaseId)
 {
@@ -549,10 +517,7 @@ void CameraDirectoryModel::finishLoadSuccess()
         return;
     }
     SERVICE_LOG_DEBUG("loadCameraDirectory finished, success:true");
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onDirectoryLoaded();
-    }
+    notifySink(&ICameraDirectoryNotificationSink::onDirectoryLoaded);
 }
 
 void CameraDirectoryModel::finishLoadFailure(CameraDirectoryLoadError error)
@@ -563,10 +528,7 @@ void CameraDirectoryModel::finishLoadFailure(CameraDirectoryLoadError error)
         return;
     }
     SERVICE_LOG_ERROR("loadCameraDirectory finished, success:false, error:" << static_cast<int>(error));
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onDirectoryLoadFailed(error);
-    }
+    notifySink(&ICameraDirectoryNotificationSink::onDirectoryLoadFailed, error);
 }
 
 } // namespace ucf::service

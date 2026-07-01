@@ -182,11 +182,13 @@ void PerformanceService::exportReportToFile(const std::filesystem::path& path) c
 
 void PerformanceService::onMemoryWarning(const MemoryInfo& memoryInfo)
 {
+    PERFORMANCE_LOG_DEBUG("Memory warning triggered, usage: " << memoryInfo.physicalBytes / 1024 / 1024 << " MB");
     fireNotification(&IPerformanceServiceCallback::onMemoryWarning, memoryInfo);
 }
 
 void PerformanceService::onCpuWarning(double cpuPercent)
 {
+    PERFORMANCE_LOG_DEBUG("CPU warning triggered, usage: " << cpuPercent << " %");
     fireNotification(&IPerformanceServiceCallback::onCpuWarning, cpuPercent);
 }
 

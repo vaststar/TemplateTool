@@ -6,6 +6,7 @@
 #include <string>
 
 #include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
 
 #include "ClientInfoNotificationSink.h"
 
@@ -22,7 +23,7 @@ class ClientInfoDBAccess;
 // persistence. Owns ClientInfoDBAccess for all DB I/O so the rest of the service
 // never sees IDataWarehouseService directly. Drives a small state machine that
 // fires onClientInfoReady / onClientInfoLoadFailed exactly once via the sink.
-class ClientInfoModel
+class ClientInfoModel : public ucf::utilities::SinkNotifier<IClientInfoNotificationSink>
 {
 public:
     explicit ClientInfoModel(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -55,10 +56,6 @@ public:
     // async queries; finishLoadSuccess / finishLoadFailure fires exactly once.
     void loadSettings();
 
-    // Sink is held as weak_ptr; safe for async DB callbacks arriving after the
-    // owning Service has been torn down.
-    void setNotificationSink(std::weak_ptr<IClientInfoNotificationSink> sink);
-
 private:
     void finishLoadSuccess();
     void finishLoadFailure(ClientInfoLoadError error);
@@ -81,8 +78,6 @@ private:
     // Set when loadSettings() is called before bindDatabase(); bindDatabase() then
     // auto-promotes the load once the DB id has been set.
     std::atomic<bool>                         mLoadPending{false};
-
-    std::weak_ptr<IClientInfoNotificationSink> mNotificationSink;
 };
 
 } // namespace ucf::service

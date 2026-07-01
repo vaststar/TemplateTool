@@ -140,7 +140,7 @@ bool CameraDirectoryManager::isCameraDirectoryReady() const
 
 void CameraDirectoryManager::setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink)
 {
-    mNotificationSink = sink;
+    SinkNotifier::setNotificationSink(sink);
     mCameraDirectoryModel->setNotificationSink(std::move(sink));
 }
 

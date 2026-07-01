@@ -169,6 +169,7 @@ bool ClientInfoManager::isReady() const
 
 void ClientInfoManager::setNotificationSink(std::weak_ptr<IClientInfoNotificationSink> sink)
 {
+    SinkNotifier::setNotificationSink(sink);
     mClientInfoModel->setNotificationSink(std::move(sink));
 }
 

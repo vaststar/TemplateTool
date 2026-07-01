@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+
 #include "CameraDirectoryEntities.h"
 #include "CameraDirectoryNotificationSink.h"
 
@@ -22,7 +24,7 @@ class CameraDirectoryDBAccess;
 // Coordinates the in-memory view with database persistence:
 //   - In-memory layer: batched CRUD protected by a mutex.
 //   - Persistence layer: owns CameraDirectoryDBAccess and flushes accepted writes to disk.
-class CameraDirectoryModel
+class CameraDirectoryModel : public ucf::utilities::SinkNotifier<ICameraDirectoryNotificationSink>
 {
 public:
     explicit CameraDirectoryModel(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -64,11 +66,6 @@ public:
     // True when the in-memory view is fully populated from the database.
     bool isCameraDirectoryReady() const;
 
-    // ===== Notification sink =====
-    // Injected by Service; weak_ptr so async DB callbacks arriving after sink destruction
-    // don't dangle.
-    void setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink);
-
 private:
     // Memory-only primitives (do not touch the DB).
     model::CameraGroupArray             addCameraGroupsInMemory(const model::CameraGroupArray& groups);
@@ -102,9 +99,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<model::CameraDirectoryRelationImpl>> mRelations;
 
     const std::unique_ptr<CameraDirectoryDBAccess> mCameraDirectoryDBAccess;
-
-    // Sink is set once and then read-only; no locking needed. Write paths lock() it once per call.
-    std::weak_ptr<ICameraDirectoryNotificationSink> mNotificationSink;
 
     // Load-stage state machine; atomic so chunk callbacks and the calling thread see consistent values.
     std::atomic<LoadStage> mLoadStage{LoadStage::Uninit};

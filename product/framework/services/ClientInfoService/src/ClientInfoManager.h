@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
 
 #include "ClientInfoNotificationSink.h"
 
@@ -25,7 +26,7 @@ class ClientInfoModel;
 // all mutable client settings (language / theme) to ClientInfoModel. Holds no
 // reference to IDataWarehouseService; DB I/O lives entirely in ClientInfoModel
 // via ClientInfoDBAccess.
-class ClientInfoManager final
+class ClientInfoManager final : public ucf::utilities::SinkNotifier<IClientInfoNotificationSink>
 {
 public:
     explicit ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFramework);

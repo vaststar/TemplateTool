@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+
 #include "ContactEntities.h"
 #include "ContactNotificationSink.h"
 
@@ -21,7 +23,7 @@ namespace ucf::service {
 class ContactDBAccess;
 
 // In-memory contact view coordinated with database persistence.
-class ContactModel
+class ContactModel : public ucf::utilities::SinkNotifier<IContactNotificationSink>
 {
 public:
     explicit ContactModel(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -63,9 +65,6 @@ public:
     void loadContactDirectory();
     bool isContactDirectoryReady() const;
 
-    // Sink is held as weak_ptr; safe for async DB callbacks arriving after Service teardown.
-    void setNotificationSink(std::weak_ptr<IContactNotificationSink> sink);
-
 private:
     // Memory-only primitives (do not touch the DB).
     model::PersonContactArray   addPersonContactsInMemory(const model::PersonContactArray& persons);
@@ -101,7 +100,6 @@ private:
 
     const std::unique_ptr<ContactDBAccess> mContactDBAccess;
 
-    std::weak_ptr<IContactNotificationSink> mNotificationSink;
     std::atomic<LoadStage> mLoadStage{LoadStage::Uninit};
     // Set when loadContactDirectory() is called before bindDatabase(); bindDatabase()
     // then auto-promotes the load once the DB id has been set. Lets callers be order

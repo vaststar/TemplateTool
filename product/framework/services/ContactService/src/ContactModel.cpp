@@ -353,10 +353,7 @@ model::PersonContactArray ContactModel::addPersonContacts(const model::PersonCon
     if (!accepted.empty())
     {
         mContactDBAccess->insertPersonContacts(accepted);
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onPersonContactsAdded(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onPersonContactsAdded, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -372,10 +369,7 @@ model::PersonContactArray ContactModel::updatePersonContacts(const model::Person
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onPersonContactsUpdated(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onPersonContactsUpdated, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -391,10 +385,7 @@ std::vector<std::string> ContactModel::removePersonContacts(const std::vector<st
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onPersonContactsRemoved(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onPersonContactsRemoved, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -407,10 +398,7 @@ model::GroupContactArray ContactModel::addGroupContacts(const model::GroupContac
     if (!accepted.empty())
     {
         mContactDBAccess->insertGroupContacts(accepted);
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onGroupContactsAdded(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onGroupContactsAdded, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -426,10 +414,7 @@ model::GroupContactArray ContactModel::updateGroupContacts(const model::GroupCon
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onGroupContactsUpdated(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onGroupContactsUpdated, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -445,10 +430,7 @@ std::vector<std::string> ContactModel::removeGroupContacts(const std::vector<std
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onGroupContactsRemoved(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onGroupContactsRemoved, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -461,10 +443,7 @@ model::ContactRelationArray ContactModel::addContactRelations(const model::Conta
     if (!accepted.empty())
     {
         mContactDBAccess->insertContactRelations(accepted);
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onContactRelationsAdded(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onContactRelationsAdded, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -480,10 +459,7 @@ model::ContactRelationArray ContactModel::updateContactRelations(const model::Co
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onContactRelationsUpdated(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onContactRelationsUpdated, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
@@ -499,21 +475,12 @@ std::vector<std::string> ContactModel::removeContactRelations(const std::vector<
     }
     if (!accepted.empty())
     {
-        if (auto sink = mNotificationSink.lock())
-        {
-            sink->onContactRelationsRemoved(accepted, ContactNotificationSource::Local);
-        }
+        notifySink(&IContactNotificationSink::onContactRelationsRemoved, accepted, ContactNotificationSource::Local);
     }
     return accepted;
 }
 
 // ===== Lifecycle =====
-
-void ContactModel::setNotificationSink(std::weak_ptr<IContactNotificationSink> sink)
-{
-    SERVICE_LOG_DEBUG("setNotificationSink");
-    mNotificationSink = std::move(sink);
-}
 
 void ContactModel::bindDatabase(const std::string& databaseId)
 {
@@ -623,10 +590,7 @@ void ContactModel::finishLoadSuccess()
         return;
     }
     SERVICE_LOG_DEBUG("loadContactDirectory finished, success:true");
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onDirectoryLoaded();
-    }
+    notifySink(&IContactNotificationSink::onDirectoryLoaded);
 }
 
 void ContactModel::finishLoadFailure(ContactDirectoryLoadError error)
@@ -637,10 +601,7 @@ void ContactModel::finishLoadFailure(ContactDirectoryLoadError error)
         return;
     }
     SERVICE_LOG_ERROR("loadContactDirectory finished, success:false, error:" << static_cast<int>(error));
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onDirectoryLoadFailed(error);
-    }
+    notifySink(&IContactNotificationSink::onDirectoryLoadFailed, error);
 }
 
 } // namespace ucf::service

@@ -1,6 +1,5 @@
 #include "PerformanceManager.h"
 #include "PerformanceServiceLogger.h"
-#include "PerformanceNotificationSink.h"
 #include "TimingTracker.h"
 #include "IMemoryMonitor.h"
 #include "ICPUMonitor.h"
@@ -33,12 +32,6 @@ void PerformanceManager::initialize()
 {
     startMonitoring();
     PERFORMANCE_LOG_INFO("PerformanceManager initialized");
-}
-
-void PerformanceManager::setNotificationSink(std::weak_ptr<IPerformanceNotificationSink> sink)
-{
-    mNotificationSink = std::move(sink);
-    PERFORMANCE_LOG_DEBUG("PerformanceManager notification sink set");
 }
 
 // ==========================================
@@ -159,10 +152,7 @@ void PerformanceManager::monitorLoop()
                 if (cpuThreshold > 0.0 && usage > cpuThreshold)
                 {
                     PERFORMANCE_LOG_WARN("CPU warning: usage " << usage << "% exceeded threshold " << cpuThreshold << "%");
-                    if (auto sink = mNotificationSink.lock())
-                    {
-                        sink->onCpuWarning(usage);
-                    }
+                    notifySink(&IPerformanceNotificationSink::onCpuWarning, usage);
                 }
             }
 
@@ -189,10 +179,7 @@ void PerformanceManager::monitorLoop()
             {
                 PERFORMANCE_LOG_WARN("Memory warning: physical " << info.physicalBytes / 1024 / 1024
                     << " MB exceeded threshold " << memThreshold / 1024 / 1024 << " MB");
-                if (auto sink = mNotificationSink.lock())
-                {
-                    sink->onMemoryWarning(info);
-                }
+                notifySink(&IPerformanceNotificationSink::onMemoryWarning, info);
             }
         }
 

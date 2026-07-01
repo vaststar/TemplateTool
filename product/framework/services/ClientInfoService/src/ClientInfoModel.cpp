@@ -41,10 +41,7 @@ void ClientInfoModel::setLanguage(model::LanguageType languageType)
         return;
     }
     mDBAccess->saveLanguage(languageType);
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onClientLanguageChanged(languageType);
-    }
+    notifySink(&IClientInfoNotificationSink::onClientLanguageChanged, languageType);
 }
 
 void ClientInfoModel::setTheme(model::ThemeType themeType)
@@ -54,10 +51,7 @@ void ClientInfoModel::setTheme(model::ThemeType themeType)
         return;
     }
     mDBAccess->saveTheme(themeType);
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onClientThemeChanged(themeType);
-    }
+    notifySink(&IClientInfoNotificationSink::onClientThemeChanged, themeType);
 }
 
 void ClientInfoModel::bindDatabase(const std::string& dbId)
@@ -75,11 +69,6 @@ void ClientInfoModel::bindDatabase(const std::string& dbId)
         SERVICE_LOG_DEBUG("bindDatabase auto-promoting pending loadSettings");
         loadSettings();
     }
-}
-
-void ClientInfoModel::setNotificationSink(std::weak_ptr<IClientInfoNotificationSink> sink)
-{
-    mNotificationSink = std::move(sink);
 }
 
 void ClientInfoModel::loadSettings()
@@ -158,10 +147,7 @@ void ClientInfoModel::finishLoadSuccess()
     }
     SERVICE_LOG_DEBUG("ClientInfo ready, language:" << static_cast<int>(mLanguage.load())
                       << ", theme:" << static_cast<int>(mTheme.load()));
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onClientInfoReady();
-    }
+    notifySink(&IClientInfoNotificationSink::onClientInfoReady);
 }
 
 void ClientInfoModel::finishLoadFailure(ClientInfoLoadError error)
@@ -172,10 +158,7 @@ void ClientInfoModel::finishLoadFailure(ClientInfoLoadError error)
         return;
     }
     SERVICE_LOG_ERROR("ClientInfo load failed, error:" << static_cast<int>(error));
-    if (auto sink = mNotificationSink.lock())
-    {
-        sink->onClientInfoLoadFailed(error);
-    }
+    notifySink(&IClientInfoNotificationSink::onClientInfoLoadFailed, error);
 }
 
 } // namespace ucf::service

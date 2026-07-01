@@ -147,7 +147,7 @@ bool ContactManager::isContactDirectoryReady() const
 void ContactManager::setNotificationSink(std::weak_ptr<IContactNotificationSink> sink)
 {
     SERVICE_LOG_DEBUG("setNotificationSink");
-    mNotificationSink = sink;
+    SinkNotifier::setNotificationSink(sink);
     mContactModel->setNotificationSink(std::move(sink));
 }
 

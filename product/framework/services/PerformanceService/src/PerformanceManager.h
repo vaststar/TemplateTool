@@ -1,12 +1,16 @@
 #pragma once
 
-#include <ucf/Services/PerformanceService/PerformanceInfo.h>
-
 #include <memory>
 #include <atomic>
 #include <thread>
 #include <chrono>
 #include <filesystem>
+
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+
+#include <ucf/Services/PerformanceService/PerformanceInfo.h>
+
+#include "PerformanceNotificationSink.h"
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -18,9 +22,8 @@ namespace ucf::service {
 class IMemoryMonitor;
 class ICPUMonitor;
 class TimingTracker;
-class IPerformanceNotificationSink;
 
-class PerformanceManager final
+class PerformanceManager final : public ucf::utilities::SinkNotifier<IPerformanceNotificationSink>
 {
 public:
     explicit PerformanceManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -33,9 +36,6 @@ public:
 
 public:
     void initialize();
-
-    /// Inject the sink that receives threshold-exceeded notifications.
-    void setNotificationSink(std::weak_ptr<IPerformanceNotificationSink> sink);
 
 public:
     // Memory Monitoring
@@ -70,8 +70,6 @@ private:
     std::unique_ptr<IMemoryMonitor> mMemoryMonitor;
     std::unique_ptr<ICPUMonitor> mCPUMonitor;
     std::unique_ptr<TimingTracker> mTimingTracker;
-
-    std::weak_ptr<IPerformanceNotificationSink> mNotificationSink;
 
     std::atomic<uint64_t> mMemoryWarningThreshold{0};  // 0 = disabled
     std::atomic<double> mCpuWarningThreshold{0.0};      // 0 or negative = disabled

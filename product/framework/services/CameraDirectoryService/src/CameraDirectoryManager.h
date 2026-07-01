@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+
 #include "CameraDirectoryEntities.h"
 #include "CameraDirectoryNotificationSink.h"
 
@@ -19,7 +21,7 @@ class CameraDirectoryModel;
 // Business orchestration layer: currently a thin forwarder onto CameraDirectoryModel.
 // Reserved as the place where camera discovery / device hot-plug / default directory
 // initialization will live in the future.
-class CameraDirectoryManager final
+class CameraDirectoryManager final : public ucf::utilities::SinkNotifier<ICameraDirectoryNotificationSink>
 {
 public:
     explicit CameraDirectoryManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -55,17 +57,13 @@ public:
     void loadCameraDirectory();
     bool isCameraDirectoryReady() const;
 
-    // Forwarded to the Model; Manager also keeps a weak_ptr copy so it can later emit
-    // business-level aggregated events on its own.
+    // Forwarded to the Model; the base SinkNotifier also keeps a weak_ptr copy so the
+    // Manager can later emit business-level aggregated events on its own.
     void setNotificationSink(std::weak_ptr<ICameraDirectoryNotificationSink> sink);
 
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     const std::unique_ptr<CameraDirectoryModel> mCameraDirectoryModel;
-
-    // Manager does not emit events today, but the sink reference is reserved for
-    // future business-level aggregation use.
-    std::weak_ptr<ICameraDirectoryNotificationSink> mNotificationSink;
 };
 
 } // namespace ucf::service

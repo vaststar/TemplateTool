@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+
 #include "ContactEntities.h"
 #include "ContactNotificationSink.h"
 
@@ -21,7 +23,7 @@ namespace ucf::service {
 class ContactModel;
 
 // Business orchestration layer; today a thin forwarder onto ContactModel.
-class ContactManager final
+class ContactManager final : public ucf::utilities::SinkNotifier<IContactNotificationSink>
 {
 public:
     explicit ContactManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -59,15 +61,13 @@ public:
     void loadContactDirectory();
     bool isContactDirectoryReady() const;
 
-    // Forwarded to the Model; Manager keeps a weak_ptr copy for future business-level events.
+    // Forwarded to the Model; the base SinkNotifier keeps a weak_ptr copy for future business-level events.
     void setNotificationSink(std::weak_ptr<IContactNotificationSink> sink);
 
 private:
     const ucf::framework::ICoreFrameworkWPtr      mCoreFrameworkWPtr;
     const std::unique_ptr<ContactModel>           mContactModel;
     const std::unique_ptr<ucf::adapter::ContactAdapter> mContactAdapter;
-
-    std::weak_ptr<IContactNotificationSink> mNotificationSink;
 };
 
 } // namespace ucf::service
