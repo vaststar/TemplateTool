@@ -47,6 +47,15 @@ public:
 
     // Returns a single mini app by id, or an empty MiniAppInfo when not found.
     virtual commonHead::viewModels::model::MiniAppInfo getMiniApp(const std::string& id) const = 0;
+
+    // Installs a mini app from an unpacked source directory (must contain a
+    // valid manifest.json). Returns true on success. The list-changed callback
+    // fires when the underlying service reports the install.
+    virtual bool installMiniApp(const std::string& sourceDirectory) = 0;
+
+    // Uninstalls the mini app with the given id. Returns true if it was
+    // installed and removed. The list-changed callback fires on success.
+    virtual bool uninstallMiniApp(const std::string& id) = 0;
 public:
     static std::shared_ptr<IMiniAppListViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };

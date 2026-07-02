@@ -112,6 +112,32 @@ commonHead::viewModels::model::MiniAppInfo MiniAppListViewModel::getMiniApp(cons
     return {};
 }
 
+bool MiniAppListViewModel::installMiniApp(const std::string& sourceDirectory)
+{
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("installMiniApp: service not available");
+        return false;
+    }
+    COMMONHEAD_LOG_INFO("installMiniApp from: " << sourceDirectory);
+    // The service drives onMiniAppInstalled -> onMiniAppListChanged on success.
+    return service->installFromDirectory(sourceDirectory);
+}
+
+bool MiniAppListViewModel::uninstallMiniApp(const std::string& id)
+{
+    auto service = lockService();
+    if (!service)
+    {
+        COMMONHEAD_LOG_ERROR("uninstallMiniApp: service not available");
+        return false;
+    }
+    COMMONHEAD_LOG_INFO("uninstallMiniApp, id:" << id);
+    // The service drives onMiniAppUninstalled -> onMiniAppListChanged on success.
+    return service->uninstall(id);
+}
+
 // ===== IMiniAppServiceCallback: apply service delta, then notify subscribers =====
 void MiniAppListViewModel::onMiniAppServiceReady()
 {

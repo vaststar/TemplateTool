@@ -10,6 +10,7 @@
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
+#include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include "ViewModelSingalEmitter/MiniAppListViewModelEmitter.h"
 
 namespace {
@@ -114,4 +115,71 @@ void MiniAppListPageController::launchMiniApp(const QString& id)
     }
     UIView::UIViewHelper::centerOnParentWhenShown(win);
     win->show();
+}
+
+void MiniAppListPageController::installMiniApp(const QString& folderUrl)
+{
+    if (!mViewModel)
+    {
+        return;
+    }
+
+    // FolderDialog yields a "file://" URL; convert to a local filesystem path.
+    QString localPath = folderUrl;
+    if (localPath.startsWith(QStringLiteral("file://")))
+    {
+        localPath = QUrl(localPath).toLocalFile();
+    }
+    if (localPath.isEmpty())
+    {
+        UIVIEW_LOG_WARN("installMiniApp: empty folder path");
+        return;
+    }
+
+    UIVIEW_LOG_INFO("installMiniApp from: " << localPath.toStdString());
+    if (!mViewModel->installMiniApp(localPath.toStdString()))
+    {
+        UIVIEW_LOG_WARN("installMiniApp failed for: " << localPath.toStdString());
+    }
+    // On success the view model fires onMiniAppListChanged, which refreshes the grid.
+}
+
+void MiniAppListPageController::uninstallMiniApp(const QString& id)
+{
+    if (!mViewModel || id.isEmpty())
+    {
+        return;
+    }
+
+    const auto app = mViewModel->getMiniApp(id.toStdString());
+    if (app.id.empty())
+    {
+        UIVIEW_LOG_WARN("uninstallMiniApp: unknown mini app id " << id.toStdString());
+        return;
+    }
+
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        return;
+    }
+
+    const QString appName = QString::fromStdString(app.name);
+    UIView::UIViewMessageBoxHelper::showDestructiveConfirm(
+        *ctx,
+        tr("Uninstall Mini App"),
+        tr("Uninstall \"%1\"? This removes its package and data.").arg(appName),
+        tr("Uninstall"),
+        [this, id](bool accepted) {
+            if (!accepted || !mViewModel)
+            {
+                return;
+            }
+            UIVIEW_LOG_INFO("uninstallMiniApp confirmed, id:" << id.toStdString());
+            if (!mViewModel->uninstallMiniApp(id.toStdString()))
+            {
+                UIVIEW_LOG_WARN("uninstallMiniApp failed for id: " << id.toStdString());
+            }
+            // On success the view model fires onMiniAppListChanged, which refreshes the grid.
+        });
 }

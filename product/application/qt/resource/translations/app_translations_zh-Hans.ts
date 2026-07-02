@@ -315,6 +315,57 @@
     </message>
 </context>
 <context>
+    <name>MiniAppListPage</name>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="27"/>
+        <source>Mini Apps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="35"/>
+        <source>Add Mini App</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="45"/>
+        <source>No mini apps installed. Click &quot;Add Mini App&quot; to install one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="126"/>
+        <source>Launch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="131"/>
+        <source>Uninstall</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="139"/>
+        <source>Select Mini App Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MiniAppListPageController</name>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="170"/>
+        <source>Uninstall Mini App</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="171"/>
+        <source>Uninstall &quot;%1&quot;? This removes its package and data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="172"/>
+        <source>Uninstall</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MockDetailDialog</name>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="31"/>

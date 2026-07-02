@@ -29,6 +29,8 @@ public:
     virtual std::string getViewModelName() const override;
     virtual std::vector<commonHead::viewModels::model::MiniAppInfo> getMiniApps() const override;
     virtual commonHead::viewModels::model::MiniAppInfo getMiniApp(const std::string& id) const override;
+    virtual bool installMiniApp(const std::string& sourceDirectory) override;
+    virtual bool uninstallMiniApp(const std::string& id) override;
 protected:
     void init() override;
 

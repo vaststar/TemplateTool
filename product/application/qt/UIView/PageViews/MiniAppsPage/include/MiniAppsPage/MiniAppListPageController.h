@@ -41,6 +41,13 @@ public:
 public slots:
     Q_INVOKABLE void launchMiniApp(const QString& id);
 
+    // Installs a mini app from a folder chosen in a native picker. Accepts
+    // either a "file://" URL (as returned by QML FolderDialog) or a local path.
+    Q_INVOKABLE void installMiniApp(const QString& folderUrl);
+
+    // Uninstalls the mini app with the given id.
+    Q_INVOKABLE void uninstallMiniApp(const QString& id);
+
 signals:
     void miniAppsChanged();
 
