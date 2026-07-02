@@ -16,6 +16,7 @@ MainWindowContentPageRegistry::MainWindowContentPageRegistry(QObject* parent)
     registerPage(static_cast<int>(PageId::Tasks),       QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
     registerPage(static_cast<int>(PageId::Credentials), QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
     registerPage(static_cast<int>(PageId::Toolbox),     QStringLiteral("UIView/PageViews/ToolsPage/common/qml/ToolsPage.qml"));
+    registerPage(static_cast<int>(PageId::MiniApps),    QStringLiteral("UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml"));
     registerPage(static_cast<int>(PageId::Settings),    QStringLiteral("UIView/PageViews/SettingsPage/qml/SettingsPage.qml"));
     registerPage(static_cast<int>(PageId::Help),        QStringLiteral("UIView/PageViews/PlaceholderPage/qml/PlaceholderPage.qml"));
 }

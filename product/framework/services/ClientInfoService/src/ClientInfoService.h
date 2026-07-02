@@ -62,6 +62,10 @@ public:
     virtual std::string getAppCacheStoragePath() const override;
     virtual std::string getAppTempStoragePath() const override;
 
+    virtual std::string getMiniAppPackageStoragePath() const override;
+    virtual std::string getMiniAppDataStoragePath() const override;
+    virtual std::string getMiniAppCacheStoragePath() const override;
+
     virtual std::string getExecutablePath() const override;
     virtual std::string getInstallDirectory() const override;
 

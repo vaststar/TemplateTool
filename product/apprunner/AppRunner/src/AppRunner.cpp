@@ -19,6 +19,7 @@
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
 #include <ucf/Services/UpgradeService/IUpgradeService.h>
+#include <ucf/Services/MiniAppService/IMiniAppService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -216,6 +217,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IFeatureSettingsService>(mServiceFactory->createFeatureSettingsService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::ICameraDirectoryService>(mServiceFactory->createCameraDirectoryService());
         mFrameworkDependencies.coreFramework->registerService<ucf::service::IUpgradeService>(mServiceFactory->createUpgradeService());
+        mFrameworkDependencies.coreFramework->registerService<ucf::service::IMiniAppService>(mServiceFactory->createMiniAppService());
 
         mFrameworkDependencies.coreFramework->initServices();
     }

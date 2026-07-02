@@ -13,6 +13,7 @@
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/Services/UpgradeService/IUpgradeService.h>
+#include <ucf/Services/MiniAppService/IMiniAppService.h>
 
 namespace commonHead{
 std::shared_ptr<IServiceLocator> IServiceLocator::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
@@ -129,6 +130,15 @@ std::weak_ptr<ucf::service::IUpgradeService> ServiceLocator::getUpgradeService()
     if (auto coreFramework = mCoreFrameworkWPtr.lock())
     {
         return coreFramework->getService<ucf::service::IUpgradeService>();
+    }
+    return {};
+}
+
+std::weak_ptr<ucf::service::IMiniAppService> ServiceLocator::getMiniAppService() const
+{
+    if (auto coreFramework = mCoreFrameworkWPtr.lock())
+    {
+        return coreFramework->getService<ucf::service::IMiniAppService>();
     }
     return {};
 }

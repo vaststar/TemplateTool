@@ -302,6 +302,19 @@
     </message>
 </context>
 <context>
+    <name>MiniAppHostDialog</name>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppHostDialog.qml" line="16"/>
+        <source>Mini App - </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppHostDialog.qml" line="37"/>
+        <source>Content area (WebEngine to be integrated) - </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MockDetailDialog</name>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/network/qml/MockDetailDialog.qml" line="31"/>
@@ -1232,131 +1245,136 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="26"/>
+        <source>Mini Apps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="27"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="27"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="28"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="28"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="29"/>
         <source>Check for Updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="29"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="30"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="30"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="31"/>
         <source>Text Processing</source>
         <translation>文本处理</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="31"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="32"/>
         <source>Date &amp; Time</source>
         <translation>时间日期</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="32"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="33"/>
         <source>Generators</source>
         <translation>生成器</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="33"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="34"/>
         <source>Base64 Encode/Decode</source>
         <translation>Base64 编解码</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="34"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="35"/>
         <source>JSON Formatter</source>
         <translation>JSON 格式化</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="35"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
         <source>Timestamp Converter</source>
         <translation>时间戳转换</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="36"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
         <source>UUID Generator</source>
         <translation>UUID 生成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="37"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
         <source>Network</source>
         <translation>网络</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="38"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
         <source>Network Proxy</source>
         <translation>网络代理</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="39"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
         <source>Media</source>
         <translation>媒体</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="40"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
         <source>Screen Capture</source>
         <translation>屏幕捕获</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="41"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
         <source>Screenshot</source>
         <translation>截图</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="42"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
         <source>Screen Recording</source>
         <translation>录屏</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="43"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
         <source>JSON is valid</source>
         <translation>JSON 格式有效</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="44"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
         <source>Invalid timestamp</source>
         <translation>无效的时间戳</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="45"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
         <source>DateTime format parse failed</source>
         <translation>日期时间格式解析失败</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="46"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
         <source>Invalid datetime</source>
         <translation>无效的日期时间</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="47"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
         <source>General</source>
         <translation>通用</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="48"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
         <source>Appearance</source>
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="49"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="50"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} / {{1}} 已完成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="63"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>测试参数 {{0}}，仅 1 个参数</translation>
     </message>

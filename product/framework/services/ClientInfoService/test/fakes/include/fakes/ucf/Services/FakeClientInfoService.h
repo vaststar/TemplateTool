@@ -53,6 +53,9 @@ public:
     MAKE_CONST_MOCK0(getAppHangStoragePath, std::string(), override);
     MAKE_CONST_MOCK0(getAppCacheStoragePath, std::string(), override);
     MAKE_CONST_MOCK0(getAppTempStoragePath, std::string(), override);
+    MAKE_CONST_MOCK0(getMiniAppPackageStoragePath, std::string(), override);
+    MAKE_CONST_MOCK0(getMiniAppDataStoragePath, std::string(), override);
+    MAKE_CONST_MOCK0(getMiniAppCacheStoragePath, std::string(), override);
     MAKE_CONST_MOCK0(getExecutablePath, std::string(), override);
     MAKE_CONST_MOCK0(getInstallDirectory, std::string(), override);
 

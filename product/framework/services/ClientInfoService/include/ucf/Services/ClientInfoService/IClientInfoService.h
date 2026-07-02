@@ -50,6 +50,13 @@ public:
     [[nodiscard]] virtual std::string getAppCacheStoragePath() const = 0;
     [[nodiscard]] virtual std::string getAppTempStoragePath() const = 0;
 
+    // Mini app storage roots. Per-app directories are namespaced by appId under
+    // each root. Packages and runtime data are persistent (data dir); cache is
+    // purgeable (cache dir).
+    [[nodiscard]] virtual std::string getMiniAppPackageStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getMiniAppDataStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getMiniAppCacheStoragePath() const = 0;
+
     [[nodiscard]] virtual std::string getExecutablePath() const = 0;
     [[nodiscard]] virtual std::string getInstallDirectory() const = 0;
 

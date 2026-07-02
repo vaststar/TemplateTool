@@ -22,6 +22,7 @@ namespace ucf::service{
     class IPerformanceService;
     class IFeatureSettingsService;
     class IUpgradeService;
+    class IMiniAppService;
 }
 
 namespace commonHead{
@@ -41,6 +42,7 @@ public:
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IPerformanceService> getPerformanceService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IFeatureSettingsService> getFeatureSettingsService() const = 0;
     [[nodiscard]] virtual std::weak_ptr<ucf::service::IUpgradeService> getUpgradeService() const = 0;
+    [[nodiscard]] virtual std::weak_ptr<ucf::service::IMiniAppService> getMiniAppService() const = 0;
 public:
     static std::shared_ptr<IServiceLocator> createInstance(ucf::framework::ICoreFrameworkWPtr coreframework);
 };

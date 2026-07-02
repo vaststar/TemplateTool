@@ -75,6 +75,18 @@
         "animated": false
       },
       {
+        "token": "nav_mini_apps",
+        "path": "assets/images/nav_icons/nav_mini_apps.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
+        "token": "nav_mini_apps_selected",
+        "path": "assets/images/nav_icons/nav_mini_apps_selected.svg",
+        "format": "svg",
+        "animated": false
+      },
+      {
         "token": "nav_help",
         "path": "assets/images/nav_icons/nav_help.svg",
         "format": "svg",

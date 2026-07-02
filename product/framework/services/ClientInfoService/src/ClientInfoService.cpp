@@ -276,6 +276,21 @@ std::string ClientInfoService::getAppTempStoragePath() const
     return mDataPrivate->getClientInfoManager().getTempStoragePath();
 }
 
+std::string ClientInfoService::getMiniAppPackageStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager().getMiniAppPackageStoragePath();
+}
+
+std::string ClientInfoService::getMiniAppDataStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager().getMiniAppDataStoragePath();
+}
+
+std::string ClientInfoService::getMiniAppCacheStoragePath() const
+{
+    return mDataPrivate->getClientInfoManager().getMiniAppCacheStoragePath();
+}
+
 std::string ClientInfoService::getExecutablePath() const
 {
     return mDataPrivate->getClientInfoManager().getExecutablePath();

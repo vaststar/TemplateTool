@@ -19,6 +19,7 @@ public:
     virtual std::weak_ptr<ucf::service::IPerformanceService> getPerformanceService() const override;
     virtual std::weak_ptr<ucf::service::IFeatureSettingsService> getFeatureSettingsService() const override;
     virtual std::weak_ptr<ucf::service::IUpgradeService> getUpgradeService() const override;
+    virtual std::weak_ptr<ucf::service::IMiniAppService> getMiniAppService() const override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

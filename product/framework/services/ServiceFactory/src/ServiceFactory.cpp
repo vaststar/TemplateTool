@@ -13,6 +13,7 @@
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
 #include <ucf/Services/UpgradeService/IUpgradeService.h>
+#include <ucf/Services/MiniAppService/IMiniAppService.h>
 #include "ServiceFactoryLogger.h"
 
 namespace ucf::service{
@@ -90,5 +91,10 @@ std::shared_ptr<ucf::service::ICameraDirectoryService> ServiceFactory::createCam
 std::shared_ptr<ucf::service::IUpgradeService> ServiceFactory::createUpgradeService()
 {
     return ucf::service::IUpgradeService::createInstance(mCoreFrameworkWPtr.lock());
+}
+
+std::shared_ptr<ucf::service::IMiniAppService> ServiceFactory::createMiniAppService()
+{
+    return ucf::service::IMiniAppService::createInstance(mCoreFrameworkWPtr.lock());
 }
 }

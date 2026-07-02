@@ -30,6 +30,7 @@ public:
     MAKE_MOCK0(createFeatureSettingsService, std::shared_ptr<IFeatureSettingsService>(), override);
     MAKE_MOCK0(createCameraDirectoryService, std::shared_ptr<ICameraDirectoryService>(), override);
     MAKE_MOCK0(createUpgradeService, std::shared_ptr<IUpgradeService>(), override);
+    MAKE_MOCK0(createMiniAppService, std::shared_ptr<IMiniAppService>(), override);
 };
 
 } // namespace ucf::service::fakes

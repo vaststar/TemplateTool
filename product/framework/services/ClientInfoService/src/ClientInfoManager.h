@@ -80,6 +80,18 @@ public:
     std::string getExecutablePath() const;
     std::string getInstallDirectory() const;
 
+    // ===== Mini app path helpers =====
+    // Installed mini app packages (code/assets). Re-downloadable but treated as
+    // persistent installed state, so it lives under the data dir. Per-app dirs
+    // are namespaced by appId under this root.
+    std::string getMiniAppPackageStoragePath() const;
+    // Per-mini-app persistent runtime data (KV/localStorage, user files). Not
+    // re-generatable, so it lives under the data dir, namespaced by appId.
+    std::string getMiniAppDataStoragePath() const;
+    // Purely derived mini app cache (WebEngine http cache, temp downloads).
+    // Safe to purge, so it lives under the cache dir, namespaced by appId.
+    std::string getMiniAppCacheStoragePath() const;
+
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     const std::unique_ptr<ClientInfoModel>   mClientInfoModel;

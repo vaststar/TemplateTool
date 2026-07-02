@@ -35,6 +35,7 @@
     { "token": "NavTasks", "value": "Tasks", "conditions": [] },
     { "token": "NavCredentials", "value": "Credentials", "conditions": [] },
     { "token": "NavToolbox", "value": "Toolbox", "conditions": [] },
+    { "token": "NavMiniApps", "value": "Mini Apps", "conditions": [] },
     { "token": "NavSettings", "value": "Settings", "conditions": [] },
     { "token": "NavHelp", "value": "Help", "conditions": [] },
     { "token": "MenuCheckUpgrade", "value": "Check for Updates", "conditions": [] },

@@ -115,6 +115,17 @@ void SideBarViewModel::initDefaultNavItems()
             model::NavItemPosition::Top,
             4
         },
+        {
+            model::PageId::MiniApps,
+            "miniApps",
+            resourceLoader->getLocalizedString(commonHead::model::LocalizedString::NavMiniApps),
+            commonHead::model::AssetImageToken::Nav_Mini_Apps,
+            commonHead::model::AssetImageToken::Nav_Mini_Apps_Selected,
+            0,
+            model::NavItemState::Normal,
+            model::NavItemPosition::Top,
+            5
+        },
 
         // ========== Bottom navigation items ==========
         {

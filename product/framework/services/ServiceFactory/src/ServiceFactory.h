@@ -31,6 +31,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IFeatureSettingsService> createFeatureSettingsService() override;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::ICameraDirectoryService> createCameraDirectoryService() override;
     [[nodiscard]] virtual std::shared_ptr<ucf::service::IUpgradeService> createUpgradeService() override;
+    [[nodiscard]] virtual std::shared_ptr<ucf::service::IMiniAppService> createMiniAppService() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

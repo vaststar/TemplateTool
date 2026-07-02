@@ -33,6 +33,9 @@ static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
 static constexpr const char* APP_CRASH_FOLDER_NAME = "app_crash";
 static constexpr const char* APP_HANG_FOLDER_NAME = "app_hang";
 static constexpr const char* APP_CACHE_FOLDER_NAME = "app_cache";
+static constexpr const char* MINI_APP_ROOT_FOLDER_NAME = "mini_app";
+static constexpr const char* MINI_APP_PACKAGES_FOLDER_NAME = "packages";
+static constexpr const char* MINI_APP_STORAGE_FOLDER_NAME = "storage";
 
 ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
@@ -310,6 +313,32 @@ std::string ClientInfoManager::getInstallDirectory() const
     // Install directory is parent of bin/
     return execPath.parent_path().parent_path().string();
 #endif
+}
+
+std::string ClientInfoManager::getMiniAppPackageStoragePath() const
+{
+    return ucf::utilities::FilePathUtils::joinPaths(
+        std::filesystem::path(getDataStoragePath()),
+        MINI_APP_ROOT_FOLDER_NAME,
+        MINI_APP_PACKAGES_FOLDER_NAME
+    ).string();
+}
+
+std::string ClientInfoManager::getMiniAppDataStoragePath() const
+{
+    return ucf::utilities::FilePathUtils::joinPaths(
+        std::filesystem::path(getDataStoragePath()),
+        MINI_APP_ROOT_FOLDER_NAME,
+        MINI_APP_STORAGE_FOLDER_NAME
+    ).string();
+}
+
+std::string ClientInfoManager::getMiniAppCacheStoragePath() const
+{
+    return ucf::utilities::FilePathUtils::joinPaths(
+        std::filesystem::path(getCacheStoragePath()),
+        MINI_APP_ROOT_FOLDER_NAME
+    ).string();
 }
 
 }

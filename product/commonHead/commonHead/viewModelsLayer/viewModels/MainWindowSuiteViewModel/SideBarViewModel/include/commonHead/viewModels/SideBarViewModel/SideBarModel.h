@@ -20,6 +20,7 @@ enum class COMMONHEAD_EXPORT PageId : uint8_t
     Tasks,          // Work plans
     Credentials,    // My credentials
     Toolbox,        // Toolbox
+    MiniApps,       // Mini apps
     Settings,       // Settings
     Help,           // Help
 };
