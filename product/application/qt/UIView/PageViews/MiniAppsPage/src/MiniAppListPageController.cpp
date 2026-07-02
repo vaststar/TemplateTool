@@ -1,6 +1,7 @@
 #include "MiniAppsPage/MiniAppListPageController.h"
 
 #include <QVariantMap>
+#include <QUrl>
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
@@ -9,6 +10,7 @@
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
+#include "ViewModelSingalEmitter/MiniAppListViewModelEmitter.h"
 
 namespace {
 // QML resource path for the mini app host dialog.
@@ -17,6 +19,7 @@ const QString kMiniAppHostDialogQml = QStringLiteral("UIView/PageViews/MiniAppsP
 
 MiniAppListPageController::MiniAppListPageController(QObject* parent)
     : UIViewController(parent)
+    , mEmitter(std::make_shared<UIVMSignalEmitter::MiniAppListViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create MiniAppListPageController");
 }
@@ -41,6 +44,14 @@ void MiniAppListPageController::init()
         UIVIEW_LOG_WARN("MiniAppListPageController::init failed to create view model");
         return;
     }
+
+    using Emitter = UIVMSignalEmitter::MiniAppListViewModelEmitter;
+    QObject::connect(mEmitter.get(), &Emitter::signals_onMiniAppListChanged,
+                     this, &MiniAppListPageController::reloadMiniApps);
+
+    // Register before initViewModel so we do not miss the ready/list-changed
+    // event that the view model may fire during initialization.
+    mViewModel->registerCallback(mEmitter);
     mViewModel->initViewModel();
 
     reloadMiniApps();
@@ -55,6 +66,12 @@ void MiniAppListPageController::reloadMiniApps()
         entry.insert(QStringLiteral("id"),          QString::fromStdString(app.id));
         entry.insert(QStringLiteral("name"),        QString::fromStdString(app.name));
         entry.insert(QStringLiteral("description"), QString::fromStdString(app.description));
+        // iconPath is an absolute filesystem path (or empty). Convert to a
+        // file URL for QML's Image.source; empty stays empty so QML falls back
+        // to the letter placeholder.
+        const QString iconPath = QString::fromStdString(app.iconPath);
+        entry.insert(QStringLiteral("iconUrl"),
+                     iconPath.isEmpty() ? QString() : QUrl::fromLocalFile(iconPath).toString());
         mMiniApps.append(entry);
     }
     emit miniAppsChanged();

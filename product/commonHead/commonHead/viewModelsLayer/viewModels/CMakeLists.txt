@@ -28,6 +28,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceLocator
     ContactService
+    MiniAppService
     CameraDirectoryService
     MediaService
     ImageService

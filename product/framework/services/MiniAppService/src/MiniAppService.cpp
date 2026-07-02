@@ -116,41 +116,70 @@ void MiniAppService::onCoreFrameworkExit()
     SERVICE_LOG_DEBUG("MiniAppService exiting");
 }
 
+bool MiniAppService::isReady() const
+{
+    const bool ready = mDataPrivate->getMiniAppManager().isReady();
+    SERVICE_LOG_DEBUG("isReady: " << (ready ? "true" : "false"));
+    return ready;
+}
+
 std::vector<model::MiniAppManifest> MiniAppService::listInstalledApps() const
 {
-    return mDataPrivate->getMiniAppManager().listInstalledApps();
+    auto apps = mDataPrivate->getMiniAppManager().listInstalledApps();
+    SERVICE_LOG_DEBUG("listInstalledApps: " << apps.size() << " mini-app(s)");
+    return apps;
 }
 
 std::optional<model::MiniAppManifest> MiniAppService::getApp(const std::string& id) const
 {
-    return mDataPrivate->getMiniAppManager().getApp(id);
+    auto app = mDataPrivate->getMiniAppManager().getApp(id);
+    if (app)
+    {
+        SERVICE_LOG_DEBUG("getApp: found '" << app->name << "' (id:" << id << ")");
+    }
+    else
+    {
+        SERVICE_LOG_DEBUG("getApp: not found, id:" << id);
+    }
+    return app;
 }
 
 bool MiniAppService::installFromDirectory(const std::string& sourceDirectory)
 {
+    SERVICE_LOG_INFO("installFromDirectory: " << sourceDirectory);
     // The Manager updates state and fires onMiniAppInstalled via the sink.
     return mDataPrivate->getMiniAppManager().installFromDirectory(sourceDirectory).has_value();
 }
 
 bool MiniAppService::uninstall(const std::string& id)
 {
+    SERVICE_LOG_INFO("uninstall, id:" << id);
     // The Manager updates state and fires onMiniAppUninstalled via the sink.
     return mDataPrivate->getMiniAppManager().uninstall(id);
 }
 
 std::string MiniAppService::getAppPackageDir(const std::string& id) const
 {
+    SERVICE_LOG_DEBUG("getAppPackageDir, id:" << id);
     return mDataPrivate->getMiniAppManager().getAppPackageDir(id);
 }
 
 std::string MiniAppService::getAppStorageDir(const std::string& id) const
 {
+    SERVICE_LOG_DEBUG("getAppStorageDir, id:" << id);
     return mDataPrivate->getMiniAppManager().getAppStorageDir(id);
 }
 
 std::string MiniAppService::getAppCacheDir(const std::string& id) const
 {
+    SERVICE_LOG_DEBUG("getAppCacheDir, id:" << id);
     return mDataPrivate->getMiniAppManager().getAppCacheDir(id);
+}
+
+std::string MiniAppService::getAppIconPath(const std::string& id) const
+{
+    SERVICE_LOG_DEBUG("getAppIconPath, id:" << id);
+    return mDataPrivate->getMiniAppManager().getAppIconPath(id);
 }
 
 // ===== IMiniAppNotificationSink — translate internal events to outward callbacks =====
@@ -162,13 +191,13 @@ void MiniAppService::onMiniAppServiceReady()
 
 void MiniAppService::onMiniAppInstalled(const model::MiniAppManifest& app)
 {
-    SERVICE_LOG_DEBUG("fire onMiniAppInstalled, id:" << app.id);
+    SERVICE_LOG_INFO("fire onMiniAppInstalled, name:'" << app.name << "' (id:" << app.id << ")");
     fireNotification(&IMiniAppServiceCallback::onMiniAppInstalled, app);
 }
 
 void MiniAppService::onMiniAppUninstalled(const std::string& id)
 {
-    SERVICE_LOG_DEBUG("fire onMiniAppUninstalled, id:" << id);
+    SERVICE_LOG_INFO("fire onMiniAppUninstalled, id:" << id);
     fireNotification(&IMiniAppServiceCallback::onMiniAppUninstalled, id);
 }
 

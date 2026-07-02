@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -37,6 +38,9 @@ public:
     /// snapshot, then notify the sink that the service is ready.
     void rescan();
 
+    /// True once the first rescan() has completed.
+    [[nodiscard]] bool isReady() const;
+
     [[nodiscard]] std::vector<model::MiniAppManifest> listInstalledApps() const;
     [[nodiscard]] std::optional<model::MiniAppManifest> getApp(const std::string& id) const;
 
@@ -53,8 +57,12 @@ public:
     [[nodiscard]] std::string getAppStorageDir(const std::string& id) const;
     [[nodiscard]] std::string getAppCacheDir(const std::string& id) const;
 
+    /// Resolve the app's icon file to an absolute path from the manifest's
+    /// package-relative icon field. Returns "" if there is no icon, the icon
+    /// field is unsafe (absolute or contains ".."), or the file is missing.
+    [[nodiscard]] std::string getAppIconPath(const std::string& id) const;
+
 private:
-    /// Resolve the packages root (data/mini_app/packages) via IClientInfoService.
     [[nodiscard]] std::string packagesRoot() const;
     [[nodiscard]] std::string storageRoot() const;
     [[nodiscard]] std::string cacheRoot() const;
@@ -68,6 +76,7 @@ private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
     mutable std::mutex mMutex;
     std::vector<model::MiniAppManifest> mInstalledApps;
+    std::atomic<bool> mReady{false};
 };
 
 } // namespace ucf::service

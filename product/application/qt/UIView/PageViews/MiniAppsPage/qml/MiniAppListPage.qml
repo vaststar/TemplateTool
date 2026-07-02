@@ -30,10 +30,22 @@ Item {
                     height: 72
                     radius: 16
                     anchors.horizontalCenter: parent.horizontalCenter
+                    clip: true
                     color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal)
+
+                    Image {
+                        id: appIcon
+                        anchors.fill: parent
+                        source: appCell.modelData.iconUrl !== undefined ? appCell.modelData.iconUrl : ""
+                        fillMode: Image.PreserveAspectCrop
+                        visible: source !== "" && status === Image.Ready
+                        asynchronous: true
+                        cache: true
+                    }
 
                     UTText {
                         anchors.centerIn: parent
+                        visible: !appIcon.visible
                         text: appCell.modelData.name.length > 0 ? appCell.modelData.name.charAt(0) : "?"
                         fontEnum: UIFontToken.Subtitle_Text
                         colorEnum: UIColorToken.Sidebar_Item_Text

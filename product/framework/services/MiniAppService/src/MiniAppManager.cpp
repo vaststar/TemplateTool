@@ -30,6 +30,28 @@ std::string readFileUtf8(const fs::path& file)
     ss << in.rdbuf();
     return ss.str();
 }
+
+// Reject icon paths that are empty, absolute, or escape the package directory.
+bool isSafeRelativeIcon(const std::string& icon)
+{
+    if (icon.empty())
+    {
+        return false;
+    }
+    const fs::path rel = ucf::utilities::FilePathUtils::pathFromUtf8(icon);
+    if (rel.is_absolute())
+    {
+        return false;
+    }
+    for (const auto& part : rel)
+    {
+        if (part == "..")
+        {
+            return false;
+        }
+    }
+    return true;
+}
 } // namespace
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +169,8 @@ std::optional<model::MiniAppManifest> MiniAppManager::loadManifest(
         return std::nullopt;
     }
 
+    SERVICE_LOG_INFO("Loaded mini-app '" << manifest.name << "' (id:" << manifest.id
+                                         << ", version:" << manifest.version << ")");
     return manifest;
 }
 
@@ -185,11 +209,22 @@ void MiniAppManager::rescan()
     {
         std::lock_guard lock(mMutex);
         mInstalledApps = std::move(scanned);
-        SERVICE_LOG_INFO("rescan: " << mInstalledApps.size() << " installed mini-app(s)");
+        std::ostringstream names;
+        for (const auto& app : mInstalledApps)
+        {
+            names << (names.tellp() > 0 ? ", " : "") << app.name << "(" << app.id << ")";
+        }
+        SERVICE_LOG_INFO("rescan: " << mInstalledApps.size() << " installed mini-app(s): ["
+                                    << names.str() << "]");
     }
 
-    // Initial snapshot is built; let the service translate this to a ready event.
+    mReady.store(true);
     notifySink(&IMiniAppNotificationSink::onMiniAppServiceReady);
+}
+
+bool MiniAppManager::isReady() const
+{
+    return mReady.load();
 }
 
 std::vector<model::MiniAppManifest> MiniAppManager::listInstalledApps() const
@@ -213,6 +248,7 @@ std::optional<model::MiniAppManifest> MiniAppManager::getApp(const std::string& 
 
 std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const std::string& sourceDirectory)
 {
+    SERVICE_LOG_INFO("install: source directory: " << sourceDirectory);
     if (sourceDirectory.empty())
     {
         SERVICE_LOG_ERROR("install failed: empty source directory");
@@ -227,7 +263,6 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
         return std::nullopt;
     }
 
-    // Read the source manifest to determine the target id (dir name == id).
     const std::string srcId = ucf::utilities::FilePathUtils::utf8FromPath(srcPath.filename());
     const auto manifest = loadManifest(sourceDirectory, srcId);
     if (!manifest)
@@ -252,25 +287,27 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
         ucf::utilities::FilePathUtils::joinPaths(ucf::utilities::FilePathUtils::pathFromUtf8(root), manifest->id);
     if (fs::exists(destPath, ec))
     {
-        SERVICE_LOG_ERROR("install failed: app already installed: " << manifest->id);
+        SERVICE_LOG_ERROR("install failed: app already installed: '" << manifest->name
+                                                                     << "' (id:" << manifest->id << ")");
         return std::nullopt;
     }
 
     fs::copy(srcPath, destPath, fs::copy_options::recursive, ec);
     if (ec)
     {
-        SERVICE_LOG_ERROR("install failed: copy error for '" << manifest->id << "': " << ec.message());
+        SERVICE_LOG_ERROR("install failed: copy error for '" << manifest->name << "' (id:" << manifest->id
+                                                             << "): " << ec.message());
         fs::remove_all(destPath, ec);
         return std::nullopt;
     }
 
-    // Update the in-memory snapshot incrementally instead of rescanning.
     {
         std::lock_guard lock(mMutex);
         mInstalledApps.push_back(*manifest);
     }
 
-    SERVICE_LOG_INFO("installed mini-app '" << manifest->id << "'");
+    SERVICE_LOG_INFO("installed mini-app '" << manifest->name << "' (id:" << manifest->id
+                                            << ", version:" << manifest->version << ")");
     notifySink(&IMiniAppNotificationSink::onMiniAppInstalled, *manifest);
     return manifest;
 }
@@ -282,11 +319,14 @@ bool MiniAppManager::uninstall(const std::string& id)
         SERVICE_LOG_ERROR("uninstall failed: empty id");
         return false;
     }
-    if (!getApp(id))
+    const auto app = getApp(id);
+    if (!app)
     {
         SERVICE_LOG_WARN("uninstall: app not installed: " << id);
         return false;
     }
+    const std::string appName = app->name;
+    SERVICE_LOG_INFO("uninstall: '" << appName << "' (id:" << id << ")");
 
     std::error_code ec;
     for (const std::string& dir : {getAppPackageDir(id), getAppStorageDir(id), getAppCacheDir(id)})
@@ -306,14 +346,12 @@ bool MiniAppManager::uninstall(const std::string& id)
         }
     }
 
-    // Drop from the in-memory snapshot regardless of individual dir removal
-    // results: the app is considered uninstalled once its package is gone.
     {
         std::lock_guard lock(mMutex);
         std::erase_if(mInstalledApps, [&id](const model::MiniAppManifest& app) { return app.id == id; });
     }
 
-    SERVICE_LOG_INFO("uninstalled mini-app '" << id << "'");
+    SERVICE_LOG_INFO("uninstalled mini-app '" << appName << "' (id:" << id << ")");
     notifySink(&IMiniAppNotificationSink::onMiniAppUninstalled, id);
     return true;
 }
@@ -346,7 +384,10 @@ std::string MiniAppManager::getAppStorageDir(const std::string& id) const
     }
     const fs::path path =
         ucf::utilities::FilePathUtils::joinPaths(ucf::utilities::FilePathUtils::pathFromUtf8(root), id);
-    ucf::utilities::FilePathUtils::EnsureDirectoryExists(path);
+    // create_directories (not EnsureDirectoryExists): a dotted id would be
+    // mistaken for a filename with an extension.
+    std::error_code ec;
+    fs::create_directories(path, ec);
     return ucf::utilities::FilePathUtils::utf8FromPath(path);
 }
 
@@ -363,8 +404,38 @@ std::string MiniAppManager::getAppCacheDir(const std::string& id) const
     }
     const fs::path path =
         ucf::utilities::FilePathUtils::joinPaths(ucf::utilities::FilePathUtils::pathFromUtf8(root), id);
-    ucf::utilities::FilePathUtils::EnsureDirectoryExists(path);
+    // create_directories (not EnsureDirectoryExists): a dotted id would be
+    // mistaken for a filename with an extension.
+    std::error_code ec;
+    fs::create_directories(path, ec);
     return ucf::utilities::FilePathUtils::utf8FromPath(path);
+}
+
+std::string MiniAppManager::getAppIconPath(const std::string& id) const
+{
+    const auto app = getApp(id);
+    if (!app || !isSafeRelativeIcon(app->icon))
+    {
+        return {};
+    }
+
+    const std::string packageDir = getAppPackageDir(id);
+    if (packageDir.empty())
+    {
+        return {};
+    }
+
+    const fs::path iconPath = ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::FilePathUtils::pathFromUtf8(packageDir), app->icon);
+
+    std::error_code ec;
+    if (!fs::exists(iconPath, ec) || !fs::is_regular_file(iconPath, ec) || ec)
+    {
+        SERVICE_LOG_WARN("getAppIconPath: icon file missing for '" << app->name << "' (id:" << id
+                                                                   << "): " << app->icon);
+        return {};
+    }
+    return ucf::utilities::FilePathUtils::utf8FromPath(iconPath);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

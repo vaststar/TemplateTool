@@ -18,6 +18,7 @@ struct COMMONHEAD_EXPORT MiniAppInfo
     std::string name;           // Display name shown in the list
     std::string description;    // Short description
     std::string entry;          // Entry point (e.g. relative index.html); unused in shell
+    std::string iconPath;       // Absolute path to the icon file; empty => use placeholder
 };
 
 }

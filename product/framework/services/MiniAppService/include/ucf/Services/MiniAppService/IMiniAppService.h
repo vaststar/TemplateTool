@@ -35,6 +35,11 @@ public:
     virtual ~IMiniAppService() = default;
 
 public:
+    /// Whether the initial package scan has completed. Consumers can read
+    /// listInstalledApps() directly once true; otherwise they should subscribe
+    /// and wait for IMiniAppServiceCallback::onMiniAppServiceReady().
+    [[nodiscard]] virtual bool isReady() const = 0;
+
     /// Return the manifests of all currently installed mini-apps.
     /// Result reflects the last scan; invalid packages are skipped.
     [[nodiscard]] virtual std::vector<model::MiniAppManifest> listInstalledApps() const = 0;
@@ -62,6 +67,12 @@ public:
     /// Absolute path of the app's purgeable cache directory (<cache>/<id>).
     /// Lazily created. Empty string if id is invalid.
     [[nodiscard]] virtual std::string getAppCacheDir(const std::string& id) const = 0;
+
+    /// Absolute path of the app's icon file, resolved from the manifest's
+    /// (package-relative) icon field. Returns an empty string if the app has no
+    /// icon, the icon field is unsafe (absolute or escapes the package dir), or
+    /// the file does not exist. Callers should fall back to a placeholder.
+    [[nodiscard]] virtual std::string getAppIconPath(const std::string& id) const = 0;
 
 public:
     static std::shared_ptr<IMiniAppService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);

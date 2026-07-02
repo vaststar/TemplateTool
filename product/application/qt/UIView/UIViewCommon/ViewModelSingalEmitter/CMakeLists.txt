@@ -3,6 +3,7 @@ list(APPEND MODULE_SOURCE_PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/MediaCameraViewModelEmitter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/CameraDirectoryViewModelEmitter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/ContactListViewModelEmitter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/MiniAppListViewModelEmitter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/InvocationViewModelEmitter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/AppUIViewModelEmitter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ViewModelSingalEmitter/MainWindowViewModelEmitter.h

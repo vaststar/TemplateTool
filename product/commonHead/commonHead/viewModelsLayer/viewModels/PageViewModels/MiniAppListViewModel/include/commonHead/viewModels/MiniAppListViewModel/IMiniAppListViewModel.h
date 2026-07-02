@@ -24,6 +24,10 @@ public:
     IMiniAppListViewModelCallback& operator=(const IMiniAppListViewModelCallback&) = delete;
     IMiniAppListViewModelCallback& operator=(IMiniAppListViewModelCallback&&) = delete;
     virtual ~IMiniAppListViewModelCallback() = default;
+
+    // Fired whenever the installed mini-app list changes (initial load,
+    // install, uninstall). Subscribers should re-read getMiniApps().
+    virtual void onMiniAppListChanged() {}
 };
 
 class COMMONHEAD_EXPORT IMiniAppListViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IMiniAppListViewModelCallback>

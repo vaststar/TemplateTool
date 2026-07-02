@@ -14,6 +14,11 @@ namespace commonHead::viewModels
     class IMiniAppListViewModel;
 }
 
+namespace UIVMSignalEmitter
+{
+    class MiniAppListViewModelEmitter;
+}
+
 /**
  * @brief Controller backing the mini app list page.
  *
@@ -47,5 +52,6 @@ private:
 
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> mViewModel;
+    std::shared_ptr<UIVMSignalEmitter::MiniAppListViewModelEmitter> mEmitter;
     QVariantList mMiniApps;
 };

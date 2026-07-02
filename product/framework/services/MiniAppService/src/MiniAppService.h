@@ -39,6 +39,7 @@ public:
     virtual void onCoreFrameworkExit() override;
 
     // IMiniAppService
+    virtual bool isReady() const override;
     virtual std::vector<model::MiniAppManifest> listInstalledApps() const override;
     virtual std::optional<model::MiniAppManifest> getApp(const std::string& id) const override;
     virtual bool installFromDirectory(const std::string& sourceDirectory) override;
@@ -46,6 +47,7 @@ public:
     virtual std::string getAppPackageDir(const std::string& id) const override;
     virtual std::string getAppStorageDir(const std::string& id) const override;
     virtual std::string getAppCacheDir(const std::string& id) const override;
+    virtual std::string getAppIconPath(const std::string& id) const override;
 
 protected:
     // IService
