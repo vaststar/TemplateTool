@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <ucf/Services/MiniAppService/IMiniAppServiceCallback.h>
 #include <ucf/Services/MiniAppService/MiniAppManifest.h>
 
 namespace ucf::service {
@@ -21,8 +22,14 @@ public:
     /// A mini-app was successfully installed; carries its manifest.
     virtual void onMiniAppInstalled(const model::MiniAppManifest& app) = 0;
 
+    /// An install attempt failed; carries the reason.
+    virtual void onMiniAppInstallFailed(MiniAppInstallError error) = 0;
+
     /// A mini-app was uninstalled; carries its id.
     virtual void onMiniAppUninstalled(const std::string& id) = 0;
+
+    /// An uninstall attempt failed; carries the reason.
+    virtual void onMiniAppUninstallFailed(MiniAppUninstallError error) = 0;
 };
 
 } // namespace ucf::service

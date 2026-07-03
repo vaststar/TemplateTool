@@ -15,6 +15,7 @@ namespace commonHead{
 }
 
 namespace commonHead::viewModels{
+
 class COMMONHEAD_EXPORT IMiniAppListViewModelCallback
 {
 public:
@@ -28,6 +29,16 @@ public:
     // Fired whenever the installed mini-app list changes (initial load,
     // install, uninstall). Subscribers should re-read getMiniApps().
     virtual void onMiniAppListChanged() {}
+
+    // Fired when an install attempt fails. Both strings are already localized
+    // by the view model, so the UI can display them directly.
+    virtual void onMiniAppInstallFailed(const std::string& /*title*/,
+                                        const std::string& /*message*/) {}
+
+    // Fired when an uninstall attempt fails. Both strings are already localized
+    // by the view model, so the UI can display them directly.
+    virtual void onMiniAppUninstallFailed(const std::string& /*title*/,
+                                          const std::string& /*message*/) {}
 };
 
 class COMMONHEAD_EXPORT IMiniAppListViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IMiniAppListViewModelCallback>
@@ -49,13 +60,14 @@ public:
     virtual commonHead::viewModels::model::MiniAppInfo getMiniApp(const std::string& id) const = 0;
 
     // Installs a mini app from an unpacked source directory (must contain a
-    // valid manifest.json). Returns true on success. The list-changed callback
-    // fires when the underlying service reports the install.
-    virtual bool installMiniApp(const std::string& sourceDirectory) = 0;
+    // valid manifest.json). The outcome is delivered via the callbacks:
+    // onMiniAppListChanged on success, onMiniAppInstallFailed on failure.
+    virtual void installMiniApp(const std::string& sourceDirectory) = 0;
 
-    // Uninstalls the mini app with the given id. Returns true if it was
-    // installed and removed. The list-changed callback fires on success.
-    virtual bool uninstallMiniApp(const std::string& id) = 0;
+    // Uninstalls the mini app with the given id. The outcome is delivered via
+    // the callbacks: onMiniAppListChanged on success, onMiniAppUninstallFailed
+    // on failure.
+    virtual void uninstallMiniApp(const std::string& id) = 0;
 public:
     static std::shared_ptr<IMiniAppListViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
 };

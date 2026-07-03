@@ -48,13 +48,15 @@ public:
     [[nodiscard]] virtual std::optional<model::MiniAppManifest> getApp(const std::string& id) const = 0;
 
     /// Install a mini-app by copying a source directory (which must contain a
-    /// valid manifest.json) into <packages>/<id>/. Returns true on success.
-    /// Fails if the manifest is invalid or the id is already installed.
-    virtual bool installFromDirectory(const std::string& sourceDirectory) = 0;
+    /// valid manifest.json) into <packages>/<id>/. The outcome is reported
+    /// asynchronously via IMiniAppServiceCallback: onMiniAppInstalled on
+    /// success, or onMiniAppInstallFailed with a reason on failure.
+    virtual void installFromDirectory(const std::string& sourceDirectory) = 0;
 
     /// Remove an installed app: deletes its package, storage and cache dirs.
-    /// Returns true if the app was installed and removed.
-    virtual bool uninstall(const std::string& id) = 0;
+    /// The outcome is reported via IMiniAppServiceCallback: onMiniAppUninstalled
+    /// on success, or onMiniAppUninstallFailed with a reason on failure.
+    virtual void uninstall(const std::string& id) = 0;
 
     /// Absolute path of the app's read-only package directory
     /// (<packages>/<id>). Empty string if id is invalid.

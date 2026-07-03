@@ -246,13 +246,14 @@ std::optional<model::MiniAppManifest> MiniAppManager::getApp(const std::string& 
     return std::nullopt;
 }
 
-std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const std::string& sourceDirectory)
+void MiniAppManager::installFromDirectory(const std::string& sourceDirectory)
 {
     SERVICE_LOG_INFO("install: source directory: " << sourceDirectory);
     if (sourceDirectory.empty())
     {
         SERVICE_LOG_ERROR("install failed: empty source directory");
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::SourceNotFound);
+        return;
     }
 
     const fs::path srcPath = ucf::utilities::FilePathUtils::pathFromUtf8(sourceDirectory);
@@ -260,7 +261,8 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
     if (!fs::exists(srcPath, ec) || !fs::is_directory(srcPath, ec) || ec)
     {
         SERVICE_LOG_ERROR("install failed: source directory does not exist: " << sourceDirectory);
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::SourceNotFound);
+        return;
     }
 
     const std::string srcId = ucf::utilities::FilePathUtils::utf8FromPath(srcPath.filename());
@@ -268,19 +270,22 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
     if (!manifest)
     {
         SERVICE_LOG_ERROR("install failed: invalid manifest in source directory: " << sourceDirectory);
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::InvalidManifest);
+        return;
     }
 
     const std::string root = packagesRoot();
     if (root.empty())
     {
         SERVICE_LOG_ERROR("install failed: packages root unavailable");
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::StorageUnavailable);
+        return;
     }
     if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(ucf::utilities::FilePathUtils::pathFromUtf8(root)))
     {
         SERVICE_LOG_ERROR("install failed: cannot create packages root: " << root);
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::StorageUnavailable);
+        return;
     }
 
     const fs::path destPath =
@@ -289,7 +294,8 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
     {
         SERVICE_LOG_ERROR("install failed: app already installed: '" << manifest->name
                                                                      << "' (id:" << manifest->id << ")");
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::AlreadyInstalled);
+        return;
     }
 
     fs::copy(srcPath, destPath, fs::copy_options::recursive, ec);
@@ -298,7 +304,8 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
         SERVICE_LOG_ERROR("install failed: copy error for '" << manifest->name << "' (id:" << manifest->id
                                                              << "): " << ec.message());
         fs::remove_all(destPath, ec);
-        return std::nullopt;
+        notifySink(&IMiniAppNotificationSink::onMiniAppInstallFailed, MiniAppInstallError::CopyFailed);
+        return;
     }
 
     {
@@ -309,27 +316,50 @@ std::optional<model::MiniAppManifest> MiniAppManager::installFromDirectory(const
     SERVICE_LOG_INFO("installed mini-app '" << manifest->name << "' (id:" << manifest->id
                                             << ", version:" << manifest->version << ")");
     notifySink(&IMiniAppNotificationSink::onMiniAppInstalled, *manifest);
-    return manifest;
 }
 
-bool MiniAppManager::uninstall(const std::string& id)
+void MiniAppManager::uninstall(const std::string& id)
 {
     if (id.empty())
     {
         SERVICE_LOG_ERROR("uninstall failed: empty id");
-        return false;
+        notifySink(&IMiniAppNotificationSink::onMiniAppUninstallFailed, MiniAppUninstallError::NotInstalled);
+        return;
     }
     const auto app = getApp(id);
     if (!app)
     {
         SERVICE_LOG_WARN("uninstall: app not installed: " << id);
-        return false;
+        notifySink(&IMiniAppNotificationSink::onMiniAppUninstallFailed, MiniAppUninstallError::NotInstalled);
+        return;
     }
     const std::string appName = app->name;
     SERVICE_LOG_INFO("uninstall: '" << appName << "' (id:" << id << ")");
 
     std::error_code ec;
-    for (const std::string& dir : {getAppPackageDir(id), getAppStorageDir(id), getAppCacheDir(id)})
+
+    // The package directory is the source of truth for "installed"; if it
+    // cannot be removed the app is still installed, so treat this as failure.
+    const std::string packageDir = getAppPackageDir(id);
+    if (!packageDir.empty())
+    {
+        const fs::path path = ucf::utilities::FilePathUtils::pathFromUtf8(packageDir);
+        if (fs::exists(path, ec))
+        {
+            fs::remove_all(path, ec);
+            if (ec)
+            {
+                SERVICE_LOG_ERROR("uninstall: failed to remove package dir '" << packageDir
+                                                                              << "': " << ec.message());
+                notifySink(&IMiniAppNotificationSink::onMiniAppUninstallFailed, MiniAppUninstallError::RemoveFailed);
+                return;
+            }
+        }
+    }
+
+    // Storage and cache are best-effort: their removal failing does not keep
+    // the app installed, so only log and continue.
+    for (const std::string& dir : {getAppStorageDir(id), getAppCacheDir(id)})
     {
         if (dir.empty())
         {
@@ -341,7 +371,7 @@ bool MiniAppManager::uninstall(const std::string& id)
             fs::remove_all(path, ec);
             if (ec)
             {
-                SERVICE_LOG_ERROR("uninstall: failed to remove '" << dir << "': " << ec.message());
+                SERVICE_LOG_WARN("uninstall: failed to remove '" << dir << "': " << ec.message());
             }
         }
     }
@@ -353,7 +383,6 @@ bool MiniAppManager::uninstall(const std::string& id)
 
     SERVICE_LOG_INFO("uninstalled mini-app '" << appName << "' (id:" << id << ")");
     notifySink(&IMiniAppNotificationSink::onMiniAppUninstalled, id);
-    return true;
 }
 
 std::string MiniAppManager::getAppPackageDir(const std::string& id) const

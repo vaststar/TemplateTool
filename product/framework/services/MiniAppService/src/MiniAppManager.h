@@ -44,14 +44,15 @@ public:
     [[nodiscard]] std::vector<model::MiniAppManifest> listInstalledApps() const;
     [[nodiscard]] std::optional<model::MiniAppManifest> getApp(const std::string& id) const;
 
-    /// Install a package from a source directory. On success, adds it to the
-    /// in-memory snapshot, notifies the sink, and returns the installed
-    /// manifest; returns nullopt on failure.
-    [[nodiscard]] std::optional<model::MiniAppManifest> installFromDirectory(const std::string& sourceDirectory);
+    /// Install a package from a source directory. On success adds it to the
+    /// in-memory snapshot and fires onMiniAppInstalled; on failure fires
+    /// onMiniAppInstallFailed with the reason.
+    void installFromDirectory(const std::string& sourceDirectory);
 
-    /// Uninstall an app: removes its dirs, drops it from the in-memory
-    /// snapshot, notifies the sink. Returns true if it was installed & removed.
-    bool uninstall(const std::string& id);
+    /// Uninstall an app: removes its dirs and drops it from the in-memory
+    /// snapshot. On success fires onMiniAppUninstalled; on failure fires
+    /// onMiniAppUninstallFailed with the reason.
+    void uninstall(const std::string& id);
 
     [[nodiscard]] std::string getAppPackageDir(const std::string& id) const;
     [[nodiscard]] std::string getAppStorageDir(const std::string& id) const;

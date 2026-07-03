@@ -42,8 +42,8 @@ public:
     virtual bool isReady() const override;
     virtual std::vector<model::MiniAppManifest> listInstalledApps() const override;
     virtual std::optional<model::MiniAppManifest> getApp(const std::string& id) const override;
-    virtual bool installFromDirectory(const std::string& sourceDirectory) override;
-    virtual bool uninstall(const std::string& id) override;
+    virtual void installFromDirectory(const std::string& sourceDirectory) override;
+    virtual void uninstall(const std::string& id) override;
     virtual std::string getAppPackageDir(const std::string& id) const override;
     virtual std::string getAppStorageDir(const std::string& id) const override;
     virtual std::string getAppCacheDir(const std::string& id) const override;
@@ -59,7 +59,9 @@ private:
     // to outward IMiniAppServiceCallback notifications.
     virtual void onMiniAppServiceReady() override;
     virtual void onMiniAppInstalled(const model::MiniAppManifest& app) override;
+    virtual void onMiniAppInstallFailed(MiniAppInstallError error) override;
     virtual void onMiniAppUninstalled(const std::string& id) override;
+    virtual void onMiniAppUninstallFailed(MiniAppUninstallError error) override;
 
 private:
     class DataPrivate;

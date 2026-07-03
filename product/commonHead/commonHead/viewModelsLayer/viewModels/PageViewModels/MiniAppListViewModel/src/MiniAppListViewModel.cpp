@@ -2,10 +2,12 @@
 
 #include <algorithm>
 
+#include <ResourceString.h>
 #include <ucf/Services/MiniAppService/IMiniAppService.h>
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonHead/ResourceLoader/IResourceLoader.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 
 namespace commonHead::viewModels{
@@ -20,6 +22,34 @@ model::MiniAppInfo toMiniAppInfo(const ucf::service::model::MiniAppManifest& man
         iconPath = service->getAppIconPath(manifest.id);
     }
     return model::MiniAppInfo{ manifest.id, manifest.name, manifest.description, manifest.entry, std::move(iconPath) };
+}
+
+// Map service-layer error enums to the localized-string token that describes
+// them to the user. Keeping the mapping here means the UI never depends on
+// service headers and all user-facing text lives in ResourceString.json.
+commonHead::model::LocalizedString installErrorToken(ucf::service::MiniAppInstallError error)
+{
+    switch (error)
+    {
+        case ucf::service::MiniAppInstallError::SourceNotFound:     return commonHead::model::LocalizedString::MiniAppInstallErrorSourceNotFound;
+        case ucf::service::MiniAppInstallError::InvalidManifest:    return commonHead::model::LocalizedString::MiniAppInstallErrorInvalidManifest;
+        case ucf::service::MiniAppInstallError::AlreadyInstalled:   return commonHead::model::LocalizedString::MiniAppInstallErrorAlreadyInstalled;
+        case ucf::service::MiniAppInstallError::StorageUnavailable: return commonHead::model::LocalizedString::MiniAppInstallErrorStorageUnavailable;
+        case ucf::service::MiniAppInstallError::CopyFailed:         return commonHead::model::LocalizedString::MiniAppInstallErrorCopyFailed;
+        case ucf::service::MiniAppInstallError::Unknown:            break;
+    }
+    return commonHead::model::LocalizedString::MiniAppInstallErrorUnknown;
+}
+
+commonHead::model::LocalizedString uninstallErrorToken(ucf::service::MiniAppUninstallError error)
+{
+    switch (error)
+    {
+        case ucf::service::MiniAppUninstallError::NotInstalled: return commonHead::model::LocalizedString::MiniAppUninstallErrorNotInstalled;
+        case ucf::service::MiniAppUninstallError::RemoveFailed: return commonHead::model::LocalizedString::MiniAppUninstallErrorRemoveFailed;
+        case ucf::service::MiniAppUninstallError::Unknown:      break;
+    }
+    return commonHead::model::LocalizedString::MiniAppUninstallErrorUnknown;
 }
 } // namespace
 
@@ -112,30 +142,32 @@ commonHead::viewModels::model::MiniAppInfo MiniAppListViewModel::getMiniApp(cons
     return {};
 }
 
-bool MiniAppListViewModel::installMiniApp(const std::string& sourceDirectory)
+void MiniAppListViewModel::installMiniApp(const std::string& sourceDirectory)
 {
     auto service = lockService();
     if (!service)
     {
         COMMONHEAD_LOG_ERROR("installMiniApp: service not available");
-        return false;
+        notifyInstallFailed(ucf::service::MiniAppInstallError::StorageUnavailable);
+        return;
     }
     COMMONHEAD_LOG_INFO("installMiniApp from: " << sourceDirectory);
-    // The service drives onMiniAppInstalled -> onMiniAppListChanged on success.
-    return service->installFromDirectory(sourceDirectory);
+    // The service drives onMiniAppInstalled / onMiniAppInstallFailed via the callback.
+    service->installFromDirectory(sourceDirectory);
 }
 
-bool MiniAppListViewModel::uninstallMiniApp(const std::string& id)
+void MiniAppListViewModel::uninstallMiniApp(const std::string& id)
 {
     auto service = lockService();
     if (!service)
     {
         COMMONHEAD_LOG_ERROR("uninstallMiniApp: service not available");
-        return false;
+        notifyUninstallFailed(ucf::service::MiniAppUninstallError::Unknown);
+        return;
     }
     COMMONHEAD_LOG_INFO("uninstallMiniApp, id:" << id);
-    // The service drives onMiniAppUninstalled -> onMiniAppListChanged on success.
-    return service->uninstall(id);
+    // The service drives onMiniAppUninstalled / onMiniAppUninstallFailed via the callback.
+    service->uninstall(id);
 }
 
 // ===== IMiniAppServiceCallback: apply service delta, then notify subscribers =====
@@ -166,6 +198,12 @@ void MiniAppListViewModel::onMiniAppInstalled(const ucf::service::model::MiniApp
     fireNotification(&IMiniAppListViewModelCallback::onMiniAppListChanged);
 }
 
+void MiniAppListViewModel::onMiniAppInstallFailed(ucf::service::MiniAppInstallError error)
+{
+    COMMONHEAD_LOG_WARN("onMiniAppInstallFailed received from service, error:" << static_cast<int>(error));
+    notifyInstallFailed(error);
+}
+
 void MiniAppListViewModel::onMiniAppUninstalled(const std::string& id)
 {
     COMMONHEAD_LOG_DEBUG("onMiniAppUninstalled received from service, id:" << id);
@@ -174,5 +212,41 @@ void MiniAppListViewModel::onMiniAppUninstalled(const std::string& id)
         std::erase_if(mMiniApps, [&id](const auto& app) { return app.id == id; });
     }
     fireNotification(&IMiniAppListViewModelCallback::onMiniAppListChanged);
+}
+
+void MiniAppListViewModel::onMiniAppUninstallFailed(ucf::service::MiniAppUninstallError error)
+{
+    COMMONHEAD_LOG_WARN("onMiniAppUninstallFailed received from service, error:" << static_cast<int>(error));
+    notifyUninstallFailed(error);
+}
+
+void MiniAppListViewModel::notifyInstallFailed(ucf::service::MiniAppInstallError error)
+{
+    std::string title;
+    std::string message;
+    if (auto framework = getCommonHeadFramework().lock())
+    {
+        if (auto resourceLoader = framework->getResourceLoader())
+        {
+            title   = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::MiniAppInstallFailedTitle);
+            message = resourceLoader->getLocalizedString(installErrorToken(error));
+        }
+    }
+    fireNotification(&IMiniAppListViewModelCallback::onMiniAppInstallFailed, title, message);
+}
+
+void MiniAppListViewModel::notifyUninstallFailed(ucf::service::MiniAppUninstallError error)
+{
+    std::string title;
+    std::string message;
+    if (auto framework = getCommonHeadFramework().lock())
+    {
+        if (auto resourceLoader = framework->getResourceLoader())
+        {
+            title   = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::MiniAppUninstallFailedTitle);
+            message = resourceLoader->getLocalizedString(uninstallErrorToken(error));
+        }
+    }
+    fireNotification(&IMiniAppListViewModelCallback::onMiniAppUninstallFailed, title, message);
 }
 }

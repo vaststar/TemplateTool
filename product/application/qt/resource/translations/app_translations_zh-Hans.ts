@@ -350,17 +350,17 @@
 <context>
     <name>MiniAppListPageController</name>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="170"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="172"/>
         <source>Uninstall Mini App</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="171"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="173"/>
         <source>Uninstall &quot;%1&quot;? This removes its package and data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="172"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="174"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1420,12 +1420,67 @@ Double-click a rule to view details.</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="62"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
+        <source>Install failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="52"/>
+        <source>The selected folder no longer exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
+        <source>The folder does not contain a valid mini app. It must include a manifest.json with matching id, name and version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
+        <source>This mini app is already installed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="55"/>
+        <source>Storage is not available right now. Please try again later.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="56"/>
+        <source>Could not copy the mini app files. Check available disk space and permissions.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="57"/>
+        <source>Could not install the mini app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="58"/>
+        <source>Uninstall failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
+        <source>This mini app is no longer installed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
+        <source>Could not remove the mini app files. Check permissions and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
+        <source>Could not uninstall the mini app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="73"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} / {{1}} 已完成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="63"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="74"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>测试参数 {{0}}，仅 1 个参数</translation>
     </message>

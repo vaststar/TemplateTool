@@ -59,7 +59,18 @@
     { "token": "ToolsInvalidDateTime", "value": "Invalid datetime", "conditions": [] },
     { "token": "SettingsCategoryGeneral", "value": "General", "conditions": [] },
     { "token": "SettingsAppearance", "value": "Appearance", "conditions": [] },
-    { "token": "SettingsLanguage", "value": "Language", "conditions": [] }
+    { "token": "SettingsLanguage", "value": "Language", "conditions": [] },
+    { "token": "MiniAppInstallFailedTitle", "value": "Install failed", "conditions": [] },
+    { "token": "MiniAppInstallErrorSourceNotFound", "value": "The selected folder no longer exists.", "conditions": [] },
+    { "token": "MiniAppInstallErrorInvalidManifest", "value": "The folder does not contain a valid mini app. It must include a manifest.json with matching id, name and version.", "conditions": [] },
+    { "token": "MiniAppInstallErrorAlreadyInstalled", "value": "This mini app is already installed.", "conditions": [] },
+    { "token": "MiniAppInstallErrorStorageUnavailable", "value": "Storage is not available right now. Please try again later.", "conditions": [] },
+    { "token": "MiniAppInstallErrorCopyFailed", "value": "Could not copy the mini app files. Check available disk space and permissions.", "conditions": [] },
+    { "token": "MiniAppInstallErrorUnknown", "value": "Could not install the mini app.", "conditions": [] },
+    { "token": "MiniAppUninstallFailedTitle", "value": "Uninstall failed", "conditions": [] },
+    { "token": "MiniAppUninstallErrorNotInstalled", "value": "This mini app is no longer installed.", "conditions": [] },
+    { "token": "MiniAppUninstallErrorRemoveFailed", "value": "Could not remove the mini app files. Check permissions and try again.", "conditions": [] },
+    { "token": "MiniAppUninstallErrorUnknown", "value": "Could not uninstall the mini app.", "conditions": [] }
   ],
   "LocalizedStringWithParam": [
     {

@@ -57,6 +57,11 @@ protected:
 private:
     void reloadMiniApps();
 
+    // Show a themed error dialog for a failed install/uninstall. The title and
+    // message are already localized by the view model.
+    void onInstallFailed(const QString& title, const QString& message);
+    void onUninstallFailed(const QString& title, const QString& message);
+
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> mViewModel;
     std::shared_ptr<UIVMSignalEmitter::MiniAppListViewModelEmitter> mEmitter;

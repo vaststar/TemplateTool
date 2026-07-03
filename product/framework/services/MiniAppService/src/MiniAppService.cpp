@@ -144,18 +144,18 @@ std::optional<model::MiniAppManifest> MiniAppService::getApp(const std::string& 
     return app;
 }
 
-bool MiniAppService::installFromDirectory(const std::string& sourceDirectory)
+void MiniAppService::installFromDirectory(const std::string& sourceDirectory)
 {
     SERVICE_LOG_INFO("installFromDirectory: " << sourceDirectory);
-    // The Manager updates state and fires onMiniAppInstalled via the sink.
-    return mDataPrivate->getMiniAppManager().installFromDirectory(sourceDirectory).has_value();
+    // The Manager updates state and fires onMiniAppInstalled / onMiniAppInstallFailed via the sink.
+    mDataPrivate->getMiniAppManager().installFromDirectory(sourceDirectory);
 }
 
-bool MiniAppService::uninstall(const std::string& id)
+void MiniAppService::uninstall(const std::string& id)
 {
     SERVICE_LOG_INFO("uninstall, id:" << id);
-    // The Manager updates state and fires onMiniAppUninstalled via the sink.
-    return mDataPrivate->getMiniAppManager().uninstall(id);
+    // The Manager updates state and fires onMiniAppUninstalled / onMiniAppUninstallFailed via the sink.
+    mDataPrivate->getMiniAppManager().uninstall(id);
 }
 
 std::string MiniAppService::getAppPackageDir(const std::string& id) const
@@ -195,10 +195,22 @@ void MiniAppService::onMiniAppInstalled(const model::MiniAppManifest& app)
     fireNotification(&IMiniAppServiceCallback::onMiniAppInstalled, app);
 }
 
+void MiniAppService::onMiniAppInstallFailed(MiniAppInstallError error)
+{
+    SERVICE_LOG_INFO("fire onMiniAppInstallFailed, error:" << static_cast<int>(error));
+    fireNotification(&IMiniAppServiceCallback::onMiniAppInstallFailed, error);
+}
+
 void MiniAppService::onMiniAppUninstalled(const std::string& id)
 {
     SERVICE_LOG_INFO("fire onMiniAppUninstalled, id:" << id);
     fireNotification(&IMiniAppServiceCallback::onMiniAppUninstalled, id);
+}
+
+void MiniAppService::onMiniAppUninstallFailed(MiniAppUninstallError error)
+{
+    SERVICE_LOG_INFO("fire onMiniAppUninstallFailed, error:" << static_cast<int>(error));
+    fireNotification(&IMiniAppServiceCallback::onMiniAppUninstallFailed, error);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

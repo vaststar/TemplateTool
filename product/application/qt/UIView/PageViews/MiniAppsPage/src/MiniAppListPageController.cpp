@@ -49,6 +49,10 @@ void MiniAppListPageController::init()
     using Emitter = UIVMSignalEmitter::MiniAppListViewModelEmitter;
     QObject::connect(mEmitter.get(), &Emitter::signals_onMiniAppListChanged,
                      this, &MiniAppListPageController::reloadMiniApps);
+    QObject::connect(mEmitter.get(), &Emitter::signals_onMiniAppInstallFailed,
+                     this, &MiniAppListPageController::onInstallFailed);
+    QObject::connect(mEmitter.get(), &Emitter::signals_onMiniAppUninstallFailed,
+                     this, &MiniAppListPageController::onUninstallFailed);
 
     // Register before initViewModel so we do not miss the ready/list-changed
     // event that the view model may fire during initialization.
@@ -137,11 +141,9 @@ void MiniAppListPageController::installMiniApp(const QString& folderUrl)
     }
 
     UIVIEW_LOG_INFO("installMiniApp from: " << localPath.toStdString());
-    if (!mViewModel->installMiniApp(localPath.toStdString()))
-    {
-        UIVIEW_LOG_WARN("installMiniApp failed for: " << localPath.toStdString());
-    }
-    // On success the view model fires onMiniAppListChanged, which refreshes the grid.
+    // Fire-and-forget: the view model reports the outcome via
+    // onMiniAppListChanged (success) or onMiniAppInstallFailed (failure).
+    mViewModel->installMiniApp(localPath.toStdString());
 }
 
 void MiniAppListPageController::uninstallMiniApp(const QString& id)
@@ -176,10 +178,28 @@ void MiniAppListPageController::uninstallMiniApp(const QString& id)
                 return;
             }
             UIVIEW_LOG_INFO("uninstallMiniApp confirmed, id:" << id.toStdString());
-            if (!mViewModel->uninstallMiniApp(id.toStdString()))
-            {
-                UIVIEW_LOG_WARN("uninstallMiniApp failed for id: " << id.toStdString());
-            }
-            // On success the view model fires onMiniAppListChanged, which refreshes the grid.
+            // Fire-and-forget: the view model reports the outcome via
+            // onMiniAppListChanged (success) or onMiniAppUninstallFailed.
+            mViewModel->uninstallMiniApp(id.toStdString());
         });
+}
+
+void MiniAppListPageController::onInstallFailed(const QString& title, const QString& message)
+{
+    UIVIEW_LOG_WARN("onInstallFailed: " << message.toStdString());
+    auto ctx = getAppContext();
+    if (ctx)
+    {
+        UIView::UIViewMessageBoxHelper::showError(*ctx, title, message);
+    }
+}
+
+void MiniAppListPageController::onUninstallFailed(const QString& title, const QString& message)
+{
+    UIVIEW_LOG_WARN("onUninstallFailed: " << message.toStdString());
+    auto ctx = getAppContext();
+    if (ctx)
+    {
+        UIView::UIViewMessageBoxHelper::showError(*ctx, title, message);
+    }
 }
