@@ -373,33 +373,63 @@ BaseFolderView {
 
         UTMenuItem {
             text: qsTr("Delete")
-            onTriggered: {
-                _deleteDialog.targetFilePath = _contextMenu.currentFilePath
-                _deleteDialog.open()
-            }
+            onTriggered: _deleteDialog.openFor(_contextMenu.currentFilePath)
         }
     }
 
     // ─── Delete confirmation ───
-    Dialog {
+    UTDialog {
         id: _deleteDialog
         property string targetFilePath: ""
-        title: control.deleteDialogTitle
-        modal: true
-        parent: Overlay.overlay
-        anchors.centerIn: parent
-        width: Math.min(400, control.width * 0.8)
-        standardButtons: Dialog.Yes | Dialog.No
 
-        contentItem: UTText {
-            text: control.deleteDialogMessage
-            fontEnum: UIFontToken.Body_Text
+        title: control.deleteDialogTitle
+        width: 420
+        height: _deleteLayout.implicitHeight + 48
+        minimumWidth: 320
+        visible: false
+
+        function openFor(filePath) {
+            targetFilePath = filePath
+            visible = true
         }
 
-        onAccepted: {
-            control.fileDeleteRequested(targetFilePath)
-            control.clearSelection()
-            control.refresh()
+        Shortcut {
+            sequence: "Escape"
+            onActivated: _deleteDialog.visible = false
+        }
+
+        ColumnLayout {
+            id: _deleteLayout
+            anchors.fill: parent
+            anchors.margins: 24
+            spacing: 20
+
+            UTText {
+                text: control.deleteDialogMessage
+                fontEnum: UIFontToken.Title_Text
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignRight
+                spacing: 12
+
+                UTButton {
+                    text: qsTr("Cancel")
+                    onClicked: _deleteDialog.visible = false
+                }
+                UTButton {
+                    text: qsTr("Delete")
+                    onClicked: {
+                        control.fileDeleteRequested(_deleteDialog.targetFilePath)
+                        control.clearSelection()
+                        control.refresh()
+                        _deleteDialog.visible = false
+                    }
+                }
+            }
         }
     }
 }

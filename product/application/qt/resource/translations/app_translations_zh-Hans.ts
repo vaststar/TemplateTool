@@ -2089,8 +2089,14 @@ Press ESC to cancel</source>
     </message>
     <message>
         <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="375"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="424"/>
         <source>Delete</source>
         <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="420"/>
+        <source>Cancel</source>
+        <translation type="unfinished">取消</translation>
     </message>
 </context>
 <context>
