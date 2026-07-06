@@ -14,7 +14,6 @@ import UIResourceLoader 1.0
  * - Two view modes: grid (tiles), detail (table)
  * - Built-in header with view-mode toggle
  * - Built-in context menu: Open, Copy, Reveal, Delete
- * - Built-in delete confirmation dialog
  * - Customisable thumbnails via Component injection
  * - Auto scroll-to-latest after refresh
  *
@@ -23,6 +22,7 @@ import UIResourceLoader 1.0
  *       folderUrl: "file:///path/to/folder"
  *       nameFilters: ["*.png", "*.jpg"]
  *       onFileOpenRequested: (fp) => myController.openFile(fp)
+ *       onFileDeleteRequested: (fp) => myController.deleteFile(fp)
  *   }
  */
 BaseFolderView {
@@ -39,8 +39,6 @@ BaseFolderView {
     property string emptyTitle: qsTr("No files")
     property string emptyHint: ""
     property string statusTemplate: qsTr("%1 files")
-    property string deleteDialogTitle: qsTr("Delete File")
-    property string deleteDialogMessage: qsTr("Are you sure you want to delete this file?")
 
     // ─── Delegate customisation ───
     property Component gridThumbnail: null
@@ -58,6 +56,8 @@ BaseFolderView {
     signal fileOpenRequested(string filePath)
     signal fileCopyRequested(string filePath)
     signal fileRevealRequested(string filePath)
+    // Emitted when the user chooses Delete. The host must confirm and delete;
+    // this view performs no deletion or confirmation itself.
     signal fileDeleteRequested(string filePath)
     signal fileSelected(string filePath)
     signal fileDeselected()
@@ -373,63 +373,7 @@ BaseFolderView {
 
         UTMenuItem {
             text: qsTr("Delete")
-            onTriggered: _deleteDialog.openFor(_contextMenu.currentFilePath)
-        }
-    }
-
-    // ─── Delete confirmation ───
-    UTDialog {
-        id: _deleteDialog
-        property string targetFilePath: ""
-
-        title: control.deleteDialogTitle
-        width: 420
-        height: _deleteLayout.implicitHeight + 48
-        minimumWidth: 320
-        visible: false
-
-        function openFor(filePath) {
-            targetFilePath = filePath
-            visible = true
-        }
-
-        Shortcut {
-            sequence: "Escape"
-            onActivated: _deleteDialog.visible = false
-        }
-
-        ColumnLayout {
-            id: _deleteLayout
-            anchors.fill: parent
-            anchors.margins: 24
-            spacing: 20
-
-            UTText {
-                text: control.deleteDialogMessage
-                fontEnum: UIFontToken.Title_Text
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
-                spacing: 12
-
-                UTButton {
-                    text: qsTr("Cancel")
-                    onClicked: _deleteDialog.visible = false
-                }
-                UTButton {
-                    text: qsTr("Delete")
-                    onClicked: {
-                        control.fileDeleteRequested(_deleteDialog.targetFilePath)
-                        control.clearSelection()
-                        control.refresh()
-                        _deleteDialog.visible = false
-                    }
-                }
-            }
+            onTriggered: control.fileDeleteRequested(_contextMenu.currentFilePath)
         }
     }
 }

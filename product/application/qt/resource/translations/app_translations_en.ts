@@ -153,21 +153,6 @@
     </message>
 </context>
 <context>
-    <name>Gallery</name>
-    <message>
-        <source>Dark</source>
-        <translation type="obsolete">Dark</translation>
-    </message>
-    <message>
-        <source>Light</source>
-        <translation type="obsolete">Light</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="obsolete">Settings</translation>
-    </message>
-</context>
-<context>
     <name>HomePage</name>
     <message>
         <location filename="../../UIView/PageViews/HomePage/qml/HomePage.qml" line="48"/>
@@ -1518,69 +1503,59 @@ Double-click a rule to view details.</translation>
 <context>
     <name>RecordingContent</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="291"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="297"/>
         <source>🎬 Start Recording</source>
         <translation>🎬 Start Recording</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="313"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="319"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="314"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="320"/>
         <source>Select Region</source>
         <translation>Select Region</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="325"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="331"/>
         <source>⚠ FFmpeg not found</source>
         <translation>⚠ FFmpeg not found</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="333"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="339"/>
         <source>📂 Open Folder</source>
         <translation>📂 Open Folder</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="341"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="347"/>
         <source>⚠ Screen recording permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Screen Recording to enable.</source>
         <translation>⚠ Screen recording permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Screen Recording to enable.</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="371"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="377"/>
         <source>No recordings yet</source>
         <translation>No recordings yet</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="372"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="378"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation>Click &apos;Start Recording&apos; to capture your screen</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="373"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="379"/>
         <source>%1 recordings</source>
         <translation>%1 recordings</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="387"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="391"/>
         <source>▶ Open</source>
         <translation>▶ Open</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="393"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="397"/>
         <source>🗑 Delete</source>
         <translation>🗑 Delete</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="374"/>
-        <source>Delete Recording</source>
-        <translation>Delete Recording</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/recording/qml/RecordingContent.qml" line="375"/>
-        <source>Are you sure you want to delete this recording?</source>
-        <translation>Are you sure you want to delete this recording?</translation>
     </message>
 </context>
 <context>
@@ -1592,8 +1567,30 @@ Double-click a rule to view details.</translation>
     </message>
     <message>
         <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="429"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="447"/>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="468"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="460"/>
+        <source>Delete Recording</source>
+        <translation type="unfinished">Delete Recording</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="461"/>
+        <source>Are you sure you want to delete &quot;%1&quot;?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
+        <source>Delete</source>
+        <translation type="unfinished">Delete</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/recording/src/RecordingController.cpp" line="472"/>
+        <source>Failed to delete file: %1</source>
+        <translation type="unfinished">Failed to delete file: %1</translation>
     </message>
 </context>
 <context>
@@ -1763,24 +1760,40 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="515"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="516"/>
         <source>Screenshots folder not set</source>
         <translation>Screenshots folder not set</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="530"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="555"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="571"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="556"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="572"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="593"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="546"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="547"/>
         <source>Failed to load image: %1</source>
         <translation>Failed to load image: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="575"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="585"/>
+        <source>Delete Screenshot</source>
+        <translation type="unfinished">Delete Screenshot</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="586"/>
+        <source>Are you sure you want to delete &quot;%1&quot;?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="587"/>
+        <source>Delete</source>
+        <translation type="unfinished">Delete</translation>
+    </message>
+    <message>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="597"/>
         <source>Failed to delete file: %1</source>
         <translation>Failed to delete file: %1</translation>
     </message>
@@ -1788,77 +1801,67 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotGallery</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="65"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="71"/>
         <source>📷 Capture Region</source>
         <translation>📷 Capture Region</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="71"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="77"/>
         <source>🖥 Full Screen</source>
         <translation>🖥 Full Screen</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="77"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="83"/>
         <source>🪟 Window</source>
         <translation>🪟 Window</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="100"/>
         <source>No screenshots yet</source>
         <translation>No screenshots yet</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="95"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="101"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="102"/>
         <source>%1 screenshots</source>
         <translation>%1 screenshots</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="97"/>
-        <source>Delete Screenshot</source>
-        <translation>Delete Screenshot</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="98"/>
-        <source>Are you sure you want to delete this screenshot?</source>
-        <translation>Are you sure you want to delete this screenshot?</translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="147"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="152"/>
         <source>Select a Window to Capture</source>
         <translation>Select a Window to Capture</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="153"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="158"/>
         <source>%1 windows</source>
         <translation>%1 windows</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="318"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="323"/>
         <source>Click to Capture</source>
         <translation>Click to Capture</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="328"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="333"/>
         <source>Unnamed Window</source>
         <translation>Unnamed Window</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="390"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="395"/>
         <source>No windows found</source>
         <translation>No windows found</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="412"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="417"/>
         <source>Hover to preview, click to capture</source>
         <translation>Hover to preview, click to capture</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="420"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="425"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
@@ -2108,50 +2111,34 @@ Press ESC to cancel</translation>
 <context>
     <name>UTFolderView</name>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="39"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="46"/>
         <source>No files</source>
         <translation>No files</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="41"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="48"/>
         <source>%1 files</source>
         <translation>%1 files</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="42"/>
-        <source>Delete File</source>
-        <translation>Delete File</translation>
-    </message>
-    <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="43"/>
-        <source>Are you sure you want to delete this file?</source>
-        <translation>Are you sure you want to delete this file?</translation>
-    </message>
-    <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="351"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="358"/>
         <source>Open</source>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="355"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="362"/>
         <source>Copy to Clipboard</source>
         <translation>Copy to Clipboard</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="359"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="366"/>
         <source>Show in Explorer</source>
         <translation>Show in Explorer</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="375"/>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="424"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="382"/>
         <source>Delete</source>
         <translation>Delete</translation>
-    </message>
-    <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="420"/>
-        <source>Cancel</source>
-        <translation type="unfinished">Cancel</translation>
     </message>
 </context>
 <context>

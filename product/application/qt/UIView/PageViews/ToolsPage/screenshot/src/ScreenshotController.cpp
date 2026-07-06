@@ -1,5 +1,6 @@
 #include "ToolsPage/screenshot/ScreenshotController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include "UIEvents/UIMainWindowEvent.h"
 
 #include <AppContext/AppContext.h>
@@ -571,9 +572,33 @@ void ScreenshotController::deleteFile(const QString& filePath)
         emit errorOccurred(tr("File not found: %1").arg(filePath));
         return;
     }
-    if (!QFile::remove(filePath)) {
-        emit errorOccurred(tr("Failed to delete file: %1").arg(filePath));
+
+    auto ctx = getAppContext();
+    if (!ctx) {
+        UIVIEW_LOG_WARN("deleteFile: no AppContext; aborting");
+        return;
     }
+
+    const QString fileName = QFileInfo(filePath).fileName();
+    UIView::UIViewMessageBoxHelper::showDestructiveConfirm(
+        *ctx,
+        tr("Delete Screenshot"),
+        tr("Are you sure you want to delete \"%1\"?").arg(fileName),
+        tr("Delete"),
+        [this, filePath](bool accepted) {
+            if (!accepted) {
+                return;
+            }
+            if (!QFile::exists(filePath)) {
+                emit errorOccurred(tr("File not found: %1").arg(filePath));
+                return;
+            }
+            if (!QFile::remove(filePath)) {
+                emit errorOccurred(tr("Failed to delete file: %1").arg(filePath));
+                return;
+            }
+            emit fileDeleted(filePath);
+        });
 }
 
 // ============================================================================

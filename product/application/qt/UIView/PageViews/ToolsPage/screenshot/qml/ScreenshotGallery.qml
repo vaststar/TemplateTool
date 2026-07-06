@@ -47,6 +47,12 @@ FocusScope {
             folderView.refresh()
         }
 
+        function onFileDeleted(filePath) {
+            // FolderListModel watches the directory and drops the entry on its
+            // own; just clear the now-stale selection (no full reload needed).
+            folderView.clearSelection()
+        }
+
         function onErrorOccurred(message) {
             console.error("Screenshot error:", message)
         }
@@ -94,8 +100,7 @@ FocusScope {
             emptyTitle: qsTr("No screenshots yet")
             emptyHint: qsTr("Click 'Capture Region' or 'Full Screen' to take a screenshot")
             statusTemplate: qsTr("%1 screenshots")
-            deleteDialogTitle: qsTr("Delete Screenshot")
-            deleteDialogMessage: qsTr("Are you sure you want to delete this screenshot?")
+
 
             onFileOpenRequested: (fp) => controller.openFile(fp)
             onFileCopyRequested: (fp) => controller.copyFileToClipboard(fp)

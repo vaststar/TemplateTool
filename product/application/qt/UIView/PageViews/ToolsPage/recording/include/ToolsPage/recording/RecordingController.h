@@ -101,6 +101,7 @@ public:
     // === File Browser Methods (UI-layer only) ===
     Q_INVOKABLE void openRecordingsFolder();
     Q_INVOKABLE void openFile(const QString& filePath);
+    Q_INVOKABLE void deleteFile(const QString& filePath);
     Q_INVOKABLE QString getDefaultSavePath();
     Q_INVOKABLE void refreshAudioDevices();
     Q_INVOKABLE void requestMicrophonePermission();
@@ -116,6 +117,9 @@ signals:
     void thumbnailReady(const QString& videoPath, const QString& thumbnailUrl);
     void thumbnailFailed(const QString& videoPath, const QString& errorMessage);
     void errorOccurred(const QString& message);
+    // Emitted after a file has actually been deleted (post-confirmation), so
+    // the view can refresh and clear its selection.
+    void fileDeleted(const QString& filePath);
     void ffmpegStatusChanged();
     void audioDevicesChanged();
     void micPermissionChanged();

@@ -38,6 +38,12 @@ FocusScope {
             controller.requestThumbnail(filePath)
         }
 
+        function onFileDeleted(filePath) {
+            // FolderListModel watches the directory and drops the entry on its
+            // own; just clear the now-stale selection (no full reload needed).
+            folderView.clearSelection()
+        }
+
         function onErrorOccurred(message) {
             errorText.text = message
             errorText.visible = true
@@ -371,8 +377,6 @@ FocusScope {
             emptyTitle: qsTr("No recordings yet")
             emptyHint: qsTr("Click 'Start Recording' to capture your screen")
             statusTemplate: qsTr("%1 recordings")
-            deleteDialogTitle: qsTr("Delete Recording")
-            deleteDialogMessage: qsTr("Are you sure you want to delete this recording?")
 
             onFileOpenRequested: (fp) => controller.openFile(fp)
             onFileRevealRequested: (fp) => controller.openRecordingsFolder()
@@ -391,11 +395,7 @@ FocusScope {
                     UTButton {
                         visible: folderView.selectedFilePath.length > 0
                         text: qsTr("🗑 Delete")
-                        onClicked: {
-                            controller.deleteFile(folderView.selectedFilePath)
-                            folderView.clearSelection()
-                            folderView.refresh()
-                        }
+                        onClicked: controller.deleteFile(folderView.selectedFilePath)
                     }
                 }
             }

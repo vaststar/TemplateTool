@@ -117,6 +117,9 @@ signals:
     void captureCompleted(const QString& filePath);
     void overlayScreenshotReady(const QString& base64, int width, int height);
     void errorOccurred(const QString& message);
+    // Emitted after a file has actually been deleted (post-confirmation), so
+    // the view can refresh and clear its selection.
+    void fileDeleted(const QString& filePath);
 
 private slots:
     // ── ViewModel emitter slots ──

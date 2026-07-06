@@ -1,6 +1,6 @@
 #include "ToolsPage/recording/RecordingController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-
+#include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
@@ -437,6 +437,43 @@ void RecordingController::openFile(const QString& filePath)
 #elif defined(Q_OS_LINUX)
     QProcess::startDetached("xdg-open", {filePath});
 #endif
+}
+
+void RecordingController::deleteFile(const QString& filePath)
+{
+    UIVIEW_LOG_DEBUG("deleteFile: " << filePath.toStdString());
+
+    if (!QFile::exists(filePath)) {
+        emit errorOccurred(tr("File not found: %1").arg(filePath));
+        return;
+    }
+
+    auto ctx = getAppContext();
+    if (!ctx) {
+        UIVIEW_LOG_WARN("deleteFile: no AppContext; aborting");
+        return;
+    }
+
+    const QString fileName = QFileInfo(filePath).fileName();
+    UIView::UIViewMessageBoxHelper::showDestructiveConfirm(
+        *ctx,
+        tr("Delete Recording"),
+        tr("Are you sure you want to delete \"%1\"?").arg(fileName),
+        tr("Delete"),
+        [this, filePath](bool accepted) {
+            if (!accepted) {
+                return;
+            }
+            if (!QFile::exists(filePath)) {
+                emit errorOccurred(tr("File not found: %1").arg(filePath));
+                return;
+            }
+            if (!QFile::remove(filePath)) {
+                emit errorOccurred(tr("Failed to delete file: %1").arg(filePath));
+                return;
+            }
+            emit fileDeleted(filePath);
+        });
 }
 
 // ============================================================================
