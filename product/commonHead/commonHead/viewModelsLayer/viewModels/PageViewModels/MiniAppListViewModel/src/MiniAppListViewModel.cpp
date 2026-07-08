@@ -16,12 +16,21 @@ namespace {
 model::MiniAppInfo toMiniAppInfo(const ucf::service::model::MiniAppManifest& manifest,
                                  const std::shared_ptr<ucf::service::IMiniAppService>& service)
 {
-    std::string iconPath;
+    model::MiniAppInfo info;
+    info.id          = manifest.id;
+    info.name        = manifest.name;
+    info.description = manifest.description;
+    info.entry       = manifest.entry;
+    info.permissions = manifest.permissions;
     if (service)
     {
-        iconPath = service->getAppIconPath(manifest.id);
+        info.iconPath = service->getAppIconPath(manifest.id);
+        // packageDir is a plain lookup with no side effects. storageDir/cacheDir
+        // are created lazily by the service, so they are deliberately left empty
+        // here and resolved only when an app is actually launched.
+        info.packageDir = service->getAppPackageDir(manifest.id);
     }
-    return model::MiniAppInfo{ manifest.id, manifest.name, manifest.description, manifest.entry, std::move(iconPath) };
+    return info;
 }
 
 // Map service-layer error enums to the localized-string token that describes

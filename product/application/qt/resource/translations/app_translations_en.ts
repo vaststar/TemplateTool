@@ -335,18 +335,27 @@
 <context>
     <name>MiniAppListPageController</name>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="172"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="165"/>
         <source>Uninstall Mini App</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="173"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="166"/>
         <source>Uninstall &quot;%1&quot;? This removes its package and data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="174"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="167"/>
         <source>Uninstall</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MiniAppRuntime::MiniAppHostWindow</name>
+    <message>
+        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="37"/>
+        <source>Mini app &quot;%1&quot; runtime is ready.
+No web-view backend is wired yet.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2111,32 +2120,32 @@ Press ESC to cancel</translation>
 <context>
     <name>UTFolderView</name>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="46"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="39"/>
         <source>No files</source>
         <translation>No files</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="48"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="41"/>
         <source>%1 files</source>
         <translation>%1 files</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="358"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="351"/>
         <source>Open</source>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="362"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="355"/>
         <source>Copy to Clipboard</source>
         <translation>Copy to Clipboard</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="366"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="359"/>
         <source>Show in Explorer</source>
         <translation>Show in Explorer</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="382"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="375"/>
         <source>Delete</source>
         <translation>Delete</translation>
     </message>

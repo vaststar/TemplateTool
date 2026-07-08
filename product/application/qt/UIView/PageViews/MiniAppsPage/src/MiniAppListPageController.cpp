@@ -4,23 +4,20 @@
 #include <QUrl>
 
 #include <AppContext/AppContext.h>
-#include <UIFabrication/IUIViewFactory.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewHelper.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include "ViewModelSingalEmitter/MiniAppListViewModelEmitter.h"
 
-namespace {
-// QML resource path for the mini app host dialog.
-const QString kMiniAppHostDialogQml = QStringLiteral("UIView/PageViews/MiniAppsPage/qml/MiniAppHostDialog.qml");
-}
+#include "MiniAppRuntime/MiniAppContext.h"
+#include "MiniAppRuntime/MiniAppRuntimeManager.h"
 
 MiniAppListPageController::MiniAppListPageController(QObject* parent)
     : UIViewController(parent)
     , mEmitter(std::make_shared<UIVMSignalEmitter::MiniAppListViewModelEmitter>())
+    , mRuntimeManager(std::make_unique<MiniAppRuntime::MiniAppRuntimeManager>())
 {
     UIVIEW_LOG_DEBUG("create MiniAppListPageController");
 }
@@ -101,24 +98,20 @@ void MiniAppListPageController::launchMiniApp(const QString& id)
         return;
     }
 
-    auto ctx = getAppContext();
-    if (!ctx)
+    MiniAppRuntime::MiniAppContext context;
+    context.id         = QString::fromStdString(app.id);
+    context.name       = QString::fromStdString(app.name);
+    context.entry      = app.entry.empty() ? QStringLiteral("index.html")
+                                           : QString::fromStdString(app.entry);
+    context.packageDir = QString::fromStdString(app.packageDir);
+    context.storageDir = QString::fromStdString(app.storageDir);
+    context.cacheDir   = QString::fromStdString(app.cacheDir);
+    for (const auto& permission : app.permissions)
     {
-        return;
+        context.permissions.append(QString::fromStdString(permission));
     }
 
-    QVariantMap initialProperties;
-    initialProperties.insert(QStringLiteral("appId"),   QString::fromStdString(app.id));
-    initialProperties.insert(QStringLiteral("appName"), QString::fromStdString(app.name));
-
-    auto win = ctx->getViewFactory()->createQmlWindow(kMiniAppHostDialogQml, initialProperties);
-    if (!win)
-    {
-        UIVIEW_LOG_WARN("launchMiniApp: failed to create host dialog");
-        return;
-    }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
-    win->show();
+    mRuntimeManager->launch(context);
 }
 
 void MiniAppListPageController::installMiniApp(const QString& folderUrl)

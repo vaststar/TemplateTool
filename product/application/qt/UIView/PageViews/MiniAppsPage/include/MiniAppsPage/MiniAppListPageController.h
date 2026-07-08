@@ -19,12 +19,17 @@ namespace UIVMSignalEmitter
     class MiniAppListViewModelEmitter;
 }
 
+namespace MiniAppRuntime
+{
+    class MiniAppRuntimeManager;
+}
+
 /**
  * @brief Controller backing the mini app list page.
  *
- * Exposes the installed mini apps to QML and launches the (currently empty)
- * host dialog when the user picks one. WebEngine / Bridge wiring is intentionally
- * out of scope for this shell stage.
+ * Exposes the installed mini apps to QML and hands off to the MiniAppRuntime
+ * when the user launches one. The runtime owns the host window and web-view
+ * lifecycle; this controller only builds the launch context.
  */
 class MiniAppListPageController : public UIViewController
 {
@@ -65,5 +70,6 @@ private:
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> mViewModel;
     std::shared_ptr<UIVMSignalEmitter::MiniAppListViewModelEmitter> mEmitter;
+    std::unique_ptr<MiniAppRuntime::MiniAppRuntimeManager> mRuntimeManager;
     QVariantList mMiniApps;
 };

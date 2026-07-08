@@ -19,6 +19,7 @@ set(MODULE_PRIVATE_INCLUDE_DIRS "")
 add_subdirectory(UIViewCommon)
 add_subdirectory(UIEvents)
 add_subdirectory(MainWindowSuite)
+add_subdirectory(MiniAppRuntime)
 add_subdirectory(PageViews)
 add_subdirectory(AppUpgrade)
 add_subdirectory(MediaCameraView)
@@ -44,6 +45,19 @@ set(MODULE_DEPENDENCIES_PRIVATE
 
 if(WIN32)
     list(APPEND MODULE_DEPENDENCIES_PRIVATE crypt32)
+endif()
+
+if(APPLE)
+    # WKWebView backend for the MiniAppRuntime submodule.
+    find_library(WEBKIT_FRAMEWORK WebKit)
+    find_library(APPKIT_FRAMEWORK AppKit)
+    find_library(FOUNDATION_FRAMEWORK Foundation)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE
+        ${WEBKIT_FRAMEWORK}
+        ${APPKIT_FRAMEWORK}
+        ${FOUNDATION_FRAMEWORK}
+        objc
+    )
 endif()
 
 set(MODULE_BUILD_INTERFACE_DIR
