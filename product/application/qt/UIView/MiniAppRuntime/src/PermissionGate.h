@@ -13,6 +13,9 @@ class PermissionGate
 public:
     void setGranted(const QStringList& permissions);
 
+    // The tokens currently granted to the mini-app.
+    [[nodiscard]] QStringList granted() const;
+
     // True if every required token was granted; empty requirement is always allowed.
     [[nodiscard]] bool allows(const QStringList& required) const;
 

@@ -1,26 +1,37 @@
 #pragma once
 
+#include <QString>
 #include <QWidget>
 
 #include <memory>
 
-#include "MiniAppRuntime/MiniAppContext.h"
+namespace commonHead::viewModels {
+    class IMiniAppRuntimeViewModel;
+}
+
+namespace UIVMSignalEmitter {
+    class MiniAppRuntimeViewModelEmitter;
+}
 
 namespace MiniAppRuntime {
 
-class MiniAppSession;
-
-// Top-level window hosting one mini-app: starts a MiniAppSession and embeds its
-// web view (or a placeholder if the backend is not embeddable). Deletes itself on close.
+// Top-level window hosting one mini-app. It drives an IMiniAppRuntimeViewModel
+// (which owns the framework runtime) and embeds the native web-view window it
+// exposes, or shows a placeholder if the backend is not embeddable. Deletes
+// itself on close.
 class MiniAppHostWindow : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MiniAppHostWindow(const MiniAppContext& context, QWidget* parent = nullptr);
+    MiniAppHostWindow(std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> viewModel,
+                      const QString& appId,
+                      const QString& displayName,
+                      QWidget* parent = nullptr);
     ~MiniAppHostWindow() override;
 
 private:
-    std::unique_ptr<MiniAppSession> m_session;
+    std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> m_viewModel;
+    std::shared_ptr<UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter> m_emitter;
 };
 
 } // namespace MiniAppRuntime

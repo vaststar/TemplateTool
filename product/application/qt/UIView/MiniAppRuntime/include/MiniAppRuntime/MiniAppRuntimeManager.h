@@ -5,7 +5,9 @@
 
 #include <memory>
 
-#include "MiniAppRuntime/MiniAppContext.h"
+namespace commonHead::viewModels {
+    class IMiniAppRuntimeViewModel;
+}
 
 namespace MiniAppRuntime {
 
@@ -18,8 +20,11 @@ public:
     explicit MiniAppRuntimeManager(QObject* parent = nullptr);
     ~MiniAppRuntimeManager() override; // defined in .cpp (Pimpl)
 
-    // Open the app described by `context`, or raise its window if already open.
-    void launch(const MiniAppContext& context);
+    // Open the app identified by `appId`, driving it through the given runtime
+    // view model, or raise its window (ignoring `viewModel`) if already open.
+    void launch(const std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel>& viewModel,
+                const QString& appId,
+                const QString& displayName);
 
     // Close a running app's window, if any.
     void close(const QString& appId);

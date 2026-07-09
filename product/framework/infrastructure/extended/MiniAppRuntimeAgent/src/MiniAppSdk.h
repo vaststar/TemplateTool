@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MiniAppRuntime {
+namespace ucf::agents {
 
 // JavaScript injected at document-start into every mini-app page. Exposes a
 // small, stable `MiniApp` API over the backend's raw native channel (WKWebView
@@ -82,4 +82,4 @@ inline const char* miniAppSdkJs()
 )JS";
 }
 
-} // namespace MiniAppRuntime
+} // namespace ucf::agents

@@ -23,26 +23,34 @@ MiniAppRuntimeManager::MiniAppRuntimeManager(QObject* parent)
 
 MiniAppRuntimeManager::~MiniAppRuntimeManager() = default;
 
-void MiniAppRuntimeManager::launch(const MiniAppContext& context)
+void MiniAppRuntimeManager::launch(const std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel>& viewModel,
+                                   const QString& appId,
+                                   const QString& displayName)
 {
-    if (context.id.isEmpty())
+    if (appId.isEmpty())
     {
         UIVIEW_LOG_WARN("MiniAppRuntimeManager::launch ignored empty app id");
         return;
     }
 
-    if (auto* existing = d->windows.value(context.id).data())
+    if (auto* existing = d->windows.value(appId).data())
     {
         UIVIEW_LOG_INFO("MiniAppRuntimeManager::launch raising existing window for "
-                        << context.id.toStdString());
+                        << appId.toStdString());
         existing->show();
         existing->raise();
         existing->activateWindow();
         return;
     }
 
-    auto* window = new MiniAppHostWindow(context);
-    d->windows.insert(context.id, window);
+    if (!viewModel)
+    {
+        UIVIEW_LOG_WARN("MiniAppRuntimeManager::launch null view model for " << appId.toStdString());
+        return;
+    }
+
+    auto* window = new MiniAppHostWindow(viewModel, appId, displayName);
+    d->windows.insert(appId, window);
     window->show();
 }
 

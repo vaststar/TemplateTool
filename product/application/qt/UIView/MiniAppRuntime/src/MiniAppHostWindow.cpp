@@ -4,27 +4,62 @@
 #include <QVBoxLayout>
 #include <QWindow>
 
-#include "MiniAppSession.h"
-#include "webview/IMiniAppWebView.h"
+#include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
+
+#include "ViewModelSingalEmitter/MiniAppRuntimeViewModelEmitter.h"
+
+#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 namespace MiniAppRuntime {
 
-MiniAppHostWindow::MiniAppHostWindow(const MiniAppContext& context, QWidget* parent)
+MiniAppHostWindow::MiniAppHostWindow(std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> viewModel,
+                                     const QString& appId,
+                                     const QString& displayName,
+                                     QWidget* parent)
     : QWidget(parent)
-    , m_session(std::make_unique<MiniAppSession>(context))
+    , m_viewModel(std::move(viewModel))
+    , m_emitter(std::make_shared<UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter>())
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(context.name.isEmpty() ? context.id : context.name);
+    setWindowTitle(displayName.isEmpty() ? appId : displayName);
     resize(960, 640);
 
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
 
-    // Start first: lazy backends (WKWebView) only expose their native window after start().
-    m_session->start();
+    using Emitter = UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter;
+    QObject::connect(m_emitter.get(), &Emitter::signals_onLoadFinished, this,
+                     [appId](bool ok) {
+                         UIVIEW_LOG_INFO("MiniAppHostWindow[" << appId.toStdString()
+                                                              << "] load finished ok=" << ok);
+                     });
+    QObject::connect(m_emitter.get(), &Emitter::signals_onLoadFailed, this,
+                     [appId](int code, const QString& msg) {
+                         UIVIEW_LOG_WARN("MiniAppHostWindow[" << appId.toStdString()
+                                                              << "] load failed code=" << code
+                                                              << " msg=" << msg.toStdString());
+                     });
 
-    IMiniAppWebView* view = m_session->webView();
-    QWindow* native = view ? view->asQWindow() : nullptr;
+    // Register before start() so we do not miss lifecycle events fired during
+    // initialization.
+    if (m_viewModel)
+    {
+        m_viewModel->registerCallback(m_emitter);
+        m_viewModel->initViewModel();
+        // Start first: the runtime only exposes its native web-view window after start().
+        m_viewModel->start(appId.toStdString());
+    }
+
+    QWindow* native = nullptr;
+    if (m_viewModel)
+    {
+        const std::uintptr_t handle = m_viewModel->nativeHostHandle();
+        if (handle != 0)
+        {
+            native = QWindow::fromWinId(static_cast<WId>(handle));
+        }
+    }
+
     if (native)
     {
         QWidget* container = QWidget::createWindowContainer(native, this);
@@ -32,10 +67,10 @@ MiniAppHostWindow::MiniAppHostWindow(const MiniAppContext& context, QWidget* par
     }
     else
     {
-        // No embeddable backend (stub): show a placeholder.
+        // No embeddable backend: show a placeholder.
         auto* placeholder = new QLabel(
             tr("Mini app \"%1\" runtime is ready.\nNo web-view backend is wired yet.")
-                .arg(context.name.isEmpty() ? context.id : context.name),
+                .arg(displayName.isEmpty() ? appId : displayName),
             this);
         placeholder->setAlignment(Qt::AlignCenter);
         placeholder->setWordWrap(true);

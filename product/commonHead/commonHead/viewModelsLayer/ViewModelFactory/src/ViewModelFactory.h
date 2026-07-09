@@ -37,6 +37,7 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> createUpgradeViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> createMiniAppListViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> createMiniAppRuntimeViewModelInstance() const override;
 
 private:
     template <typename T, typename... Args>

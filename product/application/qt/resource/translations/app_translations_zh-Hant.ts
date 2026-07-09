@@ -335,17 +335,17 @@
 <context>
     <name>MiniAppListPageController</name>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="165"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="170"/>
         <source>Uninstall Mini App</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="166"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="171"/>
         <source>Uninstall &quot;%1&quot;? This removes its package and data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="167"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="172"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
@@ -353,7 +353,7 @@
 <context>
     <name>MiniAppRuntime::MiniAppHostWindow</name>
     <message>
-        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="37"/>
+        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="72"/>
         <source>Mini app &quot;%1&quot; runtime is ready.
 No web-view backend is wired yet.</source>
         <translation type="unfinished"></translation>

@@ -29,6 +29,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ServiceLocator
     ContactService
     MiniAppService
+    MiniAppRuntimeAgent
     CameraDirectoryService
     MediaService
     ImageService

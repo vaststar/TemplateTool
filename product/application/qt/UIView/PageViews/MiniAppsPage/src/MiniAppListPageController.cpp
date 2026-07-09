@@ -6,12 +6,12 @@
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
+#include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include "ViewModelSingalEmitter/MiniAppListViewModelEmitter.h"
 
-#include "MiniAppRuntime/MiniAppContext.h"
 #include "MiniAppRuntime/MiniAppRuntimeManager.h"
 
 MiniAppListPageController::MiniAppListPageController(QObject* parent)
@@ -98,20 +98,25 @@ void MiniAppListPageController::launchMiniApp(const QString& id)
         return;
     }
 
-    MiniAppRuntime::MiniAppContext context;
-    context.id         = QString::fromStdString(app.id);
-    context.name       = QString::fromStdString(app.name);
-    context.entry      = app.entry.empty() ? QStringLiteral("index.html")
-                                           : QString::fromStdString(app.entry);
-    context.packageDir = QString::fromStdString(app.packageDir);
-    context.storageDir = QString::fromStdString(app.storageDir);
-    context.cacheDir   = QString::fromStdString(app.cacheDir);
-    for (const auto& permission : app.permissions)
+    const QString appId = QString::fromStdString(app.id);
+    if (mRuntimeManager->isRunning(appId))
     {
-        context.permissions.append(QString::fromStdString(permission));
+        // Already open: hand the manager a null view model so it just raises
+        // the existing window instead of building a new runtime.
+        mRuntimeManager->launch(nullptr, appId, QString::fromStdString(app.name));
+        return;
     }
 
-    mRuntimeManager->launch(context);
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        return;
+    }
+
+    // The UI never touches the framework runtime directly: the view model owns
+    // the agent and resolves the package/permissions from the app id itself.
+    auto runtimeViewModel = ctx->getViewModelFactory()->createMiniAppRuntimeViewModelInstance();
+    mRuntimeManager->launch(runtimeViewModel, appId, QString::fromStdString(app.name));
 }
 
 void MiniAppListPageController::installMiniApp(const QString& folderUrl)

@@ -1,18 +1,20 @@
 #pragma once
 
-#include <QHash>
-#include <QJsonObject>
 #include <QJsonValue>
 #include <QObject>
 #include <QString>
 
 #include <memory>
+#include <vector>
+
+#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppBridgeCore.h>
 
 namespace MiniAppRuntime {
 
 class IMiniAppWebView;
 class IJsApiModule;
 class PermissionGate;
+class QtBridgeTransportAdapter;
 
 // JS <-> C++ dispatch hub for one mini-app: parses invoke messages, checks
 // permissions, routes to the matching JSAPI module and returns callbacks. Owns modules.
@@ -39,13 +41,11 @@ private slots:
     void onMessageReceived(const QString& json);
 
 private:
-    void dispatchInvoke(qint64 id, const QString& method, const QJsonObject& params);
-    void sendCallback(qint64 id, bool ok, const QJsonValue& payload);
-    void dispatchToJs(const QString& json);
-
     IMiniAppWebView* m_webView = nullptr; // not owned
     PermissionGate* m_gate = nullptr;     // not owned
-    QHash<QString, std::shared_ptr<IJsApiModule>> m_modules;
+    std::unique_ptr<QtBridgeTransportAdapter> m_transport;
+    std::vector<std::shared_ptr<ucf::agents::IBridgeMethodHandler>> m_handlerAdapters;
+    ucf::agents::MiniAppBridgeCore m_core;
 };
 
 } // namespace MiniAppRuntime

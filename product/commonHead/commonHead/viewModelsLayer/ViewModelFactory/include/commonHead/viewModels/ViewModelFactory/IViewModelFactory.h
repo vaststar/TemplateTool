@@ -27,6 +27,7 @@ namespace commonHead::viewModels{
     class IRecordingViewModel;
     class IUpgradeViewModel;
     class IMiniAppListViewModel;
+    class IMiniAppRuntimeViewModel;
 }
 
 namespace commonHead::viewModels{
@@ -58,6 +59,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> createUpgradeViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> createMiniAppListViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> createMiniAppRuntimeViewModelInstance() const = 0;
 
 public:
     static std::shared_ptr<IViewModelFactory> createInstance(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);

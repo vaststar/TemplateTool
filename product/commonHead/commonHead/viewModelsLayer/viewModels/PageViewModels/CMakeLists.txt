@@ -5,6 +5,7 @@ add_subdirectory(NetworkProxyViewModel)
 add_subdirectory(ScreenshotViewModel)
 add_subdirectory(RecordingViewModel)
 add_subdirectory(MiniAppListViewModel)
+add_subdirectory(MiniAppRuntimeViewModel)
 
 set(MODULE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR} PARENT_SCOPE)
 set(MODULE_HEADER_FILES ${MODULE_HEADER_FILES} PARENT_SCOPE)

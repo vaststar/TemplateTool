@@ -17,6 +17,7 @@
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
 #include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
 #include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
+#include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
 namespace commonHead::viewModels{
 
@@ -119,5 +120,10 @@ std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> ViewModelFactory::cre
 std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> ViewModelFactory::createMiniAppListViewModelInstance() const
 {
     return createViewModelInstance<commonHead::viewModels::IMiniAppListViewModel>();
+}
+
+std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> ViewModelFactory::createMiniAppRuntimeViewModelInstance() const
+{
+    return createViewModelInstance<commonHead::viewModels::IMiniAppRuntimeViewModel>();
 }
 } // namespace commonHead::viewModels

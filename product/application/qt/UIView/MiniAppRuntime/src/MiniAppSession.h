@@ -1,40 +1,41 @@
 #pragma once
 
-#include <QObject>
-
 #include <memory>
+
+#include <ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h>
 
 #include "MiniAppRuntime/MiniAppContext.h"
 
+class QWindow;
+
 namespace MiniAppRuntime {
 
-class IMiniAppWebView;
-class AppSchemeHandler;
-class PermissionGate;
-class MiniAppBridge;
-
-// Owns the runtime for one running mini-app: web-view backend, scheme handler,
-// permission gate and JS bridge. start() wires them up and navigates to the entry.
-class MiniAppSession : public QObject
+// Owns the runtime for one running mini-app. The heavy lifting (web view,
+// resource resolution, permission gating, JS bridge protocol) lives in the
+// reusable MiniAppRuntimeAgent; this class only assembles the config, registers
+// the app's bridge handlers and exposes the native view for embedding.
+class MiniAppSession
 {
-    Q_OBJECT
 public:
-    explicit MiniAppSession(MiniAppContext context, QObject* parent = nullptr);
-    ~MiniAppSession() override;
+    explicit MiniAppSession(MiniAppContext context);
+    ~MiniAppSession();
+
+    MiniAppSession(const MiniAppSession&) = delete;
+    MiniAppSession& operator=(const MiniAppSession&) = delete;
 
     void start();
 
-    // The web view for embedding into a host window. Valid after construction.
-    [[nodiscard]] IMiniAppWebView* webView() const;
+    // Native web-view window for embedding into a host window. Valid after start().
+    [[nodiscard]] QWindow* nativeWindow() const;
 
     [[nodiscard]] const MiniAppContext& context() const { return m_context; }
 
 private:
+    class Callback;
+
     MiniAppContext m_context;
-    IMiniAppWebView* m_webView = nullptr; // child QObject, parented to this
-    std::unique_ptr<AppSchemeHandler> m_schemeHandler;
-    std::unique_ptr<PermissionGate> m_permissionGate;
-    std::unique_ptr<MiniAppBridge> m_bridge;
+    std::shared_ptr<ucf::agents::IMiniAppRuntimeAgent> m_agent;
+    std::shared_ptr<Callback> m_callback;
     bool m_started = false;
 };
 

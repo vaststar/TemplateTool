@@ -1,10 +1,7 @@
 #include "jsapi/SystemApiModule.h"
 
-#include <QJsonObject>
 #include <QLocale>
 #include <QSysInfo>
-
-#include "MiniAppMessage.h"
 
 namespace MiniAppRuntime {
 
@@ -12,40 +9,39 @@ namespace {
 constexpr const char* kSdkVersion = "1.0.0";
 }
 
-SystemApiModule::SystemApiModule(QString appId, QString appName)
+SystemApiModule::SystemApiModule(std::string appId, std::string appName)
     : m_appId(std::move(appId))
     , m_appName(std::move(appName))
 {
 }
 
-QString SystemApiModule::name() const
+std::string SystemApiModule::moduleName() const
 {
-    return QStringLiteral("system");
+    return "system";
 }
 
-QStringList SystemApiModule::requiredPermissions() const
+void SystemApiModule::handle(const std::string& action,
+                             const ucf::agents::JsonValue& params,
+                             Reply reply)
 {
-    return {};
-}
+    (void)params;
 
-void SystemApiModule::invoke(const QString& action, const QJsonObject& params, Reply reply)
-{
-    Q_UNUSED(params);
-
-    if (action == QStringLiteral("getInfo"))
+    if (action == "getInfo")
     {
-        QJsonObject info;
-        info.insert(QStringLiteral("platform"), QSysInfo::productType());
-        info.insert(QStringLiteral("arch"), QSysInfo::currentCpuArchitecture());
-        info.insert(QStringLiteral("appId"), m_appId);
-        info.insert(QStringLiteral("appName"), m_appName);
-        info.insert(QStringLiteral("locale"), QLocale::system().name());
-        info.insert(QStringLiteral("sdkVersion"), QString::fromLatin1(kSdkVersion));
+        ucf::agents::JsonValue info = ucf::agents::JsonValue::object();
+        info.set("platform", QSysInfo::productType().toStdString());
+        info.set("arch", QSysInfo::currentCpuArchitecture().toStdString());
+        info.set("appId", m_appId);
+        info.set("appName", m_appName);
+        info.set("locale", QLocale::system().name().toStdString());
+        info.set("sdkVersion", std::string(kSdkVersion));
         reply(true, info);
         return;
     }
 
-    reply(false, makeError(QStringLiteral("unknown action: system.") + action));
+    ucf::agents::JsonValue err = ucf::agents::JsonValue::object();
+    err.set("message", std::string("unknown action: system.") + action);
+    reply(false, err);
 }
 
 } // namespace MiniAppRuntime

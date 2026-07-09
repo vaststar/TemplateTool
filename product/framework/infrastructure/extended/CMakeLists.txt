@@ -1,2 +1,3 @@
 add_subdirectory(NetworkProxyAgent)
 add_subdirectory(ScreenRecordingAgent)
+add_subdirectory(MiniAppRuntimeAgent)

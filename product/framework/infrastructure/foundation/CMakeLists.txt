@@ -1,3 +1,4 @@
 add_subdirectory(DatabaseClient)
 add_subdirectory(NetworkClient)
 add_subdirectory(TimerScheduler)
+add_subdirectory(WebViewEngine)
