@@ -103,6 +103,9 @@ bool MiniAppRuntimeViewModel::start(const std::string& appId)
     ucf::agents::MiniAppRuntimeAgentConfig config;
     config.appId      = manifest->id;
     config.packageDir = service->getAppPackageDir(manifest->id);
+    // Per-app writable cache dir doubles as the WebView2 user-data folder on
+    // Windows (isolates each mini-app's cookies/cache). Ignored on macOS.
+    config.userDataFolder = service->getAppCacheDir(manifest->id);
     if (!manifest->entry.empty())
     {
         config.entry = manifest->entry;

@@ -17,6 +17,8 @@ set(MODULE_HEADER_FILES
 set(MODULE_SOURCE_PRIVATE
     src/InterceptorDispatcher.h
     src/InterceptorDispatcher.cpp
+    src/WebViewSchemeUtils.h
+    src/WebViewSchemeUtils.cpp
     src/StubWebView.h
     src/StubWebView.cpp
     src/WebViewFactory.cpp
@@ -24,8 +26,18 @@ set(MODULE_SOURCE_PRIVATE
 
 if(APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
-        src/WkWebView.h
-        src/WkWebView.mm
+        src/mac/WkWebView.h
+        src/mac/WkWebView.mm
+    )
+endif()
+
+if(WIN32)
+    list(APPEND MODULE_SOURCE_PRIVATE
+        src/windows/Win32WebView.h
+        src/windows/Win32WebViewImpl.h
+        src/windows/Win32WebView.cpp
+        src/windows/Win32WebViewLifecycle.cpp
+        src/windows/Win32WebViewResourceHandler.cpp
     )
 endif()
 
@@ -35,6 +47,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
+    StringUtils
 )
 
 if(APPLE)
@@ -45,9 +58,15 @@ if(APPLE)
     )
 endif()
 
+if(WIN32)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE
+        webview2
+    )
+endif()
+
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src)
+set(MODULE_BUILD_PRIVATE_DIR src src/windows src/mac)
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}

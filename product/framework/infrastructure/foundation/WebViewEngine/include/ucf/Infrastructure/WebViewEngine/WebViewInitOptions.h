@@ -21,6 +21,12 @@ struct WebViewInitOptions
     std::vector<std::string> scriptChannels;
     // Full User-Agent override. std::nullopt keeps the backend default UA.
     std::optional<std::string> userAgentOverride;
+    // Writable directory where the backend stores its per-instance browsing
+    // data (cache, cookies, local storage). Required by WebView2 on Windows;
+    // its default location sits next to the executable, which is typically not
+    // writable (e.g. under "Program Files"). Ignored by backends that manage
+    // their own data store (WKWebView, stub). Empty means the backend default.
+    std::string userDataFolder;
     bool allowPopups = false;
     // Declarative network access policy enforced at the network layer. When set,
     // the engine compiles the rules during initialize() and only reports

@@ -75,6 +75,12 @@ add_subdirectory(trompeloeil)
 add_subdirectory(qrcodegen)
 add_subdirectory(ffmpeg)
 
+# Windows-only: Edge WebView2 SDK (headers + static loader) for the WebViewEngine
+# WebView2 backend. The rendering runtime is the system "Evergreen" runtime.
+if(WIN32)
+    add_subdirectory(webview2)
+endif()
+
 #my lib
 add_subdirectory(ThreadPool)
 add_subdirectory(logger)

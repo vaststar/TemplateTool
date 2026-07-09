@@ -149,6 +149,7 @@ bool MiniAppRuntimeAgent::initialize(const MiniAppRuntimeAgentConfig& config)
         {
             options.customSchemes.push_back(config.appScheme);
         }
+        options.userDataFolder = config.userDataFolder;
         options.documentStartScripts.emplace_back(miniAppSdkJs());
         options.documentStartScripts.insert(options.documentStartScripts.end(),
                                             config.documentStartScripts.begin(),

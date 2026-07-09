@@ -37,37 +37,37 @@ public:
     [[nodiscard]] NativeHostHandle nativeHostHandle() const override;
 
     // Platform callback dispatch methods (internal use by platform backends)
-    void platformFireWebViewReady()
+    void emitWebViewReady()
     {
         fireNotification(&IWebViewCallback::onWebViewReady);
     }
 
-    void platformFireNavigationStarted(const std::string& url)
+    void emitNavigationStarted(const std::string& url)
     {
         fireNotification(&IWebViewCallback::onNavigationStarted, url);
     }
 
-    void platformFireUrlChanged(const std::string& url)
+    void emitUrlChanged(const std::string& url)
     {
         fireNotification(&IWebViewCallback::onUrlChanged, url);
     }
 
-    void platformFireTitleChanged(const std::string& title)
+    void emitTitleChanged(const std::string& title)
     {
         fireNotification(&IWebViewCallback::onTitleChanged, title);
     }
 
-    void platformFireLoadFinished(bool ok)
+    void emitLoadFinished(bool ok)
     {
         fireNotification(&IWebViewCallback::onLoadFinished, ok);
     }
 
-    void platformFireLoadFailed(int code, const std::string& message)
+    void emitLoadFailed(int code, const std::string& message)
     {
         fireNotification(&IWebViewCallback::onLoadFailed, code, message);
     }
 
-    void platformFireScriptMessage(const std::string& channel, const std::string& payload)
+    void emitScriptMessage(const std::string& channel, const std::string& payload)
     {
         fireNotification(&IWebViewCallback::onScriptMessage, channel, payload);
     }

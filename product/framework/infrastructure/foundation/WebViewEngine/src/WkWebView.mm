@@ -1,5 +1,6 @@
 #include "WkWebView.h"
 #include "InterceptorDispatcher.h"
+#include "WebViewSchemeUtils.h"
 
 #if defined(Q_OS_MACOS) || defined(__APPLE__)
 
@@ -10,6 +11,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 // Objective-C bridge: handles WKWebView callbacks and delegates them to the C++ WkWebView.
@@ -24,32 +26,6 @@ class IWebViewCallback;
 } // forward declarations
 
 namespace {
-
-// A valid custom scheme is a non-empty lowercase string of [a-z0-9+.-]
-// starting with [a-z], and it must not collide with a system scheme WK
-// refuses to hand off to a custom handler.
-bool isValidCustomScheme(const std::string& scheme)
-{
-    if (scheme.empty()) { return false; }
-    auto isSchemeChar = [](char c) {
-        return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
-               c == '+' || c == '.' || c == '-';
-    };
-    if (!(scheme.front() >= 'a' && scheme.front() <= 'z')) { return false; }
-    for (char c : scheme)
-    {
-        if (!isSchemeChar(c)) { return false; }
-    }
-    static const char* kReserved[] = {
-        "http", "https", "file", "ftp", "ws", "wss",
-        "about", "data", "blob", "javascript"
-    };
-    for (const char* r : kReserved)
-    {
-        if (scheme == r) { return false; }
-    }
-    return true;
-}
 
 // Escape a host so it can be embedded literally inside a WKContentRuleList
 // url-filter regular expression.
@@ -217,7 +193,7 @@ std::string jsonStringFromJSResult(id result)
         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
         NSURL* url = webView.URL;
         std::string urlStr = url ? std::string(url.absoluteString.UTF8String) : "";
-        backendPtr->platformFireNavigationStarted(urlStr);
+        backendPtr->emitNavigationStarted(urlStr);
     }
 }
 
@@ -228,7 +204,7 @@ std::string jsonStringFromJSResult(id result)
     if (self.backend)
     {
         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
-        backendPtr->platformFireLoadFinished(true);
+        backendPtr->emitLoadFinished(true);
     }
 }
 
@@ -241,8 +217,8 @@ std::string jsonStringFromJSResult(id result)
         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
         int code = static_cast<int>(error.code);
         std::string message = error.localizedDescription.UTF8String ?: "";
-        backendPtr->platformFireLoadFailed(code, message);
-        backendPtr->platformFireLoadFinished(false);
+        backendPtr->emitLoadFailed(code, message);
+        backendPtr->emitLoadFinished(false);
     }
 }
 
@@ -255,8 +231,8 @@ std::string jsonStringFromJSResult(id result)
         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
         int code = static_cast<int>(error.code);
         std::string message = error.localizedDescription.UTF8String ?: "";
-        backendPtr->platformFireLoadFailed(code, message);
-        backendPtr->platformFireLoadFinished(false);
+        backendPtr->emitLoadFailed(code, message);
+        backendPtr->emitLoadFinished(false);
     }
 }
 
@@ -268,7 +244,7 @@ std::string jsonStringFromJSResult(id result)
     {
         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
         std::string url = std::string(webView.URL.absoluteString.UTF8String);
-        backendPtr->platformFireUrlChanged(url);
+        backendPtr->emitUrlChanged(url);
     }
 }
 
@@ -306,7 +282,7 @@ std::string jsonStringFromJSResult(id result)
         {
             auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
             std::string title = std::string(webView.title.UTF8String);
-            backendPtr->platformFireTitleChanged(title);
+            backendPtr->emitTitleChanged(title);
         }
     }
 }
@@ -320,7 +296,7 @@ std::string jsonStringFromJSResult(id result)
         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
         std::string channel = std::string(message.name.UTF8String ?: "");
         std::string payload = std::string(((NSString*)message.body).UTF8String ?: "");
-        backendPtr->platformFireScriptMessage(channel, payload);
+        backendPtr->emitScriptMessage(channel, payload);
     }
 }
 
@@ -507,24 +483,12 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
         return false;
     }
 
-    // Deduplicate while preserving order; fall back to the default "app" scheme
-    // when none are provided. Every scheme must be a valid, non-reserved custom
-    // scheme, otherwise WebKit would throw when registering the handler.
-    std::vector<std::string> schemes;
-    for (const std::string& scheme : options.customSchemes)
+    // Validate, deduplicate, and default the custom schemes (shared with the Windows backend).
+    std::optional<std::vector<std::string>> schemes =
+        ucf::infrastructure::webview::scheme_utils::normalizeCustomSchemes(options.customSchemes);
+    if (!schemes)
     {
-        if (!isValidCustomScheme(scheme))
-        {
-            return false;
-        }
-        if (std::find(schemes.cbegin(), schemes.cend(), scheme) == schemes.cend())
-        {
-            schemes.push_back(scheme);
-        }
-    }
-    if (schemes.empty())
-    {
-        schemes.emplace_back("app");
+        return false;
     }
 
     @autoreleasepool {
@@ -561,8 +525,8 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
         // Custom scheme handlers MUST be attached to the configuration BEFORE
         // the WKWebView is constructed; changes to config after construction
         // are silently ignored by WebKit.
-        m_impl->customSchemes = schemes;
-        for (const std::string& scheme : schemes)
+        m_impl->customSchemes = *schemes;
+        for (const std::string& scheme : *schemes)
         {
             NSString* nsScheme = [NSString stringWithUTF8String:scheme.c_str()];
             [config setURLSchemeHandler:m_impl->helper forURLScheme:nsScheme];
@@ -610,7 +574,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
                 if (helper.backend)
                 {
                     auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(helper.backend);
-                    backendPtr->platformFireWebViewReady();
+                    backendPtr->emitWebViewReady();
                 }
             });
         }
@@ -628,7 +592,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
                 [uccRef addContentRuleList:list];
                 auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(helper.backend);
                 backendPtr->m_impl->ready = true;
-                backendPtr->platformFireWebViewReady();
+                backendPtr->emitWebViewReady();
             };
 
             // Reuse a previously compiled list when the policy is unchanged;
@@ -653,7 +617,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
                         auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(helper.backend);
                         const char* desc = compileError.localizedDescription.UTF8String;
                         std::string msg = desc ? std::string(desc) : std::string("content rule list compilation failed");
-                        backendPtr->platformFireLoadFailed(kWebErrorContentPolicyCompileFailed, msg);
+                        backendPtr->emitLoadFailed(kWebErrorContentPolicyCompileFailed, msg);
                     }
                 }];
             }];
