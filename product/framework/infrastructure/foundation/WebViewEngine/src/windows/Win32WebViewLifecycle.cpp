@@ -46,6 +46,10 @@ bool Win32WebView::Impl::createHostWindow()
     // IDC_ARROW is a MAKEINTRESOURCE atom; reinterpret to the wide form since
     // the project is not compiled with UNICODE defined globally.
     wc.hCursor = ::LoadCursorW(nullptr, reinterpret_cast<LPCWSTR>(IDC_ARROW));
+    // Paint the window with the system window color before the controller draws,
+    // so there is no black/white flash while WebView2 spins up. A system-color
+    // brush (COLOR_WINDOW + 1) needs no GDI object and is never leaked.
+    wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
     // RegisterClassEx fails harmlessly if the class already exists (multiple
     // web views in one process); treat ERROR_CLASS_ALREADY_EXISTS as success.
     if (::RegisterClassExW(&wc) == 0)

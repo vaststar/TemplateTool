@@ -5,6 +5,9 @@
 
 #include <memory>
 
+class QLabel;
+class QStackedWidget;
+
 namespace commonHead::viewModels {
     class IMiniAppRuntimeViewModel;
 }
@@ -32,6 +35,8 @@ public:
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> m_viewModel;
     std::shared_ptr<UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter> m_emitter;
+    QStackedWidget* m_stack = nullptr;   // page 0: loading, page 1: content
+    QLabel* m_loadingLabel = nullptr;    // status text on the loading page
 };
 
 } // namespace MiniAppRuntime

@@ -353,7 +353,17 @@
 <context>
     <name>MiniAppRuntime::MiniAppHostWindow</name>
     <message>
-        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="72"/>
+        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="49"/>
+        <source>Loading %1…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="75"/>
+        <source>Failed to load (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="108"/>
         <source>Mini app &quot;%1&quot; runtime is ready.
 No web-view backend is wired yet.</source>
         <translation type="unfinished"></translation>
