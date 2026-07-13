@@ -40,18 +40,29 @@ std::string toJsonEvent(const std::string& eventName, const JsonValue& data)
 class MiniAppBridgeCore::Impl
 {
 public:
-    std::mutex mutex;
-    std::function<void(const std::string&)> sink;
+    struct Outbox
+    {
+        std::mutex mutex;
+        std::function<void(const std::string&)> sink;
+
+        void post(const std::string& json)
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            if (sink)
+            {
+                sink(json);
+            }
+        }
+    };
+
+    std::mutex mutex; // guards handlers + grantedPermissions
+    std::shared_ptr<Outbox> outbox = std::make_shared<Outbox>();
     std::unordered_set<std::string> grantedPermissions;
     std::map<std::string, std::shared_ptr<IBridgeMethodHandler>> handlers;
 
     void post(const std::string& json)
     {
-        std::lock_guard<std::mutex> lock(mutex);
-        if (sink)
-        {
-            sink(json);
-        }
+        outbox->post(json);
     }
 };
 
@@ -64,8 +75,8 @@ MiniAppBridgeCore::~MiniAppBridgeCore() = default;
 
 void MiniAppBridgeCore::setMessageSink(std::function<void(const std::string&)> sink)
 {
-    std::lock_guard<std::mutex> lock(m_impl->mutex);
-    m_impl->sink = std::move(sink);
+    std::lock_guard<std::mutex> lock(m_impl->outbox->mutex);
+    m_impl->outbox->sink = std::move(sink);
 }
 
 void MiniAppBridgeCore::setGrantedPermissions(const std::vector<std::string>& grantedPermissions)
@@ -87,12 +98,6 @@ void MiniAppBridgeCore::registerHandler(std::shared_ptr<IBridgeMethodHandler> ha
 
     std::lock_guard<std::mutex> lock(m_impl->mutex);
     m_impl->handlers[handler->moduleName()] = std::move(handler);
-}
-
-void MiniAppBridgeCore::unregisterHandler(const std::string& moduleName)
-{
-    std::lock_guard<std::mutex> lock(m_impl->mutex);
-    m_impl->handlers.erase(moduleName);
 }
 
 void MiniAppBridgeCore::clearHandlers()
@@ -168,15 +173,15 @@ void MiniAppBridgeCore::onInboundMessage(const std::string& json)
 
     handler->handle(action,
                     params,
-                    [this, id](bool ok, const JsonValue& payload) {
-                        m_impl->post(toJsonCallback(id, ok, payload));
+                    [weakOutbox = std::weak_ptr<Impl::Outbox>(m_impl->outbox), id](bool ok, const JsonValue& payload) {
+                        if (auto outbox = weakOutbox.lock())
+                        {
+                            outbox->post(toJsonCallback(id, ok, payload));
+                        }
                     });
 }
 
-// Currently unused convenience: a typed wrapper that guarantees a well-formed
-// {type:"event", ...} envelope. Equivalent output can be produced today via
-// MiniAppRuntimeAgent::postBridgeMessage(); this is not wired to the public API.
-void MiniAppBridgeCore::emitEvent(const std::string& eventName, const JsonValue& data)
+void MiniAppBridgeCore::postEvent(const std::string& eventName, const JsonValue& data)
 {
     m_impl->post(toJsonEvent(eventName, data));
 }

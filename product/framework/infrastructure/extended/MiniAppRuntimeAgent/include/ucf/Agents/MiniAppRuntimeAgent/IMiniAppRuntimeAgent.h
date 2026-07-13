@@ -24,11 +24,11 @@ public:
 
     virtual void loadEntry() = 0;
 
-    // Send a JSON payload to page-side bridge dispatcher.
-    virtual void postBridgeMessage(const std::string& json) = 0;
+    // Push a structured event to the page-side bridge dispatcher. Delivered to
+    // subscribers registered via MiniApp.on(eventName, cb).
+    virtual void postEvent(const std::string& eventName, const JsonValue& data) = 0;
 
     virtual void registerBridgeHandler(std::shared_ptr<IBridgeMethodHandler> handler) = 0;
-    virtual void clearBridgeHandlers() = 0;
 
     [[nodiscard]] virtual ucf::infrastructure::webview::NativeHostHandle nativeHostHandle() const = 0;
 };

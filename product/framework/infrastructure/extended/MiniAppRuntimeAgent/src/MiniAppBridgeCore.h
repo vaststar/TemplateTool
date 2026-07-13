@@ -29,17 +29,11 @@ public:
     void setGrantedPermissions(const std::vector<std::string>& grantedPermissions);
 
     void registerHandler(std::shared_ptr<IBridgeMethodHandler> handler);
-    void unregisterHandler(const std::string& moduleName);
     void clearHandlers();
 
     void onInboundMessage(const std::string& json);
 
-    // Push a structured "event" envelope to the page (type:"event").
-    // NOTE: currently unused. It is a typed convenience over the raw
-    // MiniAppRuntimeAgent::postBridgeMessage() path (which can already send any
-    // envelope), kept only so event emission has a single well-formed producer.
-    // Not yet exposed through the agent's public interface.
-    void emitEvent(const std::string& eventName, const JsonValue& data);
+    void postEvent(const std::string& eventName, const JsonValue& data);
 
 private:
     class Impl;

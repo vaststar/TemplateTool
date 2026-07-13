@@ -25,10 +25,9 @@ public:
 
     void loadEntry() override;
 
-    void postBridgeMessage(const std::string& json) override;
+    void postEvent(const std::string& eventName, const JsonValue& data) override;
 
     void registerBridgeHandler(std::shared_ptr<IBridgeMethodHandler> handler) override;
-    void clearBridgeHandlers() override;
 
     [[nodiscard]] ucf::infrastructure::webview::NativeHostHandle nativeHostHandle() const override;
 

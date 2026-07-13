@@ -20,7 +20,6 @@ struct MiniAppRuntimeAgentConfig
 
     std::vector<std::string> grantedPermissions;
     std::vector<std::string> documentStartScripts;
-    std::vector<std::string> additionalScriptChannels;
 
     bool allowNetworkByDefault = true;
     std::vector<std::string> allowedNetworkHosts;

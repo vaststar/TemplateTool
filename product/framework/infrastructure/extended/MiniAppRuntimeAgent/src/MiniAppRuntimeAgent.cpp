@@ -156,14 +156,6 @@ bool MiniAppRuntimeAgent::initialize(const MiniAppRuntimeAgentConfig& config)
                                             config.documentStartScripts.end());
 
         options.scriptChannels.push_back(config.bridgeChannel);
-        for (const auto& channel : config.additionalScriptChannels)
-        {
-            if (!channel.empty() && std::find(options.scriptChannels.cbegin(), options.scriptChannels.cend(), channel) ==
-                                      options.scriptChannels.cend())
-            {
-                options.scriptChannels.push_back(channel);
-            }
-        }
 
         // Engine-level network access control. Semantics mirror the former host
         // allow-list: a non-empty allow-list is exclusive; an empty list falls
@@ -297,25 +289,18 @@ std::string MiniAppRuntimeAgent::buildEntryUrlLocked() const
     return scheme + "://" + m_impl->config.appId + "/" + trimLeadingSlashes(entry);
 }
 
-void MiniAppRuntimeAgent::postBridgeMessage(const std::string& json)
+void MiniAppRuntimeAgent::postEvent(const std::string& eventName, const JsonValue& data)
 {
-    std::lock_guard<std::mutex> lock(m_impl->mutex);
-    if (m_impl->webView)
-    {
-        m_impl->webView->evaluateJavaScript(wrapDispatch(json));
-    }
+    // Route through the bridge core: it owns the outbound sink and produces a
+    // well-formed {type:"event"} envelope, and has its own mutex so we avoid
+    // re-entering the agent lock.
+    m_impl->bridgeCore.postEvent(eventName, data);
 }
 
 void MiniAppRuntimeAgent::registerBridgeHandler(std::shared_ptr<IBridgeMethodHandler> handler)
 {
     std::lock_guard<std::mutex> lock(m_impl->mutex);
     m_impl->bridgeCore.registerHandler(std::move(handler));
-}
-
-void MiniAppRuntimeAgent::clearBridgeHandlers()
-{
-    std::lock_guard<std::mutex> lock(m_impl->mutex);
-    m_impl->bridgeCore.clearHandlers();
 }
 
 ucf::infrastructure::webview::NativeHostHandle MiniAppRuntimeAgent::nativeHostHandle() const
@@ -395,7 +380,6 @@ void MiniAppRuntimeAgent::onWebViewScriptMessage(const std::string& channel, con
     {
         m_impl->bridgeCore.onInboundMessage(payload);
     }
-    fireNotification(&IMiniAppRuntimeAgentCallback::onRawScriptMessage, channel, payload);
 }
 
 std::shared_ptr<IMiniAppRuntimeAgent> createMiniAppRuntimeAgent()
