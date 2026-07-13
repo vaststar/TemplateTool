@@ -14,20 +14,6 @@ namespace ucf::agents {
 
 using JsonValue = ucf::utilities::JsonValue;
 
-struct BridgeRequest
-{
-    std::int64_t id = -1;
-    std::string method;
-    JsonValue params = JsonValue::object();
-};
-
-struct BridgeError
-{
-    int code = 0;
-    std::string message;
-    JsonValue details = JsonValue::object();
-};
-
 struct ResolvedResource
 {
     bool handled = false;
