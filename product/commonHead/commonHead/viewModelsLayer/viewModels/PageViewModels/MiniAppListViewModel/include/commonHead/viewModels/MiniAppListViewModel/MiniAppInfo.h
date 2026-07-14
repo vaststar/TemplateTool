@@ -10,8 +10,9 @@ namespace commonHead::viewModels::model {
 /**
  * @brief Metadata describing a single installed mini app.
  *
- * Parsed from a mini app's manifest. For the current shell stage the fields are
- * populated with placeholder data; later they will be filled from manifest.json.
+ * Built from the service-layer manifest (see toMiniAppInfo). Path fields the
+ * service resolves lazily (storageDir/cacheDir) stay empty until the app is
+ * launched.
  */
 struct COMMONHEAD_EXPORT MiniAppInfo
 {

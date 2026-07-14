@@ -43,10 +43,7 @@ class COMMONHEAD_EXPORT IMiniAppRuntimeViewModel
 public:
     using IViewModel::IViewModel;
 
-    // Resolve the app by id from the mini-app service, build and start the
-    // runtime, then load its entry page. Returns false if the app is unknown or
-    // the runtime failed to initialize.
-    virtual bool start(const std::string& appId) = 0;
+    virtual void start(const std::string& appId) = 0;
 
     // Tear down the runtime. Safe to call more than once.
     virtual void stop() = 0;

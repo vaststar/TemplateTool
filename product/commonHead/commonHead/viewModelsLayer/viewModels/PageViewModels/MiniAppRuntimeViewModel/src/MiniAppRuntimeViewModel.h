@@ -31,7 +31,7 @@ public:
 
 public:
     std::string getViewModelName() const override;
-    bool start(const std::string& appId) override;
+    void start(const std::string& appId) override;
     void stop() override;
     bool isReady() const override;
     std::uintptr_t nativeHostHandle() const override;

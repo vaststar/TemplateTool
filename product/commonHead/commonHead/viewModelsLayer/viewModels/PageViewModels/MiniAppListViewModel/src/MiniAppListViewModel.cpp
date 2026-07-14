@@ -98,6 +98,10 @@ void MiniAppListViewModel::init()
         rebuildFromService();
         fireNotification(&IMiniAppListViewModelCallback::onMiniAppListChanged);
     }
+    else
+    {
+        COMMONHEAD_LOG_DEBUG("MiniAppListViewModel init: service not ready, waiting for onMiniAppServiceReady");
+    }
 }
 
 std::shared_ptr<ucf::service::IMiniAppService> MiniAppListViewModel::lockService() const
@@ -161,7 +165,6 @@ void MiniAppListViewModel::installMiniApp(const std::string& sourceDirectory)
         return;
     }
     COMMONHEAD_LOG_INFO("installMiniApp from: " << sourceDirectory);
-    // The service drives onMiniAppInstalled / onMiniAppInstallFailed via the callback.
     service->installFromDirectory(sourceDirectory);
 }
 
@@ -175,7 +178,6 @@ void MiniAppListViewModel::uninstallMiniApp(const std::string& id)
         return;
     }
     COMMONHEAD_LOG_INFO("uninstallMiniApp, id:" << id);
-    // The service drives onMiniAppUninstalled / onMiniAppUninstallFailed via the callback.
     service->uninstall(id);
 }
 
