@@ -68,8 +68,7 @@ bool hostMatches(const std::string& host, const std::string& entry, bool include
     return false;
 }
 
-// Mirrors the WKContentRuleList ordering: blocked hosts take precedence, then
-// allowed hosts, then the default action for everything else.
+// Mirrors the WKContentRuleList ordering: blocked > allowed > default action.
 bool isRemoteAllowed(const std::string& host, const NetworkAccessPolicy& policy)
 {
     for (const std::string& blocked : policy.blockedHosts)
@@ -153,13 +152,61 @@ void Win32WebView::Impl::handleWebResourceRequested(ICoreWebView2WebResourceRequ
         return;
     }
 
-    respondToInterception(args, dispatcher.dispatch(buildWebRequest(request.Get(), url)));
+    // Resolve off the UI thread: defer the response, read on a thread-pool
+    // thread, then marshal back to the UI thread to respond and complete.
+    ComPtr<ICoreWebView2Deferral> deferral;
+    if (FAILED(args->GetDeferral(&deferral)) || !deferral)
+    {
+        // Deferral unavailable: fall back to synchronous resolution.
+        respondToInterception(args, dispatcher.dispatch(buildWebRequest(request.Get(), url)));
+        return;
+    }
+
+    auto pending = std::make_unique<PendingResourceResponse>();
+    pending->request = buildWebRequest(request.Get(), url);
+    pending->interceptors = dispatcher.snapshot();
+    pending->alive = alive;
+    pending->impl = this;
+    pending->hostWindow = hostWindow;
+    pending->args = args;         // COM objects: only touched on the UI thread
+    pending->deferral = deferral;
+
+    PendingResourceResponse* raw = pending.get();
+    if (::TrySubmitThreadpoolCallback(&Impl::resolveOnThreadPool, raw, nullptr))
+    {
+        pending.release(); // ownership passes to the callback -> UI-thread handler
+    }
+    else
+    {
+        // Could not queue work: resolve synchronously and complete now.
+        pending->result = InterceptorDispatcher::dispatchSnapshot(pending->interceptors, pending->request);
+        respondToInterception(args, pending->result);
+        deferral->Complete();
+    }
+}
+
+void CALLBACK Win32WebView::Impl::resolveOnThreadPool(PTP_CALLBACK_INSTANCE, void* context)
+{
+    auto* pending = static_cast<PendingResourceResponse*>(context);
+    if (!pending)
+    {
+        return;
+    }
+
+    // File read off the UI thread; the interceptor snapshot keeps the resolver
+    // alive regardless of the backend's lifetime.
+    pending->result = InterceptorDispatcher::dispatchSnapshot(pending->interceptors, pending->request);
+
+    if (!::PostMessageW(pending->hostWindow, kUcfResourceResolvedMessage, 0, reinterpret_cast<LPARAM>(pending)))
+    {
+        // Host window gone (teardown): drop without touching the deferral.
+        delete pending;
+    }
 }
 
 void Win32WebView::Impl::applyRemotePolicy(
     ICoreWebView2WebResourceRequestedEventArgs* args, const std::string& url)
 {
-    // No policy, or the host is allowed: let WebView2 perform the fetch.
     if (!options.networkPolicy.has_value() || isRemoteAllowed(hostOf(url), *options.networkPolicy))
     {
         return;
@@ -193,7 +240,6 @@ WebRequest Win32WebView::Impl::buildWebRequest(
                 LPWSTR value = nullptr;
                 if (SUCCEEDED(it->GetCurrentHeader(&name, &value)))
                 {
-                    // takeCoTaskString frees both; a header name is never empty.
                     const std::string key = takeCoTaskString(name);
                     const std::string val = takeCoTaskString(value);
                     if (!key.empty())

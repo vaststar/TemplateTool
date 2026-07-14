@@ -18,6 +18,13 @@
 // Must be declared at global scope, not inside namespace.
 @interface WkWebViewHelper : NSObject <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, WKURLSchemeHandler>
 @property (nonatomic, assign) void* backend;  // void* to avoid circular C++/Obj-C dependency
+// Custom-scheme tasks currently in flight, retained here so they stay valid
+// while their resource is resolved off the main thread. Only touched on the
+// main thread (WebKit calls start/stopURLSchemeTask there), so no lock needed.
+@property (nonatomic, strong) NSMutableSet* activeTasks;
+// Deliver a resolved InterceptResult to a task. Called on the main thread only.
+- (void)deliverResult:(const ucf::infrastructure::webview::InterceptResult&)result
+               toTask:(id<WKURLSchemeTask>)urlSchemeTask;
 @end
 
 namespace ucf::infrastructure::webview {
@@ -180,6 +187,15 @@ std::string jsonStringFromJSResult(id result)
     return std::string([[result description] UTF8String] ?: "");
 }
 
+// Shared concurrent queue for resolving custom-scheme resources off the main
+// thread (reads happen in parallel; delivery is hopped back to the main queue).
+dispatch_queue_t resolveQueue()
+{
+    static dispatch_queue_t queue =
+        dispatch_queue_create("com.miniapp.webview.resolve", DISPATCH_QUEUE_CONCURRENT);
+    return queue;
+}
+
 } // namespace
 
 @implementation WkWebViewHelper
@@ -255,12 +271,8 @@ std::string jsonStringFromJSResult(id result)
 {
     (void)configuration;
     (void)windowFeatures;
-    // WKWebView has no window/tab manager of its own, so it delegates the
-    // "open a new window" decision to the host. Without this, target=_blank /
-    // window.open requests (common in third-party SSO logins such as WeChat or
-    // Google) would be silently dropped and appear as a dead button. As an
-    // embedded container we have no separate window, so load the request into
-    // the current web view instead of creating a new one.
+    // Embedded container with no separate window: load target=_blank /
+    // window.open requests into the current web view instead of dropping them.
     if (!navigationAction.targetFrame)
     {
         [webView loadRequest:navigationAction.request];
@@ -343,21 +355,50 @@ std::string jsonStringFromJSResult(id result)
         webRequest.body.assign(bodyPtr, bodyPtr + nsRequest.HTTPBody.length);
     }
 
-    // Call dispatcher
+    // Snapshot the interceptors on the main thread so the off-thread resolve is
+    // independent of the backend's lifetime (the shared_ptrs keep the resolver
+    // alive even if the WkWebView is destroyed mid-flight).
     auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(self.backend);
-    ucf::infrastructure::webview::InterceptResult result = backendPtr->internalDispatcher().dispatch(webRequest);
+    auto interceptors = backendPtr->internalDispatcher().snapshot();
 
-    // Handle result
+    // Track the task as in-flight (retains it) so we can detect a later stop.
+    [self.activeTasks addObject:urlSchemeTask];
+
+    // Blocks capture `self` strongly (this file is manual reference counting):
+    // the helper stays alive through the async chain, so activeTasks stays valid.
+    // The backend may still be destroyed underneath us (nulls self.backend).
+    dispatch_async(resolveQueue(), ^{
+        // Reads the file off the main thread.
+        ucf::infrastructure::webview::InterceptResult result =
+            ucf::infrastructure::webview::InterceptorDispatcher::dispatchSnapshot(interceptors, webRequest);
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Skip if the backend is gone or the task was stopped/torn down: a
+            // stopped WKURLSchemeTask must never be messaged again.
+            if (!self.backend)
+            {
+                return;
+            }
+            if (![self.activeTasks containsObject:urlSchemeTask])
+            {
+                return;
+            }
+            [self deliverResult:result toTask:urlSchemeTask];
+            [self.activeTasks removeObject:urlSchemeTask];
+        });
+    });
+}
+
+- (void)deliverResult:(const ucf::infrastructure::webview::InterceptResult&)result
+               toTask:(id<WKURLSchemeTask>)urlSchemeTask
+{
     using ucf::infrastructure::webview::InterceptAction;
     switch (result.action)
     {
         case InterceptAction::Continue:
         {
-            // This scheme handler is installed only for the registered custom
-            // schemes. Native http(s) requests bypass this handler and are
-            // processed by WebKit. For a custom scheme, Continue is unsupported
-            // because WebKit delegates the full response responsibility to the
-            // custom handler.
+            // Custom-scheme request no interceptor served. WebKit delegates the
+            // full response to this handler, so Continue is unsupported -> fail.
             NSString* scheme = urlSchemeTask.request.URL.scheme ?: @"?";
             NSString* desc = [NSString stringWithFormat:@"%@:// request was not handled", scheme];
             NSError* error = [NSError errorWithDomain:@"WebViewEngine"
@@ -433,7 +474,8 @@ std::string jsonStringFromJSResult(id result)
 - (void)webView:(WKWebView*)webView stopURLSchemeTask:(id<WKURLSchemeTask>)urlSchemeTask
 {
     (void)webView;
-    (void)urlSchemeTask;
+    // Mark the task dead so any in-flight resolve that completes later skips it.
+    [self.activeTasks removeObject:urlSchemeTask];
 }
 
 @end
@@ -497,6 +539,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
 
         m_impl->helper = [[WkWebViewHelper alloc] init];
         m_impl->helper.backend = reinterpret_cast<void*>(this);
+        m_impl->helper.activeTasks = [NSMutableSet set];
 
         WKWebViewConfiguration* config = [[[WKWebViewConfiguration alloc] init] autorelease];
         WKUserContentController* ucc = [[[WKUserContentController alloc] init] autorelease];
@@ -568,9 +611,8 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
         {
             m_impl->ready = true;
 
-            // Notify readiness on the next main-loop turn so that consumers which
-            // register their callback right after initialize() still receive it,
-            // and so the contract matches asynchronous backends (e.g. WebView2).
+            // Notify readiness on the next main-loop turn so late-registered
+            // callbacks still receive it (matches async backends like WebView2).
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (helper.backend)
                 {

@@ -107,7 +107,30 @@ public:
         IStream* body, int statusCode, const wchar_t* reasonPhrase, const std::wstring& headers) const;
     bool isCustomScheme(const std::string& scheme) const;
 
+    // Thread-pool entry that resolves a custom-scheme resource off the UI thread,
+    // then posts the result back to the host window for delivery.
+    static void CALLBACK resolveOnThreadPool(PTP_CALLBACK_INSTANCE instance, void* context);
+
     static LRESULT CALLBACK hostWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+};
+
+// Custom window message to marshal an off-thread resource resolution back to the
+// UI thread. lParam is an owning PendingResourceResponse* the handler deletes.
+inline constexpr UINT kUcfResourceResolvedMessage = WM_APP + 1;
+
+// Context carried from the request handler, through the thread-pool resolve, and
+// back to the UI thread. COM members are only touched on the UI thread; the
+// thread pool only reads request/interceptors and writes result.
+struct PendingResourceResponse
+{
+    ComPtr<ICoreWebView2WebResourceRequestedEventArgs> args;
+    ComPtr<ICoreWebView2Deferral> deferral;
+    WebRequest request;
+    std::vector<std::shared_ptr<IRequestInterceptor>> interceptors;
+    InterceptResult result;
+    std::shared_ptr<std::atomic<bool>> alive;
+    Win32WebView::Impl* impl = nullptr;
+    HWND hostWindow = nullptr;
 };
 
 } // namespace ucf::infrastructure::webview

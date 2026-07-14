@@ -31,6 +31,25 @@ LRESULT CALLBACK Win32WebView::Impl::hostWndProc(HWND hwnd, UINT msg, WPARAM wPa
     {
         self->resizeControllerToClient();
     }
+    else if (msg == kUcfResourceResolvedMessage)
+    {
+        // An off-thread resource resolution came back. Deliver on this (UI)
+        // thread and complete the deferral, then free the context.
+        auto* pending = reinterpret_cast<PendingResourceResponse*>(lParam);
+        if (pending)
+        {
+            if (pending->alive && pending->alive->load() && pending->impl)
+            {
+                pending->impl->respondToInterception(pending->args.Get(), pending->result);
+                if (pending->deferral)
+                {
+                    pending->deferral->Complete();
+                }
+            }
+            delete pending;
+        }
+        return 0;
+    }
     return ::DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
@@ -46,9 +65,8 @@ bool Win32WebView::Impl::createHostWindow()
     // IDC_ARROW is a MAKEINTRESOURCE atom; reinterpret to the wide form since
     // the project is not compiled with UNICODE defined globally.
     wc.hCursor = ::LoadCursorW(nullptr, reinterpret_cast<LPCWSTR>(IDC_ARROW));
-    // Paint the window with the system window color before the controller draws,
-    // so there is no black/white flash while WebView2 spins up. A system-color
-    // brush (COLOR_WINDOW + 1) needs no GDI object and is never leaked.
+    // System-color brush (COLOR_WINDOW + 1) paints the window before the
+    // controller draws, avoiding a flash while WebView2 spins up.
     wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
     // RegisterClassEx fails harmlessly if the class already exists (multiple
     // web views in one process); treat ERROR_CLASS_ALREADY_EXISTS as success.
@@ -61,9 +79,8 @@ bool Win32WebView::Impl::createHostWindow()
         }
     }
 
-    // Child of the desktop, hidden until embedded. The UI layer wraps this HWND
-    // with QWindow::fromWinId() and reparents it into a container, after which
-    // Qt drives sizing (delivered here as WM_SIZE).
+    // Child of the desktop, hidden until the UI reparents it via
+    // QWindow::fromWinId(); Qt then drives sizing (delivered here as WM_SIZE).
     hostWindow = ::CreateWindowExW(
         0,
         kHostWindowClass,
@@ -110,7 +127,7 @@ bool Win32WebView::Impl::startEnvironmentCreation()
         return false;
     }
 
-    // Register the custom schemes so app:// requests are delivered to the
+    // Register the custom schemes so app:// requests reach the
     // WebResourceRequested handler (the WebView2 analogue of WKURLSchemeHandler).
     std::vector<ComPtr<ICoreWebView2CustomSchemeRegistration>> registrations;
     for (const std::string& scheme : customSchemes)
@@ -355,10 +372,8 @@ void Win32WebView::Impl::wireEvents()
             .Get(),
         &token);
 
-    // Filter every request; the handler routes custom-scheme URLs to the
-    // interceptor chain and applies the network policy to remote URLs. Prefer
-    // the source-kinds overload (ICoreWebView2_22+) so iframe requests are also
-    // intercepted; fall back to the deprecated filter on older runtimes.
+    // Filter every request. Prefer the source-kinds overload (ICoreWebView2_22+)
+    // so iframe requests are also intercepted; fall back on older runtimes.
     ComPtr<ICoreWebView2_22> webView22;
     if (SUCCEEDED(webView.As(&webView22)) && webView22)
     {

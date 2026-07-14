@@ -44,20 +44,33 @@ void InterceptorDispatcher::clear()
 
 InterceptResult InterceptorDispatcher::dispatch(const WebRequest& request) const
 {
-    std::vector<Item> snapshot;
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        snapshot = m_items;
-    }
+    return dispatchSnapshot(snapshot(), request);
+}
 
-    for (const Item& item : snapshot)
+std::vector<std::shared_ptr<IRequestInterceptor>> InterceptorDispatcher::snapshot() const
+{
+    std::vector<std::shared_ptr<IRequestInterceptor>> result;
+    std::lock_guard<std::mutex> lock(m_mutex);
+    result.reserve(m_items.size());
+    for (const Item& item : m_items)
     {
-        if (!item.interceptor || !item.interceptor->match(request))
+        result.push_back(item.interceptor);
+    }
+    return result;
+}
+
+InterceptResult InterceptorDispatcher::dispatchSnapshot(
+    const std::vector<std::shared_ptr<IRequestInterceptor>>& interceptors,
+    const WebRequest& request)
+{
+    for (const auto& interceptor : interceptors)
+    {
+        if (!interceptor || !interceptor->match(request))
         {
             continue;
         }
 
-        const InterceptResult result = item.interceptor->intercept(request);
+        const InterceptResult result = interceptor->intercept(request);
         if (result.action != InterceptAction::Continue)
         {
             return result;
