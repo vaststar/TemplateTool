@@ -60,6 +60,10 @@ private:
 private:
     class Impl;
     std::unique_ptr<Impl> m_impl;
+
+    // Off-thread resource resolution marshals results through this struct, which
+    // needs to name the otherwise-private Impl.
+    friend struct PendingResourceResponse;
 };
 
 } // namespace ucf::infrastructure::webview
