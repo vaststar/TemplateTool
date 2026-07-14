@@ -287,19 +287,6 @@
     </message>
 </context>
 <context>
-    <name>MiniAppHostDialog</name>
-    <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppHostDialog.qml" line="16"/>
-        <source>Mini App - </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppHostDialog.qml" line="37"/>
-        <source>Content area (WebEngine to be integrated) - </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MiniAppListPage</name>
     <message>
         <location filename="../../UIView/PageViews/MiniAppsPage/qml/MiniAppListPage.qml" line="27"/>
@@ -335,37 +322,36 @@
 <context>
     <name>MiniAppListPageController</name>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="170"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="176"/>
         <source>Uninstall Mini App</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="171"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="177"/>
         <source>Uninstall &quot;%1&quot;? This removes its package and data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="172"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppListPageController.cpp" line="178"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MiniAppRuntime::MiniAppHostWindow</name>
+    <name>MiniAppsPage::MiniAppHostWindow</name>
     <message>
-        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="49"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppHostWindow.cpp" line="55"/>
         <source>Loading %1…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="75"/>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppHostWindow.cpp" line="91"/>
         <source>Failed to load (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/MiniAppRuntime/src/MiniAppHostWindow.cpp" line="108"/>
-        <source>Mini app &quot;%1&quot; runtime is ready.
-No web-view backend is wired yet.</source>
+        <location filename="../../UIView/PageViews/MiniAppsPage/src/MiniAppHostWindow.cpp" line="110"/>
+        <source>No web-view backend is available.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

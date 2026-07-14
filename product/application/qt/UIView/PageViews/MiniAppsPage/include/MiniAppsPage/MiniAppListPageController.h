@@ -2,6 +2,8 @@
 
 #include <QObject>
 #include <QtQml>
+#include <QHash>
+#include <QPointer>
 #include <QString>
 #include <QVariantList>
 
@@ -19,17 +21,17 @@ namespace UIVMSignalEmitter
     class MiniAppListViewModelEmitter;
 }
 
-namespace MiniAppRuntime
+namespace MiniAppsPage
 {
-    class MiniAppRuntimeManager;
+    class MiniAppHostWindow;
 }
 
 /**
  * @brief Controller backing the mini app list page.
  *
- * Exposes the installed mini apps to QML and hands off to the MiniAppRuntime
- * when the user launches one. The runtime owns the host window and web-view
- * lifecycle; this controller only builds the launch context.
+ * Exposes the installed mini apps to QML and, on launch, spawns a
+ * MiniAppHostWindow per app id (each window owns its runtime controller).
+ * Keeps a registry so a repeat launch raises the existing window.
  */
 class MiniAppListPageController : public UIViewController
 {
@@ -70,6 +72,8 @@ private:
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> mViewModel;
     std::shared_ptr<UIVMSignalEmitter::MiniAppListViewModelEmitter> mEmitter;
-    std::unique_ptr<MiniAppRuntime::MiniAppRuntimeManager> mRuntimeManager;
+    // One running host window per app id. Each window owns its controller and
+    // self-deletes on close; the QPointer auto-clears when that happens.
+    QHash<QString, QPointer<MiniAppsPage::MiniAppHostWindow>> mWindows;
     QVariantList mMiniApps;
 };

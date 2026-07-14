@@ -6,18 +6,16 @@
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
-#include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include "ViewModelSingalEmitter/MiniAppListViewModelEmitter.h"
 
-#include "MiniAppRuntime/MiniAppRuntimeManager.h"
+#include "MiniAppHostWindow.h"
 
 MiniAppListPageController::MiniAppListPageController(QObject* parent)
     : UIViewController(parent)
     , mEmitter(std::make_shared<UIVMSignalEmitter::MiniAppListViewModelEmitter>())
-    , mRuntimeManager(std::make_unique<MiniAppRuntime::MiniAppRuntimeManager>())
 {
     UIVIEW_LOG_DEBUG("create MiniAppListPageController");
 }
@@ -25,6 +23,18 @@ MiniAppListPageController::MiniAppListPageController(QObject* parent)
 MiniAppListPageController::~MiniAppListPageController()
 {
     UIVIEW_LOG_DEBUG("delete MiniAppListPageController");
+    // The host windows are top-level (unparented), so close any that are still
+    // open. Clear the registry first so the destroyed() handler is a no-op and
+    // we do not mutate the container while iterating.
+    const auto windows = mWindows;
+    mWindows.clear();
+    for (const auto& window : windows)
+    {
+        if (!window.isNull())
+        {
+            delete window.data();
+        }
+    }
 }
 
 void MiniAppListPageController::init()
@@ -68,9 +78,6 @@ void MiniAppListPageController::reloadMiniApps()
         entry.insert(QStringLiteral("id"),          QString::fromStdString(app.id));
         entry.insert(QStringLiteral("name"),        QString::fromStdString(app.name));
         entry.insert(QStringLiteral("description"), QString::fromStdString(app.description));
-        // iconPath is an absolute filesystem path (or empty). Convert to a
-        // file URL for QML's Image.source; empty stays empty so QML falls back
-        // to the letter placeholder.
         const QString iconPath = QString::fromStdString(app.iconPath);
         entry.insert(QStringLiteral("iconUrl"),
                      iconPath.isEmpty() ? QString() : QUrl::fromLocalFile(iconPath).toString());
@@ -99,24 +106,23 @@ void MiniAppListPageController::launchMiniApp(const QString& id)
     }
 
     const QString appId = QString::fromStdString(app.id);
-    if (mRuntimeManager->isRunning(appId))
+    if (auto it = mWindows.constFind(appId); it != mWindows.constEnd() && !it.value().isNull())
     {
-        // Already open: hand the manager a null view model so it just raises
-        // the existing window instead of building a new runtime.
-        mRuntimeManager->launch(nullptr, appId, QString::fromStdString(app.name));
+        UIVIEW_LOG_INFO("launchMiniApp: raise running app, id:" << appId.toStdString());
+        auto* win = it.value().data();
+        win->show();
+        win->raise();
+        win->activateWindow();
         return;
     }
 
-    auto ctx = getAppContext();
-    if (!ctx)
-    {
-        return;
-    }
-
-    // The UI never touches the framework runtime directly: the view model owns
-    // the agent and resolves the package/permissions from the app id itself.
-    auto runtimeViewModel = ctx->getViewModelFactory()->createMiniAppRuntimeViewModelInstance();
-    mRuntimeManager->launch(runtimeViewModel, appId, QString::fromStdString(app.name));
+    UIVIEW_LOG_INFO("launchMiniApp: launch app, id:" << appId.toStdString());
+    auto* window = new MiniAppsPage::MiniAppHostWindow(appId, QString::fromStdString(app.name));
+    mWindows.insert(appId, window);
+    QObject::connect(window, &QObject::destroyed, this, [this, appId]() {
+        mWindows.remove(appId);
+    });
+    window->initialize(this);
 }
 
 void MiniAppListPageController::installMiniApp(const QString& folderUrl)
