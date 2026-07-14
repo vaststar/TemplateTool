@@ -24,6 +24,13 @@ static void setupLinuxLibraryPaths()
     char qmlPath[PATH_MAX];
     snprintf(qmlPath, sizeof(qmlPath), "%s/qml", binDir);
     setenv("QML2_IMPORT_PATH", qmlPath, 0);
+
+    // The miniapp WebView (WebKitGTK) is embedded into the Qt UI via X11 window
+    // reparenting (QWindow::fromWinId + createWindowContainer). Native Wayland
+    // forbids foreign-window embedding, so force Qt and GTK onto X11/XWayland.
+    // The final "0" leaves any user-provided override untouched (for debugging).
+    setenv("QT_QPA_PLATFORM", "xcb", 0);
+    setenv("GDK_BACKEND", "x11", 0);
 }
 #endif
 

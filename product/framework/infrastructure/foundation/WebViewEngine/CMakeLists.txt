@@ -41,6 +41,22 @@ if(WIN32)
     )
 endif()
 
+# Linux backend: WebKitGTK (webkit2gtk-4.1, falling back to 4.0) + GTK 3 on X11.
+if(UNIX AND NOT APPLE)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(WEBKITGTK IMPORTED_TARGET webkit2gtk-4.1)
+    if(NOT WEBKITGTK_FOUND)
+        pkg_check_modules(WEBKITGTK REQUIRED IMPORTED_TARGET webkit2gtk-4.0)
+    endif()
+
+    list(APPEND MODULE_SOURCE_PRIVATE
+        src/linux/GtkWebKitWebView.h
+        src/linux/GtkWebKitWebViewImpl.h
+        src/linux/GtkWebKitWebView.cpp
+        src/linux/GtkWebKitWebViewResourceHandler.cpp
+    )
+endif()
+
 set(MODULE_DEPENDENCIES_PUBLIC
     InfrastructureCommonFile
     NotificationHelper
@@ -64,9 +80,15 @@ if(WIN32)
     )
 endif()
 
+if(UNIX AND NOT APPLE)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE
+        PkgConfig::WEBKITGTK
+    )
+endif()
+
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src src/windows src/mac)
+set(MODULE_BUILD_PRIVATE_DIR src src/windows src/mac src/linux)
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
