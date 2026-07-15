@@ -94,8 +94,9 @@ public:
     // Internal: expose the dispatcher to the custom-scheme trampoline.
     class InterceptorDispatcher& internalDispatcher();
 
-private:
+public:
     struct Impl;
+private:
     std::unique_ptr<Impl> m_impl;
 };
 

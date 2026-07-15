@@ -13,6 +13,7 @@ BuildUnitTestModule(
         PerformanceService
         CoreFramework
         FakeCoreFramework
+        SinkNotifier
         Catch2::Catch2WithMain
     TARGET_INCLUDE_FOLDER
         .
