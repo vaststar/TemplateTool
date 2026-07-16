@@ -230,7 +230,7 @@ void Win32WebView::Impl::onControllerCreated(ICoreWebView2Controller* ctrl)
     controller->put_IsVisible(TRUE);
     resizeControllerToClient();
 
-    becomeReady();
+    owner->markReady();
 }
 
 void Win32WebView::Impl::applySettings()
@@ -399,15 +399,6 @@ void Win32WebView::Impl::wireEvents()
             })
             .Get(),
         &token);
-}
-
-void Win32WebView::Impl::becomeReady()
-{
-    if (ready.exchange(true))
-    {
-        return;
-    }
-    owner->emitWebViewReady();
 }
 
 } // namespace ucf::infrastructure::webview

@@ -216,7 +216,7 @@ GtkWebKitWebView::~GtkWebKitWebView()
 
 bool GtkWebKitWebView::initialize(const WebViewInitOptions& options)
 {
-    if (m_impl->initialized)
+    if (isInitialized())
     {
         return false;
     }
@@ -236,7 +236,7 @@ bool GtkWebKitWebView::initialize(const WebViewInitOptions& options)
         return false;
     }
 
-    m_impl->initialized = true;
+    markInitialized();
     m_impl->customSchemes = *schemes;
 
     // --- Web context (optionally persistent per-instance data store) --------
@@ -351,7 +351,7 @@ bool GtkWebKitWebView::initialize(const WebViewInitOptions& options)
 
     if (!deferredReady)
     {
-        m_impl->ready = true;
+        setReady(true);
         // Deliver readiness on the next main-loop turn so late-registered
         // callbacks still receive it (matches the async backends).
         g_idle_add_full(G_PRIORITY_DEFAULT_IDLE,
@@ -363,11 +363,6 @@ bool GtkWebKitWebView::initialize(const WebViewInitOptions& options)
     }
 
     return true;
-}
-
-bool GtkWebKitWebView::isReady() const
-{
-    return m_impl->ready;
 }
 
 void GtkWebKitWebView::loadUrl(const std::string& url)
@@ -412,26 +407,6 @@ void GtkWebKitWebView::evaluateJavaScript(const std::string& js, JavaScriptResul
         nullptr, nullptr, nullptr, onJavaScriptFinished, closure);
 }
 
-InterceptorId GtkWebKitWebView::addRequestInterceptor(std::shared_ptr<IRequestInterceptor> interceptor)
-{
-    return m_impl->dispatcher.add(std::move(interceptor));
-}
-
-void GtkWebKitWebView::removeRequestInterceptor(InterceptorId id)
-{
-    m_impl->dispatcher.remove(id);
-}
-
-void GtkWebKitWebView::clearRequestInterceptors()
-{
-    m_impl->dispatcher.clear();
-}
-
-InterceptorDispatcher& GtkWebKitWebView::internalDispatcher()
-{
-    return m_impl->dispatcher;
-}
-
 NativeHostHandle GtkWebKitWebView::nativeHostHandle() const
 {
     return static_cast<NativeHostHandle>(m_impl->xid);
@@ -450,19 +425,10 @@ struct GtkWebKitWebView::Impl {};
 GtkWebKitWebView::GtkWebKitWebView() : m_impl(std::make_unique<Impl>()) {}
 GtkWebKitWebView::~GtkWebKitWebView() = default;
 bool GtkWebKitWebView::initialize(const WebViewInitOptions&) { return false; }
-bool GtkWebKitWebView::isReady() const { return false; }
 void GtkWebKitWebView::loadUrl(const std::string&) {}
 void GtkWebKitWebView::reload() {}
 void GtkWebKitWebView::stop() {}
 void GtkWebKitWebView::evaluateJavaScript(const std::string&, JavaScriptResultCallback) {}
-InterceptorId GtkWebKitWebView::addRequestInterceptor(std::shared_ptr<IRequestInterceptor>) { return 0; }
-void GtkWebKitWebView::removeRequestInterceptor(InterceptorId) {}
-void GtkWebKitWebView::clearRequestInterceptors() {}
-InterceptorDispatcher& GtkWebKitWebView::internalDispatcher()
-{
-    static InterceptorDispatcher dummy;
-    return dummy;
-}
 NativeHostHandle GtkWebKitWebView::nativeHostHandle() const { return 0; }
 
 } // namespace ucf::infrastructure::webview

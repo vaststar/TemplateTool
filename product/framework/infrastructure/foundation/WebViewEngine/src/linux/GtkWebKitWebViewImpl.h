@@ -33,11 +33,7 @@ struct GtkWebKitWebView::Impl
     WebKitWebsiteDataManager* dataManager = nullptr;
     WebKitUserContentFilterStore* filterStore = nullptr;
 
-    InterceptorDispatcher dispatcher;
     std::vector<std::string> customSchemes;
-
-    bool initialized = false;
-    bool ready = false;
 
     // Connected signal handler ids (for clean disconnect on teardown).
     gulong sigLoadChanged = 0;

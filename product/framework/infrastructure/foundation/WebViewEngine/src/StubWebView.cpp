@@ -4,34 +4,28 @@ namespace ucf::infrastructure::webview {
 
 bool StubWebView::initialize(const WebViewInitOptions& options)
 {
-    if (m_initialized)
+    if (isInitialized())
     {
         return false;
     }
-    m_initialized = true;
-    m_ready = true;
+    markInitialized();
     m_options = options;
-    fireNotification(&IWebViewCallback::onWebViewReady);
+    markReady();
     return true;
-}
-
-bool StubWebView::isReady() const
-{
-    return m_ready;
 }
 
 void StubWebView::loadUrl(const std::string& url)
 {
     if (url.empty())
     {
-        fireNotification(&IWebViewCallback::onLoadFailed, -1, std::string("url is empty"));
-        fireNotification(&IWebViewCallback::onLoadFinished, false);
+        emitLoadFailed(-1, std::string("url is empty"));
+        emitLoadFinished(false);
         return;
     }
 
-    fireNotification(&IWebViewCallback::onNavigationStarted, url);
-    fireNotification(&IWebViewCallback::onUrlChanged, url);
-    fireNotification(&IWebViewCallback::onLoadFinished, true);
+    emitNavigationStarted(url);
+    emitUrlChanged(url);
+    emitLoadFinished(true);
 }
 
 void StubWebView::reload()
@@ -51,21 +45,6 @@ void StubWebView::evaluateJavaScript(const std::string& js, JavaScriptResultCall
     {
         callback(true, "null", WebError{});
     }
-}
-
-InterceptorId StubWebView::addRequestInterceptor(std::shared_ptr<IRequestInterceptor> interceptor)
-{
-    return m_dispatcher.add(std::move(interceptor));
-}
-
-void StubWebView::removeRequestInterceptor(InterceptorId id)
-{
-    m_dispatcher.remove(id);
-}
-
-void StubWebView::clearRequestInterceptors()
-{
-    m_dispatcher.clear();
 }
 
 NativeHostHandle StubWebView::nativeHostHandle() const

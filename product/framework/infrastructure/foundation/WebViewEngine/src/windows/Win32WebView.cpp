@@ -39,7 +39,7 @@ Win32WebView::~Win32WebView()
 
 bool Win32WebView::initialize(const WebViewInitOptions& options)
 {
-    if (m_impl->initialized)
+    if (isInitialized())
     {
         return false;
     }
@@ -52,7 +52,7 @@ bool Win32WebView::initialize(const WebViewInitOptions& options)
         return false;
     }
 
-    m_impl->initialized = true;
+    markInitialized();
     m_impl->options = options;
     m_impl->customSchemes = *schemes;
     // WebView2 exposes a single message channel (window.chrome.webview); report
@@ -65,11 +65,6 @@ bool Win32WebView::initialize(const WebViewInitOptions& options)
         return false;
     }
     return m_impl->startEnvironmentCreation();
-}
-
-bool Win32WebView::isReady() const
-{
-    return m_impl->ready.load();
 }
 
 void Win32WebView::loadUrl(const std::string& url)
@@ -134,63 +129,9 @@ void Win32WebView::evaluateJavaScript(const std::string& js, JavaScriptResultCal
             .Get());
 }
 
-InterceptorId Win32WebView::addRequestInterceptor(std::shared_ptr<IRequestInterceptor> interceptor)
-{
-    return m_impl->dispatcher.add(std::move(interceptor));
-}
-
-void Win32WebView::removeRequestInterceptor(InterceptorId id)
-{
-    m_impl->dispatcher.remove(id);
-}
-
-void Win32WebView::clearRequestInterceptors()
-{
-    m_impl->dispatcher.clear();
-}
-
 NativeHostHandle Win32WebView::nativeHostHandle() const
 {
     return reinterpret_cast<NativeHostHandle>(m_impl->hostWindow);
-}
-
-// -----------------------------------------------------------------------------
-// Notification forwarders
-// -----------------------------------------------------------------------------
-
-void Win32WebView::emitWebViewReady()
-{
-    fireNotification(&IWebViewCallback::onWebViewReady);
-}
-
-void Win32WebView::emitNavigationStarted(const std::string& url)
-{
-    fireNotification(&IWebViewCallback::onNavigationStarted, url);
-}
-
-void Win32WebView::emitUrlChanged(const std::string& url)
-{
-    fireNotification(&IWebViewCallback::onUrlChanged, url);
-}
-
-void Win32WebView::emitTitleChanged(const std::string& title)
-{
-    fireNotification(&IWebViewCallback::onTitleChanged, title);
-}
-
-void Win32WebView::emitLoadFinished(bool ok)
-{
-    fireNotification(&IWebViewCallback::onLoadFinished, ok);
-}
-
-void Win32WebView::emitLoadFailed(int code, const std::string& message)
-{
-    fireNotification(&IWebViewCallback::onLoadFailed, code, message);
-}
-
-void Win32WebView::emitScriptMessage(const std::string& channel, const std::string& payload)
-{
-    fireNotification(&IWebViewCallback::onScriptMessage, channel, payload);
 }
 
 } // namespace ucf::infrastructure::webview

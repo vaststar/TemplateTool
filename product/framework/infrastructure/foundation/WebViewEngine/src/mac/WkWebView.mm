@@ -1,5 +1,6 @@
 #include "WkWebView.h"
 #include "InterceptorDispatcher.h"
+#include "WebViewContentPolicy.h"
 #include "WebViewSchemeUtils.h"
 
 #if defined(Q_OS_MACOS) || defined(__APPLE__)
@@ -34,134 +35,12 @@ class IWebViewCallback;
 
 namespace {
 
-// Escape a host so it can be embedded literally inside a WKContentRuleList
-// url-filter regular expression.
-std::string escapeHostForRegex(const std::string& host)
-{
-    std::string out;
-    out.reserve(host.size() * 2);
-    for (char c : host)
-    {
-        switch (c)
-        {
-            case '.': case '\\': case '+': case '*': case '?':
-            case '(': case ')': case '[': case ']': case '{': case '}':
-            case '^': case '$': case '|': case '/':
-                out.push_back('\\');
-                break;
-            default:
-                break;
-        }
-        out.push_back(c);
-    }
-    return out;
-}
-
-// JSON-escape a string (only backslash and double-quote need handling here,
-// as regex fragments contain no control characters).
-std::string jsonEscape(const std::string& value)
-{
-    std::string out;
-    out.reserve(value.size() + 8);
-    for (char c : value)
-    {
-        if (c == '\\' || c == '"')
-        {
-            out.push_back('\\');
-        }
-        out.push_back(c);
-    }
-    return out;
-}
-
-// Regex tail matching "<optional subdomains>host<optional port>(path|end)".
-std::string hostTailRegex(const std::string& host, bool includeSubdomains)
-{
-    std::string tail;
-    if (includeSubdomains)
-    {
-        tail += "([a-z0-9-]+\\.)*"; // one backslash in the actual string
-    }
-    tail += escapeHostForRegex(host);
-    tail += "(:[0-9]+)?(/|$)";
-    return tail;
-}
-
-// Build the WKContentRuleList JSON for a NetworkAccessPolicy. Returns an empty
-// string when no restriction is required (nothing needs installing).
-//
-// Ordering matters: WKContentRuleList evaluates rules in order and
-// "ignore-previous-rules" cancels the actions of preceding matching rules.
-//   1. block-all remote (only when defaultAction == Block)
-//   2. allow-list  -> ignore-previous-rules (only meaningful under block-all)
-//   3. block-list  -> block (last, so it overrides any allow)
-std::string buildContentRuleListJson(const ucf::infrastructure::webview::NetworkAccessPolicy& policy)
-{
-    using DefaultAction = ucf::infrastructure::webview::NetworkAccessPolicy::DefaultAction;
-
-    auto ruleForFilter = [](const std::string& urlFilter, const char* actionType) {
-        std::string rule = "{\"trigger\":{\"url-filter\":\"";
-        rule += jsonEscape(urlFilter);
-        rule += "\",\"url-filter-is-case-sensitive\":false},\"action\":{\"type\":\"";
-        rule += actionType;
-        rule += "\"}}";
-        return rule;
-    };
-
-    std::vector<std::string> rules;
-    const bool blockAll = (policy.defaultAction == DefaultAction::Block);
-
-    if (blockAll)
-    {
-        rules.push_back(ruleForFilter("^https?://", "block"));
-        rules.push_back(ruleForFilter("^wss?://", "block"));
-
-        for (const std::string& host : policy.allowedHosts)
-        {
-            if (host.empty()) { continue; }
-            const std::string tail = hostTailRegex(host, policy.includeSubdomains);
-            rules.push_back(ruleForFilter("^https?://" + tail, "ignore-previous-rules"));
-            rules.push_back(ruleForFilter("^wss?://" + tail, "ignore-previous-rules"));
-        }
-    }
-
-    // Blocked hosts are appended last so they win even when defaultAction==Allow.
-    for (const std::string& host : policy.blockedHosts)
-    {
-        if (host.empty()) { continue; }
-        const std::string tail = hostTailRegex(host, policy.includeSubdomains);
-        rules.push_back(ruleForFilter("^https?://" + tail, "block"));
-        rules.push_back(ruleForFilter("^wss?://" + tail, "block"));
-    }
-
-    if (rules.empty())
-    {
-        return {};
-    }
-
-    std::string json = "[";
-    for (size_t i = 0; i < rules.size(); ++i)
-    {
-        if (i != 0) { json += ","; }
-        json += rules[i];
-    }
-    json += "]";
-    return json;
-}
-
 // FNV-1a hash of the rule JSON, used as a stable WKContentRuleListStore
 // identifier so identical policies are compiled once and reused across runs.
 std::string stableRuleIdentifier(const std::string& json)
 {
-    std::uint64_t h = 1469598103934665603ULL;
-    for (unsigned char c : json)
-    {
-        h ^= c;
-        h *= 1099511628211ULL;
-    }
-    std::ostringstream oss;
-    oss << "miniapp.netpolicy." << std::hex << h;
-    return oss.str();
+    return "miniapp.netpolicy." +
+           ucf::infrastructure::webview::content_policy::ruleListHashHex(json);
 }
 
 } // namespace
@@ -486,10 +365,7 @@ struct WkWebView::Impl
 {
     WKWebView* webView = nullptr;
     WkWebViewHelper* helper = nullptr;
-    InterceptorDispatcher dispatcher;
     std::vector<std::string> customSchemes;
-    bool initialized = false;
-    bool ready = false;
 };
 
 WkWebView::WkWebView()
@@ -521,7 +397,7 @@ WkWebView::~WkWebView()
 
 bool WkWebView::initialize(const WebViewInitOptions& options)
 {
-    if (m_impl->initialized)
+    if (isInitialized())
     {
         return false;
     }
@@ -535,7 +411,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
     }
 
     @autoreleasepool {
-        m_impl->initialized = true;
+        markInitialized();
 
         m_impl->helper = [[WkWebViewHelper alloc] init];
         m_impl->helper.backend = reinterpret_cast<void*>(this);
@@ -600,7 +476,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
         std::string ruleJson;
         if (options.networkPolicy.has_value())
         {
-            ruleJson = buildContentRuleListJson(*options.networkPolicy);
+            ruleJson = content_policy::buildContentRuleListJson(*options.networkPolicy);
         }
 
         // The block retains the helper; the destructor nulls helper.backend
@@ -609,7 +485,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
 
         if (ruleJson.empty())
         {
-            m_impl->ready = true;
+            setReady(true);
 
             // Notify readiness on the next main-loop turn so late-registered
             // callbacks still receive it (matches async backends like WebView2).
@@ -634,8 +510,7 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
                 if (!helper.backend) { return; }
                 [uccRef addContentRuleList:list];
                 auto* backendPtr = static_cast<ucf::infrastructure::webview::WkWebView*>(helper.backend);
-                backendPtr->m_impl->ready = true;
-                backendPtr->emitWebViewReady();
+                backendPtr->markReady();
             };
 
             // Reuse a previously compiled list when the policy is unchanged;
@@ -668,11 +543,6 @@ bool WkWebView::initialize(const WebViewInitOptions& options)
     }
 
     return true;
-}
-
-bool WkWebView::isReady() const
-{
-    return m_impl->ready;
 }
 
 void WkWebView::loadUrl(const std::string& url)
@@ -742,26 +612,6 @@ void WkWebView::evaluateJavaScript(const std::string& js, JavaScriptResultCallba
     }
 }
 
-InterceptorId WkWebView::addRequestInterceptor(std::shared_ptr<IRequestInterceptor> interceptor)
-{
-    return m_impl->dispatcher.add(interceptor);
-}
-
-void WkWebView::removeRequestInterceptor(InterceptorId id)
-{
-    m_impl->dispatcher.remove(id);
-}
-
-void WkWebView::clearRequestInterceptors()
-{
-    m_impl->dispatcher.clear();
-}
-
-InterceptorDispatcher& WkWebView::internalDispatcher()
-{
-    return m_impl->dispatcher;
-}
-
 NativeHostHandle WkWebView::nativeHostHandle() const
 {
     return reinterpret_cast<NativeHostHandle>(m_impl->webView);
@@ -777,14 +627,10 @@ namespace ucf::infrastructure::webview {
 WkWebView::WkWebView() : m_impl(std::make_unique<Impl>()) {}
 WkWebView::~WkWebView() = default;
 bool WkWebView::initialize(const WebViewInitOptions&) { return false; }
-bool WkWebView::isReady() const { return false; }
 void WkWebView::loadUrl(const std::string&) {}
 void WkWebView::reload() {}
 void WkWebView::stop() {}
 void WkWebView::evaluateJavaScript(const std::string&, JavaScriptResultCallback) {}
-InterceptorId WkWebView::addRequestInterceptor(std::shared_ptr<IRequestInterceptor>) { return 0; }
-void WkWebView::removeRequestInterceptor(InterceptorId) {}
-void WkWebView::clearRequestInterceptors() {}
 NativeHostHandle WkWebView::nativeHostHandle() const { return 0; }
 
 } // namespace ucf::infrastructure::webview

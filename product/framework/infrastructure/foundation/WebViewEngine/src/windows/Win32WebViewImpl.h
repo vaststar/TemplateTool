@@ -77,13 +77,9 @@ public:
     ComPtr<ICoreWebView2Controller> controller;
     ComPtr<ICoreWebView2> webView;
 
-    InterceptorDispatcher dispatcher;
     WebViewInitOptions options;
     std::vector<std::string> customSchemes;
     std::string reportChannel; // channel name reported for WebView2 messages
-
-    bool initialized = false;
-    std::atomic<bool> ready { false };
 
     // --- host window + async creation (Win32WebView.cpp) ---
     bool createHostWindow();
@@ -96,7 +92,6 @@ public:
     void applySettings();
     void injectDocumentStartScripts();
     void wireEvents();
-    void becomeReady();
 
     // --- request interception (Win32WebViewInterceptor.cpp) ---
     void handleWebResourceRequested(ICoreWebView2WebResourceRequestedEventArgs* args);

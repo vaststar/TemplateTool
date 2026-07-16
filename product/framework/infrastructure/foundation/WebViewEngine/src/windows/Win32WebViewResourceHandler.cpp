@@ -158,13 +158,13 @@ void Win32WebView::Impl::handleWebResourceRequested(ICoreWebView2WebResourceRequ
     if (FAILED(args->GetDeferral(&deferral)) || !deferral)
     {
         // Deferral unavailable: fall back to synchronous resolution.
-        respondToInterception(args, dispatcher.dispatch(buildWebRequest(request.Get(), url)));
+        respondToInterception(args, owner->internalDispatcher().dispatch(buildWebRequest(request.Get(), url)));
         return;
     }
 
     auto pending = std::make_unique<PendingResourceResponse>();
     pending->request = buildWebRequest(request.Get(), url);
-    pending->interceptors = dispatcher.snapshot();
+    pending->interceptors = owner->internalDispatcher().snapshot();
     pending->alive = alive;
     pending->impl = this;
     pending->hostWindow = hostWindow;

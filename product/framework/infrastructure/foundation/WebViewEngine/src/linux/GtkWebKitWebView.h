@@ -2,8 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Infrastructure/WebViewEngine/IWebView.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include "WebViewBase.h"
 
 namespace ucf::infrastructure::webview {
 
@@ -27,9 +26,7 @@ namespace ucf::infrastructure::webview {
 //      (fail-closed), matching the macOS behaviour.
 //
 // All methods must be called on the UI (main) thread.
-class GtkWebKitWebView final
-    : public virtual IWebView
-    , public virtual ucf::utilities::NotificationHelper<IWebViewCallback>
+class GtkWebKitWebView final : public WebViewBase
 {
 public:
     GtkWebKitWebView();
@@ -41,58 +38,13 @@ public:
 
 public:
     [[nodiscard]] bool initialize(const WebViewInitOptions& options) override;
-    [[nodiscard]] bool isReady() const override;
 
     void loadUrl(const std::string& url) override;
     void reload() override;
     void stop() override;
     void evaluateJavaScript(const std::string& js, JavaScriptResultCallback callback) override;
 
-    [[nodiscard]] InterceptorId addRequestInterceptor(std::shared_ptr<IRequestInterceptor> interceptor) override;
-    void removeRequestInterceptor(InterceptorId id) override;
-    void clearRequestInterceptors() override;
-
     [[nodiscard]] NativeHostHandle nativeHostHandle() const override;
-
-    // Notification forwarders invoked by the GTK/WebKit signal handlers (defined
-    // in the .cpp). Public so the free-function C trampolines can reach them.
-    void emitWebViewReady()
-    {
-        fireNotification(&IWebViewCallback::onWebViewReady);
-    }
-
-    void emitNavigationStarted(const std::string& url)
-    {
-        fireNotification(&IWebViewCallback::onNavigationStarted, url);
-    }
-
-    void emitUrlChanged(const std::string& url)
-    {
-        fireNotification(&IWebViewCallback::onUrlChanged, url);
-    }
-
-    void emitTitleChanged(const std::string& title)
-    {
-        fireNotification(&IWebViewCallback::onTitleChanged, title);
-    }
-
-    void emitLoadFinished(bool ok)
-    {
-        fireNotification(&IWebViewCallback::onLoadFinished, ok);
-    }
-
-    void emitLoadFailed(int code, const std::string& message)
-    {
-        fireNotification(&IWebViewCallback::onLoadFailed, code, message);
-    }
-
-    void emitScriptMessage(const std::string& channel, const std::string& payload)
-    {
-        fireNotification(&IWebViewCallback::onScriptMessage, channel, payload);
-    }
-
-    // Internal: expose the dispatcher to the custom-scheme trampoline.
-    class InterceptorDispatcher& internalDispatcher();
 
 public:
     struct Impl;

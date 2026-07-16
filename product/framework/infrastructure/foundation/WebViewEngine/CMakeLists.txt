@@ -19,6 +19,10 @@ set(MODULE_SOURCE_PRIVATE
     src/InterceptorDispatcher.cpp
     src/WebViewSchemeUtils.h
     src/WebViewSchemeUtils.cpp
+    src/WebViewContentPolicy.h
+    src/WebViewContentPolicy.cpp
+    src/WebViewBase.h
+    src/WebViewBase.cpp
     src/StubWebView.h
     src/StubWebView.cpp
     src/WebViewFactory.cpp

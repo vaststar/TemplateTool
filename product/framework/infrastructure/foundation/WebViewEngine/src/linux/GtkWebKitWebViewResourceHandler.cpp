@@ -1,6 +1,7 @@
 #include "GtkWebKitWebViewImpl.h"
 
 #include "InterceptorDispatcher.h"
+#include "WebViewContentPolicy.h"
 
 #if defined(__linux__)
 
@@ -14,129 +15,11 @@ namespace ucf::infrastructure::webview {
 
 namespace {
 
-// ---------------------------------------------------------------------------
-// Network access policy -> WebKitUserContentFilter JSON.
-//
-// WebKitUserContentFilter consumes the exact same rule schema as the macOS
-// WKContentRuleList, so this mirrors buildContentRuleListJson() in the macOS
-// backend. Keeping the two in sync means a single NetworkAccessPolicy produces
-// equivalent enforcement on both platforms.
-// ---------------------------------------------------------------------------
-
-std::string escapeHostForRegex(const std::string& host)
-{
-    std::string out;
-    out.reserve(host.size() * 2);
-    for (char c : host)
-    {
-        switch (c)
-        {
-            case '.': case '\\': case '+': case '*': case '?':
-            case '(': case ')': case '[': case ']': case '{': case '}':
-            case '^': case '$': case '|': case '/':
-                out.push_back('\\');
-                break;
-            default:
-                break;
-        }
-        out.push_back(c);
-    }
-    return out;
-}
-
-std::string jsonEscape(const std::string& value)
-{
-    std::string out;
-    out.reserve(value.size() + 8);
-    for (char c : value)
-    {
-        if (c == '\\' || c == '"')
-        {
-            out.push_back('\\');
-        }
-        out.push_back(c);
-    }
-    return out;
-}
-
-std::string hostTailRegex(const std::string& host, bool includeSubdomains)
-{
-    std::string tail;
-    if (includeSubdomains)
-    {
-        tail += "([a-z0-9-]+\\.)*";
-    }
-    tail += escapeHostForRegex(host);
-    tail += "(:[0-9]+)?(/|$)";
-    return tail;
-}
-
-std::string buildContentRuleListJson(const NetworkAccessPolicy& policy)
-{
-    using DefaultAction = NetworkAccessPolicy::DefaultAction;
-
-    auto ruleForFilter = [](const std::string& urlFilter, const char* actionType) {
-        std::string rule = "{\"trigger\":{\"url-filter\":\"";
-        rule += jsonEscape(urlFilter);
-        rule += "\",\"url-filter-is-case-sensitive\":false},\"action\":{\"type\":\"";
-        rule += actionType;
-        rule += "\"}}";
-        return rule;
-    };
-
-    std::vector<std::string> rules;
-    const bool blockAll = (policy.defaultAction == DefaultAction::Block);
-
-    if (blockAll)
-    {
-        rules.push_back(ruleForFilter("^https?://", "block"));
-        rules.push_back(ruleForFilter("^wss?://", "block"));
-
-        for (const std::string& host : policy.allowedHosts)
-        {
-            if (host.empty()) { continue; }
-            const std::string tail = hostTailRegex(host, policy.includeSubdomains);
-            rules.push_back(ruleForFilter("^https?://" + tail, "ignore-previous-rules"));
-            rules.push_back(ruleForFilter("^wss?://" + tail, "ignore-previous-rules"));
-        }
-    }
-
-    for (const std::string& host : policy.blockedHosts)
-    {
-        if (host.empty()) { continue; }
-        const std::string tail = hostTailRegex(host, policy.includeSubdomains);
-        rules.push_back(ruleForFilter("^https?://" + tail, "block"));
-        rules.push_back(ruleForFilter("^wss?://" + tail, "block"));
-    }
-
-    if (rules.empty())
-    {
-        return {};
-    }
-
-    std::string json = "[";
-    for (size_t i = 0; i < rules.size(); ++i)
-    {
-        if (i != 0) { json += ","; }
-        json += rules[i];
-    }
-    json += "]";
-    return json;
-}
-
 // FNV-1a hash of the rule JSON, used as a stable content-filter identifier so
 // identical policies compile once and are reused across runs.
 std::string stableRuleIdentifier(const std::string& json)
 {
-    std::uint64_t h = 1469598103934665603ULL;
-    for (unsigned char c : json)
-    {
-        h ^= c;
-        h *= 1099511628211ULL;
-    }
-    std::ostringstream oss;
-    oss << "miniapp_netpolicy_" << std::hex << h;
-    return oss.str();
+    return "miniapp_netpolicy_" + content_policy::ruleListHashHex(json);
 }
 
 // --- Network policy filter installation -------------------------------------
@@ -161,8 +44,7 @@ void onContentFilterSaved(GObject* source, GAsyncResult* asyncResult, gpointer u
     {
         webkit_user_content_manager_add_filter(closure->impl->contentManager, filter);
         webkit_user_content_filter_unref(filter);
-        closure->impl->ready = true;
-        closure->self->emitWebViewReady();
+        closure->self->markReady();
     }
     else
     {
@@ -274,7 +156,7 @@ bool applyNetworkPolicy(GtkWebKitWebView* self,
                         const NetworkAccessPolicy& policy,
                         const std::string& userDataFolder)
 {
-    const std::string ruleJson = buildContentRuleListJson(policy);
+    const std::string ruleJson = content_policy::buildContentRuleListJson(policy);
     if (ruleJson.empty())
     {
         // Policy imposes no restriction (e.g. default Allow with no blocked
