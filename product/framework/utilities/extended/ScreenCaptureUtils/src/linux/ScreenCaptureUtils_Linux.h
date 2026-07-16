@@ -14,9 +14,6 @@ public:
     static CaptureImage captureDisplay(int displayIndex);
     static CaptureImage captureAllDisplays();
 
-    static std::vector<WindowInfo> getWindowList();
-    static CaptureImage captureWindow(int64_t windowId);
-
     static bool hasScreenCapturePermission();
     static void requestScreenCapturePermission();
 };

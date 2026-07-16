@@ -207,61 +207,6 @@ void ScreenshotController::captureFullScreen()
     });
 }
 
-void ScreenshotController::captureWindow(qint64 windowId)
-{
-    if (!m_viewModel) return;
-    UIVIEW_LOG_DEBUG("captureWindow: " << windowId << " delaySeconds=" << m_delaySeconds);
-
-    if (m_delaySeconds > 0) {
-        int delayMs = m_delaySeconds * 1000;
-        QTimer::singleShot(delayMs, this, [this, windowId]() {
-            if (!m_viewModel) return;
-            m_viewModel->captureWindow(static_cast<int64_t>(windowId));
-            m_viewModel->saveScreenshot();
-        });
-    } else {
-        m_viewModel->captureWindow(static_cast<int64_t>(windowId));
-        m_viewModel->saveScreenshot();
-    }
-}
-
-QVariantList ScreenshotController::getWindowList()
-{
-    QVariantList result;
-    if (!m_viewModel) return result;
-    auto windows = m_viewModel->getWindowList();
-
-    // Get our own process name to filter it out
-    QString ownAppName = QGuiApplication::applicationDisplayName();
-    if (ownAppName.isEmpty()) {
-        ownAppName = QGuiApplication::applicationName();
-    }
-
-    for (const auto& w : windows) {
-        // Skip windows with empty names
-        QString name = QString::fromStdString(w.name);
-        QString owner = QString::fromStdString(w.ownerName);
-        if (name.isEmpty() && owner.isEmpty()) continue;
-
-        // Skip our own app windows
-        if (!ownAppName.isEmpty() && owner == ownAppName) continue;
-
-        QVariantMap map;
-        map["windowId"] = static_cast<qint64>(w.windowId);
-        map["name"] = name.isEmpty() ? owner : name;
-        map["ownerName"] = owner;
-        result.append(map);
-    }
-    return result;
-}
-
-QString ScreenshotController::getWindowThumbnailBase64(qint64 windowId)
-{
-    if (!m_viewModel) return {};
-    auto base64 = m_viewModel->getWindowThumbnailBase64(static_cast<int64_t>(windowId));
-    return QString::fromStdString(base64);
-}
-
 // ============================================================================
 // Annotation Methods — build AnnotationData and delegate
 // ============================================================================

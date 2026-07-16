@@ -1765,40 +1765,40 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="516"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="461"/>
         <source>Screenshots folder not set</source>
         <translation>Screenshots folder not set</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="556"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="572"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="593"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="476"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="501"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="517"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="538"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="547"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="492"/>
         <source>Failed to load image: %1</source>
         <translation>Failed to load image: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="585"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="530"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished">Delete Screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="586"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="587"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="532"/>
         <source>Delete</source>
         <translation type="unfinished">Delete</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="597"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="542"/>
         <source>Failed to delete file: %1</source>
         <translation>Failed to delete file: %1</translation>
     </message>
@@ -1816,59 +1816,51 @@ Press ESC to cancel</translation>
         <translation>🖥 Full Screen</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="83"/>
         <source>🪟 Window</source>
-        <translation>🪟 Window</translation>
+        <translation type="vanished">🪟 Window</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="100"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
         <source>No screenshots yet</source>
         <translation>No screenshots yet</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="101"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="95"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
         <source>%1 screenshots</source>
         <translation>%1 screenshots</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="152"/>
         <source>Select a Window to Capture</source>
-        <translation>Select a Window to Capture</translation>
+        <translation type="vanished">Select a Window to Capture</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="158"/>
         <source>%1 windows</source>
-        <translation>%1 windows</translation>
+        <translation type="vanished">%1 windows</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="323"/>
         <source>Click to Capture</source>
-        <translation>Click to Capture</translation>
+        <translation type="vanished">Click to Capture</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="333"/>
         <source>Unnamed Window</source>
-        <translation>Unnamed Window</translation>
+        <translation type="vanished">Unnamed Window</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="395"/>
         <source>No windows found</source>
-        <translation>No windows found</translation>
+        <translation type="vanished">No windows found</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="417"/>
         <source>Hover to preview, click to capture</source>
-        <translation>Hover to preview, click to capture</translation>
+        <translation type="vanished">Hover to preview, click to capture</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="425"/>
         <source>Cancel</source>
-        <translation>Cancel</translation>
+        <translation type="vanished">Cancel</translation>
     </message>
 </context>
 <context>

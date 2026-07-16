@@ -76,33 +76,6 @@ CaptureImage ScreenCaptureUtils::captureAllDisplays()
 #endif
 }
 
-std::vector<WindowInfo> ScreenCaptureUtils::getWindowList()
-{
-#if defined(_WIN32)
-    return ScreenCaptureUtils_Win::getWindowList();
-#elif defined(__APPLE__)
-    return ScreenCaptureUtils_Mac::getWindowList();
-#elif defined(__linux__)
-    return ScreenCaptureUtils_Linux::getWindowList();
-#else
-    return {};
-#endif
-}
-
-CaptureImage ScreenCaptureUtils::captureWindow(int64_t windowId)
-{
-#if defined(_WIN32)
-    return ScreenCaptureUtils_Win::captureWindow(windowId);
-#elif defined(__APPLE__)
-    return ScreenCaptureUtils_Mac::captureWindow(windowId);
-#elif defined(__linux__)
-    return ScreenCaptureUtils_Linux::captureWindow(windowId);
-#else
-    (void)windowId;
-    return {};
-#endif
-}
-
 bool ScreenCaptureUtils::hasScreenCapturePermission()
 {
 #if defined(_WIN32)

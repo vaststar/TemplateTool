@@ -124,32 +124,6 @@ std::vector<model::DisplayInfoVM> ScreenshotViewModel::getDisplayList() const
     return result;
 }
 
-std::vector<model::WindowInfoVM> ScreenshotViewModel::getWindowList() const
-{
-    auto windows = ucf::utilities::screencapture::ScreenCaptureUtils::getWindowList();
-    std::vector<model::WindowInfoVM> result;
-    result.reserve(windows.size());
-    for (const auto& w : windows) {
-        model::WindowInfoVM vm;
-        vm.windowId = w.windowId;
-        vm.name = w.name;
-        vm.ownerName = w.ownerName;
-        result.push_back(std::move(vm));
-    }
-    return result;
-}
-
-std::string ScreenshotViewModel::getWindowThumbnailBase64(int64_t windowId) const
-{
-    auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureWindow(windowId);
-    if (captured.pixels.empty()) return {};
-
-    auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
-        captured.pixels, captured.width, captured.height, captured.bytesPerRow);
-
-    return ucf::utilities::imageprocess::ImageProcessUtils::toBase64Png(rgbaImage);
-}
-
 // ============================================================================
 // Capture
 // ============================================================================
@@ -196,17 +170,6 @@ void ScreenshotViewModel::captureFullScreen()
 void ScreenshotViewModel::captureDisplay(int displayIndex)
 {
     auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureDisplay(displayIndex);
-    int scale = captured.scaleFactor;
-
-    auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
-        captured.pixels, captured.width, captured.height, captured.bytesPerRow);
-
-    onCaptureCompleted(std::move(rgbaImage), scale);
-}
-
-void ScreenshotViewModel::captureWindow(int64_t windowId)
-{
-    auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureWindow(windowId);
     int scale = captured.scaleFactor;
 
     auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(

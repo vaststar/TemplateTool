@@ -43,23 +43,10 @@ struct Utilities_EXPORT DisplayInfo
 };
 
 /**
- * @brief Window information for window capture
- */
-struct Utilities_EXPORT WindowInfo
-{
-    int64_t windowId = 0;
-    std::string name;
-    std::string ownerName;
-    int x = 0, y = 0, width = 0, height = 0;
-    bool isOnScreen = false;
-    bool isMinimized = false;
-};
-
-/**
  * @brief Platform-specific screen capture utility
  *
- * Provides cross-platform screen/window capture via native platform APIs.
- * No Qt dependency — uses CoreGraphics (macOS), Win32 GDI (Windows), X11 (Linux).
+ * Provides cross-platform screen capture via native platform APIs.
+ * No Qt dependency — uses CoreGraphics (macOS), Win32 GDI (Windows), portal (Linux).
  */
 class Utilities_EXPORT ScreenCaptureUtils final
 {
@@ -72,10 +59,6 @@ public:
     // === Screen Capture ===
     static CaptureImage captureDisplay(int displayIndex = 0);
     static CaptureImage captureAllDisplays();
-
-    // === Window Capture ===
-    static std::vector<WindowInfo> getWindowList();
-    static CaptureImage captureWindow(int64_t windowId);
 
     // === Permission (macOS screen recording permission) ===
     static bool hasScreenCapturePermission();

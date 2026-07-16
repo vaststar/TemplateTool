@@ -4,7 +4,7 @@
 
 namespace ucf::utilities::screencapture {
 
-class ScreenCaptureUtils_Win final
+class ScreenCaptureUtils_Mac final
 {
 public:
     static std::vector<DisplayInfo> getDisplayList();
@@ -13,9 +13,6 @@ public:
 
     static CaptureImage captureDisplay(int displayIndex);
     static CaptureImage captureAllDisplays();
-
-    static std::vector<WindowInfo> getWindowList();
-    static CaptureImage captureWindow(int64_t windowId);
 
     static bool hasScreenCapturePermission();
     static void requestScreenCapturePermission();

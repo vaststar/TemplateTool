@@ -1765,40 +1765,40 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="516"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="461"/>
         <source>Screenshots folder not set</source>
         <translation>未設定截圖資料夾</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="556"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="572"/>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="593"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="476"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="501"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="517"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="538"/>
         <source>File not found: %1</source>
         <translation>檔案未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="547"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="492"/>
         <source>Failed to load image: %1</source>
         <translation>載入圖片失敗: %1</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="585"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="530"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished">刪除截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="586"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="587"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="532"/>
         <source>Delete</source>
         <translation type="unfinished">刪除</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="597"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/src/ScreenshotController.cpp" line="542"/>
         <source>Failed to delete file: %1</source>
         <translation>刪除檔案失敗: %1</translation>
     </message>
@@ -1816,59 +1816,51 @@ Press ESC to cancel</source>
         <translation>🖥 全螢幕截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="83"/>
         <source>🪟 Window</source>
-        <translation>🪟 視窗截圖</translation>
+        <translation type="vanished">🪟 視窗截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="100"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
         <source>No screenshots yet</source>
         <translation>暫無截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="101"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="95"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>點選「區域截圖」或「全螢幕截圖」來擷取螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="102"/>
+        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
         <source>%1 screenshots</source>
         <translation>%1 張截圖</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="152"/>
         <source>Select a Window to Capture</source>
-        <translation>選擇要擷取的視窗</translation>
+        <translation type="vanished">選擇要擷取的視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="158"/>
         <source>%1 windows</source>
-        <translation>%1 個視窗</translation>
+        <translation type="vanished">%1 個視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="323"/>
         <source>Click to Capture</source>
-        <translation>點擊擷取</translation>
+        <translation type="vanished">點擊擷取</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="333"/>
         <source>Unnamed Window</source>
-        <translation>未命名視窗</translation>
+        <translation type="vanished">未命名視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="395"/>
         <source>No windows found</source>
-        <translation>未找到視窗</translation>
+        <translation type="vanished">未找到視窗</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="417"/>
         <source>Hover to preview, click to capture</source>
-        <translation>懸停預覽，點擊擷取</translation>
+        <translation type="vanished">懸停預覽，點擊擷取</translation>
     </message>
     <message>
-        <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="425"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation type="vanished">取消</translation>
     </message>
 </context>
 <context>

@@ -74,10 +74,4 @@ struct COMMONHEAD_EXPORT DisplayInfoVM {
     bool isPrimary = false;
 };
 
-struct COMMONHEAD_EXPORT WindowInfoVM {
-    int64_t windowId = 0;
-    std::string name;
-    std::string ownerName;
-};
-
 } // namespace commonHead::viewModels::model

@@ -26,12 +26,9 @@ public:
     // === Capture ===
     void captureFullScreen() override;
     void captureDisplay(int displayIndex) override;
-    void captureWindow(int64_t windowId) override;
 
     // === Display / Window Enumeration ===
     std::vector<model::DisplayInfoVM> getDisplayList() const override;
-    std::vector<model::WindowInfoVM> getWindowList() const override;
-    std::string getWindowThumbnailBase64(int64_t windowId) const override;
 
     // === Region Selection & Save ===
     void selectRegionAndSave(int x, int y, int w, int h, double scaleFactor) override;

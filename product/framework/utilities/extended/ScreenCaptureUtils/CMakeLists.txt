@@ -13,16 +13,18 @@ set(MODULE_SOURCE_PRIVATE
 )
 if (WIN32)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenCaptureUtils_Win.h
-    src/ScreenCaptureUtils_Win.cpp)
+    src/windows/ScreenCaptureUtils_Win.h
+    src/windows/ScreenCaptureUtils_Win.cpp)
 elseif (APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenCaptureUtils_Mac.h
-    src/ScreenCaptureUtils_Mac.mm)
+    src/macos/ScreenCaptureUtils_Mac.h
+    src/macos/ScreenCaptureUtils_Mac.mm)
 elseif (UNIX)
     list(APPEND MODULE_SOURCE_PRIVATE
-    src/ScreenCaptureUtils_Linux.h
-    src/ScreenCaptureUtils_Linux.cpp)
+    src/linux/ScreenCaptureUtils_Linux.h
+    src/linux/ScreenCaptureUtils_Linux.cpp
+    src/linux/PortalFrameGrabber_Linux.h
+    src/linux/PortalFrameGrabber_Linux.cpp)
 endif()
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -46,11 +48,31 @@ elseif (WIN32)
         dwmapi
         shcore
     )
+elseif (UNIX)
+    # Linux screen capture uses xdg-desktop-portal (via GDBus/GIO) plus
+    # PipeWire to receive raw frames — no ffmpeg, no external screenshot tools.
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GIO REQUIRED gio-2.0 gio-unix-2.0)
+    pkg_check_modules(PIPEWIRE REQUIRED libpipewire-0.3)
+    list(APPEND MODULE_DEPENDENCIES_PRIVATE
+        ${GIO_LIBRARIES}
+        ${PIPEWIRE_LIBRARIES}
+    )
 endif()
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_BUILD_PRIVATE_DIR src)
+if (WIN32)
+    list(APPEND MODULE_BUILD_PRIVATE_DIR src/windows)
+elseif (APPLE)
+    list(APPEND MODULE_BUILD_PRIVATE_DIR src/macos)
+elseif (UNIX)
+    list(APPEND MODULE_BUILD_PRIVATE_DIR
+        src/linux
+        ${GIO_INCLUDE_DIRS}
+        ${PIPEWIRE_INCLUDE_DIRS})
+endif()
 
 BuildModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
