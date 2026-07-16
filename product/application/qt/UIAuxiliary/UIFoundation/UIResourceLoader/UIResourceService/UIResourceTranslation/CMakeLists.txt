@@ -38,6 +38,7 @@ qt_add_translations(
     TS_FILE_DIR ${Translation_DIR}
     TS_FILES ${Translation_TS_FILES}
     SOURCES ${ALL_TRANSLATION_SOURCE_FILES}
+    LUPDATE_OPTIONS -no-obsolete
 )
 
 

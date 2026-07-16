@@ -1816,10 +1816,6 @@ Press ESC to cancel</source>
         <translation>🖥 全螢幕截圖</translation>
     </message>
     <message>
-        <source>🪟 Window</source>
-        <translation type="vanished">🪟 視窗截圖</translation>
-    </message>
-    <message>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
         <source>No screenshots yet</source>
         <translation>暫無截圖</translation>
@@ -1833,34 +1829,6 @@ Press ESC to cancel</source>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
         <source>%1 screenshots</source>
         <translation>%1 張截圖</translation>
-    </message>
-    <message>
-        <source>Select a Window to Capture</source>
-        <translation type="vanished">選擇要擷取的視窗</translation>
-    </message>
-    <message>
-        <source>%1 windows</source>
-        <translation type="vanished">%1 個視窗</translation>
-    </message>
-    <message>
-        <source>Click to Capture</source>
-        <translation type="vanished">點擊擷取</translation>
-    </message>
-    <message>
-        <source>Unnamed Window</source>
-        <translation type="vanished">未命名視窗</translation>
-    </message>
-    <message>
-        <source>No windows found</source>
-        <translation type="vanished">未找到視窗</translation>
-    </message>
-    <message>
-        <source>Hover to preview, click to capture</source>
-        <translation type="vanished">懸停預覽，點擊擷取</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
     </message>
 </context>
 <context>

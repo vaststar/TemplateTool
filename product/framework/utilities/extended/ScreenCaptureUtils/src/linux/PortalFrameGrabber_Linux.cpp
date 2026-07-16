@@ -2,10 +2,13 @@
 
 #ifdef __linux__
 
+#include <atomic>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include <gio/gio.h>
@@ -333,9 +336,12 @@ bool capturePipeWireFrame(int pipewireFd, uint32_t nodeId, CaptureImage& out)
     pw_stream_disconnect(g.stream);
     pw_thread_loop_unlock(g.loop);
 
+    // Stop (join) the loop thread BEFORE destroying any objects, otherwise the
+    // still-running onStreamProcess callback can touch a freed stream/buffer.
+    pw_thread_loop_stop(g.loop);
+
     pw_stream_destroy(g.stream);
     pw_core_disconnect(g.core);
-    pw_thread_loop_stop(g.loop);
     pw_context_destroy(g.context);
     pw_thread_loop_destroy(g.loop);
 
@@ -358,7 +364,7 @@ struct PortalCtx
     int pipewireFd = -1;
     bool started = false;
 
-    int requestCounter = 0;
+    std::vector<guint> subscriptions; ///< D-Bus signal subscription ids to remove on teardown.
     bool failed = false;
 };
 
@@ -381,9 +387,13 @@ std::string makeRequestPath(PortalCtx* ctx, const std::string& token)
     return "/org/freedesktop/portal/desktop/request/" + uniqueNameToken(ctx->conn) + "/" + token;
 }
 
-std::string newRequestToken(PortalCtx* ctx)
+std::string newRequestToken(PortalCtx* /*ctx*/)
 {
-    return "ucf" + std::to_string(getpid()) + "_" + std::to_string(++ctx->requestCounter);
+    // Must be unique across every invocation in this process: the returned
+    // token becomes the Request object path we subscribe to. Reusing a path
+    // across calls would let a stale (already-destroyed) subscription fire.
+    static std::atomic<uint64_t> counter{0};
+    return "ucf" + std::to_string(getpid()) + "_" + std::to_string(++counter);
 }
 
 void failPortal(PortalCtx* ctx)
@@ -406,11 +416,16 @@ void onCreateSessionResponse(GDBusConnection*, const gchar*, const gchar*, const
 guint subscribeResponse(PortalCtx* ctx, const std::string& path,
                         GDBusSignalCallback cb)
 {
-    return g_dbus_connection_signal_subscribe(
+    guint id = g_dbus_connection_signal_subscribe(
         ctx->conn, "org.freedesktop.portal.Desktop",
         "org.freedesktop.portal.Request", "Response", path.c_str(),
         nullptr, G_DBUS_SIGNAL_FLAGS_NONE,
         cb, ctx, nullptr);
+    if (id != 0)
+    {
+        ctx->subscriptions.push_back(id);
+    }
+    return id;
 }
 
 void onCreateSessionResponse(GDBusConnection*, const gchar*, const gchar*, const gchar*,
@@ -555,7 +570,20 @@ void onStartResponse(GDBusConnection*, const gchar*, const gchar*, const gchar*,
         return;
     }
 
-    // OpenPipeWireRemote returns the fd directly (not via Request/Response).
+    // Stop here and hand control back to grabPortalFrameBGRA. The remaining
+    // step (OpenPipeWireRemote) is a *blocking* D-Bus call; running it here —
+    // inside a signal callback that the GMainContext is currently dispatching —
+    // re-enters the main loop and is what crashed on the second capture. It is
+    // done safely after the loop quits instead.
+    ctx->started = true;
+    g_main_loop_quit(ctx->loop);
+}
+
+/// Ask the portal for the PipeWire remote fd. MUST be called from
+/// grabPortalFrameBGRA after its main loop has quit — never from inside a
+/// signal callback — because it makes a synchronous D-Bus call.
+bool openPipeWireRemote(PortalCtx* ctx)
+{
     GError* err = nullptr;
     GUnixFDList* fdList = nullptr;
     GVariantBuilder opts;
@@ -572,8 +600,7 @@ void onStartResponse(GDBusConnection*, const gchar*, const gchar*, const gchar*,
     {
         if (err) g_error_free(err);
         if (fdList) g_object_unref(fdList);
-        failPortal(ctx);
-        return;
+        return false;
     }
 
     gint32 fdIndex = -1;
@@ -586,14 +613,7 @@ void onStartResponse(GDBusConnection*, const gchar*, const gchar*, const gchar*,
     }
     if (fdList) g_object_unref(fdList);
 
-    if (ctx->pipewireFd < 0)
-    {
-        failPortal(ctx);
-        return;
-    }
-
-    ctx->started = true;
-    g_main_loop_quit(ctx->loop);
+    return ctx->pipewireFd >= 0;
 }
 
 } // namespace
@@ -641,7 +661,9 @@ PortalFrame grabPortalFrameBGRA()
 
     g_main_loop_run(ctx.loop);
 
-    if (ctx.started && !ctx.failed && ctx.pipewireFd >= 0)
+    // OpenPipeWireRemote is a blocking D-Bus call; run it here (outside any
+    // signal-callback dispatch) now that the negotiation loop has quit.
+    if (ctx.started && !ctx.failed && openPipeWireRemote(&ctx))
     {
         if (capturePipeWireFrame(ctx.pipewireFd, ctx.nodeId, frame.image))
         {
@@ -659,6 +681,15 @@ PortalFrame grabPortalFrameBGRA()
             "org.freedesktop.portal.Session", "Close",
             nullptr, nullptr, G_DBUS_CALL_FLAGS_NONE, -1, nullptr, nullptr, nullptr);
     }
+
+    // Remove every Response subscription before dropping our ref: the session
+    // bus connection is a shared process-wide singleton, so leaked
+    // subscriptions would keep firing into this now-destroyed stack ctx.
+    for (guint id : ctx.subscriptions)
+    {
+        g_dbus_connection_signal_unsubscribe(ctx.conn, id);
+    }
+    ctx.subscriptions.clear();
 
     g_main_loop_unref(ctx.loop);
     g_object_unref(ctx.conn);

@@ -1816,10 +1816,6 @@ Press ESC to cancel</translation>
         <translation>🖥 Full Screen</translation>
     </message>
     <message>
-        <source>🪟 Window</source>
-        <translation type="vanished">🪟 Window</translation>
-    </message>
-    <message>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
         <source>No screenshots yet</source>
         <translation>No screenshots yet</translation>
@@ -1833,34 +1829,6 @@ Press ESC to cancel</translation>
         <location filename="../../UIView/PageViews/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
         <source>%1 screenshots</source>
         <translation>%1 screenshots</translation>
-    </message>
-    <message>
-        <source>Select a Window to Capture</source>
-        <translation type="vanished">Select a Window to Capture</translation>
-    </message>
-    <message>
-        <source>%1 windows</source>
-        <translation type="vanished">%1 windows</translation>
-    </message>
-    <message>
-        <source>Click to Capture</source>
-        <translation type="vanished">Click to Capture</translation>
-    </message>
-    <message>
-        <source>Unnamed Window</source>
-        <translation type="vanished">Unnamed Window</translation>
-    </message>
-    <message>
-        <source>No windows found</source>
-        <translation type="vanished">No windows found</translation>
-    </message>
-    <message>
-        <source>Hover to preview, click to capture</source>
-        <translation type="vanished">Hover to preview, click to capture</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Cancel</translation>
     </message>
 </context>
 <context>
