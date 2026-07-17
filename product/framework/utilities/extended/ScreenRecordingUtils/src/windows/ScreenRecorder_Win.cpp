@@ -185,7 +185,7 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
 // GIF conversion
 // ============================================================================
 
-// GIF conversion is provided by ucf::utilities::ffmpeg::FFMpegExec (FFmpegUtils).
+// GIF conversion is provided by ucf::utilities::ffmpeg::FFmpegCli (FFmpegCliUtils).
 
 // ============================================================================
 // Construction / Destruction

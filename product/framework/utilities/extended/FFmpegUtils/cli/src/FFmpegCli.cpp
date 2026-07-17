@@ -1,4 +1,4 @@
-#include <ucf/Utilities/FFmpegUtils/FFMpegExec.h>
+#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegCli.h>
 
 #include <algorithm>
 #include <filesystem>
@@ -6,7 +6,7 @@
 #include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 #include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 
-#include <ucf/Utilities/FFmpegUtils/FFmpegLocator.h>
+#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegLocator.h>
 #include "FFmpegLogger.h"
 
 namespace ucf::utilities::ffmpeg {
@@ -25,7 +25,7 @@ std::string resolveFfprobe(const std::string& explicitPath)
 
 } // namespace
 
-bool FFMpegExec::convertToGif(const std::string& inputPath,
+bool FFmpegCli::convertToGif(const std::string& inputPath,
                               const std::string& outputPath,
                               int fps,
                               const std::string& ffmpegPath)
@@ -57,7 +57,7 @@ bool FFMpegExec::convertToGif(const std::string& inputPath,
     return result.exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
 }
 
-bool FFMpegExec::extractThumbnail(const std::string& inputPath,
+bool FFmpegCli::extractThumbnail(const std::string& inputPath,
                                   const std::string& outputPath,
                                   double timeSeconds,
                                   int maxWidth,
@@ -112,7 +112,7 @@ bool FFMpegExec::extractThumbnail(const std::string& inputPath,
     return result.exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
 }
 
-bool FFMpegExec::decodeToBgra(const std::string& imagePath,
+bool FFmpegCli::decodeToBgra(const std::string& imagePath,
                               RawImage& out,
                               const std::string& ffmpegPath,
                               const std::string& ffprobePath)

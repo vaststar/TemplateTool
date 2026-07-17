@@ -1,7 +1,7 @@
 #include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
-#include <ucf/Utilities/FFmpegUtils/FFMpegExec.h>
-#include <ucf/Utilities/FFmpegUtils/FFmpegLocator.h>
+#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegCli.h>
+#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegLocator.h>
 
 #if defined(_WIN32)
 #include "windows/ScreenRecorder_Win.h"
@@ -97,7 +97,7 @@ bool IScreenRecorder::convertToGif(const std::string& ffmpegPath,
                                    const std::string& outputPath,
                                    int fps)
 {
-    return ffmpeg::FFMpegExec::convertToGif(inputPath, outputPath, fps, ffmpegPath);
+    return ffmpeg::FFmpegCli::convertToGif(inputPath, outputPath, fps, ffmpegPath);
 }
 
 bool IScreenRecorder::extractThumbnail(const std::string& ffmpegPath,
@@ -107,7 +107,7 @@ bool IScreenRecorder::extractThumbnail(const std::string& ffmpegPath,
                                        int maxWidth,
                                        int maxHeight)
 {
-    return ffmpeg::FFMpegExec::extractThumbnail(
+    return ffmpeg::FFmpegCli::extractThumbnail(
         inputPath, outputPath, timeSeconds, maxWidth, maxHeight, ffmpegPath);
 }
 

@@ -1,7 +1,8 @@
-#include <ucf/Utilities/FFmpegUtils/FFmpegLocator.h>
+#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegLocator.h>
 
 #include <filesystem>
 #include <mutex>
+#include <unordered_map>
 
 #include "FFmpegLocatorPlatform.h"
 #include "FFmpegLogger.h"
@@ -9,12 +10,6 @@
 namespace ucf::utilities::ffmpeg {
 
 namespace {
-
-// Cache resolved executables. Only successful (non-empty) results are cached so
-// that installing FFmpeg after a failed probe is still picked up on retry.
-std::mutex g_cacheMutex;
-std::string g_ffmpegCache;
-std::string g_ffprobeCache;
 
 std::string probeCandidates(const std::string& base)
 {
@@ -34,18 +29,25 @@ std::string probeCandidates(const std::string& base)
     return detail::findInPath(exeName);
 }
 
-std::string locateCached(const std::string& base, std::string& cache)
+// Cache resolved executables keyed by base name ("ffmpeg" / "ffprobe"). Only
+// successful (non-empty) results are cached, so installing FFmpeg after a failed
+// probe is still picked up on retry. The cache lives inside this function, so no
+// module-level state leaks into the translation unit.
+std::string locateCached(const std::string& base)
 {
-    std::lock_guard<std::mutex> lock(g_cacheMutex);
-    if (!cache.empty())
+    static std::mutex mutex;
+    static std::unordered_map<std::string, std::string> cache;
+
+    std::lock_guard<std::mutex> lock(mutex);
+    if (auto it = cache.find(base); it != cache.end())
     {
-        return cache;
+        return it->second;
     }
     std::string resolved = probeCandidates(base);
     if (!resolved.empty())
     {
         FF_LOG_INFO(base << " auto-discovered at: " << resolved);
-        cache = resolved;
+        cache.emplace(base, resolved);
     }
     else
     {
@@ -58,12 +60,12 @@ std::string locateCached(const std::string& base, std::string& cache)
 
 std::string FFmpegLocator::ffmpegPath()
 {
-    return locateCached("ffmpeg", g_ffmpegCache);
+    return locateCached("ffmpeg");
 }
 
 std::string FFmpegLocator::ffprobePath()
 {
-    return locateCached("ffprobe", g_ffprobeCache);
+    return locateCached("ffprobe");
 }
 
 bool FFmpegLocator::isAvailable()

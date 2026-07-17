@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Utilities/FFmpegUtils/FFmpegExport.h>
+#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegExport.h>
 
 namespace ucf::utilities::ffmpeg {
 
@@ -14,7 +14,7 @@ namespace ucf::utilities::ffmpeg {
 /// through ProcessBridge (argument-vector based, never a shell string), so
 /// there is no command-injection surface. When an executable path is not
 /// supplied it is resolved via FFmpegLocator.
-class FFmpegUtils_EXPORT FFMpegExec
+class FFmpegUtils_EXPORT FFmpegCli
 {
 public:
     /// Raw decoded image: tightly packed, top-down BGRA (4 bytes/pixel).
