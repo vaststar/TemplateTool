@@ -55,6 +55,7 @@ elseif (UNIX)
     pkg_check_modules(GIO REQUIRED gio-2.0 gio-unix-2.0)
     pkg_check_modules(PIPEWIRE REQUIRED libpipewire-0.3)
     list(APPEND MODULE_DEPENDENCIES_PRIVATE
+        ProcessBridgeUtils
         ${GIO_LIBRARIES}
         ${PIPEWIRE_LIBRARIES}
     )

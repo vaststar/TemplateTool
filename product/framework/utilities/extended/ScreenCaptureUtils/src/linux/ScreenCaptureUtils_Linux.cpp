@@ -4,14 +4,10 @@
 
 #include "PortalFrameGrabber_Linux.h"
 
-#include <array>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <sstream>
 #include <regex>
-#include <memory>
-#include <unistd.h>
+
+#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 namespace ucf::utilities::screencapture {
 
@@ -19,21 +15,22 @@ namespace ucf::utilities::screencapture {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/// Run a command and capture stdout
-static std::string execCmd(const std::string& cmd)
+/// Run a process and capture its stdout via ProcessBridge (no shell, so there
+/// is no command-injection surface). Bare command names are resolved on PATH.
+static std::string runCapture(const std::string& exe,
+                              const std::vector<std::string>& args,
+                              int timeoutMs = 15000)
 {
-    std::array<char, 4096> buf;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe)
+    ucf::utilities::ProcessBridgeConfig config;
+    config.executablePath = exe;
+    config.arguments = args;
+    config.stopTimeoutMs = timeoutMs;
+    auto result = ucf::utilities::IProcessBridge::run(config);
+    if (result.timedOut || result.exitCode != 0)
     {
         return {};
     }
-    while (fgets(buf.data(), static_cast<int>(buf.size()), pipe.get()))
-    {
-        result += buf.data();
-    }
-    return result;
+    return result.stdoutData;
 }
 
 // ---------------------------------------------------------------------------
@@ -45,10 +42,10 @@ static std::vector<DisplayInfo> parseDisplays()
     std::vector<DisplayInfo> displays;
 
     // Try wlr-randr first (Wayland), then xrandr (X11)
-    std::string output = execCmd("wlr-randr 2>/dev/null");
+    std::string output = runCapture("wlr-randr", {});
     if (output.empty())
     {
-        output = execCmd("xrandr --current 2>/dev/null");
+        output = runCapture("xrandr", {"--current"});
     }
     if (output.empty())
     {

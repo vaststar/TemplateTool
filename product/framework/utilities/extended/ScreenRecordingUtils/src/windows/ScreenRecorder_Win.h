@@ -36,14 +36,7 @@ public:
     [[nodiscard]] std::string outputPath() const override;
 
     // ── Static utilities (called from ScreenRecordingUtils) ──
-    static std::string getLibraryDirectory();
-    static std::string findFFmpegPath();
-    static std::string findFFmpegPath(const std::string& appDir);
     static std::vector<AudioDeviceInfo> enumerateAudioDevices();
-    static bool convertToGif(const std::string& ffmpegPath,
-                             const std::string& inputPath,
-                             const std::string& outputPath,
-                             int fps);
 
 private:
     std::atomic<bool> m_active{false};

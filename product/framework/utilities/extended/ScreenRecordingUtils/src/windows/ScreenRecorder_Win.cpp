@@ -36,31 +36,6 @@ static inline int alignToEven(int v)
     return (std::max)(2, v & ~1);
 }
 
-static std::string findInPath(const std::string& name)
-{
-    const char* pathEnv = std::getenv("PATH");
-    if (!pathEnv) return {};
-
-    std::string pathStr(pathEnv);
-    std::string::size_type start = 0;
-    while (start < pathStr.size())
-    {
-        auto end = pathStr.find(';', start);
-        if (end == std::string::npos) end = pathStr.size();
-
-        std::string dir = pathStr.substr(start, end - start);
-        if (!dir.empty())
-        {
-            std::error_code ec;
-            auto canonical = std::filesystem::canonical(std::filesystem::path(dir) / name, ec);
-            if (!ec && std::filesystem::is_regular_file(canonical, ec))
-                return canonical.string();
-        }
-        start = end + 1;
-    }
-    return {};
-}
-
 // ============================================================================
 // FFmpegProcessCallback
 // ============================================================================
@@ -89,69 +64,6 @@ public:
         SRU_LOG_DEBUG("FFmpeg stderr: " << data);
     }
 };
-
-// ============================================================================
-// Library self-location
-// ============================================================================
-
-static void dummyForModuleHandle_SRU() {}
-
-std::string ScreenRecorder_Win::getLibraryDirectory()
-{
-    HMODULE hModule = nullptr;
-    if (!GetModuleHandleExA(
-            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-            reinterpret_cast<LPCSTR>(&dummyForModuleHandle_SRU), &hModule))
-        return {};
-
-    char path[MAX_PATH] = {};
-    DWORD len = GetModuleFileNameA(hModule, path, MAX_PATH);
-    if (len == 0 || len >= MAX_PATH) return {};
-
-    std::string fullPath(path, len);
-    auto lastSep = fullPath.find_last_of("\\/");
-    return (lastSep != std::string::npos) ? fullPath.substr(0, lastSep) : ".";
-}
-
-// ============================================================================
-// FFmpeg discovery
-// ============================================================================
-
-std::string ScreenRecorder_Win::findFFmpegPath()
-{
-    std::string libDir = getLibraryDirectory();
-    if (libDir.empty())
-        return findInPath("ffmpeg.exe");
-
-    for (const auto& candidate : {
-        libDir + "/ffmpeg.exe",
-        libDir + "/../bin/ffmpeg.exe",
-        libDir + "/ffmpeg/ffmpeg.exe"})
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec))
-        {
-            SRU_LOG_INFO("FFmpeg auto-discovered at: " << canonical.string());
-            return canonical.string();
-        }
-    }
-    return findInPath("ffmpeg.exe");
-}
-
-std::string ScreenRecorder_Win::findFFmpegPath(const std::string& appDir)
-{
-    for (const auto& candidate : {
-        appDir + "/ffmpeg.exe",
-        appDir + "/ffmpeg/ffmpeg.exe"})
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec))
-            return canonical.string();
-    }
-    return findInPath("ffmpeg.exe");
-}
 
 // ============================================================================
 // Audio device enumeration (public)
@@ -273,28 +185,7 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Win::enumerateAudioDevices()
 // GIF conversion
 // ============================================================================
 
-bool ScreenRecorder_Win::convertToGif(const std::string& ffmpegPath,
-                                      const std::string& inputPath,
-                                      const std::string& outputPath,
-                                      int fps)
-{
-    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
-        return false;
-
-    std::string filter = "fps=" + std::to_string(fps)
-        + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
-
-    ucf::utilities::ProcessBridgeConfig config;
-    config.executablePath = ffmpegPath;
-    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filter, outputPath};
-    config.stopTimeoutMs = 120000;
-
-    auto result = ucf::utilities::IProcessBridge::run(config);
-    if (result.timedOut) { SRU_LOG_ERROR("convertToGif: timed out"); return false; }
-
-    std::error_code ec;
-    return result.exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
-}
+// GIF conversion is provided by ucf::utilities::ffmpeg::FFMpegExec (FFmpegUtils).
 
 // ============================================================================
 // Construction / Destruction

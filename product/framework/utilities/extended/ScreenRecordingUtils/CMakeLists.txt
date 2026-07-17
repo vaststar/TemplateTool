@@ -37,6 +37,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
     ProcessBridgeUtils
+    FFmpegUtils
 )
 
 if (WIN32)
