@@ -11,10 +11,6 @@
 #include <ucf/Services/MediaService/MediaTypes.h>
 #include <ucf/Services/MediaService/IMediaService.h>
 
-namespace cv {
-class Mat;
-}
-
 namespace ucf::service {
 class CameraDevice;
 
@@ -48,8 +44,6 @@ public:
     void removeSubscription(const std::string& subscriptionId);
 
 private:
-    void processFrame(cv::Mat& frame) const;
-    media::IVideoFramePtr convertFrameToVideoFrame(const cv::Mat& frame) const;
     void captureLoop();
 
 private:

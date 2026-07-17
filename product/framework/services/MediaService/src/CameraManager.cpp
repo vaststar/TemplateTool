@@ -1,6 +1,7 @@
 #include "CameraManager.h"
 
-#include <opencv2/opencv.hpp>
+#include <algorithm>
+
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
 #include "MediaServiceLogger.h"

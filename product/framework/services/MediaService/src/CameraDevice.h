@@ -1,8 +1,6 @@
 #pragma once
 
-#include <opencv2/core.hpp>
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
+#include <memory>
 
 #include <ucf/Services/MediaService/MediaTypes.h>
 
@@ -21,14 +19,15 @@ public:
     bool open();
     void close();
     bool isOpened() const;
-    cv::Mat readFrame();
+    // 读取一帧，返回中立的 RGB888 帧；设备未开或空帧时返回 nullptr
+    media::IVideoFramePtr readFrame();
 
     int getFrameWidth() const;
     int getFrameHeight() const;
     const media::CameraSource& getSource() const;
 
 private:
-    media::CameraSource mSource;
-    cv::VideoCapture mVideoCap;
+    struct Impl;                    // 隐藏 cv::VideoCapture 和 source
+    std::unique_ptr<Impl> mImpl;
 };
 }

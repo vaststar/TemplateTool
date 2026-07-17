@@ -1,9 +1,7 @@
 #include "CameraVideoCapture.h"
 #include "CameraDevice.h"
-#include "VideoFrame.h"
 
 #include <algorithm>
-#include <opencv2/opencv.hpp>
 
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
@@ -107,30 +105,13 @@ media::IVideoFramePtr CameraVideoCapture::readImageData()
         return nullptr;
     }
 
-    cv::Mat frame = mDevice->readFrame();
-    if (frame.empty())
+    auto frame = mDevice->readFrame();
+    if (!frame)
     {
         SERVICE_LOG_WARN("read empty frame, cameraId: " << mCameraId);
         return nullptr;
     }
-
-    processFrame(frame);
-    return convertFrameToVideoFrame(frame);
-}
-
-void CameraVideoCapture::processFrame(cv::Mat& frame) const
-{
-    // 预留帧处理逻辑（如锐化、色彩校正等）
-}
-
-media::IVideoFramePtr CameraVideoCapture::convertFrameToVideoFrame(const cv::Mat& frame) const
-{
-    cv::Mat rgbFrame;
-    cv::cvtColor(frame, rgbFrame, cv::COLOR_BGR2RGB);
-    std::vector<uchar> vec(rgbFrame.datastart, rgbFrame.dataend);
-    return std::make_shared<media::VideoFrame>(
-        std::move(vec), rgbFrame.cols, rgbFrame.rows,
-        static_cast<int>(rgbFrame.step), media::PixelFormat::RGB888);
+    return frame;
 }
 
 std::string CameraVideoCapture::addSubscription(VideoFrameCallback callback)
