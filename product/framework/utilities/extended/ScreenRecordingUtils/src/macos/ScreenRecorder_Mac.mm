@@ -34,103 +34,6 @@ static inline int alignToEven(int v)
     return std::max(2, v & ~1);
 }
 
-static std::string findInPath(const std::string& name)
-{
-    const char* pathEnv = std::getenv("PATH");
-    if (!pathEnv) return {};
-
-    std::string pathStr(pathEnv);
-    std::string::size_type start = 0;
-    while (start < pathStr.size())
-    {
-        auto end = pathStr.find(':', start);
-        if (end == std::string::npos) end = pathStr.size();
-
-        std::string dir = pathStr.substr(start, end - start);
-        if (!dir.empty())
-        {
-            auto candidate = std::filesystem::path(dir) / name;
-            std::error_code ec;
-            if (std::filesystem::is_regular_file(candidate, ec) && access(candidate.c_str(), X_OK) == 0)
-            {
-                auto canonical = std::filesystem::canonical(candidate, ec);
-                if (!ec) return canonical.string();
-            }
-        }
-        start = end + 1;
-    }
-    return {};
-}
-
-// ============================================================================
-// Library self-location
-// ============================================================================
-
-std::string ScreenRecorder_Mac::getLibraryDirectory()
-{
-    Dl_info info{};
-    if (dladdr(reinterpret_cast<void*>(&ScreenRecorder_Mac::getLibraryDirectory), &info) == 0
-        || info.dli_fname == nullptr)
-        return {};
-
-    std::string fullPath = info.dli_fname;
-    if (!fullPath.empty() && fullPath[0] != '/')
-    {
-        char resolved[PATH_MAX] = {};
-        if (realpath(fullPath.c_str(), resolved))
-            fullPath = resolved;
-    }
-
-    auto lastSep = fullPath.rfind('/');
-    return (lastSep != std::string::npos) ? fullPath.substr(0, lastSep) : ".";
-}
-
-// ============================================================================
-// FFmpeg discovery
-// ============================================================================
-
-std::string ScreenRecorder_Mac::findFFmpegPath()
-{
-    std::string libDir = getLibraryDirectory();
-    if (libDir.empty())
-        return findInPath("ffmpeg");
-
-    for (const auto& candidate : {
-        libDir + "/ffmpeg",
-        libDir + "/../MacOS/ffmpeg",
-        libDir + "/../Resources/ffmpeg",
-        libDir + "/../../bin/ffmpeg",
-        std::string("/opt/homebrew/bin/ffmpeg"),
-        std::string("/usr/local/bin/ffmpeg")})
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec) && access(canonical.c_str(), X_OK) == 0)
-        {
-            SRU_LOG_INFO("FFmpeg auto-discovered at: " << canonical.string());
-            return canonical.string();
-        }
-    }
-    return findInPath("ffmpeg");
-}
-
-std::string ScreenRecorder_Mac::findFFmpegPath(const std::string& appDir)
-{
-    for (const auto& candidate : {
-        appDir + "/../../../ffmpeg",
-        appDir + "/ffmpeg",
-        appDir + "/../Resources/ffmpeg",
-        std::string("/opt/homebrew/bin/ffmpeg"),
-        std::string("/usr/local/bin/ffmpeg")})
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec))
-            return canonical.string();
-    }
-    return findInPath("ffmpeg");
-}
-
 // ============================================================================
 // Permissions
 // ============================================================================
@@ -236,33 +139,6 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Mac::enumerateAudioDevices()
             devices.push_back({name, name, true, AudioDeviceType::Microphone});
     }
     return devices;
-}
-
-// ============================================================================
-// GIF conversion
-// ============================================================================
-
-bool ScreenRecorder_Mac::convertToGif(const std::string& ffmpegPath,
-                                      const std::string& inputPath,
-                                      const std::string& outputPath,
-                                      int fps)
-{
-    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
-        return false;
-
-    std::string filter = "fps=" + std::to_string(fps)
-        + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
-
-    ucf::utilities::ProcessBridgeConfig config;
-    config.executablePath = ffmpegPath;
-    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filter, outputPath};
-    config.stopTimeoutMs = 120000;
-
-    auto result = ucf::utilities::IProcessBridge::run(config);
-    if (result.timedOut) { SRU_LOG_ERROR("convertToGif: timed out"); return false; }
-
-    std::error_code ec;
-    return result.exitCode == 0 && std::filesystem::is_regular_file(outputPath, ec);
 }
 
 // ============================================================================

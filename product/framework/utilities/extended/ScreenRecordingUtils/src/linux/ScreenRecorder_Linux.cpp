@@ -399,73 +399,6 @@ static std::string ensureRecorderScript()
 }
 
 // ============================================================================
-// Library self-location
-// ============================================================================
-
-std::string ScreenRecorder_Linux::getLibraryDirectory()
-{
-    Dl_info info{};
-    if (dladdr(reinterpret_cast<void*>(&ScreenRecorder_Linux::getLibraryDirectory), &info) == 0
-        || info.dli_fname == nullptr)
-        return {};
-
-    std::string fullPath = info.dli_fname;
-    if (!fullPath.empty() && fullPath[0] != '/')
-    {
-        char resolved[PATH_MAX] = {};
-        if (realpath(fullPath.c_str(), resolved))
-            fullPath = resolved;
-    }
-
-    auto lastSep = fullPath.rfind('/');
-    return (lastSep != std::string::npos) ? fullPath.substr(0, lastSep) : ".";
-}
-
-// ============================================================================
-// FFmpeg discovery
-// ============================================================================
-
-std::string ScreenRecorder_Linux::findFFmpegPath()
-{
-    std::string libDir = getLibraryDirectory();
-    if (libDir.empty())
-        return findInPath("ffmpeg");
-
-    for (const auto& candidate : {
-        libDir + "/ffmpeg",
-        libDir + "/../bin/ffmpeg",
-        libDir + "/../lib/ffmpeg",
-        std::string("/usr/bin/ffmpeg"),
-        std::string("/usr/local/bin/ffmpeg")})
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec) && access(canonical.c_str(), X_OK) == 0)
-        {
-            SRU_LOG_INFO("FFmpeg auto-discovered at: " << canonical.string());
-            return canonical.string();
-        }
-    }
-    return findInPath("ffmpeg");
-}
-
-std::string ScreenRecorder_Linux::findFFmpegPath(const std::string& appDir)
-{
-    for (const auto& candidate : {
-        appDir + "/ffmpeg",
-        appDir + "/../lib/ffmpeg",
-        std::string("/usr/bin/ffmpeg"),
-        std::string("/usr/local/bin/ffmpeg")})
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec))
-            return canonical.string();
-    }
-    return findInPath("ffmpeg");
-}
-
-// ============================================================================
 // Audio device enumeration (PulseAudio via pactl)
 // ============================================================================
 
@@ -533,34 +466,6 @@ std::vector<AudioDeviceInfo> ScreenRecorder_Linux::enumerateAudioDevices()
     parseDevices(true);
     parseDevices(false);
     return devices;
-}
-
-// ============================================================================
-// GIF conversion
-// ============================================================================
-
-bool ScreenRecorder_Linux::convertToGif(const std::string& ffmpegPath,
-                                        const std::string& inputPath,
-                                        const std::string& outputPath,
-                                        int fps)
-{
-    if (ffmpegPath.empty() || inputPath.empty() || outputPath.empty())
-        return false;
-
-    std::string filter = "fps=" + std::to_string(fps)
-        + ",scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse";
-
-    ucf::utilities::ProcessBridgeConfig config;
-    config.executablePath = ffmpegPath;
-    config.arguments = {"-y", "-i", inputPath, "-filter_complex", filter, outputPath};
-    config.stopTimeoutMs = 120000;
-
-    auto result = ucf::utilities::IProcessBridge::run(config);
-    if (result.timedOut) { SRU_LOG_ERROR("convertToGif: timed out"); return false; }
-
-    std::error_code ec;
-    auto sz = std::filesystem::file_size(outputPath, ec);
-    return result.exitCode == 0 && !ec && sz > 0;
 }
 
 // ============================================================================

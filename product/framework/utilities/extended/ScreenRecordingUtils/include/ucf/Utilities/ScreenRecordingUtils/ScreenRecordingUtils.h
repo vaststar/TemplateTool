@@ -128,14 +128,8 @@ public:
     /// Auto-discover FFmpeg by locating the library and probing relative paths.
     static std::string findFFmpegPath();
 
-    /// Search platform-specific candidate paths relative to appDir.
-    static std::string findFFmpegPath(const std::string& appDir);
-
     /// Convenience wrapper around findFFmpegPath().
     static bool isFFmpegAvailable();
-
-    /// Convenience wrapper around findFFmpegPath(appDir).
-    static bool isFFmpegAvailable(const std::string& appDir);
 
     /// Check if the application has screen recording permission (macOS 10.15+).
     /// On Windows and Linux, always returns true.

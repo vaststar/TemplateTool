@@ -39,19 +39,9 @@ std::string IScreenRecorder::findFFmpegPath()
     return ffmpeg::FFmpegLocator::ffmpegPath();
 }
 
-std::string IScreenRecorder::findFFmpegPath(const std::string& appDir)
-{
-    return ffmpeg::FFmpegLocator::ffmpegPath(appDir);
-}
-
 bool IScreenRecorder::isFFmpegAvailable()
 {
     return !findFFmpegPath().empty();
-}
-
-bool IScreenRecorder::isFFmpegAvailable(const std::string& appDir)
-{
-    return !findFFmpegPath(appDir).empty();
 }
 
 bool IScreenRecorder::hasScreenRecordingPermission()

@@ -66,21 +66,6 @@ std::string FFmpegLocator::ffprobePath()
     return locateCached("ffprobe", g_ffprobeCache);
 }
 
-std::string FFmpegLocator::ffmpegPath(const std::string& appDir)
-{
-    const std::string exeName = detail::executableName("ffmpeg");
-    for (const std::string& candidate : detail::candidatePathsForAppDir(exeName, appDir))
-    {
-        std::error_code ec;
-        auto canonical = std::filesystem::canonical(candidate, ec);
-        if (!ec && std::filesystem::is_regular_file(canonical, ec))
-        {
-            return canonical.string();
-        }
-    }
-    return detail::findInPath(exeName);
-}
-
 bool FFmpegLocator::isAvailable()
 {
     return !ffmpegPath().empty();

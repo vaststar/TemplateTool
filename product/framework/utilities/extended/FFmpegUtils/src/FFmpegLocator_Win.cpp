@@ -54,14 +54,6 @@ std::vector<std::string> candidatePaths(const std::string& exeName, const std::s
     };
 }
 
-std::vector<std::string> candidatePathsForAppDir(const std::string& exeName, const std::string& appDir)
-{
-    return {
-        appDir + "/" + exeName,
-        appDir + "/ffmpeg/" + exeName,
-    };
-}
-
 bool isExecutableFile(const std::string& path)
 {
     std::error_code ec;

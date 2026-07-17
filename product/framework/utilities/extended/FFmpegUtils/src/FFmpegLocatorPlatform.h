@@ -23,10 +23,6 @@ std::string executableName(const std::string& base);
 std::vector<std::string> candidatePaths(const std::string& exeName,
                                         const std::string& libDir);
 
-/// Candidate paths to probe relative to an explicit application directory.
-std::vector<std::string> candidatePathsForAppDir(const std::string& exeName,
-                                                 const std::string& appDir);
-
 /// True if @p path exists and is executable by this process.
 bool isExecutableFile(const std::string& path);
 

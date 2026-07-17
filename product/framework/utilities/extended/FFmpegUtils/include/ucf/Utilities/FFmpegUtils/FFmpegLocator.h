@@ -21,10 +21,6 @@ public:
     /// Absolute path to the ffmpeg executable, or empty if not found.
     static std::string ffmpegPath();
 
-    /// Absolute path to the ffmpeg executable, searching relative to an explicit
-    /// application directory first. Not cached.
-    static std::string ffmpegPath(const std::string& appDir);
-
     /// Absolute path to the ffprobe executable, or empty if not found.
     static std::string ffprobePath();
 

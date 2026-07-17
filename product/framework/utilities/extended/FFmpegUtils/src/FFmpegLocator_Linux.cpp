@@ -54,16 +54,6 @@ std::vector<std::string> candidatePaths(const std::string& exeName, const std::s
     return paths;
 }
 
-std::vector<std::string> candidatePathsForAppDir(const std::string& exeName, const std::string& appDir)
-{
-    return {
-        appDir + "/" + exeName,
-        appDir + "/../lib/" + exeName,
-        "/usr/bin/" + exeName,
-        "/usr/local/bin/" + exeName,
-    };
-}
-
 bool isExecutableFile(const std::string& path)
 {
     return access(path.c_str(), X_OK) == 0;
