@@ -1,0 +1,371 @@
+name: Build FFmpeg Libs All Platforms
+run-name: "FFmpeg libs ${{ github.event.inputs.ffmpeg_version }} — ${{ github.event.inputs.platforms }}"
+
+# =============================================================================
+# Fetches the FFmpeg *development libraries* (libav* shared libs + headers),
+# as opposed to the command-line executables handled by
+# download-ffmpeg-all-platforms.yml.
+#
+# LICENSE: we deliberately use the LGPL + SHARED variants only. These libs are
+# linked into our process, so GPL / static builds would impose GPL on the app.
+# Windows / Linux come from BtbN's prebuilt "lgpl-shared" packages; macOS is
+# compiled from source with --enable-shared (default LGPL, no --enable-gpl).
+#
+# The workflow only produces artifacts. A maintainer downloads the merged
+# artifact and commits it under:
+#   product/framework/thirdparty/ffmpeg/ffmpeg-libs/<platform>/<arch>/
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      ffmpeg_version:
+        description: 'FFmpeg version (e.g., 7.1, 8.1). Honored on Win/Linux (BtbN) and used as the source tag on macOS.'
+        required: true
+        default: '7.1'
+        type: string
+      platforms:
+        description: 'Platforms to build (comma-separated: windows,windows-arm64,macos,linux)'
+        required: true
+        default: 'windows,windows-arm64,macos,linux'
+        type: string
+
+env:
+  FFMPEG_VERSION: ${{ github.event.inputs.ffmpeg_version }}
+  # BtbN builds ship lgpl-shared packages (bin/ + lib/ + include/):
+  # https://github.com/BtbN/FFmpeg-Builds/releases
+  BTBN_BASE: 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest'
+
+jobs:
+  # ============================================================================
+  # Windows (x64) — BtbN lgpl-shared (contains bin/*.dll, lib/*.lib, include/)
+  # ============================================================================
+  build-windows:
+    if: contains(github.event.inputs.platforms, 'windows')
+    runs-on: ubuntu-latest
+    name: Build (Windows x64)
+
+    steps:
+      - name: Download FFmpeg shared libs for Windows x64
+        run: |
+          BASE="${{ env.BTBN_BASE }}"
+          VER="${{ env.FFMPEG_VERSION }}"
+
+          URLS=(
+            "${BASE}/ffmpeg-n${VER}-latest-win64-lgpl-shared-${VER}.zip"
+            "${BASE}/ffmpeg-master-latest-win64-lgpl-shared.zip"
+          )
+
+          DOWNLOADED=false
+          for url in "${URLS[@]}"; do
+            echo "Trying: $url"
+            if curl -fSL -o ffmpeg.zip "$url" 2>/dev/null; then
+              echo "✓ Downloaded from: $url"
+              DOWNLOADED=true
+              break
+            fi
+            echo "✗ Not found, trying next..."
+          done
+
+          if [ "$DOWNLOADED" = false ]; then
+            echo "::error::Could not download FFmpeg ${VER} lgpl-shared for Windows x64"
+            exit 1
+          fi
+
+      - name: Extract and prepare artifact
+        run: |
+          set -euo pipefail
+          unzip -q ffmpeg.zip -d raw
+          ROOT=$(find raw -maxdepth 1 -mindepth 1 -type d | head -1)
+
+          if [[ ! -d "$ROOT/include" || ! -d "$ROOT/lib" || ! -d "$ROOT/bin" ]]; then
+            echo "::error::Unexpected package layout (missing include/lib/bin)"
+            find raw -maxdepth 2 -type d
+            exit 1
+          fi
+
+          mkdir -p artifact/windows/x64/include artifact/windows/x64/lib artifact/windows/x64/bin
+          cp -r "$ROOT/include/." artifact/windows/x64/include/
+          cp "$ROOT"/lib/*.lib     artifact/windows/x64/lib/
+          cp "$ROOT"/bin/*.dll     artifact/windows/x64/bin/
+
+          echo "=== Windows x64 libs ==="
+          find artifact/windows/x64 -maxdepth 2 -type f | head -40
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-libs-windows-x64
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Windows (ARM64) — BtbN winarm64 lgpl-shared
+  # ============================================================================
+  build-windows-arm64:
+    if: contains(github.event.inputs.platforms, 'windows-arm64')
+    runs-on: ubuntu-latest
+    name: Build (Windows ARM64)
+
+    steps:
+      - name: Download FFmpeg shared libs for Windows ARM64
+        run: |
+          BASE="${{ env.BTBN_BASE }}"
+          VER="${{ env.FFMPEG_VERSION }}"
+
+          URLS=(
+            "${BASE}/ffmpeg-n${VER}-latest-winarm64-lgpl-shared-${VER}.zip"
+            "${BASE}/ffmpeg-master-latest-winarm64-lgpl-shared.zip"
+          )
+
+          DOWNLOADED=false
+          for url in "${URLS[@]}"; do
+            echo "Trying: $url"
+            if curl -fSL -o ffmpeg.zip "$url" 2>/dev/null; then
+              echo "✓ Downloaded from: $url"
+              DOWNLOADED=true
+              break
+            fi
+            echo "✗ Not found, trying next..."
+          done
+
+          if [ "$DOWNLOADED" = false ]; then
+            echo "::error::Could not download FFmpeg ${VER} lgpl-shared for Windows ARM64 (BtbN may lack arm64 for old versions; try 6.0+)"
+            exit 1
+          fi
+
+      - name: Extract and prepare artifact
+        run: |
+          set -euo pipefail
+          unzip -q ffmpeg.zip -d raw
+          ROOT=$(find raw -maxdepth 1 -mindepth 1 -type d | head -1)
+
+          if [[ ! -d "$ROOT/include" || ! -d "$ROOT/lib" || ! -d "$ROOT/bin" ]]; then
+            echo "::error::Unexpected package layout (missing include/lib/bin)"
+            find raw -maxdepth 2 -type d
+            exit 1
+          fi
+
+          mkdir -p artifact/windows/arm64/include artifact/windows/arm64/lib artifact/windows/arm64/bin
+          cp -r "$ROOT/include/." artifact/windows/arm64/include/
+          cp "$ROOT"/lib/*.lib     artifact/windows/arm64/lib/
+          cp "$ROOT"/bin/*.dll     artifact/windows/arm64/bin/
+
+          echo "=== Windows ARM64 libs ==="
+          find artifact/windows/arm64 -maxdepth 2 -type f | head -40
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-libs-windows-arm64
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Linux (x64) — BtbN linux64 lgpl-shared
+  # ============================================================================
+  build-linux:
+    if: contains(github.event.inputs.platforms, 'linux')
+    runs-on: ubuntu-latest
+    name: Build (Linux x64)
+
+    steps:
+      - name: Download FFmpeg shared libs for Linux x64
+        run: |
+          BASE="${{ env.BTBN_BASE }}"
+          VER="${{ env.FFMPEG_VERSION }}"
+
+          URLS=(
+            "${BASE}/ffmpeg-n${VER}-latest-linux64-lgpl-shared-${VER}.tar.xz"
+            "${BASE}/ffmpeg-master-latest-linux64-lgpl-shared.tar.xz"
+          )
+
+          DOWNLOADED=false
+          for url in "${URLS[@]}"; do
+            echo "Trying: $url"
+            if curl -fSL -o ffmpeg.tar.xz "$url" 2>/dev/null; then
+              echo "✓ Downloaded from: $url"
+              DOWNLOADED=true
+              break
+            fi
+            echo "✗ Not found, trying next..."
+          done
+
+          if [ "$DOWNLOADED" = false ]; then
+            echo "::error::Could not download FFmpeg ${VER} lgpl-shared for Linux x64"
+            exit 1
+          fi
+
+      - name: Extract and prepare artifact
+        run: |
+          set -euo pipefail
+          mkdir -p raw
+          tar -xf ffmpeg.tar.xz -C raw
+          ROOT=$(find raw -maxdepth 1 -mindepth 1 -type d | head -1)
+
+          if [[ ! -d "$ROOT/include" || ! -d "$ROOT/lib" ]]; then
+            echo "::error::Unexpected package layout (missing include/lib)"
+            find raw -maxdepth 2 -type d
+            exit 1
+          fi
+
+          mkdir -p artifact/linux/x64/include artifact/linux/x64/lib
+          cp -r "$ROOT/include/." artifact/linux/x64/include/
+          # Copy shared objects and their version symlinks.
+          cp -a "$ROOT"/lib/*.so*  artifact/linux/x64/lib/
+
+          echo "=== Linux x64 libs ==="
+          find artifact/linux/x64 -maxdepth 2 -type f | head -40
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-libs-linux-x64
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # macOS (arm64 + Intel x86_64) — compiled from source, --enable-shared (LGPL)
+  #
+  # Prebuilt macOS mirrors only ship single-file *static* executables, not the
+  # dev libraries, so we build the shared libs ourselves. Default configure is
+  # LGPL (we do NOT pass --enable-gpl / --enable-nonfree). install_name_tool
+  # rewrites each dylib id / inter-lib reference to @rpath so the libs relocate.
+  # ============================================================================
+  build-macos:
+    if: contains(github.event.inputs.platforms, 'macos')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            arch: arm64
+            platform_name: arm
+          - os: macos-15
+            arch: x86_64
+            platform_name: intel
+
+    runs-on: ${{ matrix.os }}
+    name: Build (macOS ${{ matrix.platform_name }})
+
+    steps:
+      - name: Install build tools
+        run: brew install nasm pkg-config
+
+      - name: Download FFmpeg source
+        run: |
+          set -euo pipefail
+          VER="${{ env.FFMPEG_VERSION }}"
+          curl -fSL -o ffmpeg-src.tar.bz2 "https://ffmpeg.org/releases/ffmpeg-${VER}.tar.bz2"
+          mkdir -p ffmpeg_src
+          tar -xf ffmpeg-src.tar.bz2 -C ffmpeg_src --strip-components=1
+
+      - name: Configure & build (shared, LGPL)
+        run: |
+          set -euo pipefail
+          cd ffmpeg_src
+          ./configure \
+            --prefix="$GITHUB_WORKSPACE/ffmpeg_install" \
+            --arch=${{ matrix.arch }} \
+            --enable-cross-compile \
+            --cc="clang -arch ${{ matrix.arch }}" \
+            --enable-shared \
+            --disable-static \
+            --disable-programs \
+            --disable-doc \
+            --disable-debug \
+            --enable-pic
+          make -j"$(sysctl -n hw.ncpu)"
+          make install
+
+      - name: Relocate dylib install names to @rpath
+        run: |
+          set -euo pipefail
+          LIBDIR="$GITHUB_WORKSPACE/ffmpeg_install/lib"
+          cd "$LIBDIR"
+
+          # Map absolute install paths -> @rpath for each dylib id and any
+          # inter-library dependency that points back into our install prefix.
+          for dylib in *.dylib; do
+            # Skip symlinks; operate on the real files only.
+            [ -L "$dylib" ] && continue
+            install_name_tool -id "@rpath/$dylib" "$dylib"
+            otool -L "$dylib" | awk 'NR>1 {print $1}' | while read -r dep; do
+              case "$dep" in
+                "$GITHUB_WORKSPACE/ffmpeg_install/lib/"*)
+                  base=$(basename "$dep")
+                  install_name_tool -change "$dep" "@rpath/$base" "$dylib"
+                  ;;
+              esac
+            done
+          done
+
+          echo "=== otool -L after relocation ==="
+          for dylib in *.dylib; do
+            [ -L "$dylib" ] && continue
+            echo "--- $dylib ---"
+            otool -L "$dylib" | head -12
+          done
+
+      - name: Prepare artifact
+        run: |
+          set -euo pipefail
+          DEST="artifact/macosx/${{ matrix.platform_name }}"
+          mkdir -p "$DEST/include" "$DEST/lib"
+          cp -R "$GITHUB_WORKSPACE/ffmpeg_install/include/." "$DEST/include/"
+          # Copy real dylibs and their version symlinks.
+          cp -a "$GITHUB_WORKSPACE/ffmpeg_install/lib/"*.dylib "$DEST/lib/"
+
+          echo "=== macOS ${{ matrix.platform_name }} libs ==="
+          find "$DEST" -maxdepth 2 -type f | head -40
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-libs-macos-${{ matrix.platform_name }}
+          path: artifact/
+          retention-days: 30
+
+  # ============================================================================
+  # Merge all artifacts into the final ffmpeg-libs/ layout
+  # ============================================================================
+  merge-artifacts:
+    needs: [build-windows, build-windows-arm64, build-linux, build-macos]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    name: Merge Artifacts
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ffmpeg-libs-*
+          path: downloads/
+
+      - name: Merge into final structure
+        run: |
+          set -euo pipefail
+          mkdir -p merged
+
+          for a in windows-x64 windows-arm64 linux-x64 macos-arm macos-intel; do
+            src="downloads/ffmpeg-libs-$a"
+            if [ -d "$src" ]; then
+              cp -a "$src"/. merged/
+              echo "✓ merged $a"
+            fi
+          done
+
+          echo ""
+          echo "=== Final structure ==="
+          find merged -maxdepth 4 -type d | sort
+
+          echo ""
+          echo "=== Sizes ==="
+          du -sh merged/* 2>/dev/null || true
+
+      - name: Upload merged artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-libs-all-platforms-${{ github.event.inputs.ffmpeg_version }}
+          path: merged/
+          retention-days: 90
