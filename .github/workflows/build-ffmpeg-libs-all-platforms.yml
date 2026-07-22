@@ -1,4 +1,4 @@
-name: Build FFmpeg Libs All Platforms
+name: Build FFmpeg (libs) All Platforms
 run-name: "FFmpeg libs ${{ github.event.inputs.ffmpeg_version }} — ${{ github.event.inputs.platforms }}"
 
 # =============================================================================

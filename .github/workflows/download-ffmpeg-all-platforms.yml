@@ -1,5 +1,5 @@
-name: Download FFmpeg All Platforms
-run-name: "FFmpeg ${{ github.event.inputs.ffmpeg_version }} — ${{ github.event.inputs.platforms }}"
+name: Download FFmpeg (exe) All Platforms
+run-name: "FFmpeg exe ${{ github.event.inputs.ffmpeg_version }} — ${{ github.event.inputs.platforms }}"
 
 on:
   workflow_dispatch:

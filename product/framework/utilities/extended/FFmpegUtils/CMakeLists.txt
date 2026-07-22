@@ -6,4 +6,9 @@
 #
 # They share data structures only, not behavior, so each builds its own target.
 add_subdirectory(cli)
-# add_subdirectory(lib)  # enable when the libav-based flavor is added
+
+# The libav-based flavor requires the ffmpeg_lib target (dev libraries), which
+# is only defined once the platform binaries are provisioned.
+if(TARGET ffmpeg_lib)
+    add_subdirectory(lib)
+endif()

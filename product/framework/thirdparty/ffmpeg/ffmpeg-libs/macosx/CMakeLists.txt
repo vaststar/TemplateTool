@@ -52,6 +52,9 @@ if(FFLIB_DYLIBS)
     add_custom_command(TARGET copy_ffmpeg_lib POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FFLIB_DYLIBS} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+        # Strip the com.apple.quarantine attribute so Gatekeeper does not prompt
+        # for each dylib when the libs were fetched via a browser download.
+        COMMAND xattr -c ${FFLIB_DYLIBS}
         COMMAND_EXPAND_LISTS
         COMMENT "[FFmpegLibs] Copying dylibs to output directory"
     )
