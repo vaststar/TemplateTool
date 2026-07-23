@@ -94,12 +94,12 @@ bool TranscodeSession::waitForCompletion(int timeoutMs)
 
     if (timeoutMs == 0)
     {
-        mImpl->cv.wait(lock, [this]() { return mImpl->completed; });
+        mImpl->cv.wait(lock, [this]() { return mImpl->completed.load(); });
         return true;
     }
 
     auto duration = std::chrono::milliseconds(timeoutMs);
-    return mImpl->cv.wait_for(lock, duration, [this]() { return mImpl->completed; });
+    return mImpl->cv.wait_for(lock, duration, [this]() { return mImpl->completed.load(); });
 }
 
 TranscodeSession::Progress TranscodeSession::getProgress() const

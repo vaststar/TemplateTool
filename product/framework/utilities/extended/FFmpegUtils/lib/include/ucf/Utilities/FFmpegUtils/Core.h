@@ -1,22 +1,18 @@
 #pragma once
 
-/// FFmpeg Core Framework - Phase 1 Foundation
+/// FFmpeg Core Framework - Transcoding & Metadata Foundation
 ///
-/// This module provides the fundamental architecture for building media processing
-/// pipelines with proper error handling, metadata management, and transcoding support.
+/// This module provides high-level transcoding support with progress tracking,
+/// cancellation, and comprehensive metadata management for various media formats.
 ///
 /// Key Components:
-/// - MediaElement:    Abstract base for all processing units (decoders, encoders, filters)
-/// - MediaPipeline:   Framework for connecting elements and orchestrating processing
-/// - ErrorHandler:    Centralized error management and recovery strategies
-/// - TranscodeSession: High-level transcoding with progress tracking
-/// - MediaMetadata:   Tag and metadata management for various formats
+/// - TranscodeSession: High-level transcoding with progress tracking, multi-track support
+/// - MediaMetadata:    Tag and metadata management for various formats
+/// - ErrorHandler:     Centralized error management with thread-local context
 
-#include "MediaElement.h"
-#include "MediaPipeline.h"
-#include "ErrorHandler.h"
-#include "TranscodeSession.h"
-#include "MediaMetadata.h"
+#include <ucf/Utilities/FFmpegUtils/Core/ErrorHandler.h>
+#include <ucf/Utilities/FFmpegUtils/Core/TranscodeSession.h>
+#include <ucf/Utilities/FFmpegUtils/Core/MediaMetadata.h>
 
 namespace ucf::utilities::ffmpeg::core {
 

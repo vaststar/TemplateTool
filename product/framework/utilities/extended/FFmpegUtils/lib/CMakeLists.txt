@@ -11,9 +11,7 @@ set(MODULE_HEADER_FILES
     include/ucf/Utilities/FFmpegUtils/Lib/FFmpegLib.h
     include/ucf/Utilities/FFmpegUtils/Lib/FFmpegSession.h
     include/ucf/Utilities/FFmpegUtils/Core.h
-    include/ucf/Utilities/FFmpegUtils/Core/MediaElement.h
     include/ucf/Utilities/FFmpegUtils/Core/ErrorHandler.h
-    include/ucf/Utilities/FFmpegUtils/Core/MediaPipeline.h
     include/ucf/Utilities/FFmpegUtils/Core/TranscodeSession.h
     include/ucf/Utilities/FFmpegUtils/Core/MediaMetadata.h
 )
@@ -37,7 +35,6 @@ set(MODULE_SOURCE_PRIVATE
     src/FFmpegLib.cpp
     src/FFmpegSession.cpp
     src/core/ErrorHandler.cpp
-    src/core/MediaPipeline.cpp
     src/core/TranscodeSession.cpp
     src/core/MediaMetadata.cpp
     src/core/Core.cpp

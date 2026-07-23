@@ -4,10 +4,9 @@ namespace ucf::utilities::ffmpeg::core {
 
 void initializeCore()
 {
-    // Initialize error handler
+    // Initialize error handler - clear any previous errors
     ErrorHandler::clearLastError();
-    ErrorHandler::setDefaultErrorPolicy(ErrorHandler::ErrorPolicy::LogAndContinue);
-    ErrorHandler::setMaxRetries(3);
+    // Additional framework initialization can be added here as needed
 }
 
 void cleanupCore()

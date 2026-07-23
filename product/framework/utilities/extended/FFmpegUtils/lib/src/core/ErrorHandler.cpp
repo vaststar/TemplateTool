@@ -13,10 +13,6 @@ namespace {
 
 class ErrorContext {
 public:
-    ErrorHandler::ErrorPolicy errorPolicy = ErrorHandler::ErrorPolicy::LogAndContinue;
-    int maxRetries = 3;
-    ErrorHandler::ErrorCallback errorCallback = nullptr;
-
     int lastErrorCode = 0;
     std::string lastErrorMsg;
     std::mutex mutex;
@@ -27,30 +23,6 @@ public:
 thread_local ErrorContext ErrorContext::tls;
 
 } // namespace
-
-void ErrorHandler::setDefaultErrorPolicy(ErrorPolicy policy)
-{
-    std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    ErrorContext::tls.errorPolicy = policy;
-}
-
-ErrorHandler::ErrorPolicy ErrorHandler::getDefaultErrorPolicy()
-{
-    std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    return ErrorContext::tls.errorPolicy;
-}
-
-void ErrorHandler::setMaxRetries(int maxRetries)
-{
-    std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    ErrorContext::tls.maxRetries = maxRetries;
-}
-
-void ErrorHandler::setErrorCallback(ErrorCallback callback)
-{
-    std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    ErrorContext::tls.errorCallback = callback;
-}
 
 std::string ErrorHandler::getErrorString(int avErrorCode)
 {
@@ -77,11 +49,19 @@ bool ErrorHandler::isFatalError(int avErrorCode)
     return avErrorCode < AVERROR(EINVAL);
 }
 
-void ErrorHandler::clearLastError()
+std::optional<ErrorHandler::ErrorInfo> ErrorHandler::getLastError()
 {
     std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    ErrorContext::tls.lastErrorCode = 0;
-    ErrorContext::tls.lastErrorMsg.clear();
+
+    if (ErrorContext::tls.lastErrorCode == 0)
+    {
+        return std::nullopt;
+    }
+
+    return ErrorInfo{
+        ErrorContext::tls.lastErrorCode,
+        ErrorContext::tls.lastErrorMsg
+    };
 }
 
 void ErrorHandler::setLastError(int errCode, const std::string& errMsg)
@@ -89,23 +69,13 @@ void ErrorHandler::setLastError(int errCode, const std::string& errMsg)
     std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
     ErrorContext::tls.lastErrorCode = errCode;
     ErrorContext::tls.lastErrorMsg = errMsg;
-
-    if (ErrorContext::tls.errorCallback)
-    {
-        ErrorContext::tls.errorCallback(errCode, errMsg);
-    }
 }
 
-int ErrorHandler::getLastErrorCode()
+void ErrorHandler::clearLastError()
 {
     std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    return ErrorContext::tls.lastErrorCode;
-}
-
-std::string ErrorHandler::getLastErrorMessage()
-{
-    std::lock_guard<std::mutex> lock(ErrorContext::tls.mutex);
-    return ErrorContext::tls.lastErrorMsg;
+    ErrorContext::tls.lastErrorCode = 0;
+    ErrorContext::tls.lastErrorMsg.clear();
 }
 
 } // namespace ucf::utilities::ffmpeg::core
