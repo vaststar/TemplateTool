@@ -87,18 +87,22 @@ private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
     Listener* mListener{nullptr};
 
-    // Sub-managers
+    // FSM
+    // Declared before sub-managers so it outlives them during destruction.
+    upgrade::UpgradeContext mFsmContext{};
+    std::unique_ptr<upgrade::UpgradeFSM> mFsm;
+
+    // Sub-managers (destroyed before mFsm)
     std::unique_ptr<UpgradeCheckManager>    mCheckManager;
     std::unique_ptr<UpgradeDownloadManager> mDownloadManager;
     std::unique_ptr<UpgradeInstallManager>  mInstallManager;
 
-    // FSM
-    upgrade::UpgradeContext mFsmContext{};
-    std::unique_ptr<upgrade::UpgradeFSM> mFsm;
-
     // Auto-check timer
     std::thread mAutoCheckThread;
     std::atomic<bool> mStopRequested{false};
+
+    // Liveness sentinel for async callbacks; declared last so it expires first.
+    std::shared_ptr<int> mAlive{std::make_shared<int>(0)};
 };
 
 } // namespace ucf::service

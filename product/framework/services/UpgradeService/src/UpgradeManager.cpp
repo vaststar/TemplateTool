@@ -81,8 +81,9 @@ void UpgradeManager::bindFsmCallbacks()
         auto arch     = getCurrentArch();
 
         mCheckManager->checkForUpgrade(version, platform, arch, userTriggered,
-            [this](bool success, const model::UpgradeCheckResult& result,
+            [this, alive = std::weak_ptr<int>(mAlive)](bool success, const model::UpgradeCheckResult& result,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (alive.expired()) { return; }
                 if (!success) {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 } else if (!result.hasUpgrade) {
@@ -94,15 +95,22 @@ void UpgradeManager::bindFsmCallbacks()
     };
 
     mFsmContext.triggerDownload = [this](const std::string& /*url*/) {
+        if (!mFsmContext.availableUpgrade) {
+            mFsm->processEvent(upgrade::EvError{
+                model::UpgradeErrorCode::DownloadFailed, "No available upgrade to download"});
+            return;
+        }
         auto& info = *mFsmContext.availableUpgrade;
         mDownloadManager->downloadPackage(info.package,
             // Progress callback
-            [this](int64_t current, int64_t total) {
+            [this, alive = std::weak_ptr<int>(mAlive)](int64_t current, int64_t total) {
+                if (alive.expired()) { return; }
                 mFsm->processEvent(upgrade::EvProgress{current, total});
             },
             // Completion callback
-            [this](bool success, const std::string& path,
+            [this, alive = std::weak_ptr<int>(mAlive)](bool success, const std::string& path,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (alive.expired()) { return; }
                 if (success) {
                     mFsm->processEvent(upgrade::EvDownloadDone{path});
                 } else {
@@ -112,9 +120,15 @@ void UpgradeManager::bindFsmCallbacks()
     };
 
     mFsmContext.triggerVerify = [this](const std::string& filePath) {
+        if (!mFsmContext.availableUpgrade) {
+            mFsm->processEvent(upgrade::EvError{
+                model::UpgradeErrorCode::VerifyFailed, "No available upgrade to verify"});
+            return;
+        }
         auto& info = *mFsmContext.availableUpgrade;
         mDownloadManager->verifyPackage(filePath, info.package.sha256,
-            [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
+            [this, alive = std::weak_ptr<int>(mAlive)](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (alive.expired()) { return; }
                 if (success) {
                     mFsm->processEvent(upgrade::EvVerifyOk{});
                 } else {
@@ -125,8 +139,9 @@ void UpgradeManager::bindFsmCallbacks()
 
     mFsmContext.triggerExtract = [this](const std::string& packagePath) {
         mInstallManager->extractPackageToStaging(packagePath,
-            [this](bool success, const std::string& stagingDir,
+            [this, alive = std::weak_ptr<int>(mAlive)](bool success, const std::string& stagingDir,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (alive.expired()) { return; }
                 if (success) {
                     mFsm->processEvent(upgrade::EvExtractOk{stagingDir});
                 } else {
@@ -137,7 +152,8 @@ void UpgradeManager::bindFsmCallbacks()
 
     mFsmContext.triggerInstall = [this](const std::string& stagingDir) {
         mInstallManager->launchUpdaterAndExit(stagingDir,
-            [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
+            [this, alive = std::weak_ptr<int>(mAlive)](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (alive.expired()) { return; }
                 if (!success) {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 }

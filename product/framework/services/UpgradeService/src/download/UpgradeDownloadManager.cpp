@@ -30,8 +30,12 @@ UpgradeDownloadManager::UpgradeDownloadManager(ucf::framework::ICoreFrameworkWPt
 
 UpgradeDownloadManager::~UpgradeDownloadManager()
 {
+    mGeneration.fetch_add(1, std::memory_order_acq_rel);
     cancelDownload();
+    mVerifyThread.request_stop();
+    mRetryThread.request_stop();
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager destroyed");
+    // mVerifyThread / mRetryThread join automatically as the last members destroyed.
 }
 
 void UpgradeDownloadManager::ensureDownloadDirectory()
@@ -214,13 +218,16 @@ void UpgradeDownloadManager::attemptDownload(std::shared_ptr<DownloadSession> se
                     if (std::filesystem::exists(session->partialFilePath)) {
                         session->resumedBytes = static_cast<int64_t>(std::filesystem::file_size(session->partialFilePath));
                     }
-                    // Retry after delay (on a detached thread)
-                    std::thread([this, session, delay]() {
-                        std::this_thread::sleep_for(delay);
-                        if (isCurrent(*session)) {
-                            attemptDownload(session);
+                    // Retry after a cancellable delay on a tracked worker thread.
+                    mRetryThread = std::jthread([this, session, delay](std::stop_token st) {
+                        auto deadline = std::chrono::steady_clock::now() + delay;
+                        while (std::chrono::steady_clock::now() < deadline) {
+                            if (st.stop_requested() || !isCurrent(*session)) { return; }
+                            std::this_thread::sleep_for(std::chrono::milliseconds(100));
                         }
-                    }).detach();
+                        if (st.stop_requested() || !isCurrent(*session)) { return; }
+                        attemptDownload(session);
+                    });
                     return;
                 }
 
@@ -293,15 +300,20 @@ void UpgradeDownloadManager::verifyPackage(
 {
     UPGRADE_LOG_INFO("Verifying package: " << filePath);
 
-    // Run verification on a background thread to avoid blocking FSM
-    std::thread([this, filePath, expectedSha256, callback]() {
+    // Run verification on a tracked worker thread to avoid blocking FSM.
+    auto gen = mGeneration.load(std::memory_order_acquire);
+    mVerifyThread = std::jthread(
+        [this, gen, filePath, expectedSha256, callback](std::stop_token st) {
         try {
+            if (st.stop_requested()) { return; }
             if (!ucf::utilities::FilePathUtils::existsUtf8(filePath)) {
                 callback(false, model::UpgradeErrorCode::VerifyFailed, "File not found: " + filePath);
                 return;
             }
 
             auto actualHash = computeSha256(ucf::utilities::FilePathUtils::pathFromUtf8(filePath));
+
+            if (st.stop_requested() || gen != mGeneration.load(std::memory_order_acquire)) { return; }
 
             if (expectedSha256.empty()) {
                 UPGRADE_LOG_WARN("No expected SHA-256 provided, skipping verification");
@@ -323,7 +335,7 @@ void UpgradeDownloadManager::verifyPackage(
             UPGRADE_LOG_ERROR("Verification exception: " << ex.what());
             callback(false, model::UpgradeErrorCode::VerifyFailed, ex.what());
         }
-    }).detach();
+    });
 }
 
 std::string UpgradeDownloadManager::computeSha256(const std::filesystem::path& filePath) const

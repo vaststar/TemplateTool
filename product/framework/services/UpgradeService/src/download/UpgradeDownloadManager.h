@@ -9,6 +9,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <thread>
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -124,6 +125,11 @@ private:
     /// can pick up where the previous attempt left off. Cleared by hardReset.
     std::filesystem::path mResumePartialPath;
     std::int64_t mResumeBytes{0};
+
+    /// Async worker threads. Declared last so they are destroyed (and joined)
+    /// first, before any member they touch. jthread auto stop+join on destroy.
+    std::jthread mVerifyThread;
+    std::jthread mRetryThread;
 };
 
 } // namespace ucf::service
