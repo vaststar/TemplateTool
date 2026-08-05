@@ -5,7 +5,12 @@
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
-namespace ucf::service{
+namespace ucf::framework{
+    class ICoreFramework;
+    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+}
+
+namespace ucf::service::impl{
 class DataWarehouseService final: public IDataWarehouseService,
                                   public ucf::framework::CoreFrameworkCallbackDefault,
                                   public virtual ucf::utilities::NotificationHelper<IDataWarehouseServiceCallback>,

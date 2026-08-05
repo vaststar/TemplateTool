@@ -29,7 +29,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ContactService
     NetworkService
     ClientInfoService
-    DataWarehouseService
+    DataWarehouseServiceImpl
     InvocationService
     CoreFramework
     LoggerUtils

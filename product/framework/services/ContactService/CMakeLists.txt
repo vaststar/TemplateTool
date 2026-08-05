@@ -34,7 +34,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     NetworkService
     DatabaseClient
-    DataWarehouseService
+    DataWarehouseServiceApi
     DataWarehouseSchema
     ClientInfoService
     CoreFramework

@@ -11,7 +11,7 @@ BuildUnitTestModule(
     TARGET_SOURCE
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_ADD_LINK_LIBRARY_PRIVATE
-        DataWarehouseService
+        DataWarehouseServiceApi
         ClientInfoService
         CoreFramework
         FakeCoreFramework

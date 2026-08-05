@@ -19,19 +19,7 @@ public:
     ServiceFactory& operator=(ServiceFactory&&) = delete;
     ~ServiceFactory();
 public:
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IInvocationService> createInvocationService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IDataWarehouseService> createDataWarehouseService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::INetworkService> createNetworkService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IClientInfoService> createClientInfoService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IContactService> createContactService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IImageService> createImageService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IMediaService> createMediaService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IStabilityService> createStabilityService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IPerformanceService> createPerformanceService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IFeatureSettingsService> createFeatureSettingsService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::ICameraDirectoryService> createCameraDirectoryService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IUpgradeService> createUpgradeService() override;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IMiniAppService> createMiniAppService() override;
+    virtual void registerServices() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

@@ -18,7 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
     InvocationService
-    DataWarehouseService
+    DataWarehouseServiceApi
     NetworkService
     ClientInfoService
     ContactService

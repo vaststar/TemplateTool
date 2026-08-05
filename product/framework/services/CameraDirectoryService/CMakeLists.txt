@@ -31,7 +31,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     MediaService
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    DataWarehouseService
+    DataWarehouseServiceApi
     DataWarehouseSchema
     ClientInfoService
     CoreFramework

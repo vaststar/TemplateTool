@@ -8,18 +8,6 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceFactory/IServiceFactory.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ImageService/IImageService.h>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/StabilityService/IStabilityService.h>
-#include <ucf/Services/PerformanceService/IPerformanceService.h>
-#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
-#include <ucf/Services/UpgradeService/IUpgradeService.h>
-#include <ucf/Services/MiniAppService/IMiniAppService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -205,19 +193,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IInvocationService>(mServiceFactory->createInvocationService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IDataWarehouseService>(mServiceFactory->createDataWarehouseService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IClientInfoService>(mServiceFactory->createClientInfoService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IStabilityService>(mServiceFactory->createStabilityService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IPerformanceService>(mServiceFactory->createPerformanceService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::INetworkService>(mServiceFactory->createNetworkService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IContactService>(mServiceFactory->createContactService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IImageService>(mServiceFactory->createImageService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IMediaService>(mServiceFactory->createMediaService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IFeatureSettingsService>(mServiceFactory->createFeatureSettingsService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::ICameraDirectoryService>(mServiceFactory->createCameraDirectoryService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IUpgradeService>(mServiceFactory->createUpgradeService());
-        mFrameworkDependencies.coreFramework->registerService<ucf::service::IMiniAppService>(mServiceFactory->createMiniAppService());
+        mServiceFactory->registerServices();
 
         mFrameworkDependencies.coreFramework->initServices();
     }

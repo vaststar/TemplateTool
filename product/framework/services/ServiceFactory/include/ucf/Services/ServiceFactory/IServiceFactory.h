@@ -8,22 +8,6 @@ namespace ucf::framework{
 }
 
 namespace ucf::service{
-    class IInvocationService;
-    class IDataWarehouseService;
-    class INetworkService;
-    class IClientInfoService;
-    class IContactService;
-    class IImageService;
-    class IMediaService;
-    class IStabilityService;
-    class IPerformanceService;
-    class IFeatureSettingsService;
-    class ICameraDirectoryService;
-    class IUpgradeService;
-    class IMiniAppService;
-}
-
-namespace ucf::service{
 class SERVICE_EXPORT IServiceFactory
 {
 public:
@@ -34,19 +18,9 @@ public:
     IServiceFactory& operator=(IServiceFactory&&) = delete;
     virtual ~IServiceFactory() = default;
 public:
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IInvocationService> createInvocationService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IDataWarehouseService> createDataWarehouseService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::INetworkService> createNetworkService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IClientInfoService> createClientInfoService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IContactService> createContactService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IImageService> createImageService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IMediaService> createMediaService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IStabilityService> createStabilityService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IPerformanceService> createPerformanceService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IFeatureSettingsService> createFeatureSettingsService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::ICameraDirectoryService> createCameraDirectoryService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IUpgradeService> createUpgradeService() = 0;
-    [[nodiscard]] virtual std::shared_ptr<ucf::service::IMiniAppService> createMiniAppService() = 0;
+    // Creates every application service and registers it into the ICoreFramework
+    // this factory was constructed with. Call after ICoreFramework::initCoreFramework().
+    virtual void registerServices() = 0;
 public:
     static std::shared_ptr<IServiceFactory> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

@@ -3,6 +3,7 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/InvocationService/IInvocationService.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/Services/DataWarehouseService/DataWarehouseServiceCreator.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/ContactService/IContactService.h>
@@ -33,68 +34,27 @@ ServiceFactory::~ServiceFactory()
     SERVICE_LOG_INFO("delete ServiceFactory, address:" << this);
 }
 
-std::shared_ptr<ucf::service::IInvocationService> ServiceFactory::createInvocationService()
+void ServiceFactory::registerServices()
 {
-    return ucf::service::IInvocationService::createInstance(mCoreFrameworkWPtr.lock());
-}
+    auto coreFramework = mCoreFrameworkWPtr.lock();
+    if (!coreFramework)
+    {
+        SERVICE_LOG_ERROR("registerServices failed: coreFramework expired");
+        return;
+    }
 
-std::shared_ptr<ucf::service::IDataWarehouseService> ServiceFactory::createDataWarehouseService()
-{
-    return ucf::service::IDataWarehouseService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::INetworkService> ServiceFactory::createNetworkService()
-{
-    return ucf::service::INetworkService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IClientInfoService> ServiceFactory::createClientInfoService()
-{
-    return ucf::service::IClientInfoService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IContactService> ServiceFactory::createContactService()
-{
-    return ucf::service::IContactService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IImageService> ServiceFactory::createImageService()
-{
-    return ucf::service::IImageService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IMediaService> ServiceFactory::createMediaService()
-{
-    return ucf::service::IMediaService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IStabilityService> ServiceFactory::createStabilityService()
-{
-    return ucf::service::IStabilityService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IPerformanceService> ServiceFactory::createPerformanceService()
-{
-    return ucf::service::IPerformanceService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IFeatureSettingsService> ServiceFactory::createFeatureSettingsService()
-{
-    return ucf::service::IFeatureSettingsService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::ICameraDirectoryService> ServiceFactory::createCameraDirectoryService()
-{
-    return ucf::service::ICameraDirectoryService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IUpgradeService> ServiceFactory::createUpgradeService()
-{
-    return ucf::service::IUpgradeService::createInstance(mCoreFrameworkWPtr.lock());
-}
-
-std::shared_ptr<ucf::service::IMiniAppService> ServiceFactory::createMiniAppService()
-{
-    return ucf::service::IMiniAppService::createInstance(mCoreFrameworkWPtr.lock());
+    coreFramework->registerService<ucf::service::IInvocationService>(ucf::service::IInvocationService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IDataWarehouseService>(ucf::service::impl::createDataWarehouseService(coreFramework));
+    coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::IClientInfoService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IStabilityService>(ucf::service::IStabilityService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IPerformanceService>(ucf::service::IPerformanceService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IContactService>(ucf::service::IContactService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IImageService>(ucf::service::IImageService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IMediaService>(ucf::service::IMediaService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IFeatureSettingsService>(ucf::service::IFeatureSettingsService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::ICameraDirectoryService>(ucf::service::ICameraDirectoryService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IUpgradeService>(ucf::service::IUpgradeService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IMiniAppService>(ucf::service::IMiniAppService::createInstance(coreFramework));
 }
 }

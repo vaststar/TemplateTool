@@ -11,7 +11,7 @@ namespace ucf::framework{
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
-namespace ucf::service{
+namespace ucf::service::impl{
 class DataWarehouseManager final
 {
 public:

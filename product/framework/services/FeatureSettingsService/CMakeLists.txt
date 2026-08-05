@@ -23,7 +23,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    DataWarehouseService
+    DataWarehouseServiceApi
     CoreFramework
     DataWarehouseSchema
     ClientInfoService

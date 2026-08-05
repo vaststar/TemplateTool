@@ -27,7 +27,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UpgradeService
     MiniAppService
     ImageService
-    DataWarehouseService
+    DataWarehouseServiceApi
     ContactService
     MediaService
     NetworkService
