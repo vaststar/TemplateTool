@@ -11,7 +11,7 @@
 #include "MediaCameraView/MediaCameraViewController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
-#include "ViewModelSingalEmitter/CameraDirectoryViewModelEmitter.h"
+#include "ViewModelSignalEmitter/CameraDirectoryViewModelEmitter.h"
 
 namespace {
 // QML resource paths used by this controller.

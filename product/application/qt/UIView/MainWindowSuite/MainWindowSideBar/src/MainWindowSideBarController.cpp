@@ -5,7 +5,7 @@
 #include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
 #include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
 
-#include "ViewModelSingalEmitter/SideBarViewModelEmitter.h"
+#include "ViewModelSignalEmitter/SideBarViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIEvents/UIAboutEvent.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"

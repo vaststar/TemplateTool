@@ -8,7 +8,7 @@
 #include <QtQml>
 #include "UIViewBase/UIViewController.h"
 #include "SettingsTreeModel.h"
-#include "ViewModelSingalEmitter/SettingsViewModelEmitter.h"
+#include "ViewModelSignalEmitter/SettingsViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class ISettingsViewModel;

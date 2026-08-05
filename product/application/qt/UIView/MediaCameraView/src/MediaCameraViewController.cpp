@@ -8,7 +8,7 @@
 #include <AppContext/AppContext.h>
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 
-#include "ViewModelSingalEmitter/MediaCameraViewModelEmitter.h"
+#include "ViewModelSignalEmitter/MediaCameraViewModelEmitter.h"
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 

@@ -1,5 +1,5 @@
 add_subdirectory(UIViewBase)
-add_subdirectory(ViewModelSingalEmitter)
+add_subdirectory(ViewModelSignalEmitter)
 add_subdirectory(LoggerDefine)
 add_subdirectory(UIViewHelper)
 set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)

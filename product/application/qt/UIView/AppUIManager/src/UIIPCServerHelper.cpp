@@ -6,7 +6,7 @@
 #include <AppContext/AppContext.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "ViewModelSingalEmitter/InvocationViewModelEmitter.h"
+#include "ViewModelSignalEmitter/InvocationViewModelEmitter.h"
 
 UIIPCServerHelper::UIIPCServerHelper(AppContext* appContext, QObject* parent)
     : QObject(parent)
@@ -29,7 +29,7 @@ void UIIPCServerHelper::start()
     mIPCViewModel->registerCallback(mInvocationViewModelEmitter);
 
     mIPCServer->setMessageHandler([wekPtr = std::weak_ptr<commonHead::viewModels::IInvocationViewModel>(mIPCViewModel)](const std::string& ipcMessage){
-        if (auto ptr = wekPtr.lock()) 
+        if (auto ptr = wekPtr.lock())
         {
             UIVIEW_LOG_DEBUG("start process new message: " << ipcMessage);
             ptr->processCommandMessage(ipcMessage);

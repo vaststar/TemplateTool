@@ -20,7 +20,7 @@
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 // #include "UIViewBase/UIViewControllerInitializer.h"
 #include "AppUIController.h"
-#include "ViewModelSingalEmitter/RegisterViewModelMetaTypes.h"
+#include "ViewModelSignalEmitter/RegisterViewModelMetaTypes.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

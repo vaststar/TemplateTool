@@ -9,7 +9,7 @@
 #include "UIViewBase/UIViewController.h"
 #include "ToolsTreeModel.h"
 #include "ToolsPanelRegistry.h"
-#include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
+#include "ViewModelSignalEmitter/ToolsViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class IToolsViewModel;

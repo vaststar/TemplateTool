@@ -6,7 +6,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
-#include "ViewModelSingalEmitter/MiniAppRuntimeViewModelEmitter.h"
+#include "ViewModelSignalEmitter/MiniAppRuntimeViewModelEmitter.h"
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 

@@ -9,7 +9,7 @@
 #include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
-#include "ViewModelSingalEmitter/ToolsViewModelEmitter.h"
+#include "ViewModelSignalEmitter/ToolsViewModelEmitter.h"
 
 ToolsPageController::ToolsPageController(QObject* parent)
     : UIViewController(parent)

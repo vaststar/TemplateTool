@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MainWindowSideBar/NavItemModel.h"
-#include "ViewModelSingalEmitter/SideBarViewModelEmitter.h"
+#include "ViewModelSignalEmitter/SideBarViewModelEmitter.h"
 
 #include <QObject>
 #include <QPointer>

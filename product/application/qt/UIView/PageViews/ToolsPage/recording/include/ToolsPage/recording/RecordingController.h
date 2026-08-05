@@ -5,7 +5,7 @@
 #include <QtQml>
 #include <memory>
 #include "UIViewBase/UIViewController.h"
-#include "ViewModelSingalEmitter/RecordingViewModelEmitter.h"
+#include "ViewModelSignalEmitter/RecordingViewModelEmitter.h"
 
 namespace commonHead::viewModels {
     class IRecordingViewModel;
