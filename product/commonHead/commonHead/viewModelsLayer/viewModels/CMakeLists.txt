@@ -27,19 +27,19 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceLocator
-    ContactService
-    MiniAppService
+    ContactServiceApi
+    MiniAppServiceApi
     MiniAppRuntimeAgent
-    CameraDirectoryService
+    CameraDirectoryServiceApi
     MediaService
-    ImageService
-    ClientInfoService
-    InvocationService
+    ImageServiceApi
+    ClientInfoServiceApi
+    InvocationServiceApi
     ViewModelUtils
-    StabilityService
-    PerformanceService
-    FeatureSettingsService
-    UpgradeService
+    StabilityServiceApi
+    PerformanceServiceApi
+    FeatureSettingsServiceApi
+    UpgradeServiceApi
     Base64Utils
     JsonUtils
     TimeUtils

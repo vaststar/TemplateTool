@@ -18,19 +18,19 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
-    MiniAppService
-    UpgradeService
-    CameraDirectoryService
-    FeatureSettingsService
-    PerformanceService
-    StabilityService
+    MiniAppServiceImpl
+    UpgradeServiceImpl
+    CameraDirectoryServiceImpl
+    FeatureSettingsServiceImpl
+    PerformanceServiceImpl
+    StabilityServiceImpl
     MediaService
-    ImageService
-    ContactService
+    ImageServiceImpl
+    ContactServiceImpl
     NetworkService
-    ClientInfoService
+    ClientInfoServiceImpl
     DataWarehouseServiceImpl
-    InvocationService
+    InvocationServiceImpl
     CoreFramework
     LoggerUtils
 )

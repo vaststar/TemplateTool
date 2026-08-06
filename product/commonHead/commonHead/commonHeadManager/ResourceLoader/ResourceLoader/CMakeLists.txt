@@ -21,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ResourceAssetLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ClientInfoService
+    ClientInfoServiceApi
     CoreFramework
     SystemUtils
 )
