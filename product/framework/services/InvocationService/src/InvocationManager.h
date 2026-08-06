@@ -22,14 +22,10 @@ public:
     InvocationManager& operator=(InvocationManager&&) = delete;
 public:
     void processStartupParameters();
-    void setStartupParameters(const std::vector<std::string>& args);
     std::vector<std::string> getStartupParameters() const;
     void processCommandMessage(const std::string& message);
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
-    
-    mutable std::mutex mStartupParametersMutex;
-    std::vector<std::string> mStartupParameters;
 
     mutable std::mutex mCommandMessagesMutex;
     std::vector<std::string> mCommandMessages;//history command messages

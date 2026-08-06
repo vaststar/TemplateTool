@@ -105,12 +105,6 @@ void InvocationService::processStartupParameters()
     mDataPrivate->getInvocationManager().processStartupParameters();
 }
 
-void InvocationService::setStartupParameters(const std::vector<std::string>& args)
-{
-    SERVICE_LOG_DEBUG("args size:" << args.size());
-    mDataPrivate->getInvocationManager().setStartupParameters(args);
-}
-
 std::vector<std::string> InvocationService::getStartupParameters() const
 {
     return mDataPrivate->getInvocationManager().getStartupParameters();

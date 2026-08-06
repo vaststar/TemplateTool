@@ -24,19 +24,6 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceFactory
-    UpgradeService
-    MiniAppService
-    ImageService
-    DataWarehouseServiceApi
-    ContactService
-    MediaService
-    NetworkService
-    ClientInfoService
-    InvocationService
-    StabilityService
-    PerformanceService
-    FeatureSettingsService
-    CameraDirectoryService
     CoreFramework
     FilePathUtils
     SystemUtils

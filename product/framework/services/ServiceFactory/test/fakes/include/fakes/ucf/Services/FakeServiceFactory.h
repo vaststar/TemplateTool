@@ -10,7 +10,7 @@ namespace ucf::service::fakes {
  *
  * Usage:
  *   auto fakeFactory = std::make_shared<FakeServiceFactory>();
- *   ALLOW_CALL(*fakeFactory, registerServices());
+ *   ALLOW_CALL(*fakeFactory, createServices());
  */
 class FakeServiceFactory : public IServiceFactory
 {
@@ -18,7 +18,7 @@ public:
     FakeServiceFactory() = default;
     ~FakeServiceFactory() override = default;
 
-    MAKE_MOCK0(registerServices, void(), override);
+    MAKE_MOCK0(createServices, void(), override);
 };
 
 } // namespace ucf::service::fakes

@@ -7,7 +7,6 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Services/ServiceFactory/IServiceFactory.h>
-#include <ucf/Services/InvocationService/IInvocationService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 
@@ -193,7 +192,7 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     if (mFrameworkDependencies.coreFramework)
     {
         mFrameworkDependencies.coreFramework->initCoreFramework();
-        mServiceFactory->registerServices();
+        mServiceFactory->createServices();
 
         mFrameworkDependencies.coreFramework->initServices();
     }
@@ -211,10 +210,7 @@ void ApplicationRunner::DataPrivate::injectStartupParameters()
         RUNNER_LOG_DEBUG("Will set command line args, size: " << mCommandLineValues.size());
         if (auto coreFramework = mFrameworkDependencies.coreFramework)
         {
-            if (auto invocationService = coreFramework->getService<ucf::service::IInvocationService>().lock())
-            {
-                invocationService->setStartupParameters(mCommandLineValues);
-            }
+            coreFramework->setStartupParameters(mCommandLineValues);
         }
     }
 }

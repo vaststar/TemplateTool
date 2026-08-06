@@ -2,37 +2,46 @@ include(BuildModule)
 
 # DataWarehouseServiceImpl (SHARED) - the concrete service implementation.
 # Only ServiceFactory links this (to create instances via createDataWarehouseService).
+set(MODULE_MODULE_NAME DataWarehouseServiceImpl)
+set(MODULE_IDE_FOLDER framework/Services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(IMPL_PUBLIC_HEADERS
+set(MODULE_HEADER_FILES
     include/ucf/Services/DataWarehouseService/DataWarehouseServiceCreator.h
 )
-set(IMPL_SOURCE_PRIVATE
+set(MODULE_SOURCE_PRIVATE
     src/DataWarehouseServiceLogger.h
     src/DataWarehouseService.h
     src/DataWarehouseService.cpp
     src/DataWarehouseManager.h
     src/DataWarehouseManager.cpp
 )
+set(MODULE_DEPENDENCIES_PUBLIC
+    DataWarehouseServiceApi
+    ServiceExportMacro
+)
+set(MODULE_DEPENDENCIES_PRIVATE
+    NetworkService
+    DatabaseClient
+    CoreFramework
+    LoggerUtils
+)
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(MODULE_INSTALL_INTERFACE_DIR include)
+set(MODULE_BUILD_PRIVATE_DIR src)
 
 BuildModule(
-    MODULE_NAME DataWarehouseServiceImpl
-    TARGET_SOURCE_PRIVATE ${IMPL_SOURCE_PRIVATE}
+    MODULE_NAME ${MODULE_MODULE_NAME}
+    TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
-    TARGET_SOURCE_PUBLIC_HEADER ${IMPL_PUBLIC_HEADERS}
-    TARGET_ADD_LINK_LIBRARY_PUBLIC
-        DataWarehouseServiceApi
-        ServiceExportMacro
-    TARGET_ADD_LINK_LIBRARY_PRIVATE
-        NetworkService
-        DatabaseClient
-        CoreFramework
-        LoggerUtils
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE include
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE src
+    TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+    TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
+    TARGET_ADD_LINK_LIBRARY_PRIVATE ${MODULE_DEPENDENCIES_PRIVATE}
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${MODULE_BUILD_INTERFACE_DIR}
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+    TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_BUILD_PRIVATE_DIR}
     TARGET_DEFINITIONS ${ADD_SERVICE_DEFINITIONS}
-    IDE_FOLDER framework/Services
+    IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
 
 add_subdirectory(test)

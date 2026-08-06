@@ -34,12 +34,12 @@ ServiceFactory::~ServiceFactory()
     SERVICE_LOG_INFO("delete ServiceFactory, address:" << this);
 }
 
-void ServiceFactory::registerServices()
+void ServiceFactory::createServices()
 {
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        SERVICE_LOG_ERROR("registerServices failed: coreFramework expired");
+        SERVICE_LOG_ERROR("createServices failed: coreFramework expired");
         return;
     }
 

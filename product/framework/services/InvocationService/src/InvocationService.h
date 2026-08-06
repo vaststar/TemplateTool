@@ -30,7 +30,6 @@ public:
 
     //IInvocationService
     virtual void processStartupParameters() override;
-    virtual void setStartupParameters(const std::vector<std::string>& args) override;
     virtual std::vector<std::string> getStartupParameters() const override;
     virtual void processCommandMessage(const std::string& message) override;
 protected:

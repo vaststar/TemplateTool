@@ -29,9 +29,15 @@ public:
     void initialize();
     void onExiting();
     void exitFinished();
+
+    void setStartupParameters(const std::vector<std::string>& args);
+    std::vector<std::string> getStartupParameters() const;
 private:
     mutable std::mutex mStateMutex;
     CoreFrameworkState mState;
+
+    mutable std::mutex mStartupParametersMutex;
+    std::vector<std::string> mStartupParameters;
 };
 
 CoreFramework::DataPrivate::DataPrivate()
@@ -78,6 +84,19 @@ void CoreFramework::DataPrivate::initialize()
     {
         CORE_LOG_DEBUG("duplicate initialize coreframework, address:" << this);
     }
+}
+
+void CoreFramework::DataPrivate::setStartupParameters(const std::vector<std::string>& args)
+{
+    std::scoped_lock<std::mutex> loc(mStartupParametersMutex);
+    mStartupParameters = args;
+    CORE_LOG_DEBUG("set startup parameters, count: " << mStartupParameters.size() << ", address:" << this);
+}
+
+std::vector<std::string> CoreFramework::DataPrivate::getStartupParameters() const
+{
+    std::scoped_lock<std::mutex> loc(mStartupParametersMutex);
+    return mStartupParameters;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -151,6 +170,16 @@ void CoreFramework::exitCoreFramework()
 std::string CoreFramework::getName() const
 {
     return "CoreFramework";
+}
+
+void CoreFramework::setStartupParameters(const std::vector<std::string>& args)
+{
+    mDataPrivate->setStartupParameters(args);
+}
+
+std::vector<std::string> CoreFramework::getStartupParameters() const
+{
+    return mDataPrivate->getStartupParameters();
 }
 
 void CoreFramework::initServices()

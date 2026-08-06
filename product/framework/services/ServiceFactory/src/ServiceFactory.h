@@ -19,7 +19,7 @@ public:
     ServiceFactory& operator=(ServiceFactory&&) = delete;
     ~ServiceFactory();
 public:
-    virtual void registerServices() override;
+    virtual void createServices() override;
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;
 };

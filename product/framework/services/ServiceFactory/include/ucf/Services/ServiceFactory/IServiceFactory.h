@@ -20,7 +20,7 @@ public:
 public:
     // Creates every application service and registers it into the ICoreFramework
     // this factory was constructed with. Call after ICoreFramework::initCoreFramework().
-    virtual void registerServices() = 0;
+    virtual void createServices() = 0;
 public:
     static std::shared_ptr<IServiceFactory> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };

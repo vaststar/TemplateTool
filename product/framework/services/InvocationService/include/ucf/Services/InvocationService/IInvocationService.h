@@ -26,7 +26,6 @@ public:
     static std::shared_ptr<IInvocationService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 public:
     virtual void processStartupParameters() = 0;
-    virtual void setStartupParameters(const std::vector<std::string>& args) = 0;
     [[nodiscard]] virtual std::vector<std::string> getStartupParameters() const = 0;
 
     virtual void processCommandMessage(const std::string& message) = 0;

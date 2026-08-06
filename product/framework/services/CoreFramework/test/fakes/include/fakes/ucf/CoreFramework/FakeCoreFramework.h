@@ -19,5 +19,7 @@ public:
     MAKE_MOCK0(exitCoreFramework, void(), override);
     MAKE_MOCK0(initServices, void(), override);
     MAKE_CONST_MOCK0(getName, std::string(), override);
+    MAKE_MOCK1(setStartupParameters, void(const std::vector<std::string>&), override);
+    MAKE_CONST_MOCK0(getStartupParameters, std::vector<std::string>(), override);
 };
 }

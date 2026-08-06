@@ -26,7 +26,6 @@ public:
 
     // IInvocationService
     MAKE_MOCK0(processStartupParameters, void(), override);
-    MAKE_MOCK1(setStartupParameters, void(const std::vector<std::string>&), override);
     MAKE_CONST_MOCK0(getStartupParameters, std::vector<std::string>(), override);
     MAKE_MOCK1(processCommandMessage, void(const std::string&), override);
 
