@@ -1,0 +1,32 @@
+include(BuildModule)
+
+# ImageServiceTypes (SHARED) - public value types for ImageService.
+# Currently header-only aggregates + one anchor symbol (see src/ImageTypes.cpp);
+# grows an out-of-line implementation when the types gain compiled behaviour.
+set(MODULE_MODULE_NAME ImageServiceTypes)
+set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(MODULE_HEADER_FILES
+    include/ucf/Services/ImageService/ImageTypes.h
+)
+set(MODULE_SOURCE_PRIVATE
+    src/ImageTypes.cpp
+)
+set(MODULE_DEPENDENCIES_PUBLIC
+    ServiceExportMacro
+)
+set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
+set(MODULE_INSTALL_INTERFACE_DIR include)
+
+BuildModule(
+    MODULE_NAME ${MODULE_MODULE_NAME}
+    TARGET_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE}
+    TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+    TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+    TARGET_ADD_LINK_LIBRARY_PUBLIC ${MODULE_DEPENDENCIES_PUBLIC}
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${MODULE_BUILD_INTERFACE_DIR}
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+    TARGET_DEFINITIONS ${ADD_SERVICE_DEFINITIONS}
+    IDE_FOLDER ${MODULE_IDE_FOLDER}
+)

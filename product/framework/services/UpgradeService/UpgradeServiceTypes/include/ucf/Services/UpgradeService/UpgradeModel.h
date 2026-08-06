@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+
 namespace ucf::service::model {
 
 enum class UpgradeState {
@@ -30,13 +32,13 @@ enum class UpgradeErrorCode {
     Cancelled               ///< User cancelled the operation
 };
 
-struct PackageInfo {
+struct SERVICE_EXPORT PackageInfo {
     std::string downloadUrl;
     std::string sha256;
     int64_t sizeBytes{0};
 };
 
-struct UpgradeInfo {
+struct SERVICE_EXPORT UpgradeInfo {
     std::string version;
     std::string releaseDate;
     std::string releaseNotes;
@@ -45,7 +47,7 @@ struct UpgradeInfo {
     std::string minVersion;
 };
 
-struct UpgradeCheckResult {
+struct SERVICE_EXPORT UpgradeCheckResult {
     bool hasUpgrade{false};
     UpgradeInfo upgradeInfo;
 };

@@ -35,8 +35,16 @@ function(BuildModule)
         message(WARNING "[BuildModule] Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
     endif()
 
-    # Determine library type
+    # Determine library type.
+    # Explicit STATIC_LIB/SHARED_LIB wins; otherwise default to SHARED unless a
+    # subtree opts out via UCF_MODULE_SHARED_DEFAULT=OFF (e.g. framework/services
+    # flipping every module to static). A dedicated variable name is used so we
+    # never perturb the reserved BUILD_SHARED_LIBS that third-party code inspects.
     if(MODULE_STATIC_LIB)
+        set(LIB_TYPE "STATIC")
+    elseif(MODULE_SHARED_LIB)
+        set(LIB_TYPE "SHARED")
+    elseif(DEFINED UCF_MODULE_SHARED_DEFAULT AND NOT UCF_MODULE_SHARED_DEFAULT)
         set(LIB_TYPE "STATIC")
     else()
         set(LIB_TYPE "SHARED")
@@ -65,7 +73,7 @@ function(BuildModule)
     # ==========================================
     # Create library
     # ==========================================
-    if(MODULE_STATIC_LIB)
+    if(LIB_TYPE STREQUAL "STATIC")
         add_library(${MODULE_MODULE_NAME} STATIC "")
     else()
         add_library(${MODULE_MODULE_NAME} SHARED "")

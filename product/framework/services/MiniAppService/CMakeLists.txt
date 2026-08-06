@@ -1,2 +1,3 @@
+add_subdirectory(MiniAppServiceTypes)
 add_subdirectory(MiniAppServiceApi)
 add_subdirectory(MiniAppServiceImpl)

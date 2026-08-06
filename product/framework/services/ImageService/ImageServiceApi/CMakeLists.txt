@@ -7,11 +7,11 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
     include/ucf/Services/ImageService/IImageService.h
-    include/ucf/Services/ImageService/ImageTypes.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
     NotificationHelper
+    ImageServiceTypes
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

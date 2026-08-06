@@ -9,11 +9,11 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES
     include/ucf/Services/ContactService/IContactService.h
     include/ucf/Services/ContactService/IContactServiceCallback.h
-    include/ucf/Services/ContactService/IContactEntities.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
     NotificationHelper
+    ContactServiceTypes
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

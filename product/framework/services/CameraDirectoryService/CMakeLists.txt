@@ -1,2 +1,3 @@
+add_subdirectory(CameraDirectoryServiceTypes)
 add_subdirectory(CameraDirectoryServiceApi)
 add_subdirectory(CameraDirectoryServiceImpl)

@@ -1,2 +1,3 @@
+add_subdirectory(ImageServiceTypes)
 add_subdirectory(ImageServiceApi)
 add_subdirectory(ImageServiceImpl)

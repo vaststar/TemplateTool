@@ -8,11 +8,11 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES
     include/ucf/Services/UpgradeService/IUpgradeService.h
     include/ucf/Services/UpgradeService/IUpgradeServiceCallback.h
-    include/ucf/Services/UpgradeService/UpgradeModel.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
     NotificationHelper
+    UpgradeServiceTypes
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

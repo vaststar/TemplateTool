@@ -5,10 +5,12 @@
 #include <string>
 #include <vector>
 
+#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+
 namespace ucf::service {
 
 /// Memory usage information
-struct MemoryInfo {
+struct SERVICE_EXPORT MemoryInfo {
     uint64_t physicalBytes{0};       ///< Physical memory used by process
     uint64_t virtualBytes{0};        ///< Virtual memory used by process
     uint64_t peakPhysicalBytes{0};   ///< Peak physical memory usage
@@ -16,30 +18,30 @@ struct MemoryInfo {
 };
 
 /// Timing statistics for a specific operation
-struct TimingStats {
+struct SERVICE_EXPORT TimingStats {
     std::string operationName;
     uint64_t callCount{0};
     std::chrono::milliseconds totalTime{0};
     std::chrono::milliseconds minTime{std::chrono::milliseconds::max()};
     std::chrono::milliseconds maxTime{0};
-    
+
     [[nodiscard]] std::chrono::milliseconds avgTime() const {
-        return callCount > 0 ? std::chrono::milliseconds(totalTime.count() / callCount) 
+        return callCount > 0 ? std::chrono::milliseconds(totalTime.count() / callCount)
                              : std::chrono::milliseconds{0};
     }
 };
 
 /// Token returned by beginTiming, used to end timing
-struct TimingToken {
+struct SERVICE_EXPORT TimingToken {
     uint64_t id{0};
     std::string operationName;
     std::chrono::steady_clock::time_point startTime;
-    
+
     [[nodiscard]] bool isValid() const { return id != 0; }
 };
 
 /// Complete performance snapshot
-struct PerformanceSnapshot {
+struct SERVICE_EXPORT PerformanceSnapshot {
     std::chrono::system_clock::time_point timestamp;
     MemoryInfo memory;
     double cpuUsagePercent{0.0};

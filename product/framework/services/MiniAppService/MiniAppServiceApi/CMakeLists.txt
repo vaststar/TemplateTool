@@ -8,11 +8,11 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES
     include/ucf/Services/MiniAppService/IMiniAppService.h
     include/ucf/Services/MiniAppService/IMiniAppServiceCallback.h
-    include/ucf/Services/MiniAppService/MiniAppManifest.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
     NotificationHelper
+    MiniAppServiceTypes
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
