@@ -6,6 +6,7 @@
 #include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/Services/DataWarehouseService/DataWarehouseServiceCreator.h>
 #include <ucf/Services/NetworkService/INetworkService.h>
+#include <ucf/Services/NetworkService/NetworkServiceCreator.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/ClientInfoService/ClientInfoServiceCreator.h>
 #include <ucf/Services/ContactService/IContactService.h>
@@ -58,7 +59,7 @@ void ServiceFactory::createServices()
     coreFramework->registerService<ucf::service::IClientInfoService>(ucf::service::impl::createClientInfoService(coreFramework));
     coreFramework->registerService<ucf::service::IStabilityService>(ucf::service::impl::createStabilityService(coreFramework));
     coreFramework->registerService<ucf::service::IPerformanceService>(ucf::service::impl::createPerformanceService(coreFramework));
-    coreFramework->registerService<ucf::service::INetworkService>(ucf::service::INetworkService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::INetworkService>(ucf::service::impl::createNetworkService(coreFramework));
     coreFramework->registerService<ucf::service::IContactService>(ucf::service::impl::createContactService(coreFramework));
     coreFramework->registerService<ucf::service::IImageService>(ucf::service::impl::createImageService(coreFramework));
     coreFramework->registerService<ucf::service::IMediaService>(ucf::service::IMediaService::createInstance(coreFramework));

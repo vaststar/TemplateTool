@@ -5,19 +5,19 @@
 #include <vector>
 #include <optional>
 
-#include <ucf/Services/NetworkService/NetworkServiceExport.h>
+#include <ucf/Services/NetworkService/NetworkServiceTypesExport.h>
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
-class NETWORK_SERVICE_API HttpRawResponse final
+class NETWORK_SERVICE_TYPES_API HttpRestResponse final
 {
 public:
-    HttpRawResponse();
-    ~HttpRawResponse();
-    HttpRawResponse(const HttpRawResponse&) = delete;
-    HttpRawResponse(HttpRawResponse&&) = delete;
-    HttpRawResponse& operator=(const HttpRawResponse&) = delete;
-    HttpRawResponse& operator=(HttpRawResponse&&) = delete;
+    HttpRestResponse();
+    ~HttpRestResponse();
+    HttpRestResponse(const HttpRestResponse&) = delete;
+    HttpRestResponse(HttpRestResponse&&) = delete;
+    HttpRestResponse& operator=(const HttpRestResponse&) = delete;
+    HttpRestResponse& operator=(HttpRestResponse&&) = delete;
 
     void setHttpResponseCode(int statusCode);
     int getHttpResponseCode() const;
@@ -28,8 +28,8 @@ public:
     void setErrorData(const ResponseErrorStruct& errorData);
     std::optional<ResponseErrorStruct> getErrorData() const;
 
-    void setResponseBody(const ByteBuffer& body);
-    const ByteBuffer& getResponseBody() const;
+    void setResponseBody(const std::string& body);
+    const std::string& getResponseBody() const;
 
 private:
     class DataPrivate;

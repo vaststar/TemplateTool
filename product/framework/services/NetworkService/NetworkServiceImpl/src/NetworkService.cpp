@@ -3,6 +3,8 @@
 #include "NetworkServiceLogger.h"
 #include "NetworkHttpManager.h"
 
+#include <ucf/Services/NetworkService/NetworkServiceCreator.h>
+
 namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -47,9 +49,11 @@ std::shared_ptr<network::http::INetworkHttpManager> NetworkService::DataPrivate:
 ////////////////////Start NetworkService Logic///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<INetworkService> INetworkService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+namespace impl{
+std::shared_ptr<INetworkService> createNetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<NetworkService>(coreFramework);
+}
 }
 
 NetworkService::NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)

@@ -13,7 +13,7 @@ BuildUnitTestModule(
         UpgradeServiceImpl
         CoreFramework
         FakeCoreFramework
-        NetworkService
+        NetworkServiceApi
         ClientInfoServiceApi
         StateMachineUtils
         FilePathUtils

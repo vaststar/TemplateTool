@@ -3,7 +3,6 @@
 #include <source_location>
 #include <functional>
 #include <string>
-#include <ucf/Services/NetworkService/NetworkServiceExport.h>
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 namespace ucf::service::network::http{
 class HttpRestRequest;
@@ -11,7 +10,7 @@ class HttpRawRequest;
 class HttpDownloadToMemoryRequest;
 class HttpDownloadToFileRequest;
 
-class NETWORK_SERVICE_API INetworkHttpManager
+class INetworkHttpManager
 {
 public:
     INetworkHttpManager() = default;

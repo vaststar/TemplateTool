@@ -19,7 +19,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
     InvocationServiceApi
     DataWarehouseServiceApi
-    NetworkService
+    NetworkServiceApi
     ClientInfoServiceApi
     ContactServiceApi
     CameraDirectoryServiceApi

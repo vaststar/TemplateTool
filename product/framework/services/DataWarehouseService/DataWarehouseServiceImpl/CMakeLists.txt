@@ -21,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     DataWarehouseServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    NetworkService
+    NetworkServiceApi
     DatabaseClient
     CoreFramework
     LoggerUtils

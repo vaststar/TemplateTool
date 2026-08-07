@@ -1,10 +1,8 @@
 #pragma once
 
-#include <ucf/Services/NetworkService/NetworkServiceExport.h>
-
 namespace ucf::service{
 
-class NETWORK_SERVICE_API INetworkServiceCallback
+class INetworkServiceCallback
 {
 public:
     INetworkServiceCallback() = default;

@@ -4,11 +4,11 @@
 #include <memory>
 #include <functional>
 #include <optional>
-#include <ucf/Services/NetworkService/NetworkServiceExport.h>
+#include <ucf/Services/NetworkService/NetworkServiceTypesExport.h>
 
 namespace ucf::service::network::http{
 
-enum class NETWORK_SERVICE_API HTTPMethod{
+enum class HTTPMethod{
     GET,
     POST,
     HEAD,
@@ -19,7 +19,7 @@ enum class NETWORK_SERVICE_API HTTPMethod{
     Unknown
 };
 
-enum class NETWORK_SERVICE_API ResponseErrorType
+enum class ResponseErrorType
 {
     NoError,
     DNSError,
@@ -31,7 +31,7 @@ enum class NETWORK_SERVICE_API ResponseErrorType
     UnHandledError
 };
 
-struct NETWORK_SERVICE_API ResponseErrorStruct{
+struct NETWORK_SERVICE_TYPES_API ResponseErrorStruct{
     int errorCode{ 0 };
     ResponseErrorType errorType{ResponseErrorType::NoError};
     std::string errorDescription;

@@ -5,11 +5,11 @@
 #include <vector>
 #include <optional>
 
-#include <ucf/Services/NetworkService/NetworkServiceExport.h>
+#include <ucf/Services/NetworkService/NetworkServiceTypesExport.h>
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
-class NETWORK_SERVICE_API HttpDownloadToMemoryResponse final
+class NETWORK_SERVICE_TYPES_API HttpDownloadToMemoryResponse final
 {
 public:
     HttpDownloadToMemoryResponse();

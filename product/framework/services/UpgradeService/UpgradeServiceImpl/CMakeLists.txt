@@ -36,7 +36,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     CoreFramework
-    NetworkService
+    NetworkServiceApi
     ClientInfoServiceApi
     ArchiveUtils
     FilePathUtils
