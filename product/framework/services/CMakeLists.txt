@@ -1,30 +1,18 @@
 # ============================================================================
-# 总开关: 控制本层 service 模块编译为动态库 (DLL) 还是静态库 (LIB)。
-#   UCF_BUILD_SERVICES_SHARED (选项) -> SERVICE_LIB_TYPE (库类型)
-#   SERVICE_LIB_TYPE                    -> SERVICE_EXPORT_DEFINE_SUFFIX (导出宏后缀)
-# 各模块在 BuildModule(...) 里追加 ${SERVICE_LIB_TYPE}, 并把
-# <模块名>${SERVICE_EXPORT_DEFINE_SUFFIX} 作为 TARGET_DEFINITIONS 传入。
-# 开关只落在 services 层, 不改动通用的 BuildModule。
+# Master switch: build this layer's service modules as shared (DLL) or static (LIB).
+#   UCF_BUILD_SERVICES_SHARED (option) -> SERVICE_LIB_TYPE (library type)
+# Each module appends ${SERVICE_LIB_TYPE} in BuildModule(...) and passes its own
+# per-module <MODULE>_SHARED / <MODULE>_STATIC export define. The switch is scoped
+# to the services layer and does not modify the generic BuildModule.
 # ============================================================================
 option(UCF_BUILD_SERVICES_SHARED "Build UCF service modules as shared libraries (DLL). OFF builds them as static libraries." ON)
 
 if (UCF_BUILD_SERVICES_SHARED)
-    set(SERVICE_LIB_TYPE "")            # 空 -> BuildModule 走默认 SHARED
+    set(SERVICE_LIB_TYPE "")            # empty -> BuildModule default SHARED
 else()
-    set(SERVICE_LIB_TYPE STATIC_LIB)   # -> BuildModule 走 STATIC
+    set(SERVICE_LIB_TYPE STATIC_LIB)   # -> BuildModule STATIC
 endif()
 
-# 仍在使用共享 ServiceExportMacro 的模块 (如各 Api) 沿用此定义。
-if (WIN32)
-    if (UCF_BUILD_SERVICES_SHARED)
-        set(ADD_SERVICE_DEFINITIONS SERVICE_DLL)
-    else()
-        set(ADD_SERVICE_DEFINITIONS SERVICE_LIB)
-    endif()
-else()
-    set(ADD_SERVICE_DEFINITIONS)
-endif()
-add_subdirectory(ServiceExportMacro)
 add_subdirectory(ServiceDeclaration)
 add_subdirectory(CoreFramework)
 add_subdirectory(InvocationService)

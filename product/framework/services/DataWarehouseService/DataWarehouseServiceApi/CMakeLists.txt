@@ -1,7 +1,7 @@
 include(BuildInterface)
 
 # DataWarehouseServiceApi (INTERFACE) - pure abstract interface, no binary.
-# No SERVICE_EXPORT, no createInstance; consumers depend only on this.
+# No export macro, no createInstance; consumers depend only on this.
 # Publicly carries DataWarehouseTypes so callers get the DTO symbols.
 set(MODULE_MODULE_NAME DataWarehouseServiceApi)
 set(MODULE_IDE_FOLDER framework/Services)

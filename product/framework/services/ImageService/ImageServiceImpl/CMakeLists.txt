@@ -30,10 +30,10 @@ set(MODULE_PUBLIC_DEFINITIONS
 set(MODULE_PRIVATE_DEFINITIONS
 )
 if (SERVICE_LIB_TYPE STREQUAL "STATIC_LIB")
-    # 静态库：导出宏置空，但需要传递给消费者，所以用 PUBLIC
+    # Static lib: macro is empty but must propagate to consumers -> PUBLIC
     set(MODULE_PUBLIC_DEFINITIONS IMAGE_SERVICE_IMPL_STATIC)
 else()
-    # 动态库：只有本模块导出，消费者走 dllimport，所以用 PRIVATE
+    # Shared lib: only this module exports; consumers use dllimport -> PRIVATE
     set(MODULE_PRIVATE_DEFINITIONS IMAGE_SERVICE_IMPL_SHARED)
 endif()
 
@@ -54,4 +54,3 @@ BuildModule(
     IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
 
-add_subdirectory(test)

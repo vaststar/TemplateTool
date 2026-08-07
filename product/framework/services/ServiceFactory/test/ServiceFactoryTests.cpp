@@ -1,11 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <fakes/ucf/Services/FakeServiceFactory.h>
+#include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
+#include "ServiceFactory.h"
 
-using namespace ucf::service;
-
-TEST_CASE("FakeServiceFactory can be constructed", "[ServiceFactory]")
+TEST_CASE("ServiceFactory can be constructed", "[ServiceFactory]")
 {
-    auto fakeFactory = std::make_shared<fakes::FakeServiceFactory>();
-    REQUIRE(fakeFactory != nullptr);
+    auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
+    REQUIRE(fakeCoreFramework != nullptr);
+
+    auto factory = std::make_shared<ucf::service::ServiceFactory>(fakeCoreFramework);
+    REQUIRE(factory != nullptr);
 }

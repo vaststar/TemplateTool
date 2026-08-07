@@ -1,3 +1,5 @@
 add_subdirectory(FeatureSettingsServiceTypes)
 add_subdirectory(FeatureSettingsServiceApi)
 add_subdirectory(FeatureSettingsServiceImpl)
+
+add_subdirectory(test)

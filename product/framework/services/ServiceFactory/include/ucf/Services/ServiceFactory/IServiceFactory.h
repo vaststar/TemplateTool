@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ucf/Services/ServiceDeclaration/IService.h>
+#include <ucf/Services/ServiceFactory/ServiceFactoryExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -8,7 +9,7 @@ namespace ucf::framework{
 }
 
 namespace ucf::service{
-class SERVICE_EXPORT IServiceFactory
+class SERVICE_FACTORY_API IServiceFactory
 {
 public:
     IServiceFactory() = default;

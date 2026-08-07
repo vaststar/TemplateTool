@@ -1,9 +1,8 @@
 #pragma once
 
 // Per-module export macro for CoreFramework.
-//   CORE_FRAMEWORK_SHARED : 动态构建本模块时由 CMake 以 PRIVATE 传入 -> dllexport；
-//                           消费者未定义它 -> dllimport。
-//   CORE_FRAMEWORK_STATIC : 静态构建时由 CMake 以 PUBLIC 传入（传播给消费者）-> 空。
+//   CORE_FRAMEWORK_SHARED : defined PRIVATE when built as a shared lib -> dllexport; undefined in consumers -> dllimport.
+//   CORE_FRAMEWORK_STATIC : defined PUBLIC when built as a static lib -> empty.
 #if defined(CORE_FRAMEWORK_STATIC) && defined(CORE_FRAMEWORK_SHARED)
 #  error "CORE_FRAMEWORK_STATIC and CORE_FRAMEWORK_SHARED cannot be defined together"
 #endif

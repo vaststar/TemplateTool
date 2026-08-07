@@ -1,9 +1,8 @@
 #pragma once
 
 // Per-module export macro for NetworkServiceTypes.
-//   NETWORK_SERVICE_TYPES_SHARED : 动态构建本模块时由 CMake 以 PRIVATE 传入 -> dllexport；
-//                                  消费者未定义它 -> dllimport。
-//   NETWORK_SERVICE_TYPES_STATIC : 静态构建时由 CMake 以 PUBLIC 传入（传播给消费者）-> 空。
+//   NETWORK_SERVICE_TYPES_SHARED : defined PRIVATE when built as a shared lib -> dllexport; undefined in consumers -> dllimport.
+//   NETWORK_SERVICE_TYPES_STATIC : defined PUBLIC when built as a static lib -> empty.
 #if defined(NETWORK_SERVICE_TYPES_STATIC) && defined(NETWORK_SERVICE_TYPES_SHARED)
 #  error "NETWORK_SERVICE_TYPES_STATIC and NETWORK_SERVICE_TYPES_SHARED cannot be defined together"
 #endif

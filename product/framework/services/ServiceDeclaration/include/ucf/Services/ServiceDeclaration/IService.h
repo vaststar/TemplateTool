@@ -6,7 +6,7 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/ServiceDeclaration/ServiceDeclarationExport.h>
 
 namespace ucf::service{
 
@@ -32,7 +32,7 @@ struct ServiceDependency
     DependencyKind kind;
 };
 
-class SERVICE_EXPORT IService
+class SERVICE_DECLARATION_API IService
 {
 public:
     IService() = default;

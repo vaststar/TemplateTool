@@ -1,3 +1,5 @@
 add_subdirectory(StabilityServiceTypes)
 add_subdirectory(StabilityServiceApi)
 add_subdirectory(StabilityServiceImpl)
+
+add_subdirectory(test)

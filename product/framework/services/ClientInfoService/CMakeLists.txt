@@ -2,3 +2,5 @@ add_subdirectory(version)
 add_subdirectory(ClientInfoServiceTypes)
 add_subdirectory(ClientInfoServiceApi)
 add_subdirectory(ClientInfoServiceImpl)
+
+add_subdirectory(test)

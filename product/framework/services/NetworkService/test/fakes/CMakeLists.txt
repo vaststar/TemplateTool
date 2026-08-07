@@ -27,6 +27,4 @@ BuildModule(
         src
     IDE_FOLDER
         framework/Services/unit-test
-    TARGET_DEFINITIONS
-        ${ADD_SERVICE_DEFINITIONS}
 )

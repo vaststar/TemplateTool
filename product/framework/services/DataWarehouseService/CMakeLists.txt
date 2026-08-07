@@ -2,3 +2,5 @@ add_subdirectory(DataWarehouseTypes)
 add_subdirectory(DataWarehouseServiceApi)
 add_subdirectory(DataWarehouseServiceImpl)
 add_subdirectory(DataWarehouseSchema)
+
+add_subdirectory(test)

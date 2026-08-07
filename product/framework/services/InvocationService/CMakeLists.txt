@@ -1,3 +1,4 @@
 add_subdirectory(InvocationServiceApi)
 add_subdirectory(InvocationServiceImpl)
 
+add_subdirectory(test)

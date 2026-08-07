@@ -88,4 +88,3 @@ BuildModule(
     IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
 
-add_subdirectory(test)

@@ -9,7 +9,7 @@ namespace ucf::framework{
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 namespace ucf::service{
-class SERVICE_EXPORT ServiceFactory: public IServiceFactory
+class SERVICE_FACTORY_API ServiceFactory: public IServiceFactory
 {
 public:
     ServiceFactory(ucf::framework::ICoreFrameworkWPtr coreFramework);

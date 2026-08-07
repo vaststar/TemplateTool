@@ -1,3 +1,5 @@
 add_subdirectory(PerformanceServiceTypes)
 add_subdirectory(PerformanceServiceApi)
 add_subdirectory(PerformanceServiceImpl)
+
+add_subdirectory(test)

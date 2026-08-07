@@ -1,7 +1,7 @@
 include(BuildInterface)
 
 # ContactServiceApi (INTERFACE) - pure abstract interfaces, no binary.
-# No SERVICE_EXPORT, no createInstance; consumers depend only on this.
+# No export macro, no createInstance; consumers depend only on this.
 set(MODULE_MODULE_NAME ContactServiceApi)
 set(MODULE_IDE_FOLDER framework/Services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -2,3 +2,4 @@ add_subdirectory(ContactServiceTypes)
 add_subdirectory(ContactServiceApi)
 add_subdirectory(ContactServiceImpl)
 
+add_subdirectory(test)
