@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/ContactService/ContactServiceImplExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -20,6 +20,6 @@ namespace ucf::service::impl{
 // Factory entry point for the ContactService implementation. Lives in the
 // Impl library (ContactServiceImpl); only ServiceFactory links against it.
 // Kept out of IContactService so the Api stays a pure, dependency-free interface.
-SERVICE_EXPORT std::shared_ptr<ucf::service::IContactService> createContactService(ucf::framework::ICoreFrameworkWPtr coreFramework);
+CONTACT_SERVICE_IMPL_API std::shared_ptr<ucf::service::IContactService> createContactService(ucf::framework::ICoreFrameworkWPtr coreFramework);
 
 }

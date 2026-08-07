@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <ucf/Services/ImageService/IImageService.h>
+#include <ucf/Services/ImageService/ImageServiceImplExport.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 namespace ucf::framework{
@@ -10,7 +11,7 @@ namespace ucf::framework{
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 namespace ucf::service{
-class SERVICE_EXPORT ImageService:public IImageService,
+class IMAGE_SERVICE_IMPL_API ImageService:public IImageService,
                                   public ucf::framework::CoreFrameworkCallbackDefault,
                                   public std::enable_shared_from_this<ImageService>
 {

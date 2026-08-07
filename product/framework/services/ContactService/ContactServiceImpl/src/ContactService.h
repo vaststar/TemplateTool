@@ -7,13 +7,14 @@
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ContactService/IContactService.h>
+#include <ucf/Services/ContactService/ContactServiceImplExport.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 #include "ContactNotificationSink.h"
 
 namespace ucf::service {
 
-class SERVICE_EXPORT ContactService final
+class CONTACT_SERVICE_IMPL_API ContactService final
     : public virtual IContactService
     , public virtual ucf::utilities::NotificationHelper<IContactServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault

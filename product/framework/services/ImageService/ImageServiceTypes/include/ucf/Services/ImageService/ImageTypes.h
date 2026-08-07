@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/ImageService/ImageServiceTypesExport.h>
 
 namespace ucf::service::model{
 
 using ImageBuffer = std::vector<unsigned char>;
-struct SERVICE_EXPORT Image
+struct IMAGE_SERVICE_TYPES_API Image
 {
     Image(const ImageBuffer& buffer, int width, int height, int steps)
         : buffer(buffer)

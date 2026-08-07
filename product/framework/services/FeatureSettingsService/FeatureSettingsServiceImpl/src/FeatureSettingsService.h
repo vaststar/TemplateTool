@@ -7,11 +7,12 @@
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/Services/FeatureSettingsService/FeatureSettingsServiceImplExport.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 namespace ucf::service {
 
-class SERVICE_EXPORT FeatureSettingsService final
+class FEATURE_SETTINGS_SERVICE_IMPL_API FeatureSettingsService final
     : public virtual IFeatureSettingsService
     , public virtual ucf::utilities::NotificationHelper<IFeatureSettingsServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault

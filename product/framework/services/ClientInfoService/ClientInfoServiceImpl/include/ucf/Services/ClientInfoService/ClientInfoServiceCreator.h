@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/ClientInfoService/ClientInfoServiceImplExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -19,6 +19,6 @@ namespace ucf::service::impl{
 
 // Factory entry point for the ClientInfoService implementation. Lives in the
 // Impl library (ClientInfoServiceImpl); only ServiceFactory links against it.
-SERVICE_EXPORT std::shared_ptr<ucf::service::IClientInfoService> createClientInfoService(ucf::framework::ICoreFrameworkWPtr coreFramework);
+CLIENT_INFO_SERVICE_IMPL_API std::shared_ptr<ucf::service::IClientInfoService> createClientInfoService(ucf::framework::ICoreFrameworkWPtr coreFramework);
 
 }

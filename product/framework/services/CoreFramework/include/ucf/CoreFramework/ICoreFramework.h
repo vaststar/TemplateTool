@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/CoreFramework/CoreFrameworkExport.h>
 #include <ucf/CoreFramework/IServiceAccessor.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
 
@@ -14,7 +14,7 @@ namespace ucf::framework{
 
 class IService;
 
-class SERVICE_EXPORT ICoreFramework: public virtual IServiceAccessor, public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
+class CORE_FRAMEWORK_API ICoreFramework: public virtual IServiceAccessor, public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
 {
 public:
     ICoreFramework() = default;

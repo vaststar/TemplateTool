@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/StabilityService/StabilityServiceTypesExport.h>
 
 namespace ucf::service {
 
 // Structure to hold information about a detected hang
-struct SERVICE_EXPORT HangInfo
+struct STABILITY_SERVICE_TYPES_API HangInfo
 {
     // When the hang was detected
     std::chrono::system_clock::time_point detectionTime;

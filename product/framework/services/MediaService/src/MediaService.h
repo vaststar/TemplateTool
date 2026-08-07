@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <ucf/Services/MediaService/IMediaService.h>
+#include <ucf/Services/MediaService/MediaServiceExport.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
@@ -12,7 +13,7 @@ namespace ucf::framework {
 }
 
 namespace ucf::service {
-class SERVICE_EXPORT MediaService final : public IMediaService,
+class MEDIA_SERVICE_API MediaService final : public IMediaService,
                                           public virtual ucf::utilities::NotificationHelper<IMediaServiceCallback>,
                                           public ucf::framework::CoreFrameworkCallbackDefault,
                                           public std::enable_shared_from_this<MediaService>

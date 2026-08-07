@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ucf/Services/StabilityService/IStabilityService.h>
+#include <ucf/Services/StabilityService/StabilityServiceImplExport.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <memory>
 #include <vector>
@@ -12,7 +13,7 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class SERVICE_EXPORT StabilityService : public IStabilityService,
+class STABILITY_SERVICE_IMPL_API StabilityService : public IStabilityService,
                                         public ucf::framework::CoreFrameworkCallbackDefault,
                                         public std::enable_shared_from_this<StabilityService>
 {

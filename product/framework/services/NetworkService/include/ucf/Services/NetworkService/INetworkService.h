@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/NetworkService/NetworkServiceExport.h>
 
 // #include <ucf/CoreFramework/IService.h>
 #include <ucf/Services/ServiceDeclaration/IService.h>
@@ -21,7 +21,7 @@ namespace network::http{
     using INetworkHttpManagerWPtr = std::weak_ptr<INetworkHttpManager>;
 }
 
-class SERVICE_EXPORT INetworkService: public IService, public virtual ucf::utilities::INotificationHelper<INetworkServiceCallback>
+class NETWORK_SERVICE_API INetworkService: public IService, public virtual ucf::utilities::INotificationHelper<INetworkServiceCallback>
 {
 public:
     INetworkService() = default;
@@ -32,7 +32,7 @@ public:
     virtual ~INetworkService() = default;
 public:
     virtual network::http::INetworkHttpManagerWPtr getNetworkHttpManager() = 0;
-public: 
+public:
     static std::shared_ptr<INetworkService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 };
 }

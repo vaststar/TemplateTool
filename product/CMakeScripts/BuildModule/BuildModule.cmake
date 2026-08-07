@@ -15,7 +15,7 @@ function(BuildModule)
         TARGET_SOURCE_PRIVATE TARGET_SOURCE_PUBLIC_HEADER TARGET_SOURCE_HEADER_BASE_DIR
         TARGET_ADD_LINK_LIBRARY_PRIVATE TARGET_ADD_LINK_LIBRARY_PUBLIC TARGET_ADD_DEPENDENCIES
         TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        TARGET_DEFINITIONS
+        TARGET_DEFINITIONS TARGET_PUBLIC_DEFINITIONS TARGET_PRIVATE_DEFINITIONS
     )
     cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -35,16 +35,8 @@ function(BuildModule)
         message(WARNING "[BuildModule] Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
     endif()
 
-    # Determine library type.
-    # Explicit STATIC_LIB/SHARED_LIB wins; otherwise default to SHARED unless a
-    # subtree opts out via UCF_MODULE_SHARED_DEFAULT=OFF (e.g. framework/services
-    # flipping every module to static). A dedicated variable name is used so we
-    # never perturb the reserved BUILD_SHARED_LIBS that third-party code inspects.
+    # Determine library type
     if(MODULE_STATIC_LIB)
-        set(LIB_TYPE "STATIC")
-    elseif(MODULE_SHARED_LIB)
-        set(LIB_TYPE "SHARED")
-    elseif(DEFINED UCF_MODULE_SHARED_DEFAULT AND NOT UCF_MODULE_SHARED_DEFAULT)
         set(LIB_TYPE "STATIC")
     else()
         set(LIB_TYPE "SHARED")
@@ -73,7 +65,7 @@ function(BuildModule)
     # ==========================================
     # Create library
     # ==========================================
-    if(LIB_TYPE STREQUAL "STATIC")
+    if(MODULE_STATIC_LIB)
         add_library(${MODULE_MODULE_NAME} STATIC "")
     else()
         add_library(${MODULE_MODULE_NAME} SHARED "")
@@ -152,6 +144,14 @@ function(BuildModule)
 
     if(MODULE_TARGET_DEFINITIONS)
         target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
+    endif()
+
+    if(MODULE_TARGET_PUBLIC_DEFINITIONS)
+        target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_PUBLIC_DEFINITIONS})
+    endif()
+
+    if(MODULE_TARGET_PRIVATE_DEFINITIONS)
+        target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_PRIVATE_DEFINITIONS})
     endif()
 
     # ==========================================

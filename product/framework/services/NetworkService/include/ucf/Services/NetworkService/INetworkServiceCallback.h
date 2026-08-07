@@ -1,10 +1,10 @@
 #pragma once
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
- 
+#include <ucf/Services/NetworkService/NetworkServiceExport.h>
+
 namespace ucf::service{
-    
-class SERVICE_EXPORT INetworkServiceCallback
+
+class NETWORK_SERVICE_API INetworkServiceCallback
 {
 public:
     INetworkServiceCallback() = default;

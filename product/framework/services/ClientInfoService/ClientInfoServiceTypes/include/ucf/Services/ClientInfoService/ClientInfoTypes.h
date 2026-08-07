@@ -3,11 +3,11 @@
 #include <string>
 #include <format>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/ClientInfoService/ClientInfoServiceTypesExport.h>
 
 namespace ucf::service::model{
 
-struct SERVICE_EXPORT Version
+struct CLIENT_INFO_SERVICE_TYPES_API Version
 {
     std::string majorVersion;
     std::string minorVersion;
@@ -18,7 +18,7 @@ struct SERVICE_EXPORT Version
     }
 };
 
-struct SERVICE_EXPORT ProductInfo
+struct CLIENT_INFO_SERVICE_TYPES_API ProductInfo
 {
     std::string companyName;
     std::string copyright;

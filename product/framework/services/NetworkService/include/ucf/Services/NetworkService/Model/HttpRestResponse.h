@@ -5,11 +5,11 @@
 #include <vector>
 #include <optional>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/NetworkService/NetworkServiceExport.h>
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
-class SERVICE_EXPORT HttpRestResponse final
+class NETWORK_SERVICE_API HttpRestResponse final
 {
 public:
     HttpRestResponse();

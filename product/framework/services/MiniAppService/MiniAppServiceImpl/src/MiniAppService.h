@@ -9,12 +9,13 @@
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/MiniAppService/IMiniAppService.h>
+#include <ucf/Services/MiniAppService/MiniAppServiceImplExport.h>
 
 #include "MiniAppNotificationSink.h"
 
 namespace ucf::service {
 
-class SERVICE_EXPORT MiniAppService final
+class MINI_APP_SERVICE_IMPL_API MiniAppService final
     : public virtual IMiniAppService
     , public virtual ucf::utilities::NotificationHelper<IMiniAppServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault

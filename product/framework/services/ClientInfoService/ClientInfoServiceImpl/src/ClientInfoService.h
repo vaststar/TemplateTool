@@ -8,12 +8,13 @@
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/Services/ClientInfoService/ClientInfoServiceImplExport.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 #include "ClientInfoNotificationSink.h"
 
 namespace ucf::service{
-class SERVICE_EXPORT ClientInfoService final: public virtual IClientInfoService,
+class CLIENT_INFO_SERVICE_IMPL_API ClientInfoService final: public virtual IClientInfoService,
                                public virtual ucf::utilities::NotificationHelper<IClientInfoServiceCallback>,
                                public ucf::framework::CoreFrameworkCallbackDefault,
                                public ucf::service::IDataWarehouseServiceCallback,

@@ -5,7 +5,7 @@
 #include <tuple>
 #include <variant>
 #include <cstdint>
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/DataWarehouseService/DataWarehouseTypesExport.h>
 
 namespace ucf::service::model{
 namespace DBSupportedTypes{
@@ -23,7 +23,7 @@ using DBDataValue = std::variant<DBSupportedTypes::NULL_TYPE, DBSupportedTypes::
 /**
  * @brief Wrapper for database column values supporting multiple types.
  */
-class SERVICE_EXPORT DatabaseDataValue final
+class DATA_WAREHOUSE_TYPES_API DatabaseDataValue final
 {
 public:
     /// @brief Default constructor creates a NULL value.
@@ -39,7 +39,7 @@ public:
 public:
     /// @brief Check if value is NULL.
     bool isNull() const;
-    
+
     template <typename T>
     bool holdsType() const
     {

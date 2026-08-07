@@ -5,6 +5,7 @@
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 #include <ucf/Services/PerformanceService/IPerformanceService.h>
+#include <ucf/Services/PerformanceService/PerformanceServiceImplExport.h>
 
 #include "PerformanceNotificationSink.h"
 
@@ -16,7 +17,7 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
-class SERVICE_EXPORT PerformanceService : public virtual IPerformanceService,
+class PERFORMANCE_SERVICE_IMPL_API PerformanceService : public virtual IPerformanceService,
                            public virtual ucf::utilities::NotificationHelper<IPerformanceServiceCallback>,
                            public IPerformanceNotificationSink,
                            public ucf::framework::CoreFrameworkCallbackDefault,

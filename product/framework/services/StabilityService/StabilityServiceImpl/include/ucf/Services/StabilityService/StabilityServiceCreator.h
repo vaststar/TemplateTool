@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/StabilityService/StabilityServiceImplExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -19,6 +19,6 @@ namespace ucf::service::impl{
 
 // Factory entry point for the StabilityService implementation. Lives in the
 // Impl library (StabilityServiceImpl); only ServiceFactory links against it.
-SERVICE_EXPORT std::shared_ptr<ucf::service::IStabilityService> createStabilityService(ucf::framework::ICoreFrameworkPtr coreFramework);
+STABILITY_SERVICE_IMPL_API std::shared_ptr<ucf::service::IStabilityService> createStabilityService(ucf::framework::ICoreFrameworkPtr coreFramework);
 
 }

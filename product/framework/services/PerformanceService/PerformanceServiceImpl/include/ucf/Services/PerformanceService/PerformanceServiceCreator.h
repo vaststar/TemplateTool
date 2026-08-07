@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/PerformanceService/PerformanceServiceImplExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -19,6 +19,6 @@ namespace ucf::service::impl{
 
 // Factory entry point for the PerformanceService implementation. Lives in the
 // Impl library (PerformanceServiceImpl); only ServiceFactory links against it.
-SERVICE_EXPORT std::shared_ptr<ucf::service::IPerformanceService> createPerformanceService(ucf::framework::ICoreFrameworkPtr coreFramework);
+PERFORMANCE_SERVICE_IMPL_API std::shared_ptr<ucf::service::IPerformanceService> createPerformanceService(ucf::framework::ICoreFrameworkPtr coreFramework);
 
 }

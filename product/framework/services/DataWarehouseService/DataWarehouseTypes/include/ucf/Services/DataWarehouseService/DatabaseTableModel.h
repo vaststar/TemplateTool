@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 #include <variant>
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/DataWarehouseService/DataWarehouseTypesExport.h>
 namespace ucf::service::model{
 //for DBTable
-class SERVICE_EXPORT DBTableModel
+class DATA_WAREHOUSE_TYPES_API DBTableModel
 {
 public:
     struct Column

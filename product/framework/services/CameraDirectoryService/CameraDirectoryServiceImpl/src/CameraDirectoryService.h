@@ -7,13 +7,14 @@
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
+#include <ucf/Services/CameraDirectoryService/CameraDirectoryServiceImplExport.h>
 #include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 #include "CameraDirectoryNotificationSink.h"
 
 namespace ucf::service {
 
-class SERVICE_EXPORT CameraDirectoryService final
+class CAMERA_DIRECTORY_SERVICE_IMPL_API CameraDirectoryService final
     : public virtual ICameraDirectoryService
     , public virtual ucf::utilities::NotificationHelper<ICameraDirectoryServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault

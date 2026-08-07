@@ -6,6 +6,7 @@
 #include <ucf/Services/ServiceDeclaration/IService.h>
 #include <ucf/Services/MediaService/MediaTypes.h>
 #include <ucf/Services/MediaService/IMediaServiceCallback.h>
+#include <ucf/Services/MediaService/MediaServiceExport.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf::framework {
@@ -17,7 +18,7 @@ namespace ucf::service {
 
 using VideoFrameCallback = std::function<void(const media::IVideoFramePtr&)>;
 
-class SERVICE_EXPORT IMediaService : public IService,
+class MEDIA_SERVICE_API IMediaService : public IService,
                                      public virtual ucf::utilities::INotificationHelper<IMediaServiceCallback>
 {
 public:

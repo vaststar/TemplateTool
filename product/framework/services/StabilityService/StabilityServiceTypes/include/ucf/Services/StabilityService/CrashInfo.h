@@ -4,11 +4,11 @@
 #include <filesystem>
 #include <chrono>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/StabilityService/StabilityServiceTypesExport.h>
 
 namespace ucf::service {
 
-struct SERVICE_EXPORT CrashInfo
+struct STABILITY_SERVICE_TYPES_API CrashInfo
 {
     // Signal/Exception info
     std::string signalName;         // "SIGSEGV", "SIGABRT", "EXCEPTION_ACCESS_VIOLATION"

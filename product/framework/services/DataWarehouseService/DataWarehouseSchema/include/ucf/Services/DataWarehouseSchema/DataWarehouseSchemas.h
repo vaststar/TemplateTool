@@ -1,9 +1,9 @@
 #pragma once
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemaExport.h>
 #include <ucf/Services/DataWarehouseService/DatabaseTableModel.h>
 namespace db::schema{
-struct SERVICE_EXPORT UserContactTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API UserContactTable: public ucf::service::model::DBTableModel
 {
     UserContactTable();
     static constexpr auto TableName            = "UserContact";
@@ -17,7 +17,7 @@ struct SERVICE_EXPORT UserContactTable: public ucf::service::model::DBTableModel
 // is the foreign key into UserContact and is the natural key here as well.
 // Rows may be absent for legacy persons that pre-date this table — readers must
 // tolerate missing sub-rows and treat them as empty profile.
-struct SERVICE_EXPORT PersonContactTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API PersonContactTable: public ucf::service::model::DBTableModel
 {
     PersonContactTable();
     static constexpr auto TableName      = "PersonContact";
@@ -29,7 +29,7 @@ struct SERVICE_EXPORT PersonContactTable: public ucf::service::model::DBTableMod
     static constexpr auto EmailField     = "EMAIL";
 };
 
-struct SERVICE_EXPORT GroupContactTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API GroupContactTable: public ucf::service::model::DBTableModel
 {
     GroupContactTable();
     static constexpr auto TableName          = "GroupContact";
@@ -41,7 +41,7 @@ struct SERVICE_EXPORT GroupContactTable: public ucf::service::model::DBTableMode
 
 // CTI sub-table for IGroupContact::GroupType::Department. GROUP_ID is the same id as
 // the main GroupContact row; presence of a row here means the group is a Department.
-struct SERVICE_EXPORT DepartmentGroupTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API DepartmentGroupTable: public ucf::service::model::DBTableModel
 {
     DepartmentGroupTable();
     static constexpr auto TableName       = "DepartmentGroup";
@@ -51,7 +51,7 @@ struct SERVICE_EXPORT DepartmentGroupTable: public ucf::service::model::DBTableM
 };
 
 // CTI sub-table for IGroupContact::GroupType::Team.
-struct SERVICE_EXPORT TeamGroupTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API TeamGroupTable: public ucf::service::model::DBTableModel
 {
     TeamGroupTable();
     static constexpr auto TableName       = "TeamGroup";
@@ -66,14 +66,14 @@ struct SERVICE_EXPORT TeamGroupTable: public ucf::service::model::DBTableModel
 // GROUP_TYPE=0 default). Reserves space for future per-folder fields (icon, color,
 // sort order, ...) so adding them later is a column-add migration rather than a
 // new-table migration.
-struct SERVICE_EXPORT FolderGroupTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API FolderGroupTable: public ucf::service::model::DBTableModel
 {
     FolderGroupTable();
     static constexpr auto TableName    = "FolderGroup";
     static constexpr auto GroupIdField = "GROUP_ID";
 };
 
-struct SERVICE_EXPORT ContactRelationTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API ContactRelationTable: public ucf::service::model::DBTableModel
 {
     ContactRelationTable();
     static constexpr auto TableName         = "ContactRelation";
@@ -84,7 +84,7 @@ struct SERVICE_EXPORT ContactRelationTable: public ucf::service::model::DBTableM
     static constexpr auto RelationTypeField = "RELATION_TYPE";
 };
 
-struct SERVICE_EXPORT SettingsTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API SettingsTable: public ucf::service::model::DBTableModel
 {
     SettingsTable();
     static constexpr auto TableName = "Settings";
@@ -92,7 +92,7 @@ struct SERVICE_EXPORT SettingsTable: public ucf::service::model::DBTableModel
     static constexpr auto ValField = "Value";
 };
 
-struct SERVICE_EXPORT ScreenshotSettingsTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API ScreenshotSettingsTable: public ucf::service::model::DBTableModel
 {
     ScreenshotSettingsTable();
     static constexpr auto TableName = "ScreenshotSettings";
@@ -104,7 +104,7 @@ struct SERVICE_EXPORT ScreenshotSettingsTable: public ucf::service::model::DBTab
     static constexpr auto AddTimestampField = "ADD_TIMESTAMP";
 };
 
-struct SERVICE_EXPORT RecordingSettingsTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API RecordingSettingsTable: public ucf::service::model::DBTableModel
 {
     RecordingSettingsTable();
     static constexpr auto TableName = "RecordingSettings";
@@ -118,7 +118,7 @@ struct SERVICE_EXPORT RecordingSettingsTable: public ucf::service::model::DBTabl
     static constexpr auto SystemAudioDeviceIdField = "SYSTEM_AUDIO_DEVICE_ID";
 };
 
-struct SERVICE_EXPORT CameraGroupTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API CameraGroupTable: public ucf::service::model::DBTableModel
 {
     CameraGroupTable();
     static constexpr auto TableName        = "CameraGroup";
@@ -127,7 +127,7 @@ struct SERVICE_EXPORT CameraGroupTable: public ucf::service::model::DBTableModel
     static constexpr auto NodeStatusField  = "NODE_STATUS";
 };
 
-struct SERVICE_EXPORT CameraTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API CameraTable: public ucf::service::model::DBTableModel
 {
     CameraTable();
     static constexpr auto TableName             = "Camera";
@@ -142,7 +142,7 @@ struct SERVICE_EXPORT CameraTable: public ucf::service::model::DBTableModel
     static constexpr auto ReadTimeoutMsField    = "READ_TIMEOUT_MS";
 };
 
-struct SERVICE_EXPORT CameraDirectoryRelationTable: public ucf::service::model::DBTableModel
+struct DATA_WAREHOUSE_SCHEMA_API CameraDirectoryRelationTable: public ucf::service::model::DBTableModel
 {
     CameraDirectoryRelationTable();
     static constexpr auto TableName         = "CameraDirectoryRelation";

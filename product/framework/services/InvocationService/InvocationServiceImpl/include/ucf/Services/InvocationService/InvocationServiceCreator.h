@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/InvocationService/InvocationServiceImplExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -20,6 +20,6 @@ namespace ucf::service::impl{
 // Factory entry point for the InvocationService implementation. Lives in the
 // Impl library (InvocationServiceImpl); only ServiceFactory links against it.
 // Kept out of IInvocationService so the Api stays a pure, dependency-free interface.
-SERVICE_EXPORT std::shared_ptr<ucf::service::IInvocationService> createInvocationService(ucf::framework::ICoreFrameworkWPtr coreFramework);
+INVOCATION_SERVICE_IMPL_API std::shared_ptr<ucf::service::IInvocationService> createInvocationService(ucf::framework::ICoreFrameworkWPtr coreFramework);
 
 }

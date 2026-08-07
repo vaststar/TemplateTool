@@ -7,12 +7,13 @@
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <ucf/Services/UpgradeService/IUpgradeService.h>
+#include <ucf/Services/UpgradeService/UpgradeServiceImplExport.h>
 
 #include "UpgradeManager.h"
 
 namespace ucf::service {
 
-class SERVICE_EXPORT UpgradeService final
+class UPGRADE_SERVICE_IMPL_API UpgradeService final
     : public virtual IUpgradeService
     , public virtual ucf::utilities::NotificationHelper<IUpgradeServiceCallback>
     , public ucf::framework::CoreFrameworkCallbackDefault

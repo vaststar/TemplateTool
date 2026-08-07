@@ -4,12 +4,12 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/NetworkService/NetworkServiceExport.h>
 #include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
 
 namespace ucf::service::network::http{
 
-class SERVICE_EXPORT HttpRawRequest final
+class NETWORK_SERVICE_API HttpRawRequest final
 {
 public:
     HttpRawRequest();

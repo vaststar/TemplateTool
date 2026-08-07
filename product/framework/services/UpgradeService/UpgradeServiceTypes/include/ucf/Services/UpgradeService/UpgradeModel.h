@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/UpgradeService/UpgradeServiceTypesExport.h>
 
 namespace ucf::service::model {
 
@@ -32,13 +32,13 @@ enum class UpgradeErrorCode {
     Cancelled               ///< User cancelled the operation
 };
 
-struct SERVICE_EXPORT PackageInfo {
+struct UPGRADE_SERVICE_TYPES_API PackageInfo {
     std::string downloadUrl;
     std::string sha256;
     int64_t sizeBytes{0};
 };
 
-struct SERVICE_EXPORT UpgradeInfo {
+struct UPGRADE_SERVICE_TYPES_API UpgradeInfo {
     std::string version;
     std::string releaseDate;
     std::string releaseNotes;
@@ -47,7 +47,7 @@ struct SERVICE_EXPORT UpgradeInfo {
     std::string minVersion;
 };
 
-struct SERVICE_EXPORT UpgradeCheckResult {
+struct UPGRADE_SERVICE_TYPES_API UpgradeCheckResult {
     bool hasUpgrade{false};
     UpgradeInfo upgradeInfo;
 };

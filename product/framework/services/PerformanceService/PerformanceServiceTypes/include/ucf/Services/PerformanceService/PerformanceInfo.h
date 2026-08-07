@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/ServiceExportMacro/ServiceExport.h>
+#include <ucf/Services/PerformanceService/PerformanceServiceTypesExport.h>
 
 namespace ucf::service {
 
 /// Memory usage information
-struct SERVICE_EXPORT MemoryInfo {
+struct PERFORMANCE_SERVICE_TYPES_API MemoryInfo {
     uint64_t physicalBytes{0};       ///< Physical memory used by process
     uint64_t virtualBytes{0};        ///< Virtual memory used by process
     uint64_t peakPhysicalBytes{0};   ///< Peak physical memory usage
@@ -18,7 +18,7 @@ struct SERVICE_EXPORT MemoryInfo {
 };
 
 /// Timing statistics for a specific operation
-struct SERVICE_EXPORT TimingStats {
+struct PERFORMANCE_SERVICE_TYPES_API TimingStats {
     std::string operationName;
     uint64_t callCount{0};
     std::chrono::milliseconds totalTime{0};
@@ -32,7 +32,7 @@ struct SERVICE_EXPORT TimingStats {
 };
 
 /// Token returned by beginTiming, used to end timing
-struct SERVICE_EXPORT TimingToken {
+struct PERFORMANCE_SERVICE_TYPES_API TimingToken {
     uint64_t id{0};
     std::string operationName;
     std::chrono::steady_clock::time_point startTime;
@@ -41,7 +41,7 @@ struct SERVICE_EXPORT TimingToken {
 };
 
 /// Complete performance snapshot
-struct SERVICE_EXPORT PerformanceSnapshot {
+struct PERFORMANCE_SERVICE_TYPES_API PerformanceSnapshot {
     std::chrono::system_clock::time_point timestamp;
     MemoryInfo memory;
     double cpuUsagePercent{0.0};
