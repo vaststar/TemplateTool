@@ -1,11 +1,11 @@
 #pragma once
 #include <memory>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/NetworkClient/LibCurlClient/LibCurlClientExport.h>
 #include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/INetworkHttpClient.h>
 
 namespace ucf::infrastructure::network::libcurl{
-class Infrastructure_EXPORT LibCurlClient final: public ucf::infrastructure::network::http::INetworkHttpClient
+class LIB_CURL_CLIENT_API LibCurlClient final: public ucf::infrastructure::network::http::INetworkHttpClient
 {
 public:
     LibCurlClient();

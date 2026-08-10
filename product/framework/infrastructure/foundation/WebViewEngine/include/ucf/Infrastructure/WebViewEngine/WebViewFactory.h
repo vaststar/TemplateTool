@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/WebViewEngine/WebViewEngineExport.h>
 
 namespace ucf::infrastructure::webview {
 
 class IWebView;
 
-[[nodiscard]] Infrastructure_EXPORT std::shared_ptr<IWebView> createWebView();
+[[nodiscard]] WEB_VIEW_ENGINE_API std::shared_ptr<IWebView> createWebView();
 
 } // namespace ucf::infrastructure::webview

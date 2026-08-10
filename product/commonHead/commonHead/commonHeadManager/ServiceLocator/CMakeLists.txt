@@ -16,7 +16,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     InvocationServiceApi
     DataWarehouseServiceApi
     NetworkServiceApi

@@ -4,14 +4,12 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/CoreFramework/CoreFrameworkExport.h>
-
 namespace ucf::service {
     class IService;
     using IServicePtr = std::shared_ptr<IService>;
 }
 namespace ucf::framework{
-class CORE_FRAMEWORK_API IServiceAccessor
+class IServiceAccessor
 {
 public:
     IServiceAccessor() = default;

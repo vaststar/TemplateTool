@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <variant>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h>
 
 namespace ucf::infrastructure::database{
 
@@ -29,7 +29,7 @@ using DBDataValue = std::variant<DBSupportedTypes::STRING, DBSupportedTypes::INT
 /**
  * @brief Wrapper for database column values supporting multiple types.
  */
-class Infrastructure_EXPORT DatabaseDataValue final
+class DATABASE_CLIENT_API DatabaseDataValue final
 {
 public:
     /// @brief Default constructor creates a NULL value

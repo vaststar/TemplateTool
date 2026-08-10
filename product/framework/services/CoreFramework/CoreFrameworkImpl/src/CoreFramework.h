@@ -3,14 +3,14 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/CoreFramework/CoreFrameworkExport.h>
+#include <ucf/CoreFramework/CoreFrameworkImplExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
 
 #include "ServiceAccessor.h"
 
 namespace ucf::framework{
-class CORE_FRAMEWORK_API CoreFramework final:  public virtual ICoreFramework,
+class CORE_FRAMEWORK_IMPL_API CoreFramework final:  public virtual ICoreFramework,
                             public virtual ServiceAccessor,
                             public virtual ucf::utilities::NotificationHelper<ICoreFrameworkCallback>,
                             public std::enable_shared_from_this<CoreFramework>

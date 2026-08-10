@@ -3,7 +3,7 @@
 #include <chrono>
 #include <functional>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/TimerScheduler/TimerSchedulerExport.h>
 #include <ucf/Infrastructure/TimerScheduler/TimerHandle.h>
 
 namespace ucf::infrastructure::scheduling {
@@ -17,7 +17,7 @@ using TimerCallback = std::function<void()>;
 // Exceptions escaping a callback are caught and logged.
 //
 // Obtain instances via TimerSchedulerFactory::create().
-class Infrastructure_EXPORT ITimerScheduler
+class TIMER_SCHEDULER_API ITimerScheduler
 {
 public:
     ITimerScheduler() = default;

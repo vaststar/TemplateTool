@@ -12,7 +12,7 @@ BuildUnitTestModule(
     TARGET_ADD_LINK_LIBRARY_PRIVATE
         StabilityServiceImpl
         ClientInfoServiceApi
-        CoreFramework
+        CoreFrameworkApi
         FakeCoreFramework
         FakeClientInfoService
         Catch2::Catch2WithMain

@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/NetworkModelTypesExport.h>
 #include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
 
 namespace ucf::infrastructure::network::http{
@@ -16,7 +16,7 @@ namespace ucf::infrastructure::network::http{
  * 
  * @note This class is non-copyable and non-movable due to PIMPL implementation.
  */
-class Infrastructure_EXPORT NetworkHttpRequest final
+class NETWORK_MODEL_TYPES_API NetworkHttpRequest final
 {
 public:
     NetworkHttpRequest();

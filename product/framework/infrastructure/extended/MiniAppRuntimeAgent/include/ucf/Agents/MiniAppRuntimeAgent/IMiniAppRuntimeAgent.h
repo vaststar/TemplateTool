@@ -6,13 +6,13 @@
 #include <ucf/Agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h>
 #include <ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgentCallback.h>
 #include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentConfig.h>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h>
 #include <ucf/Infrastructure/WebViewEngine/WebViewTypes.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf::agents {
 
-class Infrastructure_EXPORT IMiniAppRuntimeAgent
+class MINI_APP_RUNTIME_AGENT_API IMiniAppRuntimeAgent
     : public virtual ucf::utilities::INotificationHelper<IMiniAppRuntimeAgentCallback>
 {
 public:

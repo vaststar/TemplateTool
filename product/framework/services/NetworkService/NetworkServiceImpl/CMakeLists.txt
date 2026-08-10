@@ -30,7 +30,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     NetworkServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     UUIDUtils
     OSUtils
     LibCurlClient

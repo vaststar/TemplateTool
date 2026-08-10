@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/CoreFramework/CoreFrameworkCreator.h>
 
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
 
@@ -7,7 +8,7 @@
 
 TEST_CASE( "Basic Test for CoreFramework", "[CoreFrameworkTests]" )
 {
-    auto coreFramework = ucf::framework::ICoreFramework::createInstance();
+    auto coreFramework = ucf::framework::createCoreFramework();
     REQUIRE(coreFramework != nullptr);
 
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();

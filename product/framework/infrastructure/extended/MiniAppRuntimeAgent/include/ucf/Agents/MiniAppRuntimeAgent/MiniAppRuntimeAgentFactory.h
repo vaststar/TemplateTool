@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h>
 
 namespace ucf::agents {
 
 class IMiniAppRuntimeAgent;
 
-[[nodiscard]] Infrastructure_EXPORT std::shared_ptr<IMiniAppRuntimeAgent> createMiniAppRuntimeAgent();
+[[nodiscard]] MINI_APP_RUNTIME_AGENT_API std::shared_ptr<IMiniAppRuntimeAgent> createMiniAppRuntimeAgent();
 
 } // namespace ucf::agents

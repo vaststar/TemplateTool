@@ -21,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     MiniAppServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     ClientInfoServiceApi
     FilePathUtils
     JsonUtils

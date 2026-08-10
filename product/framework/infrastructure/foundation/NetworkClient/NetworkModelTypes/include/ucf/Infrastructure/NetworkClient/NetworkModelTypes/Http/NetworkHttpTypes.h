@@ -5,7 +5,7 @@
 #include <functional>
 #include <optional>
 #include <cstdint>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/NetworkModelTypesExport.h>
 
 namespace ucf::infrastructure::network::http{
 
@@ -13,7 +13,7 @@ namespace ucf::infrastructure::network::http{
  * @brief HTTP request methods.
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
  */
-enum class Infrastructure_EXPORT HTTPMethod{
+enum class NETWORK_MODEL_TYPES_API HTTPMethod{
     GET,        ///< Retrieve data from the server
     POST,       ///< Submit data to the server
     HEAD,       ///< Same as GET but without response body
@@ -52,7 +52,7 @@ enum class ResponseErrorType
 /**
  * @brief Detailed error information for failed HTTP requests.
  */
-struct Infrastructure_EXPORT ResponseErrorStruct{
+struct NETWORK_MODEL_TYPES_API ResponseErrorStruct{
     int errorCode{ 0 };                                     ///< Native error code (e.g., CURLcode)
     ResponseErrorType errorType{ResponseErrorType::NoError}; ///< Error category
     std::string errorDescription;                            ///< Human-readable error message
@@ -62,7 +62,7 @@ struct Infrastructure_EXPORT ResponseErrorStruct{
  * @brief Performance metrics for HTTP request/response cycle.
  * @note All time values are in milliseconds unless otherwise specified.
  */
-struct Infrastructure_EXPORT HttpResponseMetrics{
+struct NETWORK_MODEL_TYPES_API HttpResponseMetrics{
     int64_t requestStartTime{ 0 };  ///< Unix timestamp (ms) when request started
     int dnsLookupMs{ 0 };           ///< Time spent on DNS lookup
     int connectMs{ 0 };             ///< Time spent on TCP + TLS connection

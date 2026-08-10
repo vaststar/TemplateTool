@@ -57,7 +57,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     PerformanceServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     LoggerUtils
     JsonUtils
     SinkNotifier

@@ -2,7 +2,7 @@
 #include <memory>
 #include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
 #include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/NetworkModelTypesExport.h>
 
 namespace ucf::infrastructure::network::http{
 

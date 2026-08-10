@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentExport.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 #include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 
@@ -31,7 +31,7 @@ class INetworkProxyAgentCallback;
 /// Thread safety:
 ///   - start(), stop(), sendCommand(), and state queries are thread-safe.
 ///   - Callbacks are invoked on internal worker threads.
-class Infrastructure_EXPORT INetworkProxyAgent
+class NETWORK_PROXY_AGENT_API INetworkProxyAgent
     : public virtual ucf::utilities::INotificationHelper<INetworkProxyAgentCallback>
 {
 public:

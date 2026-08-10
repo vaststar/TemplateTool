@@ -2,7 +2,7 @@
 
 #include <string>
 #include <map>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h>
 #include <ucf/Infrastructure/DatabaseClient/DatabaseDataValue.h>
 
 namespace ucf::infrastructure::database{
@@ -10,7 +10,7 @@ namespace ucf::infrastructure::database{
 /**
  * @brief Represents a single row of database query results.
  */
-class Infrastructure_EXPORT DatabaseDataRecord final
+class DATABASE_CLIENT_API DatabaseDataRecord final
 {
 public:
     void addColumnData(const std::string& key, const DatabaseDataValue& value);

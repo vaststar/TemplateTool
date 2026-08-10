@@ -13,7 +13,7 @@ BuildUnitTestModule(
     TARGET_ADD_LINK_LIBRARY_PRIVATE
         DataWarehouseServiceApi
         ClientInfoServiceImpl
-        CoreFramework
+        CoreFrameworkApi
         FakeCoreFramework
         Catch2::Catch2WithMain
     TARGET_INCLUDE_FOLDER

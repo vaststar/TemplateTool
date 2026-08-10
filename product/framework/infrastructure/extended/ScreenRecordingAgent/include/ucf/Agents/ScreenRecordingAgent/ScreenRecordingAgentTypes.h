@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/ScreenRecordingAgent/ScreenRecordingAgentExport.h>
 #include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
 namespace ucf::agents {
@@ -24,7 +24,7 @@ using AudioDeviceInfo = ucf::utilities::screenrecording::AudioDeviceInfo;
 using AudioDeviceType = ucf::utilities::screenrecording::AudioDeviceType;
 
 /// Configuration for starting a screen recording session.
-struct Infrastructure_EXPORT RecordingAgentConfig
+struct SCREEN_RECORDING_AGENT_API RecordingAgentConfig
 {
     std::string ffmpegPath;             ///< Absolute path to ffmpeg binary
     std::string outputPath;             ///< Full output file path (e.g. /path/recording.mp4)

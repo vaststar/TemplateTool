@@ -6,7 +6,6 @@ set(MODULE_IDE_FOLDER framework/utilities/media)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/FFmpegLibUtils/FFmpegLibUtilsExport.h
     include/ucf/Utilities/FFmpegUtils/Lib/FFmpegExport.h
     include/ucf/Utilities/FFmpegUtils/Lib/FFmpegTypes.h
     include/ucf/Utilities/FFmpegUtils/Lib/FFmpegLib.h

@@ -35,7 +35,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     UpgradeServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     NetworkServiceApi
     ClientInfoServiceApi
     ArchiveUtils

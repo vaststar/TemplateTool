@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentExport.h>
 #include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
 
 namespace ucf::agents {

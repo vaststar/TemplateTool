@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/ScreenRecordingAgent/ScreenRecordingAgentExport.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 #include <ucf/Agents/ScreenRecordingAgent/ScreenRecordingAgentTypes.h>
 #include <ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgentCallback.h>
@@ -20,7 +20,7 @@ namespace ucf::agents {
 /// Thread safety:
 ///   - All public methods are thread-safe.
 ///   - Callbacks are invoked on internal worker threads.
-class Infrastructure_EXPORT IScreenRecordingAgent
+class SCREEN_RECORDING_AGENT_API IScreenRecordingAgent
     : public virtual ucf::utilities::INotificationHelper<IScreenRecordingAgentCallback>
 {
 public:

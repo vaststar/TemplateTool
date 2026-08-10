@@ -1,11 +1,11 @@
 #pragma once
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/WebViewEngine/WebViewEngineExport.h>
 #include <ucf/Infrastructure/WebViewEngine/WebViewTypes.h>
 
 namespace ucf::infrastructure::webview {
 
-class Infrastructure_EXPORT IRequestInterceptor
+class WEB_VIEW_ENGINE_API IRequestInterceptor
 {
 public:
     IRequestInterceptor() = default;

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <cstdint>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h>
 
 namespace ucf::infrastructure::database {
 
@@ -25,7 +25,7 @@ enum class DatabaseType {
  * config.password = "optional_encryption_key";  // For SQLCipher
  * @endcode
  */
-struct Infrastructure_EXPORT SqliteDatabaseConfig {
+struct DATABASE_CLIENT_API SqliteDatabaseConfig {
     std::string fileName;               ///< Path to the SQLite database file
     std::string password;               ///< Encryption password (requires SQLCipher)
     bool createIfNotExists = true;      ///< Create file if it doesn't exist
@@ -44,7 +44,7 @@ struct Infrastructure_EXPORT SqliteDatabaseConfig {
  * config.password = "secret";
  * @endcode
  */
-struct Infrastructure_EXPORT MySqlDatabaseConfig {
+struct DATABASE_CLIENT_API MySqlDatabaseConfig {
     std::string host = "localhost";     ///< Server hostname or IP
     uint16_t port = 3306;               ///< Server port
     std::string database;               ///< Database name

@@ -22,7 +22,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoServiceApi
-    CoreFramework
+    CoreFrameworkApi
     SystemUtils
 )
 

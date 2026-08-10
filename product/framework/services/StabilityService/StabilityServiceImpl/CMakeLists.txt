@@ -54,7 +54,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     StabilityServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     LoggerUtils
     FilePathUtils
     ClientInfoServiceApi

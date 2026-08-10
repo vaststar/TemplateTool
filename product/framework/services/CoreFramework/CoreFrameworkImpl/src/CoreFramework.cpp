@@ -3,6 +3,7 @@
 
 #include <ucf/Services/ServiceDeclaration/IService.h>
 
+#include <ucf/CoreFramework/CoreFrameworkCreator.h>
 #include "CoreFramework.h"
 #include "CoreframeworkLogger.h"
 
@@ -110,7 +111,7 @@ std::vector<std::string> CoreFramework::DataPrivate::getStartupParameters() cons
 ////////////////////Start CoreFramework Logic////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<ICoreFramework> ICoreFramework::createInstance()
+std::shared_ptr<ICoreFramework> createCoreFramework()
 {
     return std::make_shared<CoreFramework>();
 }

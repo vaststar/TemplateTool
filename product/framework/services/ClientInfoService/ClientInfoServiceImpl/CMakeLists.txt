@@ -26,7 +26,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseServiceApi
-    CoreFramework
+    CoreFrameworkApi
     DataWarehouseSchema
     AppVersionHeader
     LoggerUtils

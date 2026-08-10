@@ -24,7 +24,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceFactory
-    CoreFramework
+    CoreFrameworkImpl
     FilePathUtils
     SystemUtils
     LoggerUtils

@@ -32,7 +32,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoServiceImpl
     DataWarehouseServiceImpl
     InvocationServiceImpl
-    CoreFramework
+    CoreFrameworkApi
     LoggerUtils
 )
 

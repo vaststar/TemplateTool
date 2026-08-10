@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h>
 
 #include <ucf/Agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h>
 
 namespace ucf::agents {
 
-class Infrastructure_EXPORT MiniAppBridgeCore
+class MINI_APP_RUNTIME_AGENT_API MiniAppBridgeCore
 {
 public:
     MiniAppBridgeCore();

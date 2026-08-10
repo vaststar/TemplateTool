@@ -2,13 +2,13 @@
 
 #include <memory>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/TimerScheduler/TimerSchedulerExport.h>
 
 namespace ucf::infrastructure::scheduling {
 
 class ITimerScheduler;
 
-class Infrastructure_EXPORT TimerSchedulerFactory final
+class TIMER_SCHEDULER_API TimerSchedulerFactory final
 {
 public:
     TimerSchedulerFactory() = delete;

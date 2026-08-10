@@ -6,7 +6,7 @@
 #include <functional>
 #include <source_location>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h>
 
 namespace ucf::infrastructure::database{
 
@@ -51,7 +51,7 @@ using ListsOfWhereCondition = std::vector<WhereCondition>;
  *
  * @see DatabaseFactory
  */
-class Infrastructure_EXPORT IDatabaseWrapper
+class DATABASE_CLIENT_API IDatabaseWrapper
 {
 public:
     IDatabaseWrapper() = default;

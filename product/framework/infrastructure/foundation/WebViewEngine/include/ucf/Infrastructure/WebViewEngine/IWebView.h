@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/WebViewEngine/WebViewEngineExport.h>
 #include <ucf/Infrastructure/WebViewEngine/IRequestInterceptor.h>
 #include <ucf/Infrastructure/WebViewEngine/IWebViewCallback.h>
 #include <ucf/Infrastructure/WebViewEngine/WebViewInitOptions.h>
@@ -12,7 +12,7 @@
 
 namespace ucf::infrastructure::webview {
 
-class Infrastructure_EXPORT IWebView
+class WEB_VIEW_ENGINE_API IWebView
     : public virtual ucf::utilities::INotificationHelper<IWebViewCallback>
 {
 public:

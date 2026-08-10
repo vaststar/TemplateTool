@@ -29,7 +29,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     UUIDUtils
     OSUtils
     LoggerUtils

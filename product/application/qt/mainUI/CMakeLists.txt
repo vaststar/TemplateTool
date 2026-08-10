@@ -27,7 +27,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIIPCChannel
     AppRunner
     CommonHeadFramework
-    CoreFramework
+    CoreFrameworkApi
     LoggerUtils
 )
 

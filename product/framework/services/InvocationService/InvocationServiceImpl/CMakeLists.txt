@@ -21,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     InvocationServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CoreFramework
+    CoreFrameworkApi
     TimeUtils
     OSUtils
     StringUtils

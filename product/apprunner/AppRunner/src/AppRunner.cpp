@@ -6,6 +6,7 @@
 #include <ucf/Utilities/SystemUtils/SystemUtils.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
+#include <ucf/CoreFramework/CoreFrameworkCreator.h>
 #include <ucf/Services/ServiceFactory/IServiceFactory.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
@@ -177,7 +178,7 @@ void ApplicationRunner::DataPrivate::createFrameworks()
     RUNNER_LOG_INFO("===========start create Frameworks=========");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
-    mFrameworkDependencies.coreFramework = ucf::framework::ICoreFramework::createInstance();
+    mFrameworkDependencies.coreFramework = ucf::framework::createCoreFramework();
     mServiceFactory = ucf::service::IServiceFactory::createInstance(mFrameworkDependencies.coreFramework);
     mFrameworkDependencies.commonHeadFramework = commonHead::ICommonHeadFramework::createInstance(mFrameworkDependencies.coreFramework);
     RUNNER_LOG_INFO("===========================================");

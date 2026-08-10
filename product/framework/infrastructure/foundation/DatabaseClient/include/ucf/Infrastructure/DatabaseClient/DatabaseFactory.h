@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h>
 
 namespace ucf::infrastructure::database {
 
@@ -32,7 +32,7 @@ struct MySqlDatabaseConfig;
  * auto mysqlDb = DatabaseFactory::create(mysqlConfig);
  * @endcode
  */
-class Infrastructure_EXPORT DatabaseFactory final {
+class DATABASE_CLIENT_API DatabaseFactory final {
 public:
     DatabaseFactory() = delete;
 

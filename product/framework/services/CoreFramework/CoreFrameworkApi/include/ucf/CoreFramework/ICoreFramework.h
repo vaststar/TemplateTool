@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include <ucf/CoreFramework/CoreFrameworkExport.h>
 #include <ucf/CoreFramework/IServiceAccessor.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
 
@@ -14,7 +13,7 @@ namespace ucf::framework{
 
 class IService;
 
-class CORE_FRAMEWORK_API ICoreFramework: public virtual IServiceAccessor, public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
+class ICoreFramework: public virtual IServiceAccessor, public virtual ucf::utilities::INotificationHelper<ICoreFrameworkCallback>
 {
 public:
     ICoreFramework() = default;
@@ -34,8 +33,6 @@ public:
     // read them on demand. Set once during startup; reads are thread-safe.
     virtual void setStartupParameters(const std::vector<std::string>& args) = 0;
     [[nodiscard]] virtual std::vector<std::string> getStartupParameters() const = 0;
-
-    static std::shared_ptr<ICoreFramework> createInstance();
 };
 
 using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;

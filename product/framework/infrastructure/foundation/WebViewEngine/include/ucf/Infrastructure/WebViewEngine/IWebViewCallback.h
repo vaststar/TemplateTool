@@ -2,11 +2,11 @@
 
 #include <string>
 
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/WebViewEngine/WebViewEngineExport.h>
 
 namespace ucf::infrastructure::webview {
 
-class Infrastructure_EXPORT IWebViewCallback
+class WEB_VIEW_ENGINE_API IWebViewCallback
 {
 public:
     IWebViewCallback() = default;

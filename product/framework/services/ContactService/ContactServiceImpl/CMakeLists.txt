@@ -35,7 +35,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     DataWarehouseServiceApi
     DataWarehouseSchema
     ClientInfoServiceApi
-    CoreFramework
+    CoreFrameworkApi
     LoggerUtils
     ThreadPool
     UUIDUtils

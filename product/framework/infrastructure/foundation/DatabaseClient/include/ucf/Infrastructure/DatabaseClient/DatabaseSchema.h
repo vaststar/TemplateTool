@@ -2,10 +2,10 @@
 
 #include <string>
 #include <vector>
-#include <ucf/Infrastructure/InfrastructureCommonFile/InfrastructureExport.h>
+#include <ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h>
 namespace ucf::infrastructure::database{
 
-class Infrastructure_EXPORT DatabaseSchema
+class DATABASE_CLIENT_API DatabaseSchema
 {
 public:
     struct Column
