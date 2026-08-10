@@ -16,7 +16,6 @@ BuildUnitTestModule(
         FakeCoreFramework
     TARGET_INCLUDE_FOLDER
         .
-        ${CMAKE_CURRENT_SOURCE_DIR}/../CoreFrameworkImpl/src
     IDE_FOLDER
         framework/Services/unit-test
 )

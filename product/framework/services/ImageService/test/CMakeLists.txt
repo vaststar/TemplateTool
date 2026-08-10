@@ -17,7 +17,6 @@ BuildUnitTestModule(
         Catch2::Catch2WithMain
     TARGET_INCLUDE_FOLDER
         .
-        ${CMAKE_CURRENT_SOURCE_DIR}/../ImageServiceImpl/src
     IDE_FOLDER
         framework/Services/unit-test
 )
