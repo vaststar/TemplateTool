@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/TcpChannelUtils/TcpChannelUtilsExport.h>
 
 namespace ucf::utilities {
 

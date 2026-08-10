@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/UUIDUtils/UUIDUtilsExport.h>
 
 namespace ucf::utilities{
-class Utilities_EXPORT UUIDUtils final
+class UUID_UTILS_API UUIDUtils final
 {
 public:
     static std::string generateUUID();

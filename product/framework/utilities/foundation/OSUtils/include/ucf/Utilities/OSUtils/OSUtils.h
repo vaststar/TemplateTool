@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdint>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/OSUtils/OSUtilsExport.h>
 
 namespace ucf::utilities{
 enum class OSType{
@@ -22,7 +22,7 @@ struct MemoryInfo {
     uint64_t availableMemoryBytes;
 };
 
-class Utilities_EXPORT OSUtils final
+class OS_UTILS_API OSUtils final
 {
 public:
     static OSType getOSType();

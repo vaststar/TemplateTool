@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/SystemUtils/SystemUtilsExport.h>
 
 #include <filesystem>
 
@@ -8,7 +8,7 @@ namespace ucf::utilities {
 
 enum class SystemColorScheme { Light, Dark };
 
-class Utilities_EXPORT SystemUtils final
+class SYSTEM_UTILS_API SystemUtils final
 {
 public:
     static SystemColorScheme getSystemColorScheme();

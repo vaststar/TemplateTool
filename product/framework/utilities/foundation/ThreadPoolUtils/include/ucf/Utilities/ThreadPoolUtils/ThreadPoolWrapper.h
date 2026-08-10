@@ -6,7 +6,7 @@
 #include <string>
 #include <cstdint>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ThreadPoolUtils/ThreadPoolUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -29,7 +29,7 @@ enum class TaskPriority : uint32_t {
 /// pool.submit([]{ doWork(); });
 /// @endcode
 ///
-class Utilities_EXPORT ThreadPoolWrapper final {
+class THREAD_POOL_UTILS_API ThreadPoolWrapper final {
 public:
     /// 创建新的线程池
     /// @param threadCount 线程数，0 = 自动检测

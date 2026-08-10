@@ -4,7 +4,7 @@
 #include <vector>
 #include <cstdint>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ImageProcessUtils/ImageProcessUtilsExport.h>
 
 namespace ucf::utilities::imageprocess {
 
@@ -18,7 +18,7 @@ namespace ucf::utilities::imageprocess {
  * Unlike CaptureImage (BGRA, platform-native), ImageData uses RGBA byte order
  * which is the standard format for image processing and encoding.
  */
-struct Utilities_EXPORT ImageData {
+struct IMAGE_PROCESS_UTILS_API ImageData {
     std::vector<uint8_t> pixels;   ///< Pixel data in RGBA byte order
     int width = 0;
     int height = 0;
@@ -27,24 +27,24 @@ struct Utilities_EXPORT ImageData {
     bool isValid() const { return width > 0 && height > 0 && !pixels.empty(); }
 };
 
-struct Utilities_EXPORT Rect {
+struct IMAGE_PROCESS_UTILS_API Rect {
     int x = 0;
     int y = 0;
     int width = 0;
     int height = 0;
 };
 
-struct Utilities_EXPORT Point {
+struct IMAGE_PROCESS_UTILS_API Point {
     int x = 0;
     int y = 0;
 };
 
-struct Utilities_EXPORT PointF {
+struct IMAGE_PROCESS_UTILS_API PointF {
     double x = 0.0;
     double y = 0.0;
 };
 
-struct Utilities_EXPORT Color {
+struct IMAGE_PROCESS_UTILS_API Color {
     uint8_t r = 0;
     uint8_t g = 0;
     uint8_t b = 0;
@@ -66,7 +66,7 @@ enum class AnnotationType {
     Mosaic          ///< Pixelated/mosaic region (privacy)
 };
 
-struct Utilities_EXPORT Annotation {
+struct IMAGE_PROCESS_UTILS_API Annotation {
     AnnotationType type = AnnotationType::Rectangle;
     Color color = {255, 0, 0, 255};
     int thickness = 2;                      ///< Line thickness in pixels
@@ -89,7 +89,7 @@ struct Utilities_EXPORT Annotation {
 // Encoding Result
 // ============================================================================
 
-struct Utilities_EXPORT EncodeResult {
+struct IMAGE_PROCESS_UTILS_API EncodeResult {
     bool success = false;
     std::vector<uint8_t> data;              ///< Encoded image bytes (PNG/JPEG)
     std::string errorMessage;
@@ -108,7 +108,7 @@ struct Utilities_EXPORT EncodeResult {
  * extraction — all without Qt dependency. Uses OpenCV for internal processing;
  * external API exposes only plain C++ types (ImageData, Annotation, etc.).
  */
-class Utilities_EXPORT ImageProcessUtils final {
+class IMAGE_PROCESS_UTILS_API ImageProcessUtils final {
 public:
     // === Format Conversion ===
 

@@ -6,7 +6,7 @@
 #include <functional>
 #include <memory>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtilsExport.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -38,7 +38,7 @@ enum class AudioDeviceType
 /**
  * @brief Information about an available audio device
  */
-struct Utilities_EXPORT AudioDeviceInfo
+struct SCREEN_RECORDING_UTILS_API AudioDeviceInfo
 {
     std::string id;           ///< Platform-specific device identifier
     std::string displayName;  ///< User-friendly display name
@@ -49,7 +49,7 @@ struct Utilities_EXPORT AudioDeviceInfo
 /**
  * @brief Configuration for starting a recording session
  */
-struct Utilities_EXPORT RecordingConfig
+struct SCREEN_RECORDING_UTILS_API RecordingConfig
 {
     std::string ffmpegPath;             ///< Absolute path to ffmpeg binary
     std::string outputPath;             ///< Full output file path (e.g. /path/recording.mp4)
@@ -70,7 +70,7 @@ struct Utilities_EXPORT RecordingConfig
 /**
  * @brief Result returned after stopping a recording
  */
-struct Utilities_EXPORT RecordingResult
+struct SCREEN_RECORDING_UTILS_API RecordingResult
 {
     bool success = false;
     std::string outputPath;
@@ -95,7 +95,7 @@ struct Utilities_EXPORT RecordingResult
  *   auto result = recorder->stop();
  *   // recorder goes out of scope — RAII cleanup
  */
-class Utilities_EXPORT IScreenRecorder
+class SCREEN_RECORDING_UTILS_API IScreenRecorder
 {
 public:
     virtual ~IScreenRecorder() = default;

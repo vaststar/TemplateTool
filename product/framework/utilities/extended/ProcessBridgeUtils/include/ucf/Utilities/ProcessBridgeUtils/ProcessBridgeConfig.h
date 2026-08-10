@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeUtilsExport.h>
 
 namespace ucf::utilities {
 

@@ -7,12 +7,12 @@
 #include <string_view>
 
 #include <ucf/Utilities/TimeUtils/LocalDate.h>
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/TimeUtils/TimeUtilsExport.h>
 
 namespace ucf::utilities {
 
 // Date + time-of-day with millisecond precision, no timezone attached.
-class Utilities_EXPORT LocalDateTime final
+class TIME_UTILS_API LocalDateTime final
 {
 public:
     LocalDateTime() = default;
@@ -37,8 +37,8 @@ public:
     // strftime-style pattern; %f is replaced with three-digit millisecond.
     [[nodiscard]] std::string format(std::string_view pattern) const;
 
-    friend Utilities_EXPORT std::strong_ordering operator<=>(const LocalDateTime& lhs, const LocalDateTime& rhs) noexcept;
-    friend Utilities_EXPORT bool operator==(const LocalDateTime& lhs, const LocalDateTime& rhs) noexcept;
+    friend TIME_UTILS_API std::strong_ordering operator<=>(const LocalDateTime& lhs, const LocalDateTime& rhs) noexcept;
+    friend TIME_UTILS_API bool operator==(const LocalDateTime& lhs, const LocalDateTime& rhs) noexcept;
 
 private:
     LocalDate mDate{};

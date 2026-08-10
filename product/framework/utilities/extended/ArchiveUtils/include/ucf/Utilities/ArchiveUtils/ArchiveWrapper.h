@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ArchiveUtils/ArchiveUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -81,7 +81,7 @@ using ArchiveProgressCallback = std::function<bool(size_t current, size_t total,
 /// auto entries = archiver.list("archive.zip");
 /// @endcode
 ///
-class Utilities_EXPORT ArchiveWrapper final {
+class ARCHIVE_UTILS_API ArchiveWrapper final {
 public:
     ArchiveWrapper();
     ~ArchiveWrapper();
@@ -218,7 +218,7 @@ private:
 /// @param archivePath Output archive path
 /// @param filePaths Files to add
 /// @return Error code
-Utilities_EXPORT ArchiveError 
+ARCHIVE_UTILS_API ArchiveError 
 createZipArchive(const std::string& archivePath,
                  const std::vector<std::string>& filePaths);
 
@@ -226,7 +226,7 @@ createZipArchive(const std::string& archivePath,
 /// @param archivePath Archive path
 /// @param destDir Destination directory
 /// @return Error code
-Utilities_EXPORT ArchiveError 
+ARCHIVE_UTILS_API ArchiveError 
 extractZipArchive(const std::string& archivePath,
                   const std::string& destDir);
 

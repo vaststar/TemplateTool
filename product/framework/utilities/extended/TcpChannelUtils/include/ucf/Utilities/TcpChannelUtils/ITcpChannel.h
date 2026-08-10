@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/TcpChannelUtils/TcpChannelUtilsExport.h>
 #include <ucf/Utilities/TcpChannelUtils/TcpChannelConfig.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
@@ -30,7 +30,7 @@ class ITcpChannelCallback;
 ///
 ///   channel->stop();
 /// @endcode
-class Utilities_EXPORT ITcpChannel
+class TCP_CHANNEL_UTILS_API ITcpChannel
     : public virtual INotificationHelper<ITcpChannelCallback>
 {
 public:

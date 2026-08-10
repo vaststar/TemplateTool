@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/JsonUtils/JsonUtilsExport.h>
 
 #include <cstdint>
 #include <initializer_list>
@@ -26,7 +26,7 @@ enum class JsonType
 
 /// Unified JSON value type
 /// Can represent any JSON value: null, bool, number, string, array, object
-class Utilities_EXPORT JsonValue
+class JSON_UTILS_API JsonValue
 {
 public:
     // ==========================================
@@ -253,7 +253,7 @@ struct JsonValue::ParseResult
 // ==========================================
 
 /// Array element iterator
-class Utilities_EXPORT JsonValue::ConstIterator
+class JSON_UTILS_API JsonValue::ConstIterator
 {
 public:
     using iterator_category = std::forward_iterator_tag;
@@ -283,7 +283,7 @@ private:
 };
 
 /// Object key-value pair iterator
-class Utilities_EXPORT JsonValue::ObjectIterator
+class JSON_UTILS_API JsonValue::ObjectIterator
 {
 public:
     using iterator_category = std::forward_iterator_tag;
@@ -311,7 +311,7 @@ private:
 };
 
 /// Object iteration range (for for-range)
-class Utilities_EXPORT JsonValue::ObjectRange
+class JSON_UTILS_API JsonValue::ObjectRange
 {
 public:
     ObjectRange(ObjectIterator beginIt, ObjectIterator endIt);

@@ -5,7 +5,7 @@
 #include <filesystem>
 #include <type_traits>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/FilePathUtils/FilePathUtilsExport.h>
 
 namespace ucf::utilities {
 template <typename T>
@@ -18,7 +18,7 @@ concept StringLike =
     std::is_same_v<std::decay_t<T>, const char*> ||
     std::is_same_v<std::decay_t<T>, char*>;
 
-class Utilities_EXPORT FilePathUtils {
+class FILE_PATH_UTILS_API FilePathUtils {
 public:
     // === Encoding-safe path construction (UTF-8 ↔ fs::path) ===
 

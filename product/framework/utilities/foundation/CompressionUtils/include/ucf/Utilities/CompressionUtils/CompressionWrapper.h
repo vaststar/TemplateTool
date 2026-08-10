@@ -6,7 +6,7 @@
 #include <vector>
 #include <optional>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/CompressionUtils/CompressionUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -91,7 +91,7 @@ struct DecompressionResult {
 /// // Set Content-Encoding: gzip header
 /// @endcode
 ///
-class Utilities_EXPORT CompressionWrapper final {
+class COMPRESSION_UTILS_API CompressionWrapper final {
 public:
     /// Create a compressor with specified format and level
     /// @param format Compression format (default: Zstd)
@@ -231,7 +231,7 @@ private:
 /// @param format Compression format (default: Zstd)
 /// @param level Compression level (default: Default)
 /// @return CompressionResult
-Utilities_EXPORT CompressionResult 
+COMPRESSION_UTILS_API CompressionResult 
 compressData(const uint8_t* input, size_t inputSize,
              CompressionFormat format = CompressionFormat::Zstd,
              CompressionLevel level = CompressionLevel::Default);
@@ -242,7 +242,7 @@ compressData(const uint8_t* input, size_t inputSize,
 /// @param format Compression format (must match compression format)
 /// @param originalSize Original size hint (0 = auto-detect)
 /// @return DecompressionResult
-Utilities_EXPORT DecompressionResult 
+COMPRESSION_UTILS_API DecompressionResult 
 decompressData(const uint8_t* input, size_t inputSize,
                CompressionFormat format = CompressionFormat::Zstd,
                size_t originalSize = 0);
@@ -253,7 +253,7 @@ decompressData(const uint8_t* input, size_t inputSize,
 /// @param originalSize Original size hint (0 = auto-detect)
 /// @return DecompressionResult with detected format
 /// @note Detects via magic bytes: zstd (0x28 0xB5), gzip (0x1F 0x8B)
-Utilities_EXPORT DecompressionResult 
+COMPRESSION_UTILS_API DecompressionResult 
 decompressDataAuto(const uint8_t* input, size_t inputSize,
                    size_t originalSize = 0);
 
@@ -261,7 +261,7 @@ decompressDataAuto(const uint8_t* input, size_t inputSize,
 /// @param data Data pointer
 /// @param size Data size
 /// @return Detected format, or nullopt if unknown
-Utilities_EXPORT std::optional<CompressionFormat>
+COMPRESSION_UTILS_API std::optional<CompressionFormat>
 detectCompressionFormat(const uint8_t* data, size_t size);
 
 } // namespace ucf::utilities

@@ -6,7 +6,7 @@
 #include <string_view>
 #include <vector>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/Base64Utils/Base64UtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -21,7 +21,7 @@ enum class Base64Variant {
 /**
  * @brief Result of Base64 encoding operation
  */
-struct Utilities_EXPORT Base64EncodeResult {
+struct BASE64_UTILS_API Base64EncodeResult {
     bool success = false;
     std::string data;
     Base64Variant variant = Base64Variant::Standard;
@@ -34,7 +34,7 @@ struct Utilities_EXPORT Base64EncodeResult {
 /**
  * @brief Result of Base64 decoding operation
  */
-struct Utilities_EXPORT Base64DecodeResult {
+struct BASE64_UTILS_API Base64DecodeResult {
     bool success = false;
     std::vector<uint8_t> data;
     Base64Variant variant = Base64Variant::Standard;
@@ -49,7 +49,7 @@ struct Utilities_EXPORT Base64DecodeResult {
  * 
  * Supports both standard Base64 (RFC 4648) and URL-safe variant.
  */
-class Utilities_EXPORT Base64Utils {
+class BASE64_UTILS_API Base64Utils {
 public:
     //========================================
     // Encoding

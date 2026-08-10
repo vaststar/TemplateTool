@@ -4,14 +4,14 @@
 #include <vector>
 #include <cstdint>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ScreenCaptureUtils/ScreenCaptureUtilsExport.h>
 
 namespace ucf::utilities::screencapture {
 
 /**
  * @brief Raw captured image data in platform-native BGRA format
  */
-struct Utilities_EXPORT CaptureImage
+struct SCREEN_CAPTURE_UTILS_API CaptureImage
 {
     std::vector<uint8_t> pixels;   ///< Pixel data in BGRA byte order
     int width = 0;                 ///< Image width in physical pixels
@@ -28,7 +28,7 @@ struct Utilities_EXPORT CaptureImage
 /**
  * @brief Display/monitor information
  */
-struct Utilities_EXPORT DisplayInfo
+struct SCREEN_CAPTURE_UTILS_API DisplayInfo
 {
     int displayId = 0;
     std::string name;
@@ -48,7 +48,7 @@ struct Utilities_EXPORT DisplayInfo
  * Provides cross-platform screen capture via native platform APIs.
  * No Qt dependency — uses CoreGraphics (macOS), Win32 GDI (Windows), portal (Linux).
  */
-class Utilities_EXPORT ScreenCaptureUtils final
+class SCREEN_CAPTURE_UTILS_API ScreenCaptureUtils final
 {
 public:
     // === Display Enumeration ===

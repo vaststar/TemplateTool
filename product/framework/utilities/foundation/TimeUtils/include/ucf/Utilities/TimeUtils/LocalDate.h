@@ -6,12 +6,12 @@
 #include <string>
 #include <string_view>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/TimeUtils/TimeUtilsExport.h>
 
 namespace ucf::utilities {
 
 // Calendar date with no time-of-day and no timezone.
-class Utilities_EXPORT LocalDate final
+class TIME_UTILS_API LocalDate final
 {
 public:
     LocalDate() = default;
@@ -38,11 +38,11 @@ public:
     LocalDate& operator+=(std::chrono::days d) noexcept;
     LocalDate& operator-=(std::chrono::days d) noexcept;
 
-    friend Utilities_EXPORT std::strong_ordering operator<=>(const LocalDate& lhs, const LocalDate& rhs) noexcept;
-    friend Utilities_EXPORT bool operator==(const LocalDate& lhs, const LocalDate& rhs) noexcept;
-    friend Utilities_EXPORT LocalDate operator+(LocalDate lhs, std::chrono::days rhs) noexcept;
-    friend Utilities_EXPORT LocalDate operator-(LocalDate lhs, std::chrono::days rhs) noexcept;
-    friend Utilities_EXPORT std::chrono::days operator-(const LocalDate& lhs, const LocalDate& rhs) noexcept;
+    friend TIME_UTILS_API std::strong_ordering operator<=>(const LocalDate& lhs, const LocalDate& rhs) noexcept;
+    friend TIME_UTILS_API bool operator==(const LocalDate& lhs, const LocalDate& rhs) noexcept;
+    friend TIME_UTILS_API LocalDate operator+(LocalDate lhs, std::chrono::days rhs) noexcept;
+    friend TIME_UTILS_API LocalDate operator-(LocalDate lhs, std::chrono::days rhs) noexcept;
+    friend TIME_UTILS_API std::chrono::days operator-(const LocalDate& lhs, const LocalDate& rhs) noexcept;
 
 private:
     std::chrono::year_month_day mYmd{};

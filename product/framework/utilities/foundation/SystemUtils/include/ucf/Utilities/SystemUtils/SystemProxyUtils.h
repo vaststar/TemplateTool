@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/SystemUtils/SystemUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -11,7 +11,7 @@ namespace ucf::utilities {
 /// On Windows: writes to Internet Settings registry keys.
 /// On macOS:   calls networksetup for Wi-Fi / Ethernet interfaces.
 /// On Linux:   sets GNOME gsettings (best-effort).
-class Utilities_EXPORT SystemProxyUtils final
+class SYSTEM_UTILS_API SystemProxyUtils final
 {
 public:
     /// Enable the OS-level HTTP and HTTPS proxy pointing at host:port.

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/SystemUtils/SystemUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -29,7 +29,7 @@ enum class CertInstallResult
 ///
 /// @note installToTrustStore() may trigger an OS-level security prompt
 /// requiring user confirmation (Windows) or password input (macOS / Linux).
-class Utilities_EXPORT CertStoreUtils final
+class SYSTEM_UTILS_API CertStoreUtils final
 {
 public:
     /// Check whether a CA certificate file is trusted by the system.

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <memory>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeUtilsExport.h>
 #include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 #include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
 
@@ -35,7 +35,7 @@ class IProcessBridgeCallback;
 /// Thread safety:
 ///   - start(), stop(), and state queries are thread-safe.
 ///   - Callbacks are invoked on an internal monitor thread.
-class Utilities_EXPORT IProcessBridge
+class PROCESS_BRIDGE_UTILS_API IProcessBridge
     : public virtual INotificationHelper<IProcessBridgeCallback>
 {
 public:

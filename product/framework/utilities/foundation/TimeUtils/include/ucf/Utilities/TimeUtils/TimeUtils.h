@@ -5,7 +5,7 @@
 #include <ctime>
 #include <string>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/TimeUtils/TimeUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -13,7 +13,7 @@ namespace ucf::utilities {
 // LocalDate / LocalDateTime. Prefer the value types for new code;
 // the helpers here are kept for ergonomics at boundaries (time_t,
 // int64_t ms) and for duration formatting.
-class Utilities_EXPORT TimeUtils final
+class TIME_UTILS_API TimeUtils final
 {
 public:
     // ---- Current time as numeric values ----

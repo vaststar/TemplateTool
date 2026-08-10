@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h"
+#include "ucf/Utilities/QRCodeUtils/QRCodeUtilsExport.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -14,7 +14,7 @@ namespace Utilities {
  * This class provides a thin wrapper around the underlying QR code generation library,
  * allowing the implementation to be swapped without affecting client code.
  */
-class Utilities_EXPORT QRCodeUtils {
+class QRCODE_UTILS_API QRCodeUtils {
 public:
     /**
      * @brief Error correction level for QR code

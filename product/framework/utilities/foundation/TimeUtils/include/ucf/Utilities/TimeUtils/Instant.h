@@ -7,14 +7,14 @@
 #include <string>
 #include <string_view>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/TimeUtils/TimeUtilsExport.h>
 
 namespace ucf::utilities {
 
 class LocalDateTime;
 
 // Absolute moment in time, system_clock based, millisecond precision.
-class Utilities_EXPORT Instant final
+class TIME_UTILS_API Instant final
 {
 public:
     using Clock = std::chrono::system_clock;
@@ -43,11 +43,11 @@ public:
     Instant& operator+=(std::chrono::milliseconds d) noexcept;
     Instant& operator-=(std::chrono::milliseconds d) noexcept;
 
-    friend Utilities_EXPORT std::strong_ordering operator<=>(const Instant& lhs, const Instant& rhs) noexcept;
-    friend Utilities_EXPORT bool operator==(const Instant& lhs, const Instant& rhs) noexcept;
-    friend Utilities_EXPORT Instant operator+(Instant lhs, std::chrono::milliseconds rhs) noexcept;
-    friend Utilities_EXPORT Instant operator-(Instant lhs, std::chrono::milliseconds rhs) noexcept;
-    friend Utilities_EXPORT std::chrono::milliseconds operator-(const Instant& lhs, const Instant& rhs) noexcept;
+    friend TIME_UTILS_API std::strong_ordering operator<=>(const Instant& lhs, const Instant& rhs) noexcept;
+    friend TIME_UTILS_API bool operator==(const Instant& lhs, const Instant& rhs) noexcept;
+    friend TIME_UTILS_API Instant operator+(Instant lhs, std::chrono::milliseconds rhs) noexcept;
+    friend TIME_UTILS_API Instant operator-(Instant lhs, std::chrono::milliseconds rhs) noexcept;
+    friend TIME_UTILS_API std::chrono::milliseconds operator-(const Instant& lhs, const Instant& rhs) noexcept;
 
 private:
     TimePoint mTp{};

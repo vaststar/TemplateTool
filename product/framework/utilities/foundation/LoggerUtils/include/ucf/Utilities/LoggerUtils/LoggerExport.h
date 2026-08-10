@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include <ucf/Utilities/UtilitiesCommonFile/UtilitiesExport.h>
+#include <ucf/Utilities/LoggerUtils/LoggerUtilsExport.h>
 
 namespace ucf::utilities {
 
@@ -74,14 +74,14 @@ struct FileLoggerConfig : public LoggerConfig {
 //============================================
 // 日志函数声明
 //============================================
-Utilities_EXPORT void writeLog(const std::string& tag, LogLevel level,
+LOGGER_UTILS_API void writeLog(const std::string& tag, LogLevel level,
                                 const std::string& filePath, int lineNumber,
                                 const std::string& functionName,
                                 const std::string& message,
                                 const std::string& loggerName);
 
-Utilities_EXPORT void initLogger(const std::vector<std::shared_ptr<LoggerConfig>>& configs);
-Utilities_EXPORT void stopLogger();
+LOGGER_UTILS_API void initLogger(const std::vector<std::shared_ptr<LoggerConfig>>& configs);
+LOGGER_UTILS_API void stopLogger();
 
 } // namespace ucf::utilities
 
