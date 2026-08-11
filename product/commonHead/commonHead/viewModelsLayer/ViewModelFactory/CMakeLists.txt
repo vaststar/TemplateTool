@@ -18,6 +18,9 @@ set(MODULE_DEPENDENCIES_PUBLIC
 
 set(MODULE_DEPENDENCIES_PRIVATE
     ViewModels
+    InvocationViewModelImpl
+    ClientInfoViewModelImpl
+    AppUIViewModelImpl
     UpgradeViewModelImpl
     CommonHeadFramework
 )

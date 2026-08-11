@@ -31,6 +31,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIAppCore
     CommonHeadFramework
     ViewModels
+    ClientInfoViewModelApi
     LoggerUtils
 )
 

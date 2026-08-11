@@ -1,8 +1,8 @@
 #include "ViewModelFactory.h"
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/viewModels/InvocationViewModel/IInvocationViewModel.h>
-#include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
-#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
+#include <commonHead/viewModels/InvocationViewModel/InvocationViewModelCreator.h>
+#include <commonHead/viewModels/AppUIViewModel/AppUIViewModelCreator.h>
+#include <commonHead/viewModels/ClientInfoViewModel/ClientInfoViewModelCreator.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
@@ -39,17 +39,17 @@ ViewModelFactory::~ViewModelFactory()
 
 std::shared_ptr<commonHead::viewModels::IInvocationViewModel> ViewModelFactory::createInvocationViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IInvocationViewModel>();
+    return impl::createInvocationViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IAppUIViewModel> ViewModelFactory::createAppUIViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IAppUIViewModel>();
+    return impl::createAppUIViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> ViewModelFactory::createClientInfoViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IClientInfoViewModel>();
+    return impl::createClientInfoViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IContactListViewModel> ViewModelFactory::createContactListViewModelInstance() const

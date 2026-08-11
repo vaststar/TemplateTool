@@ -37,6 +37,9 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIResourcecTranslation #for translation
     UIManager
     ViewModels
+    InvocationViewModelApi
+    ClientInfoViewModelApi
+    AppUIViewModelApi
     UpgradeViewModelApi
     CommonHeadFramework
     ResourceLoader
