@@ -4,14 +4,14 @@
 #include <commonHead/viewModels/AppUIViewModel/AppUIViewModelCreator.h>
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoViewModelCreator.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
-#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonHead/viewModels/MainWindowViewModel/MainWindowViewModelCreator.h>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
-#include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
-#include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
-#include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
+#include <commonHead/viewModels/SideBarViewModel/SideBarViewModelCreator.h>
+#include <commonHead/viewModels/SettingsViewModel/SettingsViewModelCreator.h>
+#include <commonHead/viewModels/StabilityViewModel/StabilityViewModelCreator.h>
 #include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
-#include <commonHead/viewModels/JsonTreeViewModel/IJsonTreeViewModel.h>
+#include <commonHead/viewModels/JsonTreeViewModel/JsonTreeViewModelCreator.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 #include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
@@ -59,7 +59,7 @@ std::shared_ptr<commonHead::viewModels::IContactListViewModel> ViewModelFactory:
 
 std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> ViewModelFactory::createMainWindowViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IMainWindowViewModel>();
+    return impl::createMainWindowViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> ViewModelFactory::createMediaCameraViewModelInstance() const
@@ -74,17 +74,17 @@ std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> ViewModelFact
 
 std::shared_ptr<commonHead::viewModels::ISideBarViewModel> ViewModelFactory::createSideBarViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::ISideBarViewModel>();
+    return impl::createSideBarViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::ISettingsViewModel> ViewModelFactory::createSettingsViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::ISettingsViewModel>();
+    return impl::createSettingsViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IStabilityViewModel> ViewModelFactory::createStabilityViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IStabilityViewModel>();
+    return impl::createStabilityViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::createToolsViewModelInstance() const
@@ -94,7 +94,7 @@ std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::creat
 
 std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> ViewModelFactory::createJsonTreeViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IJsonTreeViewModel>();
+    return impl::createJsonTreeViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory::createNetworkProxyViewModelInstance() const

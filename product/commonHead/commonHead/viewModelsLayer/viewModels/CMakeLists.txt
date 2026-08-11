@@ -34,10 +34,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     MediaService
     ImageServiceApi
     ClientInfoServiceApi
-    InvocationServiceApi
-    ViewModelUtils
-    StabilityServiceApi
-    PerformanceServiceApi
     FeatureSettingsServiceApi
     Base64Utils
     JsonUtils
@@ -52,7 +48,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CompressionUtils
     ThreadPoolUtils
     FilePathUtils
-    magic_enum
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

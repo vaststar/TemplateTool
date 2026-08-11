@@ -22,6 +22,11 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoViewModelImpl
     AppUIViewModelImpl
     UpgradeViewModelImpl
+    MainWindowViewModelImpl
+    SideBarViewModelImpl
+    SettingsViewModelImpl
+    StabilityViewModelImpl
+    JsonTreeViewModelImpl
     CommonHeadFramework
 )
 

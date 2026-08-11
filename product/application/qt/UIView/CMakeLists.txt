@@ -41,6 +41,11 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoViewModelApi
     AppUIViewModelApi
     UpgradeViewModelApi
+    MainWindowViewModelApi
+    SideBarViewModelApi
+    SettingsViewModelApi
+    StabilityViewModelApi
+    JsonTreeViewModelApi
     CommonHeadFramework
     ResourceLoader
     Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia Qt6::Network
