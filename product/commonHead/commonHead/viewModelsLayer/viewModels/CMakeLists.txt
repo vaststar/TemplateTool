@@ -9,7 +9,6 @@ set(MODULE_HEADER_FILES "")
 set(MODULE_SOURCE_PRIVATE "")
 set(MODULE_BUILD_PRIVATE_DIR "")
 
-add_subdirectory(ViewModelCommon)
 add_subdirectory(MainWindowSuiteViewModel)
 add_subdirectory(PageViewModels)
 add_subdirectory(AppUIViewModel)
@@ -22,6 +21,7 @@ add_subdirectory(InvocationViewModel)
 set(MODULE_DEPENDENCIES_PUBLIC
     CommonHeadCommonFile
     VMNotificationHelper
+    ViewModelCore
     ResourceLoader
 )
 set(MODULE_DEPENDENCIES_PRIVATE
@@ -39,7 +39,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     StabilityServiceApi
     PerformanceServiceApi
     FeatureSettingsServiceApi
-    UpgradeServiceApi
     Base64Utils
     JsonUtils
     TimeUtils

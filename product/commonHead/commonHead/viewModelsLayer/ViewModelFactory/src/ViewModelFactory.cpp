@@ -15,7 +15,7 @@
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 #include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
-#include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
+#include <commonHead/viewModels/UpgradeViewModel/UpgradeViewModelCreator.h>
 #include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
 #include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
@@ -114,7 +114,7 @@ std::shared_ptr<commonHead::viewModels::IRecordingViewModel> ViewModelFactory::c
 
 std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> ViewModelFactory::createUpgradeViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IUpgradeViewModel>();
+    return impl::createUpgradeViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> ViewModelFactory::createMiniAppListViewModelInstance() const

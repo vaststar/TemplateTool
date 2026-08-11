@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 namespace commonHead::utilities{
 template <typename CallbackObject>
 class IVMNotificationHelper

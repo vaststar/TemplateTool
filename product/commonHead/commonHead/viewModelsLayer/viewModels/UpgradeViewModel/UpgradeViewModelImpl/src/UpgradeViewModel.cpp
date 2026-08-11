@@ -1,16 +1,22 @@
 #include "UpgradeViewModel.h"
 
+#include <utility>
+
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
+#include <commonHead/viewModels/UpgradeViewModel/UpgradeViewModelCreator.h>
 #include <ucf/Services/UpgradeService/IUpgradeService.h>
 
 namespace commonHead::viewModels{
 
-std::shared_ptr<IUpgradeViewModel> IUpgradeViewModel::createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+namespace impl{
+std::shared_ptr<IUpgradeViewModel> createUpgradeViewModel(
+    commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
     return std::make_shared<UpgradeViewModel>(commonHeadFramework);
 }
+} // namespace impl
 
 UpgradeViewModel::UpgradeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IUpgradeViewModel(commonHeadFramework)

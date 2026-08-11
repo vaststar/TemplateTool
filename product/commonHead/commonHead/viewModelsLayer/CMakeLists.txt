@@ -1,4 +1,5 @@
 
 add_subdirectory(ViewModelUtils)
+add_subdirectory(ViewModelCore)
 add_subdirectory(viewModels)
 add_subdirectory(ViewModelFactory)

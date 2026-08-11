@@ -1,18 +1,10 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <optional>
 #include <cstdint>
+#include <string>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
 #include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
 #include <commonHead/viewModels/IViewModel/IViewModel.h>
-
-namespace commonHead{
-    class ICommonHeadFramework;
-    using ICommonHeadFrameworkWptr = std::weak_ptr<ICommonHeadFramework>;
-}
 
 namespace commonHead::viewModels{
 
@@ -38,7 +30,7 @@ struct UpgradeViewInfo {
 };
 } // namespace model
 
-class COMMONHEAD_EXPORT IUpgradeViewModelCallback
+class IUpgradeViewModelCallback
 {
 public:
     IUpgradeViewModelCallback() = default;
@@ -54,7 +46,7 @@ public:
     virtual void onUpgradeError(const std::string& message) = 0;
 };
 
-class COMMONHEAD_EXPORT IUpgradeViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IUpgradeViewModelCallback>
+class IUpgradeViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IUpgradeViewModelCallback>
 {
 public:
     using IViewModel::IViewModel;
@@ -64,8 +56,6 @@ public:
     IUpgradeViewModel& operator=(IUpgradeViewModel&&) = delete;
     virtual ~IUpgradeViewModel() = default;
 public:
-    static std::shared_ptr<IUpgradeViewModel> createInstance(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
-
     virtual void checkForUpgrade() = 0;
     virtual void downloadUpgrade() = 0;
     virtual void installAndRestart() = 0;

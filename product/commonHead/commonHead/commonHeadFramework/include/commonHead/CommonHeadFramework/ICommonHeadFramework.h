@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <map>
-#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
+#include <commonHead/CommonHeadFramework/CommonHeadFrameworkExport.h>
 
 namespace ucf::framework{
     class ICoreFramework;
@@ -17,7 +17,7 @@ using IResourceLoaderPtr = std::shared_ptr<IResourceLoader>;
 class IServiceLocator;
 using IServiceLocatorPtr = std::shared_ptr<IServiceLocator>;
 
-class COMMONHEAD_EXPORT ICommonHeadFramework
+class COMMON_HEAD_FRAMEWORK_API ICommonHeadFramework
 {
 public:
     ICommonHeadFramework() = default;
