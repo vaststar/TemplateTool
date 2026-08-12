@@ -54,7 +54,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Qml
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ResourceColorLoader
+    ResourceColorLoaderApi
     LoggerUtils
 )
 

@@ -55,7 +55,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkProxyViewModelApi
     ToolsViewModelApi
     CommonHeadFramework
-    ResourceLoader
+    ResourceLoaderApi
     Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia Qt6::Network
 )
 

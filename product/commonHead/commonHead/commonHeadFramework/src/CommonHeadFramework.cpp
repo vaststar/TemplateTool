@@ -4,6 +4,7 @@
 
 #include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
+#include <commonHead/ResourceLoader/ResourceLoaderCreator.h>
 #include <commonHead/ServiceLocator/ServiceLocatorCreator.h>
 
 namespace commonHead{
@@ -15,7 +16,7 @@ std::shared_ptr<ICommonHeadFramework> ICommonHeadFramework::createInstance(ucf::
 CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mCoreframeworkWPtr(coreframework)
     , mServiceLocator(impl::createServiceLocator(coreframework))
-    , mResourceLoader(IResourceLoader::createInstance(coreframework))
+    , mResourceLoader(impl::createResourceLoader(coreframework))
 {
     COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
 }

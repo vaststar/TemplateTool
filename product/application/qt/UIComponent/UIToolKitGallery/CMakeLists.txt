@@ -36,7 +36,10 @@ target_link_libraries(${GALLERY_TARGET} PRIVATE
     UICore
     UIResourceLoaderManager
     # commonHead: real color/font/asset loaders + framework interface
-    ResourceLoader
+    ResourceLoaderApi
+    ResourceColorLoaderImpl
+    ResourceFontLoaderImpl
+    ResourceAssetLoaderImpl
     CommonHeadFramework
     # The components under test
     UIComponentBase

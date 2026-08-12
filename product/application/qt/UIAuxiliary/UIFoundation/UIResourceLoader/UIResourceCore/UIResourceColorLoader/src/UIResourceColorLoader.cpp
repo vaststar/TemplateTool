@@ -1,7 +1,7 @@
 #include <UIResourceColorLoader/UIResourceColorLoader.h>
 #include <QQmlEngine>
 
-#include <commonHead/ResourceColorLoader/model/Color.h>
+#include <commonHead/ResourceColorLoader/Color.h>
 #include <UIResourceColorLoader/UIColorState.h>
 #include <UIColorToken.h>
 

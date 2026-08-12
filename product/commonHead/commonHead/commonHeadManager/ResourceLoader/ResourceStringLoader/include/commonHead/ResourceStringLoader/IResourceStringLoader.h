@@ -2,12 +2,13 @@
 
 #include <string>
 #include <initializer_list>
+
 #include <ResourceString.h>
-#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
+#include <commonHead/ResourceStringLoader/ResourceStringLoaderExport.h>
 
 namespace commonHead{
 
-class COMMONHEAD_EXPORT IResourceStringLoader
+class RESOURCE_STRING_LOADER_API IResourceStringLoader
 {
 public:
     IResourceStringLoader() = default;

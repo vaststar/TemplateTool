@@ -52,7 +52,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     Qt6::Qml Qt6::Core
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    ResourceAssetLoader
+    ResourceAssetLoaderApi
     LoggerUtils
 )
 

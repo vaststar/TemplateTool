@@ -17,7 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC)
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadCommonFile
     CoreFrameworkApi
-    ResourceLoader
+    ResourceLoaderImpl
     ServiceLocatorImpl
 )
 

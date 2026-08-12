@@ -20,7 +20,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadCommonFile
     CommonHeadFramework
-    ResourceLoader
+    ResourceLoaderApi
     Base64Utils
     JsonUtils
     TimeUtils
