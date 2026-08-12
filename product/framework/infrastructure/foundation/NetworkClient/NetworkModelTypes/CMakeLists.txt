@@ -6,11 +6,11 @@ set(MODULE_IDE_FOLDER framework/infrastructure/foundation/NetworkClient)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Infrastructure/NetworkClient/NetworkModelTypes/NetworkModelTypesExport.h
-    include/ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h
-    include/ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h
-    include/ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h
-    include/ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/INetworkHttpClient.h
+    include/ucf/infrastructure/NetworkClient/NetworkModelTypes/NetworkModelTypesExport.h
+    include/ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h
+    include/ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h
+    include/ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h
+    include/ucf/infrastructure/NetworkClient/NetworkModelTypes/http/INetworkHttpClient.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/NetworkHttpRequest.cpp

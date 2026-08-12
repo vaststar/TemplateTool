@@ -6,13 +6,13 @@
 #include <appVersion.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
 
-#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
-#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/DataWarehouseSchema/DataWarehouseSchemas.h>
+#include <ucf/services/DataWarehouseService/DatabaseConfig.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
 
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
-#include <ucf/Utilities/SystemUtils/SystemUtils.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/SystemUtils/SystemUtils.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include "ClientInfoModel.h"
 #include "ClientInfoServiceLogger.h"

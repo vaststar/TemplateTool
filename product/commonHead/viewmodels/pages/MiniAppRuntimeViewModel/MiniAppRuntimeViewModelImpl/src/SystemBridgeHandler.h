@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <ucf/Agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h>
+#include <ucf/agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h>
 
 namespace commonHead::viewModels {
 

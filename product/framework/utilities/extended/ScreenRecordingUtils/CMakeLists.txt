@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/platform)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtilsExport.h
-    include/ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h
+    include/ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtilsExport.h
+    include/ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ScreenRecordingUtils.cpp

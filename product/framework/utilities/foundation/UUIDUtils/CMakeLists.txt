@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/UUIDUtils/UUIDUtilsExport.h
-    include/ucf/Utilities/UUIDUtils/UUIDUtils.h
+    include/ucf/utilities/UUIDUtils/UUIDUtilsExport.h
+    include/ucf/utilities/UUIDUtils/UUIDUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/UUIDUtils.cpp

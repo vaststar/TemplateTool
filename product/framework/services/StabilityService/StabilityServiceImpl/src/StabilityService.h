@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ucf/Services/StabilityService/IStabilityService.h>
-#include <ucf/Services/StabilityService/StabilityServiceImplExport.h>
+#include <ucf/services/StabilityService/IStabilityService.h>
+#include <ucf/services/StabilityService/StabilityServiceImplExport.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 #include <memory>
 #include <vector>

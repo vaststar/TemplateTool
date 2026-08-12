@@ -4,8 +4,8 @@
 
 #include "LoggerDefine.h"
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
 
 #include <chrono>
 #include <cstdlib>

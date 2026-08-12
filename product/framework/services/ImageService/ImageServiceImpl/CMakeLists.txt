@@ -2,12 +2,12 @@ include(BuildModule)
 
 # ImageServiceImpl (SHARED) - concrete implementation.
 set(MODULE_MODULE_NAME ImageServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ImageService/ImageServiceImplExport.h
-    include/ucf/Services/ImageService/ImageServiceCreator.h
+    include/ucf/services/ImageService/ImageServiceImplExport.h
+    include/ucf/services/ImageService/ImageServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ImageServiceLogger.h

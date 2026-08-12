@@ -1,13 +1,13 @@
 include(BuildModule)
 
 set(MODULE_MODULE_NAME ServiceFactory)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Services/ServiceFactory/ServiceFactoryExport.h
-    include/ucf/Services/ServiceFactory/IServiceFactory.h
+    include/ucf/services/ServiceFactory/ServiceFactoryExport.h
+    include/ucf/services/ServiceFactory/IServiceFactory.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ServiceFactoryLogger.h

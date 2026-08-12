@@ -4,7 +4,7 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
-#include <ucf/Services/UpgradeService/IUpgradeServiceCallback.h>
+#include <ucf/services/UpgradeService/IUpgradeServiceCallback.h>
 
 namespace commonHead::viewModels{
 class UpgradeViewModel: public virtual IUpgradeViewModel,

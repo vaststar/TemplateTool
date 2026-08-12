@@ -6,15 +6,15 @@
 #include <mutex>
 #include <string>
 
-#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgent.h>
-#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgentCallback.h>
-#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/agents/NetworkProxyAgent/INetworkProxyAgent.h>
+#include <ucf/agents/NetworkProxyAgent/INetworkProxyAgentCallback.h>
+#include <ucf/agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
-#include <ucf/Utilities/TcpChannelUtils/ITcpChannel.h>
-#include <ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/utilities/TcpChannelUtils/ITcpChannel.h>
+#include <ucf/utilities/TcpChannelUtils/ITcpChannelCallback.h>
 
 namespace ucf::agents {
 

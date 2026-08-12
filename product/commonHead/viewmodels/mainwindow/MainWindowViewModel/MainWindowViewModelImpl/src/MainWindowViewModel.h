@@ -4,7 +4,7 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
-#include <ucf/Services/InvocationService/IInvocationServiceCallback.h>
+#include <ucf/services/InvocationService/IInvocationServiceCallback.h>
 
 namespace commonHead::viewModels{
 class MainWindowViewModel: public virtual IMainWindowViewModel,

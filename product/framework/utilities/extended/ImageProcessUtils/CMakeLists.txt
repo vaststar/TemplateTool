@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/platform)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/ImageProcessUtils/ImageProcessUtilsExport.h
-    include/ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h
+    include/ucf/utilities/ImageProcessUtils/ImageProcessUtilsExport.h
+    include/ucf/utilities/ImageProcessUtils/ImageProcessUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ImageProcessUtils.cpp

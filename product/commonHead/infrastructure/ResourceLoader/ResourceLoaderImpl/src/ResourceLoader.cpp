@@ -11,9 +11,9 @@
 #include <commonHead/ResourceLoader/ResourceLoaderCreator.h>
 #include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/SystemUtils/SystemUtils.h>
+#include <ucf/services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/SystemUtils/SystemUtils.h>
 
 #include "LoggerDefine.h"
 

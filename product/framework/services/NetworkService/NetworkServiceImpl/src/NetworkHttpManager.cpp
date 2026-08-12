@@ -1,11 +1,11 @@
 #include "NetworkHttpManager.h"
 
-#include <ucf/Infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
 
-#include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
+#include <ucf/services/NetworkService/model/HttpDeclareTypes.h>
 
 #include "NetworkHttpHandler/NetworkHttpRestHandler.h"
 #include "NetworkHttpHandler/NetworkHttpRawHandler.h"

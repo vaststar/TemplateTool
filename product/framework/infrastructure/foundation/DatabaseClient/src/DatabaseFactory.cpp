@@ -1,8 +1,8 @@
 #include <stdexcept>
 
-#include <ucf/Infrastructure/DatabaseClient/DatabaseFactory.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseConfig.h>
-#include <ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseFactory.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseConfig.h>
+#include <ucf/infrastructure/DatabaseClient/IDatabaseWrapper.h>
 
 #include "SqliteWrapper/SqliteDatabaseWrapper.h"
 

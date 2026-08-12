@@ -2,12 +2,12 @@ include(BuildModule)
 
 # NetworkServiceImpl - concrete NetworkService implementation.
 set(MODULE_MODULE_NAME NetworkServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/NetworkService/NetworkServiceImplExport.h
-    include/ucf/Services/NetworkService/NetworkServiceCreator.h
+    include/ucf/services/NetworkService/NetworkServiceImplExport.h
+    include/ucf/services/NetworkService/NetworkServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/NetworkServiceLogger.h

@@ -1,0 +1,66 @@
+#pragma once
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <ucf/services/MediaService/MediaTypes.h>
+
+namespace ucf::service::model {
+
+enum class CameraNodeStatus {
+    Active   = 0,
+    Inactive = 1,
+    Deleted  = 2,
+    Archived = 3
+};
+
+// Shared base for camera directory tree nodes (groups and concrete cameras).
+class ICameraDirectoryNode
+{
+public:
+    virtual ~ICameraDirectoryNode() = default;
+
+    virtual std::string getNodeId() const = 0;
+    virtual std::string getDisplayName() const = 0;
+    virtual CameraNodeStatus getNodeStatus() const = 0;
+};
+using ICameraDirectoryNodePtr = std::shared_ptr<ICameraDirectoryNode>;
+
+// Group node (e.g. Local / Remote / Family / Yard).
+class ICameraGroup : public ICameraDirectoryNode
+{
+};
+using ICameraGroupPtr   = std::shared_ptr<ICameraGroup>;
+using CameraGroupArray  = std::vector<ICameraGroupPtr>;
+
+// Concrete camera node (local index / network stream).
+class ICameraEntry : public ICameraDirectoryNode
+{
+public:
+    virtual media::CameraSource getSource() const = 0;
+};
+using ICameraEntryPtr   = std::shared_ptr<ICameraEntry>;
+using CameraEntryArray  = std::vector<ICameraEntryPtr>;
+
+// Parent-child relation (only Containment is supported today).
+class ICameraDirectoryRelation
+{
+public:
+    enum class RelationType {
+        Containment = 0     // Containment: parent group -> child node (group or camera)
+    };
+
+    virtual ~ICameraDirectoryRelation() = default;
+
+    // Surrogate primary key (UUID). Empty when callers issue an "add" request and
+    // expect the service layer to mint a new id.
+    virtual std::string getRelationId() const = 0;
+    virtual std::string getParentId() const = 0;
+    virtual std::string getChildId() const = 0;
+    virtual RelationType getRelationType() const = 0;
+};
+using ICameraDirectoryRelationPtr   = std::shared_ptr<ICameraDirectoryRelation>;
+using CameraDirectoryRelationArray  = std::vector<ICameraDirectoryRelationPtr>;
+
+} // namespace ucf::service::model

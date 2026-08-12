@@ -2,12 +2,12 @@ include(BuildModule)
 
 # FeatureSettingsServiceTypes (SHARED) - public value types.
 set(MODULE_MODULE_NAME FeatureSettingsServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/FeatureSettingsService/FeatureSettingsServiceTypesExport.h
-    include/ucf/Services/FeatureSettingsService/FeatureSettingsModel.h
+    include/ucf/services/FeatureSettingsService/FeatureSettingsServiceTypesExport.h
+    include/ucf/services/FeatureSettingsService/FeatureSettingsModel.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/FeatureSettingsModel.cpp

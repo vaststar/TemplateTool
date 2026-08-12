@@ -1,6 +1,6 @@
 #include "ContactModel.h"
 
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include "ContactDBAccess.h"
 #include "ContactServiceLogger.h"

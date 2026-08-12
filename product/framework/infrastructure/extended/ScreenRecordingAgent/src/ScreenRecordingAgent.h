@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgent.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
-#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/agents/ScreenRecordingAgent/IScreenRecordingAgent.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
 #include <atomic>
 #include <condition_variable>

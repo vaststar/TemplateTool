@@ -1,0 +1,155 @@
+#pragma once
+
+#include <ucf/services/DataWarehouseSchema/DataWarehouseSchemaExport.h>
+#include <ucf/services/DataWarehouseService/DatabaseTableModel.h>
+namespace db::schema{
+struct DATA_WAREHOUSE_SCHEMA_API UserContactTable: public ucf::service::model::DBTableModel
+{
+    UserContactTable();
+    static constexpr auto TableName            = "UserContact";
+    static constexpr auto ContactIdField       = "CONTACT_ID";
+    static constexpr auto ContactFullNameField = "CONTACT_FULL_NAME";
+    static constexpr auto ContactStatusField   = "CONTACT_STATUS";
+};
+
+// CTI sub-table that hangs off UserContact and carries the per-person profile
+// fields (name parts, contact methods, gender). One row per person; CONTACT_ID
+// is the foreign key into UserContact and is the natural key here as well.
+// Rows may be absent for legacy persons that pre-date this table — readers must
+// tolerate missing sub-rows and treat them as empty profile.
+struct DATA_WAREHOUSE_SCHEMA_API PersonContactTable: public ucf::service::model::DBTableModel
+{
+    PersonContactTable();
+    static constexpr auto TableName      = "PersonContact";
+    static constexpr auto ContactIdField = "CONTACT_ID";
+    static constexpr auto FirstNameField = "FIRST_NAME";
+    static constexpr auto LastNameField  = "LAST_NAME";
+    static constexpr auto GenderField    = "GENDER";   // 0=Unspecified, 1=Male, 2=Female, 3=Other
+    static constexpr auto PhoneField     = "PHONE";
+    static constexpr auto EmailField     = "EMAIL";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API GroupContactTable: public ucf::service::model::DBTableModel
+{
+    GroupContactTable();
+    static constexpr auto TableName          = "GroupContact";
+    static constexpr auto GroupIdField       = "GROUP_ID";
+    static constexpr auto GroupNameField     = "GROUP_NAME";
+    static constexpr auto GroupTypeField     = "GROUP_TYPE";     // 见 IGroupContact::GroupType
+    static constexpr auto ContactStatusField = "CONTACT_STATUS";
+};
+
+// CTI sub-table for IGroupContact::GroupType::Department. GROUP_ID is the same id as
+// the main GroupContact row; presence of a row here means the group is a Department.
+struct DATA_WAREHOUSE_SCHEMA_API DepartmentGroupTable: public ucf::service::model::DBTableModel
+{
+    DepartmentGroupTable();
+    static constexpr auto TableName       = "DepartmentGroup";
+    static constexpr auto GroupIdField    = "GROUP_ID";
+    static constexpr auto ManagerIdField  = "MANAGER_ID";
+    static constexpr auto HeadcountField  = "HEADCOUNT";
+};
+
+// CTI sub-table for IGroupContact::GroupType::Team.
+struct DATA_WAREHOUSE_SCHEMA_API TeamGroupTable: public ucf::service::model::DBTableModel
+{
+    TeamGroupTable();
+    static constexpr auto TableName       = "TeamGroup";
+    static constexpr auto GroupIdField    = "GROUP_ID";
+    static constexpr auto TeamLeadIdField = "TEAM_LEAD_ID";
+    static constexpr auto MissionField    = "MISSION";
+};
+
+// CTI sub-table for IGroupContact::GroupType::Folder. Currently carries no typed
+// fields beyond GROUP_ID -- presence of a row serves as a positive marker that
+// the matching GroupContact main row is intentionally a folder (vs. an accidental
+// GROUP_TYPE=0 default). Reserves space for future per-folder fields (icon, color,
+// sort order, ...) so adding them later is a column-add migration rather than a
+// new-table migration.
+struct DATA_WAREHOUSE_SCHEMA_API FolderGroupTable: public ucf::service::model::DBTableModel
+{
+    FolderGroupTable();
+    static constexpr auto TableName    = "FolderGroup";
+    static constexpr auto GroupIdField = "GROUP_ID";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API ContactRelationTable: public ucf::service::model::DBTableModel
+{
+    ContactRelationTable();
+    static constexpr auto TableName         = "ContactRelation";
+    // 主键为 RELATION_ID（UUID）；(CHILD_ID, PARENT_ID, RELATION_TYPE) 作为业务唯一约束由应用层保证。
+    static constexpr auto RelationIdField   = "RELATION_ID";
+    static constexpr auto ChildIdField      = "CHILD_ID";
+    static constexpr auto ParentIdField     = "PARENT_ID";
+    static constexpr auto RelationTypeField = "RELATION_TYPE";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API SettingsTable: public ucf::service::model::DBTableModel
+{
+    SettingsTable();
+    static constexpr auto TableName = "Settings";
+    static constexpr auto KeyField = "Key";
+    static constexpr auto ValField = "Value";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API ScreenshotSettingsTable: public ucf::service::model::DBTableModel
+{
+    ScreenshotSettingsTable();
+    static constexpr auto TableName = "ScreenshotSettings";
+    static constexpr auto SettingsIdentifierField = "SETTINGS_IDENTIFIER";
+    static constexpr auto OutputDirectoryField = "OUTPUT_DIRECTORY";
+    static constexpr auto ImageFormatField = "IMAGE_FORMAT";
+    static constexpr auto JpegQualityField = "JPEG_QUALITY";
+    static constexpr auto CaptureDelayField = "CAPTURE_DELAY";
+    static constexpr auto AddTimestampField = "ADD_TIMESTAMP";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API RecordingSettingsTable: public ucf::service::model::DBTableModel
+{
+    RecordingSettingsTable();
+    static constexpr auto TableName = "RecordingSettings";
+    static constexpr auto SettingsIdentifierField = "SETTINGS_IDENTIFIER";
+    static constexpr auto OutputDirectoryField = "OUTPUT_DIRECTORY";
+    static constexpr auto VideoFormatField = "VIDEO_FORMAT";
+    static constexpr auto FramesPerSecondField = "FRAMES_PER_SECOND";
+    static constexpr auto EnableMicrophoneField = "ENABLE_MICROPHONE";
+    static constexpr auto EnableSystemAudioField = "ENABLE_SYSTEM_AUDIO";
+    static constexpr auto MicDeviceIdField = "MIC_DEVICE_ID";
+    static constexpr auto SystemAudioDeviceIdField = "SYSTEM_AUDIO_DEVICE_ID";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API CameraGroupTable: public ucf::service::model::DBTableModel
+{
+    CameraGroupTable();
+    static constexpr auto TableName        = "CameraGroup";
+    static constexpr auto NodeIdField      = "NODE_ID";
+    static constexpr auto DisplayNameField = "DISPLAY_NAME";
+    static constexpr auto NodeStatusField  = "NODE_STATUS";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API CameraTable: public ucf::service::model::DBTableModel
+{
+    CameraTable();
+    static constexpr auto TableName             = "Camera";
+    static constexpr auto NodeIdField           = "NODE_ID";
+    static constexpr auto DisplayNameField      = "DISPLAY_NAME";
+    static constexpr auto NodeStatusField       = "NODE_STATUS";
+    static constexpr auto SourceTypeField       = "SOURCE_TYPE";        // 0=Local, 1=Network
+    static constexpr auto LocalIndexField       = "LOCAL_INDEX";
+    static constexpr auto NetworkUrlField       = "NETWORK_URL";
+    static constexpr auto NetworkTransportField = "NETWORK_TRANSPORT";
+    static constexpr auto OpenTimeoutMsField    = "OPEN_TIMEOUT_MS";
+    static constexpr auto ReadTimeoutMsField    = "READ_TIMEOUT_MS";
+};
+
+struct DATA_WAREHOUSE_SCHEMA_API CameraDirectoryRelationTable: public ucf::service::model::DBTableModel
+{
+    CameraDirectoryRelationTable();
+    static constexpr auto TableName         = "CameraDirectoryRelation";
+    // 主键为 RELATION_ID（UUID）；(CHILD_ID, PARENT_ID, RELATION_TYPE) 作为业务唯一约束由应用层保证。
+    static constexpr auto RelationIdField   = "RELATION_ID";
+    static constexpr auto ChildIdField      = "CHILD_ID";
+    static constexpr auto ParentIdField     = "PARENT_ID";
+    static constexpr auto RelationTypeField = "RELATION_TYPE";
+};
+}

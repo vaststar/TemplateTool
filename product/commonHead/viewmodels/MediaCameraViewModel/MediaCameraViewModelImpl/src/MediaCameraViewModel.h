@@ -4,8 +4,8 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/MediaService/MediaTypes.h>
+#include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/MediaService/MediaTypes.h>
 
 namespace commonHead::viewModels {
 

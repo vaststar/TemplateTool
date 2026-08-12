@@ -1,4 +1,4 @@
-#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
+#include <ucf/services/DataWarehouseSchema/DataWarehouseSchemas.h>
 
 namespace db::schema{
 UserContactTable::UserContactTable()

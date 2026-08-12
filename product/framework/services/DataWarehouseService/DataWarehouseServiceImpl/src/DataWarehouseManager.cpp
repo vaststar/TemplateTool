@@ -7,17 +7,17 @@
 #include <functional>
 #include <filesystem>
 
-#include <ucf/Infrastructure/DatabaseClient/DatabaseDataValue.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseSchema.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseDataRecord.h>
-#include <ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseFactory.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseConfig.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseDataValue.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseSchema.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseDataRecord.h>
+#include <ucf/infrastructure/DatabaseClient/IDatabaseWrapper.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseFactory.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseConfig.h>
 
-#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataValue.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
-#include <ucf/Services/DataWarehouseService/DatabaseTableModel.h>
+#include <ucf/services/DataWarehouseService/DatabaseConfig.h>
+#include <ucf/services/DataWarehouseService/DatabaseDataValue.h>
+#include <ucf/services/DataWarehouseService/DatabaseDataRecord.h>
+#include <ucf/services/DataWarehouseService/DatabaseTableModel.h>
 
 #include "DataWarehouseServiceLogger.h"
 

@@ -1,7 +1,7 @@
 #include <mutex>
 #include <vector>
 
-#include <ucf/Services/ServiceDeclaration/IService.h>
+#include <ucf/services/ServiceDeclaration/IService.h>
 
 #include <ucf/CoreFramework/CoreFrameworkCreator.h>
 #include "CoreFramework.h"

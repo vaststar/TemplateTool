@@ -4,11 +4,11 @@
 #include <algorithm>
 #include <cctype>
 
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToMemoryRequest.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToMemoryResponse.h>
 
 #include "NetworkHttpTypeConverter.h"
 

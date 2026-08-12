@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/InvocationService/IInvocationService.h>
+#include <ucf/services/InvocationService/IInvocationService.h>
 
 namespace ucf::framework{
     class ICoreFramework;

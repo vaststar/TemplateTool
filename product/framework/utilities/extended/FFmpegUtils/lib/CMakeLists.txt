@@ -6,14 +6,14 @@ set(MODULE_IDE_FOLDER framework/utilities/media)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/FFmpegUtils/Lib/FFmpegExport.h
-    include/ucf/Utilities/FFmpegUtils/Lib/FFmpegTypes.h
-    include/ucf/Utilities/FFmpegUtils/Lib/FFmpegLib.h
-    include/ucf/Utilities/FFmpegUtils/Lib/FFmpegSession.h
-    include/ucf/Utilities/FFmpegUtils/Core.h
-    include/ucf/Utilities/FFmpegUtils/Core/ErrorHandler.h
-    include/ucf/Utilities/FFmpegUtils/Core/TranscodeSession.h
-    include/ucf/Utilities/FFmpegUtils/Core/MediaMetadata.h
+    include/ucf/utilities/FFmpegUtils/lib/FFmpegExport.h
+    include/ucf/utilities/FFmpegUtils/lib/FFmpegTypes.h
+    include/ucf/utilities/FFmpegUtils/lib/FFmpegLib.h
+    include/ucf/utilities/FFmpegUtils/lib/FFmpegSession.h
+    include/ucf/utilities/FFmpegUtils/Core.h
+    include/ucf/utilities/FFmpegUtils/core/ErrorHandler.h
+    include/ucf/utilities/FFmpegUtils/core/TranscodeSession.h
+    include/ucf/utilities/FFmpegUtils/core/MediaMetadata.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/FFmpegLibLogger.h

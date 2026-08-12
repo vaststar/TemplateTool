@@ -2,13 +2,13 @@ include(BuildModule)
 
 # StabilityServiceTypes (SHARED) - public value types (CrashInfo/HangInfo).
 set(MODULE_MODULE_NAME StabilityServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/StabilityService/StabilityServiceTypesExport.h
-    include/ucf/Services/StabilityService/CrashInfo.h
-    include/ucf/Services/StabilityService/HangInfo.h
+    include/ucf/services/StabilityService/StabilityServiceTypesExport.h
+    include/ucf/services/StabilityService/CrashInfo.h
+    include/ucf/services/StabilityService/HangInfo.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/StabilityTypes.cpp

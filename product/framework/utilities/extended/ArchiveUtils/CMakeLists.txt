@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/platform)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/ArchiveUtils/ArchiveUtilsExport.h
-    include/ucf/Utilities/ArchiveUtils/ArchiveWrapper.h
+    include/ucf/utilities/ArchiveUtils/ArchiveUtilsExport.h
+    include/ucf/utilities/ArchiveUtils/ArchiveWrapper.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ArchiveWrapper.cpp

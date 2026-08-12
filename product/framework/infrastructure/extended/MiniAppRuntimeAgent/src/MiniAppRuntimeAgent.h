@@ -3,10 +3,10 @@
 #include <memory>
 
 #include "MiniAppBridgeCore.h"
-#include <ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h>
-#include <ucf/Infrastructure/WebViewEngine/IWebView.h>
-#include <ucf/Infrastructure/WebViewEngine/IWebViewCallback.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h>
+#include <ucf/infrastructure/WebViewEngine/IWebView.h>
+#include <ucf/infrastructure/WebViewEngine/IWebViewCallback.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 namespace ucf::agents {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/UpgradeService/UpgradeModel.h>
+#include <ucf/services/UpgradeService/UpgradeModel.h>
 #include <atomic>
 #include <chrono>
 #include <cstdint>

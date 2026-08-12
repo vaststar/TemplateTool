@@ -5,7 +5,7 @@ set(MODULE_IDE_FOLDER framework/utilities/ipc)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/SinkNotifier/SinkNotifier.h
+    include/ucf/utilities/SinkNotifier/SinkNotifier.h
 )
 set(MODULE_INSTALL_INTERFACE_DIR include)
 

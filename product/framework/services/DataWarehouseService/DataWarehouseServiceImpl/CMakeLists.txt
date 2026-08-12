@@ -3,12 +3,12 @@ include(BuildModule)
 # DataWarehouseServiceImpl (SHARED) - the concrete service implementation.
 # Only ServiceFactory links this (to create instances via createDataWarehouseService).
 set(MODULE_MODULE_NAME DataWarehouseServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/DataWarehouseService/DataWarehouseServiceImplExport.h
-    include/ucf/Services/DataWarehouseService/DataWarehouseServiceCreator.h
+    include/ucf/services/DataWarehouseService/DataWarehouseServiceImplExport.h
+    include/ucf/services/DataWarehouseService/DataWarehouseServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DataWarehouseServiceLogger.h

@@ -2,7 +2,7 @@ include(BuildModule)
 
 # CoreFrameworkImpl (SHARED) - concrete CoreFramework + ServiceAccessor.
 set(MODULE_MODULE_NAME CoreFrameworkImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES

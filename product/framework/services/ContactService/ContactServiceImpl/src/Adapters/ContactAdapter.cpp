@@ -2,21 +2,21 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/NetworkService/http/INetworkHttpManager.h>
 
-#include <ucf/Services/NetworkService/Model/HttpRestRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
+#include <ucf/services/NetworkService/model/HttpRestRequest.h>
+#include <ucf/services/NetworkService/model/HttpRestResponse.h>
 
-#include <ucf/Services/NetworkService/Model/HttpRawRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpRawResponse.h>
+#include <ucf/services/NetworkService/model/HttpRawRequest.h>
+#include <ucf/services/NetworkService/model/HttpRawResponse.h>
 
 
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToMemoryRequest.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToMemoryResponse.h>
 
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileRequest.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileResponse.h>
 
 #include "ContactServiceLogger.h"
 

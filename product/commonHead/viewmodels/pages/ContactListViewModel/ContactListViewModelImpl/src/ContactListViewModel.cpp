@@ -2,9 +2,9 @@
 #include "LoggerDefine.h"
 
 #include <mutex>
-#include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ContactService/IContactEntities.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/services/ContactService/IContactService.h>
+#include <ucf/services/ContactService/IContactEntities.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>

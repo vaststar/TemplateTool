@@ -18,5 +18,5 @@ BuildUnitTestModule(
         .
         ${CMAKE_CURRENT_SOURCE_DIR}/../src
     IDE_FOLDER
-        framework/Services/unit-test
+        framework/services/test
 )

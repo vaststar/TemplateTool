@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Services/MediaService/MediaTypes.h>
+#include <ucf/services/MediaService/MediaTypes.h>
 
 namespace ucf::service {
 class CameraDevice

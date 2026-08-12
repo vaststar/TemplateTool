@@ -4,7 +4,7 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
-#include <ucf/Services/ClientInfoService/IClientInfoServiceCallback.h>
+#include <ucf/services/ClientInfoService/IClientInfoServiceCallback.h>
 
 namespace commonHead::viewModels{
 class AppUIViewModel: public virtual IAppUIViewModel,

@@ -2,12 +2,12 @@ include(BuildModule)
 
 # ClientInfoServiceTypes (SHARED) - public value types for ClientInfoService.
 set(MODULE_MODULE_NAME ClientInfoServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ClientInfoService/ClientInfoServiceTypesExport.h
-    include/ucf/Services/ClientInfoService/ClientInfoTypes.h
+    include/ucf/services/ClientInfoService/ClientInfoServiceTypesExport.h
+    include/ucf/services/ClientInfoService/ClientInfoTypes.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ClientInfoTypes.cpp

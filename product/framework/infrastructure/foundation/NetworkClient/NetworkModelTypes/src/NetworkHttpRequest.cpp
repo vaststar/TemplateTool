@@ -2,8 +2,8 @@
 #include <variant>
 #include <filesystem>
 
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 namespace ucf::infrastructure::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

@@ -5,7 +5,7 @@
 #include <optional>
 #include <string>
 
-#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/services/ClientInfoService/ClientInfoTypes.h>
 
 namespace ucf::framework {
     class ICoreFramework;

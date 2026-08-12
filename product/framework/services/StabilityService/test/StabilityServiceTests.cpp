@@ -3,7 +3,7 @@
 #include <trompeloeil/matcher/any.hpp>
 
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
-#include <fakes/ucf/Services/FakeClientInfoService.h>
+#include <fakes/ucf/services/FakeClientInfoService.h>
 #include "StabilityService.h"
 
 #include <filesystem>

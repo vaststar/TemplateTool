@@ -2,12 +2,12 @@ include(BuildModule)
 
 # PerformanceServiceTypes (SHARED) - public value types for PerformanceService.
 set(MODULE_MODULE_NAME PerformanceServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/PerformanceService/PerformanceServiceTypesExport.h
-    include/ucf/Services/PerformanceService/PerformanceInfo.h
+    include/ucf/services/PerformanceService/PerformanceServiceTypesExport.h
+    include/ucf/services/PerformanceService/PerformanceInfo.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/PerformanceInfo.cpp

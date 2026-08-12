@@ -1,5 +1,5 @@
 
-#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
+#include <ucf/services/DataWarehouseService/DatabaseDataRecord.h>
 
 namespace ucf::service::model{
 

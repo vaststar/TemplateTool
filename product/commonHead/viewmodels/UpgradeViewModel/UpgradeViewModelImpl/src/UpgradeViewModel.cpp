@@ -6,7 +6,7 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/UpgradeViewModel/UpgradeViewModelCreator.h>
-#include <ucf/Services/UpgradeService/IUpgradeService.h>
+#include <ucf/services/UpgradeService/IUpgradeService.h>
 
 namespace commonHead::viewModels{
 

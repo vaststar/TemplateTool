@@ -6,10 +6,10 @@ set(MODULE_IDE_FOLDER framework/infrastructure/extended)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Agents/ScreenRecordingAgent/ScreenRecordingAgentExport.h
-    include/ucf/Agents/ScreenRecordingAgent/ScreenRecordingAgentTypes.h
-    include/ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgentCallback.h
-    include/ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgent.h
+    include/ucf/agents/ScreenRecordingAgent/ScreenRecordingAgentExport.h
+    include/ucf/agents/ScreenRecordingAgent/ScreenRecordingAgentTypes.h
+    include/ucf/agents/ScreenRecordingAgent/IScreenRecordingAgentCallback.h
+    include/ucf/agents/ScreenRecordingAgent/IScreenRecordingAgent.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ScreenRecordingAgent.h

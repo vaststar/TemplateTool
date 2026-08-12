@@ -1,0 +1,70 @@
+#pragma once
+
+#include <functional>
+#include <vector>
+#include <memory>
+#include <ucf/utilities/NotificationHelper/INotificationHelper.h>
+
+#include <ucf/services/ServiceDeclaration/IService.h>
+#include <ucf/services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/services/ClientInfoService/IClientInfoServiceCallback.h>
+
+namespace ucf::framework{
+    class ICoreFramework;
+    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+}
+
+namespace ucf::service{
+
+namespace model{
+    class SqliteDBConfig;
+}
+class IClientInfoService: public IService, public virtual ucf::utilities::INotificationHelper<IClientInfoServiceCallback>
+{
+public:
+    IClientInfoService() = default;
+    IClientInfoService(const IClientInfoService&) = delete;
+    IClientInfoService(IClientInfoService&&) = delete;
+    IClientInfoService& operator=(const IClientInfoService&) = delete;
+    IClientInfoService& operator=(IClientInfoService&&) = delete;
+    virtual ~IClientInfoService() = default;
+public:
+    [[nodiscard]] virtual model::Version getApplicationVersion() const = 0;
+
+    [[nodiscard]] virtual model::ProductInfo getProductInfo() const = 0;
+
+    [[nodiscard]] virtual model::LanguageType getApplicationLanguage() const = 0;
+    virtual void setApplicationLanguage(model::LanguageType languageType) = 0;
+    [[nodiscard]] virtual std::vector<model::LanguageType> getSupportedLanguages() const = 0;
+
+    virtual void setCurrentThemeType(model::ThemeType themeType) = 0;
+    [[nodiscard]] virtual model::ThemeType getCurrentThemeType() const = 0;
+    [[nodiscard]] virtual std::vector<model::ThemeType> getSupportedThemeTypes() const = 0;
+
+    [[nodiscard]] virtual model::SqliteDBConfig getSharedDBConfig() const = 0;
+
+    [[nodiscard]] virtual std::string getAppDataStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppLogStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppCrashStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppHangStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppCacheStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getAppTempStoragePath() const = 0;
+
+    // Mini app storage roots. Per-app directories are namespaced by appId under
+    // each root. Packages and runtime data are persistent (data dir); cache is
+    // purgeable (cache dir).
+    [[nodiscard]] virtual std::string getMiniAppPackageStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getMiniAppDataStoragePath() const = 0;
+    [[nodiscard]] virtual std::string getMiniAppCacheStoragePath() const = 0;
+
+    [[nodiscard]] virtual std::string getExecutablePath() const = 0;
+    [[nodiscard]] virtual std::string getInstallDirectory() const = 0;
+
+    virtual void initializeAppClient() = 0;
+
+    // True once language/theme have been populated from the DB. Late subscribers
+    // should check this on registration; if true, read settings directly because
+    // onClientInfoReady will not be re-fired.
+    [[nodiscard]] virtual bool isClientInfoReady() const = 0;
+};
+}

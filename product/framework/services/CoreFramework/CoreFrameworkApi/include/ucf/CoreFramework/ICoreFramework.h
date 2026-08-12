@@ -7,7 +7,7 @@
 #include <ucf/CoreFramework/IServiceAccessor.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
 
-#include <ucf/Utilities/NotificationHelper/INotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf::framework{
 

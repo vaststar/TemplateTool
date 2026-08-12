@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/Base64Utils/Base64UtilsExport.h
-    include/ucf/Utilities/Base64Utils/Base64Utils.h
+    include/ucf/utilities/Base64Utils/Base64UtilsExport.h
+    include/ucf/utilities/Base64Utils/Base64Utils.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/Base64Utils.cpp

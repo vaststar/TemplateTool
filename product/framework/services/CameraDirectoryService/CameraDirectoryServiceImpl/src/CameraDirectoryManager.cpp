@@ -1,8 +1,8 @@
 #include "CameraDirectoryManager.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/DataWarehouseService/DatabaseConfig.h>
 
 #include "CameraDirectoryModel.h"
 #include "CameraDirectoryServiceLogger.h"

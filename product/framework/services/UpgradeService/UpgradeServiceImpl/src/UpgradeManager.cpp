@@ -5,8 +5,8 @@
 #include "install/UpgradeInstallManager.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/OSUtils/OSUtils.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/OSUtils/OSUtils.h>
 
 namespace ucf::service {
 

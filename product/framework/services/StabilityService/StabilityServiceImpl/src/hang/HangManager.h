@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/StabilityService/HangInfo.h>
+#include <ucf/services/StabilityService/HangInfo.h>
 
 #include <atomic>
 #include <chrono>

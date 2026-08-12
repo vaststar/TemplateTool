@@ -1,4 +1,4 @@
-#include <fakes/ucf/Services/FakeFeatureSettingsService.h>
+#include <fakes/ucf/services/FakeFeatureSettingsService.h>
 
 namespace ucf::service::fakes {
 

@@ -1,7 +1,7 @@
 #include "AppUIViewModel.h"
 #include "LoggerDefine.h"
 
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>

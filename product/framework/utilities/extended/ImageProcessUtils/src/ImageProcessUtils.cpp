@@ -1,5 +1,5 @@
-#include <ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h>
-#include <ucf/Utilities/Base64Utils/Base64Utils.h>
+#include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
+#include <ucf/utilities/Base64Utils/Base64Utils.h>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>

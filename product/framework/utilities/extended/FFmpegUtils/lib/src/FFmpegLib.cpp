@@ -1,5 +1,5 @@
-#include <ucf/Utilities/FFmpegUtils/Lib/FFmpegLib.h>
-#include <ucf/Utilities/FFmpegUtils/Lib/FFmpegSession.h>
+#include <ucf/utilities/FFmpegUtils/lib/FFmpegLib.h>
+#include <ucf/utilities/FFmpegUtils/lib/FFmpegSession.h>
 
 #include <algorithm>
 #include <cctype>

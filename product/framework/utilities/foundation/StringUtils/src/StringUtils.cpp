@@ -1,6 +1,6 @@
 
-#include <ucf/Utilities/StringUtils/StringUtils.h>
-#include <ucf/Utilities/StringUtils/UnicodeString.h>
+#include <ucf/utilities/StringUtils/StringUtils.h>
+#include <ucf/utilities/StringUtils/UnicodeString.h>
 
 #include <algorithm>
 #include <vector>

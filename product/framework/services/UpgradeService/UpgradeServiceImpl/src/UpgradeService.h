@@ -4,10 +4,10 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/UpgradeService/IUpgradeService.h>
-#include <ucf/Services/UpgradeService/UpgradeServiceImplExport.h>
+#include <ucf/services/UpgradeService/IUpgradeService.h>
+#include <ucf/services/UpgradeService/UpgradeServiceImplExport.h>
 
 #include "UpgradeManager.h"
 

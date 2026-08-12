@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Utilities/TcpChannelUtils/ITcpChannel.h>
-#include <ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h>
-#include <ucf/Utilities/TcpChannelUtils/TcpChannelConfig.h>
+#include <ucf/utilities/TcpChannelUtils/ITcpChannel.h>
+#include <ucf/utilities/TcpChannelUtils/ITcpChannelCallback.h>
+#include <ucf/utilities/TcpChannelUtils/TcpChannelConfig.h>
 
 #include <atomic>
 #include <chrono>

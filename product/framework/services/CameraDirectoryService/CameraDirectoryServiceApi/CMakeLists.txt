@@ -2,12 +2,12 @@ include(BuildInterface)
 
 # CameraDirectoryServiceApi (INTERFACE) - pure interfaces + entity interfaces.
 set(MODULE_MODULE_NAME CameraDirectoryServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/CameraDirectoryService/ICameraDirectoryService.h
-    include/ucf/Services/CameraDirectoryService/ICameraDirectoryServiceCallback.h
+    include/ucf/services/CameraDirectoryService/ICameraDirectoryService.h
+    include/ucf/services/CameraDirectoryService/ICameraDirectoryServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/VersionUtils/VersionUtilsExport.h
-    include/ucf/Utilities/VersionUtils/Version.h
+    include/ucf/utilities/VersionUtils/VersionUtilsExport.h
+    include/ucf/utilities/VersionUtils/Version.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/Version.cpp

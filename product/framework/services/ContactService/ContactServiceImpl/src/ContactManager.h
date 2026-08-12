@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+#include <ucf/utilities/SinkNotifier/SinkNotifier.h>
 
 #include "ContactEntities.h"
 #include "ContactNotificationSink.h"

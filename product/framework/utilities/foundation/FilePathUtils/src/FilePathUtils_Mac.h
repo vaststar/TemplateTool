@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 namespace ucf::utilities{
 class FilePathUtils_Mac final

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
+#include <ucf/utilities/LoggerUtils/LoggerExport.h>
 
 static inline const char* CommonHeadFrameworkLoggerName = ucf::utilities::kAppLoggerName;
 static inline const char* CommonHeadFrameworkLoggerTag = "CommonHeadFramework";

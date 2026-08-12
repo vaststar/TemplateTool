@@ -1,7 +1,7 @@
 #include "StabilityViewModel.h"
 #include "LoggerDefine.h"
 
-#include <ucf/Services/StabilityService/IStabilityService.h>
+#include <ucf/services/StabilityService/IStabilityService.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/StabilityViewModel/StabilityViewModelCreator.h>

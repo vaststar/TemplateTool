@@ -5,9 +5,9 @@
 #include <mutex>
 #include <thread>
 
-#include <ucf/Utilities/TcpChannelUtils/ITcpChannel.h>
-#include <ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/TcpChannelUtils/ITcpChannel.h>
+#include <ucf/utilities/TcpChannelUtils/ITcpChannelCallback.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include "SocketHelper.h"
 

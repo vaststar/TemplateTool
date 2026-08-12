@@ -1,4 +1,4 @@
-#include <ucf/Utilities/StringUtils/UnicodeString.h>
+#include <ucf/utilities/StringUtils/UnicodeString.h>
 #include "UnicodeStringEncoding.h"
 
 #include <stdexcept>

@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Utilities/StringUtils/UnicodeString.h>
+#include <ucf/utilities/StringUtils/UnicodeString.h>
 
 #include "InterceptorDispatcher.h"
 

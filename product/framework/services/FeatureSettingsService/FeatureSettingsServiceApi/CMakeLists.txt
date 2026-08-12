@@ -2,12 +2,12 @@ include(BuildInterface)
 
 # FeatureSettingsServiceApi (INTERFACE) - pure interface + value types.
 set(MODULE_MODULE_NAME FeatureSettingsServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/FeatureSettingsService/IFeatureSettingsService.h
-    include/ucf/Services/FeatureSettingsService/IFeatureSettingsServiceCallback.h
+    include/ucf/services/FeatureSettingsService/IFeatureSettingsService.h
+    include/ucf/services/FeatureSettingsService/IFeatureSettingsServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

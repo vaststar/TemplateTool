@@ -3,7 +3,7 @@
 /// @file UpgradeEvents.h
 /// @brief Event types for the Upgrade FSM.
 
-#include <ucf/Services/UpgradeService/UpgradeModel.h>
+#include <ucf/services/UpgradeService/UpgradeModel.h>
 #include <cstdint>
 #include <string>
 

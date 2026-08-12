@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include <ResourceString.h>
-#include <ucf/Services/MiniAppService/IMiniAppService.h>
+#include <ucf/services/MiniAppService/IMiniAppService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>

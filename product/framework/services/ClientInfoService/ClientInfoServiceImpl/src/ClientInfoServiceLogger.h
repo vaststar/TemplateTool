@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
+#include <ucf/utilities/LoggerUtils/LoggerExport.h>
 
 static inline constexpr auto LOGGER_NAME = ucf::utilities::kAppLoggerName;
 static inline constexpr auto LOGGER_TAG = "ClientInfoService";

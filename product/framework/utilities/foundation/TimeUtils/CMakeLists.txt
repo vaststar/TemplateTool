@@ -6,11 +6,11 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/TimeUtils/TimeUtilsExport.h
-    include/ucf/Utilities/TimeUtils/TimeUtils.h
-    include/ucf/Utilities/TimeUtils/Instant.h
-    include/ucf/Utilities/TimeUtils/LocalDate.h
-    include/ucf/Utilities/TimeUtils/LocalDateTime.h
+    include/ucf/utilities/TimeUtils/TimeUtilsExport.h
+    include/ucf/utilities/TimeUtils/TimeUtils.h
+    include/ucf/utilities/TimeUtils/Instant.h
+    include/ucf/utilities/TimeUtils/LocalDate.h
+    include/ucf/utilities/TimeUtils/LocalDateTime.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/TimeUtils.cpp

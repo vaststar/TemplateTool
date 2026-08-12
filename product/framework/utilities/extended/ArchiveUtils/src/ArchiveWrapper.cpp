@@ -1,7 +1,7 @@
-#include <ucf/Utilities/ArchiveUtils/ArchiveWrapper.h>
+#include <ucf/utilities/ArchiveUtils/ArchiveWrapper.h>
 #include "ArchiveUtilsLogger.h"
 
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <mz.h>
 #include <mz_os.h>

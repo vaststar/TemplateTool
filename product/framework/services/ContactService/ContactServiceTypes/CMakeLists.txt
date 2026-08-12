@@ -4,12 +4,12 @@ include(BuildModule)
 # Currently the contact entity interfaces (pure-virtual, header-only); a stub TU
 # carries an exported anchor so the DLL has an import library.
 set(MODULE_MODULE_NAME ContactServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ContactService/ContactServiceTypesExport.h
-    include/ucf/Services/ContactService/IContactEntities.h
+    include/ucf/services/ContactService/ContactServiceTypesExport.h
+    include/ucf/services/ContactService/IContactEntities.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ContactTypes.cpp

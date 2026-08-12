@@ -1,8 +1,8 @@
 #include "MiniAppService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/MiniAppService/MiniAppServiceCreator.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/MiniAppService/MiniAppServiceCreator.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 #include "MiniAppManager.h"
 #include "MiniAppServiceLogger.h"

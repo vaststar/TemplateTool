@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 namespace ucf::framework{

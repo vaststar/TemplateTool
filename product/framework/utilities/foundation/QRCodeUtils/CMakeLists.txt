@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/platform)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/QRCodeUtils/QRCodeUtilsExport.h
-    include/ucf/Utilities/QRCodeUtils/QRCodeUtils.h
+    include/ucf/utilities/QRCodeUtils/QRCodeUtilsExport.h
+    include/ucf/utilities/QRCodeUtils/QRCodeUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/QRCodeUtils.cpp

@@ -6,13 +6,13 @@ set(MODULE_IDE_FOLDER framework/infrastructure/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Infrastructure/DatabaseClient/DatabaseClientExport.h
-    include/ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h
-    include/ucf/Infrastructure/DatabaseClient/DatabaseConfig.h
-    include/ucf/Infrastructure/DatabaseClient/DatabaseFactory.h
-    include/ucf/Infrastructure/DatabaseClient/DatabaseSchema.h
-    include/ucf/Infrastructure/DatabaseClient/DatabaseDataValue.h
-    include/ucf/Infrastructure/DatabaseClient/DatabaseDataRecord.h
+    include/ucf/infrastructure/DatabaseClient/DatabaseClientExport.h
+    include/ucf/infrastructure/DatabaseClient/IDatabaseWrapper.h
+    include/ucf/infrastructure/DatabaseClient/DatabaseConfig.h
+    include/ucf/infrastructure/DatabaseClient/DatabaseFactory.h
+    include/ucf/infrastructure/DatabaseClient/DatabaseSchema.h
+    include/ucf/infrastructure/DatabaseClient/DatabaseDataValue.h
+    include/ucf/infrastructure/DatabaseClient/DatabaseDataRecord.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DatabaseClientLogger.h

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
 #ifdef __linux__
 

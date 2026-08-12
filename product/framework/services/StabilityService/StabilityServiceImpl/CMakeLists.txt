@@ -2,12 +2,12 @@ include(BuildModule)
 
 # StabilityServiceImpl (SHARED) - concrete implementation with crash/hang handlers.
 set(MODULE_MODULE_NAME StabilityServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/StabilityService/StabilityServiceImplExport.h
-    include/ucf/Services/StabilityService/StabilityServiceCreator.h
+    include/ucf/services/StabilityService/StabilityServiceImplExport.h
+    include/ucf/services/StabilityService/StabilityServiceCreator.h
 )
 
 set(MODULE_SOURCE_PRIVATE

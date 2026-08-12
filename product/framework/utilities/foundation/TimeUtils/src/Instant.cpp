@@ -1,6 +1,6 @@
-#include <ucf/Utilities/TimeUtils/Instant.h>
+#include <ucf/utilities/TimeUtils/Instant.h>
 
-#include <ucf/Utilities/TimeUtils/LocalDateTime.h>
+#include <ucf/utilities/TimeUtils/LocalDateTime.h>
 
 #include <charconv>
 #include <chrono>

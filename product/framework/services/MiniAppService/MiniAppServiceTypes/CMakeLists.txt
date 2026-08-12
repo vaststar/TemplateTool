@@ -2,12 +2,12 @@ include(BuildModule)
 
 # MiniAppServiceTypes (SHARED) - public value types for MiniAppService.
 set(MODULE_MODULE_NAME MiniAppServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/MiniAppService/MiniAppServiceTypesExport.h
-    include/ucf/Services/MiniAppService/MiniAppManifest.h
+    include/ucf/services/MiniAppService/MiniAppServiceTypesExport.h
+    include/ucf/services/MiniAppService/MiniAppManifest.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/MiniAppManifest.cpp

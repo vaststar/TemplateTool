@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
+#include <ucf/services/NetworkService/model/HttpRestResponse.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

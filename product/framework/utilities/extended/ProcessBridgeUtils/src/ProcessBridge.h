@@ -5,10 +5,10 @@
 #include <mutex>
 #include <thread>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
-#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include "ProcessLauncher.h"
 

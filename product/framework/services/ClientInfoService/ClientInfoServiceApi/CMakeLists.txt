@@ -2,12 +2,12 @@ include(BuildInterface)
 
 # ClientInfoServiceApi (INTERFACE) - pure interfaces + value types, no binary.
 set(MODULE_MODULE_NAME ClientInfoServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ClientInfoService/IClientInfoService.h
-    include/ucf/Services/ClientInfoService/IClientInfoServiceCallback.h
+    include/ucf/services/ClientInfoService/IClientInfoService.h
+    include/ucf/services/ClientInfoService/IClientInfoServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

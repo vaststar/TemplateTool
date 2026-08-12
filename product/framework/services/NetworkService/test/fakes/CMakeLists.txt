@@ -1,7 +1,7 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC
-    include/fakes/ucf/Services/FakeNetworkService.h
+    include/fakes/ucf/services/FakeNetworkService.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -26,5 +26,5 @@ BuildModule(
     TARGET_INCLUDE_DIRECTORIES_PRIVATE
         src
     IDE_FOLDER
-        framework/Services/unit-test
+        framework/services/test
 )

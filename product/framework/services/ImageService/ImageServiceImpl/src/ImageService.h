@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <string>
-#include <ucf/Services/ImageService/IImageService.h>
-#include <ucf/Services/ImageService/ImageServiceImplExport.h>
+#include <ucf/services/ImageService/IImageService.h>
+#include <ucf/services/ImageService/ImageServiceImplExport.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 namespace ucf::framework{

@@ -1,5 +1,5 @@
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToMemoryRequest.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

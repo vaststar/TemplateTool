@@ -1,13 +1,13 @@
 #include "ScreenshotViewModel.h"
 
-#include <ucf/Utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
-#include <ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h>
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
+#include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
+#include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/ScreenshotViewModel/ScreenshotViewModelCreator.h>
-#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
 
 #include <chrono>
 #include <cmath>

@@ -6,10 +6,10 @@ set(MODULE_IDE_FOLDER framework/infrastructure/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Infrastructure/TimerScheduler/TimerSchedulerExport.h
-    include/ucf/Infrastructure/TimerScheduler/TimerHandle.h
-    include/ucf/Infrastructure/TimerScheduler/ITimerScheduler.h
-    include/ucf/Infrastructure/TimerScheduler/TimerSchedulerFactory.h
+    include/ucf/infrastructure/TimerScheduler/TimerSchedulerExport.h
+    include/ucf/infrastructure/TimerScheduler/TimerHandle.h
+    include/ucf/infrastructure/TimerScheduler/ITimerScheduler.h
+    include/ucf/infrastructure/TimerScheduler/TimerSchedulerFactory.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/TimerSchedulerLogger.h

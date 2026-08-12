@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
-#include <ucf/Services/ClientInfoService/IClientInfoServiceCallback.h>
+#include <ucf/services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/services/ClientInfoService/IClientInfoServiceCallback.h>
 
 namespace ucf::service {
 

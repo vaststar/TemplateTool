@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/NetworkService/INetworkServiceCallback.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/NetworkService/INetworkServiceCallback.h>
 
 namespace ucf::service{
 class NetworkService final: public virtual INetworkService,

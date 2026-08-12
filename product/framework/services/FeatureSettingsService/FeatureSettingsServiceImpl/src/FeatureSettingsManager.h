@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include <mutex>
-#include <ucf/Services/FeatureSettingsService/FeatureSettingsModel.h>
+#include <ucf/services/FeatureSettingsService/FeatureSettingsModel.h>
 
 namespace ucf::framework {
     class ICoreFramework;

@@ -4,12 +4,12 @@ include(BuildModule)
 # Currently header-only aggregates + one anchor symbol (see src/ImageTypes.cpp);
 # grows an out-of-line implementation when the types gain compiled behaviour.
 set(MODULE_MODULE_NAME ImageServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ImageService/ImageServiceTypesExport.h
-    include/ucf/Services/ImageService/ImageTypes.h
+    include/ucf/services/ImageService/ImageServiceTypesExport.h
+    include/ucf/services/ImageService/ImageTypes.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ImageTypes.cpp

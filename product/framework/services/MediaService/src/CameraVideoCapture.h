@@ -8,8 +8,8 @@
 #include <mutex>
 #include <vector>
 
-#include <ucf/Services/MediaService/MediaTypes.h>
-#include <ucf/Services/MediaService/IMediaService.h>
+#include <ucf/services/MediaService/MediaTypes.h>
+#include <ucf/services/MediaService/IMediaService.h>
 
 namespace ucf::service {
 class CameraDevice;

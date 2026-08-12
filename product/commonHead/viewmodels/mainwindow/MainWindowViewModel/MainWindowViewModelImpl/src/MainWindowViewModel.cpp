@@ -5,7 +5,7 @@
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/ViewModelUtils/LogOperationUtils.h>
 #include <commonHead/viewModels/MainWindowViewModel/MainWindowViewModelCreator.h>
-#include <ucf/Services/InvocationService/IInvocationService.h>
+#include <ucf/services/InvocationService/IInvocationService.h>
 
 namespace commonHead::viewModels{
 

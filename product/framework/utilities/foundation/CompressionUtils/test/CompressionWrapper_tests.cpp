@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <ucf/Utilities/CompressionUtils/CompressionWrapper.h>
+#include <ucf/utilities/CompressionUtils/CompressionWrapper.h>
 
 #include <random>
 #include <string>

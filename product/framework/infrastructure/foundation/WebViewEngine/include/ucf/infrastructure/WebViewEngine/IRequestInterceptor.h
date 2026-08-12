@@ -1,0 +1,24 @@
+#pragma once
+
+#include <ucf/infrastructure/WebViewEngine/WebViewEngineExport.h>
+#include <ucf/infrastructure/WebViewEngine/WebViewTypes.h>
+
+namespace ucf::infrastructure::webview {
+
+class WEB_VIEW_ENGINE_API IRequestInterceptor
+{
+public:
+    IRequestInterceptor() = default;
+    IRequestInterceptor(const IRequestInterceptor&) = delete;
+    IRequestInterceptor(IRequestInterceptor&&) = delete;
+    IRequestInterceptor& operator=(const IRequestInterceptor&) = delete;
+    IRequestInterceptor& operator=(IRequestInterceptor&&) = delete;
+    virtual ~IRequestInterceptor() = default;
+
+public:
+    [[nodiscard]] virtual int priority() const { return 0; }
+    [[nodiscard]] virtual bool match(const WebRequest& request) const = 0;
+    [[nodiscard]] virtual InterceptResult intercept(const WebRequest& request) = 0;
+};
+
+} // namespace ucf::infrastructure::webview

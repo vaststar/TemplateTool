@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ucf/Services/PerformanceService/PerformanceServiceImplExport.h>
-#include <ucf/Services/PerformanceService/PerformanceInfo.h>
+#include <ucf/services/PerformanceService/PerformanceServiceImplExport.h>
+#include <ucf/services/PerformanceService/PerformanceInfo.h>
 
 #include <atomic>
 #include <chrono>

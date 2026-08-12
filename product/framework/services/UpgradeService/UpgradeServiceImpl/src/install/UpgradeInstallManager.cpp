@@ -3,10 +3,10 @@
 #include "../UpgradeServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/ArchiveUtils/ArchiveWrapper.h>
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/ArchiveUtils/ArchiveWrapper.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 #include <csignal>
 #include <filesystem>

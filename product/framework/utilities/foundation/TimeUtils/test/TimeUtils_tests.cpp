@@ -1,9 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ucf/Utilities/TimeUtils/Instant.h"
-#include "ucf/Utilities/TimeUtils/LocalDate.h"
-#include "ucf/Utilities/TimeUtils/LocalDateTime.h"
-#include "ucf/Utilities/TimeUtils/TimeUtils.h"
+#include "ucf/utilities/TimeUtils/Instant.h"
+#include "ucf/utilities/TimeUtils/LocalDate.h"
+#include "ucf/utilities/TimeUtils/LocalDateTime.h"
+#include "ucf/utilities/TimeUtils/TimeUtils.h"
 
 #include <chrono>
 #include <thread>

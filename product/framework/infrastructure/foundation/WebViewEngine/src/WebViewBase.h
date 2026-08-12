@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Infrastructure/WebViewEngine/IWebView.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/infrastructure/WebViewEngine/IWebView.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include "InterceptorDispatcher.h"
 

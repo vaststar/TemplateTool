@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h>
+#include <ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h>
 
-#include <ucf/Agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h>
+#include <ucf/agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h>
 
 namespace ucf::agents {
 

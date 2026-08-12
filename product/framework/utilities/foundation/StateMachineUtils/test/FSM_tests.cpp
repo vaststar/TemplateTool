@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Utilities/StateMachineUtils/StateMachine.h>
+#include <ucf/utilities/StateMachineUtils/StateMachine.h>
 
 #include <array>
 #include <string>

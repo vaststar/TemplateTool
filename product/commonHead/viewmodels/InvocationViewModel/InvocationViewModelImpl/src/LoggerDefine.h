@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/LoggerUtils/LoggerExport.h>
+#include <ucf/utilities/LoggerUtils/LoggerExport.h>
 
 static inline const char* InvocationViewModelLoggerName = ucf::utilities::kAppLoggerName;
 static inline const char* InvocationViewModelLoggerTag = "InvocationViewModel";

@@ -1,10 +1,10 @@
 #include "ContactService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ContactService/ContactServiceCreator.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/ContactService/ContactServiceCreator.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 #include "ContactManager.h"
 #include "ContactServiceLogger.h"

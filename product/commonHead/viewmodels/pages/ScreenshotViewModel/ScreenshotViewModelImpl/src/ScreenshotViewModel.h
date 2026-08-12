@@ -3,7 +3,7 @@
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
 
-#include <ucf/Utilities/ImageProcessUtils/ImageProcessUtils.h>
+#include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
 
 #include <mutex>
 

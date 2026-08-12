@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-#include <ucf/Services/ContactService/IContactEntities.h>
+#include <ucf/services/ContactService/IContactEntities.h>
 
 namespace commonHead::viewModels::model{
 

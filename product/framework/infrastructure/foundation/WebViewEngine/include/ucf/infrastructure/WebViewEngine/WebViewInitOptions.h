@@ -1,0 +1,38 @@
+#pragma once
+
+#include <optional>
+#include <string>
+#include <vector>
+
+#include <ucf/infrastructure/WebViewEngine/WebViewTypes.h>
+
+namespace ucf::infrastructure::webview {
+
+struct WebViewInitOptions
+{
+    // Custom schemes routed to the request-interceptor chain (e.g. "app",
+    // "myapp"). Used both for local resource loading and for catching
+    // custom-scheme redirects (SSO callbacks like myapp://callback?code=...).
+    // Reserved schemes (http/https/file/ftp/ws/wss/about/data/blob/javascript)
+    // are rejected. Must be provided at init; schemes cannot be added after the
+    // web view is created. Empty means the backend default ("app").
+    std::vector<std::string> customSchemes;
+    std::vector<std::string> documentStartScripts;
+    std::vector<std::string> scriptChannels;
+    // Full User-Agent override. std::nullopt keeps the backend default UA.
+    std::optional<std::string> userAgentOverride;
+    // Writable directory where the backend stores its per-instance browsing
+    // data (cache, cookies, local storage). Required by WebView2 on Windows;
+    // its default location sits next to the executable, which is typically not
+    // writable (e.g. under "Program Files"). Ignored by backends that manage
+    // their own data store (WKWebView, stub). Empty means the backend default.
+    std::string userDataFolder;
+    bool allowPopups = false;
+    // Declarative network access policy enforced at the network layer. When set,
+    // the engine compiles the rules during initialize() and only reports
+    // onWebViewReady after they are installed (fail-closed on error).
+    // std::nullopt means no restriction. Applies only to remote protocols.
+    std::optional<NetworkAccessPolicy> networkPolicy;
+};
+
+} // namespace ucf::infrastructure::webview

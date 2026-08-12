@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Services/MediaService/MediaTypes.h>
+#include <ucf/services/MediaService/MediaTypes.h>
 #include <vector>
 
 namespace ucf::service::media {

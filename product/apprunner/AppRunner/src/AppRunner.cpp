@@ -2,12 +2,12 @@
 #include <algorithm>
 #include <mutex>
 
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
-#include <ucf/Utilities/SystemUtils/SystemUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/SystemUtils/SystemUtils.h>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/CoreFramework/CoreFrameworkCreator.h>
-#include <ucf/Services/ServiceFactory/IServiceFactory.h>
+#include <ucf/services/ServiceFactory/IServiceFactory.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 

@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryEntities.h>
 
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
 

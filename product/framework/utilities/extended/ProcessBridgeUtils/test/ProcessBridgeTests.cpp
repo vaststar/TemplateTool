@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
-#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridgeCallback.h>
+#include <ucf/utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 
 #include <atomic>
 #include <chrono>

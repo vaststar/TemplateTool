@@ -1,15 +1,15 @@
 include(BuildModule)
 
 set(MODULE_MODULE_NAME MediaService)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Services/MediaService/MediaServiceExport.h
-    include/ucf/Services/MediaService/IMediaService.h
-    include/ucf/Services/MediaService/IMediaServiceCallback.h
-    include/ucf/Services/MediaService/MediaTypes.h
+    include/ucf/services/MediaService/MediaServiceExport.h
+    include/ucf/services/MediaService/IMediaService.h
+    include/ucf/services/MediaService/IMediaServiceCallback.h
+    include/ucf/services/MediaService/MediaTypes.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/MediaServiceLogger.h

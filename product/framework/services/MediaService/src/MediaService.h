@@ -2,9 +2,9 @@
 
 #include <memory>
 #include <string>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/MediaService/MediaServiceExport.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/MediaService/MediaServiceExport.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
 namespace ucf::framework {

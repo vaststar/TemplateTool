@@ -2,13 +2,13 @@ include(BuildInterface)
 
 # NetworkServiceApi (INTERFACE) - pure interfaces, no binary.
 set(MODULE_MODULE_NAME NetworkServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/NetworkService/INetworkService.h
-    include/ucf/Services/NetworkService/INetworkServiceCallback.h
-    include/ucf/Services/NetworkService/Http/INetworkHttpManager.h
+    include/ucf/services/NetworkService/INetworkService.h
+    include/ucf/services/NetworkService/INetworkServiceCallback.h
+    include/ucf/services/NetworkService/http/INetworkHttpManager.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

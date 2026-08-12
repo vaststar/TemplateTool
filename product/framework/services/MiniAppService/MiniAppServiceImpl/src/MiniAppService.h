@@ -6,10 +6,10 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/MiniAppService/IMiniAppService.h>
-#include <ucf/Services/MiniAppService/MiniAppServiceImplExport.h>
+#include <ucf/services/MiniAppService/IMiniAppService.h>
+#include <ucf/services/MiniAppService/MiniAppServiceImplExport.h>
 
 #include "MiniAppNotificationSink.h"
 

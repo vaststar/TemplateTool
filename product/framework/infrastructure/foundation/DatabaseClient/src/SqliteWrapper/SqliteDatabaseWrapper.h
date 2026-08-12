@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseConfig.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseSchema.h>
+#include <ucf/infrastructure/DatabaseClient/IDatabaseWrapper.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseConfig.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseSchema.h>
 
 namespace ucf::infrastructure::database{
 

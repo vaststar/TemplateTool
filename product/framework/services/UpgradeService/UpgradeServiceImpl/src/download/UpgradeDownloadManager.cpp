@@ -3,12 +3,12 @@
 #include "../UpgradeServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/NetworkService/http/INetworkHttpManager.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileRequest.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileResponse.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <fstream>
 #include <iomanip>

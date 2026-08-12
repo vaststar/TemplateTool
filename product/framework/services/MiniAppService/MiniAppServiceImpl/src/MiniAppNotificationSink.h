@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include <ucf/Services/MiniAppService/IMiniAppServiceCallback.h>
-#include <ucf/Services/MiniAppService/MiniAppManifest.h>
+#include <ucf/services/MiniAppService/IMiniAppServiceCallback.h>
+#include <ucf/services/MiniAppService/MiniAppManifest.h>
 
 namespace ucf::service {
 

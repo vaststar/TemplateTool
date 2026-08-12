@@ -1,4 +1,4 @@
-#include <fakes/ucf/Services/FakeNetworkService.h>
+#include <fakes/ucf/services/FakeNetworkService.h>
 
 namespace ucf::service::fakes {
 

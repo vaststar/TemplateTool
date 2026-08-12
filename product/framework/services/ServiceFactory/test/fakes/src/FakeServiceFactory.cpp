@@ -1,4 +1,4 @@
-#include <fakes/ucf/Services/FakeServiceFactory.h>
+#include <fakes/ucf/services/FakeServiceFactory.h>
 
 namespace ucf::service::fakes {
 

@@ -6,10 +6,10 @@ set(MODULE_IDE_FOLDER framework/utilities/ipc)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/ProcessBridgeUtils/ProcessBridgeUtilsExport.h
-    include/ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h
-    include/ucf/Utilities/ProcessBridgeUtils/IProcessBridgeCallback.h
-    include/ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h
+    include/ucf/utilities/ProcessBridgeUtils/ProcessBridgeUtilsExport.h
+    include/ucf/utilities/ProcessBridgeUtils/ProcessBridgeConfig.h
+    include/ucf/utilities/ProcessBridgeUtils/IProcessBridgeCallback.h
+    include/ucf/utilities/ProcessBridgeUtils/IProcessBridge.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ProcessBridge.h

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ucf/Services/UpgradeService/UpgradeModel.h>
-#include <ucf/Services/UpgradeService/IUpgradeServiceCallback.h>
+#include <ucf/services/UpgradeService/UpgradeModel.h>
+#include <ucf/services/UpgradeService/IUpgradeServiceCallback.h>
 #include "fsm/UpgradeStates.h"
 
 #include <atomic>

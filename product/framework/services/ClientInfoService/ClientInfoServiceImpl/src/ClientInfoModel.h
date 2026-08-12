@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
-#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+#include <ucf/services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/utilities/SinkNotifier/SinkNotifier.h>
 
 #include "ClientInfoNotificationSink.h"
 

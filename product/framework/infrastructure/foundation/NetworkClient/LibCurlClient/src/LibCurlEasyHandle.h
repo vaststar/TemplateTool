@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 #include <curl/curl.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
 namespace ucf::infrastructure::network::libcurl{
 class LibCurlEasyHandle final
 {

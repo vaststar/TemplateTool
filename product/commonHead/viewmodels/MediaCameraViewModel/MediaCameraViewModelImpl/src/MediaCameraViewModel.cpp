@@ -7,8 +7,8 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/MediaCameraViewModel/MediaCameraViewModelCreator.h>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/MediaService/MediaTypes.h>
+#include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/MediaService/MediaTypes.h>
 
 namespace commonHead::viewModels {
 

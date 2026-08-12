@@ -1,7 +1,7 @@
 #include "ImageService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ImageService/ImageServiceCreator.h>
+#include <ucf/services/ImageService/ImageServiceCreator.h>
 #include "ImageServiceLogger.h"
 
 

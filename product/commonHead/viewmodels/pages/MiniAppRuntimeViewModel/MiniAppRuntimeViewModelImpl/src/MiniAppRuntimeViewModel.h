@@ -4,8 +4,8 @@
 #include <mutex>
 #include <string>
 
-#include <ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h>
-#include <ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgentCallback.h>
+#include <ucf/agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h>
+#include <ucf/agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgentCallback.h>
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>

@@ -4,11 +4,11 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/ContactService/ContactServiceImplExport.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
+#include <ucf/services/ContactService/IContactService.h>
+#include <ucf/services/ContactService/ContactServiceImplExport.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 #include "ContactNotificationSink.h"
 

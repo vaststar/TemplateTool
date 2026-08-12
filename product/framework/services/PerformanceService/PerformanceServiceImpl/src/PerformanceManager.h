@@ -8,9 +8,9 @@
 #include <chrono>
 #include <filesystem>
 
-#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+#include <ucf/utilities/SinkNotifier/SinkNotifier.h>
 
-#include <ucf/Services/PerformanceService/PerformanceInfo.h>
+#include <ucf/services/PerformanceService/PerformanceInfo.h>
 
 #include "PerformanceNotificationSink.h"
 

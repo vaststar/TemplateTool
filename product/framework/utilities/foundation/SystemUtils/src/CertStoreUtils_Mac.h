@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
+#include <ucf/utilities/SystemUtils/CertStoreUtils.h>
 
 namespace ucf::utilities {
 

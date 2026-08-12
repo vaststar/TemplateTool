@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryServiceCallback.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryServiceCallback.h>
 #include "CameraDirectoryEntities.h"
 
 namespace ucf::service {

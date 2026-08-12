@@ -3,9 +3,9 @@
 #include "IPlatformCrashHandler.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
 
 #include <fstream>
 #include <sstream>

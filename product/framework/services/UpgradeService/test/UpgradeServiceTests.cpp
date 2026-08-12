@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Services/UpgradeService/UpgradeModel.h>
-#include <ucf/Services/UpgradeService/IUpgradeService.h>
-#include <ucf/Services/UpgradeService/IUpgradeServiceCallback.h>
+#include <ucf/services/UpgradeService/UpgradeModel.h>
+#include <ucf/services/UpgradeService/IUpgradeService.h>
+#include <ucf/services/UpgradeService/IUpgradeServiceCallback.h>
 
 #include "fsm/UpgradeStates.h"
 #include "fsm/UpgradeEvents.h"

@@ -4,11 +4,11 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
-#include <ucf/Services/CameraDirectoryService/CameraDirectoryServiceImplExport.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryService.h>
+#include <ucf/services/CameraDirectoryService/CameraDirectoryServiceImplExport.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 #include "CameraDirectoryNotificationSink.h"
 

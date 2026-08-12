@@ -1,0 +1,101 @@
+#pragma once
+
+#include <cstdint>
+#include <memory>
+
+#include <ucf/utilities/ProcessBridgeUtils/ProcessBridgeUtilsExport.h>
+#include <ucf/utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
+#include <ucf/utilities/NotificationHelper/INotificationHelper.h>
+
+namespace ucf::utilities {
+
+class IProcessBridgeCallback;
+
+/// Manages a child process lifecycle: launch, monitor, and stop.
+///
+/// This class is purely about process management. It does NOT handle
+/// communication (TCP, pipe, etc.) â€” that is the caller's responsibility.
+///
+/// Typical usage:
+/// @code
+///   auto bridge = IProcessBridge::create();
+///   bridge->registerCallback(myCallback);
+///
+///   ProcessBridgeConfig config;
+///   config.executablePath = "/path/to/child";
+///   config.arguments = {"--port", "8080"};
+///   bridge->start(config);
+///
+///   // ... process runs, callbacks fire on internal thread ...
+///   // ... caller sets up TCP/IPC separately if needed ...
+///
+///   bridge->stop();  // graceful shutdown
+/// @endcode
+///
+/// Thread safety:
+///   - start(), stop(), and state queries are thread-safe.
+///   - Callbacks are invoked on an internal monitor thread.
+class PROCESS_BRIDGE_UTILS_API IProcessBridge
+    : public virtual INotificationHelper<IProcessBridgeCallback>
+{
+public:
+    ~IProcessBridge() override = default;
+
+    /// Launch the child process.
+    /// @param config  Process configuration (executable, args, etc.)
+    /// @return true if launch was initiated successfully
+    virtual bool start(const ProcessBridgeConfig& config) = 0;
+
+    /// Gracefully stop the child process.
+    /// Sends terminate signal, waits up to stopTimeoutMs, then force-kills.
+    /// No-op if process is not running.
+    virtual void stop() = 0;
+
+    /// Get the current process state.
+    virtual ProcessState state() const = 0;
+
+    /// Convenience: returns true if state is Starting or Running.
+    virtual bool isRunning() const = 0;
+
+    /// Get the child process PID. Returns 0 if not running.
+    virtual int64_t processPid() const = 0;
+
+    /// Write data to the child process's stdin pipe.
+    /// Requires config.pipeStdin = true when starting.
+    /// @return true if all bytes were written successfully
+    virtual bool writeToStdin(const std::string& data) = 0;
+
+    /// Close the stdin pipe (child will see EOF on its stdin).
+    /// Useful for signaling "no more input" without stopping the process.
+    virtual void closeStdin() = 0;
+
+    /// Create a ProcessBridge instance.
+    static std::unique_ptr<IProcessBridge> create();
+
+    // === Static utilities ===
+
+    /// Result of a synchronous process run.
+    struct RunResult {
+        int exitCode = -1;
+        std::string stdoutData;
+        std::string stderrData;
+        bool timedOut = false;
+    };
+
+    /// Run a process synchronously: launch, collect output, wait for exit.
+    /// This is a convenience for "fire-and-forget" commands (e.g. ffmpeg convert).
+    /// Blocks the calling thread until the process exits or times out.
+    /// @param config  Process configuration (stopTimeoutMs used as overall timeout)
+    /// @return RunResult with exit code and captured output
+    static RunResult run(const ProcessBridgeConfig& config);
+
+    /// Launch a detached process: start it and immediately release all handles.
+    /// The child process runs independently and is NOT monitored or stopped.
+    /// Use this when the child must outlive the parent (e.g. an updater).
+    /// @param config  Process configuration (only executablePath, arguments,
+    ///                workingDirectory, and environment are used)
+    /// @return true if the process was launched successfully
+    static bool launch(const ProcessBridgeConfig& config);
+};
+
+} // namespace ucf::utilities

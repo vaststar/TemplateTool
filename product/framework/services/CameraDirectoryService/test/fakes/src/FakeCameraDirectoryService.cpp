@@ -1,4 +1,4 @@
-#include <fakes/ucf/Services/FakeCameraDirectoryService.h>
+#include <fakes/ucf/services/FakeCameraDirectoryService.h>
 
 namespace ucf::service::fakes {
 

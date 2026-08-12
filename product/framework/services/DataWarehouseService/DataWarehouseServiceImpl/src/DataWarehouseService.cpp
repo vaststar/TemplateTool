@@ -4,9 +4,9 @@
 #include <mutex>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Infrastructure/DatabaseClient/IDatabaseWrapper.h>
-#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
-#include <ucf/Services/DataWarehouseService/DataWarehouseServiceCreator.h>
+#include <ucf/infrastructure/DatabaseClient/IDatabaseWrapper.h>
+#include <ucf/services/DataWarehouseService/DatabaseConfig.h>
+#include <ucf/services/DataWarehouseService/DataWarehouseServiceCreator.h>
 
 #include "DataWarehouseServiceLogger.h"
 #include "DataWarehouseManager.h"

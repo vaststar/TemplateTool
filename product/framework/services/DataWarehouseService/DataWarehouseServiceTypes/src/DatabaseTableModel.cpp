@@ -1,4 +1,4 @@
-#include <ucf/Services/DataWarehouseService/DatabaseTableModel.h>
+#include <ucf/services/DataWarehouseService/DatabaseTableModel.h>
 
 namespace ucf::service::model{
 DBTableModel::DBTableModel(const std::string& tableName, const std::vector<Column>& columns)

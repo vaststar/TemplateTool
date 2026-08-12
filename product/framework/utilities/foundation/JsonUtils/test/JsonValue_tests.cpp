@@ -1,7 +1,7 @@
 /// @file JsonValue_tests.cpp
 /// @brief Comprehensive unit tests for JsonValue class
 
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>

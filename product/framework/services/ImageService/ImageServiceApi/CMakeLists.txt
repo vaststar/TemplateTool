@@ -2,11 +2,11 @@ include(BuildInterface)
 
 # ImageServiceApi (INTERFACE) - pure interface + Image value type.
 set(MODULE_MODULE_NAME ImageServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ImageService/IImageService.h
+    include/ucf/services/ImageService/IImageService.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

@@ -4,12 +4,12 @@ include(BuildInterface)
 # No export macro, no createInstance; consumers depend only on this.
 # Publicly carries DataWarehouseServiceTypes so callers get the DTO symbols.
 set(MODULE_MODULE_NAME DataWarehouseServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/DataWarehouseService/IDataWarehouseService.h
-    include/ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h
+    include/ucf/services/DataWarehouseService/IDataWarehouseService.h
+    include/ucf/services/DataWarehouseService/IDataWarehouseServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     DataWarehouseServiceTypes

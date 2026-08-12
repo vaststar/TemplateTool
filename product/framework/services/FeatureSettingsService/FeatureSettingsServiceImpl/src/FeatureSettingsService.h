@@ -4,11 +4,11 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
-#include <ucf/Services/FeatureSettingsService/FeatureSettingsServiceImplExport.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
+#include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/services/FeatureSettingsService/FeatureSettingsServiceImplExport.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 namespace ucf::service {
 

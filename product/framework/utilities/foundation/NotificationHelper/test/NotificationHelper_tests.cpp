@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 class IObaserverCallback{
 public: 

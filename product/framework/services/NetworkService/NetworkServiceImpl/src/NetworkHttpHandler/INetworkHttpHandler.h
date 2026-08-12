@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
 
 namespace ucf::infrastructure::network::http{
 class NetworkHttpRequest;

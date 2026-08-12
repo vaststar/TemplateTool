@@ -2,12 +2,12 @@ include(BuildModule)
 
 # UpgradeServiceTypes (SHARED) - public value types for UpgradeService.
 set(MODULE_MODULE_NAME UpgradeServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/UpgradeService/UpgradeServiceTypesExport.h
-    include/ucf/Services/UpgradeService/UpgradeModel.h
+    include/ucf/services/UpgradeService/UpgradeServiceTypesExport.h
+    include/ucf/services/UpgradeService/UpgradeModel.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/UpgradeModel.cpp

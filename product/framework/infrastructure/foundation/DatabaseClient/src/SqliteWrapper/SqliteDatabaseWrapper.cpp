@@ -7,9 +7,9 @@
 
 #include <sqlite3.h>
 
-#include <ucf/Infrastructure/DatabaseClient/DatabaseDataValue.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseSchema.h>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseDataRecord.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseDataValue.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseSchema.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseDataRecord.h>
 
 #include "SqliteWrapper/SqliteDatabaseWrapper.h"
 #include "DatabaseClientLogger.h"

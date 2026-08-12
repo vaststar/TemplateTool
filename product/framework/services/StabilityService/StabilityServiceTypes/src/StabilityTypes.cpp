@@ -1,3 +1,3 @@
 // Materialises the exported value types of StabilityServiceTypes (see headers).
-#include <ucf/Services/StabilityService/CrashInfo.h>
-#include <ucf/Services/StabilityService/HangInfo.h>
+#include <ucf/services/StabilityService/CrashInfo.h>
+#include <ucf/services/StabilityService/HangInfo.h>

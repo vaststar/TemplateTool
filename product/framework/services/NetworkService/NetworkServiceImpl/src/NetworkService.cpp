@@ -3,7 +3,7 @@
 #include "NetworkServiceLogger.h"
 #include "NetworkHttpManager.h"
 
-#include <ucf/Services/NetworkService/NetworkServiceCreator.h>
+#include <ucf/services/NetworkService/NetworkServiceCreator.h>
 
 namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////

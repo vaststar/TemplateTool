@@ -5,11 +5,11 @@
 #include <cctype>
 #include <fstream>
 
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileRequest.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileResponse.h>
 
 #include "NetworkHttpTypeConverter.h"
 #include "NetworkServiceLogger.h"

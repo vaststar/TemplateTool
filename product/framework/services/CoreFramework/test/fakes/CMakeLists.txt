@@ -27,5 +27,5 @@ BuildModule(
     TARGET_INCLUDE_DIRECTORIES_PRIVATE
         src
     IDE_FOLDER
-        framework/Services/unit-test
+        framework/services/test
 )

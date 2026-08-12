@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <ucf/Utilities/FFmpegUtils/Lib/FFmpegTypes.h>
+#include <ucf/utilities/FFmpegUtils/lib/FFmpegTypes.h>
 
 #include "../FFmpegInternal.h"
 

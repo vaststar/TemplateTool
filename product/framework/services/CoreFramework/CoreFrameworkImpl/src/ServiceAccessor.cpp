@@ -4,7 +4,7 @@
 #include <typeindex>
 #include <vector>
 
-#include <ucf/Services/ServiceDeclaration/IService.h>
+#include <ucf/services/ServiceDeclaration/IService.h>
 
 #include "ServiceAccessor.h"
 #include "CoreframeworkLogger.h"

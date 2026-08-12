@@ -5,7 +5,7 @@
 #include "ICPUMonitor.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
 
 #include <algorithm>
 #include <fstream>

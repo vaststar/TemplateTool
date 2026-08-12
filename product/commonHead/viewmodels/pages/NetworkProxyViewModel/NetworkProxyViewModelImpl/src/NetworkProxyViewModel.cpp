@@ -2,8 +2,8 @@
 #include "LoggerDefine.h"
 
 #include <commonHead/viewModels/NetworkProxyViewModel/NetworkProxyViewModelCreator.h>
-#include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
-#include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
+#include <ucf/utilities/SystemUtils/CertStoreUtils.h>
+#include <ucf/agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
 
 namespace commonHead::viewModels {
 

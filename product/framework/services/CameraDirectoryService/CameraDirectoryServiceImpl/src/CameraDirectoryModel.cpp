@@ -1,6 +1,6 @@
 #include "CameraDirectoryModel.h"
 
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include "CameraDirectoryDBAccess.h"
 #include "CameraDirectoryServiceLogger.h"

@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iterator>
-#include <ucf/Infrastructure/DatabaseClient/DatabaseSchema.h>
+#include <ucf/infrastructure/DatabaseClient/DatabaseSchema.h>
 
 namespace ucf::infrastructure::database{
 DatabaseSchema::DatabaseSchema(const std::string& tableName, const std::vector<Column>& columns)

@@ -6,10 +6,10 @@ set(MODULE_IDE_FOLDER framework/utilities/ipc)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/TcpChannelUtils/TcpChannelUtilsExport.h
-    include/ucf/Utilities/TcpChannelUtils/TcpChannelConfig.h
-    include/ucf/Utilities/TcpChannelUtils/ITcpChannelCallback.h
-    include/ucf/Utilities/TcpChannelUtils/ITcpChannel.h
+    include/ucf/utilities/TcpChannelUtils/TcpChannelUtilsExport.h
+    include/ucf/utilities/TcpChannelUtils/TcpChannelConfig.h
+    include/ucf/utilities/TcpChannelUtils/ITcpChannelCallback.h
+    include/ucf/utilities/TcpChannelUtils/ITcpChannel.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/TcpChannel.h

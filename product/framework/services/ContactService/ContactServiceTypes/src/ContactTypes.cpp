@@ -3,9 +3,9 @@
 // compile-time contract and emit no linkable symbols, so this exported anchor
 // gives the shared library a symbol and an import library. Replace it with a
 // real exported type once one gains an out-of-line body.
-#include <ucf/Services/ContactService/ContactServiceTypesExport.h>
+#include <ucf/services/ContactService/ContactServiceTypesExport.h>
 
-#include <ucf/Services/ContactService/IContactEntities.h>
+#include <ucf/services/ContactService/IContactEntities.h>
 
 namespace ucf::service::model {
 

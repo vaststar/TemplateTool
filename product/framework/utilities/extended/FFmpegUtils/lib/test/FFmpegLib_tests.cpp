@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <ucf/Utilities/FFmpegUtils/Lib/FFmpegLib.h>
+#include <ucf/utilities/FFmpegUtils/lib/FFmpegLib.h>
 
 #include <algorithm>
 #include <chrono>

@@ -1,4 +1,4 @@
-#include <ucf/Utilities/FFmpegUtils/Core/MediaMetadata.h>
+#include <ucf/utilities/FFmpegUtils/core/MediaMetadata.h>
 
 extern "C" {
 #include <libavformat/avformat.h>

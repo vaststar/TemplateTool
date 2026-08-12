@@ -3,7 +3,7 @@
 /// @file UpgradeContext.h
 /// @brief Shared context data borrowed by the Upgrade FSM.
 
-#include <ucf/Services/UpgradeService/UpgradeModel.h>
+#include <ucf/services/UpgradeService/UpgradeModel.h>
 #include <functional>
 #include <optional>
 #include <string>

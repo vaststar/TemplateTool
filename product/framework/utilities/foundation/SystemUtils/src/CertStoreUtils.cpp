@@ -1,4 +1,4 @@
-#include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
+#include <ucf/utilities/SystemUtils/CertStoreUtils.h>
 
 #if defined(_WIN32)
 #include "CertStoreUtils_Win.h"

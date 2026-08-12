@@ -4,16 +4,16 @@ include(BuildModule)
 # These carry out-of-line implementations (ctors, operators) that consumers use
 # by value, so they live in a compiled library rather than the pure-interface Api.
 set(MODULE_MODULE_NAME DataWarehouseServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/DataWarehouseService/DataWarehouseServiceTypesExport.h
-    include/ucf/Services/DataWarehouseService/DatabaseDataValue.h
-    include/ucf/Services/DataWarehouseService/DatabaseDataRecord.h
-    include/ucf/Services/DataWarehouseService/DatabaseTableModel.h
-    include/ucf/Services/DataWarehouseService/DatabaseConfig.h
-    include/ucf/Services/DataWarehouseService/DatabaseModelDeclare.h
+    include/ucf/services/DataWarehouseService/DataWarehouseServiceTypesExport.h
+    include/ucf/services/DataWarehouseService/DatabaseDataValue.h
+    include/ucf/services/DataWarehouseService/DatabaseDataRecord.h
+    include/ucf/services/DataWarehouseService/DatabaseTableModel.h
+    include/ucf/services/DataWarehouseService/DatabaseConfig.h
+    include/ucf/services/DataWarehouseService/DatabaseModelDeclare.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DatabaseDataValue.cpp

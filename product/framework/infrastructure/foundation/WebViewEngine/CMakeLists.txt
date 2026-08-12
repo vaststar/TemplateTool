@@ -6,13 +6,13 @@ set(MODULE_IDE_FOLDER framework/infrastructure/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Infrastructure/WebViewEngine/WebViewEngineExport.h
-    include/ucf/Infrastructure/WebViewEngine/WebViewTypes.h
-    include/ucf/Infrastructure/WebViewEngine/WebViewInitOptions.h
-    include/ucf/Infrastructure/WebViewEngine/IWebViewCallback.h
-    include/ucf/Infrastructure/WebViewEngine/IRequestInterceptor.h
-    include/ucf/Infrastructure/WebViewEngine/IWebView.h
-    include/ucf/Infrastructure/WebViewEngine/WebViewFactory.h
+    include/ucf/infrastructure/WebViewEngine/WebViewEngineExport.h
+    include/ucf/infrastructure/WebViewEngine/WebViewTypes.h
+    include/ucf/infrastructure/WebViewEngine/WebViewInitOptions.h
+    include/ucf/infrastructure/WebViewEngine/IWebViewCallback.h
+    include/ucf/infrastructure/WebViewEngine/IRequestInterceptor.h
+    include/ucf/infrastructure/WebViewEngine/IWebView.h
+    include/ucf/infrastructure/WebViewEngine/WebViewFactory.h
 )
 
 set(MODULE_SOURCE_PRIVATE

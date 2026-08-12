@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/ContactService/IContactServiceCallback.h>
+#include <ucf/services/ContactService/IContactServiceCallback.h>
 #include "ContactEntities.h"
 
 namespace ucf::service {

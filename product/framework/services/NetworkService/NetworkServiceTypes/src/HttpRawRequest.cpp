@@ -1,5 +1,5 @@
-#include <ucf/Services/NetworkService/Model/HttpRawRequest.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/services/NetworkService/model/HttpRawRequest.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

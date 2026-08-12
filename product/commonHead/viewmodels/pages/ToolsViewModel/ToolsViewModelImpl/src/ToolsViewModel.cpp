@@ -7,10 +7,10 @@
 #include <iomanip>
 #include <sstream>
 
-#include <ucf/Utilities/Base64Utils/Base64Utils.h>
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/utilities/Base64Utils/Base64Utils.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include <ResourceString.h>
 

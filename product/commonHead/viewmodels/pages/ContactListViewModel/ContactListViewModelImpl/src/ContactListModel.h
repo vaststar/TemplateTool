@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <ucf/Services/ContactService/IContactEntities.h>
+#include <ucf/services/ContactService/IContactEntities.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 
 namespace ucf::service::model{

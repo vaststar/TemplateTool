@@ -2,12 +2,12 @@ include(BuildModule)
 
 # DataWarehouseSchema (SHARED) - generated / hand-written table schema definitions.
 set(MODULE_MODULE_NAME DataWarehouseSchema)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/DataWarehouseSchema/DataWarehouseSchemaExport.h
-    include/ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h
+    include/ucf/services/DataWarehouseSchema/DataWarehouseSchemaExport.h
+    include/ucf/services/DataWarehouseSchema/DataWarehouseSchemas.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/DataWarehouseSchemas.cpp

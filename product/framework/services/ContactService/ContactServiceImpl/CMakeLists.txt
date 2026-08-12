@@ -3,12 +3,12 @@ include(BuildModule)
 # ContactServiceImpl (SHARED) - the concrete service implementation.
 # Only ServiceFactory links this (to create instances via createContactService).
 set(MODULE_MODULE_NAME ContactServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ContactService/ContactServiceImplExport.h
-    include/ucf/Services/ContactService/ContactServiceCreator.h
+    include/ucf/services/ContactService/ContactServiceImplExport.h
+    include/ucf/services/ContactService/ContactServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ContactServiceLogger.h

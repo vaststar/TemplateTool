@@ -2,13 +2,13 @@
 #include "../UpgradeServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
-#include <ucf/Services/NetworkService/Model/HttpRestRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpRestResponse.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
-#include <ucf/Utilities/VersionUtils/Version.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/NetworkService/http/INetworkHttpManager.h>
+#include <ucf/services/NetworkService/model/HttpRestRequest.h>
+#include <ucf/services/NetworkService/model/HttpRestResponse.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/VersionUtils/Version.h>
 
 #include <format>
 

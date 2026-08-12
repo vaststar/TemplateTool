@@ -3,12 +3,12 @@ include(BuildInterface)
 # InvocationServiceApi (INTERFACE) - pure abstract interface, no binary.
 # No export macro, no createInstance; consumers depend only on this.
 set(MODULE_MODULE_NAME InvocationServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/InvocationService/IInvocationService.h
-    include/ucf/Services/InvocationService/IInvocationServiceCallback.h
+    include/ucf/services/InvocationService/IInvocationService.h
+    include/ucf/services/InvocationService/IInvocationServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

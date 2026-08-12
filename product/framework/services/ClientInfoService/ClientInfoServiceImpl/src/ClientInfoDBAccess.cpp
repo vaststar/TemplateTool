@@ -1,11 +1,11 @@
 #include "ClientInfoDBAccess.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/DataWarehouseSchema/DataWarehouseSchemas.h>
-#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataRecord.h>
-#include <ucf/Services/DataWarehouseService/DatabaseDataValue.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/DataWarehouseSchema/DataWarehouseSchemas.h>
+#include <ucf/services/DataWarehouseService/DatabaseConfig.h>
+#include <ucf/services/DataWarehouseService/DatabaseDataRecord.h>
+#include <ucf/services/DataWarehouseService/DatabaseDataValue.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
 
 #include "ClientInfoServiceLogger.h"
 

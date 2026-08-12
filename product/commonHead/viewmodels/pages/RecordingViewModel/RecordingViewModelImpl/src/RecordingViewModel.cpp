@@ -3,10 +3,10 @@
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/RecordingViewModel/RecordingViewModelCreator.h>
-#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <chrono>
 #include <filesystem>

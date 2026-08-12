@@ -1,9 +1,9 @@
 #include "FeatureSettingsService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/FeatureSettingsService/FeatureSettingsServiceCreator.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/FeatureSettingsService/FeatureSettingsServiceCreator.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 #include "FeatureSettingsManager.h"
 #include "FeatureSettingsServiceLogger.h"

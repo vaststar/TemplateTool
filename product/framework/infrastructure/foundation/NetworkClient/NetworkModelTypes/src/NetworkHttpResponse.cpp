@@ -1,4 +1,4 @@
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
 
 #include <algorithm>
 #include <cctype>

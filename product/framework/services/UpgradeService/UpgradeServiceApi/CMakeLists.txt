@@ -2,12 +2,12 @@ include(BuildInterface)
 
 # UpgradeServiceApi (INTERFACE) - pure interface + callback + UpgradeModel value types.
 set(MODULE_MODULE_NAME UpgradeServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/UpgradeService/IUpgradeService.h
-    include/ucf/Services/UpgradeService/IUpgradeServiceCallback.h
+    include/ucf/services/UpgradeService/IUpgradeService.h
+    include/ucf/services/UpgradeService/IUpgradeServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

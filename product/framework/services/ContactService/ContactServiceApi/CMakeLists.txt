@@ -3,12 +3,12 @@ include(BuildInterface)
 # ContactServiceApi (INTERFACE) - pure abstract interfaces, no binary.
 # No export macro, no createInstance; consumers depend only on this.
 set(MODULE_MODULE_NAME ContactServiceApi)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ContactService/IContactService.h
-    include/ucf/Services/ContactService/IContactServiceCallback.h
+    include/ucf/services/ContactService/IContactService.h
+    include/ucf/services/ContactService/IContactServiceCallback.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

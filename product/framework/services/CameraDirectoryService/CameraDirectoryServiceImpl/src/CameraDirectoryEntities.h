@@ -3,7 +3,7 @@
 #include <mutex>
 #include <string>
 
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryEntities.h>
 
 namespace ucf::service::model {
 

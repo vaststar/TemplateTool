@@ -3,19 +3,19 @@
 #include <utility>
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/InvocationService/IInvocationService.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Services/ContactService/IContactService.h>
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
-#include <ucf/Services/ImageService/IImageService.h>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/StabilityService/IStabilityService.h>
-#include <ucf/Services/PerformanceService/IPerformanceService.h>
-#include <ucf/Services/FeatureSettingsService/IFeatureSettingsService.h>
-#include <ucf/Services/UpgradeService/IUpgradeService.h>
-#include <ucf/Services/MiniAppService/IMiniAppService.h>
+#include <ucf/services/InvocationService/IInvocationService.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/ContactService/IContactService.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryService.h>
+#include <ucf/services/ImageService/IImageService.h>
+#include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/StabilityService/IStabilityService.h>
+#include <ucf/services/PerformanceService/IPerformanceService.h>
+#include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
+#include <ucf/services/UpgradeService/IUpgradeService.h>
+#include <ucf/services/MiniAppService/IMiniAppService.h>
 
 #include <commonHead/ServiceLocator/ServiceLocatorCreator.h>
 

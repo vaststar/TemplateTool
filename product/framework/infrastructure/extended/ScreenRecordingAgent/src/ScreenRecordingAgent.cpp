@@ -1,7 +1,7 @@
 #include "ScreenRecordingAgent.h"
 #include "LoggerDefine.h"
 
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <filesystem>
 

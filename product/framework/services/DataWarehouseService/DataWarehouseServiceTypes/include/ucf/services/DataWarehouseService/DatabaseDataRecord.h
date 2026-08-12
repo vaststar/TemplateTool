@@ -1,0 +1,27 @@
+#pragma once
+
+#include <string>
+#include <map>
+#include <ucf/services/DataWarehouseService/DataWarehouseServiceTypesExport.h>
+#include <ucf/services/DataWarehouseService/DatabaseDataValue.h>
+
+namespace ucf::service::model{
+
+class DatabaseDataValue;
+
+class DATA_WAREHOUSE_SERVICE_TYPES_API DatabaseDataRecord final
+{
+public:
+    void addColumnData(const std::string& key, const DatabaseDataValue& value);
+    void addColumnData(const std::string& key, DatabaseDataValue&& value);
+    DatabaseDataValue getColumnData(const std::string& key) const;
+
+    /// @brief Check if column exists in this record.
+    bool hasColumn(const std::string& key) const;
+
+    /// @brief Get all column data for traversal.
+    const std::map<std::string, DatabaseDataValue>& getData() const;
+private:
+    std::map<std::string, DatabaseDataValue> mValueMaps;
+};
+}

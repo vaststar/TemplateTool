@@ -2,13 +2,13 @@
 
 #include <locale>
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/ClientInfoService/ClientInfoServiceCreator.h>
-#include <ucf/Utilities/TimeUtils/TimeUtils.h>
-#include <ucf/Utilities/OSUtils/OSUtils.h>
-#include <ucf/Utilities/StringUtils/StringUtils.h>
+#include <ucf/services/ClientInfoService/ClientInfoServiceCreator.h>
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
+#include <ucf/utilities/OSUtils/OSUtils.h>
+#include <ucf/utilities/StringUtils/StringUtils.h>
 
-#include <ucf/Services/DataWarehouseService/DatabaseConfig.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/DataWarehouseService/DatabaseConfig.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
 
 #include <magic_enum/magic_enum.hpp>
 

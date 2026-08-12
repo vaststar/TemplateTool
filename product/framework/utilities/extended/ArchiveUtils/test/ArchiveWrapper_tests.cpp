@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <ucf/Utilities/ArchiveUtils/ArchiveWrapper.h>
+#include <ucf/utilities/ArchiveUtils/ArchiveWrapper.h>
 
 #include <filesystem>
 #include <fstream>

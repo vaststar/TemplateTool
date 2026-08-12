@@ -2,7 +2,7 @@
 
 #include <BuildNormalThemeFontSet.h>
 #include <commonHead/ResourceFontLoader/ResourceFontLoaderCreator.h>
-#include <ucf/Utilities/OSUtils/OSUtils.h>
+#include <ucf/utilities/OSUtils/OSUtils.h>
 
 #include "LoggerDefine.h"
 

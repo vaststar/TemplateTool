@@ -4,8 +4,8 @@
 #include "StabilityServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/StabilityService/StabilityServiceCreator.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/StabilityService/StabilityServiceCreator.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 namespace ucf::service {
 

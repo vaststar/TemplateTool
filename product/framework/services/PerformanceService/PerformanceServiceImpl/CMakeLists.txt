@@ -2,12 +2,12 @@ include(BuildModule)
 
 # PerformanceServiceImpl (SHARED) - concrete implementation with platform monitors.
 set(MODULE_MODULE_NAME PerformanceServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/PerformanceService/PerformanceServiceImplExport.h
-    include/ucf/Services/PerformanceService/PerformanceServiceCreator.h
+    include/ucf/services/PerformanceService/PerformanceServiceImplExport.h
+    include/ucf/services/PerformanceService/PerformanceServiceCreator.h
 )
 
 set(MODULE_SOURCE_COMMON

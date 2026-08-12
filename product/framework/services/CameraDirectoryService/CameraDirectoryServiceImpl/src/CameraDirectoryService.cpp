@@ -1,10 +1,10 @@
 #include "CameraDirectoryService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/CameraDirectoryService/CameraDirectoryServiceCreator.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
-#include <ucf/Services/MediaService/IMediaService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/CameraDirectoryService/CameraDirectoryServiceCreator.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 #include "CameraDirectoryManager.h"
 #include "CameraDirectoryServiceLogger.h"

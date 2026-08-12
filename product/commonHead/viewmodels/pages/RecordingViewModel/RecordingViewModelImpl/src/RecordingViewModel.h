@@ -3,10 +3,10 @@
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
 
-#include <ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgent.h>
-#include <ucf/Agents/ScreenRecordingAgent/IScreenRecordingAgentCallback.h>
-#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
-#include <ucf/Utilities/ThreadPoolUtils/ThreadPoolWrapper.h>
+#include <ucf/agents/ScreenRecordingAgent/IScreenRecordingAgent.h>
+#include <ucf/agents/ScreenRecordingAgent/IScreenRecordingAgentCallback.h>
+#include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/utilities/ThreadPoolUtils/ThreadPoolWrapper.h>
 
 #include <memory>
 #include <mutex>

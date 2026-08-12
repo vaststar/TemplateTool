@@ -8,7 +8,7 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
-#include <ucf/Services/ContactService/IContactServiceCallback.h>
+#include <ucf/services/ContactService/IContactServiceCallback.h>
 
 namespace ucf::service {
     class IContactService;

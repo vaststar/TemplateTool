@@ -8,8 +8,8 @@
 #include "LoggerDefine.h"
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Utilities/ArchiveUtils/ArchiveWrapper.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/ArchiveUtils/ArchiveWrapper.h>
 
 namespace commonHead::utilities {
 

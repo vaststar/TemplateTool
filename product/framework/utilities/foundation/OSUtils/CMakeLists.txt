@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/OSUtils/OSUtilsExport.h
-    include/ucf/Utilities/OSUtils/OSUtils.h
+    include/ucf/utilities/OSUtils/OSUtilsExport.h
+    include/ucf/utilities/OSUtils/OSUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/OSUtils.cpp

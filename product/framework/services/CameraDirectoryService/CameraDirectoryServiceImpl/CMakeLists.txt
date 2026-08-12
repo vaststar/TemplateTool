@@ -2,12 +2,12 @@ include(BuildModule)
 
 # CameraDirectoryServiceImpl (SHARED) - concrete implementation.
 set(MODULE_MODULE_NAME CameraDirectoryServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/CameraDirectoryService/CameraDirectoryServiceImplExport.h
-    include/ucf/Services/CameraDirectoryService/CameraDirectoryServiceCreator.h
+    include/ucf/services/CameraDirectoryService/CameraDirectoryServiceImplExport.h
+    include/ucf/services/CameraDirectoryService/CameraDirectoryServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/CameraDirectoryServiceLogger.h

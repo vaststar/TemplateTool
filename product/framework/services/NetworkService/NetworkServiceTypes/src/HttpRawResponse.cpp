@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpRawResponse.h>
+#include <ucf/services/NetworkService/model/HttpRawResponse.h>
 
 namespace ucf::service::network::http{
 /////////////////////////////////////////////////////////////////////////////////////

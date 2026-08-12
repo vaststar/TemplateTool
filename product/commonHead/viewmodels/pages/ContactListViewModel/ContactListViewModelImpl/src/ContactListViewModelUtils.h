@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/ContactService/IContactEntities.h>
-#include <ucf/Services/ContactService/IContactServiceCallback.h>
+#include <ucf/services/ContactService/IContactEntities.h>
+#include <ucf/services/ContactService/IContactServiceCallback.h>
 
 #include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
 

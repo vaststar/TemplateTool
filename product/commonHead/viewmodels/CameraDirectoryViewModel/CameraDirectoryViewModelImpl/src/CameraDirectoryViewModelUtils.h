@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h>
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryServiceCallback.h>
-#include <ucf/Services/MediaService/MediaTypes.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryEntities.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryServiceCallback.h>
+#include <ucf/services/MediaService/MediaTypes.h>
 
 #include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
 #include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>

@@ -10,9 +10,9 @@
 #include "RuntimeRequestInterceptor.h"
 #include "RuntimeResourceResolver.h"
 #include "MiniAppSdk.h"
-#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h>
-#include <ucf/Infrastructure/WebViewEngine/WebViewFactory.h>
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
+#include <ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h>
+#include <ucf/infrastructure/WebViewEngine/WebViewFactory.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
 
 namespace ucf::agents {
 namespace {

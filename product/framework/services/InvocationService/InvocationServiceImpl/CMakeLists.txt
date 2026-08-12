@@ -3,12 +3,12 @@ include(BuildModule)
 # InvocationServiceImpl (SHARED) - the concrete service implementation.
 # Only ServiceFactory links this (to create instances via createInvocationService).
 set(MODULE_MODULE_NAME InvocationServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/InvocationService/InvocationServiceImplExport.h
-    include/ucf/Services/InvocationService/InvocationServiceCreator.h
+    include/ucf/services/InvocationService/InvocationServiceImplExport.h
+    include/ucf/services/InvocationService/InvocationServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/InvocationServiceLogger.h

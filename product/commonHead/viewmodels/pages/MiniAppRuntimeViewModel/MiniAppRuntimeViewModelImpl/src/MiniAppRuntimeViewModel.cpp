@@ -1,9 +1,9 @@
 #include "MiniAppRuntimeViewModel.h"
 #include "LoggerDefine.h"
 
-#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Services/MiniAppService/IMiniAppService.h>
+#include <ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/MiniAppService/IMiniAppService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>

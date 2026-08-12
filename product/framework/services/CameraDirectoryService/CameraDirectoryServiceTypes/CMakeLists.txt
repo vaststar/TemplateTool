@@ -4,12 +4,12 @@ include(BuildModule)
 # Currently the camera directory entity interfaces (pure-virtual, header-only);
 # a stub TU carries an exported anchor so the DLL has an import library.
 set(MODULE_MODULE_NAME CameraDirectoryServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/CameraDirectoryService/CameraDirectoryServiceTypesExport.h
-    include/ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h
+    include/ucf/services/CameraDirectoryService/CameraDirectoryServiceTypesExport.h
+    include/ucf/services/CameraDirectoryService/ICameraDirectoryEntities.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/CameraDirectoryTypes.cpp

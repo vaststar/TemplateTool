@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <ucf/Services/NetworkService/Http/INetworkHttpManager.h>
+#include <ucf/services/NetworkService/http/INetworkHttpManager.h>
 
 namespace ucf::infrastructure::network::http
 {

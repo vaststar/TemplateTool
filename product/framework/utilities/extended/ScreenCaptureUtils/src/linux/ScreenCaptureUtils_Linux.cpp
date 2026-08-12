@@ -7,7 +7,7 @@
 #include <sstream>
 #include <regex>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 namespace ucf::utilities::screencapture {
 

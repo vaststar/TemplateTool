@@ -21,5 +21,5 @@ BuildUnitTestModule(
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
-        framework/Services/unit-test
+        framework/services/test
 )

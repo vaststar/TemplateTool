@@ -1,7 +1,7 @@
 #include "InvocationService.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/InvocationService/InvocationServiceCreator.h>
+#include <ucf/services/InvocationService/InvocationServiceCreator.h>
 
 #include "InvocationManager.h"
 #include "InvocationServiceLogger.h"

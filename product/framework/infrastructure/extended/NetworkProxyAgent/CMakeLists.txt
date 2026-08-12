@@ -8,10 +8,10 @@ set(MODULE_IDE_FOLDER framework/infrastructure/extended/NetworkProxyAgent)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Agents/NetworkProxyAgent/NetworkProxyAgentExport.h
-    include/ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h
-    include/ucf/Agents/NetworkProxyAgent/INetworkProxyAgentCallback.h
-    include/ucf/Agents/NetworkProxyAgent/INetworkProxyAgent.h
+    include/ucf/agents/NetworkProxyAgent/NetworkProxyAgentExport.h
+    include/ucf/agents/NetworkProxyAgent/NetworkProxyAgentTypes.h
+    include/ucf/agents/NetworkProxyAgent/INetworkProxyAgentCallback.h
+    include/ucf/agents/NetworkProxyAgent/INetworkProxyAgent.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/NetworkProxyAgent.h

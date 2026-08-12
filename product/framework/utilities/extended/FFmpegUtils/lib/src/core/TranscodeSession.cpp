@@ -1,5 +1,5 @@
-#include <ucf/Utilities/FFmpegUtils/Core/TranscodeSession.h>
-#include <ucf/Utilities/FFmpegUtils/Core/ErrorHandler.h>
+#include <ucf/utilities/FFmpegUtils/core/TranscodeSession.h>
+#include <ucf/utilities/FFmpegUtils/core/ErrorHandler.h>
 
 #include <atomic>
 #include <thread>

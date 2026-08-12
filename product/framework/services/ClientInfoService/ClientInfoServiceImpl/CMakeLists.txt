@@ -2,12 +2,12 @@ include(BuildModule)
 
 # ClientInfoServiceImpl (SHARED) - concrete ClientInfoService implementation.
 set(MODULE_MODULE_NAME ClientInfoServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/ClientInfoService/ClientInfoServiceImplExport.h
-    include/ucf/Services/ClientInfoService/ClientInfoServiceCreator.h
+    include/ucf/services/ClientInfoService/ClientInfoServiceImplExport.h
+    include/ucf/services/ClientInfoService/ClientInfoServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ClientInfoServiceLogger.h

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <curl/curl.h>
-#include <ucf/Utilities/StringUtils/StringUtils.h>
+#include <ucf/utilities/StringUtils/StringUtils.h>
 
 #include "LibCurlEasyHandle.h"
 #include "LibCurlClientLogger.h"

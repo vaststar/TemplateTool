@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ucf/Infrastructure/TimerScheduler/ITimerScheduler.h>
-#include <ucf/Infrastructure/TimerScheduler/TimerSchedulerFactory.h>
+#include <ucf/infrastructure/TimerScheduler/ITimerScheduler.h>
+#include <ucf/infrastructure/TimerScheduler/TimerSchedulerFactory.h>
 
 #include <atomic>
 #include <chrono>

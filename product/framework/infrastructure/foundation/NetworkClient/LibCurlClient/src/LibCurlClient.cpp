@@ -1,9 +1,9 @@
-#include <ucf/Infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h>
+#include <ucf/infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h>
 
 #include <mutex>
 #include <memory>
 #include <filesystem>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
 
 #include "LibCurlClientLogger.h"
 #include "LibCurlMultiHandle.h"

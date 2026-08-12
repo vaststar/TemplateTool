@@ -1,9 +1,9 @@
 include(BuildModule)
 
 set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-    include/ucf/Services/ServiceDeclaration/ServiceDeclarationExport.h
-    include/ucf/Services/ServiceDeclaration/IService.h
-    include/ucf/Services/ServiceDeclaration/Function.h
+    include/ucf/services/ServiceDeclaration/ServiceDeclarationExport.h
+    include/ucf/services/ServiceDeclaration/IService.h
+    include/ucf/services/ServiceDeclaration/Function.h
 )
 
 set(TARGET_SOURCE_FILES_PRIVATE
@@ -41,5 +41,5 @@ BuildModule(
     TARGET_PRIVATE_DEFINITIONS
         ${MODULE_PRIVATE_DEFINITIONS}
     IDE_FOLDER
-        framework/Services
+        framework/services
 )

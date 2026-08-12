@@ -3,8 +3,8 @@
 #include "AddonLocator.h"
 #include "AddonProtocol.h"
 
-#include <ucf/Utilities/SystemUtils/SystemProxyUtils.h>
-#include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
+#include <ucf/utilities/SystemUtils/SystemProxyUtils.h>
+#include <ucf/utilities/SystemUtils/CertStoreUtils.h>
 
 #include <magic_enum/magic_enum.hpp>
 

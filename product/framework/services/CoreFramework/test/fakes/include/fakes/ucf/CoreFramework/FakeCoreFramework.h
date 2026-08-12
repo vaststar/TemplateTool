@@ -2,7 +2,7 @@
 
 #include <trompeloeil.hpp>
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 #include <memory>
 
 #include <fakes/ucf/CoreFramework/FakeServiceAccessor.h>

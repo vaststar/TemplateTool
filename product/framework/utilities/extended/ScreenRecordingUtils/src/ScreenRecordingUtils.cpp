@@ -1,7 +1,7 @@
-#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
-#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegCli.h>
-#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegLocator.h>
+#include <ucf/utilities/FFmpegUtils/cli/FFmpegCli.h>
+#include <ucf/utilities/FFmpegUtils/cli/FFmpegLocator.h>
 
 #if defined(_WIN32)
 #include "windows/ScreenRecorder_Win.h"

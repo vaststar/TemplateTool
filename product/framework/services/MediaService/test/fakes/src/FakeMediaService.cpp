@@ -1,4 +1,4 @@
-#include <fakes/ucf/Services/FakeMediaService.h>
+#include <fakes/ucf/services/FakeMediaService.h>
 
 namespace ucf::service::fakes {
 

@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <functional>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Services/NetworkService/Model/HttpDeclareTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
+#include <ucf/services/NetworkService/model/HttpDeclareTypes.h>
 
 #include "NetworkHttpHandler/INetworkHttpHandler.h"
 

@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "ucf/Utilities/Base64Utils/Base64Utils.h"
+#include "ucf/utilities/Base64Utils/Base64Utils.h"
 
 //============================================
 // Standard Base64 Encoding Tests

@@ -3,7 +3,7 @@
 #include "PerformanceManager.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/PerformanceService/PerformanceServiceCreator.h>
+#include <ucf/services/PerformanceService/PerformanceServiceCreator.h>
 
 namespace ucf::service {
 

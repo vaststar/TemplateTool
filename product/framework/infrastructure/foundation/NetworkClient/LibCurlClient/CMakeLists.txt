@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/infrastructure/foundation/NetworkClient)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Infrastructure/NetworkClient/LibCurlClient/LibCurlClientExport.h
-    include/ucf/Infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h
+    include/ucf/infrastructure/NetworkClient/LibCurlClient/LibCurlClientExport.h
+    include/ucf/infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LibCurlClient.cpp

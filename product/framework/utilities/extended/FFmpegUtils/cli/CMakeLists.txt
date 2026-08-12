@@ -6,9 +6,9 @@ set(MODULE_IDE_FOLDER framework/utilities/media)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/FFmpegUtils/Cli/FFmpegExport.h
-    include/ucf/Utilities/FFmpegUtils/Cli/FFmpegLocator.h
-    include/ucf/Utilities/FFmpegUtils/Cli/FFmpegCli.h
+    include/ucf/utilities/FFmpegUtils/cli/FFmpegExport.h
+    include/ucf/utilities/FFmpegUtils/cli/FFmpegLocator.h
+    include/ucf/utilities/FFmpegUtils/cli/FFmpegCli.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/FFmpegLogger.h

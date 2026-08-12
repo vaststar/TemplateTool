@@ -2,20 +2,20 @@ include(BuildModule)
 
 # NetworkServiceTypes - public value types (pimpl request/response models).
 set(MODULE_MODULE_NAME NetworkServiceTypes)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/NetworkService/NetworkServiceTypesExport.h
-    include/ucf/Services/NetworkService/Model/HttpDeclareTypes.h
-    include/ucf/Services/NetworkService/Model/HttpRestRequest.h
-    include/ucf/Services/NetworkService/Model/HttpRestResponse.h
-    include/ucf/Services/NetworkService/Model/HttpRawRequest.h
-    include/ucf/Services/NetworkService/Model/HttpRawResponse.h
-    include/ucf/Services/NetworkService/Model/HttpDownloadToMemoryRequest.h
-    include/ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h
-    include/ucf/Services/NetworkService/Model/HttpDownloadToFileRequest.h
-    include/ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h
+    include/ucf/services/NetworkService/NetworkServiceTypesExport.h
+    include/ucf/services/NetworkService/model/HttpDeclareTypes.h
+    include/ucf/services/NetworkService/model/HttpRestRequest.h
+    include/ucf/services/NetworkService/model/HttpRestResponse.h
+    include/ucf/services/NetworkService/model/HttpRawRequest.h
+    include/ucf/services/NetworkService/model/HttpRawResponse.h
+    include/ucf/services/NetworkService/model/HttpDownloadToMemoryRequest.h
+    include/ucf/services/NetworkService/model/HttpDownloadToMemoryResponse.h
+    include/ucf/services/NetworkService/model/HttpDownloadToFileRequest.h
+    include/ucf/services/NetworkService/model/HttpDownloadToFileResponse.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/HttpRestRequest.cpp

@@ -6,7 +6,7 @@
 
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
-#include <ucf/Services/MiniAppService/IMiniAppServiceCallback.h>
+#include <ucf/services/MiniAppService/IMiniAppServiceCallback.h>
 
 namespace ucf::service {
     class IMiniAppService;

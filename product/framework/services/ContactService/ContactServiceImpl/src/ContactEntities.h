@@ -4,7 +4,7 @@
 #include <vector>
 #include <mutex>
 
-#include <ucf/Services/ContactService/IContactEntities.h>
+#include <ucf/services/ContactService/IContactEntities.h>
 
 namespace ucf::service::model{
 class PersonContact: public IPersonContact

@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <ucf/Utilities/OSUtils/OSUtils.h>
+#include <ucf/utilities/OSUtils/OSUtils.h>
 
 #include "MediaServiceLogger.h"
 #include "VideoFrame.h"

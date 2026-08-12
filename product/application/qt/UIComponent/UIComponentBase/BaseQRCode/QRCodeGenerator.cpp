@@ -1,5 +1,5 @@
 #include "QRCodeGenerator.h"
-#include <ucf/Utilities/QRCodeUtils/QRCodeUtils.h>
+#include <ucf/utilities/QRCodeUtils/QRCodeUtils.h>
 
 QRCodeGenerator::QRCodeGenerator(QObject* parent)
     : QObject(parent)

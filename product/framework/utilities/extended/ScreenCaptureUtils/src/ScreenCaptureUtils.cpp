@@ -1,4 +1,4 @@
-#include <ucf/Utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
+#include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
 
 #if defined(_WIN32)
 #include "ScreenCaptureUtils_Win.h"

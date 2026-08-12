@@ -1,5 +1,5 @@
 
-#include <ucf/Utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN

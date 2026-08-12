@@ -4,12 +4,12 @@
 #include <vector>
 #include <typeindex>
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
-#include <ucf/Services/ClientInfoService/ClientInfoServiceImplExport.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseServiceCallback.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/ClientInfoService/ClientInfoServiceImplExport.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 #include "ClientInfoNotificationSink.h"
 

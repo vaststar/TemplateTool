@@ -6,8 +6,8 @@
 #include <commonHead/commonHeadUtils/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
-#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgent.h>
-#include <ucf/Agents/NetworkProxyAgent/INetworkProxyAgentCallback.h>
+#include <ucf/agents/NetworkProxyAgent/INetworkProxyAgent.h>
+#include <ucf/agents/NetworkProxyAgent/INetworkProxyAgentCallback.h>
 
 namespace commonHead::viewModels {
 

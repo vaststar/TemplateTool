@@ -5,7 +5,7 @@
 
 #include <ucf/CoreFramework/CoreFrameworkImplExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include "ServiceAccessor.h"
 

@@ -1,7 +1,7 @@
 #include "AddonProtocol.h"
 #include "NetworkProxyAgentLogger.h"
 
-#include <ucf/Utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
 
 namespace ucf::agents::detail {
 

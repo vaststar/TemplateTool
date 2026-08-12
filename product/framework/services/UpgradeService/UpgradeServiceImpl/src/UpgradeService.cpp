@@ -3,9 +3,9 @@
 #include "UpgradeManager.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <ucf/Services/UpgradeService/UpgradeServiceCreator.h>
-#include <ucf/Services/NetworkService/INetworkService.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/UpgradeService/UpgradeServiceCreator.h>
+#include <ucf/services/NetworkService/INetworkService.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 namespace ucf::service {
 

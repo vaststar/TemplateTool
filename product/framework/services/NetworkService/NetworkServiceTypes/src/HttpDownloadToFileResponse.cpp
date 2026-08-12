@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpDownloadToFileResponse.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToFileResponse.h>
 
 #include <algorithm>
 #include <cctype>

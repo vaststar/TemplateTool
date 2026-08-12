@@ -6,13 +6,13 @@ set(MODULE_IDE_FOLDER framework/infrastructure/extended/MiniAppRuntimeAgent)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h
-    include/ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentTypes.h
-    include/ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentConfig.h
-    include/ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgentCallback.h
-    include/ucf/Agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h
-    include/ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h
-    include/ucf/Agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h
+    include/ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentExport.h
+    include/ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentTypes.h
+    include/ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentConfig.h
+    include/ucf/agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgentCallback.h
+    include/ucf/agents/MiniAppRuntimeAgent/IMiniAppRuntimeAgent.h
+    include/ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h
+    include/ucf/agents/MiniAppRuntimeAgent/IBridgeMethodHandler.h
 )
 
 set(MODULE_SOURCE_PRIVATE

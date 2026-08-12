@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
+#include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
 
 namespace ucf::utilities::screencapture {
 

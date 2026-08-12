@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
-#include <ucf/Services/MiniAppService/MiniAppManifest.h>
+#include <ucf/utilities/SinkNotifier/SinkNotifier.h>
+#include <ucf/services/MiniAppService/MiniAppManifest.h>
 
 #include "MiniAppNotificationSink.h"
 

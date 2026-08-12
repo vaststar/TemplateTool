@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include "MediaServiceLogger.h"
 #include "CameraVideoCapture.h"

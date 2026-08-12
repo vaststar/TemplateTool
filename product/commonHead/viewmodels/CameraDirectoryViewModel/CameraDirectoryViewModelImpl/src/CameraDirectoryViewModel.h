@@ -4,7 +4,7 @@
 #include <mutex>
 #include <string>
 
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryServiceCallback.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryServiceCallback.h>
 
 namespace ucf::service {
     class ICameraDirectoryService;

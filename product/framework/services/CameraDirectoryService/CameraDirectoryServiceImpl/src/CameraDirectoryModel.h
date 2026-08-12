@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <ucf/Utilities/SinkNotifier/SinkNotifier.h>
+#include <ucf/utilities/SinkNotifier/SinkNotifier.h>
 
 #include "CameraDirectoryEntities.h"
 #include "CameraDirectoryNotificationSink.h"

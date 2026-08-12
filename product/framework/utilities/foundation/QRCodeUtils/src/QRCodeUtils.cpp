@@ -1,4 +1,4 @@
-#include "ucf/Utilities/QRCodeUtils/QRCodeUtils.h"
+#include "ucf/utilities/QRCodeUtils/QRCodeUtils.h"
 #include "qrcodegen.hpp"
 #include <sstream>
 #include <stdexcept>

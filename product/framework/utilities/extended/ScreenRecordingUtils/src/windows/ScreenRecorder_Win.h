@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ucf/Utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
 
 #ifdef _WIN32
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
 
 // Forward declare to avoid pulling Windows.h into the header
 struct WasapiLoopbackCapture;

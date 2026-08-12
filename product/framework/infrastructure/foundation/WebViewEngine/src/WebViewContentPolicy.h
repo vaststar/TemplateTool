@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <ucf/Infrastructure/WebViewEngine/WebViewTypes.h>
+#include <ucf/infrastructure/WebViewEngine/WebViewTypes.h>
 
 namespace ucf::infrastructure::webview::content_policy {
 

@@ -1,4 +1,4 @@
-#include <ucf/Services/NetworkService/Model/HttpDownloadToMemoryResponse.h>
+#include <ucf/services/NetworkService/model/HttpDownloadToMemoryResponse.h>
 
 #include <algorithm>
 #include <cctype>

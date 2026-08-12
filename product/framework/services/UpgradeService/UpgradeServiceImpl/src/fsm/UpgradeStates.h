@@ -5,7 +5,7 @@
 
 #include "UpgradeEvents.h"
 #include "UpgradeContext.h"
-#include <ucf/Utilities/StateMachineUtils/StateMachine.h>
+#include <ucf/utilities/StateMachineUtils/StateMachine.h>
 
 namespace fsm = ucf::utilities::fsm;
 

@@ -5,8 +5,8 @@ set(MODULE_IDE_FOLDER framework/utilities/ipc)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
-    include/ucf/Utilities/NotificationHelper/NotificationHelper.h
-    include/ucf/Utilities/NotificationHelper/INotificationHelper.h
+    include/ucf/utilities/NotificationHelper/NotificationHelper.h
+    include/ucf/utilities/NotificationHelper/INotificationHelper.h
 )
 set(MODULE_INSTALL_INTERFACE_DIR include)
 

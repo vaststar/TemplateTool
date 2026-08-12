@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
-#include <ucf/Services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/ClientInfoService/ClientInfoTypes.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>

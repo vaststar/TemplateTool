@@ -3,7 +3,7 @@
 #include <memory>
 
 #include <commonHead/ResourceLoader/IResourceLoader.h>
-#include <ucf/Services/ClientInfoService/IClientInfoServiceCallback.h>
+#include <ucf/services/ClientInfoService/IClientInfoServiceCallback.h>
 
 namespace ucf::framework {
 class ICoreFramework;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <ucf/Utilities/OSUtils/OSUtils.h>
+#include <ucf/utilities/OSUtils/OSUtils.h>
 namespace ucf::utilities{
 class OSUtils_Win final
 {

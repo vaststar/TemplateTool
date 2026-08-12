@@ -1,11 +1,11 @@
 
 #include "NetworkHttpRawHandler.h"
 
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpTypes.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpRequest.h>
-#include <ucf/Infrastructure/NetworkClient/NetworkModelTypes/Http/NetworkHttpResponse.h>
-#include <ucf/Services/NetworkService/Model/HttpRawRequest.h>
-#include <ucf/Services/NetworkService/Model/HttpRawResponse.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
+#include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
+#include <ucf/services/NetworkService/model/HttpRawRequest.h>
+#include <ucf/services/NetworkService/model/HttpRawResponse.h>
 
 #include "NetworkHttpTypeConverter.h"
 

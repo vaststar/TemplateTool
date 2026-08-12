@@ -1,4 +1,4 @@
-#include <ucf/Services/ServiceDeclaration/IService.h>
+#include <ucf/services/ServiceDeclaration/IService.h>
 
 namespace ucf::service{
 

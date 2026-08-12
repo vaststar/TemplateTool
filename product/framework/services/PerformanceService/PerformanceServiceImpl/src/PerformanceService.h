@@ -1,11 +1,11 @@
 #pragma once
 
-#include <ucf/Utilities/NotificationHelper/NotificationHelper.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
 
-#include <ucf/Services/PerformanceService/IPerformanceService.h>
-#include <ucf/Services/PerformanceService/PerformanceServiceImplExport.h>
+#include <ucf/services/PerformanceService/IPerformanceService.h>
+#include <ucf/services/PerformanceService/PerformanceServiceImplExport.h>
 
 #include "PerformanceNotificationSink.h"
 

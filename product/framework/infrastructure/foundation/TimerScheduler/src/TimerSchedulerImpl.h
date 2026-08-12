@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <ucf/Infrastructure/TimerScheduler/ITimerScheduler.h>
+#include <ucf/infrastructure/TimerScheduler/ITimerScheduler.h>
 
 namespace ucf::infrastructure::scheduling {
 

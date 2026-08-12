@@ -1,12 +1,12 @@
-#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegCli.h>
+#include <ucf/utilities/FFmpegUtils/cli/FFmpegCli.h>
 
 #include <algorithm>
 #include <filesystem>
 
-#include <ucf/Utilities/ProcessBridgeUtils/IProcessBridge.h>
-#include <ucf/Utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
+#include <ucf/utilities/ProcessBridgeUtils/IProcessBridge.h>
+#include <ucf/utilities/ProcessBridgeUtils/ProcessBridgeConfig.h>
 
-#include <ucf/Utilities/FFmpegUtils/Cli/FFmpegLocator.h>
+#include <ucf/utilities/FFmpegUtils/cli/FFmpegLocator.h>
 #include "FFmpegLogger.h"
 
 namespace ucf::utilities::ffmpeg {

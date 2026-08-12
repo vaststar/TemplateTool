@@ -2,12 +2,12 @@ include(BuildModule)
 
 # FeatureSettingsServiceImpl (SHARED) - concrete implementation.
 set(MODULE_MODULE_NAME FeatureSettingsServiceImpl)
-set(MODULE_IDE_FOLDER framework/Services)
+set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/FeatureSettingsService/FeatureSettingsServiceImplExport.h
-    include/ucf/Services/FeatureSettingsService/FeatureSettingsServiceCreator.h
+    include/ucf/services/FeatureSettingsService/FeatureSettingsServiceImplExport.h
+    include/ucf/services/FeatureSettingsService/FeatureSettingsServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/FeatureSettingsServiceLogger.h

@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-#include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentTypes.h>
+#include <ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentTypes.h>
 
 namespace ucf::agents {
 

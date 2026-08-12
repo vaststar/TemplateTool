@@ -6,10 +6,10 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/SystemUtils/SystemUtilsExport.h
-    include/ucf/Utilities/SystemUtils/SystemUtils.h
-    include/ucf/Utilities/SystemUtils/SystemProxyUtils.h
-    include/ucf/Utilities/SystemUtils/CertStoreUtils.h
+    include/ucf/utilities/SystemUtils/SystemUtilsExport.h
+    include/ucf/utilities/SystemUtils/SystemUtils.h
+    include/ucf/utilities/SystemUtils/SystemProxyUtils.h
+    include/ucf/utilities/SystemUtils/CertStoreUtils.h
 )
 
 set(MODULE_SOURCE_PRIVATE

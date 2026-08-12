@@ -3,8 +3,8 @@
 #include <memory>
 #include <functional>
 #include <source_location>
-#include <ucf/Services/DataWarehouseService/DatabaseModelDeclare.h>
-#include <ucf/Services/DataWarehouseService/IDataWarehouseService.h>
+#include <ucf/services/DataWarehouseService/DatabaseModelDeclare.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
 
 namespace ucf::framework{
     class ICoreFramework;

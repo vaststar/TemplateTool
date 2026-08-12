@@ -6,8 +6,8 @@ set(MODULE_IDE_FOLDER framework/utilities/foundation)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Utilities/LoggerUtils/LoggerUtilsExport.h
-    include/ucf/Utilities/LoggerUtils/LoggerExport.h
+    include/ucf/utilities/LoggerUtils/LoggerUtilsExport.h
+    include/ucf/utilities/LoggerUtils/LoggerExport.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerExport.cpp

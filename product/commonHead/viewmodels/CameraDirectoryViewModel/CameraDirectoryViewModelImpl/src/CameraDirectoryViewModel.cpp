@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <utility>
 
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryService.h>
-#include <ucf/Services/CameraDirectoryService/ICameraDirectoryEntities.h>
-#include <ucf/Services/MediaService/MediaTypes.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryService.h>
+#include <ucf/services/CameraDirectoryService/ICameraDirectoryEntities.h>
+#include <ucf/services/MediaService/MediaTypes.h>
 
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
