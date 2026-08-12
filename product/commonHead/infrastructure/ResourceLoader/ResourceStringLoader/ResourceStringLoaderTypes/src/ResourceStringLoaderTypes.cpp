@@ -1,1 +1,9 @@
+#include <commonHead/ResourceStringLoader/ResourceStringLoaderTypesExport.h>
+
 #include <ResourceString.h>
+
+namespace commonHead::model {
+
+RESOURCE_STRING_LOADER_TYPES_API void resourceStringLoaderTypesAnchor() {}
+
+} // namespace commonHead::model

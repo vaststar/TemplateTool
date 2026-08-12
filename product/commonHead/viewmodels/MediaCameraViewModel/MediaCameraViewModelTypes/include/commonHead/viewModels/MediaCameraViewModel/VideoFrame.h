@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <utility>
 #include <vector>
 
 #include <commonHead/viewModels/MediaCameraViewModel/MediaCameraViewModelTypesExport.h>
@@ -27,25 +26,21 @@ struct MEDIA_CAMERA_VIEW_MODEL_TYPES_API VideoFrame
     int bytesPerLine = 0;
     PixelFormat format = PixelFormat::RGB888;
 
-    VideoFrame() = default;
+    VideoFrame();
 
     VideoFrame(ImageBuffer buffer,
                int frameWidth,
                int frameHeight,
                int stride,
-               PixelFormat pixelFormat = PixelFormat::RGB888)
-        : data(std::move(buffer))
-        , width(frameWidth)
-        , height(frameHeight)
-        , bytesPerLine(stride)
-        , format(pixelFormat)
-    {
-    }
+               PixelFormat pixelFormat = PixelFormat::RGB888);
 
-    [[nodiscard]] bool isValid() const
-    {
-        return !data.empty() && width > 0 && height > 0;
-    }
+    VideoFrame(const VideoFrame&);
+    VideoFrame(VideoFrame&&) noexcept;
+    VideoFrame& operator=(const VideoFrame&);
+    VideoFrame& operator=(VideoFrame&&) noexcept;
+    ~VideoFrame();
+
+    [[nodiscard]] bool isValid() const;
 };
 
 } // namespace commonHead::viewModels::model
