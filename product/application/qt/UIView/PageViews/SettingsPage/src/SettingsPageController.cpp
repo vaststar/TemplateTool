@@ -34,7 +34,7 @@ void SettingsPageController::init()
     m_treeModel = new SettingsTreeModel(this);
     emit treeModelChanged();
 
-    m_settingsViewModel = getAppContext()->getViewModelFactory()->createSettingsViewModelInstance();
+    m_settingsViewModel = getViewModelFactory()->createSettingsViewModelInstance();
     m_settingsViewModel->registerCallback(m_viewModelEmitter);
     UIVIEW_LOG_DEBUG("SettingsPageController::init ViewModel created, initializing");
     m_settingsViewModel->initViewModel();

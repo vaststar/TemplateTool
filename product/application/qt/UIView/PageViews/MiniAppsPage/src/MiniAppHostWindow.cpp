@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 #include <QWindow>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include "MiniAppInstanceController.h"

@@ -55,7 +55,7 @@ void MainWindowController::init()
     // Listen for events from EventBus
     listenUIEvents<UIMainWindowEvent, UIAboutEvent, UIScreenChangedEvent>();
 
-    mMainViewModel = getAppContext()->getViewModelFactory()->createMainWindowViewModelInstance();
+    mMainViewModel = getViewModelFactory()->createMainWindowViewModelInstance();
     mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
     mMainViewModel->registerCallback(mMainViewModelEmitter);
     connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow,
@@ -80,10 +80,10 @@ bool MainWindowController::isVisible() const
 
 void MainWindowController::openCamera()
 {
-    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
+    getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
     emit titleChanged();
 
-    auto win = getAppContext()->getViewFactory()->createQmlItemWindow(
+    auto win = getViewFactory()->createQmlItemWindow(
         kMediaCameraViewQml);
     if (!win) return;
     if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
@@ -160,7 +160,7 @@ void MainWindowController::createUpgradeController()
 void MainWindowController::showAboutDialog()
 {
     UIVIEW_LOG_DEBUG("showAboutDialog");
-    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kAboutDialogQml);
     if (!win) return;
     if (auto* aboutController = UIView::UIViewHelper::controllerOf<UIViewController>(win))

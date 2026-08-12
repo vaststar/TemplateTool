@@ -46,7 +46,7 @@ void AppUpgradeController::init()
             this, &AppUpgradeController::onUpgradeError);
 
     // Create ViewModel
-    m_viewModel = getAppContext()->getViewModelFactory()->createUpgradeViewModelInstance();
+    m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
     m_viewModel->initViewModel();
     m_viewModel->registerCallback(m_emitter);
 
@@ -275,7 +275,7 @@ void AppUpgradeController::showUpgradeDialog()
     }
     UIVIEW_LOG_DEBUG("showUpgradeDialog");
     m_dialogOpen = true;
-    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kUpgradeDialogQml,
         { { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) } });
     if (!win)

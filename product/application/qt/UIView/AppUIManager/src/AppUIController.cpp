@@ -44,7 +44,7 @@ void AppUIController::init()
     auto appContext = getAppContext();
 
     // Create ViewModel and connect signals
-    mAppUIViewModel = appContext->getViewModelFactory()->createAppUIViewModelInstance();
+    mAppUIViewModel = getViewModelFactory()->createAppUIViewModelInstance();
     mAppUIViewModelEmitter = std::make_shared<UIVMSignalEmitter::AppUIViewModelEmitter>();
     mAppUIViewModel->registerCallback(mAppUIViewModelEmitter);
 
@@ -74,24 +74,22 @@ void AppUIController::init()
 void AppUIController::onAppConfigInitialized()
 {
     UIVIEW_LOG_DEBUG("onAppConfigInitialized start");
-    auto appContext = getAppContext();
-
     // 1. Load translation
-    auto clientInfoViewModel = appContext->getViewModelFactory()->createClientInfoViewModelInstance();
+    auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
     UIVIEW_LOG_DEBUG("get language: " << static_cast<int>(clientInfoViewModel->getApplicationLanguage()));
-    appContext->getManagerProvider()->getTranslatorManager()->loadTranslation(
+    getTranslatorManager()->loadTranslation(
         UILanguage::convertFromViewModel(clientInfoViewModel->getApplicationLanguage()));
 
     // 2. Load theme
     UIVIEW_LOG_DEBUG("get CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
 
     connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
-        auto clientInfoViewModel = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
+        auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
         UIVIEW_LOG_DEBUG("system color scheme changed, CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
         if (clientInfoViewModel->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
         {
             UIVIEW_LOG_DEBUG("system color scheme changed, notifying theme refresh");
-            getAppContext()->getManagerProvider()->getUIResourceLoaderManager()->notifyThemeChanged();
+            getResourceLoaderManager()->notifyThemeChanged();
         }
     });
 
@@ -107,7 +105,7 @@ void AppUIController::onAppConfigInitialized()
 void AppUIController::showMainWindow()
 {
     UIVIEW_LOG_DEBUG("start load main qml");
-    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kMainWindowQml);
     if (!win)
     {

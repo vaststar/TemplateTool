@@ -3,11 +3,11 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
+#include <UIIPCChannel/UIIPCChannelExport.h>
 
 namespace UIUtilities{
 
-class UIUtilities_EXPORT UIIPCServer final
+class UIIPCChannel_EXPORT UIIPCServer final
 {
 public:
     using MessageHandler = std::function<void(const std::string&)>;

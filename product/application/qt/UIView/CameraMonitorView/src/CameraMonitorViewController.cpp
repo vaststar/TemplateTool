@@ -56,7 +56,7 @@ void CameraMonitorViewController::init()
         return;
     }
 
-    mCameraDirectoryViewModel = ctx->getViewModelFactory()->createCameraDirectoryViewModelInstance();
+    mCameraDirectoryViewModel = getViewModelFactory()->createCameraDirectoryViewModelInstance();
     if (!mCameraDirectoryViewModel)
     {
         UIVIEW_LOG_ERROR("failed to create CameraDirectoryViewModel");
@@ -220,7 +220,7 @@ void CameraMonitorViewController::openEditDialog(const QString& mode, const QStr
     {
         return;
     }
-    auto win = ctx->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kCameraEditDialogQml,
         {
             { QStringLiteral("controller"),  QVariant::fromValue<QObject*>(this) },
@@ -245,7 +245,7 @@ void CameraMonitorViewController::openDeleteDialog(const QString& nodeId)
     {
         return;
     }
-    auto win = ctx->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kCameraDeleteDialogQml,
         {
             { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) },
@@ -456,7 +456,7 @@ void CameraMonitorViewController::openCameraWindow(const QString& nodeId)
         UIVIEW_LOG_WARN("openCameraWindow: no AppContext");
         return;
     }
-    auto win = ctx->getViewFactory()->createQmlItemWindow(
+    auto win = getViewFactory()->createQmlItemWindow(
         kMediaCameraViewQml);
     if (!win)
     {

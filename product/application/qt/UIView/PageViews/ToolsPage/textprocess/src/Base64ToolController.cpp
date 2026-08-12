@@ -16,7 +16,7 @@ Base64ToolController::Base64ToolController(QObject* parent)
 void Base64ToolController::init()
 {
     UIVIEW_LOG_DEBUG("Base64ToolController::init");
-    m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
+    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->initViewModel();
 }
 

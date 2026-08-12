@@ -22,7 +22,7 @@ void MainWindowMenuBarController::init()
 {
     UIVIEW_LOG_DEBUG("");
 
-    auto clientInfoVM = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
+    auto clientInfoVM = getViewModelFactory()->createClientInfoViewModelInstance();
     auto res = clientInfoVM->getSupportedLanguages();
     buildMenuModel();
     emit controllerInitialized();
@@ -30,7 +30,7 @@ void MainWindowMenuBarController::init()
 
 void MainWindowMenuBarController::switchLanguage(UILanguage::LanguageType languageType)
 {
-    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(languageType);
+    getTranslatorManager()->loadTranslation(languageType);
 }
 
 void MainWindowMenuBarController::buildMenuModel()

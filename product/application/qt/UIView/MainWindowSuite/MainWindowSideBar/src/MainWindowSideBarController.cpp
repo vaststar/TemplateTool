@@ -46,7 +46,7 @@ void MainWindowSideBarController::init()
 
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init signals connected, creating ViewModel");
 
-    m_sideBarViewModel = getAppContext()->getViewModelFactory()->createSideBarViewModelInstance();
+    m_sideBarViewModel = getViewModelFactory()->createSideBarViewModelInstance();
     if (!m_sideBarViewModel)
     {
         UIVIEW_LOG_ERROR("Failed to create SideBarViewModel!");

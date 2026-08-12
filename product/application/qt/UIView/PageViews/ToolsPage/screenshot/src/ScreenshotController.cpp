@@ -70,7 +70,7 @@ void ScreenshotController::init()
             this, &ScreenshotController::onVMError);
 
     // Phase 2: Create ViewModel from factory
-    m_viewModel = getAppContext()->getViewModelFactory()->createScreenshotViewModelInstance();
+    m_viewModel = getViewModelFactory()->createScreenshotViewModelInstance();
     m_viewModel->initViewModel();
 
     // Phase 3: Register emitter as callback

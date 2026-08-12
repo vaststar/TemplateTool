@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QTimeZone>
 #include <QtQml>
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 
 namespace commonHead::viewModels {
     class IToolsViewModel;

@@ -1,4 +1,3 @@
-add_subdirectory(UIViewBase)
 add_subdirectory(ViewModelSignalEmitter)
 add_subdirectory(LoggerDefine)
 add_subdirectory(UIViewHelper)

@@ -6,7 +6,7 @@
 #include <QWindow>
 #include <QtQml>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "MainWindow/MainWindowContentPageRegistry.h"
 
 class AppUpgradeController;

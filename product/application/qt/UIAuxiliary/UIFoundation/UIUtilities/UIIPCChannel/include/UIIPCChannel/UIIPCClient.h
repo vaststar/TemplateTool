@@ -2,10 +2,10 @@
 
 #include <memory>
 #include <string>
-#include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
+#include <UIIPCChannel/UIIPCChannelExport.h>
 
 namespace UIUtilities{
-class UIUtilities_EXPORT UIIPCClient final
+class UIIPCChannel_EXPORT UIIPCClient final
 {
 
 public:

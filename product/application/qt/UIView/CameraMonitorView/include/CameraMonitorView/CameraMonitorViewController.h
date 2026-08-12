@@ -7,7 +7,7 @@
 #include <QVariantMap>
 #include <QtQml>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "CameraDirectoryItemModel.h"
 // Must precede moc-generated slot signatures so the Q_DECLARE_METATYPE
 // specializations win over the primary template (avoids C2908).

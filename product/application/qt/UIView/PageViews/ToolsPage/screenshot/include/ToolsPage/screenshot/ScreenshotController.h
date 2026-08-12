@@ -4,7 +4,7 @@
 #include <QVariantList>
 #include <QtQml>
 #include <memory>
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "ViewModelSignalEmitter/ScreenshotViewModelEmitter.h"
 
 namespace commonHead::viewModels {

@@ -30,15 +30,9 @@ bool MainWindowTitleBarController::isVisible() const
 
 QColor MainWindowTitleBarController::getColor() const
 {
-    if (auto appContext = getAppContext())
+    if (auto resourceLoaderManager = getResourceLoaderManager())
     {
-        if (auto managerProvider = appContext->getManagerProvider())
-        {
-            if (auto resourceLoaderManager = managerProvider->getUIResourceLoaderManager())
-            {
-                return resourceLoaderManager->getUIColor(UIColorToken::ColorToken::Main_Window_Background, UIColorState::ColorState::Normal);
-            }
-        }
+        return resourceLoaderManager->getUIColor(UIColorToken::ColorToken::Main_Window_Background, UIColorState::ColorState::Normal);
     }
     return QColor(255, 0, 0);
 }

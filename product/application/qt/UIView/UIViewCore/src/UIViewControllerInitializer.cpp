@@ -1,8 +1,7 @@
-#include "UIViewBase/UIViewControllerInitializer.h"
+#include <UIViewCore/UIViewControllerInitializer.h>
 
 #include <AppContext/AppContext.h>
-
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 
 UIViewControllerInitializer::UIViewControllerInitializer(QPointer<AppContext> appContext, QObject* parent)
     : QObject(parent)

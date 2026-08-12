@@ -59,7 +59,7 @@ void NetworkProxyController::init()
             this, &NetworkProxyController::onError);
 
     // Create ViewModel via factory, init, and register emitter as callback
-    m_viewModel = getAppContext()->getViewModelFactory()->createNetworkProxyViewModelInstance();
+    m_viewModel = getViewModelFactory()->createNetworkProxyViewModelInstance();
     m_viewModel->initViewModel();
     m_viewModel->registerCallback(m_viewModelEmitter);
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "ToolsTreeModel.h"
 #include "ToolsPanelRegistry.h"
 #include "ViewModelSignalEmitter/ToolsViewModelEmitter.h"

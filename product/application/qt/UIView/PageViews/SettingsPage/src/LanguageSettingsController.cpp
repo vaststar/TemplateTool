@@ -19,7 +19,7 @@ void LanguageSettingsController::init()
 {
     UIVIEW_LOG_DEBUG("LanguageSettingsController::init");
 
-    m_clientInfoViewModel = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
+    m_clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
     m_clientInfoViewModel->initViewModel();
 
     buildLanguageData();
@@ -49,7 +49,7 @@ void LanguageSettingsController::setLanguage(int index)
     emit currentLanguageIndexChanged();
 
     m_clientInfoViewModel->setApplicationLanguage(langType);
-    getAppContext()->getManagerProvider()->getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(langType));
+    getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(langType));
 }
 
 void LanguageSettingsController::buildLanguageData()

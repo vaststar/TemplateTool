@@ -36,7 +36,7 @@ void ToolsPageController::init()
     m_treeModel = new ToolsTreeModel(this);
     emit treeModelChanged();
 
-    m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
+    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->registerCallback(m_viewModelEmitter);
     UIVIEW_LOG_DEBUG("ToolsPageController::init ViewModel created, initializing");
     m_toolsViewModel->initViewModel();

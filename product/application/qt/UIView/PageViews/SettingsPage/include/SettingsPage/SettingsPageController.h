@@ -6,7 +6,7 @@
 
 #include <QObject>
 #include <QtQml>
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "SettingsTreeModel.h"
 #include "ViewModelSignalEmitter/SettingsViewModelEmitter.h"
 

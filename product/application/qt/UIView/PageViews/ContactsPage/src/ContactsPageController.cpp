@@ -39,7 +39,7 @@ void ContactsPageController::init()
         setLoadState(Error);
         return;
     }
-    mContactListViewModel = ctx->getViewModelFactory()->createContactListViewModelInstance();
+    mContactListViewModel = getViewModelFactory()->createContactListViewModelInstance();
     if (!mContactListViewModel)
     {
         setLoadState(Error);
@@ -71,7 +71,7 @@ void ContactsPageController::init()
 
 void ContactsPageController::buttonClicked()
 {
-    auto win = getAppContext()->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kUTWindowQml);
     if (!win)
     {
@@ -250,7 +250,7 @@ void ContactsPageController::openEditDialog(const QString& mode, const QString& 
     {
         return;
     }
-    auto win = ctx->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kContactEditDialogQml,
         {
             { QStringLiteral("controller"),  QVariant::fromValue<QObject*>(this) },
@@ -275,7 +275,7 @@ void ContactsPageController::openDeleteDialog(const QString& contactId)
     {
         return;
     }
-    auto win = ctx->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kContactDeleteDialogQml,
         {
             { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) },

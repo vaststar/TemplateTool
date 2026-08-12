@@ -2,10 +2,10 @@
 
 #include <string>
 #include <memory>
-#include <UIUtilities/UIUtilitiesCommonFile/UIUtilitiesExport.h>
+#include <UISingleInstance/UISingleInstanceExport.h>
 
 namespace UIUtilities{
-class UIUtilities_EXPORT UISingleInstanceChecker final
+class UISingleInstance_EXPORT UISingleInstanceChecker final
 {
 public:
     explicit UISingleInstanceChecker(const std::string &name);

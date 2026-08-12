@@ -16,6 +16,7 @@ set(MODULE_SOURCE_PRIVATE "")
 set(MODULE_QML_TARGET_FILES "")
 set(MODULE_PRIVATE_INCLUDE_DIRS "")
 
+add_subdirectory(UIViewCore)
 add_subdirectory(UIViewCommon)
 add_subdirectory(UIEvents)
 add_subdirectory(MainWindowSuite)
@@ -28,6 +29,7 @@ add_subdirectory(AppUIManager)
 set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
+    UIViewCore
     LoggerUtils
     UIPlatformUtils
     UIIPCChannel

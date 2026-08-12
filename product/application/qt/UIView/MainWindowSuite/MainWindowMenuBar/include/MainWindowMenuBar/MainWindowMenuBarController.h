@@ -5,7 +5,7 @@
 #include <QtQml>
 #include <QVariantList>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 
 namespace commonHead{
     class ICommonHeadFramework;

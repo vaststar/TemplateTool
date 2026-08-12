@@ -18,7 +18,7 @@
 #include <UTComposite/UTComposite.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-// #include "UIViewBase/UIViewControllerInitializer.h"
+// #include <UIViewCore/UIViewControllerInitializer.h>
 #include "AppUIController.h"
 #include "ViewModelSignalEmitter/RegisterViewModelMetaTypes.h"
 

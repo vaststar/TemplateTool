@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QtQml>
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 
 class HomePageController : public UIViewController
 {

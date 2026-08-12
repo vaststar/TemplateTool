@@ -54,7 +54,7 @@ void HomePageController::openCamera()
         return;
     }
 
-    auto win = ctx->getViewFactory()->createQmlItemWindow(
+    auto win = getViewFactory()->createQmlItemWindow(
         kMediaCameraViewQml);
     if (!win)
     {
@@ -81,7 +81,7 @@ void HomePageController::openCameraMonitor()
         return;
     }
 
-    auto win = ctx->getViewFactory()->createQmlWindow(
+    auto win = getViewFactory()->createQmlWindow(
         kCameraMonitorViewQml);
     if (!win)
     {

@@ -46,7 +46,7 @@ void MiniAppListPageController::init()
         return;
     }
 
-    mViewModel = ctx->getViewModelFactory()->createMiniAppListViewModelInstance();
+    mViewModel = getViewModelFactory()->createMiniAppListViewModelInstance();
     if (!mViewModel)
     {
         UIVIEW_LOG_WARN("MiniAppListPageController::init failed to create view model");

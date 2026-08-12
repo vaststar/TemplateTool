@@ -5,7 +5,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <memory>
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "ToolsPage/network/ProxyRequestModel.h"
 #include "ToolsPage/network/ProxyRulesManager.h"
 #include "ViewModelSignalEmitter/NetworkProxyViewModelEmitter.h"

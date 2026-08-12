@@ -45,7 +45,7 @@ void MiniAppInstanceController::init()
     }
 
     // The view model owns the agent and resolves package/permissions from the id.
-    mViewModel = ctx->getViewModelFactory()->createMiniAppRuntimeViewModelInstance();
+    mViewModel = getViewModelFactory()->createMiniAppRuntimeViewModelInstance();
     if (!mViewModel)
     {
         UIVIEW_LOG_WARN("MiniAppInstanceController::init failed to create view model, id="

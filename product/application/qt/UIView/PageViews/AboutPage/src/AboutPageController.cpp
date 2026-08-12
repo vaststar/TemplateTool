@@ -20,7 +20,7 @@ AboutPageController::~AboutPageController()
 void AboutPageController::init()
 {
     UIVIEW_LOG_DEBUG("AboutPageController::init");
-    m_clientInfoViewModel = getAppContext()->getViewModelFactory()->createClientInfoViewModelInstance();
+    m_clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
     emit infoReady();
 }
 

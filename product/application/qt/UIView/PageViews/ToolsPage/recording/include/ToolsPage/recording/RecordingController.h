@@ -4,7 +4,7 @@
 #include <QRect>
 #include <QtQml>
 #include <memory>
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "ViewModelSignalEmitter/RecordingViewModelEmitter.h"
 
 namespace commonHead::viewModels {

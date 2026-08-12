@@ -16,7 +16,7 @@ UuidToolController::UuidToolController(QObject* parent)
 void UuidToolController::init()
 {
     UIVIEW_LOG_DEBUG("UuidToolController::init");
-    m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
+    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->initViewModel();
 }
 

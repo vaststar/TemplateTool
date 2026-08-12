@@ -8,7 +8,7 @@
 #include <QVideoSink>
 #include <commonhead/viewmodels/MediaCameraViewModel/VideoFrame.h>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "ViewModelSignalEmitter/MediaCameraViewModelEmitter.h"
 
 namespace commonHead{

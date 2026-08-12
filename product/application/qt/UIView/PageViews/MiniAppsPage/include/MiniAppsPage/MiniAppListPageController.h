@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 
 namespace commonHead::viewModels
 {

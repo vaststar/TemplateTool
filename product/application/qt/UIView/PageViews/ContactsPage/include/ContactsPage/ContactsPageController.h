@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "UIViewBase/UIViewController.h"
+#include <UIViewCore/UIViewController.h>
 #include "ContactListItemModel.h"
 // Pull in Q_DECLARE_METATYPE specializations BEFORE moc generates code for
 // our slot signatures.

@@ -58,7 +58,7 @@ void RecordingController::init()
             this, &RecordingController::onVMError);
 
     // Phase 2: Create ViewModel from factory
-    m_viewModel = getAppContext()->getViewModelFactory()->createRecordingViewModelInstance();
+    m_viewModel = getViewModelFactory()->createRecordingViewModelInstance();
     m_viewModel->initViewModel();
 
     // Phase 3: Register emitter as callback

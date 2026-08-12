@@ -20,10 +20,10 @@ JsonToolController::JsonToolController(QObject* parent)
 void JsonToolController::init()
 {
     UIVIEW_LOG_DEBUG("JsonToolController::init");
-    m_toolsViewModel = getAppContext()->getViewModelFactory()->createToolsViewModelInstance();
+    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->initViewModel();
 
-    m_jsonTreeViewModel = getAppContext()->getViewModelFactory()->createJsonTreeViewModelInstance();
+    m_jsonTreeViewModel = getViewModelFactory()->createJsonTreeViewModelInstance();
     m_jsonTreeViewModel->initViewModel();
 }
 
