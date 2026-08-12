@@ -1,8 +1,8 @@
 #include "AboutPage/AboutPageController.h"
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ClientInfoViewModel/IClientInfoViewModel.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 

@@ -6,8 +6,8 @@
 #include <QString>
 #include <QStringList>
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/ResourceLoader/IResourceLoader.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/ResourceLoader/IResourceLoader.h>
 
 #include <UICore/CoreApplication.h>
 #include <UICore/CoreQmlEngine.h>

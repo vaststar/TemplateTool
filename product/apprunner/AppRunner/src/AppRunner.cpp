@@ -9,7 +9,7 @@
 #include <ucf/CoreFramework/CoreFrameworkCreator.h>
 #include <ucf/services/ServiceFactory/IServiceFactory.h>
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include "AppRunner/AppRunner.h"
 #include "LoggerDefine.h"

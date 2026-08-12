@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
+#include <commonhead/viewmodels/StabilityViewModel/IStabilityViewModel.h>
 
 namespace UIVMSignalEmitter{
 

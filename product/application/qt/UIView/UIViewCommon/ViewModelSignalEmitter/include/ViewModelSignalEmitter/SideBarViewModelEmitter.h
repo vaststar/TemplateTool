@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
+#include <commonhead/viewmodels/SideBarViewModel/ISideBarViewModel.h>
 #include "RegisterViewModelMetaTypes.h"
 
 namespace UIVMSignalEmitter {

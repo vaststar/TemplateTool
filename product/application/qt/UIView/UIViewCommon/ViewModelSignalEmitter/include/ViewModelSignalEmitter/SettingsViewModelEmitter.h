@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
+#include <commonhead/viewmodels/SettingsViewModel/ISettingsViewModel.h>
 
 namespace UIVMSignalEmitter {
 

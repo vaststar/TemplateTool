@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
+#include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 
 // Pure tree model. Owns its own mirror of nodes; exposes coarse mutation
 // methods so callers (controller) can translate VM callbacks into proper

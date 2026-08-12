@@ -1,0 +1,19 @@
+include(BuildInterface)
+
+set(MODULE_MODULE_NAME ResourceAssetLoaderApi)
+set(MODULE_IDE_FOLDER commonhead/infrastructure/ResourceLoader/ResourceAssetLoader)
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(MODULE_HEADER_FILES
+    include/commonhead/ResourceAssetLoader/IResourceAssetLoader.h
+)
+
+BuildInterface(
+    MODULE_NAME ${MODULE_MODULE_NAME}
+    TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+    TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+    TARGET_ADD_LINK_LIBRARY_PUBLIC ResourceAssetLoaderTypes ResourceAsset
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${MODULE_HEADER_BASE_DIR}
+    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE include
+    IDE_FOLDER ${MODULE_IDE_FOLDER}
+)

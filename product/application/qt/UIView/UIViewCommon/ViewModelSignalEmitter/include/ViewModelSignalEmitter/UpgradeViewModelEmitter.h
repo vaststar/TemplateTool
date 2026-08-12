@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QString>
-#include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
+#include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
 namespace UIVMSignalEmitter{
 class UpgradeViewModelEmitter: public QObject,

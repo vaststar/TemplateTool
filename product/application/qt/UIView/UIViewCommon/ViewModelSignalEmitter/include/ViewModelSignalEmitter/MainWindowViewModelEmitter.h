@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QString>
-#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
 
 namespace UIVMSignalEmitter{
 class MainWindowViewModelEmitter: public QObject,

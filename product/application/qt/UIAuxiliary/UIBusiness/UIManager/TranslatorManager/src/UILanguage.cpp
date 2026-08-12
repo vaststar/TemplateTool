@@ -1,6 +1,6 @@
 #include <TranslatorManager/UILanguage.h>
 #include <QQmlEngine>
-#include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
+#include <commonhead/viewmodels/ClientInfoViewModel/ClientInfoModel.h>
 
 namespace UILanguage{
 

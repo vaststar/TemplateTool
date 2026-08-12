@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QString>
-#include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
+#include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotViewModel.h>
 
 namespace UIVMSignalEmitter {
 

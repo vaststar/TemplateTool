@@ -5,7 +5,7 @@
 
 
 #include <ucf/CoreFramework/ICoreFramework.h>
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include <AppRunner/AppRunner.h>
 #include <UISingleInstance/UISingleInstanceChecker.h>

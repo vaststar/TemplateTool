@@ -4,9 +4,9 @@
 
 #include <functional>
 
-#include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
-#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
 #include "ViewModelSignalEmitter/ToolsViewModelEmitter.h"

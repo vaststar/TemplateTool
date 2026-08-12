@@ -4,7 +4,7 @@
 #include <QString>
 #include <QVariant>
 
-#include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
+#include <commonhead/viewmodels/SideBarViewModel/SideBarModel.h>
 
 // List model that owns a UI-layer mirror of nav items. VM data is converted
 // at the boundary (fromVM); data() reads only the internal Item struct.

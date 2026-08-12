@@ -2,9 +2,9 @@
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
-#include <commonHead/viewModels/RecordingViewModel/IRecordingModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/RecordingViewModel/IRecordingViewModel.h>
+#include <commonhead/viewmodels/RecordingViewModel/IRecordingModel.h>
 
 #include <QStandardPaths>
 #include <QDir>

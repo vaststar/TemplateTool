@@ -4,8 +4,8 @@
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
 #include <QClipboard>
 #include <QGuiApplication>

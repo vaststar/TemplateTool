@@ -2,8 +2,8 @@
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
 #include "UIViewHelper/UIViewHelper.h"
 #include "ViewModelSignalEmitter/UpgradeViewModelEmitter.h"

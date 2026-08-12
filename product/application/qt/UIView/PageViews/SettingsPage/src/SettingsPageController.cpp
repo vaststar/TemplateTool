@@ -3,9 +3,9 @@
 
 #include <functional>
 
-#include <commonHead/viewModels/SettingsViewModel/ISettingsViewModel.h>
-#include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/SettingsViewModel/ISettingsViewModel.h>
+#include <commonhead/viewmodels/SettingsViewModel/ISettingsModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
 #include "ViewModelSignalEmitter/SettingsViewModelEmitter.h"

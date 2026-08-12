@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QString>
 
-#include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
+#include <commonhead/viewmodels/MiniAppListViewModel/IMiniAppListViewModel.h>
 
 namespace UIVMSignalEmitter {
 

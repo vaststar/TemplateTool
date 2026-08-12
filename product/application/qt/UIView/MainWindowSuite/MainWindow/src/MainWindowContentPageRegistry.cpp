@@ -2,7 +2,7 @@
 
 #include <QVariantMap>
 
-#include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
+#include <commonhead/viewmodels/SideBarViewModel/SideBarModel.h>
 
 MainWindowContentPageRegistry::MainWindowContentPageRegistry(QObject* parent)
     : QObject(parent)

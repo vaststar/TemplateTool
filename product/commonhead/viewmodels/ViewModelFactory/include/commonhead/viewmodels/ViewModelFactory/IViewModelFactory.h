@@ -1,0 +1,67 @@
+#pragma once
+
+#include <memory>
+
+#include <commonhead/viewmodels/ViewModelFactory/ViewModelFactoryExport.h>
+
+namespace commonHead{
+    class ICommonHeadFramework;
+    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+}
+
+namespace commonHead::viewModels{
+    class IAppUIViewModel;
+    class IClientInfoViewModel;
+    class IContactListViewModel;
+    class IMainWindowViewModel;
+    class IMediaCameraViewModel;
+    class ICameraDirectoryViewModel;
+    class IInvocationViewModel;
+    class ISettingsViewModel;
+    class ISideBarViewModel;
+    class IStabilityViewModel;
+    class IToolsViewModel;
+    class IJsonTreeViewModel;
+    class INetworkProxyViewModel;
+    class IScreenshotViewModel;
+    class IRecordingViewModel;
+    class IUpgradeViewModel;
+    class IMiniAppListViewModel;
+    class IMiniAppRuntimeViewModel;
+}
+
+namespace commonHead::viewModels{
+class VIEW_MODEL_FACTORY_API IViewModelFactory
+{
+public:
+    IViewModelFactory() = default;
+    IViewModelFactory(const IViewModelFactory&) = delete;
+    IViewModelFactory(IViewModelFactory&&) = delete;
+    IViewModelFactory& operator=(const IViewModelFactory&) = delete;
+    IViewModelFactory& operator=(IViewModelFactory&&) = delete;
+    virtual ~IViewModelFactory() = default;
+
+public:
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IInvocationViewModel> createInvocationViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> createCameraDirectoryViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> createJsonTreeViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> createNetworkProxyViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> createScreenshotViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> createUpgradeViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> createMiniAppListViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> createMiniAppRuntimeViewModelInstance() const = 0;
+
+public:
+    static std::shared_ptr<IViewModelFactory> createInstance(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);
+};
+}

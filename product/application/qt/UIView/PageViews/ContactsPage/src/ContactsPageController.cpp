@@ -3,10 +3,10 @@
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
 #include "ViewModelSignalEmitter/ContactListViewModelEmitter.h"
-#include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
-#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
+#include <commonhead/viewmodels/ContactListViewModel/IContactListViewModel.h>
+#include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <QVariantMap>
 #include <QVariantList>

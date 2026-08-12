@@ -6,7 +6,7 @@
 
 #include "UIViewBase/UIViewController.h"
 
-#include <commonHead/viewModels/UpgradeViewModel/IUpgradeViewModel.h>
+#include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
 namespace commonHead::viewModels {
     class IUpgradeViewModel;

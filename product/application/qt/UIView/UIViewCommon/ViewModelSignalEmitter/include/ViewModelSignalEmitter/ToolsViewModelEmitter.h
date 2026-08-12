@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
 
 namespace UIVMSignalEmitter {
 

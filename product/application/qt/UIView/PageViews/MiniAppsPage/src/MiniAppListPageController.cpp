@@ -4,8 +4,8 @@
 #include <QUrl>
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/MiniAppListViewModel/IMiniAppListViewModel.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"

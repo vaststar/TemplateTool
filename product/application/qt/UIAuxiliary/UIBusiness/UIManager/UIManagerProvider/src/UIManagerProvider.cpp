@@ -1,6 +1,6 @@
 #include "UIManagerProvider.h"
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 
 #include <UIAppCore/UIApplication.h>
 #include <UIAppCore/UIQmlEngine.h>

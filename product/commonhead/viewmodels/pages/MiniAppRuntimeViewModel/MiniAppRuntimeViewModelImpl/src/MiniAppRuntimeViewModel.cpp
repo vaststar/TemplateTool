@@ -1,0 +1,245 @@
+#include "MiniAppRuntimeViewModel.h"
+#include "LoggerDefine.h"
+
+#include <ucf/agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h>
+#include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/services/MiniAppService/IMiniAppService.h>
+
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/ServiceLocator/IServiceLocator.h>
+#include <commonhead/viewmodels/MiniAppRuntimeViewModel/MiniAppRuntimeViewModelCreator.h>
+
+#include "SystemBridgeHandler.h"
+
+namespace commonHead::viewModels {
+
+namespace {
+std::string currentPlatform()
+{
+#if defined(__APPLE__)
+    return "macos";
+#elif defined(_WIN32)
+    return "windows";
+#elif defined(__linux__)
+    return "linux";
+#else
+    return "unknown";
+#endif
+}
+} // namespace
+
+namespace impl {
+
+std::shared_ptr<IMiniAppRuntimeViewModel>
+createMiniAppRuntimeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+{
+    return std::make_shared<MiniAppRuntimeViewModel>(commonHeadFramework);
+}
+
+} // namespace impl
+
+MiniAppRuntimeViewModel::MiniAppRuntimeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+    : IMiniAppRuntimeViewModel(commonHeadFramework)
+{
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("create MiniAppRuntimeViewModel");
+}
+
+MiniAppRuntimeViewModel::~MiniAppRuntimeViewModel()
+{
+    stop();
+}
+
+std::string MiniAppRuntimeViewModel::getViewModelName() const
+{
+    return "MiniAppRuntimeViewModel";
+}
+
+void MiniAppRuntimeViewModel::init()
+{
+    // The runtime is created lazily in start(); nothing to do at construction.
+}
+
+std::shared_ptr<ucf::service::IMiniAppService> MiniAppRuntimeViewModel::lockMiniAppService() const
+{
+    if (auto framework = getCommonHeadFramework().lock())
+    {
+        if (auto locator = framework->getServiceLocator())
+        {
+            return locator->getMiniAppService().lock();
+        }
+    }
+    return nullptr;
+}
+
+std::shared_ptr<ucf::service::IClientInfoService> MiniAppRuntimeViewModel::lockClientInfoService() const
+{
+    if (auto framework = getCommonHeadFramework().lock())
+    {
+        if (auto locator = framework->getServiceLocator())
+        {
+            return locator->getClientInfoService().lock();
+        }
+    }
+    return nullptr;
+}
+
+void MiniAppRuntimeViewModel::start(const std::string& appId)
+{
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        if (mAgent)
+        {
+            MINI_APP_RUNTIME_VIEW_MODEL_LOG_WARN("MiniAppRuntimeViewModel::start already started id=" << mAppId);
+            return;
+        }
+    }
+
+    // Everything below (service lookups, agent creation, initialize, loadEntry)
+    // runs without mMutex: the agent may synchronously fire callbacks that
+    // re-enter this view model, and holding the non-recursive mutex across those
+    // calls would self-deadlock.
+    auto service = lockMiniAppService();
+    if (!service)
+    {
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start mini-app service not available");
+        return;
+    }
+
+    const auto manifest = service->getApp(appId);
+    if (!manifest.has_value())
+    {
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start unknown app id=" << appId);
+        return;
+    }
+
+    ucf::agents::MiniAppRuntimeAgentConfig config;
+    config.appId      = manifest->id;
+    config.packageDir = service->getAppPackageDir(manifest->id);
+    // Per-app writable cache dir doubles as the WebView2 user-data folder on
+    // Windows (isolates each mini-app's cookies/cache). Ignored on macOS.
+    config.userDataFolder = service->getAppCacheDir(manifest->id);
+    if (!manifest->entry.empty())
+    {
+        config.entry = manifest->entry;
+    }
+    config.grantedPermissions = manifest->permissions;
+
+    // Build the built-in system handler content from the view model layer so the
+    // handler itself carries no platform/Qt dependency.
+    SystemBridgeHandler::Info systemInfo;
+    systemInfo.appId    = manifest->id;
+    systemInfo.appName  = manifest->name;
+    systemInfo.platform = currentPlatform();
+    if (auto clientInfo = lockClientInfoService())
+    {
+        systemInfo.appVersion = clientInfo->getApplicationVersion().toString();
+    }
+
+    auto agent = ucf::agents::createMiniAppRuntimeAgent();
+    if (!agent)
+    {
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start failed to create runtime agent");
+        return;
+    }
+
+    agent->registerCallback(
+        std::static_pointer_cast<ucf::agents::IMiniAppRuntimeAgentCallback>(shared_from_this()));
+    agent->registerBridgeHandler(std::make_shared<SystemBridgeHandler>(std::move(systemInfo)));
+
+    if (!agent->initialize(config))
+    {
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start initialize failed id=" << appId);
+        return;
+    }
+
+    // Commit under the lock, double-checking in case a concurrent start() won.
+    std::shared_ptr<ucf::agents::IMiniAppRuntimeAgent> throwaway;
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        if (mAgent)
+        {
+            throwaway = std::move(agent);
+        }
+        else
+        {
+            mAgent = agent;
+            mAppId = manifest->id;
+        }
+    }
+    if (throwaway)
+    {
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_WARN("MiniAppRuntimeViewModel::start lost init race, id=" << appId);
+        throwaway->shutdown();
+        return;
+    }
+
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_INFO("MiniAppRuntimeViewModel::start id=" << manifest->id
+                        << " entry=" << config.entry);
+    agent->loadEntry();
+}
+
+void MiniAppRuntimeViewModel::stop()
+{
+    std::shared_ptr<ucf::agents::IMiniAppRuntimeAgent> agent;
+    std::string appId;
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        agent = std::move(mAgent);
+        mAgent.reset();
+        appId = mAppId;
+    }
+    if (agent)
+    {
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_INFO("MiniAppRuntimeViewModel::stop id=" << appId);
+        agent->shutdown();
+    }
+}
+
+bool MiniAppRuntimeViewModel::isReady() const
+{
+    std::lock_guard<std::mutex> lock(mMutex);
+    return mAgent ? mAgent->isReady() : false;
+}
+
+std::uintptr_t MiniAppRuntimeViewModel::nativeHostHandle() const
+{
+    std::lock_guard<std::mutex> lock(mMutex);
+    if (!mAgent)
+    {
+        return 0;
+    }
+    return static_cast<std::uintptr_t>(mAgent->nativeHostHandle());
+}
+
+void MiniAppRuntimeViewModel::onReadyChanged(bool ready)
+{
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel onReadyChanged ready=" << ready);
+    fireNotification(&IMiniAppRuntimeViewModelCallback::onReadyChanged, ready);
+}
+
+void MiniAppRuntimeViewModel::onLoadFinished(bool success)
+{
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_INFO("MiniAppRuntimeViewModel onLoadFinished success=" << success);
+    fireNotification(&IMiniAppRuntimeViewModelCallback::onLoadFinished, success);
+}
+
+void MiniAppRuntimeViewModel::onLoadFailed(int errorCode, const std::string& errorMessage)
+{
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_WARN("MiniAppRuntimeViewModel onLoadFailed code=" << errorCode
+                        << " msg=" << errorMessage);
+    fireNotification(&IMiniAppRuntimeViewModelCallback::onLoadFailed, errorCode, errorMessage);
+}
+
+void MiniAppRuntimeViewModel::onTitleChanged(const std::string& title)
+{
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel onTitleChanged title=" << title);
+    fireNotification(&IMiniAppRuntimeViewModelCallback::onTitleChanged, title);
+}
+
+void MiniAppRuntimeViewModel::onUrlChanged(const std::string& url)
+{
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel onUrlChanged url=" << url);
+    fireNotification(&IMiniAppRuntimeViewModelCallback::onUrlChanged, url);
+}
+
+} // namespace commonHead::viewModels

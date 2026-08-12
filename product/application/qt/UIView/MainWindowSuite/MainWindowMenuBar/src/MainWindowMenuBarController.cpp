@@ -1,11 +1,11 @@
 #include "MainWindowMenuBar/MainWindowMenuBarController.h"
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
-#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonhead/viewmodels/ClientInfoViewModel/IClientInfoViewModel.h>
 
 #include <TranslatorManager/UILanguage.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <TranslatorManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>

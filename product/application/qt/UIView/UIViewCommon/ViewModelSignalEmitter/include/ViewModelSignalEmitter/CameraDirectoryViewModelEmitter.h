@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
+#include <commonhead/viewmodels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
 
 namespace UIVMSignalEmitter {
 

@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include "MockResourceLoader.h"
 
 /**

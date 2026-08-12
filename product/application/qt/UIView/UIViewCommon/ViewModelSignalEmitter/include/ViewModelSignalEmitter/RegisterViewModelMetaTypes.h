@@ -3,12 +3,12 @@
 #include <QMetaType>
 #include <string>
 #include <vector>
-#include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
-#include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
-#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
-#include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
-#include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
-#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
+#include <commonhead/viewmodels/SideBarViewModel/ISideBarViewModel.h>
+#include <commonhead/viewmodels/MediaCameraViewModel/IMediaCameraViewModel.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsModel.h>
+#include <commonhead/viewmodels/SettingsViewModel/ISettingsModel.h>
+#include <commonhead/viewmodels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
+#include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 
 Q_DECLARE_METATYPE(commonHead::viewModels::model::NavItemData)
 Q_DECLARE_METATYPE(std::vector<commonHead::viewModels::model::NavItemData>)

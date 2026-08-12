@@ -1,8 +1,8 @@
 #include "ToolsPage/generators/UuidToolController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 
-#include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <QClipboard>
 #include <QGuiApplication>

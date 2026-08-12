@@ -2,7 +2,7 @@
 
 #include <QVariantMap>
 
-#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsModel.h>
 
 ToolsPanelRegistry::ToolsPanelRegistry(QObject* parent)
     : QObject(parent)

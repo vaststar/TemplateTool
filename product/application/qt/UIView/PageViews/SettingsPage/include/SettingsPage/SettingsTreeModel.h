@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <commonHead/viewModels/SettingsViewModel/ISettingsModel.h>
+#include <commonhead/viewmodels/SettingsViewModel/ISettingsModel.h>
 
 // Pure tree model. Owns its own mirror of nodes; exposes coarse mutation
 // methods so callers (controller) can translate VM callbacks into proper

@@ -1,0 +1,53 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <memory>
+
+#include <commonhead/utilities/VMNotificationHelper/IVMNotificationHelper.h>
+#include <commonhead/viewmodels/ViewModelCore/IViewModel.h>
+
+namespace commonHead::viewModels::model{
+    enum class LanguageType;
+    enum class ThemeType;
+}
+
+namespace commonHead::viewModels{
+class IClientInfoViewModelCallback
+{
+public:
+    IClientInfoViewModelCallback() = default;
+    IClientInfoViewModelCallback(const IClientInfoViewModelCallback&) = delete;
+    IClientInfoViewModelCallback(IClientInfoViewModelCallback&&) = delete;
+    IClientInfoViewModelCallback& operator=(const IClientInfoViewModelCallback&) = delete;
+    IClientInfoViewModelCallback& operator=(IClientInfoViewModelCallback&&) = delete;
+    virtual ~IClientInfoViewModelCallback() = default;
+};
+
+class IClientInfoViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IClientInfoViewModelCallback>
+{
+public:
+    using IViewModel::IViewModel;
+    IClientInfoViewModel(const IClientInfoViewModel&) = delete;
+    IClientInfoViewModel(IClientInfoViewModel&&) = delete;
+    IClientInfoViewModel& operator=(const IClientInfoViewModel&) = delete;
+    IClientInfoViewModel& operator=(IClientInfoViewModel&&) = delete;
+    virtual ~IClientInfoViewModel() = default;
+public:
+    virtual std::string getViewModelName() const = 0;
+
+    virtual std::string getApplicationVersion() const = 0;
+    virtual std::string getProductName() const = 0;
+    virtual std::string getCompanyName() const = 0;
+    virtual std::string getCopyright() const = 0;
+    virtual std::string getProductDescription() const = 0;
+
+    virtual commonHead::viewModels::model::LanguageType getApplicationLanguage() const = 0;
+    virtual void setApplicationLanguage(commonHead::viewModels::model::LanguageType language) = 0;
+    virtual std::vector<commonHead::viewModels::model::LanguageType> getSupportedLanguages() const = 0;
+
+    virtual void setCurrentThemeType(commonHead::viewModels::model::ThemeType themeType) = 0;
+    virtual commonHead::viewModels::model::ThemeType getCurrentThemeType() const = 0;
+    virtual std::vector<commonHead::viewModels::model::ThemeType> getSupportedThemeTypes() const = 0;
+};
+}

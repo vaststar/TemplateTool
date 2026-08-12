@@ -2,11 +2,11 @@
 
 #include <thread>
 
-#include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
-#include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>
+#include <commonhead/viewmodels/MediaCameraViewModel/IMediaCameraViewModel.h>
+#include <commonhead/viewmodels/MediaCameraViewModel/CameraSource.h>
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 
 #include "ViewModelSignalEmitter/MediaCameraViewModelEmitter.h"
 

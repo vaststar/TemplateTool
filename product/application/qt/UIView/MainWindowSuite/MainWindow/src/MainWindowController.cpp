@@ -1,11 +1,11 @@
 #include "MainWindow/MainWindowController.h"
 #include "MainWindow/MainWindowContentPageRegistry.h"
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/viewModels/MainWindowViewModel/IMainWindowViewModel.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
 
 #include <TranslatorManager/UILanguage.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <TranslatorManager/ITranslatorManager.h>

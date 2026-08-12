@@ -1,9 +1,9 @@
 #include "MainWindowSideBar/MainWindowSideBarController.h"
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/SideBarViewModel/ISideBarViewModel.h>
-#include <commonHead/viewModels/SideBarViewModel/SideBarModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/SideBarViewModel/ISideBarViewModel.h>
+#include <commonhead/viewmodels/SideBarViewModel/SideBarModel.h>
 
 #include "ViewModelSignalEmitter/SideBarViewModelEmitter.h"
 #include "UIEvents/UIUpgradeEvent.h"

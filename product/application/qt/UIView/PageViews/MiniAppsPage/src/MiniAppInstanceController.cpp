@@ -3,8 +3,8 @@
 #include <utility>
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
 #include "ViewModelSignalEmitter/MiniAppRuntimeViewModelEmitter.h"
 

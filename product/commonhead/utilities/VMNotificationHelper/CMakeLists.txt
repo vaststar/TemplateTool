@@ -1,0 +1,20 @@
+include(BuildInterface)
+
+set(MODULE_MODULE_NAME VMNotificationHelper)
+set(MODULE_IDE_FOLDER commonhead/utilities)
+
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(MODULE_HEADER_FILES #for include and install header
+    include/commonhead/utilities/VMNotificationHelper/VMNotificationHelper.h
+    include/commonhead/utilities/VMNotificationHelper/IVMNotificationHelper.h
+)
+set(MODULE_INSTALL_INTERFACE_DIR include)
+
+BuildInterface(
+MODULE_NAME ${MODULE_MODULE_NAME}
+TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
+TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
+TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE  ${MODULE_HEADER_BASE_DIR}
+TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_INSTALL_INTERFACE_DIR}
+IDE_FOLDER ${MODULE_IDE_FOLDER}
+)

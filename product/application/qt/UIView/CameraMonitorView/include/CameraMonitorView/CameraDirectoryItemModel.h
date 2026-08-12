@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
+#include <commonhead/viewmodels/CameraDirectoryViewModel/ICameraDirectoryTreeModel.h>
 
 // Tree model with an internal node mirror. Mutation methods translate VM
 // callbacks into proper QAbstractItemModel structural changes.

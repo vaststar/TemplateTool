@@ -3,7 +3,7 @@
 #include <QString>
 #include <QVariantMap>
 
-#include <commonHead/viewModels/ContactListViewModel/IContactListModel.h>
+#include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 
 namespace ContactsPage::Utils {
 

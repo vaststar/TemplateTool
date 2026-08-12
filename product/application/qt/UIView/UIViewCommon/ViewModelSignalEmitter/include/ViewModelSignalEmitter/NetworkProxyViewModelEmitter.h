@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QString>
-#include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
+#include <commonhead/viewmodels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
 namespace UIVMSignalEmitter {
 

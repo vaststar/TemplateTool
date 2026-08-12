@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
+#include <commonhead/viewmodels/ContactListViewModel/IContactListViewModel.h>
 
 namespace UIVMSignalEmitter {
 

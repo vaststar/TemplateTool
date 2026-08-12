@@ -3,7 +3,7 @@
 #include <UIAppCore/UIApplication.h>
 #include <UIAppCore/UIQmlEngine.h>
 #include <UIFabrication/IUIViewFactory.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 
 

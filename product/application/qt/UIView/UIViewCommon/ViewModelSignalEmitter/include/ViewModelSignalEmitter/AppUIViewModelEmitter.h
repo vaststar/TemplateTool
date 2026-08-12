@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
+#include <commonhead/viewmodels/AppUIViewModel/IAppUIViewModel.h>
 
 namespace UIVMSignalEmitter{
 class AppUIViewModelEmitter: public QObject,

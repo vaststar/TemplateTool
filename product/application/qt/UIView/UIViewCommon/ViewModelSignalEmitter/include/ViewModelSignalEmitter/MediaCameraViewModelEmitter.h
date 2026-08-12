@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
+#include <commonhead/viewmodels/MediaCameraViewModel/IMediaCameraViewModel.h>
 #include "RegisterViewModelMetaTypes.h"
 
 namespace UIVMSignalEmitter{

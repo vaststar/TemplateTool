@@ -3,10 +3,10 @@
 #include <memory>
 #include <string>
 
-#include <commonHead/ResourceLoader/IResourceLoader.h>
-#include <commonHead/ResourceColorLoader/IResourceColorLoader.h>
-#include <commonHead/ResourceFontLoader/IResourceFontLoader.h>
-#include <commonHead/ResourceAssetLoader/IResourceAssetLoader.h>
+#include <commonhead/ResourceLoader/IResourceLoader.h>
+#include <commonhead/ResourceColorLoader/IResourceColorLoader.h>
+#include <commonhead/ResourceFontLoader/IResourceFontLoader.h>
+#include <commonhead/ResourceAssetLoader/IResourceAssetLoader.h>
 
 /**
  * MockResourceLoader - gallery-only implementation of IResourceLoader.

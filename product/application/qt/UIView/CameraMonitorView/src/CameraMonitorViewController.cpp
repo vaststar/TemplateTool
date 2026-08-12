@@ -2,9 +2,9 @@
 
 #include <QUuid>
 
-#include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
-#include <commonHead/viewModels/MediaCameraViewModel/CameraSource.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
+#include <commonhead/viewmodels/MediaCameraViewModel/CameraSource.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
 

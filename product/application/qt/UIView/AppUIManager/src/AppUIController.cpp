@@ -1,11 +1,11 @@
 #include "AppUIController.h"
 
-#include <commonHead/viewModels/AppUIViewModel/IAppUIViewModel.h>
-#include <commonHead/viewModels/ClientInfoViewModel/IClientInfoViewModel.h>
-#include <commonHead/viewModels/ClientInfoViewModel/ClientInfoModel.h>
+#include <commonhead/viewmodels/AppUIViewModel/IAppUIViewModel.h>
+#include <commonhead/viewmodels/ClientInfoViewModel/IClientInfoViewModel.h>
+#include <commonhead/viewmodels/ClientInfoViewModel/ClientInfoModel.h>
 
 #include <TranslatorManager/UILanguage.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <AppContext/AppContext.h>

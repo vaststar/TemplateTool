@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <commonHead/viewModels/ToolsViewModel/IToolsModel.h>
+#include <commonhead/viewmodels/ToolsViewModel/IToolsModel.h>
 
 // Pure tree model. Owns its own mirror of nodes; exposes coarse mutation
 // methods so callers (controller) can translate VM callbacks into proper

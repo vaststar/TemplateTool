@@ -4,9 +4,9 @@
 #include "UIEvents/UIMainWindowEvent.h"
 
 #include <AppContext/AppContext.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
-#include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
-#include <commonHead/viewModels/ScreenshotViewModel/IScreenshotModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotViewModel.h>
+#include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotModel.h>
 
 #include <QGuiApplication>
 #include <QClipboard>

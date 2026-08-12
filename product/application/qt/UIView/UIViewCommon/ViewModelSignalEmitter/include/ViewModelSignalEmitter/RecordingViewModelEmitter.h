@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QString>
-#include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
+#include <commonhead/viewmodels/RecordingViewModel/IRecordingViewModel.h>
 
 namespace UIVMSignalEmitter {
 

@@ -1,8 +1,8 @@
 #include "UIStabilityMonitor.h"
 
 #include <QTimer>
-#include <commonHead/viewModels/StabilityViewModel/IStabilityViewModel.h>
-#include <commonHead/viewModels/ViewModelFactory/IViewModelFactory.h>
+#include <commonhead/viewmodels/StabilityViewModel/IStabilityViewModel.h>
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"

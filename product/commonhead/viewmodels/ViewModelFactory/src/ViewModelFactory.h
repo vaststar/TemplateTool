@@ -1,0 +1,45 @@
+#pragma once
+
+#include <memory>
+
+#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
+
+namespace commonHead{
+    class ICommonHeadFramework;
+    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
+}
+
+namespace commonHead::viewModels{
+class ViewModelFactory final: public IViewModelFactory
+{
+public:
+    explicit ViewModelFactory(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework);
+    ViewModelFactory(const ViewModelFactory&) = delete;
+    ViewModelFactory(ViewModelFactory&&) = delete;
+    ViewModelFactory& operator=(const ViewModelFactory&) = delete;
+    ViewModelFactory& operator=(ViewModelFactory&&) = delete;
+    ~ViewModelFactory();
+
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IInvocationViewModel> createInvocationViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> createCameraDirectoryViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> createJsonTreeViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> createNetworkProxyViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> createScreenshotViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> createUpgradeViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> createMiniAppListViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> createMiniAppRuntimeViewModelInstance() const override;
+
+private:
+    commonHead::ICommonHeadFrameworkWPtr mCommonHeadFramework;
+};
+}

@@ -1,8 +1,8 @@
 #include "MockResourceLoader.h"
 
-#include <commonHead/ResourceAssetLoader/ResourceAssetLoaderCreator.h>
-#include <commonHead/ResourceColorLoader/ResourceColorLoaderCreator.h>
-#include <commonHead/ResourceFontLoader/ResourceFontLoaderCreator.h>
+#include <commonhead/ResourceAssetLoader/ResourceAssetLoaderCreator.h>
+#include <commonhead/ResourceColorLoader/ResourceColorLoaderCreator.h>
+#include <commonhead/ResourceFontLoader/ResourceFontLoaderCreator.h>
 
 MockResourceLoader::MockResourceLoader()
     : mColorLoader(commonHead::impl::createResourceColorLoader())

@@ -2,9 +2,9 @@
 
 #include <QQmlEngine>
 
-#include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonHead/ResourceLoader/IResourceLoader.h>
-#include <commonHead/ResourceStringLoader/IResourceStringLoader.h>
+#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
+#include <commonhead/ResourceLoader/IResourceLoader.h>
+#include <commonhead/ResourceStringLoader/IResourceStringLoader.h>
 
 #include "AppUIStringLoader.h"
 #include "LoggerDefine.h"
