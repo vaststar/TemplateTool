@@ -3,21 +3,21 @@
 #include <commonHead/viewModels/InvocationViewModel/InvocationViewModelCreator.h>
 #include <commonHead/viewModels/AppUIViewModel/AppUIViewModelCreator.h>
 #include <commonHead/viewModels/ClientInfoViewModel/ClientInfoViewModelCreator.h>
-#include <commonHead/viewModels/ContactListViewModel/IContactListViewModel.h>
+#include <commonHead/viewModels/ContactListViewModel/ContactListViewModelCreator.h>
 #include <commonHead/viewModels/MainWindowViewModel/MainWindowViewModelCreator.h>
-#include <commonHead/viewModels/MediaCameraViewModel/IMediaCameraViewModel.h>
-#include <commonHead/viewModels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
+#include <commonHead/viewModels/MediaCameraViewModel/MediaCameraViewModelCreator.h>
+#include <commonHead/viewModels/CameraDirectoryViewModel/CameraDirectoryViewModelCreator.h>
 #include <commonHead/viewModels/SideBarViewModel/SideBarViewModelCreator.h>
 #include <commonHead/viewModels/SettingsViewModel/SettingsViewModelCreator.h>
 #include <commonHead/viewModels/StabilityViewModel/StabilityViewModelCreator.h>
-#include <commonHead/viewModels/ToolsViewModel/IToolsViewModel.h>
+#include <commonHead/viewModels/ToolsViewModel/ToolsViewModelCreator.h>
 #include <commonHead/viewModels/JsonTreeViewModel/JsonTreeViewModelCreator.h>
-#include <commonHead/viewModels/NetworkProxyViewModel/INetworkProxyViewModel.h>
-#include <commonHead/viewModels/ScreenshotViewModel/IScreenshotViewModel.h>
-#include <commonHead/viewModels/RecordingViewModel/IRecordingViewModel.h>
+#include <commonHead/viewModels/NetworkProxyViewModel/NetworkProxyViewModelCreator.h>
+#include <commonHead/viewModels/ScreenshotViewModel/ScreenshotViewModelCreator.h>
+#include <commonHead/viewModels/RecordingViewModel/RecordingViewModelCreator.h>
 #include <commonHead/viewModels/UpgradeViewModel/UpgradeViewModelCreator.h>
-#include <commonHead/viewModels/MiniAppListViewModel/IMiniAppListViewModel.h>
-#include <commonHead/viewModels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
+#include <commonHead/viewModels/MiniAppListViewModel/MiniAppListViewModelCreator.h>
+#include <commonHead/viewModels/MiniAppRuntimeViewModel/MiniAppRuntimeViewModelCreator.h>
 
 namespace commonHead::viewModels{
 
@@ -54,7 +54,7 @@ std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> ViewModelFactory::
 
 std::shared_ptr<commonHead::viewModels::IContactListViewModel> ViewModelFactory::createContactListViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IContactListViewModel>();
+    return impl::createContactListViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> ViewModelFactory::createMainWindowViewModelInstance() const
@@ -64,12 +64,12 @@ std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> ViewModelFactory::
 
 std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> ViewModelFactory::createMediaCameraViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IMediaCameraViewModel>();
+    return impl::createMediaCameraViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> ViewModelFactory::createCameraDirectoryViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::ICameraDirectoryViewModel>();
+    return impl::createCameraDirectoryViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::ISideBarViewModel> ViewModelFactory::createSideBarViewModelInstance() const
@@ -89,7 +89,7 @@ std::shared_ptr<commonHead::viewModels::IStabilityViewModel> ViewModelFactory::c
 
 std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::createToolsViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IToolsViewModel>();
+    return impl::createToolsViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> ViewModelFactory::createJsonTreeViewModelInstance() const
@@ -99,17 +99,17 @@ std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> ViewModelFactory::cr
 
 std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory::createNetworkProxyViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::INetworkProxyViewModel>();
+    return impl::createNetworkProxyViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> ViewModelFactory::createScreenshotViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IScreenshotViewModel>();
+    return impl::createScreenshotViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IRecordingViewModel> ViewModelFactory::createRecordingViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IRecordingViewModel>();
+    return impl::createRecordingViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> ViewModelFactory::createUpgradeViewModelInstance() const
@@ -119,11 +119,11 @@ std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> ViewModelFactory::cre
 
 std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> ViewModelFactory::createMiniAppListViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IMiniAppListViewModel>();
+    return impl::createMiniAppListViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> ViewModelFactory::createMiniAppRuntimeViewModelInstance() const
 {
-    return createViewModelInstance<commonHead::viewModels::IMiniAppRuntimeViewModel>();
+    return impl::createMiniAppRuntimeViewModel(mCommonHeadFramework);
 }
 } // namespace commonHead::viewModels

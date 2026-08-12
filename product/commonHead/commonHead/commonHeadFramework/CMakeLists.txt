@@ -18,7 +18,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadCommonFile
     CoreFrameworkApi
     ResourceLoader
-    ServiceLocator
+    ServiceLocatorImpl
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
@@ -48,3 +48,5 @@ BuildModule(
     TARGET_PRIVATE_DEFINITIONS ${MODULE_PRIVATE_DEFINITIONS}
     IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
+
+add_subdirectory(test)

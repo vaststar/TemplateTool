@@ -6,4 +6,3 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
         )
 
 add_subdirectory(commonHead)
-add_subdirectory(unit_test)

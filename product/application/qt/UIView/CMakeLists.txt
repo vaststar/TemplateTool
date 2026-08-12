@@ -36,7 +36,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIResourceAssetRCCInterface #for asset resource
     UIResourcecTranslation #for translation
     UIManager
-    ViewModels
     InvocationViewModelApi
     ClientInfoViewModelApi
     AppUIViewModelApi
@@ -46,6 +45,15 @@ set(MODULE_DEPENDENCIES_PRIVATE
     SettingsViewModelApi
     StabilityViewModelApi
     JsonTreeViewModelApi
+    MediaCameraViewModelApi
+    CameraDirectoryViewModelApi
+    ContactListViewModelApi
+    MiniAppListViewModelApi
+    MiniAppRuntimeViewModelApi
+    ScreenshotViewModelApi
+    RecordingViewModelApi
+    NetworkProxyViewModelApi
+    ToolsViewModelApi
     CommonHeadFramework
     ResourceLoader
     Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia Qt6::Network

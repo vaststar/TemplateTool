@@ -6,8 +6,3 @@ add_subdirectory(ScreenshotViewModel)
 add_subdirectory(RecordingViewModel)
 add_subdirectory(MiniAppListViewModel)
 add_subdirectory(MiniAppRuntimeViewModel)
-
-set(MODULE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR} PARENT_SCOPE)
-set(MODULE_HEADER_FILES ${MODULE_HEADER_FILES} PARENT_SCOPE)
-set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
-set(MODULE_BUILD_PRIVATE_DIR ${MODULE_BUILD_PRIVATE_DIR} PARENT_SCOPE)

@@ -1,0 +1,68 @@
+#pragma once
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <commonHead/commonHeadUtils/VMNotificationHelper/IVMNotificationHelper.h>
+#include <commonHead/viewModels/IViewModel/IViewModel.h>
+#include <commonHead/viewModels/MiniAppListViewModel/MiniAppInfo.h>
+
+namespace commonHead::viewModels {
+
+class IMiniAppListViewModelCallback
+{
+public:
+    IMiniAppListViewModelCallback() = default;
+    IMiniAppListViewModelCallback(const IMiniAppListViewModelCallback&) = delete;
+    IMiniAppListViewModelCallback(IMiniAppListViewModelCallback&&) = delete;
+    IMiniAppListViewModelCallback& operator=(const IMiniAppListViewModelCallback&) = delete;
+    IMiniAppListViewModelCallback& operator=(IMiniAppListViewModelCallback&&) = delete;
+    virtual ~IMiniAppListViewModelCallback() = default;
+
+    // Fired whenever the installed mini-app list changes (initial load,
+    // install, uninstall). Subscribers should re-read getMiniApps().
+    virtual void onMiniAppListChanged() {}
+
+    // Fired when an install attempt fails. Both strings are already localized
+    // by the view model, so the UI can display them directly.
+    virtual void onMiniAppInstallFailed(const std::string& /*title*/,
+                                        const std::string& /*message*/) {}
+
+    // Fired when an uninstall attempt fails. Both strings are already localized
+    // by the view model, so the UI can display them directly.
+    virtual void onMiniAppUninstallFailed(const std::string& /*title*/,
+                                          const std::string& /*message*/) {}
+};
+
+class IMiniAppListViewModel
+    : public IViewModel
+    , public virtual commonHead::utilities::IVMNotificationHelper<IMiniAppListViewModelCallback>
+{
+public:
+    using IViewModel::IViewModel;
+    IMiniAppListViewModel(const IMiniAppListViewModel&) = delete;
+    IMiniAppListViewModel(IMiniAppListViewModel&&) = delete;
+    IMiniAppListViewModel& operator=(const IMiniAppListViewModel&) = delete;
+    IMiniAppListViewModel& operator=(IMiniAppListViewModel&&) = delete;
+    virtual ~IMiniAppListViewModel() = default;
+public:
+    virtual std::string getViewModelName() const override = 0;
+
+    // Returns the list of installed, launchable mini apps.
+    virtual std::vector<commonHead::viewModels::model::MiniAppInfo> getMiniApps() const = 0;
+
+    // Returns a single mini app by id, or an empty MiniAppInfo when not found.
+    virtual commonHead::viewModels::model::MiniAppInfo getMiniApp(const std::string& id) const = 0;
+
+    // Installs a mini app from an unpacked source directory (must contain a
+    // valid manifest.json). The outcome is delivered via the callbacks:
+    // onMiniAppListChanged on success, onMiniAppInstallFailed on failure.
+    virtual void installMiniApp(const std::string& sourceDirectory) = 0;
+
+    // Uninstalls the mini app with the given id. The outcome is delivered via
+    // the callbacks: onMiniAppListChanged on success, onMiniAppUninstallFailed
+    // on failure.
+    virtual void uninstallMiniApp(const std::string& id) = 0;
+};
+} // namespace commonHead::viewModels

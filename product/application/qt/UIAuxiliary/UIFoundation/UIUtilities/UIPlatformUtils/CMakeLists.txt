@@ -20,7 +20,6 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     UIManager
     UICore
-    ViewModels
     LoggerUtils
 )
 

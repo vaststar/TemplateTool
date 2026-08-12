@@ -40,13 +40,6 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> createMiniAppRuntimeViewModelInstance() const override;
 
 private:
-    template <typename T, typename... Args>
-    std::shared_ptr<T> createViewModelInstance(const Args&... args) const
-    {
-        return T::createInstance(args..., mCommonHeadFramework);
-    }
-
-private:
     commonHead::ICommonHeadFrameworkWPtr mCommonHeadFramework;
 };
 }

@@ -18,7 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadCommonFile
     CommonHeadFramework
-    ServiceLocator
+    ServiceLocatorApi
     ClientInfoServiceApi
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

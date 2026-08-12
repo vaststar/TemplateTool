@@ -1,0 +1,51 @@
+#pragma once
+
+#include <string>
+
+#include <commonHead/viewModels/RecordingViewModel/RecordingViewModelTypesExport.h>
+
+namespace commonHead::viewModels::model {
+
+// ============================================================================
+// Recording State
+// ============================================================================
+
+enum class RecordingState {
+    Idle,           ///< No active recording
+    Recording,      ///< Recording in progress
+    Paused          ///< Recording paused
+};
+
+// ============================================================================
+// Audio Device Info (ViewModel-layer mirror of utilities::AudioDeviceInfo)
+// ============================================================================
+
+/// Classification of audio devices by type (mirrors utilities layer).
+enum class AudioDeviceType {
+    Microphone,       ///< Physical mic / headset input
+    LoopbackCapture,  ///< Virtual loopback (Stereo Mix, BlackHole, .monitor)
+    OutputDevice      ///< Physical output — usable via WASAPI loopback
+};
+
+struct RECORDING_VIEW_MODEL_TYPES_API AudioDeviceInfo {
+    std::string id;           ///< Platform-specific device identifier
+    std::string displayName;  ///< User-friendly display name
+    bool isInput = true;      ///< true = microphone/input, false = output/loopback
+    AudioDeviceType deviceType = AudioDeviceType::Microphone;
+};
+
+// ============================================================================
+// Recording Settings
+// ============================================================================
+
+struct RECORDING_VIEW_MODEL_TYPES_API RecordingSettings {
+    std::string outputDirectory;
+    std::string videoFormat = "mp4";     ///< mp4 / webm / mov
+    int framesPerSecond = 30;            ///< 15 / 30 / 60
+    bool enableMicrophone = false;       ///< Record microphone audio
+    bool enableSystemAudio = false;      ///< Record system/desktop audio
+    std::string micDeviceId;             ///< Selected microphone device ID
+    std::string systemAudioDeviceId;     ///< Selected system audio device ID
+};
+
+} // namespace commonHead::viewModels::model

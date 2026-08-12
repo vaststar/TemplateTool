@@ -28,7 +28,6 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     UIAppCore
     CommonHeadFramework
-    ViewModels
     ViewModelFactory
     LoggerUtils
 )

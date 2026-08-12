@@ -1,19 +1,4 @@
-list(APPEND MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-list(APPEND MODULE_HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/commonHead/viewModels/ContactListViewModel/IContactListModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/commonHead/viewModels/ContactListViewModel/IContactListViewModel.h
-)
-list(APPEND MODULE_SOURCE_PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModelUtils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ContactListViewModelUtils.cpp
-)
-list(APPEND MODULE_BUILD_PRIVATE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-set(MODULE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR} PARENT_SCOPE)
-set(MODULE_HEADER_FILES ${MODULE_HEADER_FILES} PARENT_SCOPE)
-set(MODULE_SOURCE_PRIVATE ${MODULE_SOURCE_PRIVATE} PARENT_SCOPE)
-set(MODULE_BUILD_PRIVATE_DIR ${MODULE_BUILD_PRIVATE_DIR} PARENT_SCOPE)
+add_subdirectory(ContactListViewModelTypes)
+add_subdirectory(ContactListViewModelApi)
+add_subdirectory(ContactListViewModelImpl)
+add_subdirectory(test)

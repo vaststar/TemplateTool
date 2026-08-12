@@ -2,7 +2,8 @@
 
 #include <string>
 #include <memory>
-#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
+
+#include <commonHead/ViewModelUtils/ViewModelUtilsExport.h>
 
 namespace commonHead {
     class ICommonHeadFramework;
@@ -14,7 +15,7 @@ namespace commonHead::utilities {
 /**
  * @brief Result of log operation
  */
-struct COMMONHEAD_EXPORT LogOperationResult {
+struct VIEW_MODEL_UTILS_API LogOperationResult {
     bool success{false};
     std::string archivePath;
     std::string errorMessage;
@@ -27,7 +28,7 @@ struct COMMONHEAD_EXPORT LogOperationResult {
  * It uses CommonHeadFramework to access services like ClientInfoService
  * for log paths.
  */
-class COMMONHEAD_EXPORT LogOperationUtils final {
+class VIEW_MODEL_UTILS_API LogOperationUtils final {
 public:
     LogOperationUtils() = delete;
     

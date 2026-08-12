@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadExport.h>
+#include <commonHead/viewModels/ViewModelFactory/ViewModelFactoryExport.h>
 
 namespace commonHead{
     class ICommonHeadFramework;
@@ -31,7 +31,7 @@ namespace commonHead::viewModels{
 }
 
 namespace commonHead::viewModels{
-class COMMONHEAD_EXPORT IViewModelFactory
+class VIEW_MODEL_FACTORY_API IViewModelFactory
 {
 public:
     IViewModelFactory() = default;
