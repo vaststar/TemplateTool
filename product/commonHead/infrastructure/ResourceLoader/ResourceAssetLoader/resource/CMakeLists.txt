@@ -12,16 +12,16 @@ set(RESOURCE_TARGETS )
 ## Precheck: token ↔ theme 一致性 + 本地资源文件存在性校验
 include(ValidateAssetTokens)
 validate_asset_tokens(
-    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/resource/validate_asset_tokens.py
-    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json
-    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes
-    ASSET_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/resource
+    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate_asset_tokens.py
+    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json
+    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/data/themes
+    ASSET_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/data
     PRECHECK_TARGET
 )
 list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
 
 ## AssetToken
-set(GLOBAL_ASSET_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
+set(GLOBAL_ASSET_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE AssetToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/AssetToken.h.j2)
@@ -38,7 +38,7 @@ list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
 set(THEME_JSON_NAMES "normal" )
 set(THEME_JSON_PATH_SET)
 foreach(item IN LISTS THEME_JSON_NAMES)
-  set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
+  set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${item}.json)
   list(APPEND THEME_JSON_PATH_SET ${THEME_JSON_PATH})
   capitalize(${item} capital_json_name)
   set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
@@ -54,7 +54,7 @@ foreach(item IN LISTS THEME_JSON_NAMES)
   list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
 endforeach()
 set(GLOBAL_ASSET_THEME_FILES "${THEME_JSON_PATH_SET}" CACHE STRING "all asset json files" FORCE)
-set(GLOBAL_ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/resource CACHE STRING "base asset dir" FORCE)
+set(GLOBAL_ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data CACHE STRING "base asset dir" FORCE)
 
 include(BuildInterface)
 BuildInterface(

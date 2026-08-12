@@ -86,7 +86,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ResourceLoaderApi
-    ResourceStringLoader
+    ResourceStringLoaderApi
     LoggerUtils
 )
 

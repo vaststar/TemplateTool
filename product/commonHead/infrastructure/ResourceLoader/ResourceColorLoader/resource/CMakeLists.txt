@@ -10,16 +10,16 @@ set(RESOURCE_TARGETS )
 ## Precheck: token ↔ theme 一致性校验
 include(ValidateColorTokens)
 validate_color_tokens(
-    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/resource/validate_color_tokens.py
-    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json
-    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes
-    PALETTE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json
+    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate_color_tokens.py
+    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json
+    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/data/themes
+    PALETTE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/palette.json
     PRECHECK_TARGET
 )
 list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
 
 ## ColorPalette
-set(COLOR_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json)
+set(COLOR_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/palette.json)
 set(COLOR_OUT_PUT_FILE ColorPaletteModel.h)
 set(COLOR_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${COLOR_OUT_PUT_FILE})
 set(COLOR_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ColorPaletteModel.h.j2)
@@ -33,7 +33,7 @@ generate_from_template(
 list(APPEND RESOURCE_TARGETS ${COLOR_TARGET})
 
 ## ColorToken
-set(GLOBAL_COLOR_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
+set(GLOBAL_COLOR_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE ColorToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ColorToken.h.j2)
@@ -50,7 +50,7 @@ list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
 ## BuildThemeColorSet
 set(THEME_JSON_NAMES "light" "dark")
 foreach(item IN LISTS THEME_JSON_NAMES)
-set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
+set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${item}.json)
 capitalize(${item} capital_json_name)
 set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeColorSet.h)
 set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})

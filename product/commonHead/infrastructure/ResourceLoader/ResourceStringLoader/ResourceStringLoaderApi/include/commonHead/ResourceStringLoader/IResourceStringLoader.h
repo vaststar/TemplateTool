@@ -4,7 +4,7 @@
 #include <initializer_list>
 
 #include <ResourceString.h>
-#include <commonHead/ResourceStringLoader/ResourceStringLoaderExport.h>
+#include <commonHead/ResourceStringLoader/ResourceStringLoaderApiExport.h>
 
 namespace commonHead{
 

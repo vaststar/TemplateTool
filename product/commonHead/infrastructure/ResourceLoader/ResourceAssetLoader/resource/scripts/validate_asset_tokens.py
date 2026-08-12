@@ -54,7 +54,7 @@ def main():
     argument_parser.add_argument("--themes", nargs="+", required=True, help="Paths to theme JSON files")
     argument_parser.add_argument(
         "--asset-root", required=True,
-        help="Base directory that asset 'path' fields are relative to (the resource/ dir)",
+        help="Base directory that asset 'path' fields are relative to (the data/ dir)",
     )
     args = argument_parser.parse_args()
 

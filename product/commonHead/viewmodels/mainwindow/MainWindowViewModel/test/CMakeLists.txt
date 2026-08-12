@@ -15,5 +15,5 @@ BuildUnitTestModule(
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
-        commonhead/viewmodels/mainwindow/unit-test
+        commonhead/viewmodels/mainwindow/test
 )

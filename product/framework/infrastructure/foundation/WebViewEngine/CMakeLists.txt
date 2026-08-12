@@ -31,8 +31,8 @@ set(MODULE_SOURCE_PRIVATE
 
 if(APPLE)
     list(APPEND MODULE_SOURCE_PRIVATE
-        src/mac/WkWebView.h
-        src/mac/WkWebView.mm
+        src/macos/WkWebView.h
+        src/macos/WkWebView.mm
     )
 endif()
 
@@ -92,7 +92,7 @@ endif()
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src src/windows src/mac src/linux)
+set(MODULE_BUILD_PRIVATE_DIR src src/windows src/macos src/linux)
 
 set(MODULE_PUBLIC_DEFINITIONS)
 set(MODULE_PRIVATE_DEFINITIONS)

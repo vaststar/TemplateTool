@@ -16,4 +16,4 @@ BuildInterface(
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE include
 )
 
-add_subdirectory(unit_test)
+add_subdirectory(test)

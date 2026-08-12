@@ -13,7 +13,7 @@ BuildInterface(
     TARGET_SOURCE_HEADER_BASE_DIR ${MODULE_HEADER_BASE_DIR}
     TARGET_SOURCE_PUBLIC_HEADER ${MODULE_HEADER_FILES}
     TARGET_ADD_LINK_LIBRARY_PUBLIC
-        ResourceStringLoader
+        ResourceStringLoaderApi
         ResourceColorLoaderApi
         ResourceFontLoaderApi
         ResourceAssetLoaderApi

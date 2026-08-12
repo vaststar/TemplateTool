@@ -10,16 +10,16 @@ set(RESOURCE_TARGETS )
 ## Precheck: token ↔ theme ↔ palette 一致性校验
 include(ValidateFontTokens)
 validate_font_tokens(
-    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/resource/validate_font_tokens.py
-    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json
-    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes
-    PALETTE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json
+    SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate_font_tokens.py
+    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json
+    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/data/themes
+    PALETTE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/palette.json
     PRECHECK_TARGET
 )
 list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
 
 ## FontPalette
-set(FONT_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/palette.json)
+set(FONT_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/palette.json)
 set(FONT_OUT_PUT_FILE FontPaletteModel.h)
 set(FONT_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${FONT_OUT_PUT_FILE})
 set(FONT_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/FontPaletteModel.h.j2)
@@ -33,7 +33,7 @@ generate_from_template(
 list(APPEND RESOURCE_TARGETS ${FONT_TARGET})
 
 ## FontToken
-set(GLOBAL_FONT_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/token.json  CACHE STRING "Path to token.json" FORCE)
+set(GLOBAL_FONT_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE FontToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/FontToken.h.j2)
@@ -50,7 +50,7 @@ list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
 ## BuildThemeFontSet
 set(THEME_JSON_NAMES "normal" )
 foreach(item IN LISTS THEME_JSON_NAMES)
-set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/resource/themes/${item}.json)
+set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${item}.json)
 capitalize(${item} capital_json_name)
 set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeFontSet.h)
 set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})

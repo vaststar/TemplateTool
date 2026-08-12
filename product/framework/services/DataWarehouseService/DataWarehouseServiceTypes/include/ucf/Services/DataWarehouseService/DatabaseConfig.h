@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include <ucf/Services/DataWarehouseService/DataWarehouseTypesExport.h>
+#include <ucf/Services/DataWarehouseService/DataWarehouseServiceTypesExport.h>
 namespace ucf::service::model{
 
-class DATA_WAREHOUSE_TYPES_API DBConfig
+class DATA_WAREHOUSE_SERVICE_TYPES_API DBConfig
 {
 public:
     DBConfig();
@@ -16,7 +16,7 @@ private:
     std::string mDbId;
 };
 
-class DATA_WAREHOUSE_TYPES_API SqliteDBConfig: public DBConfig
+class DATA_WAREHOUSE_SERVICE_TYPES_API SqliteDBConfig: public DBConfig
 {
 public:
     SqliteDBConfig();

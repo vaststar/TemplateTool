@@ -1,14 +1,14 @@
 include(BuildModule)
 
-# DataWarehouseTypes (SHARED) - public value types / DTOs.
+# DataWarehouseServiceTypes (SHARED) - public value types / DTOs.
 # These carry out-of-line implementations (ctors, operators) that consumers use
 # by value, so they live in a compiled library rather than the pure-interface Api.
-set(MODULE_MODULE_NAME DataWarehouseTypes)
+set(MODULE_MODULE_NAME DataWarehouseServiceTypes)
 set(MODULE_IDE_FOLDER framework/Services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/Services/DataWarehouseService/DataWarehouseTypesExport.h
+    include/ucf/Services/DataWarehouseService/DataWarehouseServiceTypesExport.h
     include/ucf/Services/DataWarehouseService/DatabaseDataValue.h
     include/ucf/Services/DataWarehouseService/DatabaseDataRecord.h
     include/ucf/Services/DataWarehouseService/DatabaseTableModel.h
@@ -29,9 +29,9 @@ set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_PUBLIC_DEFINITIONS)
 set(MODULE_PRIVATE_DEFINITIONS)
 if (SERVICE_LIB_TYPE STREQUAL "STATIC_LIB")
-    set(MODULE_PUBLIC_DEFINITIONS DATA_WAREHOUSE_TYPES_STATIC)
+    set(MODULE_PUBLIC_DEFINITIONS DATA_WAREHOUSE_SERVICE_TYPES_STATIC)
 else()
-    set(MODULE_PRIVATE_DEFINITIONS DATA_WAREHOUSE_TYPES_SHARED)
+    set(MODULE_PRIVATE_DEFINITIONS DATA_WAREHOUSE_SERVICE_TYPES_SHARED)
 endif()
 
 BuildModule(

@@ -2,14 +2,14 @@
 
 #include <string>
 #include <map>
-#include <ucf/Services/DataWarehouseService/DataWarehouseTypesExport.h>
+#include <ucf/Services/DataWarehouseService/DataWarehouseServiceTypesExport.h>
 #include <ucf/Services/DataWarehouseService/DatabaseDataValue.h>
 
 namespace ucf::service::model{
 
 class DatabaseDataValue;
 
-class DATA_WAREHOUSE_TYPES_API DatabaseDataRecord final
+class DATA_WAREHOUSE_SERVICE_TYPES_API DatabaseDataRecord final
 {
 public:
     void addColumnData(const std::string& key, const DatabaseDataValue& value);

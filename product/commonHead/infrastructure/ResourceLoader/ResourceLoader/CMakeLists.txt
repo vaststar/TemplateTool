@@ -1,2 +1,0 @@
-add_subdirectory(ResourceLoaderApi)
-add_subdirectory(ResourceLoaderImpl)
