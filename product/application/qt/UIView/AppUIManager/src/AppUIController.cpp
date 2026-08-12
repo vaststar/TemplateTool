@@ -19,7 +19,7 @@
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
 #include "MainWindow/MainWindowController.h"
-#include "ViewModelSignalEmitter/AppUIViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/AppUIViewModelEmitter.h>
 #include "UIIPCServerHelper.h"
 #include "UIStabilityMonitor.h"
 #include "UIScreenMonitor.h"

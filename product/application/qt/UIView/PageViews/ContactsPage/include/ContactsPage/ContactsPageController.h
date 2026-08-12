@@ -10,7 +10,7 @@
 #include "ContactListItemModel.h"
 // Pull in Q_DECLARE_METATYPE specializations BEFORE moc generates code for
 // our slot signatures.
-#include "ViewModelSignalEmitter/RegisterViewModelMetaTypes.h"
+#include <UIViewModelSignalBridge/metatypes/ContactListMetaTypes.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 
 namespace commonHead::viewModels

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <QObject>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/ToolsMetaTypes.h>
 #include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
 
 namespace UIVMSignalEmitter {
 
-class ToolsViewModelEmitter : public QObject,
-                              public commonHead::viewModels::IToolsViewModelCallback
+class UIViewModelSignalBridge_EXPORT ToolsViewModelEmitter : public QObject,
+                                                         public commonHead::viewModels::IToolsViewModelCallback
 {
     Q_OBJECT
 public:

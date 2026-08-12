@@ -2,11 +2,13 @@
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/UpgradeMetaTypes.h>
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
 namespace UIVMSignalEmitter{
-class UpgradeViewModelEmitter: public QObject,
-                               public commonHead::viewModels::IUpgradeViewModelCallback
+class UIViewModelSignalBridge_EXPORT UpgradeViewModelEmitter: public QObject,
+                                                          public commonHead::viewModels::IUpgradeViewModelCallback
 {
     Q_OBJECT
 public:

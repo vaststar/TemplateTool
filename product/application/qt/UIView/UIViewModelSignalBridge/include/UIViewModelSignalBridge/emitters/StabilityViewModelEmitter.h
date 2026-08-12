@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QObject>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/StabilityViewModel/IStabilityViewModel.h>
 
 namespace UIVMSignalEmitter{
 
-class StabilityViewModelEmitter: public QObject,
-                                 public commonHead::viewModels::IStabilityViewModelCallback
+class UIViewModelSignalBridge_EXPORT StabilityViewModelEmitter: public QObject,
+                                                        public commonHead::viewModels::IStabilityViewModelCallback
 {
     Q_OBJECT
 public:

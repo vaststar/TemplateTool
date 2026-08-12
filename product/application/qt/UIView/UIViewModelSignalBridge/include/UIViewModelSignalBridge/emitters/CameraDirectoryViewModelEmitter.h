@@ -1,6 +1,7 @@
 #pragma once
 
-#include "RegisterViewModelMetaTypes.h"
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/CameraDirectoryMetaTypes.h>
 
 #include <QObject>
 #include <QString>
@@ -13,7 +14,7 @@ namespace UIVMSignalEmitter {
 
 // 一一对应 ICameraDirectoryViewModelCallback 的事件，透传 payload，
 // 让消费方可以按需做差量 UI 更新。
-class CameraDirectoryViewModelEmitter
+class UIViewModelSignalBridge_EXPORT CameraDirectoryViewModelEmitter
     : public QObject
     , public commonHead::viewModels::ICameraDirectoryViewModelCallback
 {

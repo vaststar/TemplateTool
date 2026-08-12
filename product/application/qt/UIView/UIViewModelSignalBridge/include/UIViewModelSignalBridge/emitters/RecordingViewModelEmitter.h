@@ -2,12 +2,14 @@
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/RecordingMetaTypes.h>
 #include <commonhead/viewmodels/RecordingViewModel/IRecordingViewModel.h>
 
 namespace UIVMSignalEmitter {
 
-class RecordingViewModelEmitter : public QObject,
-                                  public commonHead::viewModels::IRecordingViewModelCallback
+class UIViewModelSignalBridge_EXPORT RecordingViewModelEmitter : public QObject,
+                                                             public commonHead::viewModels::IRecordingViewModelCallback
 {
     Q_OBJECT
 public:

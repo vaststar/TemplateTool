@@ -1,6 +1,7 @@
 #pragma once
 
-#include "RegisterViewModelMetaTypes.h"
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/SettingsMetaTypes.h>
 
 #include <QObject>
 #include <string>
@@ -11,8 +12,8 @@
 namespace UIVMSignalEmitter {
 
 // Qt-signal bridge for ISettingsViewModelCallback.
-class SettingsViewModelEmitter : public QObject,
-                                 public commonHead::viewModels::ISettingsViewModelCallback
+class UIViewModelSignalBridge_EXPORT SettingsViewModelEmitter : public QObject,
+                                                            public commonHead::viewModels::ISettingsViewModelCallback
 {
     Q_OBJECT
 public:

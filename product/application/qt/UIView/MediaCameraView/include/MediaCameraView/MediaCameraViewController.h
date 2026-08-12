@@ -9,7 +9,7 @@
 #include <commonhead/viewmodels/MediaCameraViewModel/VideoFrame.h>
 
 #include <UIViewCore/UIViewController.h>
-#include "ViewModelSignalEmitter/MediaCameraViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/MediaCameraViewModelEmitter.h>
 
 namespace commonHead{
     namespace viewModels{

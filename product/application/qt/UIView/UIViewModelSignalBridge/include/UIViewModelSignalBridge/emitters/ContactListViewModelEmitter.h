@@ -1,6 +1,7 @@
 #pragma once
 
-#include "RegisterViewModelMetaTypes.h"
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/ContactListMetaTypes.h>
 
 #include <QObject>
 #include <string>
@@ -11,7 +12,7 @@
 namespace UIVMSignalEmitter {
 
 // Qt-signal bridge for IContactListViewModelCallback.
-class ContactListViewModelEmitter
+class UIViewModelSignalBridge_EXPORT ContactListViewModelEmitter
     : public QObject
     , public commonHead::viewModels::IContactListViewModelCallback
 {

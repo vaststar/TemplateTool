@@ -19,7 +19,7 @@
 #include <QCoreApplication>
 
 #include "MediaCameraView/MediaCameraViewController.h"
-#include "ViewModelSignalEmitter/MainWindowViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/MainWindowViewModelEmitter.h>
 
 #include "ContactsPage/ContactsPageController.h"
 #include "HomePage/HomePageController.h"

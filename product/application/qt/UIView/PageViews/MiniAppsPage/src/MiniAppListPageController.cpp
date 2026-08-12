@@ -9,7 +9,7 @@
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewMessageBoxHelper.h"
-#include "ViewModelSignalEmitter/MiniAppListViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/MiniAppListViewModelEmitter.h>
 
 #include "MiniAppHostWindow.h"
 

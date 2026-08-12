@@ -4,13 +4,14 @@
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 
 #include <commonhead/viewmodels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
 namespace UIVMSignalEmitter {
 
 // Qt-signal bridge for IMiniAppRuntimeViewModelCallback.
-class MiniAppRuntimeViewModelEmitter
+class UIViewModelSignalBridge_EXPORT MiniAppRuntimeViewModelEmitter
     : public QObject
     , public commonHead::viewModels::IMiniAppRuntimeViewModelCallback
 {

@@ -1,18 +1,17 @@
 #pragma once
 
-#include "RegisterViewModelMetaTypes.h"
-
 #include <string>
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 
 #include <commonhead/viewmodels/MiniAppListViewModel/IMiniAppListViewModel.h>
 
 namespace UIVMSignalEmitter {
 
 // Qt-signal bridge for IMiniAppListViewModelCallback.
-class MiniAppListViewModelEmitter
+class UIViewModelSignalBridge_EXPORT MiniAppListViewModelEmitter
     : public QObject
     , public commonHead::viewModels::IMiniAppListViewModelCallback
 {

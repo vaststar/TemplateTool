@@ -11,7 +11,7 @@
 #include "CameraDirectoryItemModel.h"
 // Must precede moc-generated slot signatures so the Q_DECLARE_METATYPE
 // specializations win over the primary template (avoids C2908).
-#include "ViewModelSignalEmitter/RegisterViewModelMetaTypes.h"
+#include <UIViewModelSignalBridge/metatypes/CameraDirectoryMetaTypes.h>
 
 namespace commonHead::viewModels {
     class ICameraDirectoryViewModel;

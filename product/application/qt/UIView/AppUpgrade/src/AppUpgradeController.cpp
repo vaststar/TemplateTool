@@ -6,7 +6,7 @@
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
 #include "UIViewHelper/UIViewHelper.h"
-#include "ViewModelSignalEmitter/UpgradeViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/UpgradeViewModelEmitter.h>
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 

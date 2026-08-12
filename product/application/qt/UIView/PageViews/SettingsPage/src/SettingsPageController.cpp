@@ -8,7 +8,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
-#include "ViewModelSignalEmitter/SettingsViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/SettingsViewModelEmitter.h>
 
 SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)

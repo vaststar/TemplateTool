@@ -8,7 +8,7 @@
 #include <UIViewCore/UIViewController.h>
 #include "ToolsPage/network/ProxyRequestModel.h"
 #include "ToolsPage/network/ProxyRulesManager.h"
-#include "ViewModelSignalEmitter/NetworkProxyViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/NetworkProxyViewModelEmitter.h>
 
 namespace commonHead::viewModels {
     class INetworkProxyViewModel;

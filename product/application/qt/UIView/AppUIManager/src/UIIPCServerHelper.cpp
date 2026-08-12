@@ -6,7 +6,7 @@
 #include <AppContext/AppContext.h>
 
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "ViewModelSignalEmitter/InvocationViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/InvocationViewModelEmitter.h>
 
 UIIPCServerHelper::UIIPCServerHelper(AppContext* appContext, QObject* parent)
     : QObject(parent)

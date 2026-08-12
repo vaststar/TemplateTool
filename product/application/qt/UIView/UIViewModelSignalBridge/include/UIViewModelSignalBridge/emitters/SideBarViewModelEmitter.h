@@ -2,12 +2,13 @@
 
 #include <QObject>
 #include <commonhead/viewmodels/SideBarViewModel/ISideBarViewModel.h>
-#include "RegisterViewModelMetaTypes.h"
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/SideBarMetaTypes.h>
 
 namespace UIVMSignalEmitter {
 
-class SideBarViewModelEmitter : public QObject,
-                                public commonHead::viewModels::ISideBarViewModelCallback
+class UIViewModelSignalBridge_EXPORT SideBarViewModelEmitter : public QObject,
+                                                           public commonHead::viewModels::ISideBarViewModelCallback
 {
     Q_OBJECT
 public:

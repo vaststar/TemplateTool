@@ -17,6 +17,7 @@ set(MODULE_QML_TARGET_FILES "")
 set(MODULE_PRIVATE_INCLUDE_DIRS "")
 
 add_subdirectory(UIViewCore)
+add_subdirectory(UIViewModelSignalBridge)
 add_subdirectory(UIViewCommon)
 add_subdirectory(UIEvents)
 add_subdirectory(MainWindowSuite)
@@ -30,6 +31,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     UIViewCore
+    UIViewModelSignalBridge
     LoggerUtils
     UIPlatformUtils
     UIIPCChannel

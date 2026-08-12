@@ -2,11 +2,12 @@
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
 
 namespace UIVMSignalEmitter{
-class MainWindowViewModelEmitter: public QObject,
-                             public commonHead::viewModels::IMainWindowViewModelCallback
+class UIViewModelSignalBridge_EXPORT MainWindowViewModelEmitter: public QObject,
+                                                        public commonHead::viewModels::IMainWindowViewModelCallback
 {
     Q_OBJECT
 public:

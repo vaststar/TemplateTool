@@ -2,7 +2,7 @@
 #include "ContactsPageUtils.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
 #include "UIViewHelper/UIViewHelper.h"
-#include "ViewModelSignalEmitter/ContactListViewModelEmitter.h"
+#include <UIViewModelSignalBridge/emitters/ContactListViewModelEmitter.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListViewModel.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 #include <AppContext/AppContext.h>

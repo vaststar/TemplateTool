@@ -2,12 +2,14 @@
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
+#include <UIViewModelSignalBridge/metatypes/ScreenshotMetaTypes.h>
 #include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotViewModel.h>
 
 namespace UIVMSignalEmitter {
 
-class ScreenshotViewModelEmitter : public QObject,
-                                   public commonHead::viewModels::IScreenshotViewModelCallback
+class UIViewModelSignalBridge_EXPORT ScreenshotViewModelEmitter : public QObject,
+                                                              public commonHead::viewModels::IScreenshotViewModelCallback
 {
     Q_OBJECT
 public:

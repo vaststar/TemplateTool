@@ -2,12 +2,13 @@
 
 #include <QObject>
 #include <QString>
+#include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
 namespace UIVMSignalEmitter {
 
-class NetworkProxyViewModelEmitter : public QObject,
-                                     public commonHead::viewModels::INetworkProxyViewModelCallback
+class UIViewModelSignalBridge_EXPORT NetworkProxyViewModelEmitter : public QObject,
+                                                                public commonHead::viewModels::INetworkProxyViewModelCallback
 {
     Q_OBJECT
 public:
