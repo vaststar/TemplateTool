@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/MiniAppListViewModel/MiniAppListViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/MiniAppListViewModel.h
     src/MiniAppListViewModel.cpp
 )
@@ -16,7 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     MiniAppListViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     ResourceLoaderApi

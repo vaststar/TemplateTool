@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/MainWindowViewModel/MainWindowViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/MainWindowViewModel.h
     src/MainWindowViewModel.cpp
 )
@@ -16,7 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     MainWindowViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     InvocationServiceApi

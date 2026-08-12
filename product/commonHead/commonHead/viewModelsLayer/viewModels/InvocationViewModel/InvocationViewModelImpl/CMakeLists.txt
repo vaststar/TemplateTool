@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/InvocationViewModel/InvocationViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/InvocationViewModel.h
     src/InvocationViewModel.cpp
 )
@@ -16,7 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     InvocationViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     InvocationServiceApi

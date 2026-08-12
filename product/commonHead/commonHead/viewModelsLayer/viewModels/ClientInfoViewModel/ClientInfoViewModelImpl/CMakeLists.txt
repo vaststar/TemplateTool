@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/ClientInfoViewModel/ClientInfoViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/ClientInfoViewModel.h
     src/ClientInfoViewModel.cpp
 )
@@ -16,7 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ClientInfoViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     ClientInfoServiceApi

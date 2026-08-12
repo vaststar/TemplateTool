@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/MiniAppRuntimeViewModel/MiniAppRuntimeViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/SystemBridgeHandler.h
     src/SystemBridgeHandler.cpp
     src/MiniAppRuntimeViewModel.h
@@ -18,7 +19,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     MiniAppRuntimeViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     MiniAppServiceApi

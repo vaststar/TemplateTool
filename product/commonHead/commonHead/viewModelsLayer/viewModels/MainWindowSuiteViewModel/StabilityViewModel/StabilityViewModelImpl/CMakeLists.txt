@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/StabilityViewModel/StabilityViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/StabilityViewModel.h
     src/StabilityViewModel.cpp
 )
@@ -16,7 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     StabilityViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     StabilityServiceApi

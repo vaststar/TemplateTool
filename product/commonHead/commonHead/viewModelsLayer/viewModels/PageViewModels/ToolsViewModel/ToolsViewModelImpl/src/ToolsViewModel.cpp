@@ -1,4 +1,5 @@
 #include "ToolsViewModel.h"
+#include "LoggerDefine.h"
 
 #include <chrono>
 #include <ctime>
@@ -13,7 +14,6 @@
 
 #include <ResourceString.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/ToolsViewModel/ToolsViewModelCreator.h>
@@ -33,7 +33,7 @@ std::shared_ptr<IToolsViewModel> impl::createToolsViewModel(
 ToolsViewModel::ToolsViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : IToolsViewModel(framework)
 {
-    COMMONHEAD_LOG_DEBUG("create ToolsViewModel");
+    TOOLS_VIEW_MODEL_LOG_DEBUG("create ToolsViewModel");
 }
 
 // ==================== IViewModel ====================
@@ -45,7 +45,7 @@ std::string ToolsViewModel::getViewModelName() const
 
 void ToolsViewModel::init()
 {
-    COMMONHEAD_LOG_DEBUG("ToolsViewModel::init");
+    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::init");
     buildToolsTree();
     m_ready = true;
     fireNotification(&IToolsViewModelCallback::onToolsTreeReady);
@@ -67,12 +67,12 @@ void ToolsViewModel::selectNode(const std::string& nodeId)
 {
     // VM owns no selection state; controller is the source of truth.
     // Keep this hook so future metrics/telemetry can be added in one place.
-    COMMONHEAD_LOG_DEBUG("ToolsViewModel::selectNode: " << nodeId);
+    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::selectNode: " << nodeId);
 }
 
 void ToolsViewModel::reloadTree()
 {
-    COMMONHEAD_LOG_DEBUG("ToolsViewModel::reloadTree");
+    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::reloadTree");
 
     if (!m_toolsTree) {
         // First-time build path: act like init().
@@ -458,7 +458,7 @@ void ToolsViewModel::buildToolsTree()
 
     m_toolsTree = tree;
 
-    COMMONHEAD_LOG_DEBUG("ToolsViewModel::buildToolsTree completed");
+    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::buildToolsTree completed");
 }
 
 } // namespace commonHead::viewModels

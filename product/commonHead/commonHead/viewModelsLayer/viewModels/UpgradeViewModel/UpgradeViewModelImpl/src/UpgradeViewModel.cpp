@@ -1,8 +1,8 @@
 #include "UpgradeViewModel.h"
+#include "LoggerDefine.h"
 
 #include <utility>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/UpgradeViewModel/UpgradeViewModelCreator.h>
@@ -21,7 +21,7 @@ std::shared_ptr<IUpgradeViewModel> createUpgradeViewModel(
 UpgradeViewModel::UpgradeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IUpgradeViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create UpgradeViewModel");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("create UpgradeViewModel");
 }
 
 std::string UpgradeViewModel::getViewModelName() const
@@ -47,7 +47,7 @@ void UpgradeViewModel::init()
 
 void UpgradeViewModel::checkForUpgrade()
 {
-    COMMONHEAD_LOG_DEBUG("checkForUpgrade (user triggered)");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("checkForUpgrade (user triggered)");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -62,7 +62,7 @@ void UpgradeViewModel::checkForUpgrade()
 
 void UpgradeViewModel::downloadUpgrade()
 {
-    COMMONHEAD_LOG_DEBUG("downloadUpgrade");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("downloadUpgrade");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -77,7 +77,7 @@ void UpgradeViewModel::downloadUpgrade()
 
 void UpgradeViewModel::installAndRestart()
 {
-    COMMONHEAD_LOG_DEBUG("installAndRestart");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("installAndRestart");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -92,7 +92,7 @@ void UpgradeViewModel::installAndRestart()
 
 void UpgradeViewModel::cancelDownload()
 {
-    COMMONHEAD_LOG_DEBUG("cancelDownload");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("cancelDownload");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -107,7 +107,7 @@ void UpgradeViewModel::cancelDownload()
 
 void UpgradeViewModel::dismissUpgrade()
 {
-    COMMONHEAD_LOG_DEBUG("dismissUpgrade");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("dismissUpgrade");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())

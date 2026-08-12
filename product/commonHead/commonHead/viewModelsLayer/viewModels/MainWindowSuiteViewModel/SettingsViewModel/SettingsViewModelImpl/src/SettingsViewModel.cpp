@@ -1,4 +1,5 @@
 #include "SettingsViewModel.h"
+#include "LoggerDefine.h"
 
 #include "SettingsModel.h"
 
@@ -6,7 +7,6 @@
 
 #include <ResourceString.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 #include <commonHead/viewModels/SettingsViewModel/SettingsViewModelCreator.h>
@@ -26,7 +26,7 @@ std::shared_ptr<ISettingsViewModel> createSettingsViewModel(
 SettingsViewModel::SettingsViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : ISettingsViewModel(framework)
 {
-    COMMONHEAD_LOG_DEBUG("create SettingsViewModel");
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("create SettingsViewModel");
 }
 
 std::string SettingsViewModel::getViewModelName() const
@@ -36,7 +36,7 @@ std::string SettingsViewModel::getViewModelName() const
 
 void SettingsViewModel::init()
 {
-    COMMONHEAD_LOG_DEBUG("SettingsViewModel::init");
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::init");
     buildSettingsTree();
     m_ready = true;
     fireNotification(&ISettingsViewModelCallback::onSettingsTreeReady);
@@ -54,12 +54,12 @@ bool SettingsViewModel::isSettingsTreeReady() const
 
 void SettingsViewModel::selectNode(const std::string& nodeId)
 {
-    COMMONHEAD_LOG_DEBUG("SettingsViewModel::selectNode: " << nodeId);
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::selectNode: " << nodeId);
 }
 
 void SettingsViewModel::reloadTree()
 {
-    COMMONHEAD_LOG_DEBUG("SettingsViewModel::reloadTree");
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::reloadTree");
 
     if (!m_settingsTree)
     {
@@ -163,7 +163,7 @@ void SettingsViewModel::buildSettingsTree()
 
     m_settingsTree = tree;
 
-    COMMONHEAD_LOG_DEBUG("SettingsViewModel::buildSettingsTree completed");
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::buildSettingsTree completed");
 }
 
 } // namespace commonHead::viewModels

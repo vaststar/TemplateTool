@@ -1,7 +1,7 @@
 #include "StabilityViewModel.h"
+#include "LoggerDefine.h"
 
 #include <ucf/Services/StabilityService/IStabilityService.h>
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/StabilityViewModel/StabilityViewModelCreator.h>
@@ -18,13 +18,13 @@ std::shared_ptr<IStabilityViewModel> createStabilityViewModel(
 
 StabilityViewModel::~StabilityViewModel()
 {
-    COMMONHEAD_LOG_DEBUG("");
+    STABILITY_VIEW_MODEL_LOG_DEBUG("");
 }
 
 StabilityViewModel::StabilityViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IStabilityViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create StabilityViewModel");
+    STABILITY_VIEW_MODEL_LOG_DEBUG("create StabilityViewModel");
 }
 
 std::string StabilityViewModel::getViewModelName() const

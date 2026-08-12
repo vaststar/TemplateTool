@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/SettingsViewModel/SettingsViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/SettingsModel.h
     src/SettingsModel.cpp
     src/SettingsViewModel.h
@@ -18,7 +19,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     SettingsViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ResourceLoaderApi
 )

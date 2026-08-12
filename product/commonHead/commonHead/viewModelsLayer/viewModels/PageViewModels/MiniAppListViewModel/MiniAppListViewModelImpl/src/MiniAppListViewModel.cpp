@@ -1,11 +1,11 @@
 #include "MiniAppListViewModel.h"
+#include "LoggerDefine.h"
 
 #include <algorithm>
 
 #include <ResourceString.h>
 #include <ucf/Services/MiniAppService/IMiniAppService.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
@@ -76,7 +76,7 @@ createMiniAppListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramew
 MiniAppListViewModel::MiniAppListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMiniAppListViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create MiniAppListViewModel");
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("create MiniAppListViewModel");
 }
 
 std::string MiniAppListViewModel::getViewModelName() const
@@ -89,7 +89,7 @@ void MiniAppListViewModel::init()
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("MiniAppListViewModel init: service not available");
+        MINI_APP_LIST_VIEW_MODEL_LOG_ERROR("MiniAppListViewModel init: service not available");
         return;
     }
     // Register first so we do not miss the ready event between the probe and the read.
@@ -106,7 +106,7 @@ void MiniAppListViewModel::init()
     }
     else
     {
-        COMMONHEAD_LOG_DEBUG("MiniAppListViewModel init: service not ready, waiting for onMiniAppServiceReady");
+        MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("MiniAppListViewModel init: service not ready, waiting for onMiniAppServiceReady");
     }
 }
 
@@ -127,7 +127,7 @@ void MiniAppListViewModel::rebuildFromService()
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("MiniAppListViewModel rebuild skipped: service not available");
+        MINI_APP_LIST_VIEW_MODEL_LOG_ERROR("MiniAppListViewModel rebuild skipped: service not available");
         return;
     }
 
@@ -136,7 +136,7 @@ void MiniAppListViewModel::rebuildFromService()
     {
         apps.push_back(toMiniAppInfo(manifest, service));
     }
-    COMMONHEAD_LOG_DEBUG("MiniAppListViewModel rebuild: " << apps.size() << " app(s)");
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("MiniAppListViewModel rebuild: " << apps.size() << " app(s)");
     {
         std::scoped_lock lock(mMutex);
         mMiniApps = std::move(apps);
@@ -166,11 +166,11 @@ void MiniAppListViewModel::installMiniApp(const std::string& sourceDirectory)
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("installMiniApp: service not available");
+        MINI_APP_LIST_VIEW_MODEL_LOG_ERROR("installMiniApp: service not available");
         notifyInstallFailed(ucf::service::MiniAppInstallError::StorageUnavailable);
         return;
     }
-    COMMONHEAD_LOG_INFO("installMiniApp from: " << sourceDirectory);
+    MINI_APP_LIST_VIEW_MODEL_LOG_INFO("installMiniApp from: " << sourceDirectory);
     service->installFromDirectory(sourceDirectory);
 }
 
@@ -179,25 +179,25 @@ void MiniAppListViewModel::uninstallMiniApp(const std::string& id)
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("uninstallMiniApp: service not available");
+        MINI_APP_LIST_VIEW_MODEL_LOG_ERROR("uninstallMiniApp: service not available");
         notifyUninstallFailed(ucf::service::MiniAppUninstallError::Unknown);
         return;
     }
-    COMMONHEAD_LOG_INFO("uninstallMiniApp, id:" << id);
+    MINI_APP_LIST_VIEW_MODEL_LOG_INFO("uninstallMiniApp, id:" << id);
     service->uninstall(id);
 }
 
 // ===== IMiniAppServiceCallback: apply service delta, then notify subscribers =====
 void MiniAppListViewModel::onMiniAppServiceReady()
 {
-    COMMONHEAD_LOG_DEBUG("onMiniAppServiceReady received from service");
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("onMiniAppServiceReady received from service");
     rebuildFromService();
     fireNotification(&IMiniAppListViewModelCallback::onMiniAppListChanged);
 }
 
 void MiniAppListViewModel::onMiniAppInstalled(const ucf::service::model::MiniAppManifest& app)
 {
-    COMMONHEAD_LOG_DEBUG("onMiniAppInstalled received from service, id:" << app.id);
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("onMiniAppInstalled received from service, id:" << app.id);
     auto service = lockService();
     {
         std::scoped_lock lock(mMutex);
@@ -217,13 +217,13 @@ void MiniAppListViewModel::onMiniAppInstalled(const ucf::service::model::MiniApp
 
 void MiniAppListViewModel::onMiniAppInstallFailed(ucf::service::MiniAppInstallError error)
 {
-    COMMONHEAD_LOG_WARN("onMiniAppInstallFailed received from service, error:" << static_cast<int>(error));
+    MINI_APP_LIST_VIEW_MODEL_LOG_WARN("onMiniAppInstallFailed received from service, error:" << static_cast<int>(error));
     notifyInstallFailed(error);
 }
 
 void MiniAppListViewModel::onMiniAppUninstalled(const std::string& id)
 {
-    COMMONHEAD_LOG_DEBUG("onMiniAppUninstalled received from service, id:" << id);
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("onMiniAppUninstalled received from service, id:" << id);
     {
         std::scoped_lock lock(mMutex);
         std::erase_if(mMiniApps, [&id](const auto& app) { return app.id == id; });
@@ -233,7 +233,7 @@ void MiniAppListViewModel::onMiniAppUninstalled(const std::string& id)
 
 void MiniAppListViewModel::onMiniAppUninstallFailed(ucf::service::MiniAppUninstallError error)
 {
-    COMMONHEAD_LOG_WARN("onMiniAppUninstallFailed received from service, error:" << static_cast<int>(error));
+    MINI_APP_LIST_VIEW_MODEL_LOG_WARN("onMiniAppUninstallFailed received from service, error:" << static_cast<int>(error));
     notifyUninstallFailed(error);
 }
 

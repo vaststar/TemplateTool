@@ -1,10 +1,10 @@
 #include "MiniAppRuntimeViewModel.h"
+#include "LoggerDefine.h"
 
 #include <ucf/Agents/MiniAppRuntimeAgent/MiniAppRuntimeAgentFactory.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 #include <ucf/Services/MiniAppService/IMiniAppService.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/MiniAppRuntimeViewModel/MiniAppRuntimeViewModelCreator.h>
@@ -41,7 +41,7 @@ createMiniAppRuntimeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFra
 MiniAppRuntimeViewModel::MiniAppRuntimeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMiniAppRuntimeViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create MiniAppRuntimeViewModel");
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("create MiniAppRuntimeViewModel");
 }
 
 MiniAppRuntimeViewModel::~MiniAppRuntimeViewModel()
@@ -89,7 +89,7 @@ void MiniAppRuntimeViewModel::start(const std::string& appId)
         std::lock_guard<std::mutex> lock(mMutex);
         if (mAgent)
         {
-            COMMONHEAD_LOG_WARN("MiniAppRuntimeViewModel::start already started id=" << mAppId);
+            MINI_APP_RUNTIME_VIEW_MODEL_LOG_WARN("MiniAppRuntimeViewModel::start already started id=" << mAppId);
             return;
         }
     }
@@ -101,14 +101,14 @@ void MiniAppRuntimeViewModel::start(const std::string& appId)
     auto service = lockMiniAppService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("MiniAppRuntimeViewModel::start mini-app service not available");
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start mini-app service not available");
         return;
     }
 
     const auto manifest = service->getApp(appId);
     if (!manifest.has_value())
     {
-        COMMONHEAD_LOG_ERROR("MiniAppRuntimeViewModel::start unknown app id=" << appId);
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start unknown app id=" << appId);
         return;
     }
 
@@ -138,7 +138,7 @@ void MiniAppRuntimeViewModel::start(const std::string& appId)
     auto agent = ucf::agents::createMiniAppRuntimeAgent();
     if (!agent)
     {
-        COMMONHEAD_LOG_ERROR("MiniAppRuntimeViewModel::start failed to create runtime agent");
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start failed to create runtime agent");
         return;
     }
 
@@ -148,7 +148,7 @@ void MiniAppRuntimeViewModel::start(const std::string& appId)
 
     if (!agent->initialize(config))
     {
-        COMMONHEAD_LOG_ERROR("MiniAppRuntimeViewModel::start initialize failed id=" << appId);
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_ERROR("MiniAppRuntimeViewModel::start initialize failed id=" << appId);
         return;
     }
 
@@ -168,12 +168,12 @@ void MiniAppRuntimeViewModel::start(const std::string& appId)
     }
     if (throwaway)
     {
-        COMMONHEAD_LOG_WARN("MiniAppRuntimeViewModel::start lost init race, id=" << appId);
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_WARN("MiniAppRuntimeViewModel::start lost init race, id=" << appId);
         throwaway->shutdown();
         return;
     }
 
-    COMMONHEAD_LOG_INFO("MiniAppRuntimeViewModel::start id=" << manifest->id
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_INFO("MiniAppRuntimeViewModel::start id=" << manifest->id
                         << " entry=" << config.entry);
     agent->loadEntry();
 }
@@ -190,7 +190,7 @@ void MiniAppRuntimeViewModel::stop()
     }
     if (agent)
     {
-        COMMONHEAD_LOG_INFO("MiniAppRuntimeViewModel::stop id=" << appId);
+        MINI_APP_RUNTIME_VIEW_MODEL_LOG_INFO("MiniAppRuntimeViewModel::stop id=" << appId);
         agent->shutdown();
     }
 }
@@ -213,32 +213,32 @@ std::uintptr_t MiniAppRuntimeViewModel::nativeHostHandle() const
 
 void MiniAppRuntimeViewModel::onReadyChanged(bool ready)
 {
-    COMMONHEAD_LOG_DEBUG("MiniAppRuntimeViewModel onReadyChanged ready=" << ready);
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel onReadyChanged ready=" << ready);
     fireNotification(&IMiniAppRuntimeViewModelCallback::onReadyChanged, ready);
 }
 
 void MiniAppRuntimeViewModel::onLoadFinished(bool success)
 {
-    COMMONHEAD_LOG_INFO("MiniAppRuntimeViewModel onLoadFinished success=" << success);
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_INFO("MiniAppRuntimeViewModel onLoadFinished success=" << success);
     fireNotification(&IMiniAppRuntimeViewModelCallback::onLoadFinished, success);
 }
 
 void MiniAppRuntimeViewModel::onLoadFailed(int errorCode, const std::string& errorMessage)
 {
-    COMMONHEAD_LOG_WARN("MiniAppRuntimeViewModel onLoadFailed code=" << errorCode
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_WARN("MiniAppRuntimeViewModel onLoadFailed code=" << errorCode
                         << " msg=" << errorMessage);
     fireNotification(&IMiniAppRuntimeViewModelCallback::onLoadFailed, errorCode, errorMessage);
 }
 
 void MiniAppRuntimeViewModel::onTitleChanged(const std::string& title)
 {
-    COMMONHEAD_LOG_DEBUG("MiniAppRuntimeViewModel onTitleChanged title=" << title);
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel onTitleChanged title=" << title);
     fireNotification(&IMiniAppRuntimeViewModelCallback::onTitleChanged, title);
 }
 
 void MiniAppRuntimeViewModel::onUrlChanged(const std::string& url)
 {
-    COMMONHEAD_LOG_DEBUG("MiniAppRuntimeViewModel onUrlChanged url=" << url);
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel onUrlChanged url=" << url);
     fireNotification(&IMiniAppRuntimeViewModelCallback::onUrlChanged, url);
 }
 

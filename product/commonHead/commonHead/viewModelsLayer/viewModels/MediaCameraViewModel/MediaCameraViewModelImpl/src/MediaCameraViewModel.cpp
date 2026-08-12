@@ -1,9 +1,9 @@
 #include "MediaCameraViewModel.h"
+#include "LoggerDefine.h"
 
 #include <type_traits>
 #include <variant>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/MediaCameraViewModel/MediaCameraViewModelCreator.h>
@@ -51,12 +51,12 @@ MediaCameraViewModel::MediaCameraViewModel(
     commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMediaCameraViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create MediaCameraViewModel");
+    MEDIA_CAMERA_VIEW_MODEL_LOG_DEBUG("create MediaCameraViewModel");
 }
 
 MediaCameraViewModel::~MediaCameraViewModel()
 {
-    COMMONHEAD_LOG_DEBUG("");
+    MEDIA_CAMERA_VIEW_MODEL_LOG_DEBUG("");
 
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {

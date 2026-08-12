@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/CameraDirectoryViewModel/CameraDirectoryViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/CameraDirectoryTreeModel.h
     src/CameraDirectoryTreeModel.cpp
     src/CameraDirectoryViewModel.h
@@ -20,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     CameraDirectoryViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     CameraDirectoryServiceApi

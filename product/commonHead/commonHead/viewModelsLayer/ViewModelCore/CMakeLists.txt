@@ -10,9 +10,10 @@ set(MODULE_HEADER_FILES
 )
 set(MODULE_SOURCE_PRIVATE
     src/IViewModel.cpp
+    src/LoggerDefine.h
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

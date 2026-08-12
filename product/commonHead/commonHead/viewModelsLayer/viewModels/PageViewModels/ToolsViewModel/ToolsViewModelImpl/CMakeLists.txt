@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/ToolsViewModel/ToolsViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/ToolsModel.h
     src/ToolsModel.cpp
     src/ToolsViewModel.h
@@ -18,7 +19,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ToolsViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ResourceLoaderApi
     Base64Utils

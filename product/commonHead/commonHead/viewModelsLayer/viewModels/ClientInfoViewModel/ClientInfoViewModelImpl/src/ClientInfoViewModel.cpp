@@ -1,4 +1,5 @@
 #include "ClientInfoViewModel.h"
+#include "LoggerDefine.h"
 
 #include <algorithm>
 #include <iterator>
@@ -6,7 +7,6 @@
 #include <ucf/Services/ClientInfoService/ClientInfoTypes.h>
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 
@@ -26,7 +26,7 @@ std::shared_ptr<IClientInfoViewModel> createClientInfoViewModel(
 ClientInfoViewModel::ClientInfoViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IClientInfoViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create ClientInfoViewModel");
+    CLIENT_INFO_VIEW_MODEL_LOG_DEBUG("create ClientInfoViewModel");
 }
 
 std::string ClientInfoViewModel::getViewModelName() const

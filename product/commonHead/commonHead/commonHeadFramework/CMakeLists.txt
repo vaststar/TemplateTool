@@ -12,11 +12,12 @@ set(MODULE_HEADER_FILES #for include and install header
 set(MODULE_SOURCE_PRIVATE
     src/CommonHeadFramework.h
     src/CommonHeadFramework.cpp
+    src/LoggerDefine.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC)
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
     CoreFrameworkApi
+    LoggerUtils
     ResourceLoaderImpl
     ServiceLocatorImpl
 )

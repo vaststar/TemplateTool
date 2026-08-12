@@ -1,11 +1,11 @@
 #include "ContactListViewModel.h"
+#include "LoggerDefine.h"
 
 #include <mutex>
 #include <ucf/Services/ContactService/IContactService.h>
 #include <ucf/Services/ContactService/IContactEntities.h>
 #include <ucf/Utilities/UUIDUtils/UUIDUtils.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/ContactListViewModel/ContactListViewModelCreator.h>
@@ -29,7 +29,7 @@ createContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramew
 ContactListViewModel::ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IContactListViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create ContactListViewModel");
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("create ContactListViewModel");
 }
 
 std::string ContactListViewModel::getViewModelName() const
@@ -48,7 +48,7 @@ void ContactListViewModel::setRelationType(model::RelationType type)
     {
         return;
     }
-    COMMONHEAD_LOG_DEBUG("setRelationType from " << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("setRelationType from " << static_cast<int>(mInterestedRelationType)
                          << " to " << static_cast<int>(type));
     mInterestedRelationType = type;
 
@@ -123,7 +123,7 @@ void ContactListViewModel::init()
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("ContactListViewModel init: service not available");
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("ContactListViewModel init: service not available");
         return;
     }
     // Register first so we do not miss change events between the isReady probe and the read.
@@ -154,7 +154,7 @@ void ContactListViewModel::rebuildTreeFromService()
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("rebuildTreeFromService skipped: service not available");
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("rebuildTreeFromService skipped: service not available");
         return;
     }
 
@@ -171,7 +171,7 @@ void ContactListViewModel::rebuildTreeFromService()
         allContacts.insert(allContacts.end(), allGroupContacts.begin(), allGroupContacts.end());
     }
     auto allRelations = service->getContactRelations(relType);
-    COMMONHEAD_LOG_DEBUG("rebuildTreeFromService, slice relType:" << static_cast<int>(relType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("rebuildTreeFromService, slice relType:" << static_cast<int>(relType)
                          << ", groupType:" << (groupType.has_value() ? static_cast<int>(*groupType) : -1)
                          << ", persons:" << allPersonContacts.size()
                          << ", groups:" << allGroupContacts.size()
@@ -194,7 +194,7 @@ bool ContactListViewModel::ensureTreeBuilt()
         }
     }
     // Incremental event arrived before tree was built; rebuild full snapshot instead.
-    COMMONHEAD_LOG_DEBUG("ensureTreeBuilt: rebuilding full snapshot");
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("ensureTreeBuilt: rebuilding full snapshot");
     rebuildTreeFromService();
     return true;
 }
@@ -214,7 +214,7 @@ bool ContactListViewModel::isContactDirectoryReady() const
 void ContactListViewModel::selectContact(const std::string& contactId)
 {
     // Fire-and-forget metrics hook; selection state lives in the UI.
-    COMMONHEAD_LOG_INFO("selectContact: contactId:" << (contactId.empty() ? "<cleared>" : contactId));
+    CONTACT_LIST_VIEW_MODEL_LOG_INFO("selectContact: contactId:" << (contactId.empty() ? "<cleared>" : contactId));
 }
 
 std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const std::string& contactId) const
@@ -226,7 +226,7 @@ std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("getContactDetail failed: service not available, id:" << contactId);
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("getContactDetail failed: service not available, id:" << contactId);
         return std::nullopt;
     }
 
@@ -293,7 +293,7 @@ std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const
         return d;
     }
 
-    COMMONHEAD_LOG_WARN("getContactDetail: unknown contactId:" << contactId);
+    CONTACT_LIST_VIEW_MODEL_LOG_WARN("getContactDetail: unknown contactId:" << contactId);
     return std::nullopt;
 }
 
@@ -353,14 +353,14 @@ void ContactListViewModel::moveContact(const std::string& childId,
 {
     if (!canMoveContact(childId, newParentId))
     {
-        COMMONHEAD_LOG_WARN("moveContact rejected: childId=" << childId
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("moveContact rejected: childId=" << childId
                             << ", newParentId=" << (newParentId.empty() ? "<root>" : newParentId));
         return;
     }
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("moveContact failed: service not available");
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("moveContact failed: service not available");
         return;
     }
 
@@ -375,7 +375,7 @@ void ContactListViewModel::moveContact(const std::string& childId,
         }
     }
 
-    COMMONHEAD_LOG_INFO("moveContact: childId=" << childId
+    CONTACT_LIST_VIEW_MODEL_LOG_INFO("moveContact: childId=" << childId
                         << ", from=" << (curParentId.empty() ? "<root>" : curParentId)
                         << ", to="   << (newParentId.empty() ? "<root>" : newParentId)
                         << ", relType=" << static_cast<int>(mInterestedRelationType));
@@ -398,7 +398,7 @@ void ContactListViewModel::moveContact(const std::string& childId,
         }
         else
         {
-            COMMONHEAD_LOG_WARN("moveContact: no existing relation to remove for childId=" << childId
+            CONTACT_LIST_VIEW_MODEL_LOG_WARN("moveContact: no existing relation to remove for childId=" << childId
                                 << " with empty newParentId; this should not happen");
         }
     }
@@ -454,19 +454,19 @@ std::string ContactListViewModel::addContact(const std::string& parentId, const 
 {
     if (!canAddContact(parentId, data.type))
     {
-        COMMONHEAD_LOG_WARN("addContact rejected: parentId=" << (parentId.empty() ? "<root>" : parentId)
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("addContact rejected: parentId=" << (parentId.empty() ? "<root>" : parentId)
                             << ", type=" << static_cast<int>(data.type));
         return {};
     }
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("addContact failed: service not available");
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("addContact failed: service not available");
         return {};
     }
 
     const std::string newId = ucf::utilities::UUIDUtils::generateUUID();
-    COMMONHEAD_LOG_INFO("addContact: id=" << newId << ", name=" << data.displayName
+    CONTACT_LIST_VIEW_MODEL_LOG_INFO("addContact: id=" << newId << ", name=" << data.displayName
                         << ", type=" << static_cast<int>(data.type)
                         << ", parent=" << (parentId.empty() ? "<root>" : parentId));
 
@@ -506,7 +506,7 @@ void ContactListViewModel::updateContact(const model::ContactNodeData& data)
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("updateContact failed: service not available");
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("updateContact failed: service not available");
         return;
     }
 
@@ -521,7 +521,7 @@ void ContactListViewModel::updateContact(const model::ContactNodeData& data)
         }
     }
 
-    COMMONHEAD_LOG_INFO("updateContact: id=" << node.id << ", name=" << node.displayName
+    CONTACT_LIST_VIEW_MODEL_LOG_INFO("updateContact: id=" << node.id << ", name=" << node.displayName
                         << ", type=" << static_cast<int>(node.type));
 
     if (node.type == model::ContactNodeType::Person)
@@ -557,13 +557,13 @@ void ContactListViewModel::removeContact(const std::string& contactId)
 {
     if (!canRemoveContact(contactId))
     {
-        COMMONHEAD_LOG_WARN("removeContact rejected: contactId=" << contactId);
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("removeContact rejected: contactId=" << contactId);
         return;
     }
     auto service = lockService();
     if (!service)
     {
-        COMMONHEAD_LOG_ERROR("removeContact failed: service not available");
+        CONTACT_LIST_VIEW_MODEL_LOG_ERROR("removeContact failed: service not available");
         return;
     }
 
@@ -594,7 +594,7 @@ void ContactListViewModel::removeContact(const std::string& contactId)
         }
     }
 
-    COMMONHEAD_LOG_INFO("removeContact: id=" << contactId << ", isPerson=" << isPerson
+    CONTACT_LIST_VIEW_MODEL_LOG_INFO("removeContact: id=" << contactId << ", isPerson=" << isPerson
                         << ", relations=" << relationIds.size());
 
     // Detach relations first so children re-home to the virtual root, then drop the node.
@@ -616,14 +616,14 @@ void ContactListViewModel::removeContact(const std::string& contactId)
 
 void ContactListViewModel::onContactDirectoryReady()
 {
-    COMMONHEAD_LOG_DEBUG("onContactDirectoryReady received from service, slice:" << static_cast<int>(mInterestedRelationType));
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onContactDirectoryReady received from service, slice:" << static_cast<int>(mInterestedRelationType));
     rebuildTreeFromService();
     fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
 }
 
 void ContactListViewModel::onContactDirectoryLoadFailed(ucf::service::ContactDirectoryLoadError error)
 {
-    COMMONHEAD_LOG_ERROR("onContactDirectoryLoadFailed received from service, slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_ERROR("onContactDirectoryLoadFailed received from service, slice:" << static_cast<int>(mInterestedRelationType)
                          << ", error:" << static_cast<int>(error));
     fireNotification(&IContactListViewModelCallback::onContactDirectoryLoadFailed, utils::toVMLoadError(error));
 }
@@ -631,11 +631,11 @@ void ContactListViewModel::onContactDirectoryLoadFailed(ucf::service::ContactDir
 void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons)
 {
     auto vmNodes = utils::toVMNodeDatas(persons);
-    COMMONHEAD_LOG_DEBUG("onPersonContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onPersonContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
                          << ", count:" << vmNodes.size());
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onPersonContactsAdded arrived before tree was built (count:" << vmNodes.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onPersonContactsAdded arrived before tree was built (count:" << vmNodes.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -653,11 +653,11 @@ void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::Pers
 void ContactListViewModel::onPersonContactsUpdated(const ucf::service::model::PersonContactArray& persons)
 {
     auto vmNodes = utils::toVMNodeDatas(persons);
-    COMMONHEAD_LOG_DEBUG("onPersonContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onPersonContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
                          << ", count:" << vmNodes.size());
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onPersonContactsUpdated arrived before tree was built (count:" << vmNodes.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onPersonContactsUpdated arrived before tree was built (count:" << vmNodes.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -674,11 +674,11 @@ void ContactListViewModel::onPersonContactsUpdated(const ucf::service::model::Pe
 
 void ContactListViewModel::onPersonContactsRemoved(const std::vector<std::string>& contactIds)
 {
-    COMMONHEAD_LOG_DEBUG("onPersonContactsRemoved slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onPersonContactsRemoved slice:" << static_cast<int>(mInterestedRelationType)
                          << ", count:" << contactIds.size());
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onPersonContactsRemoved arrived before tree was built (count:" << contactIds.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onPersonContactsRemoved arrived before tree was built (count:" << contactIds.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -698,12 +698,12 @@ void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::Group
     auto filteredOpt = filterGroupsForSlice(groups);
     if (!filteredOpt.has_value())
     {
-        COMMONHEAD_LOG_DEBUG("onGroupContactsAdded dropped (slice has no group type), slice:"
+        CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onGroupContactsAdded dropped (slice has no group type), slice:"
                              << static_cast<int>(mInterestedRelationType) << ", raw count:" << groups.size());
         return;
     }
     const auto& filtered = *filteredOpt;
-    COMMONHEAD_LOG_DEBUG("onGroupContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onGroupContactsAdded slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << groups.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
@@ -713,7 +713,7 @@ void ContactListViewModel::onGroupContactsAdded(const ucf::service::model::Group
     auto vmNodes = utils::toVMNodeDatas(filtered);
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onGroupContactsAdded arrived before tree was built (count:" << vmNodes.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onGroupContactsAdded arrived before tree was built (count:" << vmNodes.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -733,12 +733,12 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
     auto filteredOpt = filterGroupsForSlice(groups);
     if (!filteredOpt.has_value())
     {
-        COMMONHEAD_LOG_DEBUG("onGroupContactsUpdated dropped (slice has no group type), slice:"
+        CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onGroupContactsUpdated dropped (slice has no group type), slice:"
                              << static_cast<int>(mInterestedRelationType) << ", raw count:" << groups.size());
         return;
     }
     const auto& filtered = *filteredOpt;
-    COMMONHEAD_LOG_DEBUG("onGroupContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onGroupContactsUpdated slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << groups.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
@@ -748,7 +748,7 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
     auto vmNodes = utils::toVMNodeDatas(filtered);
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onGroupContactsUpdated arrived before tree was built (count:" << vmNodes.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onGroupContactsUpdated arrived before tree was built (count:" << vmNodes.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -765,11 +765,11 @@ void ContactListViewModel::onGroupContactsUpdated(const ucf::service::model::Gro
 
 void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>& contactIds)
 {
-    COMMONHEAD_LOG_DEBUG("onGroupContactsRemoved slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onGroupContactsRemoved slice:" << static_cast<int>(mInterestedRelationType)
                          << ", count:" << contactIds.size());
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onGroupContactsRemoved arrived before tree was built (count:" << contactIds.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onGroupContactsRemoved arrived before tree was built (count:" << contactIds.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -787,7 +787,7 @@ void ContactListViewModel::onGroupContactsRemoved(const std::vector<std::string>
 void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::ContactRelationArray& relations)
 {
     auto filtered = filterRelationsForSlice(relations);
-    COMMONHEAD_LOG_DEBUG("onContactRelationsAdded slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onContactRelationsAdded slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << relations.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
@@ -797,7 +797,7 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
     auto vmRelations = utils::toVMRelations(filtered);
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onContactRelationsAdded arrived before tree was built (count:" << vmRelations.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onContactRelationsAdded arrived before tree was built (count:" << vmRelations.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -811,7 +811,7 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
     }
     for (const auto& r : vmRelations)
     {
-        COMMONHEAD_LOG_DEBUG("  relation+ id:" << r.id << ", parent:" << r.parentId << ", child:" << r.childId);
+        CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("  relation+ id:" << r.id << ", parent:" << r.parentId << ", child:" << r.childId);
     }
     fireNotification(&IContactListViewModelCallback::onContactRelationsAdded, vmRelations);
 }
@@ -819,7 +819,7 @@ void ContactListViewModel::onContactRelationsAdded(const ucf::service::model::Co
 void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::ContactRelationArray& relations)
 {
     auto filtered = filterRelationsForSlice(relations);
-    COMMONHEAD_LOG_DEBUG("onContactRelationsUpdated slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onContactRelationsUpdated slice:" << static_cast<int>(mInterestedRelationType)
                          << ", raw:" << relations.size() << ", kept:" << filtered.size());
     if (filtered.empty())
     {
@@ -829,7 +829,7 @@ void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::
     auto vmRelations = utils::toVMRelations(filtered);
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onContactRelationsUpdated arrived before tree was built (count:" << vmRelations.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onContactRelationsUpdated arrived before tree was built (count:" << vmRelations.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -843,18 +843,18 @@ void ContactListViewModel::onContactRelationsUpdated(const ucf::service::model::
     }
     for (const auto& r : vmRelations)
     {
-        COMMONHEAD_LOG_DEBUG("  relation~ id:" << r.id << ", parent:" << r.parentId << ", child:" << r.childId);
+        CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("  relation~ id:" << r.id << ", parent:" << r.parentId << ", child:" << r.childId);
     }
     fireNotification(&IContactListViewModelCallback::onContactRelationsUpdated, vmRelations);
 }
 
 void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::string>& relationIds)
 {
-    COMMONHEAD_LOG_DEBUG("onContactRelationsRemoved slice:" << static_cast<int>(mInterestedRelationType)
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onContactRelationsRemoved slice:" << static_cast<int>(mInterestedRelationType)
                          << ", incoming relationIds count:" << relationIds.size());
     if (ensureTreeBuilt())
     {
-        COMMONHEAD_LOG_WARN("onContactRelationsRemoved arrived before tree was built (count:" << relationIds.size()
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("onContactRelationsRemoved arrived before tree was built (count:" << relationIds.size()
                             << "); fired onContactDirectoryReady instead of delta");
         fireNotification(&IContactListViewModelCallback::onContactDirectoryReady);
         return;
@@ -868,7 +868,7 @@ void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::stri
             removed = mTree->removeRelationsByIds(relationIds);
         }
     }
-    COMMONHEAD_LOG_DEBUG("onContactRelationsRemoved matched in this slice:" << removed.size()
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("onContactRelationsRemoved matched in this slice:" << removed.size()
                          << " of " << relationIds.size());
     if (removed.empty())
     {
@@ -879,7 +879,7 @@ void ContactListViewModel::onContactRelationsRemoved(const std::vector<std::stri
     payload.reserve(removed.size());
     for (auto& r : removed)
     {
-        COMMONHEAD_LOG_DEBUG("  relation- id:" << r.relationId << ", oldParent:" << r.oldParentId
+        CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("  relation- id:" << r.relationId << ", oldParent:" << r.oldParentId
                              << ", child:" << r.childId);
         payload.push_back({std::move(r.relationId),
                            std::move(r.oldParentId),

@@ -31,14 +31,14 @@ LogOperationResult LogOperationUtils::packLogs(
 {
     LogOperationResult result;
     
-    VIEWMODELUTILS_LOG_DEBUG("packLogs called");
+    LOG_OPERATION_UTILS_LOG_DEBUG("packLogs called");
     
     // Get log path from ClientInfoService via framework
     auto framework = commonHeadFramework.lock();
     if (!framework)
     {
         result.errorMessage = "CommonHeadFramework is null";
-        VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+        LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
         return result;
     }
     
@@ -46,7 +46,7 @@ LogOperationResult LogOperationUtils::packLogs(
     if (!serviceLocator)
     {
         result.errorMessage = "ServiceLocator is null";
-        VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+        LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
         return result;
     }
     
@@ -54,25 +54,25 @@ LogOperationResult LogOperationUtils::packLogs(
     if (!clientInfoService)
     {
         result.errorMessage = "ClientInfoService is null";
-        VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+        LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
         return result;
     }
     
     std::string logDirectoryPath = clientInfoService->getAppLogStoragePath();
-    VIEWMODELUTILS_LOG_DEBUG("Log directory path: " << logDirectoryPath);
+    LOG_OPERATION_UTILS_LOG_DEBUG("Log directory path: " << logDirectoryPath);
     
     // Validate log directory exists
     if (logDirectoryPath.empty())
     {
         result.errorMessage = "Log directory path is empty";
-        VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+        LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
         return result;
     }
     
     if (!std::filesystem::exists(logDirectoryPath))
     {
         result.errorMessage = "Log directory does not exist: " + logDirectoryPath;
-        VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+        LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
         return result;
     }
     
@@ -96,7 +96,7 @@ LogOperationResult LogOperationUtils::packLogs(
             catch (const std::exception& e)
             {
                 result.errorMessage = std::string("Failed to create output directory: ") + e.what();
-                VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+                LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
                 return result;
             }
         }
@@ -107,7 +107,7 @@ LogOperationResult LogOperationUtils::packLogs(
     std::filesystem::path fullArchivePath = outDir / archiveName;
     result.archivePath = fullArchivePath.string();
     
-    VIEWMODELUTILS_LOG_DEBUG("Packing logs from: " << logDirectoryPath << " to: " << result.archivePath);
+    LOG_OPERATION_UTILS_LOG_DEBUG("Packing logs from: " << logDirectoryPath << " to: " << result.archivePath);
     
     // Create archive
     ucf::utilities::ArchiveWrapper archiveWrapper;
@@ -116,12 +116,12 @@ LogOperationResult LogOperationUtils::packLogs(
     
     if (result.success)
     {
-        VIEWMODELUTILS_LOG_DEBUG("Successfully packed logs to: " << result.archivePath);
+        LOG_OPERATION_UTILS_LOG_DEBUG("Successfully packed logs to: " << result.archivePath);
     }
     else
     {
         result.errorMessage = "Failed to create archive";
-        VIEWMODELUTILS_LOG_ERROR(result.errorMessage);
+        LOG_OPERATION_UTILS_LOG_ERROR(result.errorMessage);
     }
     
     return result;

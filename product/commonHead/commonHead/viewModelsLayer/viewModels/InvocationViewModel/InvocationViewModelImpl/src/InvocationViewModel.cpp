@@ -1,6 +1,6 @@
 #include "InvocationViewModel.h"
+#include "LoggerDefine.h"
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/viewModels/InvocationViewModel/InvocationViewModelCreator.h>
@@ -18,13 +18,13 @@ std::shared_ptr<IInvocationViewModel> createInvocationViewModel(
 
 InvocationViewModel::~InvocationViewModel()
 {
-    COMMONHEAD_LOG_DEBUG("");
+    INVOCATION_VIEW_MODEL_LOG_DEBUG("");
 }
 
 InvocationViewModel::InvocationViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IInvocationViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create InvocationViewModel");
+    INVOCATION_VIEW_MODEL_LOG_DEBUG("create InvocationViewModel");
 }
 
 std::string InvocationViewModel::getViewModelName() const
@@ -73,9 +73,9 @@ void InvocationViewModel::processCommandMessage(const std::string& message)
         {
             if (auto invocationService = serviceLocator->getInvocationService().lock())
             {
-                COMMONHEAD_LOG_DEBUG("will processed command message: " << message);
+                INVOCATION_VIEW_MODEL_LOG_DEBUG("will processed command message: " << message);
                 invocationService->processCommandMessage(message);
-                COMMONHEAD_LOG_DEBUG("finish processed command message: " << message);
+                INVOCATION_VIEW_MODEL_LOG_DEBUG("finish processed command message: " << message);
             }
         }
     }

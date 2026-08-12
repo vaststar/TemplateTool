@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonHead/viewModels/ContactListViewModel/ContactListViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/ContactListModel.h
     src/ContactListModel.cpp
     src/ContactListViewModel.h
@@ -20,7 +21,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ContactListViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    CommonHeadCommonFile
+    LoggerUtils
     CommonHeadFramework
     ServiceLocatorApi
     ContactServiceApi

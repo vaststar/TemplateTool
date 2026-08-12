@@ -1,6 +1,6 @@
 #include "NetworkProxyViewModel.h"
+#include "LoggerDefine.h"
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/viewModels/NetworkProxyViewModel/NetworkProxyViewModelCreator.h>
 #include <ucf/Utilities/SystemUtils/CertStoreUtils.h>
 #include <ucf/Agents/NetworkProxyAgent/NetworkProxyAgentTypes.h>
@@ -73,13 +73,13 @@ std::shared_ptr<INetworkProxyViewModel> createNetworkProxyViewModel(
 NetworkProxyViewModel::NetworkProxyViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : INetworkProxyViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create NetworkProxyViewModel");
+    NETWORK_PROXY_VIEW_MODEL_LOG_DEBUG("create NetworkProxyViewModel");
 }
 
 NetworkProxyViewModel::~NetworkProxyViewModel()
 {
     stopProxy();
-    COMMONHEAD_LOG_DEBUG("destroy NetworkProxyViewModel");
+    NETWORK_PROXY_VIEW_MODEL_LOG_DEBUG("destroy NetworkProxyViewModel");
 }
 
 std::string NetworkProxyViewModel::getViewModelName() const
@@ -106,7 +106,7 @@ void NetworkProxyViewModel::startProxy(const model::ProxyConfig& config)
 
     if (!mAgent->start(agentConfig))
     {
-        COMMONHEAD_LOG_WARN("startProxy() — agent rejected start");
+        NETWORK_PROXY_VIEW_MODEL_LOG_WARN("startProxy() — agent rejected start");
     }
 }
 

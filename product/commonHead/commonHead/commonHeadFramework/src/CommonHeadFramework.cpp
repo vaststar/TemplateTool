@@ -1,8 +1,8 @@
 #include "CommonHeadFramework.h"
+#include "LoggerDefine.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 #include <commonHead/ResourceLoader/ResourceLoaderCreator.h>
 #include <commonHead/ServiceLocator/ServiceLocatorCreator.h>
@@ -18,18 +18,18 @@ CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr core
     , mServiceLocator(impl::createServiceLocator(coreframework))
     , mResourceLoader(impl::createResourceLoader(coreframework))
 {
-    COMMONHEAD_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
 }
 
 void CommonHeadFramework::initCommonheadFramework()
 {
-    COMMONHEAD_LOG_DEBUG("init CommonHeadFramework, address:"<<this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("init CommonHeadFramework, address:"<<this);
     mResourceLoader->initResourceLoader();
 }
 
 void CommonHeadFramework::exitCommonheadFramework()
 {
-    COMMONHEAD_LOG_DEBUG("exit CommonHeadFramework, address:"<<this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("exit CommonHeadFramework, address:"<<this);
 }
 
 std::string CommonHeadFramework::getName() const

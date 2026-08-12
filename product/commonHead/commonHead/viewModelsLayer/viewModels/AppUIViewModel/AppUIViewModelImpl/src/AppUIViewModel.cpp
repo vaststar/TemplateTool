@@ -1,8 +1,8 @@
 #include "AppUIViewModel.h"
+#include "LoggerDefine.h"
 
 #include <ucf/Services/ClientInfoService/IClientInfoService.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/viewModels/AppUIViewModel/AppUIViewModelCreator.h>
@@ -21,7 +21,7 @@ std::shared_ptr<IAppUIViewModel> createAppUIViewModel(
 AppUIViewModel::AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IAppUIViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create AppUIViewModel");
+    APP_UI_VIEW_MODEL_LOG_DEBUG("create AppUIViewModel");
 }
 
 std::string AppUIViewModel::getViewModelName() const
@@ -36,7 +36,7 @@ void AppUIViewModel::init()
 
 void AppUIViewModel::initApplication()
 {
-    COMMONHEAD_LOG_DEBUG("AppUIViewModel::initApplication start");
+    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::initApplication start");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
@@ -48,7 +48,7 @@ void AppUIViewModel::initApplication()
                 clientInfoService->registerCallback(shared_from_this());
                 if (clientInfoService->isClientInfoReady())
                 {
-                    COMMONHEAD_LOG_DEBUG("AppUIViewModel::initApplication: already ready, dispatching synchronously");
+                    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::initApplication: already ready, dispatching synchronously");
                     onClientInfoReady();
                 }
                 else
@@ -58,12 +58,12 @@ void AppUIViewModel::initApplication()
             }
         }
     }
-    COMMONHEAD_LOG_DEBUG("AppUIViewModel::initApplication finish");
+    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::initApplication finish");
 }
 
 void AppUIViewModel::onClientInfoReady()
 {
-    COMMONHEAD_LOG_DEBUG("AppUIViewModel::onClientInfoReady, fire onAppConfigInitialized");
+    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::onClientInfoReady, fire onAppConfigInitialized");
     fireNotification(&IAppUIViewModelCallback::onAppConfigInitialized);
 }
 

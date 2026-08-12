@@ -1,10 +1,10 @@
 #include "SideBarViewModel.h"
+#include "LoggerDefine.h"
 
 #include <algorithm>
 
 #include <ResourceString.h>
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ResourceLoader/IResourceLoader.h>
 #include <commonHead/viewModels/SideBarViewModel/SideBarViewModelCreator.h>
@@ -24,12 +24,12 @@ std::shared_ptr<ISideBarViewModel> createSideBarViewModel(
 SideBarViewModel::SideBarViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : ISideBarViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create SideBarViewModel");
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("create SideBarViewModel");
 }
 
 SideBarViewModel::~SideBarViewModel()
 {
-    COMMONHEAD_LOG_DEBUG("destroy SideBarViewModel");
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("destroy SideBarViewModel");
 }
 
 std::string SideBarViewModel::getViewModelName() const
@@ -39,7 +39,7 @@ std::string SideBarViewModel::getViewModelName() const
 
 void SideBarViewModel::init()
 {
-    COMMONHEAD_LOG_DEBUG("SideBarViewModel::init");
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("SideBarViewModel::init");
     initDefaultNavItems();
     {
         std::lock_guard<std::mutex> lock(m_mutex);
@@ -274,21 +274,21 @@ bool SideBarViewModel::navigateTo(model::PageId pageId, bool isUserAction)
 
     if (!exists)
     {
-        COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " not found");
+        SIDE_BAR_VIEW_MODEL_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " not found");
         return false;
     }
     if (!enabled)
     {
-        COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is disabled");
+        SIDE_BAR_VIEW_MODEL_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is disabled");
         return false;
     }
     if (!visible)
     {
-        COMMONHEAD_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is hidden");
+        SIDE_BAR_VIEW_MODEL_LOG_WARN("navigateTo: pageId " << static_cast<int>(pageId) << " is hidden");
         return false;
     }
 
-    COMMONHEAD_LOG_DEBUG("navigateTo: pageId=" << static_cast<int>(pageId)
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("navigateTo: pageId=" << static_cast<int>(pageId)
         << " approved (userAction=" << isUserAction << ")");
     return true;
 }
@@ -318,14 +318,14 @@ void SideBarViewModel::updateBadge(model::PageId pageId, std::int32_t badge)
 
         if (!found)
         {
-            COMMONHEAD_LOG_WARN("updateBadge: pageId " << static_cast<int>(pageId) << " not found");
+            SIDE_BAR_VIEW_MODEL_LOG_WARN("updateBadge: pageId " << static_cast<int>(pageId) << " not found");
             return;
         }
     }
 
     fireNotification(&ISideBarViewModelCallback::onNavItemsUpdated,
                      std::vector<model::NavItemData>{updatedItem});
-    COMMONHEAD_LOG_DEBUG("Badge updated: pageId=" << static_cast<int>(pageId) << ", badge=" << badge);
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("Badge updated: pageId=" << static_cast<int>(pageId) << ", badge=" << badge);
 }
 
 void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState state)
@@ -353,20 +353,20 @@ void SideBarViewModel::setNavItemState(model::PageId pageId, model::NavItemState
 
         if (!found)
         {
-            COMMONHEAD_LOG_WARN("setNavItemState: pageId " << static_cast<int>(pageId) << " not found");
+            SIDE_BAR_VIEW_MODEL_LOG_WARN("setNavItemState: pageId " << static_cast<int>(pageId) << " not found");
             return;
         }
     }
 
     fireNotification(&ISideBarViewModelCallback::onNavItemsUpdated,
                      std::vector<model::NavItemData>{updatedItem});
-    COMMONHEAD_LOG_DEBUG("NavItem state updated: pageId=" << static_cast<int>(pageId)
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("NavItem state updated: pageId=" << static_cast<int>(pageId)
         << ", state=" << static_cast<int>(state));
 }
 
 void SideBarViewModel::reloadNavConfig()
 {
-    COMMONHEAD_LOG_DEBUG("reloadNavConfig");
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("reloadNavConfig");
 
     std::vector<model::PageId> oldPageIds;
     {
@@ -429,11 +429,11 @@ void SideBarViewModel::reloadNavConfig()
 
 void SideBarViewModel::handleSubMenuAction(model::MenuActionId actionId)
 {
-    COMMONHEAD_LOG_DEBUG("handleSubMenuAction: " << static_cast<int>(actionId));
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("handleSubMenuAction: " << static_cast<int>(actionId));
 
     if (actionId == model::MenuActionId::Unknown)
     {
-        COMMONHEAD_LOG_WARN("Unknown MenuActionId: " << static_cast<int>(actionId));
+        SIDE_BAR_VIEW_MODEL_LOG_WARN("Unknown MenuActionId: " << static_cast<int>(actionId));
         return;
     }
 

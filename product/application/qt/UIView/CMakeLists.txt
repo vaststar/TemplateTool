@@ -28,6 +28,7 @@ add_subdirectory(AppUIManager)
 set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
+    LoggerUtils
     UIPlatformUtils
     UIIPCChannel
     UTComponent

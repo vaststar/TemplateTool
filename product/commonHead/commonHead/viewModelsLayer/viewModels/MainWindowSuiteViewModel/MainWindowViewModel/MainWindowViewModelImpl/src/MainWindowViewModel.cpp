@@ -1,6 +1,6 @@
 #include "MainWindowViewModel.h"
+#include "LoggerDefine.h"
 
-#include <commonHead/CommonHeadCommonFile/CommonHeadLogger.h>
 #include <commonHead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonHead/ServiceLocator/IServiceLocator.h>
 #include <commonHead/ViewModelUtils/LogOperationUtils.h>
@@ -20,7 +20,7 @@ std::shared_ptr<IMainWindowViewModel> createMainWindowViewModel(
 MainWindowViewModel::MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMainWindowViewModel(commonHeadFramework)
 {
-    COMMONHEAD_LOG_DEBUG("create MainWindowViewModel");
+    MAIN_WINDOW_VIEW_MODEL_LOG_DEBUG("create MainWindowViewModel");
 }
 
 std::string MainWindowViewModel::getViewModelName() const
@@ -51,7 +51,7 @@ void MainWindowViewModel::onCommandMessageReceived(const std::string& message)
 
 void MainWindowViewModel::packApplicationLogs()
 {
-    COMMONHEAD_LOG_DEBUG("packApplicationLogs called");
+    MAIN_WINDOW_VIEW_MODEL_LOG_DEBUG("packApplicationLogs called");
 
     // Use LogOperationUtils to pack logs - it handles framework/service access internally
     auto result = commonHead::utilities::LogOperationUtils::packLogs(getCommonHeadFramework());
