@@ -5,4 +5,7 @@ project(${ProjectName} DESCRIPTION ${ProjectDesc}
                        LANGUAGES CXX
         )
 
-add_subdirectory(commonHead)
+add_subdirectory(utilities)
+add_subdirectory(infrastructure)
+add_subdirectory(CommonHeadFramework)
+add_subdirectory(viewmodels)

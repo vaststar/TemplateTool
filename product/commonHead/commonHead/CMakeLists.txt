@@ -1,4 +1,0 @@
-add_subdirectory(commonHeadUtils)
-add_subdirectory(commonHeadManager)
-add_subdirectory(commonHeadFramework)
-add_subdirectory(viewModelsLayer)

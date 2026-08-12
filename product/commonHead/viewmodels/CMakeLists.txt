@@ -1,0 +1,12 @@
+
+add_subdirectory(ViewModelUtils)
+add_subdirectory(ViewModelCore)
+add_subdirectory(mainwindow)
+add_subdirectory(pages)
+add_subdirectory(AppUIViewModel)
+add_subdirectory(ClientInfoViewModel)
+add_subdirectory(UpgradeViewModel)
+add_subdirectory(MediaCameraViewModel)
+add_subdirectory(CameraDirectoryViewModel)
+add_subdirectory(InvocationViewModel)
+add_subdirectory(ViewModelFactory)

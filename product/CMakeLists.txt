@@ -13,7 +13,7 @@ set(UCF_CODE_GENERATOR_DIR ${CMAKE_BINARY_DIR}/codegen)
 message(STATUS "set UCF_CODE_GENERATOR_DIR: ${UCF_CODE_GENERATOR_DIR}")
 
 add_subdirectory(framework)
-add_subdirectory(commonHead)
+add_subdirectory(commonhead)
 add_subdirectory(apprunner)
 add_subdirectory(application)
 add_subdirectory(bundle_pack)
