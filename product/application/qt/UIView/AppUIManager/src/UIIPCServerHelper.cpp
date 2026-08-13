@@ -5,7 +5,7 @@
 #include <UIIPCChannel/UIIPCServer.h>
 #include <AppContext/AppContext.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 #include <UIViewModelSignalBridge/emitters/InvocationViewModelEmitter.h>
 
 UIIPCServerHelper::UIIPCServerHelper(AppContext* appContext, QObject* parent)

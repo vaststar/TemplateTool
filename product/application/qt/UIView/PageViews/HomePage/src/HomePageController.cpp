@@ -1,7 +1,7 @@
 #include "HomePage/HomePageController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewHelper.h"
-#include "UIViewHelper/UIViewMessageBoxHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIWindowUtilities/WindowGeometry.h"
+#include "UIViewMessageBox/UIViewMessageBoxHelper.h"
 #include "MediaCameraView/MediaCameraViewController.h"
 #include "CameraMonitorView/CameraMonitorViewController.h"
 
@@ -65,11 +65,11 @@ void HomePageController::openCamera()
     if (auto* mediaController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MediaCameraViewController>(
             win, "controller"))
     {
-        mediaController->initializeController(ctx.data());
+        setupController(mediaController);
         // Standalone entry: default to local camera 0.
         mediaController->openLocalCamera(0);
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -93,8 +93,8 @@ void HomePageController::openCameraMonitor()
     if (auto* monitorController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<CameraMonitorViewController>(
             win, "controller"))
     {
-        monitorController->initializeController(ctx.data());
+        setupController(monitorController);
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }

@@ -1,20 +1,19 @@
-#include "UIViewHelper/UIViewMessageBoxHelper.h"
-#include "UIViewHelper/UIViewHelper.h"
+#include <UIViewMessageBox/UIViewMessageBoxHelper.h>
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIQmlUtilities/QmlWindowPropertyResolver.h>
+#include <UIWindowUtilities/WindowGeometry.h>
 #include <UTMessageDialog/UTMessageDialogController.h>
 #include <UTMessageDialog/UTMessagePresets.h>
 
-#include <QPointer>
-#include <QQuickWindow>
-#include <QWindow>
+#include <QtCore/QPointer>
+#include <QtQuick/QQuickWindow>
+#include <QtGui/QWindow>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 namespace {
-// QML resource path for the shared message dialog.
 const QString kUTMessageDialogQml = QStringLiteral("UTComposite/UTMessageDialog/UTMessageDialog.qml");
 }
 
@@ -40,12 +39,8 @@ void UIViewMessageBoxHelper::showMessageAsync(AppContext& appContext,
         return;
     }
 
-    // The dialog's QML root creates its own UTMessageDialogController, so we
-    // do NOT pass any initialProperties. The window owns the controller via
-    // the QML object tree; both die together when the window closes.
-    QPointer<QQuickWindow> win = factory->createQmlWindow(
-        kUTMessageDialogQml);
-    if (!win)
+    QPointer<QQuickWindow> window = factory->createQmlWindow(kUTMessageDialogQml);
+    if (!window)
     {
         UIVIEW_LOG_WARN("UIViewMessageBoxHelper::showMessageAsync: failed to create UTMessageDialog");
         if (onClosed) onClosed({ -1, {} });
@@ -53,11 +48,11 @@ void UIViewMessageBoxHelper::showMessageAsync(AppContext& appContext,
     }
 
     auto* controller = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UTMessageDialogController>(
-        win.data(), "controller");
+        window.data(), "controller");
     if (!controller)
     {
         UIVIEW_LOG_WARN("UIViewMessageBoxHelper::showMessageAsync: UTMessageDialog has no UTMessageDialogController");
-        win->deleteLater();
+        window->deleteLater();
         if (onClosed) onClosed({ -1, {} });
         return;
     }
@@ -65,46 +60,31 @@ void UIViewMessageBoxHelper::showMessageAsync(AppContext& appContext,
     controller->setOptions(opts);
     if (onClosed)
     {
-        // `controller` is the connection's context: when it is destroyed
-        // (together with `win`), the connection is removed automatically.
         QObject::connect(controller, &UTMessageDialogController::closed,
                          controller,
-                         [onClosed](const UTMessageResult& r) { onClosed(r); });
+                         [onClosed](const UTMessageResult& result) { onClosed(result); });
     }
 
-    // Mark the dialog as owned by `parent` so that:
-    //   * Windows: no separate taskbar entry; the dialog inherits the parent's
-    //     window icon (avoids the "blank icon" issue).
-    //   * macOS / Linux: appropriate stacking and modality semantics.
-    // Falls back to any visible top-level window when no explicit parent is
-    // given, mirroring centerOnParentWhenShown()'s behaviour.
     QWindow* parentWindow = opts.parent
         ? opts.parent
-        : UIViewHelper::findFallbackParent(win.data());
+        : UIUtilities::WindowGeometry::findFallbackParent(window.data());
     if (parentWindow)
     {
-        win->setTransientParent(parentWindow);
+        window->setTransientParent(parentWindow);
     }
 
-    UIViewHelper::centerOnParentWhenShown(win.data(), opts.parent);
-    win->show();
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(window.data(), opts.parent);
+    window->show();
 }
-
-// ---------- Convenience message dialogs ----------
 
 namespace {
 
-// Folds a UTMessageResult down to a bool: Accept-role => true, anything else
-// (Reject / Destructive / external close) => false.
-//
-// Note: destructive buttons carry UTButtonRole::Destructive, NOT Accept, so
-// callers of showDestructiveConfirm get a custom adapter below instead.
-UIViewMessageBoxHelper::MessageCallback toBoolAdapter(UIViewMessageBoxHelper::BoolCallback cb,
+UIViewMessageBoxHelper::MessageCallback toBoolAdapter(UIViewMessageBoxHelper::BoolCallback callback,
                                                       UTButtonRole acceptedRole)
 {
-    if (!cb) return {};
-    return [cb = std::move(cb), acceptedRole](const UTMessageResult& r) {
-        cb(r.buttonIndex >= 0 && r.role == acceptedRole);
+    if (!callback) return {};
+    return [callback = std::move(callback), acceptedRole](const UTMessageResult& result) {
+        callback(result.buttonIndex >= 0 && result.role == acceptedRole);
     };
 }
 

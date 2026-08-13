@@ -1,5 +1,5 @@
 #include "SettingsPage/SettingsPageController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 #include <functional>
 

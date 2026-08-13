@@ -4,7 +4,7 @@
 #include <UIManager/IUIManagerProvider.h>
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 MainWindowTitleBarController::MainWindowTitleBarController(QObject *parent)
     : UIViewController(parent)

@@ -1,7 +1,7 @@
 #include "ContactsPage/ContactsPageController.h"
 #include "ContactsPageUtils.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIWindowUtilities/WindowGeometry.h"
 #include <UIViewModelSignalBridge/emitters/ContactListViewModelEmitter.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListViewModel.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
@@ -77,7 +77,7 @@ void ContactsPageController::buttonClicked()
     {
         return;
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -264,7 +264,7 @@ void ContactsPageController::openEditDialog(const QString& mode, const QString& 
     {
         return;
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -285,7 +285,7 @@ void ContactsPageController::openDeleteDialog(const QString& contactId)
     {
         return;
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 

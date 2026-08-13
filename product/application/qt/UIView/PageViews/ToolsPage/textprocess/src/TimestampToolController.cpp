@@ -1,5 +1,5 @@
 #include "ToolsPage/textprocess/TimestampToolController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 #include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>

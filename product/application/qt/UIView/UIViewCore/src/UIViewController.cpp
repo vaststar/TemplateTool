@@ -115,6 +115,14 @@ void UIViewController::setupController(UIViewController* controller)
         return;
     }
 
+    if (controller->isInitialized())
+    {
+        UIViewCore_LOG_DEBUG("setupController: controller "
+            << controller->getControllerName().toStdString()
+            << " has already been initialized; skipping setup");
+        return;
+    }
+
     auto appContext = getAppContext();
     if (!appContext)
     {

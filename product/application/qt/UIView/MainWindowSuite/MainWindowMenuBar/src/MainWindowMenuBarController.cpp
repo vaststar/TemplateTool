@@ -8,7 +8,7 @@
 #include <TranslatorManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 MainWindowMenuBarController::MainWindowMenuBarController(QObject* parent)
     : UIViewController(parent)

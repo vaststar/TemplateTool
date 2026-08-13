@@ -1,6 +1,6 @@
 #include "ToolsPage/recording/RecordingController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewMessageBoxHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewMessageBox/UIViewMessageBoxHelper.h"
 #include <AppContext/AppContext.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <commonhead/viewmodels/RecordingViewModel/IRecordingViewModel.h>

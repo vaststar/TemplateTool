@@ -17,8 +17,8 @@
 #include <QStyleHints>
 #include <QTimer>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIWindowUtilities/WindowGeometry.h"
 #include "MainWindow/MainWindowController.h"
 #include <UIViewModelSignalBridge/emitters/AppUIViewModelEmitter.h>
 #include "UIIPCServerHelper.h"
@@ -38,6 +38,11 @@ AppUIController::AppUIController(QObject* parent)
 }
 
 AppUIController::~AppUIController() = default;
+
+void AppUIController::start(QPointer<AppContext> appContext)
+{
+    initializeController(appContext);
+}
 
 void AppUIController::init()
 {
@@ -117,13 +122,13 @@ void AppUIController::showMainWindow()
             win, "controller"))
     {
         UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
-        mainController->initializeController(getAppContext());
+        setupController(mainController);
         UIVIEW_LOG_DEBUG("MainWindowController init done");
     }
 
     // First placement: fit into the screen's available area, then center.
-    UIView::UIViewHelper::clampIntoScreen(win.data());
-    UIView::UIViewHelper::centerOnScreen(win.data());
+    UIUtilities::WindowGeometry::clampIntoScreen(win.data());
+    UIUtilities::WindowGeometry::centerOnScreen(win.data());
 
     win->show();
     UIVIEW_LOG_DEBUG("finish load main qml");

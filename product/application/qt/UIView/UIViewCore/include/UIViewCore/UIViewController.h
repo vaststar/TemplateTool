@@ -40,14 +40,18 @@ public:
 
     bool isInitialized() const;
 
-    void initializeController(QPointer<AppContext> appContext);
-
-    // Setup another controller (inject appContext and call its initializeController)
+    // Set up an uninitialized child controller. The customization hook runs
+    // before appContext injection and init(), allowing signal connections to
+    // observe initialization-time emissions. Repeated setup is ignored.
     Q_INVOKABLE void setupController(UIViewController* controller);
 
     Q_INVOKABLE void logInfo(const QString& message);
 
 protected:
+    // Root controllers expose their own application bootstrap entry; child
+    // controllers are initialized through setupController().
+    void initializeController(QPointer<AppContext> appContext);
+
     virtual void init() = 0;
 
     // Called when application language changes. Override to refresh localized data.

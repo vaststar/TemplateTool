@@ -36,8 +36,7 @@ public:
      *
      * @note Only local / qrc resources are supported (synchronous load).
      * @note Does NOT call show(), does NOT set transient parent and does NOT
-     *       set window position. Callers are responsible for those concerns
-     *       (e.g. via UIView::UIViewHelper).
+     *       set window position. Callers are responsible for those concerns.
      */
     virtual QPointer<QQuickWindow> createQmlWindow(const QString& qmlResource,
                                                    const QVariantMap& initialProperties = {}) = 0;

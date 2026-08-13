@@ -25,6 +25,9 @@ public:
     explicit AppUIController(QObject* parent = nullptr);
     ~AppUIController();
 
+    // Bootstrap entry for the root of the application controller tree.
+    void start(QPointer<AppContext> appContext);
+
 protected:
     void init() override;
 

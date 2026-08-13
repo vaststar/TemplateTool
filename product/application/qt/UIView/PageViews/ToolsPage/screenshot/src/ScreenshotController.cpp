@@ -1,6 +1,6 @@
 #include "ToolsPage/screenshot/ScreenshotController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewMessageBoxHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewMessageBox/UIViewMessageBoxHelper.h"
 #include "UIEvents/UIMainWindowEvent.h"
 
 #include <AppContext/AppContext.h>

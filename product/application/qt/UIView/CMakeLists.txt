@@ -18,7 +18,8 @@ set(MODULE_PRIVATE_INCLUDE_DIRS "")
 
 add_subdirectory(UIViewCore)
 add_subdirectory(UIViewModelSignalBridge)
-add_subdirectory(UIViewCommon)
+add_subdirectory(LoggerDefine)
+add_subdirectory(Dialogs)
 add_subdirectory(UIEvents)
 add_subdirectory(MainWindowSuite)
 add_subdirectory(PageViews)
@@ -36,6 +37,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
     UIPlatformUtils
     UIQmlUtilities
+    UIWindowUtilities
     UIIPCChannel
     UTComponent
     UTComposite

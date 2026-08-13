@@ -5,10 +5,10 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
-#include "UIViewHelper/UIViewHelper.h"
+#include "UIWindowUtilities/WindowGeometry.h"
 #include <UIViewModelSignalBridge/emitters/UpgradeViewModelEmitter.h>
 #include "UIEvents/UIUpgradeEvent.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 namespace {
 // QML resource paths used by this controller.
@@ -283,6 +283,6 @@ void AppUpgradeController::showUpgradeDialog()
         m_dialogOpen = false;
         return;
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }

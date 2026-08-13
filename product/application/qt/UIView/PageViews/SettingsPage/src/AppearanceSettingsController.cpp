@@ -1,5 +1,5 @@
 #include "SettingsPage/AppearanceSettingsController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 #include <commonhead/viewmodels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonhead/viewmodels/ClientInfoViewModel/ClientInfoModel.h>

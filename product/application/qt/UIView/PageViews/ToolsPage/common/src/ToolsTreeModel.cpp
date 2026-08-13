@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 namespace {
 constexpr const char* kRootId = "";

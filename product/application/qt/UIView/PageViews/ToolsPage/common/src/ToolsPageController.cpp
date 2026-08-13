@@ -1,6 +1,6 @@
 #include "ToolsPage/common/ToolsPageController.h"
 #include "ToolsPage/common/ToolsTreeModel.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 #include <functional>
 

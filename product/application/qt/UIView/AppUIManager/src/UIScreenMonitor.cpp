@@ -11,7 +11,7 @@
 #include <UIEventBus/IUIEventBus.h>
 
 #include "UIEvents/UIScreenChangedEvent.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 namespace
 {

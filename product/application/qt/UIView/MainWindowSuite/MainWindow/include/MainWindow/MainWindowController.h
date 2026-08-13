@@ -62,7 +62,6 @@ protected:
     void onSetupController(UIViewController* controller) override;
     bool event(QEvent* event) override;
 private:
-    void connectSignals(UIViewController* controller);
     void createUpgradeController();
     void showAboutDialog();
     void quitApplication();

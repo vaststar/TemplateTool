@@ -6,7 +6,7 @@
 #include <QWindow>
 
 #include <UIViewCore/UIViewController.h>
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 #include "MiniAppInstanceController.h"
 

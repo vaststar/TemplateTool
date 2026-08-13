@@ -6,7 +6,7 @@
 // Convenience factories for the most common UTMessageOptions combinations.
 //
 // All factories build a fully populated options struct. Callers may tweak
-// the result before handing it to UIViewHelper::showMessageAsync (e.g. add a
+// the result before handing it to UIViewMessageBoxHelper::showMessageAsync (e.g. add a
 // third button, override the parent window).
 namespace UTMessagePresets {
 

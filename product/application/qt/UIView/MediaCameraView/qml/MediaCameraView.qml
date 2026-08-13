@@ -8,7 +8,7 @@ import UIResourceLoader 1.0
 
 // Item-rooted, embeddable camera preview. One instance == one ViewModel.
 // Host drives the lifecycle via controller.openLocalCamera / openNetworkCamera
-// after calling initializeController(appContext).
+// after initializing the child through its parent controller's setupController().
 Item {
     id: root
     property MediaCameraViewController controller: MediaCameraViewController {}

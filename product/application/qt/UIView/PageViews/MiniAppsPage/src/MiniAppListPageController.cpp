@@ -7,8 +7,8 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <commonhead/viewmodels/MiniAppListViewModel/IMiniAppListViewModel.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewMessageBoxHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIViewMessageBox/UIViewMessageBoxHelper.h"
 #include <UIViewModelSignalBridge/emitters/MiniAppListViewModelEmitter.h>
 
 #include "MiniAppHostWindow.h"

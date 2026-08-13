@@ -2,7 +2,7 @@
 
 #include <AppContext/AppContext.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 MainWindowFootBarController::MainWindowFootBarController(QObject *parent)
     : UIViewController(parent)

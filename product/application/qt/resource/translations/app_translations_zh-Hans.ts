@@ -1205,7 +1205,7 @@ Double-click a rule to view details.</source>
         <translation>我的测试窗口标题栏</translation>
     </message>
     <message>
-        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="73"/>
+        <location filename="../../UIView/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="69"/>
         <source>my test window aa</source>
         <translation>我的测试窗口 aa</translation>
     </message>

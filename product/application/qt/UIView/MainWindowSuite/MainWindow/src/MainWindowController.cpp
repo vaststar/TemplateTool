@@ -13,19 +13,15 @@
 
 #include <UIUtilities/UIPlatformUtils.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIWindowUtilities/WindowGeometry.h"
 
 #include <QCoreApplication>
 
 #include "MediaCameraView/MediaCameraViewController.h"
 #include <UIViewModelSignalBridge/emitters/MainWindowViewModelEmitter.h>
 
-#include "ContactsPage/ContactsPageController.h"
-#include "HomePage/HomePageController.h"
-#include "SettingsPage/SettingsPageController.h"
 #include "AppUpgrade/AppUpgradeController.h"
-#include "AboutPage/AboutPageController.h"
 #include "UIEvents/UIAboutEvent.h"
 #include "UIEvents/UIMainWindowEvent.h"
 #include "UIEvents/UIScreenChangedEvent.h"
@@ -89,11 +85,11 @@ void MainWindowController::openCamera()
     if (auto* mediaController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MediaCameraViewController>(
             win, "controller"))
     {
-        mediaController->initializeController(getAppContext());
+        setupController(mediaController);
         // Standalone entry: default to local camera 0.
         mediaController->openLocalCamera(0);
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -128,23 +124,9 @@ void MainWindowController::onLogsPackComplete(bool success, const QString& archi
 
 void MainWindowController::onSetupController(UIViewController* controller)
 {
-    connectSignals(controller);
-}
-
-void MainWindowController::connectSignals(UIViewController* controller)
-{
-    if (dynamic_cast<ContactsPageController*>(controller))
-    {
-        UIVIEW_LOG_DEBUG("connectSignals for ContactsPageController");
-    }
-    else if (dynamic_cast<HomePageController*>(controller))
-    {
-        UIVIEW_LOG_DEBUG("connectSignals for HomePageController");
-    }
-    else if (dynamic_cast<SettingsPageController*>(controller))
-    {
-        UIVIEW_LOG_DEBUG("connectSignals for SettingsPageController");
-    }
+    Q_UNUSED(controller);
+    // Connect child-controller signals here. This hook runs before the child
+    // controller's init(), so initialization-time signals cannot be missed.
 }
 
 void MainWindowController::createUpgradeController()
@@ -169,7 +151,7 @@ void MainWindowController::showAboutDialog()
     {
         setupController(aboutController);
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -194,7 +176,7 @@ bool MainWindowController::startSystemResize(QWindow *window, int edges)
 
 QRect MainWindowController::fitToScreen(int x, int y, int width, int height) const
 {
-    return UIView::UIViewHelper::fitRect(QRect(x, y, width, height));
+    return UIUtilities::WindowGeometry::fitRect(QRect(x, y, width, height));
 }
 
 bool MainWindowController::event(QEvent* event)

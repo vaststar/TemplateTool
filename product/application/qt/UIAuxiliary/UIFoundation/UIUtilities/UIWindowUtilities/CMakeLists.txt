@@ -1,33 +1,28 @@
 include(BuildQtModule)
 
 if (WIN32)
-    set(ADD_DEFINITIONS UIViewCore_DLL)
+    set(ADD_DEFINITIONS UIWindowUtilities_DLL)
 else()
     set(ADD_DEFINITIONS)
 endif()
 
-set(MODULE_MODULE_NAME UIViewCore)
-set(MODULE_IDE_FOLDER UI/UIView)
+set(MODULE_MODULE_NAME UIWindowUtilities)
+set(MODULE_IDE_FOLDER UI/UIAuxiliary/UIFoundation/UIUtilities)
 
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/UIViewCore/UIViewCoreExport.h
-    include/UIViewCore/UIViewController.h
+    include/UIWindowUtilities/UIWindowUtilitiesExport.h
+    include/UIWindowUtilities/WindowGeometry.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/LoggerDefine.h
-    src/UIViewController.cpp
+    src/WindowGeometry.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
-    UIAppCore
-    UIEventBus
     Qt6::Core
-    Qt6::Qml
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    AppContext
-    LoggerUtils
+    Qt6::Gui
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

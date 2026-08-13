@@ -8,7 +8,7 @@
 
 #include <UIViewModelSignalBridge/emitters/MiniAppRuntimeViewModelEmitter.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 namespace MiniAppsPage {
 

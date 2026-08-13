@@ -8,7 +8,7 @@
 #include <UIViewModelSignalBridge/emitters/SideBarViewModelEmitter.h>
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIEvents/UIAboutEvent.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 // ==================== MainWindowSideBarController ====================
 

@@ -2,7 +2,7 @@
 
 #include <AppContext/AppContext.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 #include "UIEvents/UIMainWindowEvent.h"
 
 MainWindowSystemTrayController::MainWindowSystemTrayController(QObject *parent)

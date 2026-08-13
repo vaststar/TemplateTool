@@ -10,7 +10,7 @@
 
 #include <UIViewModelSignalBridge/emitters/MediaCameraViewModelEmitter.h>
 
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 MediaCameraViewController::MediaCameraViewController(QObject *parent)
     : UIViewController(parent)

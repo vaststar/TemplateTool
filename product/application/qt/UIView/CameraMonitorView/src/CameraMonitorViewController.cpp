@@ -10,8 +10,8 @@
 #include <UIQmlUtilities/QmlWindowPropertyResolver.h>
 
 #include "MediaCameraView/MediaCameraViewController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
-#include "UIViewHelper/UIViewHelper.h"
+#include "LoggerDefine/LoggerDefine.h"
+#include "UIWindowUtilities/WindowGeometry.h"
 #include <UIViewModelSignalBridge/emitters/CameraDirectoryViewModelEmitter.h>
 
 namespace {
@@ -235,7 +235,7 @@ void CameraMonitorViewController::openEditDialog(const QString& mode, const QStr
     {
         return;
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -256,7 +256,7 @@ void CameraMonitorViewController::openDeleteDialog(const QString& nodeId)
     {
         return;
     }
-    UIView::UIViewHelper::centerOnParentWhenShown(win);
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win);
     win->show();
 }
 
@@ -472,7 +472,7 @@ void CameraMonitorViewController::openCameraWindow(const QString& nodeId)
         win->show();
         return;
     }
-    mc->initializeController(ctx);
+    setupController(mc);
     std::visit([mc](auto&& s) {
         using T = std::decay_t<decltype(s)>;
         if constexpr (std::is_same_v<T, commonHead::viewModels::model::LocalCameraSource>)
@@ -487,7 +487,7 @@ void CameraMonitorViewController::openCameraWindow(const QString& nodeId)
                                   s.readTimeoutMs);
         }
     }, *srcOpt);
-    UIView::UIViewHelper::centerOnParentWhenShown(win.data());
+    UIUtilities::WindowGeometry::centerOnParentWhenShown(win.data());
     win->show();
 }
 

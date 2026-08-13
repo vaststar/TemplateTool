@@ -1,5 +1,5 @@
 #include "ToolsPage/textprocess/Base64ToolController.h"
-#include "UIViewCommon/LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine/LoggerDefine.h"
 
 #include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
