@@ -1,6 +1,7 @@
 include(BuildQtModule)
+
 if (WIN32)
-    set(ADD_DEFINITIONS AppUI_DLL) #AppUI_DLL AppUI_LIB
+    set(ADD_DEFINITIONS UIView_DLL)
 else()
     set(ADD_DEFINITIONS)
 endif()
@@ -8,11 +9,16 @@ endif()
 set(MODULE_MODULE_NAME UIView)
 set(MODULE_IDE_FOLDER UI/UIView)
 
-set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Source files, public headers, QML files and per-submodule include dirs are aggregated by the subdirectories below.
-set(MODULE_HEADER_FILES "")
-set(MODULE_SOURCE_PRIVATE "")
+set(MODULE_HEADER_FILES
+    include/UIView/UIViewExport.h
+    include/UIView/UIViewModule.h
+)
+set(MODULE_SOURCE_PRIVATE
+    src/UIViewModule.cpp
+)
 set(MODULE_QML_TARGET_FILES "")
 set(MODULE_PRIVATE_INCLUDE_DIRS "")
 
@@ -26,7 +32,6 @@ add_subdirectory(PageViews)
 add_subdirectory(AppUpgrade)
 add_subdirectory(MediaCameraView)
 add_subdirectory(CameraMonitorView)
-add_subdirectory(AppUIManager)
 
 set(MODULE_DEPENDENCIES_PUBLIC
 )
@@ -38,21 +43,17 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIPlatformUtils
     UIQmlUtilities
     UIWindowUtilities
-    UIIPCChannel
     UTComponent
     UTComposite
     AppContext
     UIResourceAssetRCCInterface #for asset resource
     UIResourcecTranslation #for translation
     UIManager
-    InvocationViewModelApi
     ClientInfoViewModelApi
-    AppUIViewModelApi
     UpgradeViewModelApi
     MainWindowViewModelApi
     SideBarViewModelApi
     SettingsViewModelApi
-    StabilityViewModelApi
     JsonTreeViewModelApi
     MediaCameraViewModelApi
     CameraDirectoryViewModelApi
@@ -63,7 +64,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     RecordingViewModelApi
     NetworkProxyViewModelApi
     ToolsViewModelApi
-    CommonHeadFramework
     ResourceLoaderApi
     Qt6::Gui Qt6::Quick Qt6::Widgets Qt6::Multimedia Qt6::Network
 )
@@ -73,8 +73,8 @@ if(WIN32)
 endif()
 
 set(MODULE_BUILD_INTERFACE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/AppUIManager/include
 )
 set(MODULE_INSTALL_INTERFACE_DIR include)
 set(MODULE_BUILD_PRIVATE_DIR include)

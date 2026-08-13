@@ -16,8 +16,9 @@
 #include <TranslatorManager/UILanguage.h>
 #include <UTComponent/UTComponent.h>
 #include <UTComposite/UTComposite.h>
+#include <UIView/UIViewModule.h>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 #include "AppUIController.h"
 #include <UIViewModelSignalBridge/RegisterViewModelMetaTypes.h>
 
@@ -46,15 +47,15 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mQmlEngine(std::make_unique<UIAppCore::UIQmlEngine>())
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
-    UIVIEW_LOG_INFO("===========================================");
-    UIVIEW_LOG_INFO("===========create AppUIManagerImpl=========");
-    UIVIEW_LOG_INFO("Qt Version: " << qVersion());
-    UIVIEW_LOG_INFO("Qt Build ABI: " << QSysInfo::buildAbi().toStdString());
-    UIVIEW_LOG_INFO("Qt Platform Plugin: " << QGuiApplication::platformName().toStdString());
-    UIVIEW_LOG_INFO("Application PID: " << QCoreApplication::applicationPid());
-    UIVIEW_LOG_INFO("Device Pixel Ratio: " << qApp->devicePixelRatio());
+    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("===========create AppUIManagerImpl=========");
+    APPUI_LOG_INFO("Qt Version: " << qVersion());
+    APPUI_LOG_INFO("Qt Build ABI: " << QSysInfo::buildAbi().toStdString());
+    APPUI_LOG_INFO("Qt Platform Plugin: " << QGuiApplication::platformName().toStdString());
+    APPUI_LOG_INFO("Application PID: " << QCoreApplication::applicationPid());
+    APPUI_LOG_INFO("Device Pixel Ratio: " << qApp->devicePixelRatio());
     const auto screens = QGuiApplication::screens();
-    UIVIEW_LOG_INFO("Screen Count: " << screens.size());
+    APPUI_LOG_INFO("Screen Count: " << screens.size());
     for (const QScreen* screen : screens)
     {
         if (!screen)
@@ -62,25 +63,26 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
             continue;
         }
         const QRect geometry = screen->geometry();
-        UIVIEW_LOG_INFO("Screen [" << screen->name().toStdString() << "]"
+        APPUI_LOG_INFO("Screen [" << screen->name().toStdString() << "]"
             << " resolution: " << geometry.width() << "x" << geometry.height()
             << ", dpr: " << screen->devicePixelRatio()
             << ", logicalDPI: " << screen->logicalDotsPerInch()
             << ", refreshRate: " << screen->refreshRate() << "Hz");
     }
     registerQmlTypes();
-    UIVIEW_LOG_INFO("===========create AppUIManagerImpl done====");
-    UIVIEW_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("===========create AppUIManagerImpl done====");
+    APPUI_LOG_INFO("===========================================");
 }
 
 void AppUIManager::Impl::registerQmlTypes()
 {
-    UIVIEW_LOG_DEBUG("");
+    APPUI_LOG_DEBUG("");
+    UIViewModule::ensureLoaded();
     UIViewModelSignalBridge::registerAllViewModelMetaTypes();
     UILanguage::registerMetaObject();
     UTComponent::registerUTComponent();
     UTComposite::registerUTComposite();
-    UIVIEW_LOG_DEBUG("done");
+    APPUI_LOG_DEBUG("done");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -91,32 +93,32 @@ void AppUIManager::Impl::registerQmlTypes()
 AppUIManager::AppUIManager(const AppUIManager::ApplicationConfig& config)
     : mImpl(std::make_unique<AppUIManager::Impl>(config))
 {
-    UIVIEW_LOG_INFO("===========================================");
-    UIVIEW_LOG_INFO("create AppUIManager, address:" << this);
-    UIVIEW_LOG_INFO("============================================");
+    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("create AppUIManager, address:" << this);
+    APPUI_LOG_INFO("============================================");
 }
 
 AppUIManager::~AppUIManager()
 {
-    UIVIEW_LOG_INFO("exit AppUIManager, address:" << this);
+    APPUI_LOG_INFO("exit AppUIManager, address:" << this);
 }
 
 int AppUIManager::runApp()
 {
-    UIVIEW_LOG_INFO("===========================================");
-    UIVIEW_LOG_INFO("run AppUIManager, address:" << this << ", appContext's address: " << mImpl->getAppContext());
+    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("run AppUIManager, address:" << this << ", appContext's address: " << mImpl->getAppContext());
     auto controller = std::make_unique<AppUIController>();
-    UIVIEW_LOG_INFO("=======start UI with AppUIController======");
+    APPUI_LOG_INFO("=======start UI with AppUIController======");
     controller->start(mImpl->getAppContext());
-    UIVIEW_LOG_INFO("=====start UI with AppUIController done===");
-    UIVIEW_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("=====start UI with AppUIController done===");
+    APPUI_LOG_INFO("===========================================");
 
-    UIVIEW_LOG_INFO("===========================================");
-    UIVIEW_LOG_INFO("==start runApp in AppUIController==========");
-    UIVIEW_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("==start runApp in AppUIController==========");
+    APPUI_LOG_INFO("===========================================");
     int res = mImpl->runApp();
-    UIVIEW_LOG_INFO("===========================================");
-    UIVIEW_LOG_INFO("======quit mainApp in AppUIController======");
-    UIVIEW_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("======quit mainApp in AppUIController======");
+    APPUI_LOG_INFO("===========================================");
     return res;
 }

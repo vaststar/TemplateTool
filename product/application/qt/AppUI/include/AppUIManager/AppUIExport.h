@@ -9,5 +9,9 @@
         #define AppUI_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define AppUI_EXPORT 
+    #if defined(AppUI_DLL)
+        #define AppUI_EXPORT __attribute__((visibility("default")))
+    #else
+        #define AppUI_EXPORT
+    #endif
 #endif

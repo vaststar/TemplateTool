@@ -5,7 +5,7 @@
 #include <UIIPCChannel/UIIPCServer.h>
 #include <AppContext/AppContext.h>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 #include <UIViewModelSignalBridge/emitters/InvocationViewModelEmitter.h>
 
 UIIPCServerHelper::UIIPCServerHelper(AppContext* appContext, QObject* parent)
@@ -21,7 +21,7 @@ UIIPCServerHelper::~UIIPCServerHelper()
 
 void UIIPCServerHelper::start()
 {
-    UIVIEW_LOG_DEBUG("start ipc server");
+    APPUI_LOG_DEBUG("start ipc server");
     constexpr auto IPC_SERVER_NAME = "TemplateTool_IPC_Server";
     mIPCServer = std::make_shared<UIUtilities::UIIPCServer>(IPC_SERVER_NAME);
     mIPCViewModel = mAppContext->getViewModelFactory()->createInvocationViewModelInstance();
@@ -31,17 +31,17 @@ void UIIPCServerHelper::start()
     mIPCServer->setMessageHandler([wekPtr = std::weak_ptr<commonHead::viewModels::IInvocationViewModel>(mIPCViewModel)](const std::string& ipcMessage){
         if (auto ptr = wekPtr.lock())
         {
-            UIVIEW_LOG_DEBUG("start process new message: " << ipcMessage);
+            APPUI_LOG_DEBUG("start process new message: " << ipcMessage);
             ptr->processCommandMessage(ipcMessage);
-            UIVIEW_LOG_DEBUG("finish process message");
+            APPUI_LOG_DEBUG("finish process message");
         }
         else
         {
-            UIVIEW_LOG_INFO("no InvocationViewModel");
+            APPUI_LOG_INFO("no InvocationViewModel");
         }
     });
     mIPCServer->start();
-    UIVIEW_LOG_DEBUG("start ipc server succeed");
+    APPUI_LOG_DEBUG("start ipc server succeed");
 }
 
 void UIIPCServerHelper::stop()

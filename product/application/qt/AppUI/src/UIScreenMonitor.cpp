@@ -11,7 +11,7 @@
 #include <UIEventBus/IUIEventBus.h>
 
 #include "UIEvents/UIScreenChangedEvent.h"
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 
 namespace
 {
@@ -48,7 +48,7 @@ UIScreenMonitor::~UIScreenMonitor()
 
 void UIScreenMonitor::start()
 {
-    UIVIEW_LOG_DEBUG("start screen monitor");
+    APPUI_LOG_DEBUG("start screen monitor");
 
     // Coalesce a burst of screen signals into one event.
     mDebounceTimer = new QTimer(this);
@@ -57,24 +57,24 @@ void UIScreenMonitor::start()
     connect(mDebounceTimer, &QTimer::timeout, this, &UIScreenMonitor::notifyScreenChanged);
 
     const auto screens = QGuiApplication::screens();
-    UIVIEW_LOG_DEBUG("initial screen count=" << static_cast<int>(screens.size()));
+    APPUI_LOG_DEBUG("initial screen count=" << static_cast<int>(screens.size()));
     for (QScreen* screen : screens)
     {
-        UIVIEW_LOG_DEBUG("  screen " << describeScreen(screen));
+        APPUI_LOG_DEBUG("  screen " << describeScreen(screen));
         connectScreen(screen);
     }
 
     connect(qApp, &QGuiApplication::screenAdded, this, [this](QScreen* screen) {
-        UIVIEW_LOG_DEBUG("screenAdded: " << describeScreen(screen));
+        APPUI_LOG_DEBUG("screenAdded: " << describeScreen(screen));
         connectScreen(screen);
         scheduleNotify();
     });
     connect(qApp, &QGuiApplication::screenRemoved, this, [this](QScreen* screen) {
-        UIVIEW_LOG_DEBUG("screenRemoved: " << (screen ? screen->name().toStdString() : std::string("<null>")));
+        APPUI_LOG_DEBUG("screenRemoved: " << (screen ? screen->name().toStdString() : std::string("<null>")));
         scheduleNotify();
     });
     connect(qApp, &QGuiApplication::primaryScreenChanged, this, [this](QScreen* screen) {
-        UIVIEW_LOG_DEBUG("primaryScreenChanged: " << describeScreen(screen));
+        APPUI_LOG_DEBUG("primaryScreenChanged: " << describeScreen(screen));
         scheduleNotify();
     });
 }
@@ -95,22 +95,22 @@ void UIScreenMonitor::connectScreen(QScreen* screen)
         return;
     }
     connect(screen, &QScreen::availableGeometryChanged, this, [this, screen](const QRect& g) {
-        UIVIEW_LOG_DEBUG("availableGeometryChanged '" << screen->name().toStdString() << "' -> "
+        APPUI_LOG_DEBUG("availableGeometryChanged '" << screen->name().toStdString() << "' -> "
                          << g.width() << "x" << g.height() << "@(" << g.x() << "," << g.y() << ")");
         scheduleNotify();
     });
     connect(screen, &QScreen::geometryChanged, this, [this, screen](const QRect& g) {
-        UIVIEW_LOG_DEBUG("geometryChanged '" << screen->name().toStdString() << "' -> "
+        APPUI_LOG_DEBUG("geometryChanged '" << screen->name().toStdString() << "' -> "
                          << g.width() << "x" << g.height() << "@(" << g.x() << "," << g.y() << ")");
         scheduleNotify();
     });
     connect(screen, &QScreen::logicalDotsPerInchChanged, this, [this, screen](qreal dpi) {
-        UIVIEW_LOG_DEBUG("logicalDotsPerInchChanged '" << screen->name().toStdString() << "' -> "
+        APPUI_LOG_DEBUG("logicalDotsPerInchChanged '" << screen->name().toStdString() << "' -> "
                          << dpi << " (dpr=" << screen->devicePixelRatio() << ")");
         scheduleNotify();
     });
     connect(screen, &QScreen::physicalDotsPerInchChanged, this, [this, screen](qreal dpi) {
-        UIVIEW_LOG_DEBUG("physicalDotsPerInchChanged '" << screen->name().toStdString() << "' -> " << dpi);
+        APPUI_LOG_DEBUG("physicalDotsPerInchChanged '" << screen->name().toStdString() << "' -> " << dpi);
         scheduleNotify();
     });
 }
@@ -140,13 +140,13 @@ void UIScreenMonitor::notifyScreenChanged()
         return;
     }
 
-    UIVIEW_LOG_DEBUG("screen configuration changed, broadcasting UIScreenChangedEvent");
+    APPUI_LOG_DEBUG("screen configuration changed, broadcasting UIScreenChangedEvent");
     const auto screens = QGuiApplication::screens();
-    UIVIEW_LOG_DEBUG("current screen count=" << static_cast<int>(screens.size())
+    APPUI_LOG_DEBUG("current screen count=" << static_cast<int>(screens.size())
                      << ", primary=" << describeScreen(QGuiApplication::primaryScreen()));
     for (QScreen* screen : screens)
     {
-        UIVIEW_LOG_DEBUG("  screen " << describeScreen(screen));
+        APPUI_LOG_DEBUG("  screen " << describeScreen(screen));
     }
 
     UIScreenChangedEvent event;

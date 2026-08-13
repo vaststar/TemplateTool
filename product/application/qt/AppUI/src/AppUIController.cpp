@@ -17,9 +17,8 @@
 #include <QStyleHints>
 #include <QTimer>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 #include "UIWindowUtilities/WindowGeometry.h"
-#include "MainWindow/MainWindowController.h"
 #include <UIViewModelSignalBridge/emitters/AppUIViewModelEmitter.h>
 #include "UIIPCServerHelper.h"
 #include "UIStabilityMonitor.h"
@@ -34,7 +33,7 @@ const QString kMainWindowQml = QStringLiteral("UIView/MainWindowSuite/MainWindow
 AppUIController::AppUIController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create AppUIController, address: " << this);
+    APPUI_LOG_DEBUG("create AppUIController, address: " << this);
 }
 
 AppUIController::~AppUIController() = default;
@@ -46,7 +45,7 @@ void AppUIController::start(QPointer<AppContext> appContext)
 
 void AppUIController::init()
 {
-    UIVIEW_LOG_DEBUG("init AppUIController start");
+    APPUI_LOG_DEBUG("init AppUIController start");
     auto appContext = getAppContext();
 
     // Create ViewModel and connect signals
@@ -74,56 +73,56 @@ void AppUIController::init()
     QTimer::singleShot(0, this, [this]() {
         mAppUIViewModel->initApplication();
     });
-    UIVIEW_LOG_DEBUG("init AppUIController finish");
+    APPUI_LOG_DEBUG("init AppUIController finish");
 }
 
 void AppUIController::onAppConfigInitialized()
 {
-    UIVIEW_LOG_DEBUG("onAppConfigInitialized start");
+    APPUI_LOG_DEBUG("onAppConfigInitialized start");
     // 1. Load translation
     auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
-    UIVIEW_LOG_DEBUG("get language: " << static_cast<int>(clientInfoViewModel->getApplicationLanguage()));
+    APPUI_LOG_DEBUG("get language: " << static_cast<int>(clientInfoViewModel->getApplicationLanguage()));
     getTranslatorManager()->loadTranslation(
         UILanguage::convertFromViewModel(clientInfoViewModel->getApplicationLanguage()));
 
     // 2. Load theme
-    UIVIEW_LOG_DEBUG("get CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
+    APPUI_LOG_DEBUG("get CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
 
     connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
         auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
-        UIVIEW_LOG_DEBUG("system color scheme changed, CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
+        APPUI_LOG_DEBUG("system color scheme changed, CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
         if (clientInfoViewModel->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
         {
-            UIVIEW_LOG_DEBUG("system color scheme changed, notifying theme refresh");
+            APPUI_LOG_DEBUG("system color scheme changed, notifying theme refresh");
             getResourceLoaderManager()->notifyThemeChanged();
         }
     });
 
     // 3. Show main window
     QTimer::singleShot(0, this, [this]() {
-        UIVIEW_LOG_DEBUG("will show main window");
+        APPUI_LOG_DEBUG("will show main window");
         showMainWindow();
     });
 
-    UIVIEW_LOG_DEBUG("onAppConfigInitialized finish");
+    APPUI_LOG_DEBUG("onAppConfigInitialized finish");
 }
 
 void AppUIController::showMainWindow()
 {
-    UIVIEW_LOG_DEBUG("start load main qml");
+    APPUI_LOG_DEBUG("start load main qml");
     auto win = getViewFactory()->createQmlWindow(
         kMainWindowQml);
     if (!win)
     {
-        UIVIEW_LOG_WARN("failed to create main window");
+        APPUI_LOG_WARN("failed to create main window");
         return;
     }
-    if (auto* mainController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MainWindowController>(
+    if (auto* mainController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UIViewController>(
             win, "controller"))
     {
-        UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
+        APPUI_LOG_DEBUG("MainWindow.qml load done, will initialize its root controller");
         setupController(mainController);
-        UIVIEW_LOG_DEBUG("MainWindowController init done");
+        APPUI_LOG_DEBUG("MainWindow root controller initialization done");
     }
 
     // First placement: fit into the screen's available area, then center.
@@ -131,5 +130,5 @@ void AppUIController::showMainWindow()
     UIUtilities::WindowGeometry::centerOnScreen(win.data());
 
     win->show();
-    UIVIEW_LOG_DEBUG("finish load main qml");
+    APPUI_LOG_DEBUG("finish load main qml");
 }

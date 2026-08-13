@@ -5,7 +5,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 
-#include "LoggerDefine/LoggerDefine.h"
+#include "LoggerDefine.h"
 #include <UIViewModelSignalBridge/emitters/StabilityViewModelEmitter.h>
 
 UIStabilityMonitor::UIStabilityMonitor(AppContext* appContext, QObject* parent)
@@ -21,7 +21,7 @@ UIStabilityMonitor::~UIStabilityMonitor()
 
 void UIStabilityMonitor::start()
 {
-    UIVIEW_LOG_DEBUG("start heartbeat");
+    APPUI_LOG_DEBUG("start heartbeat");
     mStabilityViewModel = mAppContext->getViewModelFactory()->createStabilityViewModelInstance();
     mStabilityViewModelEmitter = std::make_shared<UIViewModelSignalBridge::StabilityViewModelEmitter>();
     mStabilityViewModel->registerCallback(mStabilityViewModelEmitter);
@@ -34,7 +34,7 @@ void UIStabilityMonitor::start()
         }
     });
     mHeartbeatTimer->start(mStabilityViewModel->getHeartbeatIntervalMs());
-    UIVIEW_LOG_DEBUG("heartbeat started with interval: " << mStabilityViewModel->getHeartbeatIntervalMs() << "ms");
+    APPUI_LOG_DEBUG("heartbeat started with interval: " << mStabilityViewModel->getHeartbeatIntervalMs() << "ms");
 }
 
 void UIStabilityMonitor::stop()
