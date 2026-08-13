@@ -13,7 +13,7 @@
 // Two-phase lifecycle:
 //   1. Default-constructed by QML inside the dialog (so the QML side fully
 //      owns its lifetime; the controller dies with the dialog window).
-//   2. C++ side fetches it via UIViewHelper::controllerOf<>() and calls
+//   2. C++ side resolves it from the QML window's `controller` property and calls
 //      setOptions() exactly once before showing the window.
 //
 // QML reads the dialog content via the NOTIFY-backed Q_PROPERTYs; bindings
@@ -58,4 +58,3 @@ private:
     int              mCancelIndex = -1;
     bool             mFired       = false;
 };
-

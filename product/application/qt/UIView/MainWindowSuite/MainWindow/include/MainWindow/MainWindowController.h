@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QString>
 #include <QObject>
 #include <QRect>
@@ -11,21 +13,13 @@
 
 class AppUpgradeController;
 
-namespace commonHead{
-    class ICommonHeadFramework;
-    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
-
-    namespace viewModels{
-        class IMainWindowViewModel;
-        class IMediaCameraViewModel;
-    }
+namespace commonHead::viewModels {
+    class IMainWindowViewModel;
 }
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
     class MainWindowViewModelEmitter;
 }
-
-class AppContext;
 
 class MainWindowController : public UIViewController
 {
@@ -74,7 +68,7 @@ private:
     void quitApplication();
 private:
     std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
-    std::shared_ptr<UIVMSignalEmitter::MainWindowViewModelEmitter> mMainViewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::MainWindowViewModelEmitter> mMainViewModelEmitter;
     AppUpgradeController* m_upgradeController = nullptr;
     MainWindowContentPageRegistry* m_pageRegistry = nullptr;
 };

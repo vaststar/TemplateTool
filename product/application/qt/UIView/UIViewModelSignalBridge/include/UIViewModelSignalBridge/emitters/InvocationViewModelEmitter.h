@@ -4,7 +4,7 @@
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/InvocationViewModel/IInvocationViewModel.h>
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
 class UIViewModelSignalBridge_EXPORT InvocationViewModelEmitter: public QObject,
                                                         public commonHead::viewModels::IInvocationViewModelCallback
 {

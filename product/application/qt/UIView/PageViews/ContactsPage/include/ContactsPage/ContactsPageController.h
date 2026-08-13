@@ -8,16 +8,13 @@
 
 #include <UIViewCore/UIViewController.h>
 #include "ContactListItemModel.h"
-// Pull in Q_DECLARE_METATYPE specializations BEFORE moc generates code for
-// our slot signatures.
-#include <UIViewModelSignalBridge/metatypes/ContactListMetaTypes.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListModel.h>
 
 namespace commonHead::viewModels
 {
     class IContactListViewModel;
 }
-namespace UIVMSignalEmitter
+namespace UIViewModelSignalBridge
 {
     class ContactListViewModelEmitter;
 }
@@ -73,7 +70,7 @@ public slots:
 protected:
     void init() override;
 
-private slots:
+private:
     void onContactDirectoryReady();
     void onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error);
     void onPersonContactsAdded   (const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
@@ -110,7 +107,7 @@ private:
 
 private:
     std::shared_ptr<commonHead::viewModels::IContactListViewModel> mContactListViewModel;
-    std::shared_ptr<UIVMSignalEmitter::ContactListViewModelEmitter> mContactListEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::ContactListViewModelEmitter> mContactListEmitter;
     ContactListItemModel* mOrgTreeModel = nullptr;
     QString m_currentContactId;
     LoadState m_loadState = Loading;

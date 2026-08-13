@@ -5,7 +5,7 @@
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 class UIViewModelSignalBridge_EXPORT NetworkProxyViewModelEmitter : public QObject,
                                                                 public commonHead::viewModels::INetworkProxyViewModelCallback
@@ -76,4 +76,4 @@ signals:
     void signals_onError(const QString& errorMessage);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

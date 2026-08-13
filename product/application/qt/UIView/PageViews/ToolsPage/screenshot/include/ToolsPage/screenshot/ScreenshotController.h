@@ -5,10 +5,16 @@
 #include <QtQml>
 #include <memory>
 #include <UIViewCore/UIViewController.h>
-#include <UIViewModelSignalBridge/emitters/ScreenshotViewModelEmitter.h>
 
 namespace commonHead::viewModels {
     class IScreenshotViewModel;
+    namespace model {
+        struct ScreenshotSettings;
+    }
+}
+
+namespace UIViewModelSignalBridge {
+    class ScreenshotViewModelEmitter;
 }
 
 /**
@@ -118,7 +124,7 @@ signals:
     // the view can refresh and clear its selection.
     void fileDeleted(const QString& filePath);
 
-private slots:
+private:
     // ── ViewModel emitter slots ──
     void onVMStateChanged(int state);
     void onVMScreenCaptured(const QString& base64Png, int width, int height);
@@ -127,10 +133,9 @@ private slots:
     void onVMSettingsChanged(const commonHead::viewModels::model::ScreenshotSettings& settings);
     void onVMError(const QString& message);
 
-private:
     // ViewModel
     std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> m_viewModel;
-    std::shared_ptr<UIVMSignalEmitter::ScreenshotViewModelEmitter> m_viewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::ScreenshotViewModelEmitter> m_viewModelEmitter;
 
     // Shadow state for QML property bindings
     bool m_hasScreenshot = false;

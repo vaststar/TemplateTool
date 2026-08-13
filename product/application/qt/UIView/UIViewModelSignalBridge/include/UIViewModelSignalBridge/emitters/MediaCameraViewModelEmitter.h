@@ -5,7 +5,7 @@
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <UIViewModelSignalBridge/metatypes/MediaCameraMetaTypes.h>
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
 class UIViewModelSignalBridge_EXPORT MediaCameraViewModelEmitter: public QObject,
                                                               public commonHead::viewModels::IMediaCameraViewModelCallback
 {

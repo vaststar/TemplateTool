@@ -1,13 +1,13 @@
 #include "MainWindow/MainWindowController.h"
 #include "MainWindow/MainWindowContentPageRegistry.h"
 
-#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
 
 #include <TranslatorManager/UILanguage.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
+#include <UIQmlUtilities/QmlWindowPropertyResolver.h>
 #include <TranslatorManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
@@ -56,11 +56,11 @@ void MainWindowController::init()
     listenUIEvents<UIMainWindowEvent, UIAboutEvent, UIScreenChangedEvent>();
 
     mMainViewModel = getViewModelFactory()->createMainWindowViewModelInstance();
-    mMainViewModelEmitter = std::make_shared<UIVMSignalEmitter::MainWindowViewModelEmitter>();
+    mMainViewModelEmitter = std::make_shared<UIViewModelSignalBridge::MainWindowViewModelEmitter>();
     mMainViewModel->registerCallback(mMainViewModelEmitter);
-    connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onActivateMainWindow,
+    connect(mMainViewModelEmitter.get(), &UIViewModelSignalBridge::MainWindowViewModelEmitter::signals_onActivateMainWindow,
                 this, &MainWindowController::activateMainWindow);
-    connect(mMainViewModelEmitter.get(), &UIVMSignalEmitter::MainWindowViewModelEmitter::signals_onLogsPackComplete,
+    connect(mMainViewModelEmitter.get(), &UIViewModelSignalBridge::MainWindowViewModelEmitter::signals_onLogsPackComplete,
                 this, &MainWindowController::onLogsPackComplete);
 
     mMainViewModel->initViewModel();
@@ -86,7 +86,8 @@ void MainWindowController::openCamera()
     auto win = getViewFactory()->createQmlItemWindow(
         kMediaCameraViewQml);
     if (!win) return;
-    if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
+    if (auto* mediaController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MediaCameraViewController>(
+            win, "controller"))
     {
         mediaController->initializeController(getAppContext());
         // Standalone entry: default to local camera 0.
@@ -163,7 +164,8 @@ void MainWindowController::showAboutDialog()
     auto win = getViewFactory()->createQmlWindow(
         kAboutDialogQml);
     if (!win) return;
-    if (auto* aboutController = UIView::UIViewHelper::controllerOf<UIViewController>(win))
+    if (auto* aboutController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UIViewController>(
+            win, "controller"))
     {
         setupController(aboutController);
     }
@@ -197,7 +199,7 @@ QRect MainWindowController::fitToScreen(int x, int y, int width, int height) con
 
 bool MainWindowController::event(QEvent* event)
 {
-    if (event->type() == UIAboutEvent::type)
+    if (event->type() == UIAboutEvent::eventType())
     {
         switch (static_cast<UIAboutEvent*>(event)->mAction)
         {
@@ -211,7 +213,7 @@ bool MainWindowController::event(QEvent* event)
         }
         return true;
     }
-    if (event->type() == UIMainWindowEvent::type)
+    if (event->type() == UIMainWindowEvent::eventType())
     {
         switch (static_cast<UIMainWindowEvent*>(event)->mAction)
         {
@@ -248,7 +250,7 @@ bool MainWindowController::event(QEvent* event)
         }
         return true;
     }
-    if (event->type() == UIScreenChangedEvent::type)
+    if (event->type() == UIScreenChangedEvent::eventType())
     {
         UIVIEW_LOG_DEBUG("UIScreenChangedEvent: ask QML to re-fit window into available screen area");
         emit screenChanged();

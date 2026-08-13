@@ -7,6 +7,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
+#include <UIQmlUtilities/QmlWindowPropertyResolver.h>
 
 #include "MediaCameraView/MediaCameraViewController.h"
 #include "UIViewCommon/LoggerDefine/LoggerDefine.h"
@@ -22,7 +23,7 @@ const QString kMediaCameraViewQml    = QStringLiteral("UIView/MediaCameraView/qm
 
 CameraMonitorViewController::CameraMonitorViewController(QObject* parent)
     : UIViewController(parent)
-    , mCameraDirectoryEmitter(std::make_shared<UIVMSignalEmitter::CameraDirectoryViewModelEmitter>())
+    , mCameraDirectoryEmitter(std::make_shared<UIViewModelSignalBridge::CameraDirectoryViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create CameraMonitorViewController");
 }
@@ -68,7 +69,7 @@ void CameraMonitorViewController::init()
     mCameraTreeModel = new CameraDirectoryItemModel(this);
     emit cameraTreeModelChanged();
 
-    using Emitter = UIVMSignalEmitter::CameraDirectoryViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::CameraDirectoryViewModelEmitter;
     auto* e = mCameraDirectoryEmitter.get();
     QObject::connect(e, &Emitter::signals_onCameraDirectoryReady,       this, &CameraMonitorViewController::onCameraDirectoryReady);
     QObject::connect(e, &Emitter::signals_onCameraDirectoryLoadFailed,  this, &CameraMonitorViewController::onCameraDirectoryLoadFailed);
@@ -463,7 +464,8 @@ void CameraMonitorViewController::openCameraWindow(const QString& nodeId)
         UIVIEW_LOG_WARN("openCameraWindow: failed to create window");
         return;
     }
-    auto* mc = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win.data());
+    auto* mc = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MediaCameraViewController>(
+        win.data(), "controller");
     if (!mc)
     {
         UIVIEW_LOG_WARN("openCameraWindow: window has no MediaCameraViewController");

@@ -32,8 +32,10 @@ set(MODULE_DEPENDENCIES_PUBLIC
 set(MODULE_DEPENDENCIES_PRIVATE
     UIViewCore
     UIViewModelSignalBridge
+    UIEvents
     LoggerUtils
     UIPlatformUtils
+    UIQmlUtilities
     UIIPCChannel
     UTComponent
     UTComposite

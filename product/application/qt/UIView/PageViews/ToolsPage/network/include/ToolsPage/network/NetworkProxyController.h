@@ -8,10 +8,13 @@
 #include <UIViewCore/UIViewController.h>
 #include "ToolsPage/network/ProxyRequestModel.h"
 #include "ToolsPage/network/ProxyRulesManager.h"
-#include <UIViewModelSignalBridge/emitters/NetworkProxyViewModelEmitter.h>
 
 namespace commonHead::viewModels {
     class INetworkProxyViewModel;
+}
+
+namespace UIViewModelSignalBridge {
+    class NetworkProxyViewModelEmitter;
 }
 
 /**
@@ -155,7 +158,7 @@ signals:
     void certInstallingChanged();
     void interceptedRequest(const QString& flowId, const QJsonObject& detail);
 
-private slots:
+private:
     // ── ViewModel emitter slots ──
     void onProxyStateChanged(int state);
     void onAddonConnectionChanged(bool connected);
@@ -166,13 +169,12 @@ private slots:
     void onCertStatusChanged(int status);
     void onError(const QString& errorMessage);
 
-private:
     void updateDetailText();
     void setStatusMessage(const QString& msg);
 
     // ViewModel
     std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> m_viewModel;
-    std::shared_ptr<UIVMSignalEmitter::NetworkProxyViewModelEmitter> m_viewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::NetworkProxyViewModelEmitter> m_viewModelEmitter;
 
     // State (shadow of ViewModel state for QML property bindings)
     bool    m_proxyRunning     = false;

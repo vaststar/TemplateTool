@@ -8,7 +8,7 @@
 
 #include <commonhead/viewmodels/MiniAppRuntimeViewModel/IMiniAppRuntimeViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 // Qt-signal bridge for IMiniAppRuntimeViewModelCallback.
 class UIViewModelSignalBridge_EXPORT MiniAppRuntimeViewModelEmitter
@@ -43,4 +43,4 @@ signals:
     void signals_onUrlChanged(const QString& url);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

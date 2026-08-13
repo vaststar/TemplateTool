@@ -12,7 +12,7 @@
 
 SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)
-    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::SettingsViewModelEmitter>())
+    , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::SettingsViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create SettingsPageController");
 }
@@ -22,13 +22,13 @@ void SettingsPageController::init()
     UIVIEW_LOG_DEBUG("SettingsPageController::init");
 
     // Connect signals from ViewModel emitter
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsTreeReady,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SettingsViewModelEmitter::signals_onSettingsTreeReady,
             this, &SettingsPageController::onSettingsTreeReady);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsNodesAdded,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SettingsViewModelEmitter::signals_onSettingsNodesAdded,
             this, &SettingsPageController::onSettingsNodesAdded);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsNodesUpdated,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SettingsViewModelEmitter::signals_onSettingsNodesUpdated,
             this, &SettingsPageController::onSettingsNodesUpdated);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SettingsViewModelEmitter::signals_onSettingsNodesRemoved,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SettingsViewModelEmitter::signals_onSettingsNodesRemoved,
             this, &SettingsPageController::onSettingsNodesRemoved);
 
     m_treeModel = new SettingsTreeModel(this);

@@ -7,19 +7,10 @@
 
 #include <UIViewCore/UIViewController.h>
 
-namespace commonHead{
-    class ICommonHeadFramework;
-    using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
-
-    namespace viewModels{
-        class IMainWindowViewModel;
-    }
-}
 namespace UILanguage{
     enum class LanguageType;
 }
 
-class AppContext;
 class MainWindowMenuBarController : public UIViewController
 {
     Q_OBJECT
@@ -33,15 +24,12 @@ public:
     Q_INVOKABLE void handleMenuAction(const QString& action);
 
 signals:
-    void titleChanged();
-    void controllerInitialized();
     void menuModelChanged();
 public slots:
     void switchLanguage(UILanguage::LanguageType languageType);
 protected:
-    virtual void init() override;
+    void init() override;
 private:
     void buildMenuModel();
-    std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> mMainViewModel;
     QVariantList m_menuModel;
 };

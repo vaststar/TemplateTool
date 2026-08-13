@@ -5,7 +5,7 @@
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <UIViewModelSignalBridge/metatypes/SideBarMetaTypes.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 class UIViewModelSignalBridge_EXPORT SideBarViewModelEmitter : public QObject,
                                                            public commonHead::viewModels::ISideBarViewModelCallback
@@ -57,4 +57,4 @@ signals:
     void signals_onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

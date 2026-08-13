@@ -11,7 +11,7 @@ namespace commonHead::viewModels{
     class IStabilityViewModel;
 }
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
     class StabilityViewModelEmitter;
 }
 
@@ -28,6 +28,6 @@ public:
 private:
     const QPointer<AppContext> mAppContext;
     std::shared_ptr<commonHead::viewModels::IStabilityViewModel> mStabilityViewModel;
-    std::shared_ptr<UIVMSignalEmitter::StabilityViewModelEmitter> mStabilityViewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::StabilityViewModelEmitter> mStabilityViewModelEmitter;
     QTimer* mHeartbeatTimer = nullptr;
 };

@@ -14,7 +14,7 @@
 
 MediaCameraViewController::MediaCameraViewController(QObject *parent)
     : UIViewController(parent)
-    , mMediaCameraViewModelEmitter(std::make_shared<UIVMSignalEmitter::MediaCameraViewModelEmitter>())
+    , mMediaCameraViewModelEmitter(std::make_shared<UIViewModelSignalBridge::MediaCameraViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create MediaCameraViewController");
 }
@@ -45,8 +45,8 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 void MediaCameraViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIVMSignalEmitter::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived);
-    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIVMSignalEmitter::MediaCameraViewModelEmitter::signals_onCameraOpenFailed, this, &MediaCameraViewController::onCameraOpenFailed);
+    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived);
+    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraOpenFailed, this, &MediaCameraViewController::onCameraOpenFailed);
     mMediaCameraViewModel = getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
     // Callers drive the camera lifecycle via openLocal/openNetworkCamera.

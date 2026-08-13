@@ -9,7 +9,7 @@
 
 #include <commonhead/viewmodels/SettingsViewModel/ISettingsViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 // Qt-signal bridge for ISettingsViewModelCallback.
 class UIViewModelSignalBridge_EXPORT SettingsViewModelEmitter : public QObject,
@@ -43,4 +43,4 @@ signals:
     void signals_onSettingsNodesRemoved(const std::vector<std::string>& nodeIds);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

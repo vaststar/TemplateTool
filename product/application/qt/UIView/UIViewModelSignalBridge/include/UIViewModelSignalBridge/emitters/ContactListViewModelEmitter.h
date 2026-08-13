@@ -9,7 +9,7 @@
 
 #include <commonhead/viewmodels/ContactListViewModel/IContactListViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 // Qt-signal bridge for IContactListViewModelCallback.
 class UIViewModelSignalBridge_EXPORT ContactListViewModelEmitter
@@ -68,4 +68,4 @@ signals:
     void signals_onContactRelationsRemoved(const std::vector<RelationData>& removed);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

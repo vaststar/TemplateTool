@@ -8,7 +8,6 @@
 #include <QtQml>
 #include <UIViewCore/UIViewController.h>
 #include "SettingsTreeModel.h"
-#include <UIViewModelSignalBridge/emitters/SettingsViewModelEmitter.h>
 
 namespace commonHead::viewModels {
     class ISettingsViewModel;
@@ -17,6 +16,10 @@ namespace commonHead::viewModels::model {
     class ISettingsTree;
     struct SettingsNodeData;
     enum class SettingsPanelType : uint8_t;
+}
+
+namespace UIViewModelSignalBridge {
+    class SettingsViewModelEmitter;
 }
 
 class SettingsPageController : public UIViewController
@@ -46,20 +49,19 @@ signals:
     void currentPanelQmlChanged();
     void currentNodeIdChanged();
 
-private slots:
+private:
     void onSettingsTreeReady();
     void onSettingsNodesAdded(const std::vector<commonHead::viewModels::model::SettingsNodeData>& nodes);
     void onSettingsNodesUpdated(const std::vector<commonHead::viewModels::model::SettingsNodeData>& nodes);
     void onSettingsNodesRemoved(const std::vector<std::string>& nodeIds);
 
-private:
     QString mapPanelTypeToQml(commonHead::viewModels::model::SettingsPanelType panelType) const;
     commonHead::viewModels::model::SettingsPanelType panelTypeOf(const std::string& nodeId) const;
     std::string findFirstSelectableNodeId() const;
     void ensureValidSelection();
 
     std::shared_ptr<commonHead::viewModels::ISettingsViewModel> m_settingsViewModel;
-    std::shared_ptr<UIVMSignalEmitter::SettingsViewModelEmitter> m_viewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::SettingsViewModelEmitter> m_viewModelEmitter;
     SettingsTreeModel* m_treeModel = nullptr;
     QString m_currentPanelQml;
     QString m_currentNodeId;

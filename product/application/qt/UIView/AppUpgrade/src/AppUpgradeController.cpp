@@ -17,7 +17,7 @@ const QString kUpgradeDialogQml = QStringLiteral("UIView/AppUpgrade/qml/UpgradeD
 
 AppUpgradeController::AppUpgradeController(QObject* parent)
     : UIViewController(parent)
-    , m_emitter(std::make_shared<UIVMSignalEmitter::UpgradeViewModelEmitter>())
+    , m_emitter(std::make_shared<UIViewModelSignalBridge::UpgradeViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create AppUpgradeController");
 }
@@ -35,7 +35,7 @@ void AppUpgradeController::init()
     listenUIEvents<UIUpgradeEvent>();
 
     // Connect emitter signals
-    using Emitter = UIVMSignalEmitter::UpgradeViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::UpgradeViewModelEmitter;
     connect(m_emitter.get(), &Emitter::signals_onCheckCompleted,
             this, &AppUpgradeController::onCheckCompleted);
     connect(m_emitter.get(), &Emitter::signals_onDownloadProgress,
@@ -170,7 +170,7 @@ void AppUpgradeController::dismiss()
 
 bool AppUpgradeController::event(QEvent* e)
 {
-    if (e->type() == UIUpgradeEvent::type)
+    if (e->type() == UIUpgradeEvent::eventType())
     {
         auto* upgradeEvent = static_cast<UIUpgradeEvent*>(e);
         switch (upgradeEvent->mAction)

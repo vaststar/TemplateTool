@@ -14,7 +14,7 @@
 
 MainWindowSideBarController::MainWindowSideBarController(QObject* parent)
     : UIViewController(parent)
-    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::SideBarViewModelEmitter>())
+    , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::SideBarViewModelEmitter>())
     , m_topNavItems(new NavItemModel(this))
     , m_bottomNavItems(new NavItemModel(this))
 {
@@ -31,17 +31,17 @@ void MainWindowSideBarController::init()
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init start");
 
     // Connect signals from ViewModel emitter
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onSideBarReady,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onSideBarReady,
             this, &MainWindowSideBarController::onSideBarReady);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsAdded,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onNavItemsAdded,
             this, &MainWindowSideBarController::onNavItemsAdded);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsUpdated,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onNavItemsUpdated,
             this, &MainWindowSideBarController::onNavItemsUpdated);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onNavItemsRemoved,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onNavItemsRemoved,
             this, &MainWindowSideBarController::onNavItemsRemoved);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onSubMenuRequested,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onSubMenuRequested,
             this, &MainWindowSideBarController::onSubMenuRequested);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::SideBarViewModelEmitter::signals_onMenuActionClicked,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onMenuActionClicked,
             this, &MainWindowSideBarController::onMenuActionClicked);
 
     UIVIEW_LOG_DEBUG("MainWindowSideBarController::init signals connected, creating ViewModel");

@@ -10,7 +10,7 @@ namespace commonHead::viewModels{
     class IInvocationViewModel;
 }
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
     class InvocationViewModelEmitter;
 }
 
@@ -32,5 +32,5 @@ private:
     const QPointer<AppContext> mAppContext;
     std::shared_ptr<UIUtilities::UIIPCServer> mIPCServer;
     std::shared_ptr<commonHead::viewModels::IInvocationViewModel> mIPCViewModel;
-    std::shared_ptr<UIVMSignalEmitter::InvocationViewModelEmitter> mInvocationViewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::InvocationViewModelEmitter> mInvocationViewModelEmitter;
 };

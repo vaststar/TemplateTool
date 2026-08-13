@@ -3,6 +3,7 @@
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
+#include <UIQmlUtilities/QmlWindowPropertyResolver.h>
 #include <UTMessageDialog/UTMessageDialogController.h>
 #include <UTMessageDialog/UTMessagePresets.h>
 
@@ -51,7 +52,8 @@ void UIViewMessageBoxHelper::showMessageAsync(AppContext& appContext,
         return;
     }
 
-    auto* controller = UIViewHelper::controllerOf<UTMessageDialogController>(win.data());
+    auto* controller = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UTMessageDialogController>(
+        win.data(), "controller");
     if (!controller)
     {
         UIVIEW_LOG_WARN("UIViewMessageBoxHelper::showMessageAsync: UTMessageDialog has no UTMessageDialogController");

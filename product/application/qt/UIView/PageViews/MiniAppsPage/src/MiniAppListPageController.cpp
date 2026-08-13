@@ -15,7 +15,7 @@
 
 MiniAppListPageController::MiniAppListPageController(QObject* parent)
     : UIViewController(parent)
-    , mEmitter(std::make_shared<UIVMSignalEmitter::MiniAppListViewModelEmitter>())
+    , mEmitter(std::make_shared<UIViewModelSignalBridge::MiniAppListViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create MiniAppListPageController");
 }
@@ -53,7 +53,7 @@ void MiniAppListPageController::init()
         return;
     }
 
-    using Emitter = UIVMSignalEmitter::MiniAppListViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::MiniAppListViewModelEmitter;
     QObject::connect(mEmitter.get(), &Emitter::signals_onMiniAppListChanged,
                      this, &MiniAppListPageController::reloadMiniApps);
     QObject::connect(mEmitter.get(), &Emitter::signals_onMiniAppInstallFailed,

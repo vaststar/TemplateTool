@@ -5,6 +5,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <commonhead/viewmodels/RecordingViewModel/IRecordingViewModel.h>
 #include <commonhead/viewmodels/RecordingViewModel/IRecordingModel.h>
+#include <UIViewModelSignalBridge/emitters/RecordingViewModelEmitter.h>
 
 #include <QStandardPaths>
 #include <QDir>
@@ -20,7 +21,7 @@
 
 RecordingController::RecordingController(QObject* parent)
     : UIViewController(parent)
-    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::RecordingViewModelEmitter>())
+    , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::RecordingViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create RecordingController");
 }
@@ -41,7 +42,7 @@ void RecordingController::init()
     UIVIEW_LOG_DEBUG("RecordingController::init");
 
     // Phase 1: Connect emitter Qt signals → controller slots
-    using Emitter = UIVMSignalEmitter::RecordingViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::RecordingViewModelEmitter;
     connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,
             this, &RecordingController::onVMStateChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onDurationChanged,

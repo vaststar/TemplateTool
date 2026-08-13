@@ -1,21 +1,20 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "MainWindowSideBar/NavItemModel.h"
-#include <UIViewModelSignalBridge/emitters/SideBarViewModelEmitter.h>
 
 #include <QObject>
-#include <QPointer>
 #include <QtQml>
 
 #include <UIViewCore/UIViewController.h>
-
-class AppContext;
 
 namespace commonHead::viewModels {
     class ISideBarViewModel;
 }
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
     class SideBarViewModelEmitter;
 }
 
@@ -49,7 +48,7 @@ protected:
     void init() override;
     void onLanguageChanged() override;
 
-private slots:
+private:
     void onSideBarReady();
     void onNavItemsAdded  (const std::vector<commonHead::viewModels::model::NavItemData>& items);
     void onNavItemsUpdated(const std::vector<commonHead::viewModels::model::NavItemData>& items);
@@ -57,13 +56,12 @@ private slots:
     void onSubMenuRequested(int pageId, const std::vector<commonHead::viewModels::model::SubMenuItem>& items);
     void onMenuActionClicked(commonHead::viewModels::model::MenuActionId actionId);
 
-private:
     void seedFromSnapshot();
     void ensureValidSelection();
     void navigateToInternal(int pageId, bool isUserAction);
 
     std::shared_ptr<commonHead::viewModels::ISideBarViewModel> m_sideBarViewModel;
-    std::shared_ptr<UIVMSignalEmitter::SideBarViewModelEmitter> m_viewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::SideBarViewModelEmitter> m_viewModelEmitter;
 
     NavItemModel* m_topNavItems = nullptr;
     NavItemModel* m_bottomNavItems = nullptr;

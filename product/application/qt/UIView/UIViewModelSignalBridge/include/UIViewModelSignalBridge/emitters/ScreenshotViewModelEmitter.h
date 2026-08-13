@@ -6,7 +6,7 @@
 #include <UIViewModelSignalBridge/metatypes/ScreenshotMetaTypes.h>
 #include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 class UIViewModelSignalBridge_EXPORT ScreenshotViewModelEmitter : public QObject,
                                                               public commonHead::viewModels::IScreenshotViewModelCallback
@@ -59,4 +59,4 @@ signals:
     void signals_onError(const QString& message);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

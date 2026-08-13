@@ -4,7 +4,7 @@
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/AppUIViewModel/IAppUIViewModel.h>
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
 class UIViewModelSignalBridge_EXPORT AppUIViewModelEmitter: public QObject,
                                                         public commonHead::viewModels::IAppUIViewModelCallback
 {

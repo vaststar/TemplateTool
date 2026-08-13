@@ -6,7 +6,7 @@
 #include <UIViewModelSignalBridge/metatypes/RecordingMetaTypes.h>
 #include <commonhead/viewmodels/RecordingViewModel/IRecordingViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 class UIViewModelSignalBridge_EXPORT RecordingViewModelEmitter : public QObject,
                                                              public commonHead::viewModels::IRecordingViewModelCallback
@@ -69,4 +69,4 @@ signals:
     void signals_onError(const QString& message);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

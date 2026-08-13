@@ -1,7 +1,5 @@
 #include "MainWindowMenuBar/MainWindowMenuBarController.h"
 
-#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
-#include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
 #include <commonhead/viewmodels/ClientInfoViewModel/IClientInfoViewModel.h>
 
 #include <TranslatorManager/UILanguage.h>
@@ -25,7 +23,6 @@ void MainWindowMenuBarController::init()
     auto clientInfoVM = getViewModelFactory()->createClientInfoViewModelInstance();
     auto res = clientInfoVM->getSupportedLanguages();
     buildMenuModel();
-    emit controllerInitialized();
 }
 
 void MainWindowMenuBarController::switchLanguage(UILanguage::LanguageType languageType)

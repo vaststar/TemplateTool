@@ -6,7 +6,7 @@
 #include <UIViewModelSignalBridge/metatypes/UpgradeMetaTypes.h>
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
 class UIViewModelSignalBridge_EXPORT UpgradeViewModelEmitter: public QObject,
                                                           public commonHead::viewModels::IUpgradeViewModelCallback
 {

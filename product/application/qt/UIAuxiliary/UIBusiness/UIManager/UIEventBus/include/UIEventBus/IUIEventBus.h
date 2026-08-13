@@ -29,14 +29,14 @@ public:
     virtual void send(QEvent* event) const = 0;
 
     /// Type-safe listener registration.
-    template <typename DerivedEvent>
+    template <UIEventType EventT>
     void addListener(QObject* listener)
     {
-        addListener(UIEvent<DerivedEvent>::type, listener);
+        addListener(EventT::eventType(), listener);
     }
 
     /// Register listener for multiple event types at once.
-    template <typename... Events>
+    template <UIEventType... Events>
     void addListeners(QObject* listener)
     {
         (addListener<Events>(listener), ...);

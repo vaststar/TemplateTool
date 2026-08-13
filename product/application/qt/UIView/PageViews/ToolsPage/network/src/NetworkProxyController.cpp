@@ -6,6 +6,7 @@
 #include <AppContext/AppContext.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <commonhead/viewmodels/NetworkProxyViewModel/INetworkProxyViewModel.h>
+#include <UIViewModelSignalBridge/emitters/NetworkProxyViewModelEmitter.h>
 
 #include <QClipboard>
 #include <QGuiApplication>
@@ -21,7 +22,7 @@
 
 NetworkProxyController::NetworkProxyController(QObject* parent)
     : UIViewController(parent)
-    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::NetworkProxyViewModelEmitter>())
+    , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::NetworkProxyViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create NetworkProxyController, this=" << (void*)this);
     m_requestModel = new ProxyRequestModel(this);
@@ -41,21 +42,21 @@ void NetworkProxyController::init()
     UIVIEW_LOG_DEBUG("NetworkProxyController::init");
 
     // Connect emitter signals to controller slots
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onProxyStateChanged,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onProxyStateChanged,
             this, &NetworkProxyController::onProxyStateChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onAddonConnectionChanged,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onAddonConnectionChanged,
             this, &NetworkProxyController::onAddonConnectionChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onRequestCaptured,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onRequestCaptured,
             this, &NetworkProxyController::onRequestCaptured);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onResponseCaptured,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onResponseCaptured,
             this, &NetworkProxyController::onResponseCaptured);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onRequestIntercepted,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onRequestIntercepted,
             this, &NetworkProxyController::onRequestIntercepted);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onStatusMessage,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onStatusMessage,
             this, &NetworkProxyController::onStatusMessage);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onCertStatusChanged,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onCertStatusChanged,
             this, &NetworkProxyController::onCertStatusChanged);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::NetworkProxyViewModelEmitter::signals_onError,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onError,
             this, &NetworkProxyController::onError);
 
     // Create ViewModel via factory, init, and register emitter as callback

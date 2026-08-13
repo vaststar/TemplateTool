@@ -12,7 +12,7 @@ namespace commonHead::viewModels
     class IMiniAppRuntimeViewModel;
 }
 
-namespace UIVMSignalEmitter
+namespace UIViewModelSignalBridge
 {
     class MiniAppRuntimeViewModelEmitter;
 }
@@ -52,7 +52,7 @@ protected:
 
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppRuntimeViewModel> mViewModel;
-    std::shared_ptr<UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter> mEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::MiniAppRuntimeViewModelEmitter> mEmitter;
     QString mAppId;
 };
 

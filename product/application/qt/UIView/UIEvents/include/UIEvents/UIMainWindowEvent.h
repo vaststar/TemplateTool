@@ -1,8 +1,9 @@
 #pragma once
 
+#include <UIEvents/UIEventsExport.h>
 #include <UIEventBus/UIEvent.h>
 
-class UIMainWindowEvent : public UIManager::UIEvent<UIMainWindowEvent>
+class UIEvents_EXPORT UIMainWindowEvent final : public UIManager::UIEvent<UIMainWindowEvent>
 {
 public:
     enum class Action
@@ -15,6 +16,8 @@ public:
         Show,           // Show window
         Close           // Request close
     };
+
+    static QEvent::Type eventType();
 
     explicit UIMainWindowEvent(Action action);
 

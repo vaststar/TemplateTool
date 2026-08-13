@@ -14,7 +14,7 @@ class UIIPCServerHelper;
 class UIStabilityMonitor;
 class UIScreenMonitor;
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
     class AppUIViewModelEmitter;
 }
 
@@ -36,7 +36,7 @@ private:
 
 private:
     std::shared_ptr<commonHead::viewModels::IAppUIViewModel> mAppUIViewModel;
-    std::shared_ptr<UIVMSignalEmitter::AppUIViewModelEmitter> mAppUIViewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::AppUIViewModelEmitter> mAppUIViewModelEmitter;
     std::unique_ptr<UIIPCServerHelper> mIPCServerHelper;
     std::unique_ptr<UIStabilityMonitor> mStabilityMonitor;
     std::unique_ptr<UIScreenMonitor> mScreenMonitor;

@@ -5,10 +5,16 @@
 #include <QtQml>
 #include <memory>
 #include <UIViewCore/UIViewController.h>
-#include <UIViewModelSignalBridge/emitters/RecordingViewModelEmitter.h>
 
 namespace commonHead::viewModels {
     class IRecordingViewModel;
+    namespace model {
+        struct RecordingSettings;
+    }
+}
+
+namespace UIViewModelSignalBridge {
+    class RecordingViewModelEmitter;
 }
 
 /**
@@ -125,7 +131,7 @@ signals:
     void micPermissionChanged();
     void screenRecordingPermissionChanged();
 
-private slots:
+private:
     // ── ViewModel emitter slots ──
     void onVMStateChanged(int state);
     void onVMDurationChanged(int seconds);
@@ -135,10 +141,9 @@ private slots:
     void onVMSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
     void onVMError(const QString& message);
 
-private:
     // ViewModel
     std::shared_ptr<commonHead::viewModels::IRecordingViewModel> m_viewModel;
-    std::shared_ptr<UIVMSignalEmitter::RecordingViewModelEmitter> m_viewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::RecordingViewModelEmitter> m_viewModelEmitter;
 
     // Shadow state for QML property bindings
     bool m_isRecording = false;

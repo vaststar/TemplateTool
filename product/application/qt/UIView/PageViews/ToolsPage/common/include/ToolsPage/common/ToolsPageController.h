@@ -9,7 +9,6 @@
 #include <UIViewCore/UIViewController.h>
 #include "ToolsTreeModel.h"
 #include "ToolsPanelRegistry.h"
-#include <UIViewModelSignalBridge/emitters/ToolsViewModelEmitter.h>
 
 namespace commonHead::viewModels {
     class IToolsViewModel;
@@ -17,6 +16,10 @@ namespace commonHead::viewModels {
 namespace commonHead::viewModels::model {
     struct ToolNodeData;
     enum class ToolPanelType : std::uint8_t;
+}
+
+namespace UIViewModelSignalBridge {
+    class ToolsViewModelEmitter;
 }
 
 class ToolsPageController : public UIViewController
@@ -49,21 +52,19 @@ signals:
     void currentPanelTypeChanged();
     void currentNodeIdChanged();
 
-private slots:
+private:
     void onToolsTreeReady();
     void onToolsNodesAdded(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes);
     void onToolsNodesUpdated(const std::vector<commonHead::viewModels::model::ToolNodeData>& nodes);
     void onToolsNodesRemoved(const std::vector<std::string>& nodeIds);
 
-private:
     // Mirror-reading helpers (do NOT touch the VM's tree object).
     commonHead::viewModels::model::ToolPanelType panelTypeOf(const std::string& nodeId) const;
     std::string findFirstSelectableNodeId() const;
     void        ensureValidSelection();
 
-private:
     std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
-    std::shared_ptr<UIVMSignalEmitter::ToolsViewModelEmitter> m_viewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::ToolsViewModelEmitter> m_viewModelEmitter;
     ToolsTreeModel* m_treeModel = nullptr;
     ToolsPanelRegistry* m_panelRegistry = nullptr;
     int m_currentPanelType = 0;     // 0 == ToolPanelType::None

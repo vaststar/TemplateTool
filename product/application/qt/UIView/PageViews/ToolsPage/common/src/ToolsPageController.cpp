@@ -13,7 +13,7 @@
 
 ToolsPageController::ToolsPageController(QObject* parent)
     : UIViewController(parent)
-    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::ToolsViewModelEmitter>())
+    , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::ToolsViewModelEmitter>())
     , m_panelRegistry(new ToolsPanelRegistry(this))
 {
     UIVIEW_LOG_DEBUG("create ToolsPageController");
@@ -24,13 +24,13 @@ void ToolsPageController::init()
     UIVIEW_LOG_DEBUG("ToolsPageController::init");
 
     // Connect signals from ViewModel emitter
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsTreeReady,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::ToolsViewModelEmitter::signals_onToolsTreeReady,
             this, &ToolsPageController::onToolsTreeReady);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsNodesAdded,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::ToolsViewModelEmitter::signals_onToolsNodesAdded,
             this, &ToolsPageController::onToolsNodesAdded);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsNodesUpdated,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::ToolsViewModelEmitter::signals_onToolsNodesUpdated,
             this, &ToolsPageController::onToolsNodesUpdated);
-    connect(m_viewModelEmitter.get(), &UIVMSignalEmitter::ToolsViewModelEmitter::signals_onToolsNodesRemoved,
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::ToolsViewModelEmitter::signals_onToolsNodesRemoved,
             this, &ToolsPageController::onToolsNodesRemoved);
 
     m_treeModel = new ToolsTreeModel(this);

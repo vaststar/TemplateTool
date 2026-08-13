@@ -23,7 +23,7 @@ void UIStabilityMonitor::start()
 {
     UIVIEW_LOG_DEBUG("start heartbeat");
     mStabilityViewModel = mAppContext->getViewModelFactory()->createStabilityViewModelInstance();
-    mStabilityViewModelEmitter = std::make_shared<UIVMSignalEmitter::StabilityViewModelEmitter>();
+    mStabilityViewModelEmitter = std::make_shared<UIViewModelSignalBridge::StabilityViewModelEmitter>();
     mStabilityViewModel->registerCallback(mStabilityViewModelEmitter);
 
     mHeartbeatTimer = new QTimer(this);

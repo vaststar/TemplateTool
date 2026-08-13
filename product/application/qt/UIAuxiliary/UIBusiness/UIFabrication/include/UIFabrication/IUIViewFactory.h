@@ -68,9 +68,8 @@ public:
      *       therefore inherits the platform's default decorations
      *       (title bar, min/close buttons). Callers wanting a frameless
      *       look must call setFlags(Qt::FramelessWindowHint) themselves.
-     * @note To expose a controller to UIView::UIViewHelper::controllerOf(),
-     *       declare `controller` as a property of the root Item (mirroring
-     *       the Window-as-root convention).
+     * @note Properties that callers need to inspect after creation must be
+     *       declared on the root Item rather than on the QQuickView container.
      */
     virtual QPointer<QQuickWindow> createQmlItemWindow(const QString& qmlResource,
                                                        const QVariantMap& initialProperties = {}) = 0;

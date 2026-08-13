@@ -1,23 +1,24 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
-#include <QPointer>
 #include <QtQml>
 #include <QImage>
 #include <QVideoFrame>
 #include <QVideoSink>
-#include <commonhead/viewmodels/MediaCameraViewModel/VideoFrame.h>
 
 #include <UIViewCore/UIViewController.h>
-#include <UIViewModelSignalBridge/emitters/MediaCameraViewModelEmitter.h>
 
-namespace commonHead{
-    namespace viewModels{
-        class IMediaCameraViewModel;
-    }
+namespace commonHead::viewModels {
+    class IMediaCameraViewModel;
     namespace model {
         struct VideoFrame;
     }
+}
+
+namespace UIViewModelSignalBridge {
+    class MediaCameraViewModelEmitter;
 }
 
 class AppContext;
@@ -51,7 +52,7 @@ public:
                                        int readTimeoutMs);
     Q_INVOKABLE void closeCamera();
 
-private slots:
+private:
     virtual void onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame);
     virtual void onCameraOpenFailed();
 signals:
@@ -62,9 +63,10 @@ signals:
     void isOpeningChanged();
 protected:
     virtual void init() override;
+
 private:
     std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> mMediaCameraViewModel;
-    std::shared_ptr<UIVMSignalEmitter::MediaCameraViewModelEmitter>  mMediaCameraViewModelEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::MediaCameraViewModelEmitter>  mMediaCameraViewModelEmitter;
     QVideoSink* mVideoSink = nullptr;
     bool mOpenFailed = false;
     bool mIsOpening = false;

@@ -9,7 +9,7 @@ import UTComposite 1.0
  * UTMessageDialog - Generic message dialog driven by UTMessageDialogController.
  *
  * The dialog owns its controller (default-constructed inline). The C++ side
- * grabs the controller via UIView::UIViewHelper::controllerOf<>() right after
+ * resolves the controller from this window's `controller` property right after
  * the window is created and calls setOptions() exactly once before show().
  *
  * QML -> C++ contract:

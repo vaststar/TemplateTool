@@ -4,7 +4,7 @@
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/StabilityViewModel/IStabilityViewModel.h>
 
-namespace UIVMSignalEmitter{
+namespace UIViewModelSignalBridge{
 
 class UIViewModelSignalBridge_EXPORT StabilityViewModelEmitter: public QObject,
                                                         public commonHead::viewModels::IStabilityViewModelCallback
@@ -18,4 +18,4 @@ public:
     // 目前没有callback需要发射，预留扩展
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

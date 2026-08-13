@@ -79,7 +79,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
 void AppUIManager::Impl::registerQmlTypes()
 {
     UIVIEW_LOG_DEBUG("");
-    UIVMSignalEmitter::registerAllViewModelMetaTypes();
+    UIViewModelSignalBridge::registerAllViewModelMetaTypes();
     UILanguage::registerMetaObject();
     UTComponent::registerUTComponent();
     UTComposite::registerUTComposite();

@@ -16,7 +16,7 @@
 #include <UIViewModelSignalBridge/metatypes/ToolsMetaTypes.h>
 #include <UIViewModelSignalBridge/metatypes/UpgradeMetaTypes.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 void registerAllViewModelMetaTypes()
 {
@@ -60,4 +60,4 @@ void registerAllViewModelMetaTypes()
     });
 }
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

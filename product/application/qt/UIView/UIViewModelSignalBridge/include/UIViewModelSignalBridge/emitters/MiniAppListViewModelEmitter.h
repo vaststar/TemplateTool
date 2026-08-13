@@ -8,7 +8,7 @@
 
 #include <commonhead/viewmodels/MiniAppListViewModel/IMiniAppListViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 // Qt-signal bridge for IMiniAppListViewModelCallback.
 class UIViewModelSignalBridge_EXPORT MiniAppListViewModelEmitter
@@ -35,4 +35,4 @@ signals:
     void signals_onMiniAppUninstallFailed(const QString& title, const QString& message);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

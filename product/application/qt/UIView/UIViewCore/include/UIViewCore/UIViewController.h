@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <memory>
 #include <utility>
 
@@ -69,7 +70,8 @@ protected:
     QPointer<UIManager::IUIEventBus> getUIEventBus() const;
 
     /// Convenience: construct and send an event in one call.
-    template <typename EventT, typename... Args>
+    template <UIManager::UIEventType EventT, typename... Args>
+        requires std::constructible_from<EventT, Args...>
     void sendUIEvent(Args&&... args)
     {
         if (auto bus = getUIEventBus()) {
@@ -80,7 +82,7 @@ protected:
 
     /// Convenience: register this controller as listener for one or more event types.
     /// Call in init(). Automatically removed when this controller is destroyed.
-    template <typename... Events>
+    template <UIManager::UIEventType... Events>
     void listenUIEvents()
     {
         if (auto bus = getUIEventBus()) {

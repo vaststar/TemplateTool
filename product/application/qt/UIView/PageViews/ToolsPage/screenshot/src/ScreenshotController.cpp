@@ -7,6 +7,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotViewModel.h>
 #include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotModel.h>
+#include <UIViewModelSignalBridge/emitters/ScreenshotViewModelEmitter.h>
 
 #include <QGuiApplication>
 #include <QClipboard>
@@ -39,7 +40,7 @@ static void parseColor(const QString& colorStr, uint8_t& r, uint8_t& g, uint8_t&
 
 ScreenshotController::ScreenshotController(QObject* parent)
     : UIViewController(parent)
-    , m_viewModelEmitter(std::make_shared<UIVMSignalEmitter::ScreenshotViewModelEmitter>())
+    , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::ScreenshotViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create ScreenshotController");
 }
@@ -55,7 +56,7 @@ void ScreenshotController::init()
     UIVIEW_LOG_DEBUG("ScreenshotController::init");
 
     // Phase 1: Connect emitter Qt signals → controller slots
-    using Emitter = UIVMSignalEmitter::ScreenshotViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::ScreenshotViewModelEmitter;
     connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,
             this, &ScreenshotController::onVMStateChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onScreenCaptured,

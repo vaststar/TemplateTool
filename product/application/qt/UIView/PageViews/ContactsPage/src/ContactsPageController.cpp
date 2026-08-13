@@ -21,7 +21,7 @@ const QString kContactDeleteDialogQml = QStringLiteral("UIView/PageViews/Contact
 
 ContactsPageController::ContactsPageController(QObject* parent)
     : UIViewController(parent)
-    , mContactListEmitter(std::make_shared<UIVMSignalEmitter::ContactListViewModelEmitter>())
+    , mContactListEmitter(std::make_shared<UIViewModelSignalBridge::ContactListViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("create ContactsPageController");
 }
@@ -46,7 +46,7 @@ void ContactsPageController::init()
         return;
     }
 
-    using Emitter = UIVMSignalEmitter::ContactListViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::ContactListViewModelEmitter;
     auto* e = mContactListEmitter.get();
     QObject::connect(e, &Emitter::signals_onContactDirectoryReady,      this, &ContactsPageController::onContactDirectoryReady);
     QObject::connect(e, &Emitter::signals_onContactDirectoryLoadFailed, this, &ContactsPageController::onContactDirectoryLoadFailed);

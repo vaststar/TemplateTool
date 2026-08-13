@@ -5,7 +5,7 @@
 #include <UIViewModelSignalBridge/metatypes/ToolsMetaTypes.h>
 #include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 class UIViewModelSignalBridge_EXPORT ToolsViewModelEmitter : public QObject,
                                                          public commonHead::viewModels::IToolsViewModelCallback
@@ -44,4 +44,4 @@ signals:
     void signals_onToolsNodesRemoved(const std::vector<std::string>& nodeIds);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

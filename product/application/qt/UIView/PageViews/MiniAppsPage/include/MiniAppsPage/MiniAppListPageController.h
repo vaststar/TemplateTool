@@ -16,7 +16,7 @@ namespace commonHead::viewModels
     class IMiniAppListViewModel;
 }
 
-namespace UIVMSignalEmitter
+namespace UIViewModelSignalBridge
 {
     class MiniAppListViewModelEmitter;
 }
@@ -71,7 +71,7 @@ private:
 
 private:
     std::shared_ptr<commonHead::viewModels::IMiniAppListViewModel> mViewModel;
-    std::shared_ptr<UIVMSignalEmitter::MiniAppListViewModelEmitter> mEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::MiniAppListViewModelEmitter> mEmitter;
     // One running host window per app id. Each window owns its controller and
     // self-deletes on close; the QPointer auto-clears when that happens.
     QHash<QString, QPointer<MiniAppsPage::MiniAppHostWindow>> mWindows;

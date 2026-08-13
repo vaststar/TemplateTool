@@ -1,3 +1,4 @@
 add_subdirectory(UIPlatformUtils)
+add_subdirectory(UIQmlUtilities)
 add_subdirectory(UISingleInstance)
 add_subdirectory(UIIPCChannel)

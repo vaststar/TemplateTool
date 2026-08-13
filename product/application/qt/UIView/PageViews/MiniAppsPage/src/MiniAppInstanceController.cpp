@@ -14,7 +14,7 @@ namespace MiniAppsPage {
 
 MiniAppInstanceController::MiniAppInstanceController(QString appId, QObject* parent)
     : UIViewController(parent)
-    , mEmitter(std::make_shared<UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter>())
+    , mEmitter(std::make_shared<UIViewModelSignalBridge::MiniAppRuntimeViewModelEmitter>())
     , mAppId(std::move(appId))
 {
     UIVIEW_LOG_DEBUG("create MiniAppInstanceController id=" << mAppId.toStdString());
@@ -55,7 +55,7 @@ void MiniAppInstanceController::init()
 
     // Relay the runtime's load events as this controller's own signals so the
     // host window can observe them without touching the emitter.
-    using Emitter = UIVMSignalEmitter::MiniAppRuntimeViewModelEmitter;
+    using Emitter = UIViewModelSignalBridge::MiniAppRuntimeViewModelEmitter;
     QObject::connect(mEmitter.get(), &Emitter::signals_onLoadFinished,
                      this, &MiniAppInstanceController::loadFinished);
     QObject::connect(mEmitter.get(), &Emitter::signals_onLoadFailed,

@@ -10,7 +10,7 @@
 
 #include <commonhead/viewmodels/CameraDirectoryViewModel/ICameraDirectoryViewModel.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 // 一一对应 ICameraDirectoryViewModelCallback 的事件，透传 payload，
 // 让消费方可以按需做差量 UI 更新。
@@ -75,4 +75,4 @@ signals:
     void signals_onCurrentCameraChanged(const QString& nodeId);
 };
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

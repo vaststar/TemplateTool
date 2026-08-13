@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include <QObject>
 #include <QString>
@@ -9,15 +11,12 @@
 
 #include <UIViewCore/UIViewController.h>
 #include "CameraDirectoryItemModel.h"
-// Must precede moc-generated slot signatures so the Q_DECLARE_METATYPE
-// specializations win over the primary template (avoids C2908).
-#include <UIViewModelSignalBridge/metatypes/CameraDirectoryMetaTypes.h>
 
 namespace commonHead::viewModels {
     class ICameraDirectoryViewModel;
 }
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
     class CameraDirectoryViewModelEmitter;
 }
 
@@ -86,7 +85,7 @@ signals:
 protected:
     void init() override;
 
-private slots:
+private:
     void onCameraDirectoryReady();
     void onCameraDirectoryLoadFailed(commonHead::viewModels::model::CameraDirectoryLoadError error);
     void onCurrentCameraChanged(const QString& nodeId);
@@ -100,7 +99,6 @@ private slots:
     void onCameraRelationsUpdated(const std::vector<commonHead::viewModels::model::CameraDirectoryRelationData>& relations);
     void onCameraRelationsRemoved(const std::vector<std::string>& ids);
 
-private:
     void setLoadState(LoadState s);
     bool canAddUnder(const QString& parentId, int nodeType) const;
     bool canRemove(const QString& nodeId) const;
@@ -117,7 +115,7 @@ private:
 
 private:
     std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> mCameraDirectoryViewModel;
-    std::shared_ptr<UIVMSignalEmitter::CameraDirectoryViewModelEmitter> mCameraDirectoryEmitter;
+    std::shared_ptr<UIViewModelSignalBridge::CameraDirectoryViewModelEmitter> mCameraDirectoryEmitter;
 
     CameraDirectoryItemModel* mCameraTreeModel = nullptr;
     QString   mCurrentCameraId;

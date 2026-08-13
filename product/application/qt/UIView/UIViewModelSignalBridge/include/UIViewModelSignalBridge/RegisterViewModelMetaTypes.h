@@ -2,8 +2,8 @@
 
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
 
 UIViewModelSignalBridge_EXPORT void registerAllViewModelMetaTypes();
 
-} // namespace UIVMSignalEmitter
+} // namespace UIViewModelSignalBridge

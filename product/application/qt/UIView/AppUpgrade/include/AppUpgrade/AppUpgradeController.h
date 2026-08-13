@@ -12,7 +12,7 @@ namespace commonHead::viewModels {
     class IUpgradeViewModel;
 }
 
-namespace UIVMSignalEmitter {
+namespace UIViewModelSignalBridge {
     class UpgradeViewModelEmitter;
 }
 
@@ -63,20 +63,19 @@ protected:
     void init() override;
     bool event(QEvent* e) override;
 
-private slots:
+private:
     void onCheckCompleted(bool hasUpgrade, const QString& version, const QString& releaseNotes, bool mandatory);
     void onDownloadProgress(int64_t currentBytes, int64_t totalBytes);
     void onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state);
     void onUpgradeError(const QString& message);
 
-private:
     void showUpgradeDialog();
 
     // ── Helpers ──
     bool isOperationInProgress() const;
 
     std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> m_viewModel;
-    std::shared_ptr<UIVMSignalEmitter::UpgradeViewModelEmitter> m_emitter;
+    std::shared_ptr<UIViewModelSignalBridge::UpgradeViewModelEmitter> m_emitter;
 
     // Single source of truth — mirrors the FSM state reported via onUpgradeStateChanged.
     // All bool properties (checking, downloading, ...) are derived from this value.

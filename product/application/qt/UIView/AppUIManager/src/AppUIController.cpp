@@ -8,6 +8,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
+#include <UIQmlUtilities/QmlWindowPropertyResolver.h>
 #include <AppContext/AppContext.h>
 #include <TranslatorManager/ITranslatorManager.h>
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
@@ -45,10 +46,10 @@ void AppUIController::init()
 
     // Create ViewModel and connect signals
     mAppUIViewModel = getViewModelFactory()->createAppUIViewModelInstance();
-    mAppUIViewModelEmitter = std::make_shared<UIVMSignalEmitter::AppUIViewModelEmitter>();
+    mAppUIViewModelEmitter = std::make_shared<UIViewModelSignalBridge::AppUIViewModelEmitter>();
     mAppUIViewModel->registerCallback(mAppUIViewModelEmitter);
 
-    QObject::connect(mAppUIViewModelEmitter.get(), &UIVMSignalEmitter::AppUIViewModelEmitter::signals_onAppConfigInitialized,
+    QObject::connect(mAppUIViewModelEmitter.get(), &UIViewModelSignalBridge::AppUIViewModelEmitter::signals_onAppConfigInitialized,
                      this, &AppUIController::onAppConfigInitialized);
 
     // Start IPC server and stability monitor
@@ -112,7 +113,8 @@ void AppUIController::showMainWindow()
         UIVIEW_LOG_WARN("failed to create main window");
         return;
     }
-    if (auto* mainController = UIView::UIViewHelper::controllerOf<MainWindowController>(win))
+    if (auto* mainController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MainWindowController>(
+            win, "controller"))
     {
         UIVIEW_LOG_DEBUG("MainWindow.qml load done, will start init MainWindowController");
         mainController->initializeController(getAppContext());

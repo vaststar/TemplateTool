@@ -7,6 +7,7 @@
 
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
+#include <UIQmlUtilities/QmlWindowPropertyResolver.h>
 
 namespace {
 // QML resource paths used by this controller.
@@ -61,7 +62,8 @@ void HomePageController::openCamera()
         UIVIEW_LOG_WARN("failed to create MediaCameraView window");
         return;
     }
-    if (auto* mediaController = UIView::UIViewHelper::controllerOf<MediaCameraViewController>(win))
+    if (auto* mediaController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<MediaCameraViewController>(
+            win, "controller"))
     {
         mediaController->initializeController(ctx.data());
         // Standalone entry: default to local camera 0.
@@ -88,7 +90,8 @@ void HomePageController::openCameraMonitor()
         UIVIEW_LOG_WARN("failed to create CameraMonitorView window");
         return;
     }
-    if (auto* monitorController = UIView::UIViewHelper::controllerOf<CameraMonitorViewController>(win))
+    if (auto* monitorController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<CameraMonitorViewController>(
+            win, "controller"))
     {
         monitorController->initializeController(ctx.data());
     }
