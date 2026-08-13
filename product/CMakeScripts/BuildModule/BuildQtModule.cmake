@@ -15,7 +15,7 @@ function(BuildQtModule)
                        TARGET_ADD_LINK_LIBRARY_PRIVATE TARGET_ADD_LINK_LIBRARY_PUBLIC TARGET_ADD_DEPENDENCIES
                        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
                        TARGET_DEFINITIONS
-                       QML_TARGET_FILES QML_TARGET_SOURCES
+                       QML_TARGET_FILES QML_TARGET_FILE_ALIAS_MAPPINGS QML_TARGET_SOURCES
                        QML_TARGET_RESOURCES_DIR QML_TARGET_RESOURCES
     )
     cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -40,6 +40,10 @@ function(BuildQtModule)
     # QML resources directory check
     if(MODULE_QML_TARGET_RESOURCES AND NOT MODULE_QML_TARGET_RESOURCES_DIR)
         message(FATAL_ERROR "[BuildQtModule] QML_TARGET_RESOURCES_DIR is required when QML_TARGET_RESOURCES is specified")
+    endif()
+
+    if(MODULE_QML_TARGET_FILE_ALIAS_MAPPINGS AND NOT MODULE_QML_TARGET_FILES)
+        message(FATAL_ERROR "[BuildQtModule] QML_TARGET_FILE_ALIAS_MAPPINGS requires QML_TARGET_FILES")
     endif()
 
     if(MODULE_UNPARSED_ARGUMENTS)
@@ -76,6 +80,7 @@ function(BuildQtModule)
         message(STATUS "[BuildQtModule]   Include Priv : ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}")
         if(MODULE_QML_TARGET_URI)
             message(STATUS "[BuildQtModule]   QML Files    : ${MODULE_QML_TARGET_FILES}")
+            message(STATUS "[BuildQtModule]   QML Aliases  : ${MODULE_QML_TARGET_FILE_ALIAS_MAPPINGS}")
             message(STATUS "[BuildQtModule]   QML Sources  : ${MODULE_QML_TARGET_SOURCES}")
             message(STATUS "[BuildQtModule]   QML Res Dir  : ${MODULE_QML_TARGET_RESOURCES_DIR}")
             message(STATUS "[BuildQtModule]   QML Resources: ${MODULE_QML_TARGET_RESOURCES}")
@@ -173,6 +178,52 @@ function(BuildQtModule)
     # QML module configuration
     # ==========================================
     if(DEFINED MODULE_QML_TARGET_URI)
+        # QML files remain part of QML_FILES (qmlcache, qmldir and type tooling),
+        # while their resource paths may be decoupled from their source-tree paths.
+        set(_mapped_qml_files "")
+        set(_mapped_qml_aliases "")
+        foreach(mapping IN LISTS MODULE_QML_TARGET_FILE_ALIAS_MAPPINGS)
+            string(FIND "${mapping}" "|" separator_index)
+            string(LENGTH "${mapping}" mapping_length)
+
+            if(separator_index LESS 1)
+                message(FATAL_ERROR
+                    "[BuildQtModule] Invalid QML alias mapping '${mapping}'. "
+                    "Expected '<physical-file>|<resource-alias>'.")
+            endif()
+
+            math(EXPR alias_index "${separator_index} + 1")
+            if(alias_index GREATER_EQUAL mapping_length)
+                message(FATAL_ERROR
+                    "[BuildQtModule] Empty resource alias in QML mapping '${mapping}'.")
+            endif()
+
+            string(SUBSTRING "${mapping}" 0 ${separator_index} qml_file)
+            string(SUBSTRING "${mapping}" ${alias_index} -1 qml_alias)
+
+            list(FIND MODULE_QML_TARGET_FILES "${qml_file}" qml_file_index)
+            if(qml_file_index EQUAL -1)
+                message(FATAL_ERROR
+                    "[BuildQtModule] QML alias source '${qml_file}' is not listed in QML_TARGET_FILES.")
+            endif()
+
+            list(FIND _mapped_qml_files "${qml_file}" duplicate_file_index)
+            if(NOT duplicate_file_index EQUAL -1)
+                message(FATAL_ERROR
+                    "[BuildQtModule] QML file '${qml_file}' has more than one alias mapping.")
+            endif()
+
+            list(FIND _mapped_qml_aliases "${qml_alias}" duplicate_alias_index)
+            if(NOT duplicate_alias_index EQUAL -1)
+                message(FATAL_ERROR
+                    "[BuildQtModule] QML resource alias '${qml_alias}' is used more than once.")
+            endif()
+
+            list(APPEND _mapped_qml_files "${qml_file}")
+            list(APPEND _mapped_qml_aliases "${qml_alias}")
+            set_source_files_properties("${qml_file}" PROPERTIES QT_RESOURCE_ALIAS "${qml_alias}")
+        endforeach()
+
         # Process QML resources with aliases
         if(MODULE_QML_TARGET_RESOURCES_DIR)
             set(ALL_MODULE_QML_TARGET_RESOURCES "")

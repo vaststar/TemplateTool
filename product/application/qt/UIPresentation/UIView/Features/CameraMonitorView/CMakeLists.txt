@@ -1,0 +1,19 @@
+UIViewAppendBuildInputs(
+    SOURCES
+        include/CameraMonitorView/CameraDirectoryItemModel.h
+        include/CameraMonitorView/CameraMonitorViewController.h
+        src/CameraDirectoryItemModel.cpp
+        src/CameraMonitorViewController.cpp
+    QML_ALIAS_PREFIX CameraMonitorView
+    QML_FILES
+        qml/CameraMonitorView.qml
+        qml/CameraDirectoryTreePanel.qml
+        qml/CameraPreviewPanel.qml
+        qml/CameraEditDialog.qml
+        qml/CameraDeleteDialog.qml
+    PRIVATE_INCLUDE_DIRS
+        include
+        include/CameraMonitorView
+    PRIVATE_DEPENDENCIES
+        CameraDirectoryViewModelApi
+)

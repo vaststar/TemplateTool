@@ -1,0 +1,19 @@
+UIViewAppendBuildInputs(
+    SOURCES
+        include/MiniAppsPage/MiniAppListPageController.h
+        src/MiniAppListPageController.cpp
+        src/MiniAppInstanceController.h
+        src/MiniAppInstanceController.cpp
+        src/MiniAppHostWindow.h
+        src/MiniAppHostWindow.cpp
+    QML_ALIAS_PREFIX PageViews/MiniAppsPage
+    QML_FILES
+        qml/MiniAppListPage.qml
+    PRIVATE_INCLUDE_DIRS
+        include
+        include/MiniAppsPage
+        src
+    PRIVATE_DEPENDENCIES
+        MiniAppListViewModelApi
+        MiniAppRuntimeViewModelApi
+)

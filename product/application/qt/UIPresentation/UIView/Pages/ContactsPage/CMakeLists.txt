@@ -1,0 +1,27 @@
+UIViewAppendBuildInputs(
+    SOURCES
+        include/ContactsPage/ContactListItemModel.h
+        include/ContactsPage/ContactsPageController.h
+        src/ContactsPageUtils.h
+        src/ContactListItemModel.cpp
+        src/ContactsPageController.cpp
+        src/ContactsPageUtils.cpp
+    QML_ALIAS_PREFIX PageViews/ContactsPage
+    QML_FILES
+        qml/ContactsPage.qml
+        qml/ContactListPanel.qml
+        qml/ContactEditDialog.qml
+        qml/ContactDeleteDialog.qml
+        qml/ContactDetailPanel.qml
+        qml/DetailFieldRow.qml
+        qml/DetailHeader.qml
+        qml/PersonDetailBody.qml
+        qml/GroupDetailBody.qml
+        qml/DepartmentDetailBody.qml
+        qml/TeamDetailBody.qml
+    PRIVATE_INCLUDE_DIRS
+        include
+        include/ContactsPage
+    PRIVATE_DEPENDENCIES
+        ContactListViewModelApi
+)

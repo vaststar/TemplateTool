@@ -1,0 +1,3 @@
+add_subdirectory(UIViewCore)
+add_subdirectory(UIEvents)
+add_subdirectory(UIViewModelSignalBridge)

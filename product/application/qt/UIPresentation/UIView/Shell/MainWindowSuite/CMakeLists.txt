@@ -1,0 +1,6 @@
+add_subdirectory(MainWindow)
+add_subdirectory(MainWindowTitleBar)
+add_subdirectory(MainWindowMenuBar)
+add_subdirectory(MainWindowFootBar)
+add_subdirectory(MainWindowSideBar)
+add_subdirectory(MainWindowSystemTray)

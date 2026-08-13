@@ -1,0 +1,6 @@
+add_subdirectory(HomePage)
+add_subdirectory(ContactsPage)
+add_subdirectory(SettingsPage)
+add_subdirectory(PlaceholderPage)
+add_subdirectory(ToolsPage)
+add_subdirectory(MiniAppsPage)

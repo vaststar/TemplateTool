@@ -11,7 +11,7 @@ set(QT_TRANSLATION_CODE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(UIAuxiliary)
 add_subdirectory(UIComponent)
-add_subdirectory(UIView)
+add_subdirectory(UIPresentation)
 add_subdirectory(AppUI)
 add_subdirectory(mainUI)
 

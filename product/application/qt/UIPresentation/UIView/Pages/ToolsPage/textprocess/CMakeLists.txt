@@ -1,0 +1,23 @@
+UIViewAppendBuildInputs(
+    SOURCES
+        include/ToolsPage/textprocess/Base64ToolController.h
+        include/ToolsPage/textprocess/JsonToolController.h
+        include/ToolsPage/textprocess/JsonTreeItemModel.h
+        include/ToolsPage/textprocess/TimestampToolController.h
+        src/Base64ToolController.cpp
+        src/JsonToolController.cpp
+        src/JsonTreeItemModel.cpp
+        src/TimestampToolController.cpp
+    QML_ALIAS_PREFIX PageViews/ToolsPage/textprocess
+    QML_FILES
+        qml/Base64Panel.qml
+        qml/JsonPanel.qml
+        qml/JsonTreeDelegate.qml
+        qml/TimestampPanel.qml
+    PRIVATE_INCLUDE_DIRS
+        include
+        include/ToolsPage/textprocess
+    PRIVATE_DEPENDENCIES
+        JsonTreeViewModelApi
+        ToolsViewModelApi
+)

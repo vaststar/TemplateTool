@@ -1,0 +1,23 @@
+UIViewAppendBuildInputs(
+    SOURCES
+        include/SettingsPage/SettingsPageController.h
+        include/SettingsPage/SettingsTreeModel.h
+        include/SettingsPage/AppearanceSettingsController.h
+        include/SettingsPage/LanguageSettingsController.h
+        src/SettingsPageController.cpp
+        src/SettingsTreeModel.cpp
+        src/AppearanceSettingsController.cpp
+        src/LanguageSettingsController.cpp
+    QML_ALIAS_PREFIX PageViews/SettingsPage
+    QML_FILES
+        qml/SettingsPage.qml
+        qml/SettingsNavPanel.qml
+        qml/AppearanceSettingsPanel.qml
+        qml/LanguageSettingsPanel.qml
+    PRIVATE_INCLUDE_DIRS
+        include
+        include/SettingsPage
+    PRIVATE_DEPENDENCIES
+        ClientInfoViewModelApi
+        SettingsViewModelApi
+)

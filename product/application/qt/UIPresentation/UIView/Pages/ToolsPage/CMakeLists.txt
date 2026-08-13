@@ -1,0 +1,6 @@
+add_subdirectory(common)
+add_subdirectory(textprocess)
+add_subdirectory(generators)
+add_subdirectory(network)
+add_subdirectory(screenshot)
+add_subdirectory(recording)

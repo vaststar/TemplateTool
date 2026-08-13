@@ -1,0 +1,4 @@
+add_subdirectory(AppUpgrade)
+add_subdirectory(AboutPage)
+add_subdirectory(MediaCameraView)
+add_subdirectory(CameraMonitorView)
