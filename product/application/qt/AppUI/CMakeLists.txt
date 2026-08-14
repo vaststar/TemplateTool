@@ -50,12 +50,10 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoViewModelApi
     InvocationViewModelApi
     StabilityViewModelApi
-    CommonHeadFramework
     LoggerUtils
     Qt6::Core
     Qt6::Gui
     Qt6::Quick
-    Qt6::Widgets
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

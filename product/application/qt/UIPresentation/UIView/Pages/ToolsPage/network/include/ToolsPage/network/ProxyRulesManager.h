@@ -1,12 +1,12 @@
 #pragma once
 
+#include <functional>
+
 #include <QObject>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QStringList>
 #include <QtQml>
-
-class QTcpSocket;
 
 /**
  * @brief Manages all proxy rule sets (mock, breakpoint, blacklist, map local/remote, throttle).

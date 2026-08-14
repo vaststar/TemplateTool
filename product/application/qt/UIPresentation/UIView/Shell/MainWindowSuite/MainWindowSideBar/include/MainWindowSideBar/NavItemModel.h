@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <QAbstractListModel>
 #include <QString>
 #include <QVariant>

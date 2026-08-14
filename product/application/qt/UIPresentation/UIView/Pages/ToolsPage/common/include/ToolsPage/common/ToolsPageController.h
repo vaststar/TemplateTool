@@ -1,10 +1,11 @@
 #pragma once
 
-#include <QObject>
-#include <QtQml>
-
+#include <memory>
 #include <string>
 #include <vector>
+
+#include <QObject>
+#include <QtQml>
 
 #include <UIViewCore/UIViewController.h>
 #include "ToolsTreeModel.h"

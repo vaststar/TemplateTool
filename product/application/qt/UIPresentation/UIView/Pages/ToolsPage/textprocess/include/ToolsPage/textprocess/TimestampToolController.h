@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QTimer>
 #include <QTimeZone>

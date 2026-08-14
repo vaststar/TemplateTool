@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
 #include <QtQml>
 #include <UIViewCore/UIViewController.h>

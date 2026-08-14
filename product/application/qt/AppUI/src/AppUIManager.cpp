@@ -7,8 +7,6 @@
 #include <QSysInfo>
 #include <QCoreApplication>
 
-#include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
-
 #include <UIAppCore/UIApplication.h>
 #include <UIAppCore/UIQmlEngine.h>
 #include <AppContext/AppContext.h>

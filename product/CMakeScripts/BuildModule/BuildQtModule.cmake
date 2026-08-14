@@ -251,7 +251,17 @@ function(BuildQtModule)
         set(_qml_header_include_dirs "")
         foreach(_src ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_SOURCES})
             if(_src MATCHES "\\.(h|hpp)$")
-                get_filename_component(_dir "${CMAKE_CURRENT_SOURCE_DIR}/${_src}" DIRECTORY)
+                set(_header_path "${_src}")
+                if(IS_ABSOLUTE "${_header_path}")
+                    cmake_path(NORMAL_PATH _header_path)
+                else()
+                    cmake_path(
+                        ABSOLUTE_PATH _header_path
+                        BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                        NORMALIZE
+                    )
+                endif()
+                cmake_path(GET _header_path PARENT_PATH _dir)
                 list(APPEND _qml_header_include_dirs "${_dir}")
             endif()
         endforeach()

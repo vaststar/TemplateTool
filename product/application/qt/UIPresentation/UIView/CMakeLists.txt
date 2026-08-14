@@ -35,7 +35,6 @@ set(MODULE_SOURCE_PRIVATE
 set(MODULE_DEPENDENCIES_PRIVATE
     AppContext
     LoggerUtils
-    ResourceLoaderApi
     TranslatorManager
     UIEvents
     UIFabrication
@@ -45,6 +44,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIResourceAssetLoader
     UIResourceAssetRCCInterface
     UIResourcecTranslation
+    UIResourceLoader
     UIResourceLoaderManager
     UIViewCore
     UIViewModelSignalBridge
@@ -56,7 +56,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Multimedia
-    Qt6::Network
+    Qt6::Qml
     Qt6::Quick
     Qt6::Widgets
 )
@@ -99,10 +99,6 @@ list(REMOVE_DUPLICATES MODULE_PRIVATE_INCLUDE_DIRS)
 list(REMOVE_DUPLICATES MODULE_DEPENDENCIES_PRIVATE)
 
 set(MODULE_DEPENDENCIES_PUBLIC)
-
-if(WIN32)
-    list(APPEND MODULE_DEPENDENCIES_PRIVATE crypt32)
-endif()
 
 set(MODULE_BUILD_INTERFACE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/include
