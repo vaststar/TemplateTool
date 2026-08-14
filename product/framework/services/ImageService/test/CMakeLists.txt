@@ -14,7 +14,6 @@ BuildUnitTestModule(
         ImageServiceImpl
         CoreFrameworkApi
         FakeCoreFramework
-        Catch2::Catch2WithMain
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER

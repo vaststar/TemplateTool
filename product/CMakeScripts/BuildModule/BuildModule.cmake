@@ -1,8 +1,6 @@
 include_guard()
-include(BuildInstallModule)
-include(LinkTargetIncludeDirectories)
-include(TargetBuildType)
-include(BuildRCFileModule)
+
+include("${CMAKE_CURRENT_LIST_DIR}/internal/TargetInternals.cmake")
 
 # ==========================================
 # Function: BuildModule
@@ -10,166 +8,130 @@ include(BuildRCFileModule)
 # ==========================================
 function(BuildModule)
     set(options STATIC_LIB SHARED_LIB NO_INSTALL)
-    set(oneValueArgs MODULE_NAME IDE_FOLDER)
-    set(multiValueArgs
-        TARGET_SOURCE_PRIVATE TARGET_SOURCE_PUBLIC_HEADER TARGET_SOURCE_HEADER_BASE_DIR
-        TARGET_ADD_LINK_LIBRARY_PRIVATE TARGET_ADD_LINK_LIBRARY_PUBLIC TARGET_ADD_DEPENDENCIES
-        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        TARGET_DEFINITIONS TARGET_PUBLIC_DEFINITIONS TARGET_PRIVATE_DEFINITIONS
+    set(one_value_args MODULE_NAME IDE_FOLDER)
+    set(multi_value_args
+        TARGET_SOURCE_PRIVATE
+        TARGET_SOURCE_PUBLIC_HEADER
+        TARGET_SOURCE_HEADER_BASE_DIR
+        TARGET_ADD_LINK_LIBRARY_PRIVATE
+        TARGET_ADD_LINK_LIBRARY_PUBLIC
+        TARGET_ADD_DEPENDENCIES
+        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
+        TARGET_INCLUDE_DIRECTORIES_PRIVATE
+        TARGET_PUBLIC_DEFINITIONS
+        TARGET_PRIVATE_DEFINITIONS
     )
-    cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(
+        PARSE_ARGV 0 MODULE
+        "${options}" "${one_value_args}" "${multi_value_args}")
 
-    # ==========================================
-    # Validate required arguments
-    # ==========================================
-    if(NOT DEFINED MODULE_MODULE_NAME)
+    if(NOT MODULE_MODULE_NAME)
         message(FATAL_ERROR "[BuildModule] MODULE_NAME is required")
     endif()
-    if(NOT MODULE_TARGET_SOURCE_PRIVATE)
-        message(FATAL_ERROR "[BuildModule] TARGET_SOURCE_PRIVATE is required - library needs source files")
+    if(TARGET "${MODULE_MODULE_NAME}")
+        message(FATAL_ERROR
+            "[BuildModule] Target already exists: ${MODULE_MODULE_NAME}")
     endif()
-    if(MODULE_TARGET_SOURCE_PUBLIC_HEADER AND NOT MODULE_TARGET_SOURCE_HEADER_BASE_DIR)
-        message(FATAL_ERROR "[BuildModule] TARGET_SOURCE_HEADER_BASE_DIR is required when TARGET_SOURCE_PUBLIC_HEADER is specified")
+    if(MODULE_STATIC_LIB AND MODULE_SHARED_LIB)
+        message(FATAL_ERROR
+            "[BuildModule:${MODULE_MODULE_NAME}] STATIC_LIB and SHARED_LIB "
+            "are mutually exclusive")
+    endif()
+    if(NOT MODULE_TARGET_SOURCE_PRIVATE)
+        message(FATAL_ERROR
+            "[BuildModule:${MODULE_MODULE_NAME}] TARGET_SOURCE_PRIVATE is required; "
+            "a compiled library needs at least one source file")
+    endif()
+    if(MODULE_TARGET_SOURCE_PUBLIC_HEADER
+       AND NOT MODULE_TARGET_SOURCE_HEADER_BASE_DIR)
+        message(FATAL_ERROR
+            "[BuildModule:${MODULE_MODULE_NAME}] "
+            "TARGET_SOURCE_HEADER_BASE_DIR is required when "
+            "TARGET_SOURCE_PUBLIC_HEADER is specified")
     endif()
     if(MODULE_UNPARSED_ARGUMENTS)
-        message(WARNING "[BuildModule] Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
+        message(FATAL_ERROR
+            "[BuildModule:${MODULE_MODULE_NAME}] Unknown arguments: "
+            "${MODULE_UNPARSED_ARGUMENTS}")
     endif()
 
-    # Determine library type
     if(MODULE_STATIC_LIB)
-        set(LIB_TYPE "STATIC")
+        set(_library_type STATIC)
     else()
-        set(LIB_TYPE "SHARED")
+        # Preserve the historical default while allowing SHARED_LIB to make the
+        # caller's intent explicit.
+        set(_library_type SHARED)
     endif()
 
-    # ==========================================
-    # Logging
-    # ==========================================
     message(STATUS "")
-    message(STATUS "[BuildModule] ${MODULE_MODULE_NAME} (${LIB_TYPE})")
-
+    message(STATUS
+        "[BuildModule] ${MODULE_MODULE_NAME} (${_library_type})")
     if(CMAKE_VERBOSE_MAKEFILE)
-        message(STATUS "[BuildModule]   Sources      : ${MODULE_TARGET_SOURCE_PRIVATE}")
-        message(STATUS "[BuildModule]   Headers      : ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
-        message(STATUS "[BuildModule]   Header Base  : ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}")
-        message(STATUS "[BuildModule]   Link Private : ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE}")
-        message(STATUS "[BuildModule]   Link Public  : ${MODULE_TARGET_ADD_LINK_LIBRARY_PUBLIC}")
-        message(STATUS "[BuildModule]   Dependencies : ${MODULE_TARGET_ADD_DEPENDENCIES}")
-        message(STATUS "[BuildModule]   Definitions  : ${MODULE_TARGET_DEFINITIONS}")
-        message(STATUS "[BuildModule]   IDE Folder   : ${MODULE_IDE_FOLDER}")
-        message(STATUS "[BuildModule]   Include Build: ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE}")
-        message(STATUS "[BuildModule]   Include Inst : ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}")
-        message(STATUS "[BuildModule]   Include Priv : ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}")
+        message(STATUS
+            "[BuildModule]   Sources      : ${MODULE_TARGET_SOURCE_PRIVATE}")
+        message(STATUS
+            "[BuildModule]   Headers      : ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}")
+        message(STATUS
+            "[BuildModule]   Header Base  : ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}")
+        message(STATUS
+            "[BuildModule]   Link Private : ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE}")
+        message(STATUS
+            "[BuildModule]   Link Public  : ${MODULE_TARGET_ADD_LINK_LIBRARY_PUBLIC}")
+        message(STATUS
+            "[BuildModule]   Dependencies : ${MODULE_TARGET_ADD_DEPENDENCIES}")
+        message(STATUS
+            "[BuildModule]   Def Private  : ${MODULE_TARGET_PRIVATE_DEFINITIONS}")
+        message(STATUS
+            "[BuildModule]   Def Public   : ${MODULE_TARGET_PUBLIC_DEFINITIONS}")
+        message(STATUS
+            "[BuildModule]   IDE Folder   : ${MODULE_IDE_FOLDER}")
+        message(STATUS
+            "[BuildModule]   Include Build: ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE}")
+        message(STATUS
+            "[BuildModule]   Include Inst : ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}")
+        message(STATUS
+            "[BuildModule]   Include Priv : ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}")
     endif()
 
-    # ==========================================
-    # Create library
-    # ==========================================
-    if(MODULE_STATIC_LIB)
-        add_library(${MODULE_MODULE_NAME} STATIC "")
-    else()
-        add_library(${MODULE_MODULE_NAME} SHARED "")
-    endif()
-
-    target_sources(${MODULE_MODULE_NAME}
+    add_library("${MODULE_MODULE_NAME}" ${_library_type} "")
+    target_sources("${MODULE_MODULE_NAME}"
         PRIVATE ${MODULE_TARGET_SOURCE_PRIVATE}
         PUBLIC FILE_SET HEADERS
         BASE_DIRS ${MODULE_TARGET_SOURCE_HEADER_BASE_DIR}
         FILES ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}
     )
 
-    target_compile_features(${MODULE_MODULE_NAME} PUBLIC cxx_std_20)
-    target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE
-        CMAKE_VERSION_STR="${CMAKE_VERSION}"
-        CMAKE_COMPILER_ID_STR="${CMAKE_CXX_COMPILER_ID}"
-        CMAKE_COMPILER_VERSION_STR="${CMAKE_CXX_COMPILER_VERSION}"
-        CMAKE_COMPILER_PATH_STR="${CMAKE_CXX_COMPILER}"
+    set(_defaults_arguments TARGET "${MODULE_MODULE_NAME}")
+    if(MODULE_IDE_FOLDER)
+        list(APPEND _defaults_arguments IDE_FOLDER "${MODULE_IDE_FOLDER}")
+    endif()
+    _tt_apply_cpp_library_defaults(${_defaults_arguments})
+    _tt_apply_target_usage_requirements(
+        TARGET "${MODULE_MODULE_NAME}"
+        PRIVATE_LINK_LIBRARIES ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE}
+        PUBLIC_LINK_LIBRARIES ${MODULE_TARGET_ADD_LINK_LIBRARY_PUBLIC}
+        DEPENDENCIES ${MODULE_TARGET_ADD_DEPENDENCIES}
+        BUILD_INTERFACE_DIRECTORIES
+            ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE}
+        INSTALL_INTERFACE_DIRECTORIES
+            ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}
+        PRIVATE_INCLUDE_DIRECTORIES
+            ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
+        PUBLIC_COMPILE_DEFINITIONS
+            ${MODULE_TARGET_PUBLIC_DEFINITIONS}
+        PRIVATE_COMPILE_DEFINITIONS
+            ${MODULE_TARGET_PRIVATE_DEFINITIONS}
     )
 
-    # ==========================================
-    # Set target properties
-    # ==========================================
-    set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-        CXX_EXTENSIONS OFF
+    set(_finalize_options)
+    if(MODULE_NO_INSTALL)
+        list(APPEND _finalize_options NO_INSTALL)
+    endif()
+    _tt_finalize_library_target(
+        ${_finalize_options}
+        TARGET "${MODULE_MODULE_NAME}"
+        LIBRARY_TYPE "${_library_type}"
+        FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
     )
-
-    if(DEFINED MODULE_IDE_FOLDER)
-        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-            FOLDER ${MODULE_IDE_FOLDER}
-        )
-    endif()
-
-    if(APPLE)
-        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-            INSTALL_NAME_DIR "@rpath"
-            INSTALL_RPATH "@loader_path;@executable_path"
-            BUILD_WITH_INSTALL_RPATH OFF
-            INSTALL_RPATH_USE_LINK_PATH OFF
-        )
-    elseif(UNIX AND NOT APPLE)
-        set_target_properties(${MODULE_MODULE_NAME} PROPERTIES
-            INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
-            BUILD_WITH_INSTALL_RPATH OFF
-            INSTALL_RPATH_USE_LINK_PATH OFF
-        )
-    endif()
-
-    # ==========================================
-    # Include directories
-    # ==========================================
-    LinkTargetIncludeDirectories(
-        MODULE_NAME ${MODULE_MODULE_NAME}
-        TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE}
-        TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}
-        TARGET_INCLUDE_DIRECTORIES_PRIVATE ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
-    )
-
-    # ==========================================
-    # Link libraries
-    # ==========================================
-    if(MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE)
-        target_link_libraries(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE})
-    endif()
-
-    if(MODULE_TARGET_ADD_LINK_LIBRARY_PUBLIC)
-        target_link_libraries(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_ADD_LINK_LIBRARY_PUBLIC})
-    endif()
-
-    # ==========================================
-    # Dependencies and definitions
-    # ==========================================
-    if(MODULE_TARGET_ADD_DEPENDENCIES)
-        add_dependencies(${MODULE_MODULE_NAME} ${MODULE_TARGET_ADD_DEPENDENCIES})
-    endif()
-
-    if(MODULE_TARGET_DEFINITIONS)
-        target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_DEFINITIONS})
-    endif()
-
-    if(MODULE_TARGET_PUBLIC_DEFINITIONS)
-        target_compile_definitions(${MODULE_MODULE_NAME} PUBLIC ${MODULE_TARGET_PUBLIC_DEFINITIONS})
-    endif()
-
-    if(MODULE_TARGET_PRIVATE_DEFINITIONS)
-        target_compile_definitions(${MODULE_MODULE_NAME} PRIVATE ${MODULE_TARGET_PRIVATE_DEFINITIONS})
-    endif()
-
-    # ==========================================
-    # Install and RC file generation
-    # ==========================================
-    if(NOT MODULE_NO_INSTALL)
-        BuildInstallModule(
-            MODULE_NAME ${MODULE_MODULE_NAME}
-        )
-    endif()
-
-    if(WIN32)
-        target_is_shared_library(${MODULE_MODULE_NAME} is_shared_lib)
-        if(is_shared_lib)
-            BuildRCFileModule(
-                MODULE_NAME ${MODULE_MODULE_NAME}
-                FILE_DESCRIPTION "${MODULE_MODULE_NAME} Library"
-            )
-        endif()
-    endif()
 endfunction()

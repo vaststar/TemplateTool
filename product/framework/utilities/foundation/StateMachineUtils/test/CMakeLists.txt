@@ -6,6 +6,5 @@ BuildUnitTestModule(
     TARGET_SOURCE
         ${CMAKE_CURRENT_SOURCE_DIR}/FSM_tests.cpp
     TARGET_ADD_LINK_LIBRARY_PRIVATE
-        Catch2::Catch2WithMain
         StateMachineUtils
 )

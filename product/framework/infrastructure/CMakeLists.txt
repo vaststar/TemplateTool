@@ -7,7 +7,7 @@
 option(UCF_BUILD_INFRASTRUCTURE_SHARED "Build UCF infrastructure modules as shared libraries (DLL). OFF builds them as static libraries." ON)
 
 if (UCF_BUILD_INFRASTRUCTURE_SHARED)
-    set(INFRASTRUCTURE_LIB_TYPE "")           # empty -> BuildModule default SHARED
+    set(INFRASTRUCTURE_LIB_TYPE SHARED_LIB)   # -> BuildModule SHARED
 else()
     set(INFRASTRUCTURE_LIB_TYPE STATIC_LIB)   # -> BuildModule STATIC
 endif()

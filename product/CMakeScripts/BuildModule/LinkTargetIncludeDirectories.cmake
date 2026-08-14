@@ -6,23 +6,34 @@ include_guard()
 # ==========================================
 function(LinkTargetIncludeDirectories)
     set(options INTERFACE)
-    set(oneValueArgs MODULE_NAME)
-    set(multiValueArgs 
+    set(one_value_args MODULE_NAME)
+    set(multi_value_args
         TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE 
+        TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
         TARGET_INCLUDE_DIRECTORIES_PRIVATE
     )
-    cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(
+        PARSE_ARGV 0 MODULE "${options}" "${one_value_args}" "${multi_value_args}")
 
     # ==========================================
     # Validate required arguments
     # ==========================================
-    if(NOT DEFINED MODULE_MODULE_NAME)
+    if(NOT MODULE_MODULE_NAME)
         message(FATAL_ERROR "[LinkTargetIncludeDirectories] MODULE_NAME is required")
     endif()
-    
+    if(NOT TARGET "${MODULE_MODULE_NAME}")
+        message(FATAL_ERROR
+            "[LinkTargetIncludeDirectories] Unknown target: ${MODULE_MODULE_NAME}")
+    endif()
     if(MODULE_UNPARSED_ARGUMENTS)
-        message(WARNING "[LinkTargetIncludeDirectories] Unrecognized arguments: ${MODULE_UNPARSED_ARGUMENTS}")
+        message(FATAL_ERROR
+            "[LinkTargetIncludeDirectories:${MODULE_MODULE_NAME}] Unknown arguments: "
+            "${MODULE_UNPARSED_ARGUMENTS}")
+    endif()
+    if(MODULE_INTERFACE AND MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE)
+        message(FATAL_ERROR
+            "[LinkTargetIncludeDirectories:${MODULE_MODULE_NAME}] "
+            "INTERFACE targets cannot have private include directories")
     endif()
 
     # Determine visibility keyword
@@ -46,23 +57,23 @@ function(LinkTargetIncludeDirectories)
     # Configure include directories
     # ==========================================
     if(MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE)
-        foreach(dir ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE})
-            target_include_directories(${MODULE_MODULE_NAME} ${VISIBILITY}
-                $<BUILD_INTERFACE:${dir}>
+        foreach(dir IN LISTS MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE)
+            target_include_directories("${MODULE_MODULE_NAME}" ${VISIBILITY}
+                "$<BUILD_INTERFACE:${dir}>"
             )
         endforeach()
     endif()
 
     if(MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE)
-        foreach(dir ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE})
-            target_include_directories(${MODULE_MODULE_NAME} ${VISIBILITY}
-                $<INSTALL_INTERFACE:${dir}>
+        foreach(dir IN LISTS MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE)
+            target_include_directories("${MODULE_MODULE_NAME}" ${VISIBILITY}
+                "$<INSTALL_INTERFACE:${dir}>"
             )
         endforeach()
     endif()
 
     if(MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE)
-        target_include_directories(${MODULE_MODULE_NAME} PRIVATE 
+        target_include_directories("${MODULE_MODULE_NAME}" PRIVATE
             ${MODULE_TARGET_INCLUDE_DIRECTORIES_PRIVATE}
         )
     endif()

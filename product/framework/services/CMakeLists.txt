@@ -8,7 +8,7 @@
 option(UCF_BUILD_SERVICES_SHARED "Build UCF service modules as shared libraries (DLL). OFF builds them as static libraries." ON)
 
 if (UCF_BUILD_SERVICES_SHARED)
-    set(SERVICE_LIB_TYPE "")            # empty -> BuildModule default SHARED
+    set(SERVICE_LIB_TYPE SHARED_LIB)   # -> BuildModule SHARED
 else()
     set(SERVICE_LIB_TYPE STATIC_LIB)   # -> BuildModule STATIC
 endif()

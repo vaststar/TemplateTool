@@ -13,7 +13,6 @@ BuildUnitTestModule(
     TARGET_ADD_LINK_LIBRARY_PRIVATE
         ServiceFactory
         FakeCoreFramework
-        Catch2::Catch2WithMain
     TARGET_INCLUDE_FOLDER
         .
         ${CMAKE_CURRENT_SOURCE_DIR}/../src

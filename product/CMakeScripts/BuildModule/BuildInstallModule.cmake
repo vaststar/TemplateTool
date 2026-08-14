@@ -5,20 +5,23 @@ include_guard()
 # Configure installation rules for a target
 # ==========================================
 function(BuildInstallModule)
-    set(options)
-    set(oneValueArgs MODULE_NAME)
-    set(multiValueArgs)
-    cmake_parse_arguments(INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    set(one_value_args MODULE_NAME)
+    cmake_parse_arguments(PARSE_ARGV 0 INSTALL "" "${one_value_args}" "")
 
     # ==========================================
     # Validate required arguments
     # ==========================================
-    if(NOT DEFINED INSTALL_MODULE_NAME)
+    if(NOT INSTALL_MODULE_NAME)
         message(FATAL_ERROR "[BuildInstallModule] MODULE_NAME is required")
     endif()
-    
+    if(NOT TARGET "${INSTALL_MODULE_NAME}")
+        message(FATAL_ERROR
+            "[BuildInstallModule] Unknown target: ${INSTALL_MODULE_NAME}")
+    endif()
     if(INSTALL_UNPARSED_ARGUMENTS)
-        message(WARNING "[BuildInstallModule] Unrecognized arguments: ${INSTALL_UNPARSED_ARGUMENTS}")
+        message(FATAL_ERROR
+            "[BuildInstallModule:${INSTALL_MODULE_NAME}] Unknown arguments: "
+            "${INSTALL_UNPARSED_ARGUMENTS}")
     endif()
 
     # ==========================================
@@ -38,8 +41,8 @@ function(BuildInstallModule)
         set(LIBRARY_DEST lib)
     endif()
 
-    install(TARGETS ${INSTALL_MODULE_NAME} 
-        EXPORT ${INSTALL_MODULE_NAME}Targets
+    install(TARGETS "${INSTALL_MODULE_NAME}"
+        EXPORT "${INSTALL_MODULE_NAME}Targets"
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${LIBRARY_DEST}
         ARCHIVE DESTINATION lib
@@ -47,9 +50,9 @@ function(BuildInstallModule)
         INCLUDES DESTINATION include
     )
     
-    install(EXPORT ${INSTALL_MODULE_NAME}Targets
-        FILE ${INSTALL_MODULE_NAME}Config.cmake 
-        DESTINATION cmake/${INSTALL_MODULE_NAME}
+    install(EXPORT "${INSTALL_MODULE_NAME}Targets"
+        FILE "${INSTALL_MODULE_NAME}Config.cmake"
+        DESTINATION "cmake/${INSTALL_MODULE_NAME}"
         NAMESPACE ${INSTALL_MODULE_NAME}::
     )
 endfunction()

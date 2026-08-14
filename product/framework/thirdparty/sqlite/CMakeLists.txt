@@ -35,7 +35,7 @@ BuildModule(
         src
     TARGET_INCLUDE_DIRECTORIES_PRIVATE
         src
-    TARGET_DEFINITIONS
+    TARGET_PRIVATE_DEFINITIONS
         ${SQLITE_DEFINITIONS}
     IDE_FOLDER
         framework/thirdparty/sqlite
