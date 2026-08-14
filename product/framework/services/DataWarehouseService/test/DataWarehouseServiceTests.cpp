@@ -1,13 +1,15 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
-#include "DataWarehouseService.h"
+#include <ucf/services/DataWarehouseService/DataWarehouseServiceCreator.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseService.h>
 
-TEST_CASE("DataWarehouseService can be constructed", "[DataWarehouseService]")
+TEST_CASE("DataWarehouseService can be created through its public creator", "[DataWarehouseService]")
 {
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
     REQUIRE(fakeCoreFramework != nullptr);
 
-    auto service = std::make_shared<ucf::service::impl::DataWarehouseService>(fakeCoreFramework);
+    auto service = ucf::service::impl::createDataWarehouseService(fakeCoreFramework);
     REQUIRE(service != nullptr);
+    REQUIRE(service->getServiceName() == "DataWarehouseService");
 }

@@ -2,18 +2,9 @@
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/CoreFramework/CoreFrameworkCreator.h>
 
-#include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
-
-#include "CoreFramework.h"
-
-TEST_CASE( "Basic Test for CoreFramework", "[CoreFrameworkTests]" )
+TEST_CASE("CoreFramework can be created through its public creator", "[CoreFramework]")
 {
     auto coreFramework = ucf::framework::createCoreFramework();
     REQUIRE(coreFramework != nullptr);
-
-    auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
-    REQUIRE(fakeCoreFramework != nullptr);
-
-    auto coreFrameworkPtr = std::make_shared<ucf::framework::CoreFramework>();
-    REQUIRE(coreFrameworkPtr != nullptr);
+    REQUIRE(coreFramework->getName() == "CoreFramework");
 }

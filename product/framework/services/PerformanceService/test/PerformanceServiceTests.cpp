@@ -1,8 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
-#include "PerformanceService.h"
-#include "PerformanceManager.h"
+#include <ucf/services/PerformanceService/IPerformanceService.h>
+#include <ucf/services/PerformanceService/PerformanceServiceCreator.h>
 #include "TimingTracker.h"
 
 #include <thread>
@@ -13,7 +13,7 @@ TEST_CASE("PerformanceService creation", "[PerformanceService]")
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
     REQUIRE(fakeCoreFramework != nullptr);
 
-    auto performanceService = std::make_shared<ucf::service::PerformanceService>(fakeCoreFramework);
+    auto performanceService = ucf::service::impl::createPerformanceService(fakeCoreFramework);
     REQUIRE(performanceService != nullptr);
     REQUIRE(performanceService->getServiceName() == "PerformanceService");
 }
@@ -21,7 +21,7 @@ TEST_CASE("PerformanceService creation", "[PerformanceService]")
 TEST_CASE("PerformanceService memory monitoring", "[PerformanceService]")
 {
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
-    auto performanceService = std::make_shared<ucf::service::PerformanceService>(fakeCoreFramework);
+    auto performanceService = ucf::service::impl::createPerformanceService(fakeCoreFramework);
 
     auto memInfo = performanceService->getCurrentMemoryUsage();
 
@@ -32,7 +32,7 @@ TEST_CASE("PerformanceService memory monitoring", "[PerformanceService]")
 TEST_CASE("PerformanceService memory threshold", "[PerformanceService]")
 {
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
-    auto performanceService = std::make_shared<ucf::service::PerformanceService>(fakeCoreFramework);
+    auto performanceService = ucf::service::impl::createPerformanceService(fakeCoreFramework);
 
     REQUIRE(performanceService->getMemoryWarningThreshold() == 0);
 
@@ -101,7 +101,7 @@ TEST_CASE("TimingTracker reset", "[PerformanceService][TimingTracker]")
 TEST_CASE("PerformanceService snapshot", "[PerformanceService]")
 {
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
-    auto performanceService = std::make_shared<ucf::service::PerformanceService>(fakeCoreFramework);
+    auto performanceService = ucf::service::impl::createPerformanceService(fakeCoreFramework);
 
     // Add some timing data
     auto token = performanceService->beginTiming("SnapshotTest");
@@ -118,7 +118,7 @@ TEST_CASE("PerformanceService snapshot", "[PerformanceService]")
 TEST_CASE("PerformanceService JSON export", "[PerformanceService]")
 {
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
-    auto performanceService = std::make_shared<ucf::service::PerformanceService>(fakeCoreFramework);
+    auto performanceService = ucf::service::impl::createPerformanceService(fakeCoreFramework);
 
     auto token = performanceService->beginTiming("JsonTest");
     performanceService->endTiming(token);
@@ -134,7 +134,7 @@ TEST_CASE("PerformanceService JSON export", "[PerformanceService]")
 TEST_CASE("ScopedTiming RAII", "[PerformanceService]")
 {
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
-    auto performanceService = std::make_shared<ucf::service::PerformanceService>(fakeCoreFramework);
+    auto performanceService = ucf::service::impl::createPerformanceService(fakeCoreFramework);
 
     {
         ucf::service::ScopedTiming timing(performanceService, "ScopedTest");

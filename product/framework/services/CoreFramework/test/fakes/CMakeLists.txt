@@ -11,6 +11,7 @@ set(TARGET_SOURCE_FILES_PRIVATE
 
 BuildModule(
     NO_INSTALL
+    STATIC_LIB
     MODULE_NAME
         FakeCoreFramework
     TARGET_SOURCE_HEADER_BASE_DIR

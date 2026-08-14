@@ -13,7 +13,6 @@ BuildUnitTestModule(
     TARGET_ADD_LINK_LIBRARY_PRIVATE
         Catch2::Catch2WithMain
         CoreFrameworkImpl
-        FakeCoreFramework
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER
