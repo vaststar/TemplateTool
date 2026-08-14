@@ -1,6 +1,9 @@
 #pragma once
 
+#include <memory>
+
 #include <QObject>
+#include <QPointer>
 
 #include <UIManager/IUIManagerProvider.h>
 

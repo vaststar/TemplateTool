@@ -1,6 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 #include <functional>
 #include <ucf/services/ServiceDeclaration/IService.h>

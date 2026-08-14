@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPointer>
+
 #include <UIFabrication/IUIViewFactory.h>
 
 namespace UIAppCore{

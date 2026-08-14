@@ -6,8 +6,13 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <functional>
+#include <initializer_list>
+#include <memory>
 #include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 namespace ucf::agents {
 

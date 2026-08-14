@@ -1,8 +1,10 @@
 #pragma once
 
-#include <string>
+#include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include <ucf/utilities/FFmpegUtils/lib/FFmpegExport.h>
@@ -40,7 +42,7 @@ public:
     struct AttachedImage
     {
         std::string mimeType;      // e.g. "image/jpeg"
-        std::vector<uint8_t> data; // Binary image data
+        std::vector<std::uint8_t> data; // Binary image data
         std::string description;   // e.g. "front cover"
     };
 

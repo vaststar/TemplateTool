@@ -2,10 +2,12 @@
 #include <ucf/utilities/FFmpegUtils/core/ErrorHandler.h>
 
 #include <atomic>
-#include <thread>
-#include <mutex>
+#include <chrono>
 #include <condition_variable>
+#include <exception>
 #include <filesystem>
+#include <mutex>
+#include <thread>
 
 namespace ucf::utilities::ffmpeg::core {
 

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
+#include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include <ucf/utilities/FFmpegUtils/lib/FFmpegExport.h>
 #include <ucf/utilities/FFmpegUtils/lib/FFmpegTypes.h>

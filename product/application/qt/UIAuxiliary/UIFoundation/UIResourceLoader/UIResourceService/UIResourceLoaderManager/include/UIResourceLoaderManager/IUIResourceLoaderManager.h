@@ -1,10 +1,13 @@
 #pragma once
 
 #include <initializer_list>
+#include <memory>
+#include <string>
+
+#include <QColor>
+#include <QFont>
 #include <QObject>
 #include <QString>
-#include <QFont>
-#include <QColor>
 
 #include <UIResourceLoaderManager/UIResourceLoaderManagerExport.h>
 

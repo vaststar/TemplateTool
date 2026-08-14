@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <commonhead/ServiceLocator/IServiceLocator.h>
 
 namespace ucf::framework{

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <ucf/services/ServiceDeclaration/IService.h>
 #include <ucf/services/ServiceFactory/ServiceFactoryExport.h>
 

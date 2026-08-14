@@ -1,8 +1,9 @@
 #pragma once
 
+#include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <mutex>
 
 #include <ucf/services/ContactService/IContactEntities.h>
 

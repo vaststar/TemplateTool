@@ -72,7 +72,7 @@ if(CMAKE_SCRIPT_MODE_FILE)
 
       # 可选：严格校验文件是否存在（如不想校验可注释掉）
       if(NOT EXISTS "${abs}")
-        message(FATAL "[NormalizeTokens] not found: ${abs}")
+        message(FATAL_ERROR "[NormalizeTokens] not found: ${abs}")
       endif()
 
       # alias=文件名（同一分类内去重），保持和之前一致的逻辑

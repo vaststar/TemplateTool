@@ -1,8 +1,9 @@
 include_guard()
 include(LinkTargetIncludeDirectories)
-include(SetIDEFolder)
+include(TargetBuildType)
 include(BuildRCFileModule)
 include(BuildInstallModule)
+include("${CMAKE_CURRENT_LIST_DIR}/internal/QtModuleInternals.cmake")
 
 # ==========================================
 # Function: BuildQtModule
@@ -178,60 +179,17 @@ function(BuildQtModule)
     # QML module configuration
     # ==========================================
     if(DEFINED MODULE_QML_TARGET_URI)
-        # QML files remain part of QML_FILES (qmlcache, qmldir and type tooling),
-        # while their resource paths may be decoupled from their source-tree paths.
-        set(_mapped_qml_files "")
-        set(_mapped_qml_aliases "")
-        foreach(mapping IN LISTS MODULE_QML_TARGET_FILE_ALIAS_MAPPINGS)
-            string(FIND "${mapping}" "|" separator_index)
-            string(LENGTH "${mapping}" mapping_length)
+        _tt_apply_qml_alias_mappings(
+            MODULE_NAME "${MODULE_MODULE_NAME}"
+            QML_FILES ${MODULE_QML_TARGET_FILES}
+            ALIAS_MAPPINGS ${MODULE_QML_TARGET_FILE_ALIAS_MAPPINGS}
+        )
 
-            if(separator_index LESS 1)
-                message(FATAL_ERROR
-                    "[BuildQtModule] Invalid QML alias mapping '${mapping}'. "
-                    "Expected '<physical-file>|<resource-alias>'.")
-            endif()
-
-            math(EXPR alias_index "${separator_index} + 1")
-            if(alias_index GREATER_EQUAL mapping_length)
-                message(FATAL_ERROR
-                    "[BuildQtModule] Empty resource alias in QML mapping '${mapping}'.")
-            endif()
-
-            string(SUBSTRING "${mapping}" 0 ${separator_index} qml_file)
-            string(SUBSTRING "${mapping}" ${alias_index} -1 qml_alias)
-
-            list(FIND MODULE_QML_TARGET_FILES "${qml_file}" qml_file_index)
-            if(qml_file_index EQUAL -1)
-                message(FATAL_ERROR
-                    "[BuildQtModule] QML alias source '${qml_file}' is not listed in QML_TARGET_FILES.")
-            endif()
-
-            list(FIND _mapped_qml_files "${qml_file}" duplicate_file_index)
-            if(NOT duplicate_file_index EQUAL -1)
-                message(FATAL_ERROR
-                    "[BuildQtModule] QML file '${qml_file}' has more than one alias mapping.")
-            endif()
-
-            list(FIND _mapped_qml_aliases "${qml_alias}" duplicate_alias_index)
-            if(NOT duplicate_alias_index EQUAL -1)
-                message(FATAL_ERROR
-                    "[BuildQtModule] QML resource alias '${qml_alias}' is used more than once.")
-            endif()
-
-            list(APPEND _mapped_qml_files "${qml_file}")
-            list(APPEND _mapped_qml_aliases "${qml_alias}")
-            set_source_files_properties("${qml_file}" PROPERTIES QT_RESOURCE_ALIAS "${qml_alias}")
-        endforeach()
-
-        # Process QML resources with aliases
-        if(MODULE_QML_TARGET_RESOURCES_DIR)
-            set(ALL_MODULE_QML_TARGET_RESOURCES "")
-            foreach(resource ${MODULE_QML_TARGET_RESOURCES})
-                set_source_files_properties(${MODULE_QML_TARGET_RESOURCES_DIR}/${resource} PROPERTIES QT_RESOURCE_ALIAS ${resource})
-                list(APPEND ALL_MODULE_QML_TARGET_RESOURCES ${MODULE_QML_TARGET_RESOURCES_DIR}/${resource})
-            endforeach()
-        endif()
+        _tt_prepare_qml_resources(
+            RESOURCE_DIRECTORY "${MODULE_QML_TARGET_RESOURCES_DIR}"
+            RESOURCES ${MODULE_QML_TARGET_RESOURCES}
+            OUTPUT_VARIABLE ALL_MODULE_QML_TARGET_RESOURCES
+        )
 
         qt_add_qml_module(${MODULE_MODULE_NAME}
             URI ${MODULE_QML_TARGET_URI}
@@ -244,60 +202,23 @@ function(BuildQtModule)
                 ${MODULE_QML_TARGET_SOURCES}
         )
 
-        # Auto-resolve include directories for QML type registration code.
-        # Qt6 generates uiview_qmltyperegistrations.cpp with short-path includes
-        # (e.g. #include "AppSystemTrayController.h") which is compiled in the
-        # main target (SHARED) or plugin target (STATIC). Both need these paths.
-        set(_qml_header_include_dirs "")
-        foreach(_src ${MODULE_TARGET_SOURCE_PRIVATE} ${MODULE_TARGET_SOURCE_PUBLIC_HEADER} ${MODULE_QML_TARGET_SOURCES})
-            if(_src MATCHES "\\.(h|hpp)$")
-                set(_header_path "${_src}")
-                if(IS_ABSOLUTE "${_header_path}")
-                    cmake_path(NORMAL_PATH _header_path)
-                else()
-                    cmake_path(
-                        ABSOLUTE_PATH _header_path
-                        BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                        NORMALIZE
-                    )
-                endif()
-                cmake_path(GET _header_path PARENT_PATH _dir)
-                list(APPEND _qml_header_include_dirs "${_dir}")
-            endif()
-        endforeach()
-        list(REMOVE_DUPLICATES _qml_header_include_dirs)
+        _tt_collect_qml_header_directories(
+            BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            SOURCES
+                ${MODULE_TARGET_SOURCE_PRIVATE}
+                ${MODULE_TARGET_SOURCE_PUBLIC_HEADER}
+                ${MODULE_QML_TARGET_SOURCES}
+            OUTPUT_VARIABLE _qml_header_include_dirs
+        )
 
-        # Add to main target (for SHARED lib type registration compilation)
-        foreach(_dir ${_qml_header_include_dirs})
-            target_include_directories(${MODULE_MODULE_NAME} PRIVATE
-                $<BUILD_INTERFACE:${_dir}>
-            )
-        endforeach()
+        _tt_configure_qml_registration_includes(
+            MODULE_NAME "${MODULE_MODULE_NAME}"
+            HEADER_DIRECTORIES ${_qml_header_include_dirs}
+        )
 
-        # Add to plugin target (for STATIC lib + plugin's own compilation)
-        if(TARGET ${MODULE_MODULE_NAME}plugin)
-            target_include_directories(${MODULE_MODULE_NAME}plugin PRIVATE
-                $<TARGET_PROPERTY:${MODULE_MODULE_NAME},INCLUDE_DIRECTORIES>
-            )
-            foreach(_dir ${_qml_header_include_dirs})
-                target_include_directories(${MODULE_MODULE_NAME}plugin PRIVATE
-                    $<BUILD_INTERFACE:${_dir}>
-                )
-            endforeach()
-        endif()
-
-        # Set IDE folder for QML internal targets
-        SetIDEFolder(
-            TARGET_NAMES
-                ${MODULE_MODULE_NAME}plugin
-                ${MODULE_MODULE_NAME}plugin_init
-                ${MODULE_MODULE_NAME}_other_files
-                ${MODULE_MODULE_NAME}_qmlcache
-                ${MODULE_MODULE_NAME}_resources_1
-                ${MODULE_MODULE_NAME}_resources_2
-                ${MODULE_MODULE_NAME}_resources_3
-            FOLDER_NAME
-                ${MODULE_IDE_FOLDER}/internalTargets
+        _tt_configure_qml_internal_target_folders(
+            MODULE_NAME "${MODULE_MODULE_NAME}"
+            IDE_FOLDER "${MODULE_IDE_FOLDER}"
         )
 
         # Link plugin for static library

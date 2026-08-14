@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+
 #include <QObject>
+#include <QPointer>
 #include <QString>
 
 #include <TranslatorManager/TranslatorManagerExport.h>

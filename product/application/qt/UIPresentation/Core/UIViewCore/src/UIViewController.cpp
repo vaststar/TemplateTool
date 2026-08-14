@@ -2,6 +2,7 @@
 
 #include <AppContext/AppContext.h>
 #include <TranslatorManager/ITranslatorManager.h>
+#include <UIFabrication/IUIViewFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 

@@ -1,7 +1,11 @@
 #pragma once
 
+#include <map>
 #include <memory>
+#include <string>
+
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QTranslator>
 

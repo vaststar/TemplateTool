@@ -1,7 +1,9 @@
 #pragma once
 
-#include <QObject>
+#include <memory>
+
 #include <QEvent>
+#include <QObject>
 #include <UIEventBus/UIEventBusExport.h>
 #include <UIEventBus/UIEvent.h>
 

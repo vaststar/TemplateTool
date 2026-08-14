@@ -1,3 +1,8 @@
+#pragma once
+
+#include <memory>
+#include <string>
+
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 
 namespace ucf::framework {
