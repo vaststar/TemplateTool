@@ -1,10 +1,10 @@
 #!/bin/bash
-set -e
+set -uo pipefail
 
 # ==========================================
 # Basic configuration
 # ==========================================
-if [[ -z "$1" ]]; then
+if [[ -z "${1:-}" ]]; then
     case "$(uname -s)" in
         Linux*)  DEFAULT_PRESET="linux-release" ;;
         Darwin*) DEFAULT_PRESET="macos-release" ;;
@@ -15,6 +15,7 @@ else
 fi
 PRESET="$DEFAULT_PRESET"
 ACTION="${2:-all}"
+EXIT_CODE=0
 
 VERBOSE_CONFIG=0
 VERBOSE_BUILD=0
@@ -157,13 +158,16 @@ ensure_configured() {
         echo "  Build Dir : $BUILD_DIR"
         echo ""
         run_configure
-        if [ $? -ne 0 ]; then
+        local configure_result=$?
+        if [ $configure_result -ne 0 ]; then
             echo ""
             echo "[ERROR] Configuration failed, cannot proceed."
-            exit 1
+            return $configure_result
         fi
         echo ""
     fi
+
+    return 0
 }
 
 cleanup_macos_cpack_dragndrop() {
@@ -240,11 +244,14 @@ case "$ACTION" in
         echo "[Step 1/1] Building project..."
         echo "----------------------------------------------------"
         ensure_configured
-        echo "  Preset    : $PRESET"
-        echo "  Build Dir : $BUILD_DIR"
-        echo ""
-        run_build
         EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 0 ]; then
+            echo "  Preset    : $PRESET"
+            echo "  Build Dir : $BUILD_DIR"
+            echo ""
+            run_build
+            EXIT_CODE=$?
+        fi
         ;;
 
     rebuild)
@@ -254,15 +261,19 @@ case "$ACTION" in
         if is_configured; then
             echo "  Cleaning $BUILD_DIR"
             run_build --target clean
+            EXIT_CODE=$?
         else
             echo "  No previous build found, skipping clean."
+            EXIT_CODE=0
         fi
-        echo ""
-        echo "[Step 2/3] Configuring project..."
-        echo "----------------------------------------------------"
-        ensure_graphviz_dir
-        run_configure
-        EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 0 ]; then
+            echo ""
+            echo "[Step 2/3] Configuring project..."
+            echo "----------------------------------------------------"
+            ensure_graphviz_dir
+            run_configure
+            EXIT_CODE=$?
+        fi
         if [ $EXIT_CODE -eq 0 ]; then
             echo ""
             echo "[Step 3/3] Building project..."
@@ -292,12 +303,15 @@ case "$ACTION" in
         echo "[Step 1/1] Building and installing..."
         echo "----------------------------------------------------"
         ensure_configured
-        echo "  Preset     : $PRESET"
-        echo "  Build Dir  : $BUILD_DIR"
-        echo "  Install to : $ROOT_DIR/install/$PRESET"
-        echo ""
-        run_build --target install
         EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 0 ]; then
+            echo "  Preset     : $PRESET"
+            echo "  Build Dir  : $BUILD_DIR"
+            echo "  Install to : $ROOT_DIR/install/$PRESET"
+            echo ""
+            run_build --target install
+            EXIT_CODE=$?
+        fi
         ;;
 
     install-only)
@@ -326,20 +340,21 @@ case "$ACTION" in
         echo "[Step 1/2] Building project..."
         echo "----------------------------------------------------"
         ensure_configured
-        echo "  Preset    : $PRESET"
-        echo "  Build Dir : $BUILD_DIR"
-        echo ""
-        run_build
-        BUILD_RESULT=$?
-        if [ $BUILD_RESULT -eq 0 ]; then
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 0 ]; then
+            echo "  Preset    : $PRESET"
+            echo "  Build Dir : $BUILD_DIR"
+            echo ""
+            run_build
+            EXIT_CODE=$?
+        fi
+        if [ $EXIT_CODE -eq 0 ]; then
             cleanup_macos_cpack_dragndrop
             echo ""
             echo "[Step 2/2] Creating package..."
             echo "----------------------------------------------------"
             cpack --preset "$PRESET" -B "$BUILD_DIR"
             EXIT_CODE=$?
-        else
-            EXIT_CODE=$BUILD_RESULT
         fi
         ;;
 
@@ -348,18 +363,19 @@ case "$ACTION" in
         echo "[Step 1/2] Building project..."
         echo "----------------------------------------------------"
         ensure_configured
-        echo "  Preset    : $PRESET"
-        echo ""
-        run_build
-        BUILD_RESULT=$?
-        if [ $BUILD_RESULT -eq 0 ]; then
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 0 ]; then
+            echo "  Preset    : $PRESET"
+            echo ""
+            run_build
+            EXIT_CODE=$?
+        fi
+        if [ $EXIT_CODE -eq 0 ]; then
             echo ""
             echo "[Step 2/2] Running tests..."
             echo "----------------------------------------------------"
             ctest --preset "$PRESET"
             EXIT_CODE=$?
-        else
-            EXIT_CODE=$BUILD_RESULT
         fi
         ;;
 
@@ -368,10 +384,9 @@ case "$ACTION" in
         ;;
 
     *)
-        echo "[WARNING] Unknown action: $ACTION"
+        echo "[ERROR] Unknown action: $ACTION"
         echo "[INFO] Valid actions: configure, build, rebuild, clean, install, install-only, package, test, all"
-        echo "[INFO] Falling back to 'all'"
-        do_all
+        EXIT_CODE=1
         ;;
 esac
 

@@ -111,10 +111,10 @@ if /i "%ACTION%"=="package" goto :package
 if /i "%ACTION%"=="test" goto :test
 if /i "%ACTION%"=="all" goto :all
 
-echo [WARNING] Unknown action: %ACTION%
+echo [ERROR] Unknown action: %ACTION%
 echo [INFO] Valid actions: configure, build, rebuild, clean, install, install-only, package, test, all
-echo [INFO] Falling back to 'all'
-goto :all
+set "EXIT_CODE=1"
+goto :result
 
 :configure
 echo.
@@ -134,6 +134,10 @@ echo.
 echo [Step 1/1] Building project...
 echo ----------------------------------------------------
 call :ensure_configured
+if errorlevel 1 (
+    set "EXIT_CODE=!errorlevel!"
+    goto :result
+)
 echo   Preset    : %PRESET%
 echo   Build Dir : %BUILD_DIR%
 echo.
@@ -162,6 +166,10 @@ echo.
 echo [Step 1/1] Building and installing...
 echo ----------------------------------------------------
 call :ensure_configured
+if errorlevel 1 (
+    set "EXIT_CODE=!errorlevel!"
+    goto :result
+)
 echo   Preset     : %PRESET%
 echo   Build Dir  : %BUILD_DIR%
 echo   Install to : %ROOT_DIR%\install\%PRESET%
@@ -183,7 +191,9 @@ if !errorlevel! neq 0 (
 echo   Build Dir  : %BUILD_DIR%
 echo   Install to : %ROOT_DIR%\install\%PRESET%
 echo.
-"%CMAKE%" --install "%BUILD_DIR%" --config Release
+set "BUILD_CONFIG=Release"
+if /i not "!PRESET:-debug=!"=="!PRESET!" set "BUILD_CONFIG=Debug"
+"%CMAKE%" --install "%BUILD_DIR%" --config "!BUILD_CONFIG!"
 set "EXIT_CODE=%errorlevel%"
 goto :result
 
@@ -192,6 +202,10 @@ echo.
 echo [Step 1/2] Building project...
 echo ----------------------------------------------------
 call :ensure_configured
+if errorlevel 1 (
+    set "EXIT_CODE=!errorlevel!"
+    goto :result
+)
 echo   Preset    : %PRESET%
 echo   Build Dir : %BUILD_DIR%
 echo.
@@ -215,6 +229,10 @@ call :is_configured
 if !errorlevel!==0 (
     echo   Cleaning %BUILD_DIR%
     call :run_build --target clean
+    if errorlevel 1 (
+        set "EXIT_CODE=!errorlevel!"
+        goto :result
+    )
 ) else (
     echo   No previous build found, skipping clean.
 )
@@ -239,6 +257,10 @@ echo.
 echo [Step 1/2] Building project...
 echo ----------------------------------------------------
 call :ensure_configured
+if errorlevel 1 (
+    set "EXIT_CODE=!errorlevel!"
+    goto :result
+)
 echo   Preset    : %PRESET%
 echo.
 call :run_build
