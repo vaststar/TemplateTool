@@ -21,53 +21,93 @@ include(GenerateAppInfoFiles)
 #   )
 # ==========================================
 function(BuildCPackModule)
-    message(STATUS "====Start Build CPack Config Module====")
-
-    set(options)
-    set(oneValueArg TEMPLATE OUTPUT_CONFIG_VAR PRE_BUILD_SCRIPT)
-    set(multiValueArgs)
-    cmake_parse_arguments(MODULE "${options}" "${oneValueArg}" "${multiValueArgs}" ${ARGN})
+    set(one_value_args TEMPLATE OUTPUT_CONFIG_VAR PRE_BUILD_SCRIPT)
+    cmake_parse_arguments(
+        PARSE_ARGV 0 MODULE "" "${one_value_args}" "")
 
     if(NOT MODULE_TEMPLATE)
-        message(WARNING "TEMPLATE not provided, skipping CPack config generation")
-        return()
+        message(FATAL_ERROR "[BuildCPackModule] TEMPLATE is required")
     endif()
-
     if(NOT EXISTS "${MODULE_TEMPLATE}")
-        message(WARNING "CPack template not found: ${MODULE_TEMPLATE}")
-        return()
+        message(FATAL_ERROR
+            "[BuildCPackModule] Template does not exist: ${MODULE_TEMPLATE}")
+    endif()
+    if(MODULE_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR
+            "[BuildCPackModule] Arguments missing values: "
+            "${MODULE_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(MODULE_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "[BuildCPackModule] Unknown arguments: "
+            "${MODULE_UNPARSED_ARGUMENTS}")
+    endif()
+    if(NOT GLOBAL_APP_VERSION_JSON)
+        message(FATAL_ERROR
+            "[BuildCPackModule] GLOBAL_APP_VERSION_JSON is not configured")
+    endif()
+    if(NOT GLOBAL_APP_VERSION_JSON_TARGET
+       OR NOT TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}")
+        message(FATAL_ERROR
+            "[BuildCPackModule] GLOBAL_APP_VERSION_JSON_TARGET is missing or "
+            "does not name an existing target")
+    endif()
+    if(MODULE_PRE_BUILD_SCRIPT
+       AND NOT EXISTS "${MODULE_PRE_BUILD_SCRIPT}")
+        message(FATAL_ERROR
+            "[BuildCPackModule] PRE_BUILD_SCRIPT does not exist: "
+            "${MODULE_PRE_BUILD_SCRIPT}")
     endif()
 
     get_filename_component(TEMPLATE_NAME "${MODULE_TEMPLATE}" NAME_WE)
-    set(CPACK_CONFIG_PATH ${CMAKE_CURRENT_BINARY_DIR}/${TEMPLATE_NAME}.cmake)
+    set(CPACK_CONFIG_PATH
+        "${CMAKE_CURRENT_BINARY_DIR}/${TEMPLATE_NAME}.cmake")
 
-    message(STATUS "  Template : ${MODULE_TEMPLATE}")
-    message(STATUS "  Output   : ${CPACK_CONFIG_PATH}")
+    message(STATUS
+        "[BuildCPackModule] ${MODULE_TEMPLATE} -> ${CPACK_CONFIG_PATH}")
 
     # Build-time generation via add_custom_command
     generate_app_info_files(
-        INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
-        INPUT_JSON_TARGET ${GLOBAL_APP_VERSION_JSON_TARGET}
-        INPUT_VERSION_TEMPLATE ${MODULE_TEMPLATE}
-        OUTPUT_FILE ${CPACK_CONFIG_PATH}
+        INPUT_JSON_FILE "${GLOBAL_APP_VERSION_JSON}"
+        INPUT_JSON_TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}"
+        INPUT_VERSION_TEMPLATE "${MODULE_TEMPLATE}"
+        OUTPUT_FILE "${CPACK_CONFIG_PATH}"
         INTERNAL_NAME ""
         FILE_DESCRIPTION ""
         ORIGINAL_FILENAME ""
-        OUTPUT_TARGET_VAR CPACK_CONFIG_TARGET
+        OUTPUT_TARGET_VAR cpack_config_target
     )
 
     # Tell CPack to read this file at cpack runtime (not configure time)
     set(CPACK_PROJECT_CONFIG_FILE "${CPACK_CONFIG_PATH}" PARENT_SCOPE)
-    message(STATUS "  CPACK_PROJECT_CONFIG_FILE: ${CPACK_CONFIG_PATH}")
+    if(CMAKE_VERBOSE_MAKEFILE)
+        message(STATUS
+            "[BuildCPackModule]   Generated target: ${cpack_config_target}")
+        message(STATUS
+            "[BuildCPackModule]   Project config  : ${CPACK_CONFIG_PATH}")
+    endif()
 
     # Set pre-build script to strip dev files before packaging
-    if(MODULE_PRE_BUILD_SCRIPT AND EXISTS "${MODULE_PRE_BUILD_SCRIPT}")
+    if(MODULE_PRE_BUILD_SCRIPT)
         set(CPACK_PRE_BUILD_SCRIPTS "${MODULE_PRE_BUILD_SCRIPT}" PARENT_SCOPE)
-        message(STATUS "  Pre-build: ${MODULE_PRE_BUILD_SCRIPT}")
+        if(CMAKE_VERBOSE_MAKEFILE)
+            message(STATUS
+                "[BuildCPackModule]   Pre-build script: "
+                "${MODULE_PRE_BUILD_SCRIPT}")
+        endif()
     endif()
 
     # Export path for reference
     if(MODULE_OUTPUT_CONFIG_VAR)
-        set(${MODULE_OUTPUT_CONFIG_VAR} ${CPACK_CONFIG_PATH} PARENT_SCOPE)
+        if(NOT "${MODULE_OUTPUT_CONFIG_VAR}"
+           MATCHES "^[A-Za-z_][A-Za-z0-9_]*$")
+            message(FATAL_ERROR
+                "[BuildCPackModule] OUTPUT_CONFIG_VAR must be a valid "
+                "variable name, got '${MODULE_OUTPUT_CONFIG_VAR}'")
+        endif()
+        set("${MODULE_OUTPUT_CONFIG_VAR}"
+            "${CPACK_CONFIG_PATH}"
+            PARENT_SCOPE
+        )
     endif()
 endfunction()

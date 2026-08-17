@@ -1,60 +1,67 @@
-add_subdirectory(cmake)
-
 include(TemplateTools)
 include(CapitalizeString)
 # 设置资源字符串 JSON 文件路径
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
 set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceAsset)
+set(ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data)
+set(ASSET_TOKEN_JSON_PATH ${ASSET_BASE_DIR}/token.json)
 
-set(RESOURCE_TARGETS )
+set(RESOURCE_TARGETS)
+
+set(THEME_JSON_NAMES normal)
+set(THEME_JSON_PATH_SET)
+foreach(theme_name IN LISTS THEME_JSON_NAMES)
+    list(APPEND THEME_JSON_PATH_SET
+        "${ASSET_BASE_DIR}/themes/${theme_name}.json")
+endforeach()
 
 ## Precheck: token ↔ theme 一致性 + 本地资源文件存在性校验
 include(ValidateAssetTokens)
 validate_asset_tokens(
     SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate_asset_tokens.py
-    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json
-    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/data/themes
-    ASSET_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/data
-    PRECHECK_TARGET
+    TOKEN_FILE ${ASSET_TOKEN_JSON_PATH}
+    THEME_FILES ${THEME_JSON_PATH_SET}
+    ASSET_ROOT ${ASSET_BASE_DIR}
+    OUTPUT_TARGET_VAR PRECHECK_TARGET
 )
-list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
+list(APPEND RESOURCE_TARGETS "${PRECHECK_TARGET}")
 
 ## AssetToken
-set(GLOBAL_ASSET_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE AssetToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/AssetToken.h.j2)
 
 generate_from_template(
     TEMPLATE_FILE ${TOKEN_TEMEPLATE_FILE}
-    INPUT_FILE ${GLOBAL_ASSET_TOKEN_JSON_PATH}
+    INPUT_FILE ${ASSET_TOKEN_JSON_PATH}
     OUTPUT_FILE ${TOKEN_OUTPUT_PATH}
     OUTPUT_TARGET_VAR TOKEN_TARGET
+    DEPENDS ${PRECHECK_TARGET}
 )
-list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
+add_dependencies("${TOKEN_TARGET}" "${PRECHECK_TARGET}")
+list(APPEND RESOURCE_TARGETS "${TOKEN_TARGET}")
 
 ## BuildThemeAssetSet
-set(THEME_JSON_NAMES "normal" )
-set(THEME_JSON_PATH_SET)
-foreach(item IN LISTS THEME_JSON_NAMES)
-  set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${item}.json)
-  list(APPEND THEME_JSON_PATH_SET ${THEME_JSON_PATH})
-  capitalize(${item} capital_json_name)
-  set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
-  set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
-  set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeAssetSet.h.j2)
+foreach(theme_name IN LISTS THEME_JSON_NAMES)
+    set(THEME_JSON_PATH
+        ${ASSET_BASE_DIR}/themes/${theme_name}.json)
+    capitalize(${theme_name} capital_json_name)
+    set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeAssetSet.h)
+    set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
+    set(THEME_TEMEPLATE_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeAssetSet.h.j2)
 
-  generate_from_template(
-      TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
-      INPUT_FILE ${THEME_JSON_PATH}
-      OUTPUT_FILE ${THEME_OUTPUT_PATH}
-      OUTPUT_TARGET_VAR THEME_TARGET
-  )
-  list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
+    generate_from_template(
+        TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
+        INPUT_FILE ${THEME_JSON_PATH}
+        OUTPUT_FILE ${THEME_OUTPUT_PATH}
+        OUTPUT_TARGET_VAR THEME_TARGET
+        DEPENDS ${PRECHECK_TARGET}
+    )
+    add_dependencies("${THEME_TARGET}" "${PRECHECK_TARGET}")
+    list(APPEND RESOURCE_TARGETS "${THEME_TARGET}")
 endforeach()
-set(GLOBAL_ASSET_THEME_FILES "${THEME_JSON_PATH_SET}" CACHE STRING "all asset json files" FORCE)
-set(GLOBAL_ASSET_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data CACHE STRING "base asset dir" FORCE)
 
 include(BuildInterface)
 BuildInterface(
@@ -66,4 +73,17 @@ BuildInterface(
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${RESOURCE_OUT_PUT_DIR}
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ResourceAsset
     IDE_FOLDER ${RESOURCE_IDE_FOLDER}
+)
+
+set_property(
+    TARGET ResourceAsset
+    PROPERTY UCF_RESOURCE_TOKEN_FILE "${ASSET_TOKEN_JSON_PATH}"
+)
+set_property(
+    TARGET ResourceAsset
+    PROPERTY UCF_RESOURCE_THEME_FILES "${THEME_JSON_PATH_SET}"
+)
+set_property(
+    TARGET ResourceAsset
+    PROPERTY UCF_RESOURCE_BASE_DIR "${ASSET_BASE_DIR}"
 )

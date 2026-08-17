@@ -1,43 +1,65 @@
-# === ValidateColorTokens.cmake ===
-# 提供 validate_color_tokens() 函数，用于在构建前校验 token.json 与 theme JSON 的一致性。
 include_guard()
 
-function(validate_color_tokens)
-    set(oneValueArgs TOKEN_FILE THEME_DIR PALETTE_FILE SCRIPT)
-    cmake_parse_arguments(VCT "" "${oneValueArgs}" "" ${ARGN})
+include("${CMAKE_CURRENT_LIST_DIR}/internal/TokenValidationInternals.cmake")
 
-    foreach(required_arg TOKEN_FILE THEME_DIR SCRIPT)
+function(validate_color_tokens)
+    set(one_value_args
+        TOKEN_FILE
+        PALETTE_FILE
+        SCRIPT
+        OUTPUT_TARGET_VAR
+    )
+    set(multi_value_args THEME_FILES)
+    cmake_parse_arguments(
+        PARSE_ARGV 0 VCT "" "${one_value_args}" "${multi_value_args}")
+
+    foreach(required_arg TOKEN_FILE SCRIPT OUTPUT_TARGET_VAR)
         if(NOT VCT_${required_arg})
-            message(FATAL_ERROR "[validate_color_tokens] Missing: ${required_arg}")
+            message(FATAL_ERROR
+                "[validate_color_tokens] ${required_arg} is required")
         endif()
     endforeach()
+    if(NOT VCT_THEME_FILES)
+        message(FATAL_ERROR
+            "[validate_color_tokens] THEME_FILES is required")
+    endif()
+    if(VCT_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR
+            "[validate_color_tokens] Arguments missing values: "
+            "${VCT_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(VCT_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "[validate_color_tokens] Unknown arguments: "
+            "${VCT_UNPARSED_ARGUMENTS}")
+    endif()
+    _tt_token_validation_validate_output_variable(
+        FUNCTION_NAME validate_color_tokens
+        VARIABLE_NAME "${VCT_OUTPUT_TARGET_VAR}"
+    )
 
-    find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    file(GLOB THEME_FILES "${VCT_THEME_DIR}/*.json")
-
-    set(CMD ${Python3_EXECUTABLE} ${VCT_SCRIPT}
-        --token "${VCT_TOKEN_FILE}" --themes ${THEME_FILES})
+    set(optional_validation_args)
     if(VCT_PALETTE_FILE)
-        list(APPEND CMD --palette "${VCT_PALETTE_FILE}")
+        _tt_token_validation_normalize_path(
+            PATH "${VCT_PALETTE_FILE}"
+            BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            OUTPUT_VARIABLE palette_file
+        )
+        list(APPEND optional_validation_args
+            ADDITIONAL_DEPENDS "${palette_file}"
+            EXTRA_ARGUMENTS --palette "${palette_file}"
+        )
     endif()
 
-    set(STAMP "${CMAKE_BINARY_DIR}/token_validation.stamp")
-    add_custom_command(OUTPUT ${STAMP}
-        COMMAND ${CMD}
-        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP}
-        DEPENDS ${VCT_TOKEN_FILE} ${THEME_FILES} ${VCT_SCRIPT}
-        COMMENT "Validating color token consistency..."
-        VERBATIM)
+    _tt_register_token_validation(
+        KIND color
+        SCRIPT "${VCT_SCRIPT}"
+        TOKEN_FILE "${VCT_TOKEN_FILE}"
+        THEME_FILES ${VCT_THEME_FILES}
+        ${optional_validation_args}
+        COMMENT "Validating color token consistency"
+        OUTPUT_TARGET_VAR validation_target
+    )
 
-    set(TARGET_NAME ValidateColorTokens)
-    if(NOT TARGET ${TARGET_NAME})
-        add_custom_target(${TARGET_NAME} ALL DEPENDS ${STAMP})
-        set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)
-    endif()
-
-    list(LENGTH VCT_UNPARSED_ARGUMENTS unparsed_count)
-    if(unparsed_count EQUAL 1)
-        list(GET VCT_UNPARSED_ARGUMENTS 0 output_variable)
-        set(${output_variable} ${TARGET_NAME} PARENT_SCOPE)
-    endif()
+    set("${VCT_OUTPUT_TARGET_VAR}" "${validation_target}" PARENT_SCOPE)
 endfunction()

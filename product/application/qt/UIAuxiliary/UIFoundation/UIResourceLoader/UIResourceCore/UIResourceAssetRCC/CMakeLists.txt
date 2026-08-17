@@ -1,11 +1,24 @@
 
+include(GetRequiredTargetProperty)
+
+get_required_target_property(
+    TARGET ResourceAsset
+    PROPERTY UCF_RESOURCE_THEME_FILES
+    OUTPUT_VARIABLE ASSET_THEME_FILES
+)
+get_required_target_property(
+    TARGET ResourceAsset
+    PROPERTY UCF_RESOURCE_BASE_DIR
+    OUTPUT_VARIABLE ASSET_BASE_DIR
+)
+
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
 set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/UIResourceAsset)
 
 set(RCC_FILES)
 set(RCC_TARGETS)
-message(STATUS "GLOBAL_ASSET_THEME_FILES: ${GLOBAL_ASSET_THEME_FILES}")
-foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
+message(STATUS "[UIResourceAssetRCC] Theme files: ${ASSET_THEME_FILES}")
+foreach(item IN LISTS ASSET_THEME_FILES)
 
   get_filename_component(FILENAME_NO_EXT ${item} NAME_WE)
   set(RCC_OUT_PUT_FILE UIAssetResource_${FILENAME_NO_EXT}.qrc)
@@ -17,7 +30,7 @@ foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
       INPUT_FILE ${item}
       OUTPUT_FILE ${RCC_OUTPUT_PATH}
       OUTPUT_TARGET_VAR GFT_RCC_TARGET
-      EXTRA_PARAMS "base_dir=${GLOBAL_ASSET_BASE_DIR}"
+      EXTRA_PARAMS "base_dir=${ASSET_BASE_DIR}"
   )
   list(APPEND RCC_FILES ${RCC_OUTPUT_PATH})
   list(APPEND RCC_TARGETS ${GFT_RCC_TARGET})

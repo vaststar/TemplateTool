@@ -1,41 +1,63 @@
-# === ValidateFontTokens.cmake ===
-# 提供 validate_font_tokens() 函数，用于在构建前校验 token.json、theme JSON 与 palette.json 的一致性。
 include_guard()
 
-function(validate_font_tokens)
-    set(oneValueArgs TOKEN_FILE THEME_DIR PALETTE_FILE SCRIPT)
-    cmake_parse_arguments(VFT "" "${oneValueArgs}" "" ${ARGN})
+include("${CMAKE_CURRENT_LIST_DIR}/internal/TokenValidationInternals.cmake")
 
-    foreach(required_arg TOKEN_FILE THEME_DIR PALETTE_FILE SCRIPT)
+function(validate_font_tokens)
+    set(one_value_args
+        TOKEN_FILE
+        PALETTE_FILE
+        SCRIPT
+        OUTPUT_TARGET_VAR
+    )
+    set(multi_value_args THEME_FILES)
+    cmake_parse_arguments(
+        PARSE_ARGV 0 VFT "" "${one_value_args}" "${multi_value_args}")
+
+    foreach(required_arg
+            TOKEN_FILE
+            PALETTE_FILE
+            SCRIPT
+            OUTPUT_TARGET_VAR)
         if(NOT VFT_${required_arg})
-            message(FATAL_ERROR "[validate_font_tokens] Missing: ${required_arg}")
+            message(FATAL_ERROR
+                "[validate_font_tokens] ${required_arg} is required")
         endif()
     endforeach()
-
-    find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    file(GLOB THEME_FILES "${VFT_THEME_DIR}/*.json")
-
-    set(CMD ${Python3_EXECUTABLE} ${VFT_SCRIPT}
-        --token "${VFT_TOKEN_FILE}" --themes ${THEME_FILES}
-        --palette "${VFT_PALETTE_FILE}")
-
-    set(STAMP "${CMAKE_BINARY_DIR}/font_token_validation.stamp")
-    add_custom_command(OUTPUT ${STAMP}
-        COMMAND ${CMD}
-        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP}
-        DEPENDS ${VFT_TOKEN_FILE} ${THEME_FILES} ${VFT_PALETTE_FILE} ${VFT_SCRIPT}
-        COMMENT "Validating font token consistency..."
-        VERBATIM)
-
-    set(TARGET_NAME ValidateFontTokens)
-    if(NOT TARGET ${TARGET_NAME})
-        add_custom_target(${TARGET_NAME} ALL DEPENDS ${STAMP})
-        set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)
+    if(NOT VFT_THEME_FILES)
+        message(FATAL_ERROR
+            "[validate_font_tokens] THEME_FILES is required")
     endif()
-
-    list(LENGTH VFT_UNPARSED_ARGUMENTS unparsed_count)
-    if(unparsed_count EQUAL 1)
-        list(GET VFT_UNPARSED_ARGUMENTS 0 output_variable)
-        set(${output_variable} ${TARGET_NAME} PARENT_SCOPE)
+    if(VFT_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR
+            "[validate_font_tokens] Arguments missing values: "
+            "${VFT_KEYWORDS_MISSING_VALUES}")
     endif()
+    if(VFT_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "[validate_font_tokens] Unknown arguments: "
+            "${VFT_UNPARSED_ARGUMENTS}")
+    endif()
+    _tt_token_validation_validate_output_variable(
+        FUNCTION_NAME validate_font_tokens
+        VARIABLE_NAME "${VFT_OUTPUT_TARGET_VAR}"
+    )
+
+    _tt_token_validation_normalize_path(
+        PATH "${VFT_PALETTE_FILE}"
+        BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE palette_file
+    )
+
+    _tt_register_token_validation(
+        KIND font
+        SCRIPT "${VFT_SCRIPT}"
+        TOKEN_FILE "${VFT_TOKEN_FILE}"
+        THEME_FILES ${VFT_THEME_FILES}
+        ADDITIONAL_DEPENDS "${palette_file}"
+        EXTRA_ARGUMENTS --palette "${palette_file}"
+        COMMENT "Validating font token and palette consistency"
+        OUTPUT_TARGET_VAR validation_target
+    )
+
+    set("${VFT_OUTPUT_TARGET_VAR}" "${validation_target}" PARENT_SCOPE)
 endfunction()

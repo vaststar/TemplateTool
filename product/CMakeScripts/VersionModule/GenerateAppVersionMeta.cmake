@@ -1,109 +1,196 @@
 include_guard()
 
-# ==========================================
-# Script mode: Generate version meta JSON
-# ==========================================
 if(CMAKE_SCRIPT_MODE_FILE)
-    if(NOT EXISTS "${INPUT_META_JSON}")
-        message(FATAL_ERROR "[GenerateAppVersionMeta] Version config file not found: ${INPUT_META_JSON}")
-    endif()
+    foreach(required_variable
+            INPUT_META_JSON
+            INPUT_TEMPLATE
+            OUTPUT_FILE
+            GIT_INFO_FILE)
+        if(NOT DEFINED ${required_variable}
+           OR "${${required_variable}}" STREQUAL "")
+            message(FATAL_ERROR
+                "[GenerateAppVersionMeta] ${required_variable} is required")
+        endif()
+    endforeach()
 
-    if(NOT EXISTS "${GIT_INFO_FILE}")
-        message(FATAL_ERROR "[GenerateAppVersionMeta] Git info file not found: ${GIT_INFO_FILE}")
-    endif()
+    foreach(required_file
+            "${INPUT_META_JSON}"
+            "${INPUT_TEMPLATE}"
+            "${GIT_INFO_FILE}")
+        if(NOT EXISTS "${required_file}")
+            message(FATAL_ERROR
+                "[GenerateAppVersionMeta] Input file does not exist: "
+                "${required_file}")
+        endif()
+    endforeach()
 
-    # Read Git information
-    file(READ "${GIT_INFO_FILE}" GIT_INFO_CONTENT)
-    string(JSON GIT_COMMIT_HASH GET "${GIT_INFO_CONTENT}" "hash")
-    string(JSON GIT_COMMIT_BRANCH GET "${GIT_INFO_CONTENT}" "branch")
-    string(JSON VERSION_BUILD GET "${GIT_INFO_CONTENT}" "depth")
+    file(READ "${GIT_INFO_FILE}" git_info_content)
+    string(JSON GIT_COMMIT_HASH GET "${git_info_content}" "hash")
+    string(JSON GIT_COMMIT_BRANCH GET "${git_info_content}" "branch")
+    string(JSON VERSION_BUILD GET "${git_info_content}" "depth")
 
-    # Read version metadata
-    file(READ "${INPUT_META_JSON}" JSON_CONTENT)
-    
-    # Parse version info
-    string(JSON VERSION_MAJOR GET "${JSON_CONTENT}" "version" "major")
-    string(JSON VERSION_MINOR GET "${JSON_CONTENT}" "version" "minor")
-    string(JSON VERSION_PATCH GET "${JSON_CONTENT}" "version" "patch")
-    
-    # Parse company info
-    string(JSON COMPANY_NAME GET "${JSON_CONTENT}" "company" "name")
-    string(JSON COPYRIGHT GET "${JSON_CONTENT}" "company" "copyright")
-    
-    # Parse product info
-    string(JSON PRODUCT_NAME GET "${JSON_CONTENT}" "product" "name")
-    string(JSON PRODUCT_DESCRIPTION GET "${JSON_CONTENT}" "product" "description")
+    file(READ "${INPUT_META_JSON}" json_content)
+    string(JSON VERSION_MAJOR GET "${json_content}" "version" "major")
+    string(JSON VERSION_MINOR GET "${json_content}" "version" "minor")
+    string(JSON VERSION_PATCH GET "${json_content}" "version" "patch")
+    string(JSON COMPANY_NAME GET "${json_content}" "company" "name")
+    string(JSON COPYRIGHT GET "${json_content}" "company" "copyright")
+    string(JSON PRODUCT_NAME GET "${json_content}" "product" "name")
+    string(JSON PRODUCT_DESCRIPTION GET
+        "${json_content}" "product" "description")
 
-    configure_file(${INPUT_TEMPLATE} ${OUTPUT_FILE} @ONLY)
+    get_filename_component(output_directory "${OUTPUT_FILE}" DIRECTORY)
+    file(MAKE_DIRECTORY "${output_directory}")
+    configure_file("${INPUT_TEMPLATE}" "${OUTPUT_FILE}" @ONLY)
     message(STATUS "[GenerateAppVersionMeta] Generated ${OUTPUT_FILE}")
+else()
+    include("${CMAKE_CURRENT_LIST_DIR}/GenerateGitInfoMeta.cmake")
+    include(
+        "${CMAKE_CURRENT_LIST_DIR}/internal/VersionGenerationInternals.cmake")
+
+    function(generate_app_version_meta)
+        set(one_value_args
+            INPUT_META_JSON
+            INPUT_VERSION_TEMPLATE
+            OUTPUT_FILE
+            OUTPUT_TARGET_VAR
+        )
+        cmake_parse_arguments(
+            PARSE_ARGV 0 ARG "" "${one_value_args}" "")
+
+        foreach(required_arg
+                INPUT_META_JSON
+                INPUT_VERSION_TEMPLATE
+                OUTPUT_FILE
+                OUTPUT_TARGET_VAR)
+            if(NOT ARG_${required_arg})
+                message(FATAL_ERROR
+                    "[generate_app_version_meta] ${required_arg} is required")
+            endif()
+        endforeach()
+        if(ARG_KEYWORDS_MISSING_VALUES)
+            message(FATAL_ERROR
+                "[generate_app_version_meta] Arguments missing values: "
+                "${ARG_KEYWORDS_MISSING_VALUES}")
+        endif()
+        if(ARG_UNPARSED_ARGUMENTS)
+            message(FATAL_ERROR
+                "[generate_app_version_meta] Unknown arguments: "
+                "${ARG_UNPARSED_ARGUMENTS}")
+        endif()
+
+        _tt_version_validate_output_variable(
+            FUNCTION_NAME generate_app_version_meta
+            VARIABLE_NAME "${ARG_OUTPUT_TARGET_VAR}"
+        )
+        _tt_version_normalize_path(
+            PATH "${ARG_INPUT_META_JSON}"
+            BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            OUTPUT_VARIABLE input_meta_json
+        )
+        _tt_version_normalize_path(
+            PATH "${ARG_INPUT_VERSION_TEMPLATE}"
+            BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            OUTPUT_VARIABLE template_file
+        )
+        _tt_version_normalize_path(
+            PATH "${ARG_OUTPUT_FILE}"
+            BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+            OUTPUT_VARIABLE output_file
+        )
+
+        foreach(required_file "${input_meta_json}" "${template_file}")
+            if(NOT EXISTS "${required_file}")
+                message(FATAL_ERROR
+                    "[generate_app_version_meta] Input file does not exist: "
+                    "${required_file}")
+            endif()
+        endforeach()
+
+        set(git_info_file "${CMAKE_CURRENT_BINARY_DIR}/git_info.meta")
+        generate_git_info_meta(
+            OUTPUT_FILE "${git_info_file}"
+            OUTPUT_TARGET_VAR git_info_target
+        )
+
+        _tt_version_make_target_name(
+            PREFIX generate_version_meta
+            OUTPUT_FILE "${output_file}"
+            OUTPUT_VARIABLE generated_target
+        )
+
+        set(generator_script "${CMAKE_CURRENT_FUNCTION_LIST_FILE}")
+        string(CONCAT registration_data
+            "input=${input_meta_json}\n"
+            "template=${template_file}\n"
+            "output=${output_file}\n"
+            "git_file=${git_info_file}\n"
+            "git_target=${git_info_target}\n"
+            "script=${generator_script}\n"
+        )
+        string(SHA256 registration_signature "${registration_data}")
+
+        _tt_version_check_registration(
+            TARGET "${generated_target}"
+            OUTPUT_FILE "${output_file}"
+            SIGNATURE "${registration_signature}"
+            OUTPUT_REUSED_VAR reused
+        )
+        if(reused)
+            set("${ARG_OUTPUT_TARGET_VAR}"
+                "${generated_target}"
+                PARENT_SCOPE
+            )
+            return()
+        endif()
+
+        get_filename_component(output_directory "${output_file}" DIRECTORY)
+        add_custom_command(
+            OUTPUT "${output_file}"
+            COMMAND
+                "${CMAKE_COMMAND}" -E make_directory "${output_directory}"
+            COMMAND
+                "${CMAKE_COMMAND}"
+                "-DINPUT_META_JSON=${input_meta_json}"
+                "-DINPUT_TEMPLATE=${template_file}"
+                "-DOUTPUT_FILE=${output_file}"
+                "-DGIT_INFO_FILE=${git_info_file}"
+                -P "${generator_script}"
+            DEPENDS
+                "${git_info_target}"
+                "${git_info_file}"
+                "${input_meta_json}"
+                "${template_file}"
+                "${generator_script}"
+            COMMENT "Generating ${output_file}"
+            VERBATIM
+        )
+
+        add_custom_target(
+            "${generated_target}" ALL DEPENDS "${output_file}")
+        add_dependencies("${generated_target}" "${git_info_target}")
+        _tt_version_record_registration(
+            TARGET "${generated_target}"
+            OUTPUT_FILE "${output_file}"
+            SIGNATURE "${registration_signature}"
+        )
+        set_source_files_properties(
+            "${output_file}" PROPERTIES GENERATED TRUE)
+
+        message(STATUS
+            "[generate_app_version_meta] ${generated_target} -> ${output_file}")
+        if(CMAKE_VERBOSE_MAKEFILE)
+            message(STATUS
+                "[generate_app_version_meta]   Input   : ${input_meta_json}")
+            message(STATUS
+                "[generate_app_version_meta]   Template: ${template_file}")
+            message(STATUS
+                "[generate_app_version_meta]   Git info: ${git_info_file}")
+        endif()
+
+        set("${ARG_OUTPUT_TARGET_VAR}"
+            "${generated_target}"
+            PARENT_SCOPE
+        )
+    endfunction()
 endif()
-
-# ==========================================
-# Function: generate_app_version_meta
-# ==========================================
-function(generate_app_version_meta)
-    # Include here instead of top level to avoid script mode conflict
-    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateGitInfoMeta.cmake")
-    
-    set(oneValueArgs INPUT_META_JSON INPUT_VERSION_TEMPLATE OUTPUT_FILE OUTPUT_TARGET_VAR)
-    cmake_parse_arguments(ARG "" "${oneValueArgs}" "" ${ARGN})
-
-    # Validate required arguments
-    if(NOT ARG_OUTPUT_FILE)
-        message(FATAL_ERROR "[GenerateAppVersionMeta] OUTPUT_FILE is required")
-    endif()
-
-    if(NOT ARG_INPUT_VERSION_TEMPLATE)
-        message(FATAL_ERROR "[GenerateAppVersionMeta] INPUT_VERSION_TEMPLATE is required")
-    endif()
-    
-    if(NOT ARG_INPUT_META_JSON)
-        message(FATAL_ERROR "[GenerateAppVersionMeta] INPUT_META_JSON is required")
-    endif()
-
-    # Generate unique target name based on output file path hash
-    string(MD5 PATH_HASH "${ARG_OUTPUT_FILE}")
-    string(SUBSTRING "${PATH_HASH}" 0 8 SHORT_HASH)
-    get_filename_component(OUTPUT_NAME "${ARG_OUTPUT_FILE}" NAME_WE)
-    set(TARGET_NAME "generate_${OUTPUT_NAME}_${SHORT_HASH}")
-
-    set(GIT_INFO_FILE "${CMAKE_CURRENT_BINARY_DIR}/git_info.meta")
-
-    message(STATUS "")
-    message(STATUS "============================================================")
-    message(STATUS "[GenerateAppVersionMeta] Configuring version meta generation")
-    message(STATUS "============================================================")
-    message(STATUS "  Output File  : ${ARG_OUTPUT_FILE}")
-    message(STATUS "  Template     : ${ARG_INPUT_VERSION_TEMPLATE}")
-    message(STATUS "  Meta JSON    : ${ARG_INPUT_META_JSON}")
-    message(STATUS "  Git Info     : ${GIT_INFO_FILE}")
-    message(STATUS "  Target Name  : ${TARGET_NAME}")
-    message(STATUS "------------------------------------------------------------")
-    
-    # Generate git info meta first
-    generate_git_info_meta(OUTPUT_FILE "${GIT_INFO_FILE}")
-    
-    # Add custom command to generate version meta
-    add_custom_command(
-        OUTPUT ${ARG_OUTPUT_FILE}
-        COMMAND ${CMAKE_COMMAND} 
-            -DINPUT_META_JSON=${ARG_INPUT_META_JSON}
-            -DINPUT_TEMPLATE=${ARG_INPUT_VERSION_TEMPLATE}
-            -DOUTPUT_FILE=${ARG_OUTPUT_FILE}
-            -DGIT_INFO_FILE=${GIT_INFO_FILE}
-            -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/GenerateAppVersionMeta.cmake"
-        DEPENDS ${ARG_INPUT_META_JSON} ${ARG_INPUT_VERSION_TEMPLATE} ${GIT_INFO_FILE}
-        COMMENT "[GenerateAppVersionMeta] Generating ${ARG_OUTPUT_FILE}"
-    )
-
-    # Create custom target
-    add_custom_target(${TARGET_NAME} ALL
-        DEPENDS ${ARG_OUTPUT_FILE}
-    )
-    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)
-    
-    # Return target name if output variable specified
-    if(ARG_OUTPUT_TARGET_VAR)
-        set(${ARG_OUTPUT_TARGET_VAR} ${TARGET_NAME} PARENT_SCOPE)
-    endif()
-endfunction()

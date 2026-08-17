@@ -1,42 +1,63 @@
-# === ValidateAssetTokens.cmake ===
-# 提供 validate_asset_tokens() 函数，用于在构建前校验 token.json 与 theme JSON 的一致性，
-# 并验证 theme 中引用的资源文件是否真实存在于磁盘上。
 include_guard()
 
-function(validate_asset_tokens)
-    set(oneValueArgs TOKEN_FILE THEME_DIR ASSET_ROOT SCRIPT)
-    cmake_parse_arguments(VAT "" "${oneValueArgs}" "" ${ARGN})
+include("${CMAKE_CURRENT_LIST_DIR}/internal/TokenValidationInternals.cmake")
 
-    foreach(required_arg TOKEN_FILE THEME_DIR ASSET_ROOT SCRIPT)
+function(validate_asset_tokens)
+    set(one_value_args
+        TOKEN_FILE
+        ASSET_ROOT
+        SCRIPT
+        OUTPUT_TARGET_VAR
+    )
+    set(multi_value_args THEME_FILES)
+    cmake_parse_arguments(
+        PARSE_ARGV 0 VAT "" "${one_value_args}" "${multi_value_args}")
+
+    foreach(required_arg TOKEN_FILE ASSET_ROOT SCRIPT OUTPUT_TARGET_VAR)
         if(NOT VAT_${required_arg})
-            message(FATAL_ERROR "[validate_asset_tokens] Missing: ${required_arg}")
+            message(FATAL_ERROR
+                "[validate_asset_tokens] ${required_arg} is required")
         endif()
     endforeach()
+    if(NOT VAT_THEME_FILES)
+        message(FATAL_ERROR
+            "[validate_asset_tokens] THEME_FILES is required")
+    endif()
+    if(VAT_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR
+            "[validate_asset_tokens] Arguments missing values: "
+            "${VAT_KEYWORDS_MISSING_VALUES}")
+    endif()
+    if(VAT_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "[validate_asset_tokens] Unknown arguments: "
+            "${VAT_UNPARSED_ARGUMENTS}")
+    endif()
+    _tt_token_validation_validate_output_variable(
+        FUNCTION_NAME validate_asset_tokens
+        VARIABLE_NAME "${VAT_OUTPUT_TARGET_VAR}"
+    )
 
-    find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    file(GLOB THEME_FILES "${VAT_THEME_DIR}/*.json")
-
-    set(CMD ${Python3_EXECUTABLE} ${VAT_SCRIPT}
-        --token "${VAT_TOKEN_FILE}" --themes ${THEME_FILES}
-        --asset-root "${VAT_ASSET_ROOT}")
-
-    set(STAMP "${CMAKE_BINARY_DIR}/asset_token_validation.stamp")
-    add_custom_command(OUTPUT ${STAMP}
-        COMMAND ${CMD}
-        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP}
-        DEPENDS ${VAT_TOKEN_FILE} ${THEME_FILES} ${VAT_SCRIPT}
-        COMMENT "Validating asset token consistency and on-disk assets..."
-        VERBATIM)
-
-    set(TARGET_NAME ValidateAssetTokens)
-    if(NOT TARGET ${TARGET_NAME})
-        add_custom_target(${TARGET_NAME} ALL DEPENDS ${STAMP})
-        set_target_properties(${TARGET_NAME} PROPERTIES FOLDER codegen)
+    _tt_token_validation_normalize_path(
+        PATH "${VAT_ASSET_ROOT}"
+        BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE asset_root
+    )
+    if(NOT IS_DIRECTORY "${asset_root}")
+        message(FATAL_ERROR
+            "[validate_asset_tokens] ASSET_ROOT is not a directory: "
+            "${asset_root}")
     endif()
 
-    list(LENGTH VAT_UNPARSED_ARGUMENTS unparsed_count)
-    if(unparsed_count EQUAL 1)
-        list(GET VAT_UNPARSED_ARGUMENTS 0 output_variable)
-        set(${output_variable} ${TARGET_NAME} PARENT_SCOPE)
-    endif()
+    _tt_register_token_validation(
+        KIND asset
+        SCRIPT "${VAT_SCRIPT}"
+        TOKEN_FILE "${VAT_TOKEN_FILE}"
+        THEME_FILES ${VAT_THEME_FILES}
+        EXTRA_ARGUMENTS --asset-root "${asset_root}"
+        COMMENT "Validating asset tokens and referenced files"
+        OUTPUT_TARGET_VAR validation_target
+    )
+
+    set("${VAT_OUTPUT_TARGET_VAR}" "${validation_target}" PARENT_SCOPE)
 endfunction()

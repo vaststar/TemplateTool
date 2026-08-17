@@ -4,19 +4,27 @@ include(CapitalizeString)
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
 set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/ResourceFont)
+set(FONT_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json)
 
-set(RESOURCE_TARGETS )
+set(RESOURCE_TARGETS)
+
+set(THEME_JSON_NAMES normal)
+set(THEME_JSON_PATH_SET)
+foreach(theme_name IN LISTS THEME_JSON_NAMES)
+    list(APPEND THEME_JSON_PATH_SET
+        "${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${theme_name}.json")
+endforeach()
 
 ## Precheck: token ↔ theme ↔ palette 一致性校验
 include(ValidateFontTokens)
 validate_font_tokens(
     SCRIPT     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate_font_tokens.py
-    TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json
-    THEME_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/data/themes
+    TOKEN_FILE ${FONT_TOKEN_JSON_PATH}
+    THEME_FILES ${THEME_JSON_PATH_SET}
     PALETTE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/palette.json
-    PRECHECK_TARGET
+    OUTPUT_TARGET_VAR PRECHECK_TARGET
 )
-list(APPEND RESOURCE_TARGETS ${PRECHECK_TARGET})
+list(APPEND RESOURCE_TARGETS "${PRECHECK_TARGET}")
 
 ## FontPalette
 set(FONT_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/palette.json)
@@ -29,40 +37,46 @@ generate_from_template(
     INPUT_FILE ${FONT_JSON_PATH}
     OUTPUT_FILE ${FONT_OUTPUT_PATH}
     OUTPUT_TARGET_VAR FONT_TARGET
+    DEPENDS ${PRECHECK_TARGET}
 )
-list(APPEND RESOURCE_TARGETS ${FONT_TARGET})
+add_dependencies("${FONT_TARGET}" "${PRECHECK_TARGET}")
+list(APPEND RESOURCE_TARGETS "${FONT_TARGET}")
 
 ## FontToken
-set(GLOBAL_FONT_TOKEN_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/token.json  CACHE STRING "Path to token.json" FORCE)
 set(TOKEN_OUT_PUT_FILE FontToken.h)
 set(TOKEN_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${TOKEN_OUT_PUT_FILE})
 set(TOKEN_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/FontToken.h.j2)
 
 generate_from_template(
     TEMPLATE_FILE ${TOKEN_TEMEPLATE_FILE}
-    INPUT_FILE ${GLOBAL_FONT_TOKEN_JSON_PATH}
+    INPUT_FILE ${FONT_TOKEN_JSON_PATH}
     OUTPUT_FILE ${TOKEN_OUTPUT_PATH}
     OUTPUT_TARGET_VAR TOKEN_TARGET
+    DEPENDS ${PRECHECK_TARGET}
 )
-list(APPEND RESOURCE_TARGETS ${TOKEN_TARGET})
+add_dependencies("${TOKEN_TARGET}" "${PRECHECK_TARGET}")
+list(APPEND RESOURCE_TARGETS "${TOKEN_TARGET}")
 
 
 ## BuildThemeFontSet
-set(THEME_JSON_NAMES "normal" )
-foreach(item IN LISTS THEME_JSON_NAMES)
-set(THEME_JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${item}.json)
-capitalize(${item} capital_json_name)
-set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeFontSet.h)
-set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
-set(THEME_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeFontSet.h.j2)
+foreach(theme_name IN LISTS THEME_JSON_NAMES)
+    set(THEME_JSON_PATH
+        ${CMAKE_CURRENT_SOURCE_DIR}/data/themes/${theme_name}.json)
+    capitalize(${theme_name} capital_json_name)
+    set(THEME_OUT_PUT_FILE Build${capital_json_name}ThemeFontSet.h)
+    set(THEME_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${THEME_OUT_PUT_FILE})
+    set(THEME_TEMEPLATE_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/templates/BuildThemeFontSet.h.j2)
 
-generate_from_template(
-    TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
-    INPUT_FILE ${THEME_JSON_PATH}
-    OUTPUT_FILE ${THEME_OUTPUT_PATH}
-    OUTPUT_TARGET_VAR THEME_TARGET
-)
-list(APPEND RESOURCE_TARGETS ${THEME_TARGET})
+    generate_from_template(
+        TEMPLATE_FILE ${THEME_TEMEPLATE_FILE}
+        INPUT_FILE ${THEME_JSON_PATH}
+        OUTPUT_FILE ${THEME_OUTPUT_PATH}
+        OUTPUT_TARGET_VAR THEME_TARGET
+        DEPENDS ${PRECHECK_TARGET}
+    )
+    add_dependencies("${THEME_TARGET}" "${PRECHECK_TARGET}")
+    list(APPEND RESOURCE_TARGETS "${THEME_TARGET}")
 endforeach()
 
 
@@ -76,4 +90,9 @@ BuildInterface(
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE ${RESOURCE_OUT_PUT_DIR}
     TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE ResourceFont
     IDE_FOLDER ${RESOURCE_IDE_FOLDER}
+)
+
+set_property(
+    TARGET ResourceFont
+    PROPERTY UCF_RESOURCE_TOKEN_FILE "${FONT_TOKEN_JSON_PATH}"
 )
