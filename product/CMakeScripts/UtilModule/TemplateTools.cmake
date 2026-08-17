@@ -1,117 +1,172 @@
-# === TemplateTools.cmake ===
-# 提供 generate_from_template() 函数，用于从模板 + JSON 输入生成文件。
 include_guard()
 
-# 核心函数：创建虚拟环境（响应requirements.txt变更）
-function(jinja_create_venv)
-    set(VENV_DIR "${CMAKE_BINARY_DIR}/jinja_venv")
-    set(REQUIREMENT_FILE "${CMAKE_SOURCE_DIR}/product/codegen/template_render/requirements.txt")
-    message(STATUS "[jinja_create_venv] requirements path: ${REQUIREMENT_FILE}")
-    set(MARKER_FILE "${VENV_DIR}/.venv_ready")  # 环境就绪标记
+include("${CMAKE_CURRENT_LIST_DIR}/internal/TemplateToolsInternals.cmake")
 
-
-    find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    message(STATUS "[jinja_create_venv] python3 path: ${Python3_EXECUTABLE}")
-
-    # 返回Python解释器路径（跨平台处理）
-    if(WIN32)
-        set(PIP_PATH "${VENV_DIR}/Scripts/pip.exe")
-        set(PYTHON_PATH "${VENV_DIR}/Scripts/python.exe")
-    else()
-        set(PIP_PATH "${VENV_DIR}/bin/pip")
-        set(PYTHON_PATH "${VENV_DIR}/bin/python")
-    endif()
-
-    add_custom_command(
-        OUTPUT ${MARKER_FILE}
-        COMMAND ${CMAKE_COMMAND} -E rm -rf ${VENV_DIR}           # 清理旧环境
-        COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_DIR}        # 创建新环境
-        COMMAND ${CMAKE_COMMAND} -E sleep 1                      # 解决权限问题：安装前等待文件系统就绪
-        COMMAND ${PIP_PATH} install -r "${REQUIREMENT_FILE}"     # 安装依赖
-        COMMAND ${CMAKE_COMMAND} -E touch "${MARKER_FILE}"       # 创建标记
-        COMMENT "Building Jinja2 venv with dependencies, create virtual env and install requirements: ${REQUIREMENT_FILE}"
-        VERBATIM
-    )
-
-    set (VENV_NAME "jinja_venv")
-    if (NOT TARGET ${VENV_NAME})
-        add_custom_target(${VENV_NAME} 
-            DEPENDS ${MARKER_FILE}
-        )
-        set_target_properties(${VENV_NAME} PROPERTIES FOLDER codegen)
-    endif()
-
-    set(VENV_PIP_PATH ${PIP_PATH} PARENT_SCOPE)
-    set(VENV_PYTHON_PATH ${PYTHON_PATH} PARENT_SCOPE)
-    set(VENV_TARGET_NAME ${VENV_NAME} PARENT_SCOPE)
-endfunction()
-
-
+# Generate a file from a Jinja template and structured input.
 function(generate_from_template)
-    set(options)  # 没有布尔选项
-    set(oneValueArgs TEMPLATE_FILE INPUT_FILE OUTPUT_FILE)
-    set(multiValueArgs DEPENDS EXTRA_PARAMS)
-    cmake_parse_arguments(GFT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    # === 参数检查 ===
-    if(NOT GFT_TEMPLATE_FILE)
-        message(FATAL_ERROR "[generate_from_template] Missing required argument: TEMPLATE_FILE")
-    endif()
-    if(NOT GFT_INPUT_FILE)
-        message(FATAL_ERROR "[generate_from_template] Missing required argument: INPUT_FILE")
-    endif()
-    if(NOT GFT_OUTPUT_FILE)
-        message(FATAL_ERROR "[generate_from_template] Missing required argument: OUTPUT_FILE")
-    endif()
-
-    jinja_create_venv()
-    message(STATUS "[generate_from_template] pip path: ${VENV_PIP_PATH}, python path: ${VENV_PYTHON_PATH}")
-
-    set(SCRIPT_PATH "${CMAKE_SOURCE_DIR}/product/codegen/template_render/render_template.py")
-    message(STATUS "[generate_from_template] render script path: ${SCRIPT_PATH}")
-
-    # === 路径准备 ===
-    get_filename_component(_output_dir "${GFT_OUTPUT_FILE}" DIRECTORY)
-    file(MAKE_DIRECTORY "${_output_dir}")
-
-    message(STATUS "[generate_from_template] Generating '${GFT_OUTPUT_FILE}' from template '${GFT_TEMPLATE_FILE}' using input '${GFT_INPUT_FILE}'")
-    # === 构建命令 ===
-    set(PYTHON_CMD ${VENV_PYTHON_PATH} ${SCRIPT_PATH} 
-        --template "${GFT_TEMPLATE_FILE}"
-        --input "${GFT_INPUT_FILE}" 
-        --output "${GFT_OUTPUT_FILE}"
+    set(one_value_args
+        TEMPLATE_FILE
+        INPUT_FILE
+        OUTPUT_FILE
+        OUTPUT_TARGET_VAR
     )
-    if(GFT_EXTRA_PARAMS)
-        foreach(param IN LISTS GFT_EXTRA_PARAMS)
-            message(STATUS "[generate_from_template] render extra param: ${param}")
-            list(APPEND PYTHON_CMD --param "${param}")
-        endforeach()
+    set(multi_value_args DEPENDS EXTRA_PARAMS)
+    cmake_parse_arguments(
+        PARSE_ARGV 0 GFT "" "${one_value_args}" "${multi_value_args}")
+
+    foreach(required_arg
+            TEMPLATE_FILE
+            INPUT_FILE
+            OUTPUT_FILE
+            OUTPUT_TARGET_VAR)
+        if(NOT GFT_${required_arg})
+            message(FATAL_ERROR
+                "[generate_from_template] ${required_arg} is required")
+        endif()
+    endforeach()
+    if(GFT_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR
+            "[generate_from_template] Arguments missing values: "
+            "${GFT_KEYWORDS_MISSING_VALUES}")
     endif()
+    if(GFT_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "[generate_from_template] Unknown arguments: "
+            "${GFT_UNPARSED_ARGUMENTS}")
+    endif()
+    if(NOT "${GFT_OUTPUT_TARGET_VAR}" MATCHES "^[A-Za-z_][A-Za-z0-9_]*$")
+        message(FATAL_ERROR
+            "[generate_from_template] OUTPUT_TARGET_VAR must be a valid "
+            "variable name, got '${GFT_OUTPUT_TARGET_VAR}'")
+    endif()
+
+    _tt_normalize_path(
+        PATH "${GFT_TEMPLATE_FILE}"
+        BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE template_file
+    )
+    _tt_normalize_path(
+        PATH "${GFT_INPUT_FILE}"
+        BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE input_file
+    )
+    _tt_normalize_path(
+        PATH "${GFT_OUTPUT_FILE}"
+        BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        OUTPUT_VARIABLE output_file
+    )
+
+    set(renderer_directory
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../codegen/template_render")
+    cmake_path(NORMAL_PATH renderer_directory)
+    set(renderer_script "${renderer_directory}/render_template.py")
+    set(requirements_file "${renderer_directory}/requirements.txt")
+
+    foreach(required_file
+            "${template_file}"
+            "${input_file}"
+            "${renderer_script}"
+            "${requirements_file}")
+        if(NOT EXISTS "${required_file}")
+            message(FATAL_ERROR
+                "[generate_from_template] Required file does not exist: "
+                "${required_file}")
+        endif()
+    endforeach()
+
+    _tt_make_template_target_name(
+        OUTPUT_FILE "${output_file}"
+        OUTPUT_VARIABLE generated_target
+    )
+
+    string(CONCAT registration_data
+        "template=${template_file}\n"
+        "input=${input_file}\n"
+        "output=${output_file}\n"
+        "depends=${GFT_DEPENDS}\n"
+        "extra_params=${GFT_EXTRA_PARAMS}\n"
+    )
+    string(SHA256 registration_signature "${registration_data}")
+
+    if(TARGET "${generated_target}")
+        get_target_property(
+            registered_output "${generated_target}" TT_GENERATED_OUTPUT)
+        get_target_property(
+            registered_signature "${generated_target}" TT_GENERATOR_SIGNATURE)
+
+        if(NOT "${registered_output}" STREQUAL "${output_file}")
+            message(FATAL_ERROR
+                "[generate_from_template] Target-name collision for "
+                "'${generated_target}': '${registered_output}' and "
+                "'${output_file}'")
+        endif()
+        if(NOT "${registered_signature}" STREQUAL
+           "${registration_signature}")
+            message(FATAL_ERROR
+                "[generate_from_template] Output '${output_file}' is already "
+                "registered with a different template-generation configuration")
+        endif()
+
+        set("${GFT_OUTPUT_TARGET_VAR}" "${generated_target}" PARENT_SCOPE)
+        return()
+    endif()
+
+    _tt_ensure_jinja_runtime(
+        REQUIREMENTS_FILE "${requirements_file}"
+        OUTPUT_PYTHON_VAR runtime_python
+        OUTPUT_TARGET_VAR runtime_target
+    )
+
+    get_filename_component(output_directory "${output_file}" DIRECTORY)
+    file(MAKE_DIRECTORY "${output_directory}")
+
+    set(render_command
+        "${runtime_python}"
+        "${renderer_script}"
+        --template "${template_file}"
+        --input "${input_file}"
+        --output "${output_file}"
+    )
+    foreach(extra_param IN LISTS GFT_EXTRA_PARAMS)
+        list(APPEND render_command --param "${extra_param}")
+    endforeach()
 
     add_custom_command(
-        OUTPUT "${GFT_OUTPUT_FILE}"
-        COMMAND ${PYTHON_CMD}
+        OUTPUT "${output_file}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${output_directory}"
+        COMMAND ${render_command}
         DEPENDS
-            "${GFT_TEMPLATE_FILE}"
-            "${GFT_INPUT_FILE}"
-            "${SCRIPT_PATH}"
+            "${runtime_target}"
+            "${template_file}"
+            "${input_file}"
+            "${renderer_script}"
+            "${requirements_file}"
             ${GFT_DEPENDS}
-            ${VENV_TARGET_NAME}
-        COMMENT "Generating ${GFT_OUTPUT_FILE} from ${GFT_TEMPLATE_FILE} using ${GFT_INPUT_FILE}"
+        COMMENT "Generating ${output_file}"
         VERBATIM
     )
 
-    get_filename_component(MODULE_NAME ${GFT_OUTPUT_FILE} NAME)
-    set(MODULE_TARGET_NAME generate_${MODULE_NAME})
+    add_custom_target("${generated_target}" ALL DEPENDS "${output_file}")
+    add_dependencies("${generated_target}" "${runtime_target}")
+    set_target_properties("${generated_target}" PROPERTIES
+        FOLDER codegen
+        TT_GENERATED_OUTPUT "${output_file}"
+        TT_GENERATOR_SIGNATURE "${registration_signature}"
+    )
+    set_source_files_properties("${output_file}" PROPERTIES GENERATED TRUE)
 
-    message(STATUS "generate coden target:${MODULE_TARGET_NAME} for ${GFT_OUTPUT_FILE}")
-    add_custom_target(${MODULE_TARGET_NAME} ALL DEPENDS ${GFT_OUTPUT_FILE})
-    set_target_properties(${MODULE_TARGET_NAME} PROPERTIES FOLDER codegen)
-
-    list(LENGTH GFT_UNPARSED_ARGUMENTS unparsed_count)
-    if(NOT unparsed_count EQUAL 1)
-        message(FATAL_ERROR "函数调用错误: 需要指定1个输出变量名表示TARGET_NAME")
+    message(STATUS
+        "[generate_from_template] ${generated_target} -> ${output_file}")
+    if(CMAKE_VERBOSE_MAKEFILE)
+        message(STATUS
+            "[generate_from_template]   Template: ${template_file}")
+        message(STATUS
+            "[generate_from_template]   Input   : ${input_file}")
+        message(STATUS
+            "[generate_from_template]   Depends : ${GFT_DEPENDS}")
+        message(STATUS
+            "[generate_from_template]   Params  : ${GFT_EXTRA_PARAMS}")
     endif()
-    list(GET GFT_UNPARSED_ARGUMENTS 0 generate_from_template_target)
-    set(${generate_from_template_target} ${MODULE_TARGET_NAME} PARENT_SCOPE)
+
+    set("${GFT_OUTPUT_TARGET_VAR}" "${generated_target}" PARENT_SCOPE)
 endfunction()

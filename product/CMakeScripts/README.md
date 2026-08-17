@@ -11,6 +11,7 @@ setup logic.
 - `BuildModule/internal/`: implementation details used by the public build
   functions. Files and functions in this directory are not public APIs.
 - `UtilModule/`: reusable platform, code-generation, and validation helpers.
+- `UtilModule/internal/`: implementation details for public utility modules.
 - `VersionModule/`: version metadata and generated application information.
 
 ## Public entry points
@@ -53,12 +54,34 @@ Existing public argument names are kept for compatibility. New APIs should
 prefer explicit names such as `PRIVATE_LINK_LIBRARIES`,
 `PUBLIC_COMPILE_DEFINITIONS`, and `OUTPUT_TARGET_VAR`.
 
+## Template generation
+
+`generate_from_template(...)` requires an explicit output variable name:
+
+```cmake
+generate_from_template(
+    TEMPLATE_FILE "${template_file}"
+    INPUT_FILE "${input_file}"
+    OUTPUT_FILE "${output_file}"
+    OUTPUT_TARGET_VAR generated_target
+)
+```
+
+The function writes the generated target name to `generated_target` in the
+caller's scope. The target name is derived from the normalized output path, so
+same-named files in different directories do not collide. Re-registering the
+same output with a different template-generation configuration is an error.
+
+The shared `jinja_venv` runtime is registered once per build tree. Generated
+targets depend on both that runtime and its requirements file; changing the
+requirements rebuilds the runtime and regenerates affected outputs.
+
 ## Public versus internal functions
 
 Public functions use their documented names. Internal helpers use the `_tt_`
 prefix and may change without migrating project `CMakeLists.txt` files.
 
-Do not call functions from `BuildModule/internal/` outside the owning public
+Do not call functions from an `internal/` directory outside the owning public
 module.
 
 ## Logging

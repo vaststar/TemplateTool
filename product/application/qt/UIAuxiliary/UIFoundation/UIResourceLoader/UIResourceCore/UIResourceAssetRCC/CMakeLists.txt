@@ -16,7 +16,7 @@ foreach(item IN LISTS GLOBAL_ASSET_THEME_FILES)
       TEMPLATE_FILE ${RCC_TEMEPLATE_FILE}
       INPUT_FILE ${item}
       OUTPUT_FILE ${RCC_OUTPUT_PATH}
-      GFT_RCC_TARGET
+      OUTPUT_TARGET_VAR GFT_RCC_TARGET
       EXTRA_PARAMS "base_dir=${GLOBAL_ASSET_BASE_DIR}"
   )
   list(APPEND RCC_FILES ${RCC_OUTPUT_PATH})
@@ -42,4 +42,3 @@ add_dependencies(${Resource_RCC_Target} ${RCC_TARGETS})
 add_library(UIResourceAssetRCCInterface INTERFACE)
 target_link_libraries(UIResourceAssetRCCInterface INTERFACE
     $<LINK_LIBRARY:WHOLE_ARCHIVE,${Resource_RCC_Target}>)
-
