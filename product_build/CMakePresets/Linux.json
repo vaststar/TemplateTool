@@ -2,7 +2,7 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 23,
+    "minor": 25,
     "patch": 0
   },
   "include": [
@@ -24,13 +24,13 @@
       "name": "linux-debug",
       "displayName": "Linux Debug",
       "description": "Linux GCC - Debug configuration",
-      "inherits": ["linux-base", "ninja", "debug"]
+      "inherits": ["linux-base", "ninja", "single-config-debug"]
     },
     {
       "name": "linux-release",
       "displayName": "Linux Release",
       "description": "Linux GCC - Release configuration",
-      "inherits": ["linux-base", "ninja", "release"]
+      "inherits": ["linux-base", "ninja", "single-config-release"]
     }
   ],
   "buildPresets": [

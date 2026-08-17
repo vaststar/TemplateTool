@@ -2,13 +2,40 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 23,
+    "minor": 25,
     "patch": 0
   },
   "include": [
     "Base.json"
   ],
   "configurePresets": [
+    {
+      "name": "vs2022-x64",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      }
+    },
+    {
+      "name": "mingw-compilers",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "msvc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_MSVC_DEBUG_INFORMATION_FORMAT": "$<$<CONFIG:Debug,Release,RelWithDebInfo>:ProgramDatabase>",
+        "CMAKE_EXE_LINKER_FLAGS_RELEASE": "/DEBUG /OPT:REF /OPT:ICF /INCREMENTAL:NO",
+        "CMAKE_SHARED_LINKER_FLAGS_RELEASE": "/DEBUG /OPT:REF /OPT:ICF /INCREMENTAL:NO",
+        "CMAKE_MODULE_LINKER_FLAGS_RELEASE": "/DEBUG /OPT:REF /OPT:ICF /INCREMENTAL:NO"
+      }
+    },
     {
       "name": "windows-base",
       "hidden": true,
@@ -24,25 +51,25 @@
       "name": "windows-msvc-debug",
       "displayName": "Windows MSVC Debug",
       "description": "Windows MSVC compiler - Debug configuration",
-      "inherits": ["windows-base", "vs2022", "debug"]
+      "inherits": ["windows-base", "vs2022-x64", "msvc"]
     },
     {
       "name": "windows-msvc-release",
       "displayName": "Windows MSVC Release",
       "description": "Windows MSVC compiler - Release configuration with debug info",
-      "inherits": ["windows-base", "vs2022", "release-with-debug"]
+      "inherits": ["windows-base", "vs2022-x64", "msvc"]
     },
     {
       "name": "windows-mingw-debug",
       "displayName": "Windows MinGW Debug",
       "description": "Windows MinGW compiler - Debug configuration",
-      "inherits": ["windows-base", "ninja", "mingw", "debug"]
+      "inherits": ["windows-base", "ninja", "mingw-compilers", "single-config-debug"]
     },
     {
       "name": "windows-mingw-release",
       "displayName": "Windows MinGW Release",
       "description": "Windows MinGW compiler - Release configuration",
-      "inherits": ["windows-base", "ninja", "mingw", "release"]
+      "inherits": ["windows-base", "ninja", "mingw-compilers", "single-config-release"]
     }
   ],
   "buildPresets": [
@@ -73,12 +100,14 @@
     {
       "name": "windows-msvc-debug",
       "configurePreset": "windows-msvc-debug",
-      "generators": ["ZIP", "NSIS"]
+      "generators": ["ZIP", "NSIS"],
+      "configurations": ["Debug"]
     },
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
-      "generators": ["ZIP", "NSIS"]
+      "generators": ["ZIP", "NSIS"],
+      "configurations": ["Release"]
     },
     {
       "name": "windows-mingw-debug",

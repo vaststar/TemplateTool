@@ -2,13 +2,26 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 23,
+    "minor": 25,
     "patch": 0
   },
   "include": [
     "Base.json"
   ],
   "configurePresets": [
+    {
+      "name": "unix-makefiles",
+      "hidden": true,
+      "generator": "Unix Makefiles"
+    },
+    {
+      "name": "clang-compilers",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
     {
       "name": "macos-base",
       "hidden": true,
@@ -24,13 +37,13 @@
       "name": "macos-debug",
       "displayName": "macOS Debug",
       "description": "macOS Clang - Debug configuration",
-      "inherits": ["macos-base", "unix-makefiles", "clang-compiler", "debug"]
+      "inherits": ["macos-base", "unix-makefiles", "clang-compilers", "single-config-debug"]
     },
     {
       "name": "macos-release",
       "displayName": "macOS Release",
       "description": "macOS Clang - Release configuration",
-      "inherits": ["macos-base", "unix-makefiles", "clang-compiler", "release"]
+      "inherits": ["macos-base", "unix-makefiles", "clang-compilers", "single-config-release"]
     }
   ],
   "buildPresets": [
