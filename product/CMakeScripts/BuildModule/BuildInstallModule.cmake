@@ -27,7 +27,7 @@ function(BuildInstallModule)
     # ==========================================
     # Logging
     # ==========================================
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS "[BuildInstallModule] ${INSTALL_MODULE_NAME}")
     endif()
 

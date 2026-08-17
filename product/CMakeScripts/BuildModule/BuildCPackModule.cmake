@@ -1,6 +1,7 @@
 include_guard()
 
 include(GenerateAppInfoFiles)
+include(GetRequiredTargetProperty)
 
 # ==========================================
 # BuildCPackModule - Unified CPack config generator (all platforms)
@@ -42,15 +43,20 @@ function(BuildCPackModule)
             "[BuildCPackModule] Unknown arguments: "
             "${MODULE_UNPARSED_ARGUMENTS}")
     endif()
-    if(NOT GLOBAL_APP_VERSION_JSON)
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_VERSION_JSON_FILE
+        OUTPUT_VARIABLE app_version_json
+    )
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_VERSION_GENERATOR_TARGET
+        OUTPUT_VARIABLE app_version_target
+    )
+    if(NOT TARGET "${app_version_target}")
         message(FATAL_ERROR
-            "[BuildCPackModule] GLOBAL_APP_VERSION_JSON is not configured")
-    endif()
-    if(NOT GLOBAL_APP_VERSION_JSON_TARGET
-       OR NOT TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}")
-        message(FATAL_ERROR
-            "[BuildCPackModule] GLOBAL_APP_VERSION_JSON_TARGET is missing or "
-            "does not name an existing target")
+            "[BuildCPackModule] AppVersionMetadata generator target does not "
+            "exist: ${app_version_target}")
     endif()
     if(MODULE_PRE_BUILD_SCRIPT
        AND NOT EXISTS "${MODULE_PRE_BUILD_SCRIPT}")
@@ -68,8 +74,8 @@ function(BuildCPackModule)
 
     # Build-time generation via add_custom_command
     generate_app_info_files(
-        INPUT_JSON_FILE "${GLOBAL_APP_VERSION_JSON}"
-        INPUT_JSON_TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}"
+        INPUT_JSON_FILE "${app_version_json}"
+        INPUT_JSON_TARGET "${app_version_target}"
         INPUT_VERSION_TEMPLATE "${MODULE_TEMPLATE}"
         OUTPUT_FILE "${CPACK_CONFIG_PATH}"
         INTERNAL_NAME ""
@@ -80,7 +86,7 @@ function(BuildCPackModule)
 
     # Tell CPack to read this file at cpack runtime (not configure time)
     set(CPACK_PROJECT_CONFIG_FILE "${CPACK_CONFIG_PATH}" PARENT_SCOPE)
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[BuildCPackModule]   Generated target: ${cpack_config_target}")
         message(STATUS
@@ -90,7 +96,7 @@ function(BuildCPackModule)
     # Set pre-build script to strip dev files before packaging
     if(MODULE_PRE_BUILD_SCRIPT)
         set(CPACK_PRE_BUILD_SCRIPTS "${MODULE_PRE_BUILD_SCRIPT}" PARENT_SCOPE)
-        if(CMAKE_VERBOSE_MAKEFILE)
+        if(TT_CMAKE_VERBOSE_CONFIG)
             message(STATUS
                 "[BuildCPackModule]   Pre-build script: "
                 "${MODULE_PRE_BUILD_SCRIPT}")

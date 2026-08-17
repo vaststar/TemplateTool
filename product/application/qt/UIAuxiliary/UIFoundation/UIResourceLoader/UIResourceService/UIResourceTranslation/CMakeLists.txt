@@ -14,7 +14,11 @@ else()
     message(STATUS "[I18N] Using default code dir: ${TRANSLATION_CODE_DIR}")
 endif()
 
-file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES "${TRANSLATION_CODE_DIR}/*.cpp" "${TRANSLATION_CODE_DIR}/*.qml")
+file(GLOB_RECURSE ALL_TRANSLATION_SOURCE_FILES
+    CONFIGURE_DEPENDS
+    "${TRANSLATION_CODE_DIR}/*.cpp"
+    "${TRANSLATION_CODE_DIR}/*.qml"
+)
 
 # Exclude the developer-only gallery (UIToolKitGallery) from translation
 # extraction: its strings are demo content and should not ship in the .ts files.

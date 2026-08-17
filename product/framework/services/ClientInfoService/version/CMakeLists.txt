@@ -1,12 +1,29 @@
 
 include(GenerateAppVersionHeader)
+include(GetRequiredTargetProperty)
+
+get_required_target_property(
+    TARGET AppVersionMetadata
+    PROPERTY UCF_APP_VERSION_JSON_FILE
+    OUTPUT_VARIABLE APP_VERSION_JSON
+)
+get_required_target_property(
+    TARGET AppVersionMetadata
+    PROPERTY UCF_APP_VERSION_GENERATOR_TARGET
+    OUTPUT_VARIABLE APP_VERSION_JSON_TARGET
+)
+if(NOT TARGET "${APP_VERSION_JSON_TARGET}")
+    message(FATAL_ERROR
+        "[ClientInfoService/version] AppVersionMetadata generator target does "
+        "not exist: ${APP_VERSION_JSON_TARGET}")
+endif()
 
 set(APP_VERSION_HEADER_FOLDER ${UCF_CODE_GENERATOR_DIR}/AppVersion)
 set(APP_VERSION_HEADER_FILE appVersion.h)
 set(APP_VERSION_HEADER_PATH ${APP_VERSION_HEADER_FOLDER}/${APP_VERSION_HEADER_FILE})
 generate_app_version_header(
-    INPUT_JSON_FILE ${GLOBAL_APP_VERSION_JSON}
-    INPUT_JSON_TARGET ${GLOBAL_APP_VERSION_JSON_TARGET}
+    INPUT_JSON_FILE ${APP_VERSION_JSON}
+    INPUT_JSON_TARGET ${APP_VERSION_JSON_TARGET}
     INPUT_VERSION_TEMPLATE ${CMAKE_CURRENT_SOURCE_DIR}/templates/appVersion.h.in
     OUTPUT_FILE ${APP_VERSION_HEADER_PATH}
     OUTPUT_TARGET_VAR APP_VERSION_TARGET

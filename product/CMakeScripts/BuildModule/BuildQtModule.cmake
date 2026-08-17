@@ -88,7 +88,7 @@ function(BuildQtModule)
         message(STATUS
             "[BuildQtModule]   QML URI: ${MODULE_QML_TARGET_URI}")
     endif()
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[BuildQtModule]   Sources      : ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS

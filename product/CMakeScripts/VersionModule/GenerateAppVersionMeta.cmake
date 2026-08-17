@@ -179,7 +179,7 @@ else()
 
         message(STATUS
             "[generate_app_version_meta] ${generated_target} -> ${output_file}")
-        if(CMAKE_VERBOSE_MAKEFILE)
+        if(TT_CMAKE_VERBOSE_CONFIG)
             message(STATUS
                 "[generate_app_version_meta]   Input   : ${input_meta_json}")
             message(STATUS

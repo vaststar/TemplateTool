@@ -44,7 +44,7 @@ function(BuildInterface)
 
     message(STATUS "")
     message(STATUS "[BuildInterface] ${INTERFACE_MODULE_NAME}")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[BuildInterface]   Headers      : ${INTERFACE_TARGET_SOURCE_PUBLIC_HEADER}")
         message(STATUS

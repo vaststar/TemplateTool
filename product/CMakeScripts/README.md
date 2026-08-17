@@ -141,6 +141,12 @@ Git state -> git_info.meta -> version_meta.json
                             -> appVersion.h / plist / RC / desktop / CPack
 ```
 
+`AppVersionMetadata` is the stable configuration target that owns the generated
+version JSON path, its generator target, and the platform metadata templates.
+Cross-directory consumers retrieve those values through target properties;
+version paths and generator target names must not be published through global
+cache variables.
+
 Every generated output rule depends directly on both its upstream generated
 file and the target that produces that file. The generated wrapper target also
 depends on the upstream target. This two-level dependency is required so a

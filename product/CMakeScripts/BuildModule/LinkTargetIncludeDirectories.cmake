@@ -46,7 +46,7 @@ function(LinkTargetIncludeDirectories)
     # ==========================================
     # Logging
     # ==========================================
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS "[LinkTargetIncludeDirectories] ${MODULE_MODULE_NAME} (${VISIBILITY})")
         message(STATUS "[LinkTargetIncludeDirectories]   Build Interface  : ${MODULE_TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE}")
         message(STATUS "[LinkTargetIncludeDirectories]   Install Interface: ${MODULE_TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE}")

@@ -157,7 +157,7 @@ function(generate_from_template)
 
     message(STATUS
         "[generate_from_template] ${generated_target} -> ${output_file}")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[generate_from_template]   Template: ${template_file}")
         message(STATUS

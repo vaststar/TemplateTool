@@ -159,7 +159,7 @@ function(_tt_ensure_jinja_runtime)
 
     message(STATUS
         "[generate_from_template] Registered Jinja runtime: ${runtime_target}")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[generate_from_template]   System Python: ${Python3_EXECUTABLE}")
         message(STATUS

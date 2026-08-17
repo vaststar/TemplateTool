@@ -1,6 +1,7 @@
 include_guard()
 
 include(GenerateAppInfoFiles)
+include(GetRequiredTargetProperty)
 
 function(BuildLinuxDesktopModule)
     set(one_value_args MODULE_NAME FILE_DESCRIPTION ICON_FILE)
@@ -24,21 +25,30 @@ function(BuildLinuxDesktopModule)
             "[BuildLinuxDesktopModule] Unknown arguments: "
             "${MODULE_UNPARSED_ARGUMENTS}")
     endif()
-    if(NOT GLOBAL_APP_VERSION_JSON)
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_VERSION_JSON_FILE
+        OUTPUT_VARIABLE app_version_json
+    )
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_VERSION_GENERATOR_TARGET
+        OUTPUT_VARIABLE app_version_target
+    )
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_LINUX_DESKTOP_TEMPLATE
+        OUTPUT_VARIABLE app_desktop_template
+    )
+    if(NOT TARGET "${app_version_target}")
         message(FATAL_ERROR
-            "[BuildLinuxDesktopModule] GLOBAL_APP_VERSION_JSON is not configured")
+            "[BuildLinuxDesktopModule] AppVersionMetadata generator target does "
+            "not exist: ${app_version_target}")
     endif()
-    if(NOT GLOBAL_APP_VERSION_JSON_TARGET
-       OR NOT TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}")
+    if(NOT EXISTS "${app_desktop_template}")
         message(FATAL_ERROR
-            "[BuildLinuxDesktopModule] GLOBAL_APP_VERSION_JSON_TARGET is missing "
-            "or does not name an existing target")
-    endif()
-    if(NOT GLOBAL_APP_DESKTOP_TEMPLATE
-       OR NOT EXISTS "${GLOBAL_APP_DESKTOP_TEMPLATE}")
-        message(FATAL_ERROR
-            "[BuildLinuxDesktopModule] GLOBAL_APP_DESKTOP_TEMPLATE is missing "
-            "or does not name an existing file: ${GLOBAL_APP_DESKTOP_TEMPLATE}")
+            "[BuildLinuxDesktopModule] desktop template does not exist: "
+            "${app_desktop_template}")
     endif()
 
     set(desktop_file_path
@@ -46,20 +56,20 @@ function(BuildLinuxDesktopModule)
 
     message(STATUS
         "[BuildLinuxDesktopModule] ${MODULE_MODULE_NAME} -> ${desktop_file_path}")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[BuildLinuxDesktopModule]   Description: ${MODULE_FILE_DESCRIPTION}")
         message(STATUS
             "[BuildLinuxDesktopModule]   Template   : "
-            "${GLOBAL_APP_DESKTOP_TEMPLATE}")
+            "${app_desktop_template}")
         message(STATUS
             "[BuildLinuxDesktopModule]   Icon       : ${MODULE_ICON_FILE}")
     endif()
 
     generate_app_info_files(
-        INPUT_JSON_FILE "${GLOBAL_APP_VERSION_JSON}"
-        INPUT_JSON_TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}"
-        INPUT_VERSION_TEMPLATE "${GLOBAL_APP_DESKTOP_TEMPLATE}"
+        INPUT_JSON_FILE "${app_version_json}"
+        INPUT_JSON_TARGET "${app_version_target}"
+        INPUT_VERSION_TEMPLATE "${app_desktop_template}"
         OUTPUT_FILE "${desktop_file_path}"
         INTERNAL_NAME "${MODULE_MODULE_NAME}"
         FILE_DESCRIPTION "${MODULE_FILE_DESCRIPTION}"

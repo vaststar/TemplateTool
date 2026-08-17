@@ -41,7 +41,7 @@ function(BuildUnitTestModule)
     message(STATUS "")
     message(STATUS "[BuildUnitTestModule] ${MODULE_MODULE_NAME}")
     
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS "[BuildUnitTestModule]   Sources      : ${MODULE_TARGET_SOURCE}")
         message(STATUS "[BuildUnitTestModule]   Link Private : ${MODULE_TARGET_ADD_LINK_LIBRARY_PRIVATE}")
         message(STATUS "[BuildUnitTestModule]   Include Dirs : ${MODULE_TARGET_INCLUDE_FOLDER}")

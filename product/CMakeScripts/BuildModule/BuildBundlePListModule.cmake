@@ -1,6 +1,7 @@
 include_guard()
 
 include(GenerateAppInfoFiles)
+include(GetRequiredTargetProperty)
 
 function(BuildBundlePListModule)
     set(one_value_args MODULE_NAME FILE_DESCRIPTION)
@@ -24,20 +25,30 @@ function(BuildBundlePListModule)
             "[BuildBundlePListModule] Unknown arguments: "
             "${MODULE_UNPARSED_ARGUMENTS}")
     endif()
-    if(NOT GLOBAL_APP_VERSION_JSON)
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_VERSION_JSON_FILE
+        OUTPUT_VARIABLE app_version_json
+    )
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_VERSION_GENERATOR_TARGET
+        OUTPUT_VARIABLE app_version_target
+    )
+    get_required_target_property(
+        TARGET AppVersionMetadata
+        PROPERTY UCF_APP_MACOS_PLIST_TEMPLATE
+        OUTPUT_VARIABLE app_plist_template
+    )
+    if(NOT TARGET "${app_version_target}")
         message(FATAL_ERROR
-            "[BuildBundlePListModule] GLOBAL_APP_VERSION_JSON is not configured")
+            "[BuildBundlePListModule] AppVersionMetadata generator target does "
+            "not exist: ${app_version_target}")
     endif()
-    if(NOT GLOBAL_APP_VERSION_JSON_TARGET
-       OR NOT TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}")
+    if(NOT EXISTS "${app_plist_template}")
         message(FATAL_ERROR
-            "[BuildBundlePListModule] GLOBAL_APP_VERSION_JSON_TARGET is missing "
-            "or does not name an existing target")
-    endif()
-    if(NOT GLOBAL_APP_RC_TEMPLATE OR NOT EXISTS "${GLOBAL_APP_RC_TEMPLATE}")
-        message(FATAL_ERROR
-            "[BuildBundlePListModule] GLOBAL_APP_RC_TEMPLATE is missing or does "
-            "not name an existing file: ${GLOBAL_APP_RC_TEMPLATE}")
+            "[BuildBundlePListModule] plist template does not exist: "
+            "${app_plist_template}")
     endif()
 
     set(plist_path
@@ -47,11 +58,11 @@ function(BuildBundlePListModule)
 
     message(STATUS
         "[BuildBundlePListModule] ${MODULE_MODULE_NAME} -> ${plist_path}")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[BuildBundlePListModule]   Description: ${MODULE_FILE_DESCRIPTION}")
         message(STATUS
-            "[BuildBundlePListModule]   Template   : ${GLOBAL_APP_RC_TEMPLATE}")
+            "[BuildBundlePListModule]   Template   : ${app_plist_template}")
     endif()
 
     # CMake requires its plist template to exist during generation. Keep that
@@ -68,9 +79,9 @@ function(BuildBundlePListModule)
     )
 
     generate_app_info_files(
-        INPUT_JSON_FILE "${GLOBAL_APP_VERSION_JSON}"
-        INPUT_JSON_TARGET "${GLOBAL_APP_VERSION_JSON_TARGET}"
-        INPUT_VERSION_TEMPLATE "${GLOBAL_APP_RC_TEMPLATE}"
+        INPUT_JSON_FILE "${app_version_json}"
+        INPUT_JSON_TARGET "${app_version_target}"
+        INPUT_VERSION_TEMPLATE "${app_plist_template}"
         OUTPUT_FILE "${plist_path}"
         INTERNAL_NAME "${MODULE_MODULE_NAME}"
         FILE_DESCRIPTION "${MODULE_FILE_DESCRIPTION}"

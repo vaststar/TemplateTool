@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.23...3.31)
 
 project(TemplateTool)
 
+option(TT_CMAKE_VERBOSE_CONFIG
+    "Print detailed TemplateTool CMake configuration"
+    OFF
+)
+
 # ============================================================================
 # C++ 标准设置 (项目要求，不可由 preset 覆盖)
 # ============================================================================

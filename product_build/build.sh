@@ -16,10 +16,32 @@ fi
 PRESET="$DEFAULT_PRESET"
 ACTION="${2:-all}"
 
+VERBOSE_CONFIG=0
+VERBOSE_BUILD=0
+for option in "${@:3}"; do
+    case "$option" in
+        --verbose-config)
+            VERBOSE_CONFIG=1
+            ;;
+        --verbose-build)
+            VERBOSE_BUILD=1
+            ;;
+        --verbose)
+            VERBOSE_CONFIG=1
+            VERBOSE_BUILD=1
+            ;;
+        *)
+            echo "[ERROR] Unknown option: $option"
+            echo "        Run './build.sh --help' for usage."
+            exit 1
+            ;;
+    esac
+done
+
 # Handle help request
 if [[ "$PRESET" == "help" || "$PRESET" == "--help" || "$PRESET" == "-h" ]]; then
     echo ""
-    echo "Usage: ./build.sh [PRESET] [ACTION]"
+    echo "Usage: ./build.sh [PRESET] [ACTION] [OPTIONS...]"
     echo ""
     echo "PRESET:"
     echo "  windows-msvc-debug      Windows MSVC Debug"
@@ -42,11 +64,17 @@ if [[ "$PRESET" == "help" || "$PRESET" == "--help" || "$PRESET" == "-h" ]]; then
     echo "  test         Build and run tests"
     echo "  all          Configure and build (default)"
     echo ""
+    echo "OPTIONS:"
+    echo "  --verbose-config  Show detailed TemplateTool CMake configuration"
+    echo "  --verbose-build   Show complete compile and link commands"
+    echo "  --verbose         Enable both configuration and build details"
+    echo ""
     echo "Examples:"
     echo "  ./build.sh                                # Default: macos-release all"
     echo "  ./build.sh macos-debug build              # Debug build only"
     echo "  ./build.sh macos-release install          # Release build and install"
     echo "  ./build.sh linux-release test             # Run tests"
+    echo "  ./build.sh macos-release all --verbose    # Configure and build verbosely"
     echo ""
     exit 0
 fi
@@ -82,6 +110,8 @@ echo " Build Dir  : $BUILD_DIR"
 echo " CMake      : $CMAKE"
 echo " Preset     : $PRESET"
 echo " Action     : $ACTION"
+echo " Config log : $([[ $VERBOSE_CONFIG -eq 1 ]] && echo ON || echo OFF)"
+echo " Build log  : $([[ $VERBOSE_BUILD -eq 1 ]] && echo ON || echo OFF)"
 echo "****************************************************"
 echo ""
 
@@ -98,6 +128,25 @@ is_configured() {
     [ -f "$BUILD_DIR/CMakeCache.txt" ]
 }
 
+run_configure() {
+    local configure_args=(
+        --preset "$PRESET"
+        --graphviz="$GRAPHVIZ_FILE"
+    )
+    if [ $VERBOSE_CONFIG -eq 1 ]; then
+        configure_args+=("-DTT_CMAKE_VERBOSE_CONFIG=ON")
+    fi
+    "$CMAKE" "${configure_args[@]}"
+}
+
+run_build() {
+    local build_args=(--build --preset "$PRESET")
+    if [ $VERBOSE_BUILD -eq 1 ]; then
+        build_args+=(--verbose)
+    fi
+    "$CMAKE" "${build_args[@]}" "$@"
+}
+
 ensure_configured() {
     if ! is_configured; then
         echo ""
@@ -107,7 +156,7 @@ ensure_configured() {
         echo "  Preset    : $PRESET"
         echo "  Build Dir : $BUILD_DIR"
         echo ""
-        "$CMAKE" --preset "$PRESET" --graphviz="$GRAPHVIZ_FILE"
+        run_configure
         if [ $? -ne 0 ]; then
             echo ""
             echo "[ERROR] Configuration failed, cannot proceed."
@@ -158,13 +207,13 @@ do_all() {
     echo "  Preset    : $PRESET"
     echo "  Build Dir : $BUILD_DIR"
     echo ""
-    "$CMAKE" --preset "$PRESET" --graphviz="$GRAPHVIZ_FILE"
+    run_configure
     EXIT_CODE=$?
     if [ $EXIT_CODE -eq 0 ]; then
         echo ""
         echo "[Step 2/2] Building project..."
         echo "----------------------------------------------------"
-        "$CMAKE" --build --preset "$PRESET"
+        run_build
         EXIT_CODE=$?
     fi
 }
@@ -182,7 +231,7 @@ case "$ACTION" in
         echo "  Build Dir : $BUILD_DIR"
         echo "  Graphviz  : $GRAPHVIZ_FILE"
         echo ""
-        "$CMAKE" --preset "$PRESET" --graphviz="$GRAPHVIZ_FILE"
+        run_configure
         EXIT_CODE=$?
         ;;
 
@@ -194,7 +243,7 @@ case "$ACTION" in
         echo "  Preset    : $PRESET"
         echo "  Build Dir : $BUILD_DIR"
         echo ""
-        "$CMAKE" --build --preset "$PRESET"
+        run_build
         EXIT_CODE=$?
         ;;
 
@@ -204,7 +253,7 @@ case "$ACTION" in
         echo "----------------------------------------------------"
         if is_configured; then
             echo "  Cleaning $BUILD_DIR"
-            "$CMAKE" --build --preset "$PRESET" --target clean
+            run_build --target clean
         else
             echo "  No previous build found, skipping clean."
         fi
@@ -212,13 +261,13 @@ case "$ACTION" in
         echo "[Step 2/3] Configuring project..."
         echo "----------------------------------------------------"
         ensure_graphviz_dir
-        "$CMAKE" --preset "$PRESET" --graphviz="$GRAPHVIZ_FILE"
+        run_configure
         EXIT_CODE=$?
         if [ $EXIT_CODE -eq 0 ]; then
             echo ""
             echo "[Step 3/3] Building project..."
             echo "----------------------------------------------------"
-            "$CMAKE" --build --preset "$PRESET"
+            run_build
             EXIT_CODE=$?
         fi
         ;;
@@ -230,7 +279,7 @@ case "$ACTION" in
         if is_configured; then
             echo "  Build Dir : $BUILD_DIR"
             echo ""
-            "$CMAKE" --build --preset "$PRESET" --target clean
+            run_build --target clean
             EXIT_CODE=$?
         else
             echo "  [WARNING] Project not configured, nothing to clean."
@@ -247,7 +296,7 @@ case "$ACTION" in
         echo "  Build Dir  : $BUILD_DIR"
         echo "  Install to : $ROOT_DIR/install/$PRESET"
         echo ""
-        "$CMAKE" --build --preset "$PRESET" --target install
+        run_build --target install
         EXIT_CODE=$?
         ;;
 
@@ -280,7 +329,7 @@ case "$ACTION" in
         echo "  Preset    : $PRESET"
         echo "  Build Dir : $BUILD_DIR"
         echo ""
-        "$CMAKE" --build --preset "$PRESET"
+        run_build
         BUILD_RESULT=$?
         if [ $BUILD_RESULT -eq 0 ]; then
             cleanup_macos_cpack_dragndrop
@@ -301,7 +350,7 @@ case "$ACTION" in
         ensure_configured
         echo "  Preset    : $PRESET"
         echo ""
-        "$CMAKE" --build --preset "$PRESET"
+        run_build
         BUILD_RESULT=$?
         if [ $BUILD_RESULT -eq 0 ]; then
             echo ""

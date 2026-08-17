@@ -208,7 +208,7 @@ function(_tt_register_token_validation)
 
     message(STATUS
         "[token_validation] ${ARG_KIND} -> ${validation_target}")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS "[token_validation]   Token : ${token_file}")
         message(STATUS "[token_validation]   Themes: ${theme_files}")
         message(STATUS "[token_validation]   Script: ${script_file}")

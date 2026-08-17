@@ -67,7 +67,7 @@ function(BuildModule)
     message(STATUS "")
     message(STATUS
         "[BuildModule] ${MODULE_MODULE_NAME} (${_library_type})")
-    if(CMAKE_VERBOSE_MAKEFILE)
+    if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
             "[BuildModule]   Sources      : ${MODULE_TARGET_SOURCE_PRIVATE}")
         message(STATUS

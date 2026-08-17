@@ -187,7 +187,7 @@ else()
 
         message(STATUS
             "[generate_app_info_files] ${generated_target} -> ${output_file}")
-        if(CMAKE_VERBOSE_MAKEFILE)
+        if(TT_CMAKE_VERBOSE_CONFIG)
             message(STATUS
                 "[generate_app_info_files]   Input   : ${input_json_file}")
             message(STATUS

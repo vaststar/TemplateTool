@@ -17,6 +17,40 @@ if /i "%PRESET%"=="--help" goto :help
 if /i "%PRESET%"=="-h" goto :help
 if /i "%PRESET%"=="/?" goto :help
 
+set "VERBOSE_CONFIG=0"
+set "VERBOSE_BUILD=0"
+shift
+shift
+
+:parse_options
+if "%~1"=="" goto :options_parsed
+if /i "%~1"=="--verbose-config" (
+    set "VERBOSE_CONFIG=1"
+    goto :next_option
+)
+if /i "%~1"=="--verbose-build" (
+    set "VERBOSE_BUILD=1"
+    goto :next_option
+)
+if /i "%~1"=="--verbose" (
+    set "VERBOSE_CONFIG=1"
+    set "VERBOSE_BUILD=1"
+    goto :next_option
+)
+echo [ERROR] Unknown option: %~1
+echo         Run 'build.bat --help' for usage.
+exit /b 1
+
+:next_option
+shift
+goto :parse_options
+
+:options_parsed
+set "CONFIG_LOG=OFF"
+set "BUILD_LOG=OFF"
+if "%VERBOSE_CONFIG%"=="1" set "CONFIG_LOG=ON"
+if "%VERBOSE_BUILD%"=="1" set "BUILD_LOG=ON"
+
 set "ROOT_DIR=%~dp0.."
 set "BUILD_DIR=%ROOT_DIR%\build\%PRESET%"
 set "GRAPHVIZ_DIR=%BUILD_DIR%\cmake_graph"
@@ -57,6 +91,8 @@ echo  Build Dir  : %BUILD_DIR%
 echo  CMake      : %CMAKE%
 echo  Preset     : %PRESET%
 echo  Action     : %ACTION%
+echo  Config log : %CONFIG_LOG%
+echo  Build log  : %BUILD_LOG%
 echo ****************************************************
 echo.
 
@@ -89,7 +125,7 @@ echo   Preset    : %PRESET%
 echo   Build Dir : %BUILD_DIR%
 echo   Graphviz  : %GRAPHVIZ_FILE%
 echo.
-"%CMAKE%" --preset %PRESET% --graphviz="%GRAPHVIZ_FILE%"
+call :run_configure
 set "EXIT_CODE=%errorlevel%"
 goto :result
 
@@ -101,7 +137,7 @@ call :ensure_configured
 echo   Preset    : %PRESET%
 echo   Build Dir : %BUILD_DIR%
 echo.
-"%CMAKE%" --build --preset %PRESET%
+call :run_build
 set "EXIT_CODE=%errorlevel%"
 goto :result
 
@@ -113,7 +149,7 @@ call :is_configured
 if !errorlevel!==0 (
     echo   Build Dir : %BUILD_DIR%
     echo.
-    "%CMAKE%" --build --preset %PRESET% --target clean
+    call :run_build --target clean
     set "EXIT_CODE=!errorlevel!"
 ) else (
     echo   [WARNING] Project not configured, nothing to clean.
@@ -130,7 +166,7 @@ echo   Preset     : %PRESET%
 echo   Build Dir  : %BUILD_DIR%
 echo   Install to : %ROOT_DIR%\install\%PRESET%
 echo.
-"%CMAKE%" --build --preset %PRESET% --target install
+call :run_build --target install
 set "EXIT_CODE=%errorlevel%"
 goto :result
 
@@ -159,7 +195,7 @@ call :ensure_configured
 echo   Preset    : %PRESET%
 echo   Build Dir : %BUILD_DIR%
 echo.
-"%CMAKE%" --build --preset %PRESET%
+call :run_build
 if !errorlevel!==0 (
     echo.
     echo [Step 2/2] Creating package...
@@ -178,7 +214,7 @@ echo ----------------------------------------------------
 call :is_configured
 if !errorlevel!==0 (
     echo   Cleaning %BUILD_DIR%
-    "%CMAKE%" --build --preset %PRESET% --target clean
+    call :run_build --target clean
 ) else (
     echo   No previous build found, skipping clean.
 )
@@ -186,12 +222,12 @@ echo.
 echo [Step 2/3] Configuring project...
 echo ----------------------------------------------------
 call :ensure_graphviz_dir
-"%CMAKE%" --preset %PRESET% --graphviz="%GRAPHVIZ_FILE%"
+call :run_configure
 if !errorlevel!==0 (
     echo.
     echo [Step 3/3] Building project...
     echo ----------------------------------------------------
-    "%CMAKE%" --build --preset %PRESET%
+    call :run_build
     set "EXIT_CODE=!errorlevel!"
 ) else (
     set "EXIT_CODE=!errorlevel!"
@@ -205,7 +241,7 @@ echo ----------------------------------------------------
 call :ensure_configured
 echo   Preset    : %PRESET%
 echo.
-"%CMAKE%" --build --preset %PRESET%
+call :run_build
 if !errorlevel!==0 (
     echo.
     echo [Step 2/2] Running tests...
@@ -225,13 +261,13 @@ call :ensure_graphviz_dir
 echo   Preset    : %PRESET%
 echo   Build Dir : %BUILD_DIR%
 echo.
-"%CMAKE%" --preset %PRESET% --graphviz="%GRAPHVIZ_FILE%"
+call :run_configure
 set "EXIT_CODE=!errorlevel!"
 if !EXIT_CODE!==0 (
     echo.
     echo [Step 2/2] Building project...
     echo ----------------------------------------------------
-    "%CMAKE%" --build --preset %PRESET%
+    call :run_build
     set "EXIT_CODE=!errorlevel!"
 )
 goto :result
@@ -241,7 +277,7 @@ rem Helper functions
 rem ==========================================
 :help
 echo.
-echo Usage: build.bat [PRESET] [ACTION]
+echo Usage: build.bat [PRESET] [ACTION] [OPTIONS...]
 echo.
 echo PRESET:
 echo   windows-msvc-debug      Windows MSVC Debug
@@ -264,11 +300,17 @@ echo   package      Build and create package
 echo   test         Build and run tests
 echo   all          Configure and build (default)
 echo.
+echo OPTIONS:
+echo   --verbose-config  Show detailed TemplateTool CMake configuration
+echo   --verbose-build   Show complete compile and link commands
+echo   --verbose         Enable both configuration and build details
+echo.
 echo Examples:
 echo   build.bat                                  # Default: windows-msvc-release all
 echo   build.bat windows-msvc-debug build         # Debug build only
 echo   build.bat windows-msvc-release install     # Release build and install
 echo   build.bat windows-msvc-release test        # Run tests
+echo   build.bat windows-msvc-release all --verbose
 echo.
 exit /b 0
 
@@ -285,6 +327,22 @@ if exist "%BUILD_DIR%\CMakeCache.txt" (
     exit /b 1
 )
 
+:run_configure
+if "%VERBOSE_CONFIG%"=="1" (
+    "%CMAKE%" --preset "%PRESET%" --graphviz="%GRAPHVIZ_FILE%" -DTT_CMAKE_VERBOSE_CONFIG=ON
+) else (
+    "%CMAKE%" --preset "%PRESET%" --graphviz="%GRAPHVIZ_FILE%"
+)
+exit /b !errorlevel!
+
+:run_build
+if "%VERBOSE_BUILD%"=="1" (
+    "%CMAKE%" --build --preset "%PRESET%" --verbose %*
+) else (
+    "%CMAKE%" --build --preset "%PRESET%" %*
+)
+exit /b !errorlevel!
+
 :ensure_configured
 call :is_configured
 if !errorlevel! neq 0 (
@@ -295,7 +353,7 @@ if !errorlevel! neq 0 (
     echo   Preset    : %PRESET%
     echo   Build Dir : %BUILD_DIR%
     echo.
-    "%CMAKE%" --preset %PRESET% --graphviz="%GRAPHVIZ_FILE%"
+    call :run_configure
     if !errorlevel! neq 0 (
         echo.
         echo [ERROR] Configuration failed, cannot proceed.
