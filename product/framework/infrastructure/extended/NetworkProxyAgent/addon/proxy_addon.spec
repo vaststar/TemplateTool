@@ -1,12 +1,29 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_all
+
+
+mitmproxy_datas, mitmproxy_binaries, mitmproxy_hiddenimports = collect_all(
+    'mitmproxy'
+)
+rs_datas, rs_binaries, rs_hiddenimports = collect_all('mitmproxy_rs')
+
 
 a = Analysis(
     ['proxy_addon.py'],
     pathex=[],
-    binaries=[],
-    datas=[],
-    hiddenimports=[],
+    binaries=mitmproxy_binaries + rs_binaries,
+    datas=mitmproxy_datas + rs_datas,
+    hiddenimports=(
+        mitmproxy_hiddenimports
+        + rs_hiddenimports
+        + [
+            'mitmproxy',
+            'mitmproxy.addons',
+            'mitmproxy.tools',
+            'mitmproxy.tools.main',
+        ]
+    ),
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
