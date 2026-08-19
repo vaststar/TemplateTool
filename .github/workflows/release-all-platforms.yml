@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to release (e.g. v2026.04.0). Leave empty to build without releasing.'
-        required: false
+        description: 'Existing tag to build and release (e.g. v2026.04.0)'
+        required: true
         type: string
       mandatory:
         description: 'Force all users to upgrade (use only for critical security fixes)'
@@ -21,9 +21,50 @@ env:
 
 jobs:
   # ============================================================================
+  # Validate the release request once before starting the platform matrix
+  # ============================================================================
+  prepare:
+    runs-on: ubuntu-latest
+    name: Prepare release request
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
+    outputs:
+      build_sha: ${{ steps.resolve.outputs.build_sha }}
+      release_tag: ${{ steps.resolve.outputs.release_tag }}
+
+    steps:
+      - name: Validate release tag format
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
+            echo "::error::Invalid release tag: $RELEASE_TAG"
+            echo "Expected format: v<major>.<minor>.<patch> (for example, v2026.08.0)"
+            exit 1
+          fi
+
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+
+      - name: Resolve release tag
+        id: resolve
+        shell: bash
+        run: |
+          BUILD_SHA=$(git rev-parse HEAD)
+          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "build_sha=$BUILD_SHA" >> "$GITHUB_OUTPUT"
+          echo "Release tag: $RELEASE_TAG"
+          echo "Build SHA  : $BUILD_SHA"
+
+  # ============================================================================
   # Build & Package — one job per platform
   # ============================================================================
   build:
+    needs: prepare
     strategy:
       fail-fast: false
       matrix:
@@ -55,12 +96,12 @@ jobs:
       # fetch-depth: 0 is required — VERSION_BUILD is derived from
       # `git rev-list --count HEAD` (commit depth).  A shallow clone
       # would produce build number "1" instead of the real count.
-      # ref: when manual dispatch specifies a tag, checkout that tag's commit
-      #      so the build matches the tagged version exactly.
+      # The prepare job resolves both manual and push triggers to the immutable
+      # commit referenced by the requested tag.
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ needs.prepare.outputs.build_sha }}
           fetch-depth: 0
           submodules: recursive
 
@@ -240,37 +281,24 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # Create GitHub Release (on tag push OR manual dispatch with tag input)
+  # Create or update the GitHub Release for the already-existing tag
   # ============================================================================
   release:
-    needs: build
-    if: >-
-      startsWith(github.ref, 'refs/tags/v')
-      || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
+    needs: [prepare, build]
     runs-on: ubuntu-latest
     name: Create Release
     permissions:
       contents: write
 
     env:
-      RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || github.event.inputs.tag }}
+      RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
 
     steps:
       - name: Checkout (for release notes context)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
+          ref: ${{ needs.prepare.outputs.build_sha }}
           fetch-depth: 0
-
-      - name: Create and push tag (manual dispatch only, skip if tag exists)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          if git rev-parse "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Tag $RELEASE_TAG already exists, skipping creation."
-          else
-            echo "Creating tag $RELEASE_TAG on current HEAD..."
-            git tag "$RELEASE_TAG"
-            git push origin "$RELEASE_TAG"
-          fi
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -324,6 +352,6 @@ jobs:
             artifacts/*
           generate_release_notes: true
           draft: false
-          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
+          prerelease: ${{ contains(env.RELEASE_TAG, '-rc') || contains(env.RELEASE_TAG, '-beta') || contains(env.RELEASE_TAG, '-alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
