@@ -16,7 +16,7 @@ get_required_target_property(
 )
 if(NOT TARGET "${APP_VERSION_TARGET}")
     message(FATAL_ERROR
-        "[bundle_pack] AppVersionMetadata generator target does not exist: "
+        "[distribution] AppVersionMetadata generator target does not exist: "
         "${APP_VERSION_TARGET}")
 endif()
 
@@ -33,12 +33,18 @@ elseif(APPLE)
         OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
     )
 elseif(UNIX)
+    set(CPACK_LINUX_PRE_BUILD_SCRIPT
+        "${CMAKE_CURRENT_BINARY_DIR}/cpack_linux_pre_build.cmake")
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cpack_linux_pre_build.cmake.in"
+        "${CPACK_LINUX_PRE_BUILD_SCRIPT}"
+        @ONLY
+    )
     BuildCPackModule(
         TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_linux_config.cmake.in"
-        PRE_BUILD_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cpack_linux_pre_build.cmake"
+        PRE_BUILD_SCRIPT "${CPACK_LINUX_PRE_BUILD_SCRIPT}"
         OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
     )
-    set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/template-factory")
 endif()
 
 # ── Generate package-info.json (used by CI to build upgrade-manifest.json) ──

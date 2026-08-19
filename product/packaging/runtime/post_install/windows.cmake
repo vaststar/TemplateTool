@@ -65,60 +65,66 @@ message(STATUS "")
 # ==========================================
 message(STATUS "[2/3] Running windeployqt...")
 
-# Find QML source directory
-set(QML_SOURCE_DIR "${TEMPLATE_TOOL_SOURCE_DIR}/product/application/qt")
-if(EXISTS "${QML_SOURCE_DIR}")
+if(QML_SOURCE_DIR AND EXISTS "${QML_SOURCE_DIR}")
     message(STATUS "  QML source directory: ${QML_SOURCE_DIR}")
 else()
     message(STATUS "  QML source directory not found: ${QML_SOURCE_DIR}")
     set(QML_SOURCE_DIR "")
 endif()
 
-# DLLs that need Qt deployment
-set(UI_DLLS "UIView.dll")
+if(BUILD_CONFIG_NAME MATCHES "^[Dd]ebug$")
+    set(QT_DEPLOY_CONFIGURATION --debug)
+else()
+    set(QT_DEPLOY_CONFIGURATION --release)
+endif()
+message(STATUS "  Qt deployment configuration: ${QT_DEPLOY_CONFIGURATION}")
 
-foreach(UI_DLL ${UI_DLLS})
-    set(TARGET_DLL "${DEPLOY_DIR}/${UI_DLL}")
-    
-    if(NOT EXISTS "${TARGET_DLL}")
-        message(STATUS "  ${UI_DLL} not found, skipping...")
-        continue()
+foreach(qt_deploy_file IN LISTS QT_DEPLOY_FILE_NAMES)
+    set(qt_deploy_binary "${DEPLOY_DIR}/${qt_deploy_file}")
+
+    if(NOT EXISTS "${qt_deploy_binary}")
+        message(FATAL_ERROR
+            "Qt deployment root not found: ${qt_deploy_binary}")
     endif()
-    
-    message(STATUS "  Running windeployqt for ${UI_DLL}...")
-    
-    set(DEPLOY_CMD 
+
+    message(STATUS "  Running windeployqt for ${qt_deploy_file}...")
+
+    set(DEPLOY_CMD
         "${WINDEPLOYQT}"
-        --release
+        ${QT_DEPLOY_CONFIGURATION}
         --no-translations
         --no-system-d3d-compiler
         --no-opengl-sw
         --no-compiler-runtime
         --dir "${DEPLOY_DIR}"
     )
-    
-    # Add qmldir parameter
+
     if(QML_SOURCE_DIR)
         list(APPEND DEPLOY_CMD --qmldir "${QML_SOURCE_DIR}")
         message(STATUS "    Using QML directory: ${QML_SOURCE_DIR}")
     endif()
-    
-    list(APPEND DEPLOY_CMD "${TARGET_DLL}")
-    
+
+    list(APPEND DEPLOY_CMD "${qt_deploy_binary}")
+
     execute_process(
         COMMAND ${DEPLOY_CMD}
         RESULT_VARIABLE DEPLOY_RESULT
         OUTPUT_VARIABLE DEPLOY_OUTPUT
         ERROR_VARIABLE DEPLOY_ERROR
     )
-    
+
     if(DEPLOY_RESULT EQUAL 0)
-        message(STATUS "  ✓ windeployqt completed for ${UI_DLL}")
+        message(STATUS
+            "  ✓ windeployqt completed for ${qt_deploy_file}")
     else()
-        message(WARNING "  ✗ windeployqt failed for ${UI_DLL} with code ${DEPLOY_RESULT}")
+        string(CONCAT deploy_error_message
+            "windeployqt failed for ${qt_deploy_file} "
+            "with code ${DEPLOY_RESULT}")
         if(DEPLOY_ERROR)
-            message(WARNING "    Error: ${DEPLOY_ERROR}")
+            string(APPEND deploy_error_message
+                "\nError: ${DEPLOY_ERROR}")
         endif()
+        message(FATAL_ERROR "${deploy_error_message}")
     endif()
 endforeach()
 

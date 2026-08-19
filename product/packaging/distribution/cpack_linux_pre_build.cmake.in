@@ -62,8 +62,8 @@ endif()
 # to live in a private prefix while remaining accessible via PATH.
 # Library resolution is handled by RUNPATH + the bin/lib -> ../lib
 # symlink created during install — no LD_LIBRARY_PATH needed.
-# NOTE: _bin_name must match MAIN_ENTRY in application/main/CMakeLists.txt
-set(_bin_name "mainEntry")
+# Filled from the stable TemplateTool::Application target contract.
+set(_bin_name "@TT_APPLICATION_EXECUTABLE_NAME@")
 if(EXISTS "${_prefix_in_staging}/bin/${_bin_name}")
     set(_wrapper_dir "${STAGING_DIR}/usr/bin")
     file(MAKE_DIRECTORY "${_wrapper_dir}")

@@ -82,7 +82,7 @@ message(STATUS "")
 message(STATUS "[2/4] Deploying runtime file payloads...")
 
 # Deploy file payloads (e.g. ffmpeg, ffprobe)
-foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
+foreach(payload_file IN LISTS PROGRAM_PAYLOADS)
     set(payload_src "${BIN_DIR}/${payload_file}")
     set(payload_dst "${LIB_DIR}/${payload_file}")
     if(EXISTS "${payload_src}")
@@ -134,7 +134,6 @@ else()
         message(STATUS "  Found linuxdeployqt: ${LINUXDEPLOYQT_EXE}")
         set(SKIP_QT_DEPLOY FALSE)
 
-        set(QML_SOURCE_DIR "${TEMPLATE_TOOL_SOURCE_DIR}/product/application/qt")
         set(DEPLOY_CMD
             "${LINUXDEPLOYQT_EXE}"
             "${BIN_DIR}/${APP_NAME}"
@@ -330,7 +329,7 @@ if(EXISTS "${BIN_DIR}/qml")
 endif()
 
 # Check payloads
-foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
+foreach(payload_file IN LISTS PROGRAM_PAYLOADS)
     if(EXISTS "${LIB_DIR}/${payload_file}")
         message(STATUS "    Resource file deployed: ${payload_file}")
     endif()

@@ -8,7 +8,7 @@
 # - Verifies deployment results
 
 if(NOT DEFINED APP_NAME OR APP_NAME STREQUAL "")
-    message(FATAL_ERROR "APP_NAME must be provided before running post_install_macosx.cmake")
+    message(FATAL_ERROR "APP_NAME must be provided before running post_install/macos.cmake")
 endif()
 
 set(INSTALL_PREFIX "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
@@ -103,7 +103,7 @@ message(STATUS "")
 # ==========================================
 message(STATUS "[2/5] Deploying runtime file payloads...")
 
-foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
+foreach(payload_file IN LISTS PROGRAM_PAYLOADS)
     set(payload_src "${BIN_DIR}/${payload_file}")
     set(payload_dst "${RESOURCES_DIR}/${payload_file}")
     if(EXISTS "${payload_src}")
@@ -169,9 +169,6 @@ else()
     if(NOT EXISTS "${APP_BUNDLE}")
         message(WARNING "  App bundle not found: ${APP_BUNDLE}")
     else()
-        # Find QML source directory
-        set(QML_SOURCE_DIR "${TEMPLATE_TOOL_SOURCE_DIR}/product/application/qt")
-
         set(DEPLOY_CMD "${MACDEPLOYQT}" "${APP_BUNDLE}" "-verbose=1")
 
         if(EXISTS "${QML_SOURCE_DIR}")
@@ -232,7 +229,7 @@ if(EXISTS "${QML_DEPLOY_DIR}")
     message(STATUS "  ✓ QML files deployed: ${QML_FILE_COUNT}")
 endif()
 
-foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
+foreach(payload_file IN LISTS PROGRAM_PAYLOADS)
     if(EXISTS "${RESOURCES_DIR}/${payload_file}")
         message(STATUS "  ✓ Resource file deployed: ${payload_file}")
     endif()
