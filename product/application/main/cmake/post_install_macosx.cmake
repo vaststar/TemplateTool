@@ -99,23 +99,9 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Step 2: Deploy runtime payloads
+# Step 2: Deploy runtime file payloads
 # ==========================================
-message(STATUS "[2/5] Deploying runtime payloads...")
-
-foreach(payload_dir ${RESOURCE_DIR_PAYLOADS})
-    set(payload_src "${BIN_DIR}/${payload_dir}")
-    set(payload_dst "${RESOURCES_DIR}/${payload_dir}")
-    if(EXISTS "${payload_src}")
-        if(EXISTS "${payload_dst}")
-            file(REMOVE_RECURSE "${payload_dst}")
-        endif()
-        file(RENAME "${payload_src}" "${payload_dst}")
-        message(STATUS "  ✓ Deployed directory payload: ${payload_dir}")
-    else()
-        message(STATUS "  ⊘ Directory payload not found: ${payload_src}")
-    endif()
-endforeach()
+message(STATUS "[2/5] Deploying runtime file payloads...")
 
 foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
     set(payload_src "${BIN_DIR}/${payload_file}")
@@ -245,12 +231,6 @@ if(EXISTS "${QML_DEPLOY_DIR}")
     list(LENGTH QML_FILES QML_FILE_COUNT)
     message(STATUS "  ✓ QML files deployed: ${QML_FILE_COUNT}")
 endif()
-
-foreach(payload_dir ${RESOURCE_DIR_PAYLOADS})
-    if(EXISTS "${RESOURCES_DIR}/${payload_dir}")
-        message(STATUS "  ✓ Resource directory deployed: ${payload_dir}")
-    endif()
-endforeach()
 
 foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
     if(EXISTS "${RESOURCES_DIR}/${payload_file}")

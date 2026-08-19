@@ -1,8 +1,8 @@
 #include "ResourceColorLoader.h"
 
-#include <BuildDarkThemeColorSet.h>
-#include <BuildLightThemeColorSet.h>
-#include <ColorPaletteModel.h>
+#include <commonhead/ResourceColorLoader/BuildDarkThemeColorSet.h>
+#include <commonhead/ResourceColorLoader/BuildLightThemeColorSet.h>
+#include <commonhead/ResourceColorLoader/ColorPaletteModel.h>
 #include <commonhead/ResourceColorLoader/ResourceColorLoaderCreator.h>
 
 #include "LoggerDefine.h"

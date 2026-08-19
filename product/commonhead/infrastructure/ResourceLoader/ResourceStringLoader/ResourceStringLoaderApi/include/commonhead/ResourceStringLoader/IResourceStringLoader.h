@@ -3,7 +3,7 @@
 #include <string>
 #include <initializer_list>
 
-#include <ResourceString.h>
+#include <commonhead/ResourceStringLoader/ResourceString.h>
 #include <commonhead/ResourceStringLoader/ResourceStringLoaderApiExport.h>
 
 namespace commonHead{

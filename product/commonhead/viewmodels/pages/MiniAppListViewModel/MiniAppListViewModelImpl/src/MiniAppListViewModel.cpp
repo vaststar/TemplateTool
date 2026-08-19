@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-#include <ResourceString.h>
+#include <commonhead/ResourceStringLoader/ResourceString.h>
 #include <ucf/services/MiniAppService/IMiniAppService.h>
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>

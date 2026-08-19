@@ -1,6 +1,6 @@
 #pragma once
 
-#include <AssetToken.h>
+#include <commonhead/ResourceAssetLoader/AssetToken.h>
 
 #include <cstdint>
 #include <memory>

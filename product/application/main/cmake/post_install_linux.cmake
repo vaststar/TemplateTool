@@ -3,7 +3,7 @@
 # ==========================================
 # This script handles .so deployment and Qt deployment for Linux builds
 # - Moves all .so files to lib/ next to the binary
-# - Deploys runtime payloads (proxy_addon, ffmpeg, etc.)
+# - Deploys runtime file payloads (ffmpeg, etc.)
 # - Runs linuxdeployqt or manual Qt plugin copy for Qt dependencies
 # - Creates bin/lib -> ../lib symlink for QML plugin RUNPATH resolution
 # - Verifies deployment results
@@ -77,24 +77,9 @@ endif()
 message(STATUS "")
 
 # ==========================================
-# Step 2: Deploy runtime payloads
+# Step 2: Deploy runtime file payloads
 # ==========================================
-message(STATUS "[2/4] Deploying runtime payloads...")
-
-# Deploy directory payloads (e.g. proxy_addon/)
-foreach(payload_dir ${RESOURCE_DIR_PAYLOADS})
-    set(payload_src "${BIN_DIR}/${payload_dir}")
-    set(payload_dst "${LIB_DIR}/${payload_dir}")
-    if(EXISTS "${payload_src}")
-        if(EXISTS "${payload_dst}")
-            file(REMOVE_RECURSE "${payload_dst}")
-        endif()
-        file(RENAME "${payload_src}" "${payload_dst}")
-        message(STATUS "  Deployed directory payload: ${payload_dir}")
-    else()
-        message(STATUS "  Directory payload not found: ${payload_src}")
-    endif()
-endforeach()
+message(STATUS "[2/4] Deploying runtime file payloads...")
 
 # Deploy file payloads (e.g. ffmpeg, ffprobe)
 foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
@@ -345,12 +330,6 @@ if(EXISTS "${BIN_DIR}/qml")
 endif()
 
 # Check payloads
-foreach(payload_dir ${RESOURCE_DIR_PAYLOADS})
-    if(EXISTS "${LIB_DIR}/${payload_dir}")
-        message(STATUS "    Resource directory deployed: ${payload_dir}")
-    endif()
-endforeach()
-
 foreach(payload_file ${RESOURCE_FILE_PAYLOADS})
     if(EXISTS "${LIB_DIR}/${payload_file}")
         message(STATUS "    Resource file deployed: ${payload_file}")

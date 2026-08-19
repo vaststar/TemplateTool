@@ -29,14 +29,15 @@ set(ADDON_REQUIREMENTS "${ADDON_SOURCE_DIR}/requirements.txt")
 set(ADDON_VENV_DIR "${ADDON_BUILD_DIR}/venv")
 set(ADDON_WORK_DIR "${ADDON_BUILD_DIR}/pyinstaller-work")
 set(ADDON_DIST_ROOT "${ADDON_BUILD_DIR}/dist")
-set(ADDON_DIST_DIR "${ADDON_DIST_ROOT}/proxy_addon")
+set(ADDON_RUNTIME_NAME proxy_addon)
+set(ADDON_DIST_DIR "${ADDON_DIST_ROOT}/${ADDON_RUNTIME_NAME}")
 
 if(WIN32)
     set(ADDON_VENV_PYTHON "${ADDON_VENV_DIR}/Scripts/python.exe")
-    set(ADDON_EXE_NAME proxy_addon.exe)
+    set(ADDON_EXE_NAME "${ADDON_RUNTIME_NAME}.exe")
 else()
     set(ADDON_VENV_PYTHON "${ADDON_VENV_DIR}/bin/python")
-    set(ADDON_EXE_NAME proxy_addon)
+    set(ADDON_EXE_NAME "${ADDON_RUNTIME_NAME}")
 endif()
 
 # Recreate the virtual environment when the selected Python interpreter or its
@@ -122,14 +123,14 @@ add_dependencies(NetworkProxyAgentAddonArtifact
 # of Windows itself. Ninja/Makefile builds on Windows remain single-config.
 if(CMAKE_CONFIGURATION_TYPES)
     set(ADDON_RUNTIME_DIR
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/proxy_addon"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${ADDON_RUNTIME_NAME}"
     )
     set(ADDON_RUNTIME_STAMP
         "${ADDON_BUILD_DIR}/addon-runtime-$<CONFIG>.stamp"
     )
 else()
     set(ADDON_RUNTIME_DIR
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/proxy_addon"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ADDON_RUNTIME_NAME}"
     )
     set(ADDON_RUNTIME_STAMP
         "${ADDON_BUILD_DIR}/addon-runtime.stamp"
@@ -176,11 +177,20 @@ set_target_properties(
     PROPERTIES FOLDER "${ADDON_IDE_FOLDER}"
 )
 
-# ── Install ─────────────────────────────────────────────────────────────────
-# A missing addon is a packaging error, so this rule is intentionally not
-# OPTIONAL.
-install(
-    DIRECTORY "${ADDON_DIST_DIR}/"
-    DESTINATION "bin/proxy_addon"
+# ── Runtime payload registration ────────────────────────────────────────────
+set_target_properties(NetworkProxyAgentAddonRuntime PROPERTIES
+    UCF_RUNTIME_PAYLOAD_DIRECTORY_NAME "${ADDON_RUNTIME_NAME}"
+    UCF_RUNTIME_PAYLOAD_EXECUTABLE_NAME "${ADDON_EXE_NAME}"
+)
+
+include(RuntimePayloadRegistry)
+RegisterRuntimePayload(
+    ID NetworkProxyAgentAddon
+    PRODUCER_TARGET NetworkProxyAgentAddonRuntime
+    TYPE DIRECTORY
+    SOURCE "${ADDON_DIST_DIR}"
+    DESTINATION_NAME "${ADDON_RUNTIME_NAME}"
+    PLACEMENT PRIVATE_TOOL
+    REQUIRED
     USE_SOURCE_PERMISSIONS
 )

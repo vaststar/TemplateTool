@@ -1,6 +1,6 @@
 #include <commonhead/ResourceStringLoader/ResourceStringLoaderTypesExport.h>
 
-#include <ResourceString.h>
+#include <commonhead/ResourceStringLoader/ResourceString.h>
 
 namespace commonHead::model {
 

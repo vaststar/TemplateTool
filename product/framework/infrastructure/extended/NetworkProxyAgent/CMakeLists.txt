@@ -1,6 +1,26 @@
 include(BuildModule)
+include(GetRequiredTargetProperty)
 
 add_subdirectory(addon)
+
+get_required_target_property(
+    TARGET NetworkProxyAgentAddonRuntime
+    PROPERTY UCF_RUNTIME_PAYLOAD_DIRECTORY_NAME
+    OUTPUT_VARIABLE ADDON_RUNTIME_NAME
+)
+get_required_target_property(
+    TARGET NetworkProxyAgentAddonRuntime
+    PROPERTY UCF_RUNTIME_PAYLOAD_EXECUTABLE_NAME
+    OUTPUT_VARIABLE ADDON_EXE_NAME
+)
+
+set(ADDON_LAYOUT_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(ADDON_LAYOUT_HEADER "${ADDON_LAYOUT_INCLUDE_DIR}/AddonRuntimeLayout.h")
+configure_file(
+    src/AddonRuntimeLayout.h.in
+    "${ADDON_LAYOUT_HEADER}"
+    @ONLY
+)
 
 set(MODULE_MODULE_NAME NetworkProxyAgent)
 set(MODULE_IDE_FOLDER framework/infrastructure/extended/NetworkProxyAgent)
@@ -19,6 +39,7 @@ set(MODULE_SOURCE_PRIVATE
     src/NetworkProxyAgentLogger.h
     src/AddonLocator.h
     src/AddonLocator.cpp
+    "${ADDON_LAYOUT_HEADER}"
     src/AddonProtocol.h
     src/AddonProtocol.cpp
 )
@@ -37,7 +58,10 @@ set(MODULE_DEPENDENCIES_PRIVATE
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR src)
+set(MODULE_BUILD_PRIVATE_DIR
+    src
+    "${ADDON_LAYOUT_INCLUDE_DIR}"
+)
 
 set(MODULE_PUBLIC_DEFINITIONS)
 set(MODULE_PRIVATE_DEFINITIONS)

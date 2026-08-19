@@ -29,6 +29,12 @@ function(BuildInterface)
         message(FATAL_ERROR
             "[BuildInterface] Target already exists: ${INTERFACE_MODULE_NAME}")
     endif()
+    if("TARGET_SOURCE_PUBLIC_HEADER"
+       IN_LIST INTERFACE_KEYWORDS_MISSING_VALUES)
+        message(FATAL_ERROR
+            "[BuildInterface:${INTERFACE_MODULE_NAME}] "
+            "TARGET_SOURCE_PUBLIC_HEADER was specified without any headers")
+    endif()
     if(INTERFACE_TARGET_SOURCE_PUBLIC_HEADER
        AND NOT INTERFACE_TARGET_SOURCE_HEADER_BASE_DIR)
         message(FATAL_ERROR

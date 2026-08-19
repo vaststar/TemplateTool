@@ -4,7 +4,7 @@
 #include <UIResourceStringLoader/UIResourceStringLoaderExport.h>
 
 #include <UIStringToken.h>
-#include <ResourceString.h>
+#include <commonhead/ResourceStringLoader/ResourceString.h>
 
 namespace commonHead{
     class ICommonHeadFramework;

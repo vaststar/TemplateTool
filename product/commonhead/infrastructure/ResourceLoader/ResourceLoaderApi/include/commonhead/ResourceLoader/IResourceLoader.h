@@ -4,10 +4,10 @@
 #include <memory>
 #include <string>
 
-#include <AssetToken.h>
-#include <ColorToken.h>
-#include <FontToken.h>
-#include <ResourceString.h>
+#include <commonhead/ResourceAssetLoader/AssetToken.h>
+#include <commonhead/ResourceColorLoader/ColorToken.h>
+#include <commonhead/ResourceFontLoader/FontToken.h>
+#include <commonhead/ResourceStringLoader/ResourceString.h>
 #include <commonhead/ResourceAssetLoader/Asset.h>
 #include <commonhead/ResourceColorLoader/Color.h>
 #include <commonhead/ResourceFontLoader/Font.h>

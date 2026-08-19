@@ -1,4 +1,5 @@
 #include "AddonLocator.h"
+#include "AddonRuntimeLayout.h"
 #include "NetworkProxyAgentLogger.h"
 
 #include <cstdlib>
@@ -102,19 +103,18 @@ std::string AddonLocator::findAddonExecutable()
 
     NPA_LOG_DEBUG("Library directory: " << libDir);
 
+    const std::string addonDirectory{ addonLayout::kDirectoryName };
+    const std::string executableName{ addonLayout::kExecutableName };
+
     // Search paths relative to the lib directory
     // Typical layout: <build>/bin/Release/ or <build>/bin/Debug/
-    //   addon at:     <build>/bin/Release/proxy_addon/proxy_addon.exe (Win)
-    //   or:           <lib_dir>/proxy_addon/proxy_addon  (Unix)
-#ifdef _WIN32
-    static const char* kExeName = "proxy_addon.exe";
-#else
-    static const char* kExeName = "proxy_addon";
-#endif
+    //   addon at:     <build>/bin/Release/<addon>/<executable> (Win)
+    //   or:           <lib_dir>/<addon>/<executable> (Unix)
 
-    // Try: <lib_dir>/proxy_addon/<exe>
+    // Try: <lib_dir>/<addon>/<executable>
     {
-        std::string candidate = libDir + "/proxy_addon/" + kExeName;
+        std::string candidate =
+            libDir + "/" + addonDirectory + "/" + executableName;
         NPA_LOG_DEBUG("Trying addon path: " << candidate);
 #ifdef _WIN32
         DWORD attrs = GetFileAttributesA(candidate.c_str());
@@ -133,12 +133,13 @@ std::string AddonLocator::findAddonExecutable()
     }
 
 #ifdef __APPLE__
-    // Try: <lib_dir>/../Resources/proxy_addon/<exe>
+    // Try: <lib_dir>/../Resources/<addon>/<executable>
     // Packaged macOS app layout:
     //   mainEntry.app/Contents/Frameworks/NetworkProxyAgent.dylib
-    //   mainEntry.app/Contents/Resources/proxy_addon/proxy_addon
+    //   mainEntry.app/Contents/Resources/<addon>/<executable>
     {
-        std::string candidate = libDir + "/../Resources/proxy_addon/" + kExeName;
+        std::string candidate = libDir + "/../Resources/"
+            + addonDirectory + "/" + executableName;
         NPA_LOG_DEBUG("Trying addon path: " << candidate);
         if (access(candidate.c_str(), X_OK) == 0)
         {
@@ -148,9 +149,10 @@ std::string AddonLocator::findAddonExecutable()
     }
 #endif
 
-    // Try: <lib_dir>/../proxy_addon/<exe>
+    // Try: <lib_dir>/../<addon>/<executable>
     {
-        std::string candidate = libDir + "/../proxy_addon/" + kExeName;
+        std::string candidate =
+            libDir + "/../" + addonDirectory + "/" + executableName;
         NPA_LOG_DEBUG("Trying addon path: " << candidate);
 #ifdef _WIN32
         DWORD attrs = GetFileAttributesA(candidate.c_str());
@@ -168,7 +170,9 @@ std::string AddonLocator::findAddonExecutable()
 #endif
     }
 
-    NPA_LOG_WARN("proxy_addon executable not found relative to: " << libDir);
+    NPA_LOG_WARN(
+        "Addon executable not found for " << addonDirectory
+        << " relative to: " << libDir);
     return {};
 }
 

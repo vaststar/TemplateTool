@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <AssetToken.h>
+#include <commonhead/ResourceAssetLoader/AssetToken.h>
 #include <commonhead/ResourceAssetLoader/Asset.h>
 
 namespace commonHead {

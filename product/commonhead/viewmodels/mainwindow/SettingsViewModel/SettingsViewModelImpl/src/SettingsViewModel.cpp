@@ -5,7 +5,7 @@
 
 #include <functional>
 
-#include <ResourceString.h>
+#include <commonhead/ResourceStringLoader/ResourceString.h>
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/ResourceLoader/IResourceLoader.h>

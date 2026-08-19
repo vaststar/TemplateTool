@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ColorToken.h>
+#include <commonhead/ResourceColorLoader/ColorToken.h>
 #include <commonhead/ResourceColorLoader/Color.h>
 
 namespace commonHead {

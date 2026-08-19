@@ -25,6 +25,10 @@ setup logic.
 - `BuildRCFileModule(...)`: Windows version resource generation.
 - `BuildBundlePListModule(...)`: macOS bundle property-list generation.
 - `BuildLinuxDesktopModule(...)`: Linux desktop-entry generation.
+- `RegisterRuntimePayload(...)`: registers a producer-owned runtime directory,
+  program, or file for application packaging.
+- `InstallRegisteredRuntimePayloads(...)`: attaches registered payload build
+  dependencies and emits platform-specific application install rules.
 - `generate_from_template(...)`: Jinja-based generated source/resource file.
 - `generate_app_version_meta(...)`: version metadata generated from product
   information and the current Git state.
@@ -131,6 +135,17 @@ get_required_target_property(
 Target properties transfer configuration-time values only. Link relationships
 and generated-file ordering must still be expressed through target links and
 dependencies.
+
+## Runtime payloads
+
+Runtime helpers that are not linked libraries, such as private executables or
+generated tool directories, are registered by the module that owns them. The
+application packager consumes the project-scoped registry without knowing
+producer-specific names or source paths.
+
+`PRIVATE_TOOL` payloads install below the application Resources directory on
+macOS, `bin` on Windows, and `lib` on Linux. Required payloads deliberately
+fail installation when their generated source is missing.
 
 ## Version generation
 

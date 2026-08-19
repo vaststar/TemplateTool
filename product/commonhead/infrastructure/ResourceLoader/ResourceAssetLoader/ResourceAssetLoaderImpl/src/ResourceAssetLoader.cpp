@@ -1,6 +1,6 @@
 #include "ResourceAssetLoader.h"
 
-#include <BuildNormalThemeAssetSet.h>
+#include <commonhead/ResourceAssetLoader/BuildNormalThemeAssetSet.h>
 #include <commonhead/ResourceAssetLoader/ResourceAssetLoaderCreator.h>
 
 #include "LoggerDefine.h"

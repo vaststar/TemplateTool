@@ -2,8 +2,8 @@
 
 #include <map>
 
-#include <FontPaletteModel.h>
-#include <FontToken.h>
+#include <commonhead/ResourceFontLoader/FontPaletteModel.h>
+#include <commonhead/ResourceFontLoader/FontToken.h>
 #include <commonhead/ResourceFontLoader/Font.h>
 
 namespace commonHead::model {

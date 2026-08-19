@@ -1,6 +1,6 @@
 #include "ResourceFontLoader.h"
 
-#include <BuildNormalThemeFontSet.h>
+#include <commonhead/ResourceFontLoader/BuildNormalThemeFontSet.h>
 #include <commonhead/ResourceFontLoader/ResourceFontLoaderCreator.h>
 #include <ucf/utilities/OSUtils/OSUtils.h>
 

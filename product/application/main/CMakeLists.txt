@@ -1,6 +1,7 @@
 include(BuildRCFileModule)
 include(BuildBundlePListModule)
 include(BuildLinuxDesktopModule)
+include(RuntimePayloadRegistry)
 project(application VERSION 1.0 LANGUAGES CXX)
 
 set(MAIN_ENTRY "mainEntry")
@@ -95,7 +96,6 @@ set(_COMMON_VARS "
     set(BUILD_CONFIG_NAME \"\${CMAKE_INSTALL_CONFIG_NAME}\")
 ")
 set(_RESOURCE_VARS "
-    set(RESOURCE_DIR_PAYLOADS \"proxy_addon\")
     set(RESOURCE_FILE_PAYLOADS \"ffmpeg;ffprobe\")
 ")
 
@@ -104,27 +104,39 @@ if(APPLE)
         EXPORT ${MAIN_ENTRY}Targets
         BUNDLE DESTINATION bin
     )
-    install(CODE "${_COMMON_VARS} ${_RESOURCE_VARS}")
-    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_macosx.cmake")
-    message(STATUS "  Install: bin/${MAIN_ENTRY}.app + post_install_macosx.cmake")
+    set(_POST_INSTALL_SCRIPT
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_macosx.cmake")
+    set(_POST_INSTALL_VARS "${_COMMON_VARS} ${_RESOURCE_VARS}")
+    set(_INSTALL_DESCRIPTION
+        "bin/${MAIN_ENTRY}.app + post_install_macosx.cmake")
 
 elseif(WIN32)
     install(TARGETS ${MAIN_ENTRY}
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
-    install(CODE "${_COMMON_VARS}")
-    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_windows.cmake")
-    message(STATUS "  Install: bin/ + post_install_windows.cmake")
+    set(_POST_INSTALL_SCRIPT
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_windows.cmake")
+    set(_POST_INSTALL_VARS "${_COMMON_VARS}")
+    set(_INSTALL_DESCRIPTION "bin/ + post_install_windows.cmake")
 
 else()
     install(TARGETS ${MAIN_ENTRY}
         EXPORT ${MAIN_ENTRY}Targets
         RUNTIME DESTINATION bin
     )
-    install(CODE "${_COMMON_VARS} ${_RESOURCE_VARS}")
-    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_linux.cmake")
-    message(STATUS "  Install: bin/ + post_install_linux.cmake")
+    set(_POST_INSTALL_SCRIPT
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/post_install_linux.cmake")
+    set(_POST_INSTALL_VARS "${_COMMON_VARS} ${_RESOURCE_VARS}")
+    set(_INSTALL_DESCRIPTION "bin/ + post_install_linux.cmake")
 endif()
+
+# Runtime payload producers own their names and sources. The application only
+# supplies the final platform-specific package layout.
+InstallRegisteredRuntimePayloads(TARGET ${MAIN_ENTRY})
+
+install(CODE "${_POST_INSTALL_VARS}")
+install(SCRIPT "${_POST_INSTALL_SCRIPT}")
+message(STATUS "  Install: ${_INSTALL_DESCRIPTION}")
 
 message(STATUS "Finished building ${MAIN_ENTRY}")

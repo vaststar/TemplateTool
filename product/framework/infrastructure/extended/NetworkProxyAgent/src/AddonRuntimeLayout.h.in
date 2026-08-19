@@ -1,0 +1,10 @@
+#pragma once
+
+#include <string_view>
+
+namespace ucf::agents::detail::addonLayout {
+
+inline constexpr std::string_view kDirectoryName = "@ADDON_RUNTIME_NAME@";
+inline constexpr std::string_view kExecutableName = "@ADDON_EXE_NAME@";
+
+} // namespace ucf::agents::detail::addonLayout

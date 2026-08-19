@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include <ColorPaletteModel.h>
+#include <commonhead/ResourceColorLoader/ColorPaletteModel.h>
 #include <commonhead/ResourceColorLoader/Color.h>
 
 namespace commonHead::model {
