@@ -1,6 +1,7 @@
 @echo off
 chcp 65001 >nul
 setlocal enabledelayedexpansion
+set "SCRIPT_DIR=%~dp0"
 
 rem ==========================================
 rem Basic configuration
@@ -19,8 +20,8 @@ if /i "%PRESET%"=="/?" goto :help
 
 set "VERBOSE_CONFIG=0"
 set "VERBOSE_BUILD=0"
-shift
-shift
+shift /1
+shift /1
 
 :parse_options
 if "%~1"=="" goto :options_parsed
@@ -42,7 +43,7 @@ echo         Run 'build.bat --help' for usage.
 exit /b 1
 
 :next_option
-shift
+shift /1
 goto :parse_options
 
 :options_parsed
@@ -51,7 +52,7 @@ set "BUILD_LOG=OFF"
 if "%VERBOSE_CONFIG%"=="1" set "CONFIG_LOG=ON"
 if "%VERBOSE_BUILD%"=="1" set "BUILD_LOG=ON"
 
-set "ROOT_DIR=%~dp0.."
+for %%I in ("%SCRIPT_DIR%..") do set "ROOT_DIR=%%~fI"
 set "BUILD_DIR=%ROOT_DIR%\build\%PRESET%"
 set "GRAPHVIZ_DIR=%BUILD_DIR%\cmake_graph"
 set "GRAPHVIZ_FILE=%GRAPHVIZ_DIR%\cmake_graph.dot"
