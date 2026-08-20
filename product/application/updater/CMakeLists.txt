@@ -1,5 +1,7 @@
 project(updater VERSION 1.0 LANGUAGES CXX)
 
+include(ApplyProjectCompileOptions)
+
 message(STATUS "Building updater...")
 
 # Platform-specific source selection
@@ -25,7 +27,7 @@ add_executable(updater
 
 # updater MUST be a single standalone exe with ZERO dynamic library dependencies.
 # All functionality uses only C++ stdlib and platform system commands.
-target_compile_features(updater PRIVATE cxx_std_20)
+ApplyProjectCompileOptions(TARGET updater)
 target_include_directories(updater PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Install the updater binary

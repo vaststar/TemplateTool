@@ -1,6 +1,7 @@
 include_guard()
 
 include("${CMAKE_CURRENT_LIST_DIR}/LinkTargetIncludeDirectories.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/ApplyProjectCompileOptions.cmake")
 
 # ==========================================
 # Function: BuildUnitTestModule
@@ -57,22 +58,18 @@ function(BuildUnitTestModule)
         PRIVATE ${MODULE_TARGET_SOURCE}
     )
 
-    target_compile_features("${MODULE_MODULE_NAME}" PRIVATE cxx_std_20)
-    target_compile_definitions("${MODULE_MODULE_NAME}" PRIVATE
-        CMAKE_VERSION_STR="${CMAKE_VERSION}"
-        CMAKE_COMPILER_ID_STR="${CMAKE_CXX_COMPILER_ID}"
-        CMAKE_COMPILER_VERSION_STR="${CMAKE_CXX_COMPILER_VERSION}"
-        CMAKE_COMPILER_PATH_STR="${CMAKE_CXX_COMPILER}"
+    ApplyProjectCompileOptions(
+        TARGET "${MODULE_MODULE_NAME}"
     )
 
     # ==========================================
     # Set target properties
     # ==========================================
-    set(TARGET_PROPERTIES CXX_EXTENSIONS OFF)
     if(MODULE_IDE_FOLDER)
-        list(APPEND TARGET_PROPERTIES FOLDER "${MODULE_IDE_FOLDER}")
+        set_target_properties("${MODULE_MODULE_NAME}" PROPERTIES
+            FOLDER "${MODULE_IDE_FOLDER}"
+        )
     endif()
-    set_target_properties("${MODULE_MODULE_NAME}" PROPERTIES ${TARGET_PROPERTIES})
 
     # ==========================================
     # Include directories and link libraries

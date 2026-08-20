@@ -4,6 +4,7 @@
 
 #include "PortalFrameGrabber_Linux.h"
 
+#include <cstring>
 #include <sstream>
 #include <regex>
 

@@ -2,6 +2,7 @@ include_guard()
 
 include("${CMAKE_CURRENT_LIST_DIR}/../BuildInstallModule.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/../LinkTargetIncludeDirectories.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/../ApplyProjectCompileOptions.cmake")
 
 if(WIN32)
     include("${CMAKE_CURRENT_LIST_DIR}/../BuildRCFileModule.cmake")
@@ -25,16 +26,9 @@ function(_tt_apply_cpp_library_defaults)
             "${ARG_UNPARSED_ARGUMENTS}")
     endif()
 
-    target_compile_features("${ARG_TARGET}" PUBLIC cxx_std_20)
-    target_compile_definitions("${ARG_TARGET}" PRIVATE
-        CMAKE_VERSION_STR="${CMAKE_VERSION}"
-        CMAKE_COMPILER_ID_STR="${CMAKE_CXX_COMPILER_ID}"
-        CMAKE_COMPILER_VERSION_STR="${CMAKE_CXX_COMPILER_VERSION}"
-        CMAKE_COMPILER_PATH_STR="${CMAKE_CXX_COMPILER}"
-    )
-
-    set_target_properties("${ARG_TARGET}" PROPERTIES
-        CXX_EXTENSIONS OFF
+    ApplyProjectCompileOptions(
+        TARGET "${ARG_TARGET}"
+        PUBLIC_CXX_STANDARD
     )
 
     if(ARG_IDE_FOLDER)

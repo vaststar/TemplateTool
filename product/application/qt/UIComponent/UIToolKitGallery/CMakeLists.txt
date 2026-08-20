@@ -4,6 +4,8 @@
 # ==========================================
 project(UIToolKitGallery LANGUAGES CXX)
 
+include(ApplyProjectCompileOptions)
+
 set(GALLERY_TARGET UIToolKitGallery)
 
 qt_add_executable(${GALLERY_TARGET}
@@ -25,7 +27,7 @@ qt_add_qml_module(${GALLERY_TARGET}
         qml/Gallery.qml
 )
 
-target_compile_features(${GALLERY_TARGET} PRIVATE cxx_std_20)
+ApplyProjectCompileOptions(TARGET ${GALLERY_TARGET})
 
 target_link_libraries(${GALLERY_TARGET} PRIVATE
     Qt6::Gui

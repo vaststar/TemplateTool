@@ -187,6 +187,12 @@ function(BuildQtModule)
             SOURCES ${MODULE_QML_TARGET_SOURCES}
         )
 
+        if(TARGET "${MODULE_MODULE_NAME}plugin")
+            ApplyProjectCompileOptions(
+                TARGET "${MODULE_MODULE_NAME}plugin"
+            )
+        endif()
+
         _tt_collect_qml_header_directories(
             BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
             SOURCES

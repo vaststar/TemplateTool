@@ -1,42 +1,78 @@
-include(BuildModule)
+cmake_minimum_required(VERSION 3.25)
 
-if (WIN32)
-    set(SQLITE_DEFINITIONS SQLITE_BUILD_DLL)
+project(Sqlite3Vendor LANGUAGES C)
+
+set(sqlite_target Sqlite3)
+set(sqlite_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+add_library("${sqlite_target}" SHARED)
+add_library(Sqlite3::Sqlite3 ALIAS "${sqlite_target}")
+
+target_sources("${sqlite_target}"
+    PRIVATE
+        "${sqlite_source_dir}/sqlite3.c"
+        "${sqlite_source_dir}/sqlite3ext.h"
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            "${sqlite_source_dir}"
+        FILES
+            "${sqlite_source_dir}/sqlite3.h"
+)
+
+target_include_directories("${sqlite_target}"
+    PUBLIC
+        "$<BUILD_INTERFACE:${sqlite_source_dir}>"
+        "$<INSTALL_INTERFACE:include>"
+)
+
+# sqlite3.h intentionally allows callers to define SQLITE_API. Keep the
+# vendor sources untouched and express the Windows DLL boundary on the target.
+target_compile_definitions("${sqlite_target}"
+    PRIVATE
+        "$<$<PLATFORM_ID:Windows>:SQLITE_API=__declspec(dllexport)>"
+    INTERFACE
+        "$<$<PLATFORM_ID:Windows>:SQLITE_API=__declspec(dllimport)>"
+)
+
+set_target_properties("${sqlite_target}" PROPERTIES
+    FOLDER "framework/thirdparty/sqlite"
+)
+
+if(APPLE)
+    set_target_properties("${sqlite_target}" PROPERTIES
+        INSTALL_NAME_DIR "@rpath"
+        INSTALL_RPATH "@loader_path;@executable_path"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH OFF
+    )
+elseif(UNIX)
+    set_target_properties("${sqlite_target}" PROPERTIES
+        INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH OFF
+    )
 endif()
 
-if (MSVC)
-add_compile_options(/FIsqlite_export.h)
+# Preserve the project's existing package layout while keeping the vendor
+# target independent from TemplateTool's BuildModule/BuildInstallModule.
+if(UNIX)
+    set(sqlite_library_destination bin)
 else()
-add_compile_options(-include sqlite_export.h)
+    set(sqlite_library_destination lib)
 endif()
 
-set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
-src/sqlite3.h
+install(TARGETS "${sqlite_target}"
+    EXPORT Sqlite3Targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION "${sqlite_library_destination}"
+    ARCHIVE DESTINATION lib
+    FILE_SET HEADERS DESTINATION include
+    INCLUDES DESTINATION include
 )
 
-set(TARGET_SOURCE_FILES_PRIVATE
-src/sqlite3.c
-src/sqlite3ext.h
-src/sqlite_export.h
-)
-
-BuildModule(
-    MODULE_NAME 
-        Sqlite3
-    TARGET_SOURCE_PRIVATE 
-        ${TARGET_SOURCE_FILES_PRIVATE}
-    TARGET_SOURCE_HEADER_BASE_DIR
-        ${CMAKE_CURRENT_LIST_DIR}/src
-    TARGET_SOURCE_PUBLIC_HEADER
-        ${TARGET_SOURCE_INCLUDE_HEADER_PUBLIC}
-    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-    TARGET_INCLUDE_DIRECTORIES_INSTALL_INTERFACE
-        src
-    TARGET_INCLUDE_DIRECTORIES_PRIVATE
-        src
-    TARGET_PRIVATE_DEFINITIONS
-        ${SQLITE_DEFINITIONS}
-    IDE_FOLDER
-        framework/thirdparty/sqlite
+install(EXPORT Sqlite3Targets
+    FILE Sqlite3Config.cmake
+    DESTINATION cmake/Sqlite3
+    NAMESPACE Sqlite3::
 )

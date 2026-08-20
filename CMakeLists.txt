@@ -8,13 +8,6 @@ option(TT_CMAKE_VERBOSE_CONFIG
 )
 
 # ============================================================================
-# C++ 标准设置 (项目要求，不可由 preset 覆盖)
-# ============================================================================
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-# ============================================================================
 # 输出目录设置 (项目结构要求)
 # ============================================================================
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -31,16 +24,6 @@ if(CMAKE_CONFIGURATION_TYPES)
 else()
     message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 endif()
-
-# MSVC 编译器特定选项
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/W4>")  # 添加警告
-
-# GCC/Clang 编译器特定选项
-add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wall>")
-add_compile_options("$<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wextra>")
 
 # macOS: Fix AGL framework issue - AGL is deprecated and removed from newer SDKs
 # Qt's FindWrapOpenGL.cmake tries to link AGL which doesn't exist in modern macOS SDK
