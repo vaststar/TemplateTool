@@ -58,8 +58,10 @@ if(NOT EXISTS "${audit_executable}")
 endif()
 
 # Include dynamically loaded plugins as roots. They are not necessarily visible
-# from the executable's static dependency graph.
+# from the executable's static dependency graph. On Apple platforms, keep
+# plugins as MODULES instead of treating them as shared libraries.
 set(audit_library_candidates)
+set(audit_module_candidates)
 foreach(library_root IN LISTS audit_library_roots)
     if(NOT IS_DIRECTORY "${library_root}")
         continue()
@@ -69,23 +71,127 @@ foreach(library_root IN LISTS audit_library_roots)
         file(GLOB_RECURSE matched_libraries
             LIST_DIRECTORIES FALSE
             "${library_root}/${library_pattern}")
-        list(APPEND audit_library_candidates ${matched_libraries})
+
+        if(APPLE
+           AND (library_root STREQUAL
+                "${audit_application_root}/Contents/PlugIns"
+                OR library_root STREQUAL
+                "${audit_application_root}/Contents/Resources/qml"))
+            list(APPEND audit_module_candidates ${matched_libraries})
+        else()
+            list(APPEND audit_library_candidates ${matched_libraries})
+        endif()
     endforeach()
 endforeach()
 
 # Versioned shared libraries often appear through multiple symlinks. Resolve
 # them before passing roots to CMake to avoid scanning the same binary twice.
-set(audit_libraries)
-foreach(library_candidate IN LISTS audit_library_candidates)
-    file(REAL_PATH "${library_candidate}" real_library)
-    list(APPEND audit_libraries "${real_library}")
-endforeach()
-list(REMOVE_DUPLICATES audit_libraries)
-list(REMOVE_ITEM audit_libraries "${audit_executable}")
+function(runtime_dependency_normalize_candidates input_variable output_variable)
+    set(normalized_candidates)
+    foreach(candidate IN LISTS ${input_variable})
+        file(REAL_PATH "${candidate}" real_candidate)
+        list(APPEND normalized_candidates "${real_candidate}")
+    endforeach()
+    list(REMOVE_DUPLICATES normalized_candidates)
+    list(REMOVE_ITEM normalized_candidates "${audit_executable}")
+    set(${output_variable} "${normalized_candidates}" PARENT_SCOPE)
+endfunction()
+
+runtime_dependency_normalize_candidates(
+    audit_library_candidates audit_libraries)
+runtime_dependency_normalize_candidates(
+    audit_module_candidates audit_modules)
+
+# CMake's Apple runtime scanner invokes otool recursively. Some optional Qt
+# plugins reference vendor libraries by absolute path (for example Mimer,
+# ODBC, or PostgreSQL). If such a vendor library is not installed, CMake tries
+# to invoke otool on the missing path and aborts the whole install instead of
+# returning it through UNRESOLVED_DEPENDENCIES_VAR.
+#
+# Discover those direct, missing references first, exclude them from recursive
+# scanning, and append them to the unresolved report afterwards. The plugin is
+# deliberately kept in the application bundle; this audit is report-only.
+set(audit_pre_exclude_regexes)
+set(audit_preexcluded_unresolved_dependencies)
+if(APPLE)
+    find_program(audit_otool_command NAMES otool)
+    if(audit_otool_command)
+        set(audit_apple_binaries
+            "${audit_executable}"
+            ${audit_libraries}
+            ${audit_modules}
+        )
+        list(REMOVE_DUPLICATES audit_apple_binaries)
+
+        foreach(audit_binary IN LISTS audit_apple_binaries)
+            execute_process(
+                COMMAND "${audit_otool_command}" -L "${audit_binary}"
+                RESULT_VARIABLE audit_otool_result
+                OUTPUT_VARIABLE audit_otool_output
+                ERROR_VARIABLE audit_otool_error
+            )
+            if(NOT audit_otool_result EQUAL 0)
+                message(WARNING
+                    "[runtime-audit] Cannot inspect ${audit_binary}: "
+                    "${audit_otool_error}")
+                continue()
+            endif()
+
+            string(REPLACE "\r\n" "\n" audit_otool_output
+                "${audit_otool_output}")
+            string(REPLACE "\r" "\n" audit_otool_output
+                "${audit_otool_output}")
+            string(REGEX MATCHALL "\n[ \t]+[^\n]+"
+                audit_otool_dependency_lines "${audit_otool_output}")
+
+            foreach(dependency_line IN LISTS audit_otool_dependency_lines)
+                string(STRIP "${dependency_line}" dependency_reference)
+                string(REGEX REPLACE
+                    "[ \t]+\\(compatibility version.*$" ""
+                    dependency_reference "${dependency_reference}")
+
+                if(IS_ABSOLUTE "${dependency_reference}"
+                   AND NOT EXISTS "${dependency_reference}"
+                   AND NOT dependency_reference MATCHES "^/System/Library/"
+                   AND NOT dependency_reference MATCHES "^/usr/lib/")
+                    list(APPEND audit_preexcluded_unresolved_dependencies
+                        "${dependency_reference}")
+
+                    set(dependency_regex "${dependency_reference}")
+                    string(REGEX REPLACE
+                        "([][+.*()^$?|\\\\])" "\\\\\\1"
+                        dependency_regex "${dependency_regex}")
+                    list(APPEND audit_pre_exclude_regexes
+                        "^${dependency_regex}$")
+                endif()
+            endforeach()
+        endforeach()
+
+        list(REMOVE_DUPLICATES audit_pre_exclude_regexes)
+        list(REMOVE_DUPLICATES
+            audit_preexcluded_unresolved_dependencies)
+    else()
+        message(WARNING
+            "[runtime-audit] otool was not found; missing absolute Apple "
+            "dependencies cannot be preflighted")
+    endif()
+endif()
 
 set(runtime_dependency_arguments EXECUTABLES "${audit_executable}")
 if(audit_libraries)
     list(APPEND runtime_dependency_arguments LIBRARIES ${audit_libraries})
+endif()
+if(audit_modules)
+    list(APPEND runtime_dependency_arguments MODULES ${audit_modules})
+endif()
+
+if(APPLE)
+    list(APPEND runtime_dependency_arguments
+        BUNDLE_EXECUTABLE "${audit_executable}")
+    if(audit_pre_exclude_regexes)
+        list(APPEND runtime_dependency_arguments
+            PRE_EXCLUDE_REGEXES ${audit_pre_exclude_regexes})
+    endif()
 endif()
 
 # Windows has no rpath. The application directory is the intended lookup root
@@ -101,6 +207,10 @@ file(GET_RUNTIME_DEPENDENCIES
     CONFLICTING_DEPENDENCIES_PREFIX conflicting_dependencies
     ${runtime_dependency_arguments}
 )
+
+list(APPEND unresolved_dependencies
+    ${audit_preexcluded_unresolved_dependencies})
+list(REMOVE_DUPLICATES unresolved_dependencies)
 
 list(SORT resolved_dependencies)
 list(SORT unresolved_dependencies)
