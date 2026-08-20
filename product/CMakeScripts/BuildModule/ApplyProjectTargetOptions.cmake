@@ -1,9 +1,9 @@
 include_guard(GLOBAL)
 
-# Apply TemplateTool's compile contract directly to a compiled first-party
-# target. Third-party targets never call this function and therefore retain
-# their own compiler settings.
-function(ApplyProjectCompileOptions)
+# Apply TemplateTool's compile and link contract directly to a compiled
+# first-party target. Third-party targets never call this function and retain
+# their own compiler and linker settings.
+function(ApplyProjectTargetOptions)
     set(options PUBLIC_CXX_STANDARD)
     set(one_value_args TARGET)
     cmake_parse_arguments(
@@ -11,30 +11,30 @@ function(ApplyProjectCompileOptions)
 
     if(NOT ARG_TARGET)
         message(FATAL_ERROR
-            "[ApplyProjectCompileOptions] TARGET is required")
+            "[ApplyProjectTargetOptions] TARGET is required")
     endif()
     if(NOT TARGET "${ARG_TARGET}")
         message(FATAL_ERROR
-            "[ApplyProjectCompileOptions] Unknown target: ${ARG_TARGET}")
+            "[ApplyProjectTargetOptions] Unknown target: ${ARG_TARGET}")
     endif()
     if(ARG_UNPARSED_ARGUMENTS)
         message(FATAL_ERROR
-            "[ApplyProjectCompileOptions:${ARG_TARGET}] Unknown arguments: "
+            "[ApplyProjectTargetOptions:${ARG_TARGET}] Unknown arguments: "
             "${ARG_UNPARSED_ARGUMENTS}")
     endif()
 
     get_target_property(is_imported "${ARG_TARGET}" IMPORTED)
     if(is_imported)
         message(FATAL_ERROR
-            "[ApplyProjectCompileOptions:${ARG_TARGET}] Imported targets "
-            "cannot use project compile options")
+            "[ApplyProjectTargetOptions:${ARG_TARGET}] Imported targets "
+            "cannot use project target options")
     endif()
 
     get_target_property(target_type "${ARG_TARGET}" TYPE)
     if(target_type STREQUAL "INTERFACE_LIBRARY"
        OR target_type STREQUAL "UTILITY")
         message(FATAL_ERROR
-            "[ApplyProjectCompileOptions:${ARG_TARGET}] Target type "
+            "[ApplyProjectTargetOptions:${ARG_TARGET}] Target type "
             "${target_type} has no compiled project sources")
     endif()
 
@@ -45,11 +45,11 @@ function(ApplyProjectCompileOptions)
     endif()
 
     get_target_property(applied_scope
-        "${ARG_TARGET}" TT_PROJECT_COMPILE_OPTIONS_SCOPE)
+        "${ARG_TARGET}" TT_PROJECT_TARGET_OPTIONS_SCOPE)
     if(applied_scope)
         if(NOT "${applied_scope}" STREQUAL "${cxx_standard_scope}")
             message(FATAL_ERROR
-                "[ApplyProjectCompileOptions:${ARG_TARGET}] Compile options "
+                "[ApplyProjectTargetOptions:${ARG_TARGET}] Target options "
                 "were already applied with ${applied_scope} C++ standard "
                 "visibility; requested ${cxx_standard_scope}")
         endif()
@@ -70,6 +70,24 @@ function(ApplyProjectCompileOptions)
 
     set_target_properties("${ARG_TARGET}" PROPERTIES
         CXX_EXTENSIONS OFF
-        TT_PROJECT_COMPILE_OPTIONS_SCOPE "${cxx_standard_scope}"
+        TT_PROJECT_TARGET_OPTIONS_SCOPE "${cxx_standard_scope}"
     )
+
+    if(MSVC)
+        set_target_properties("${ARG_TARGET}" PROPERTIES
+            MSVC_DEBUG_INFORMATION_FORMAT
+                "$<$<CONFIG:Debug,Release,RelWithDebInfo>:ProgramDatabase>"
+        )
+
+        if(target_type STREQUAL "EXECUTABLE"
+           OR target_type STREQUAL "SHARED_LIBRARY"
+           OR target_type STREQUAL "MODULE_LIBRARY")
+            target_link_options("${ARG_TARGET}" PRIVATE
+                "$<$<CONFIG:Release>:/DEBUG>"
+                "$<$<CONFIG:Release>:/OPT:REF>"
+                "$<$<CONFIG:Release>:/OPT:ICF>"
+                "$<$<CONFIG:Release>:/INCREMENTAL:NO>"
+            )
+        endif()
+    endif()
 endfunction()

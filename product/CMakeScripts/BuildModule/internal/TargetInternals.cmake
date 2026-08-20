@@ -2,7 +2,7 @@ include_guard()
 
 include("${CMAKE_CURRENT_LIST_DIR}/../BuildInstallModule.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/../LinkTargetIncludeDirectories.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/../ApplyProjectCompileOptions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/../ApplyProjectTargetOptions.cmake")
 
 if(WIN32)
     include("${CMAKE_CURRENT_LIST_DIR}/../BuildRCFileModule.cmake")
@@ -26,7 +26,7 @@ function(_tt_apply_cpp_library_defaults)
             "${ARG_UNPARSED_ARGUMENTS}")
     endif()
 
-    ApplyProjectCompileOptions(
+    ApplyProjectTargetOptions(
         TARGET "${ARG_TARGET}"
         PUBLIC_CXX_STANDARD
     )

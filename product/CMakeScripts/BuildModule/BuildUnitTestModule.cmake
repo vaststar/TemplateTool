@@ -1,7 +1,7 @@
 include_guard()
 
 include("${CMAKE_CURRENT_LIST_DIR}/LinkTargetIncludeDirectories.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/ApplyProjectCompileOptions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/ApplyProjectTargetOptions.cmake")
 
 # ==========================================
 # Function: BuildUnitTestModule
@@ -58,7 +58,7 @@ function(BuildUnitTestModule)
         PRIVATE ${MODULE_TARGET_SOURCE}
     )
 
-    ApplyProjectCompileOptions(
+    ApplyProjectTargetOptions(
         TARGET "${MODULE_MODULE_NAME}"
     )
 

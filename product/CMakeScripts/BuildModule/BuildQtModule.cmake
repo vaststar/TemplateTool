@@ -188,7 +188,7 @@ function(BuildQtModule)
         )
 
         if(TARGET "${MODULE_MODULE_NAME}plugin")
-            ApplyProjectCompileOptions(
+            ApplyProjectTargetOptions(
                 TARGET "${MODULE_MODULE_NAME}plugin"
             )
         endif()

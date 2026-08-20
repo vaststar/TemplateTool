@@ -1,7 +1,7 @@
 include(BuildRCFileModule)
 include(BuildBundlePListModule)
 include(BuildLinuxDesktopModule)
-include(ApplyProjectCompileOptions)
+include(ApplyProjectTargetOptions)
 project(application VERSION 1.0 LANGUAGES CXX)
 
 set(MAIN_ENTRY "mainEntry")
@@ -79,7 +79,7 @@ endif()
 # ==========================================
 add_executable(TemplateTool::Application ALIAS ${MAIN_ENTRY})
 
-ApplyProjectCompileOptions(TARGET ${MAIN_ENTRY})
+ApplyProjectTargetOptions(TARGET ${MAIN_ENTRY})
 message(STATUS "  C++ Standard: C++20")
 
 target_link_libraries(${MAIN_ENTRY} PRIVATE
