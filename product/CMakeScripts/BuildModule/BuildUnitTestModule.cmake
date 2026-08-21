@@ -39,7 +39,6 @@ function(BuildUnitTestModule)
     # ==========================================
     # Logging
     # ==========================================
-    message(STATUS "")
     message(STATUS "[BuildUnitTestModule] ${MODULE_MODULE_NAME}")
     
     if(TT_CMAKE_VERBOSE_CONFIG)

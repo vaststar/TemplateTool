@@ -64,7 +64,6 @@ function(BuildModule)
         set(_library_type SHARED)
     endif()
 
-    message(STATUS "")
     message(STATUS
         "[BuildModule] ${MODULE_MODULE_NAME} (${_library_type})")
     if(TT_CMAKE_VERBOSE_CONFIG)

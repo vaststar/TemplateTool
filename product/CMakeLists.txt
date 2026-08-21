@@ -1,5 +1,3 @@
-message(STATUS "CMake version: ${CMAKE_VERSION}")
-
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     "${CMAKE_CURRENT_SOURCE_DIR}/CMakeScripts/BuildModule"
@@ -9,7 +7,8 @@ set(CMAKE_MODULE_PATH
 )
 
 set(UCF_CODE_GENERATOR_DIR ${CMAKE_BINARY_DIR}/codegen)
-message(STATUS "set UCF_CODE_GENERATOR_DIR: ${UCF_CODE_GENERATOR_DIR}")
+message(STATUS
+    "[TemplateTool] Code generator: ${UCF_CODE_GENERATOR_DIR}")
 
 # Runtime payload producers register against this project-scoped directory.
 # Consumers read the registry after framework configuration has completed.

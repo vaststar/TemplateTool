@@ -81,7 +81,6 @@ function(BuildQtModule)
         set(_library_type SHARED)
     endif()
 
-    message(STATUS "")
     message(STATUS
         "[BuildQtModule] ${MODULE_MODULE_NAME} (${_library_type})")
     if(MODULE_QML_TARGET_URI)

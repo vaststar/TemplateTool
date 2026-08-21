@@ -1,6 +1,7 @@
 include(ApplyProjectTargetOptions)
 
-message(STATUS "Building updater...")
+message(STATUS
+    "[Application] updater (standalone executable, no library dependencies)")
 
 # Platform-specific source selection
 if(WIN32)
@@ -36,5 +37,3 @@ else()
     # Windows/Linux: install alongside the main binary
     install(TARGETS updater RUNTIME DESTINATION bin)
 endif()
-
-message(STATUS "  updater target configured (standalone, no library deps)")

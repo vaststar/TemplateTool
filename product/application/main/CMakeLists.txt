@@ -4,11 +4,13 @@ include(BuildLinuxDesktopModule)
 include(ApplyProjectTargetOptions)
 
 set(MAIN_ENTRY "mainEntry")
-message(STATUS "Building ${MAIN_ENTRY}...")
 
 if(APPLE)
-    message(STATUS "  Platform: macOS")
-    message(STATUS "  Bundle: ${MAIN_ENTRY}.app")
+    message(STATUS "[Application] ${MAIN_ENTRY} (macOS bundle)")
+    if(TT_CMAKE_VERBOSE_CONFIG)
+        message(STATUS "[Application]   Platform    : macOS")
+        message(STATUS "[Application]   Bundle      : ${MAIN_ENTRY}.app")
+    endif()
 
     add_executable(${MAIN_ENTRY} MACOSX_BUNDLE main.cpp)
 
@@ -27,17 +29,25 @@ if(APPLE)
         INSTALL_RPATH_USE_LINK_PATH OFF
         # BUILD_RPATH "${QT_LIB_DIR}"
     )
-    message(STATUS "  INSTALL_RPATH: @executable_path/../Frameworks")
-    message(STATUS "  BUILD_RPATH: ${QT_LIB_DIR}")
+    if(TT_CMAKE_VERBOSE_CONFIG)
+        message(STATUS
+            "[Application]   Install RPATH: @executable_path/../Frameworks")
+    endif()
 
     set(APP_ICON ${CMAKE_CURRENT_SOURCE_DIR}/logo.icns)
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
     target_sources(${MAIN_ENTRY} PRIVATE ${APP_ICON})
-    message(STATUS "  Icon: logo.icns")
+    if(TT_CMAKE_VERBOSE_CONFIG)
+        message(STATUS "[Application]   Icon        : logo.icns")
+    endif()
 
 elseif(WIN32)
-    message(STATUS "  Platform: Windows")
-    message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID}")
+    message(STATUS "[Application] ${MAIN_ENTRY} (Windows GUI executable)")
+    if(TT_CMAKE_VERBOSE_CONFIG)
+        message(STATUS "[Application]   Platform    : Windows")
+        message(STATUS
+            "[Application]   Compiler    : ${CMAKE_CXX_COMPILER_ID}")
+    endif()
 
     add_executable(${MAIN_ENTRY} main.cpp logo.rc)
 
@@ -49,14 +59,22 @@ elseif(WIN32)
     # Set Windows GUI subsystem options
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_link_options(${MAIN_ENTRY} PRIVATE -mwindows)
-        message(STATUS "  Link options: -mwindows")
+        if(TT_CMAKE_VERBOSE_CONFIG)
+            message(STATUS "[Application]   Link options: -mwindows")
+        endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_link_options(${MAIN_ENTRY} PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
-        message(STATUS "  Link options: /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+        if(TT_CMAKE_VERBOSE_CONFIG)
+            message(STATUS
+                "[Application]   Link options: /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+        endif()
     endif()
 
 else()
-    message(STATUS "  Platform: Linux")
+    message(STATUS "[Application] ${MAIN_ENTRY} (Linux executable)")
+    if(TT_CMAKE_VERBOSE_CONFIG)
+        message(STATUS "[Application]   Platform    : Linux")
+    endif()
     add_executable(${MAIN_ENTRY} main.cpp)
 
     set_target_properties(${MAIN_ENTRY} PROPERTIES
@@ -64,7 +82,10 @@ else()
         BUILD_WITH_INSTALL_RPATH OFF
         INSTALL_RPATH_USE_LINK_PATH OFF
     )
-    message(STATUS "  INSTALL_RPATH: $ORIGIN;$ORIGIN/../lib")
+    if(TT_CMAKE_VERBOSE_CONFIG)
+        message(STATUS
+            "[Application]   Install RPATH: $ORIGIN;$ORIGIN/../lib")
+    endif()
 
     BuildLinuxDesktopModule(
         MODULE_NAME ${MAIN_ENTRY}
@@ -79,11 +100,11 @@ endif()
 add_executable(TemplateTool::Application ALIAS ${MAIN_ENTRY})
 
 ApplyProjectTargetOptions(TARGET ${MAIN_ENTRY})
-message(STATUS "  C++ Standard: C++20")
 
 target_link_libraries(${MAIN_ENTRY} PRIVATE
     MainUI
 )
-message(STATUS "  Dependencies: MainUI")
-
-message(STATUS "Finished building ${MAIN_ENTRY}")
+if(TT_CMAKE_VERBOSE_CONFIG)
+    message(STATUS "[Application]   C++ standard : C++20")
+    message(STATUS "[Application]   Dependencies : MainUI")
+endif()

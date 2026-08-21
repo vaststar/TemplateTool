@@ -48,7 +48,6 @@ function(BuildInterface)
             "${INTERFACE_UNPARSED_ARGUMENTS}")
     endif()
 
-    message(STATUS "")
     message(STATUS "[BuildInterface] ${INTERFACE_MODULE_NAME}")
     if(TT_CMAKE_VERBOSE_CONFIG)
         message(STATUS
