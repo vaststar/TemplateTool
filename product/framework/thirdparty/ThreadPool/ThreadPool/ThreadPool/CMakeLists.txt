@@ -35,6 +35,9 @@ target_sources(${MODULE_NAME}
 )
 
 target_compile_features(${MODULE_NAME} PUBLIC cxx_std_20)
+target_compile_options(${MODULE_NAME} PUBLIC
+    "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/utf-8>"
+)
 set_target_properties(${MODULE_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${MODULE_NAME} PROPERTIES CXX_EXTENSIONS OFF)
 if (WIN32)

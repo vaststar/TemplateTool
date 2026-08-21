@@ -50,7 +50,7 @@ public:
     virtual std::string getName() const = 0;
     virtual size_t getPendingTaskCount() const = 0;
 
-    // threadCount = 0 表示自动检测
+    // threadCount = 0 enables automatic thread-count detection.
     static std::shared_ptr<IThreadPool> create(
         uint32_t threadCount = 0,
         const std::string& name = "default"
