@@ -2,7 +2,6 @@ include(BuildRCFileModule)
 include(BuildBundlePListModule)
 include(BuildLinuxDesktopModule)
 include(ApplyProjectTargetOptions)
-project(application VERSION 1.0 LANGUAGES CXX)
 
 set(MAIN_ENTRY "mainEntry")
 message(STATUS "Building ${MAIN_ENTRY}...")

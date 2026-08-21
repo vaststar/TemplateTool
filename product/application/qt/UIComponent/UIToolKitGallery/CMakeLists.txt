@@ -2,8 +2,6 @@
 # UIToolKitGallery - standalone UIComponent debug executable
 # Enable with: -DBUILD_COMPONENT_GALLERY=ON
 # ==========================================
-project(UIToolKitGallery LANGUAGES CXX)
-
 include(ApplyProjectTargetOptions)
 
 set(GALLERY_TARGET UIToolKitGallery)

@@ -1,5 +1,3 @@
-project(updater VERSION 1.0 LANGUAGES CXX)
-
 include(ApplyProjectTargetOptions)
 
 message(STATUS "Building updater...")

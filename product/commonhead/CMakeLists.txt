@@ -1,10 +1,3 @@
-set(ProjectName "CommonHead")
-set(ProjectDesc "CommonHead for app")
-
-project(${ProjectName} DESCRIPTION ${ProjectDesc}
-                       LANGUAGES CXX
-        )
-
 option(UCF_BUILD_COMMONHEAD_SHARED
     "Build CommonHead modules as shared libraries (DLL). OFF builds them as static libraries."
     ON

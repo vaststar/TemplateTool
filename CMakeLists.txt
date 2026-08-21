@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25...3.31)
 
-project(TemplateTool)
+project(TemplateTool LANGUAGES C CXX)
 
 option(TT_CMAKE_VERBOSE_CONFIG
     "Print detailed TemplateTool CMake configuration"
