@@ -28,55 +28,55 @@ list(APPEND ALL_TRANSLATION_SOURCE_FILES
     "${GENERATED_RESOURCE_STRING_SOURCE}")
 
 if(QT_TRANSLATION_DIR)
-    set(Translation_DIR ${QT_TRANSLATION_DIR})
-    message(STATUS "[I18N] Using external translation dir: ${Translation_DIR}")
+    set(TRANSLATION_DIR ${QT_TRANSLATION_DIR})
+    message(STATUS "[I18N] Using external translation dir: ${TRANSLATION_DIR}")
 else()
-    set(Translation_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
-    message(STATUS "[I18N] Using default translation dir: ${Translation_DIR}")
+    set(TRANSLATION_DIR ${CMAKE_CURRENT_SOURCE_DIR}/translations)
+    message(STATUS "[I18N] Using default translation dir: ${TRANSLATION_DIR}")
 endif()
-set(Translation_LIB UIResourcecTranslation)
-set(Translation_TS_FILES
-    ${Translation_DIR}/app_translations_en.ts
-    ${Translation_DIR}/app_translations_zh-Hans.ts
-    ${Translation_DIR}/app_translations_zh-Hant.ts
+set(TRANSLATION_TARGET UIResourceTranslation)
+set(TRANSLATION_TS_FILES
+    ${TRANSLATION_DIR}/app_translations_en.ts
+    ${TRANSLATION_DIR}/app_translations_zh-Hans.ts
+    ${TRANSLATION_DIR}/app_translations_zh-Hant.ts
 )
 
-add_library(${Translation_LIB} OBJECT)
+add_library(${TRANSLATION_TARGET} OBJECT)
 
 qt_add_translations(
-    ${Translation_LIB}
+    ${TRANSLATION_TARGET}
     RESOURCE_PREFIX "/i18n"
     TS_FILE_BASE app_translations
-    TS_FILE_DIR ${Translation_DIR}
-    TS_FILES ${Translation_TS_FILES}
+    TS_FILE_DIR ${TRANSLATION_DIR}
+    TS_FILES ${TRANSLATION_TS_FILES}
     SOURCES ${ALL_TRANSLATION_SOURCE_FILES}
     LUPDATE_OPTIONS -no-obsolete
 )
 
 
-if (TARGET ${Translation_LIB}_lupdate)
-    add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+if (TARGET ${TRANSLATION_TARGET}_lupdate)
+    add_dependencies(${TRANSLATION_TARGET}_lupdate UIResourceStringLoader)
 else()
-    message(STATUS "[I18N] ${Translation_LIB}_lupdate not found, creating with qt_add_lupdate")
+    message(STATUS "[I18N] ${TRANSLATION_TARGET}_lupdate not found, creating with qt_add_lupdate")
 
     qt_add_lupdate(
-        LUPDATE_TARGET ${Translation_LIB}_lupdate
-        TS_FILES ${Translation_TS_FILES}
+        LUPDATE_TARGET ${TRANSLATION_TARGET}_lupdate
+        TS_FILES ${TRANSLATION_TS_FILES}
         SOURCES  ${ALL_TRANSLATION_SOURCE_FILES}
         OPTIONS -no-obsolete
     )
-    add_dependencies(${Translation_LIB}_lupdate UIResourceStringLoader)
+    add_dependencies(${TRANSLATION_TARGET}_lupdate UIResourceStringLoader)
 endif()
 
 # Normalize codegen paths in .ts files after lupdate
 # This prevents git diff when switching between macOS and Windows builds
 set(NORMALIZE_TS_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/normalize_ts_paths.py")
 find_package(Python3 QUIET COMPONENTS Interpreter)
-if(EXISTS ${NORMALIZE_TS_SCRIPT} AND TARGET ${Translation_LIB}_lupdate AND Python3_FOUND)
+if(EXISTS ${NORMALIZE_TS_SCRIPT} AND TARGET ${TRANSLATION_TARGET}_lupdate AND Python3_FOUND)
     add_custom_command(
-        TARGET ${Translation_LIB}_lupdate
+        TARGET ${TRANSLATION_TARGET}_lupdate
         POST_BUILD
-        COMMAND ${Python3_EXECUTABLE} ${NORMALIZE_TS_SCRIPT} ${Translation_TS_FILES}
+        COMMAND ${Python3_EXECUTABLE} ${NORMALIZE_TS_SCRIPT} ${TRANSLATION_TS_FILES}
         COMMENT "[I18N] Normalizing codegen paths in .ts files..."
         VERBATIM
     )
@@ -87,47 +87,47 @@ else()
     endif()
 endif()
 
-if (NOT TARGET ${Translation_LIB}_lupdate)
-    message(WARNING "[I18N] ${Translation_LIB}_lupdate target could not be created.")
+if (NOT TARGET ${TRANSLATION_TARGET}_lupdate)
+    message(WARNING "[I18N] ${TRANSLATION_TARGET}_lupdate target could not be created.")
 endif()
 
 
-set(UPDATE_Translation_ALL UPDATE_Translation_ALL_LIB)
+set(UPDATE_TRANSLATIONS_TARGET UPDATE_Translation_ALL_LIB)
 
-add_custom_target(${UPDATE_Translation_ALL})
-add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_lupdate)
+add_custom_target(${UPDATE_TRANSLATIONS_TARGET})
+add_dependencies(${UPDATE_TRANSLATIONS_TARGET} ${TRANSLATION_TARGET}_lupdate)
 
-if (TARGET ${Translation_LIB}_lrelease)
-    add_dependencies(${Translation_LIB}_lrelease ${Translation_LIB}_lupdate)
-    add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_lrelease)
+if (TARGET ${TRANSLATION_TARGET}_lrelease)
+    add_dependencies(${TRANSLATION_TARGET}_lrelease ${TRANSLATION_TARGET}_lupdate)
+    add_dependencies(${UPDATE_TRANSLATIONS_TARGET} ${TRANSLATION_TARGET}_lrelease)
 endif()
 
-if (TARGET ${Translation_LIB}_${Translation_LIB}_translations)
-    add_dependencies(${Translation_LIB}_${Translation_LIB}_translations ${Translation_LIB}_lupdate)
-    add_dependencies(${UPDATE_Translation_ALL} ${Translation_LIB}_${Translation_LIB}_translations)
+if (TARGET ${TRANSLATION_TARGET}_${TRANSLATION_TARGET}_translations)
+    add_dependencies(${TRANSLATION_TARGET}_${TRANSLATION_TARGET}_translations ${TRANSLATION_TARGET}_lupdate)
+    add_dependencies(${UPDATE_TRANSLATIONS_TARGET} ${TRANSLATION_TARGET}_${TRANSLATION_TARGET}_translations)
 endif()
 
 if (TARGET release_translations AND TARGET update_translations)
     add_dependencies(release_translations update_translations)
-    add_dependencies(${UPDATE_Translation_ALL} release_translations)
+    add_dependencies(${UPDATE_TRANSLATIONS_TARGET} release_translations)
 endif()
-add_dependencies(${Translation_LIB} ${UPDATE_Translation_ALL} )
+add_dependencies(${TRANSLATION_TARGET} ${UPDATE_TRANSLATIONS_TARGET} )
 
 if (TARGET release_translations)
-    add_dependencies(${Translation_LIB} release_translations )
+    add_dependencies(${TRANSLATION_TARGET} release_translations )
 endif()
 
 SetIDEFolder(
     TARGET_NAMES
-        ${Translation_LIB}
-        ${Translation_LIB}_other_files
-        ${Translation_LIB}_lupdate
-        ${Translation_LIB}_lrelease
-        ${Translation_LIB}_${Translation_LIB}_translations
-        ${Translation_LIB}_resources_3
+        ${TRANSLATION_TARGET}
+        ${TRANSLATION_TARGET}_other_files
+        ${TRANSLATION_TARGET}_lupdate
+        ${TRANSLATION_TARGET}_lrelease
+        ${TRANSLATION_TARGET}_${TRANSLATION_TARGET}_translations
+        ${TRANSLATION_TARGET}_resources_3
         update_translations
         release_translations
-        ${UPDATE_Translation_ALL}
+        ${UPDATE_TRANSLATIONS_TARGET}
     FOLDER_NAME
         UI/UIAuxiliary/UIFoundation/translations
 )

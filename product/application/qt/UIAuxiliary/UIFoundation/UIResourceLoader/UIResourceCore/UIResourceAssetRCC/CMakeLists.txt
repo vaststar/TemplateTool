@@ -13,7 +13,7 @@ get_required_target_property(
 )
 
 set(RESOURCE_IDE_FOLDER commonhead/codegen)
-set(RESOURCE_OUT_PUT_DIR ${UCF_CODE_GENERATOR_DIR}/UIResourceAsset)
+set(RESOURCE_OUTPUT_DIR ${UCF_CODE_GENERATOR_DIR}/UIResourceAsset)
 
 set(RCC_FILES)
 set(RCC_TARGETS)
@@ -21,12 +21,12 @@ message(STATUS "[UIResourceAssetRCC] Theme files: ${ASSET_THEME_FILES}")
 foreach(item IN LISTS ASSET_THEME_FILES)
 
   get_filename_component(FILENAME_NO_EXT ${item} NAME_WE)
-  set(RCC_OUT_PUT_FILE UIAssetResource_${FILENAME_NO_EXT}.qrc)
-  set(RCC_OUTPUT_PATH ${RESOURCE_OUT_PUT_DIR}/${RCC_OUT_PUT_FILE})
-  set(RCC_TEMEPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/UIAssetResource.qrc.j2)
+  set(RCC_OUTPUT_FILE UIAssetResource_${FILENAME_NO_EXT}.qrc)
+  set(RCC_OUTPUT_PATH ${RESOURCE_OUTPUT_DIR}/${RCC_OUTPUT_FILE})
+  set(RCC_TEMPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/UIAssetResource.qrc.j2)
 
   generate_from_template(
-      TEMPLATE_FILE ${RCC_TEMEPLATE_FILE}
+      TEMPLATE_FILE ${RCC_TEMPLATE_FILE}
       INPUT_FILE ${item}
       OUTPUT_FILE ${RCC_OUTPUT_PATH}
       OUTPUT_TARGET_VAR GFT_RCC_TARGET

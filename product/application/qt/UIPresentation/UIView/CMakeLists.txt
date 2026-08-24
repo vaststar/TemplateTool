@@ -43,7 +43,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UIQmlUtilities
     UIResourceAssetLoader
     UIResourceAssetRCCInterface
-    UIResourcecTranslation
+    UIResourceTranslation
     UIResourceLoader
     UIResourceLoaderManager
     UIViewCore
