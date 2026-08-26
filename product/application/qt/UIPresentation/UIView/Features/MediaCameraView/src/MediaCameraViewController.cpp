@@ -1,5 +1,6 @@
 #include "MediaCameraView/MediaCameraViewController.h"
 
+#include <cstring>
 #include <thread>
 
 #include <commonhead/viewmodels/MediaCameraViewModel/IMediaCameraViewModel.h>
@@ -160,32 +161,79 @@ void MediaCameraViewController::onCameraOpenFailed()
 
 void MediaCameraViewController::onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame)
 {
+    if (!frame.isValid() ||
+        frame.format != commonHead::viewModels::model::PixelFormat::RGB888)
+    {
+        return;
+    }
+
     if (mIsOpening)
     {
         mIsOpening = false;
         emit isOpeningChanged();
     }
-    QImage img(&frame.data[0], frame.width, frame.height, frame.bytesPerLine, QImage::Format::Format_RGB888);
 
-    if(mVideoSink)
+    // imageView does not own frame.data and therefore must not escape this
+    // function. imageToVideoFrame() copies it into QVideoFrame-owned storage.
+    const QImage imageView(frame.data.data(),
+                           frame.width,
+                           frame.height,
+                           frame.bytesPerLine,
+                           QImage::Format_RGB888);
+
+    if (mVideoSink)
     {
-        mVideoSink->setVideoFrame(imageToVideoFrame(img));
+        auto videoFrame = imageToVideoFrame(imageView);
+        if (videoFrame.isValid())
+        {
+            mVideoSink->setVideoFrame(videoFrame);
+        }
     }
-
-    emit showCameraImage(img);
 
     emit visibleChanged();
 }
 
 QVideoFrame MediaCameraViewController::imageToVideoFrame(const QImage& image) const
 {
-    QImage convetedImage = image.convertToFormat(QImage::Format_RGBX8888);
-    QVideoFrame videoFrame = QVideoFrameFormat(convetedImage.size(), QVideoFrameFormat::Format_RGBX8888);
-    if (videoFrame.map(QVideoFrame::WriteOnly))
+    if (image.isNull())
     {
-        memcpy(videoFrame.bits(0), convetedImage.bits(), convetedImage.sizeInBytes());
-        videoFrame.unmap();
-        return videoFrame;
+        return {};
     }
-    return {};
+
+    const QImage convertedImage = image.convertToFormat(QImage::Format_RGBX8888);
+    if (convertedImage.isNull())
+    {
+        return {};
+    }
+
+    QVideoFrame videoFrame = QVideoFrameFormat(
+        convertedImage.size(), QVideoFrameFormat::Format_RGBX8888);
+    if (!videoFrame.map(QVideoFrame::WriteOnly))
+    {
+        return {};
+    }
+
+    const auto sourceBytesPerLine = convertedImage.bytesPerLine();
+    const auto destinationBytesPerLine = videoFrame.bytesPerLine(0);
+    const auto requiredDestinationBytes =
+        static_cast<qint64>(convertedImage.height() - 1) * destinationBytesPerLine +
+        sourceBytesPerLine;
+    auto* destination = videoFrame.bits(0);
+    if (!destination ||
+        destinationBytesPerLine < sourceBytesPerLine ||
+        requiredDestinationBytes > videoFrame.mappedBytes(0))
+    {
+        videoFrame.unmap();
+        return {};
+    }
+
+    for (int row = 0; row < convertedImage.height(); ++row)
+    {
+        std::memcpy(destination + row * destinationBytesPerLine,
+                    convertedImage.constScanLine(row),
+                    static_cast<std::size_t>(sourceBytesPerLine));
+    }
+
+    videoFrame.unmap();
+    return videoFrame;
 }

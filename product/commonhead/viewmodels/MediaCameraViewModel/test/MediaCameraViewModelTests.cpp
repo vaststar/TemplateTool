@@ -56,6 +56,17 @@ TEST_CASE("MediaCameraViewModel exposes standalone video frame types", "[MediaCa
     REQUIRE(frame.height == 1);
     REQUIRE(frame.bytesPerLine == 4);
     REQUIRE(frame.format == PixelFormat::RGBA8888);
+
+    REQUIRE_FALSE(VideoFrame{{1, 2, 3}, 1, 1, 0, PixelFormat::RGB888}.isValid());
+    REQUIRE_FALSE(VideoFrame{{1, 2, 3}, 1, 1, -1, PixelFormat::RGB888}.isValid());
+    REQUIRE_FALSE(VideoFrame{{1, 2, 3}, 2, 1, 3, PixelFormat::RGB888}.isValid());
+    REQUIRE_FALSE(VideoFrame{{1, 2}, 1, 1, 3, PixelFormat::RGB888}.isValid());
+    REQUIRE_FALSE(VideoFrame{{1, 2, 3}, 1, 1, 3, PixelFormat::Unknown}.isValid());
+    REQUIRE(VideoFrame{{1, 2, 3, 0, 0, 0, 0, 0},
+                       1,
+                       2,
+                       4,
+                       PixelFormat::RGB888}.isValid());
 }
 
 TEST_CASE("MediaCameraViewModel reports an unavailable framework", "[MediaCameraViewModel][Api]")

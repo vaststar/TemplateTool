@@ -56,7 +56,6 @@ private:
     virtual void onCameraFrameReceived(const commonHead::viewModels::model::VideoFrame& frame);
     virtual void onCameraOpenFailed();
 signals:
-    void showCameraImage(const QImage& image);
     void videoSinkChanged(QVideoSink* videoSink);
     void visibleChanged();
     void openFailedChanged();
