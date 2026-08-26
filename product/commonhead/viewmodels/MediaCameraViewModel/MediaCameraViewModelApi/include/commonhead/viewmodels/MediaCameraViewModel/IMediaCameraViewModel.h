@@ -40,12 +40,13 @@ public:
 public:
     virtual std::string getViewModelName() const override = 0;
 
-    // Each instance binds to one source. Create another instance to switch sources.
+    // Opens the camera and starts capture asynchronously. Calls for one
+    // ViewModel instance are serialized by the implementation. Each instance
+    // binds to one source until closeCamera() completes.
     virtual void openCamera(const model::CameraSource& source) = 0;
+    // Stops capture and releases the camera asynchronously. Idempotent.
+    virtual void closeCamera() = 0;
     [[nodiscard]] virtual bool isOpened() const = 0;
-
-    virtual void startCaptureCameraVideo() = 0;
-    virtual void stopCaptureCameraVideo() = 0;
 };
 
 } // namespace commonHead::viewModels

@@ -35,6 +35,9 @@ public:
 
 private:
     mutable std::mutex mCamerasMutex;
-    std::vector<std::unique_ptr<CameraVideoCapture>> mCamerasList;
+    // Operations copy a strong reference while holding mCamerasMutex and use
+    // it after unlocking, so releaseCamera() cannot invalidate an in-flight
+    // operation.
+    std::vector<std::shared_ptr<CameraVideoCapture>> mCamerasList;
 };
 }

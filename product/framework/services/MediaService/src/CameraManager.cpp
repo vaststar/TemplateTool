@@ -15,15 +15,20 @@ CameraManager::CameraManager()
 
 CameraManager::~CameraManager()
 {
+    std::vector<std::shared_ptr<CameraVideoCapture>> cameras;
     {
         std::scoped_lock loc(mCamerasMutex);
-        mCamerasList.clear();
+        cameras.swap(mCamerasList);
     }
+    // CameraVideoCapture destruction can wait for its capture thread. Never do
+    // that while holding the manager lock.
+    cameras.clear();
 }
 
 std::string CameraManager::openCamera(const media::CameraSource& source)
 {
     const std::string key = media::toKey(source);
+    std::shared_ptr<CameraVideoCapture> staleCamera;
 
     {
         std::scoped_lock loc(mCamerasMutex);
@@ -40,12 +45,14 @@ std::string CameraManager::openCamera(const media::CameraSource& source)
                 return (*iter)->getCameraId();
             }
             SERVICE_LOG_DEBUG("camera not opened, removing stale entry, source:" << key);
+            staleCamera = *iter;
             mCamerasList.erase(iter);
         }
     }
+    staleCamera.reset();
 
     // Open outside mCamerasMutex: the ctor may block for openTimeoutMs.
-    auto camera = std::make_unique<CameraVideoCapture>(source);
+    auto camera = std::make_shared<CameraVideoCapture>(source);
     if (!camera->isOpened())
     {
         SERVICE_LOG_DEBUG("failed to open camera, source:" << key);
@@ -66,6 +73,7 @@ std::string CameraManager::openCamera(const media::CameraSource& source)
         }
         if (iter != mCamerasList.end())
         {
+            staleCamera = *iter;
             mCamerasList.erase(iter);
         }
         SERVICE_LOG_DEBUG("camera opened, source: " << key << ", id: " << camera->getCameraId());
@@ -76,35 +84,39 @@ std::string CameraManager::openCamera(const media::CameraSource& source)
 
 void CameraManager::releaseCamera(const std::string& cameraId)
 {
-    std::scoped_lock loc(mCamerasMutex);
-    auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
-        return camera->getCameraId() == cameraId;
-    });
-
-    if (iter != mCamerasList.end())
+    std::shared_ptr<CameraVideoCapture> releasedCamera;
     {
+        std::scoped_lock loc(mCamerasMutex);
+        auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
+            return camera->getCameraId() == cameraId;
+        });
+
+        if (iter == mCamerasList.end())
+        {
+            SERVICE_LOG_WARN("camera not found, id:" << cameraId);
+            return;
+        }
+
         if (!(*iter)->isOpened())
         {
             SERVICE_LOG_DEBUG("camera not opened, remove this camera, cameraId:" << cameraId);
+            releasedCamera = *iter;
+            mCamerasList.erase(iter);
+        }
+        else if ((*iter)->releaseDeviceRef(); (*iter)->getDeviceRefCount() <= 0)
+        {
+            SERVICE_LOG_DEBUG("camera use count is 0, remove this camera, cameraId:" << cameraId);
+            releasedCamera = *iter;
             mCamerasList.erase(iter);
         }
         else
         {
-            if ((*iter)->releaseDeviceRef(); (*iter)->getDeviceRefCount() <= 0)
-            {
-                SERVICE_LOG_DEBUG("camera use count is 0, remove this camera, cameraId:" << cameraId);
-                mCamerasList.erase(iter);
-            }
-            else
-            {
-                SERVICE_LOG_DEBUG("camera use count decreased, cameraId:" << cameraId << ", count:" << (*iter)->getDeviceRefCount());
-            }
+            SERVICE_LOG_DEBUG("camera use count decreased, cameraId:" << cameraId << ", count:" << (*iter)->getDeviceRefCount());
         }
     }
-    else
-    {
-        SERVICE_LOG_WARN("camera not found, id:" << cameraId);
-    }
+    // Destruction joins the capture thread and belongs outside the manager
+    // lock. Existing operations can keep the object alive with their own ref.
+    releasedCamera.reset();
 }
 
 std::vector<std::string> CameraManager::getOpenedCameras() const
@@ -125,7 +137,7 @@ std::vector<std::string> CameraManager::getOpenedCameras() const
 
 media::IVideoFramePtr CameraManager::readImageData(const std::string& cameraId)
 {
-    CameraVideoCapture* camera = nullptr;
+    std::shared_ptr<CameraVideoCapture> camera;
     {
         std::scoped_lock loc(mCamerasMutex);
         auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(), [cameraId](const auto& camera) {
@@ -133,7 +145,7 @@ media::IVideoFramePtr CameraManager::readImageData(const std::string& cameraId)
         });
         if (iter != mCamerasList.end())
         {
-            camera = iter->get();
+            camera = *iter;
         }
     }
 
@@ -148,7 +160,7 @@ media::IVideoFramePtr CameraManager::readImageData(const std::string& cameraId)
 
 std::string CameraManager::startVideoCapture(const std::string& cameraId, VideoFrameCallback callback)
 {
-    CameraVideoCapture* camera = nullptr;
+    std::shared_ptr<CameraVideoCapture> camera;
     {
         std::scoped_lock loc(mCamerasMutex);
         auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(),
@@ -157,7 +169,7 @@ std::string CameraManager::startVideoCapture(const std::string& cameraId, VideoF
             });
         if (iter != mCamerasList.end())
         {
-            camera = iter->get();
+            camera = *iter;
         }
     }
 
@@ -172,7 +184,7 @@ std::string CameraManager::startVideoCapture(const std::string& cameraId, VideoF
 
 void CameraManager::stopVideoCapture(const std::string& cameraId, const std::string& subscriptionId)
 {
-    CameraVideoCapture* camera = nullptr;
+    std::shared_ptr<CameraVideoCapture> camera;
     {
         std::scoped_lock loc(mCamerasMutex);
         auto iter = std::find_if(mCamerasList.begin(), mCamerasList.end(),
@@ -181,7 +193,7 @@ void CameraManager::stopVideoCapture(const std::string& cameraId, const std::str
             });
         if (iter != mCamerasList.end())
         {
-            camera = iter->get();
+            camera = *iter;
         }
     }
 

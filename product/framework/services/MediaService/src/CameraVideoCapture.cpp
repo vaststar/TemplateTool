@@ -85,11 +85,9 @@ void CameraVideoCapture::releaseDeviceRef()
     SERVICE_LOG_DEBUG("device ref released, cameraId: " << mCameraId
         << ", refCount: " << mDeviceRefCount);
 
-    if (mDeviceRefCount <= 0 && mDevice)
-    {
-        mDevice->close();
-        SERVICE_LOG_DEBUG("device closed due to refCount 0, cameraId: " << mCameraId);
-    }
+    // CameraManager drops its shared ownership when the count reaches zero.
+    // CameraDevice is closed by CameraVideoCapture destruction after all
+    // in-flight operations release their local shared_ptr.
 }
 
 int CameraVideoCapture::getDeviceRefCount() const

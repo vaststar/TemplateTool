@@ -1,7 +1,6 @@
 #include "MediaCameraView/MediaCameraViewController.h"
 
 #include <cstring>
-#include <thread>
 
 #include <commonhead/viewmodels/MediaCameraViewModel/IMediaCameraViewModel.h>
 #include <commonhead/viewmodels/MediaCameraViewModel/CameraSource.h>
@@ -46,8 +45,8 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 void MediaCameraViewController::init()
 {
     UIVIEW_LOG_DEBUG("");
-    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived);
-    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraOpenFailed, this, &MediaCameraViewController::onCameraOpenFailed);
+    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived, Qt::QueuedConnection);
+    QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraOpenFailed, this, &MediaCameraViewController::onCameraOpenFailed, Qt::QueuedConnection);
     mMediaCameraViewModel = getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
     // Callers drive the camera lifecycle via openLocal/openNetworkCamera.
@@ -71,11 +70,8 @@ void MediaCameraViewController::openLocalCamera(int index)
         mIsOpening = true;
         emit isOpeningChanged();
     }
-    auto vm = mMediaCameraViewModel;
-    std::thread([vm, index] {
-        vm->openCamera(commonHead::viewModels::model::LocalCameraSource{index});
-        vm->startCaptureCameraVideo();
-    }).detach();
+    mMediaCameraViewModel->openCamera(
+        commonHead::viewModels::model::LocalCameraSource{index});
 }
 
 void MediaCameraViewController::openNetworkCamera(const QString& url,
@@ -104,11 +100,7 @@ void MediaCameraViewController::openNetworkCamera(const QString& url,
     source.transport     = transport.toStdString();
     source.openTimeoutMs = openTimeoutMs;
     source.readTimeoutMs = readTimeoutMs;
-    auto vm = mMediaCameraViewModel;
-    std::thread([vm, source = std::move(source)] {
-        vm->openCamera(source);
-        vm->startCaptureCameraVideo();
-    }).detach();
+    mMediaCameraViewModel->openCamera(source);
 }
 
 void MediaCameraViewController::closeCamera()
@@ -123,10 +115,7 @@ void MediaCameraViewController::closeCamera()
         mIsOpening = false;
         emit isOpeningChanged();
     }
-    auto vm = mMediaCameraViewModel;
-    std::thread([vm] {
-        vm->stopCaptureCameraVideo();
-    }).detach();
+    mMediaCameraViewModel->closeCamera();
 }
 
 bool MediaCameraViewController::isVisible() const

@@ -1,5 +1,7 @@
 #include "CameraDevice.h"
 
+#include <vector>
+
 #include <opencv2/opencv.hpp>
 
 #include <ucf/utilities/OSUtils/OSUtils.h>
@@ -58,19 +60,22 @@ bool CameraDevice::open()
         }
         else if constexpr (std::is_same_v<T, media::NetworkCameraSource>)
         {
-            bool ok = mImpl->cap.open(s.url, cv::CAP_FFMPEG);
+            std::vector<int> openParameters;
+            if (s.openTimeoutMs > 0)
+            {
+                openParameters.push_back(cv::CAP_PROP_OPEN_TIMEOUT_MSEC);
+                openParameters.push_back(s.openTimeoutMs);
+            }
+            if (s.readTimeoutMs > 0)
+            {
+                openParameters.push_back(cv::CAP_PROP_READ_TIMEOUT_MSEC);
+                openParameters.push_back(s.readTimeoutMs);
+            }
+
+            bool ok = mImpl->cap.open(s.url, cv::CAP_FFMPEG, openParameters);
             if (ok && mImpl->cap.isOpened())
             {
                 mImpl->cap.set(cv::CAP_PROP_BUFFERSIZE, 1);
-                if (s.openTimeoutMs > 0)
-                {
-                    mImpl->cap.set(cv::CAP_PROP_OPEN_TIMEOUT_MSEC, s.openTimeoutMs);
-
-                }
-                if (s.readTimeoutMs > 0)
-                {
-                    mImpl->cap.set(cv::CAP_PROP_READ_TIMEOUT_MSEC, s.readTimeoutMs);
-                }
             }
             return ok;
         }
