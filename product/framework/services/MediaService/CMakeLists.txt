@@ -21,6 +21,8 @@ set(MODULE_SOURCE_PRIVATE
     src/CameraManager.cpp
     src/CameraVideoCapture.h
     src/CameraVideoCapture.cpp
+    src/VideoFrameSubscriptionRegistry.h
+    src/VideoFrameSubscriptionRegistry.cpp
     src/VideoFrame.h
     src/VideoFrame.cpp
 )

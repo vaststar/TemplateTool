@@ -1,15 +1,18 @@
 #pragma once
 
-#include <string>
-#include <memory>
 #include <atomic>
-#include <thread>
+#include <cstddef>
+#include <condition_variable>
 #include <functional>
+#include <memory>
 #include <mutex>
-#include <vector>
+#include <string>
+#include <thread>
 
 #include <ucf/services/MediaService/MediaTypes.h>
 #include <ucf/services/MediaService/IMediaService.h>
+
+#include "VideoFrameSubscriptionRegistry.h"
 
 namespace ucf::service {
 class CameraDevice;
@@ -44,6 +47,7 @@ public:
     void removeSubscription(const std::string& subscriptionId);
 
 private:
+    [[nodiscard]] bool ensureCaptureThreadStarted();
     void captureLoop();
 
 private:
@@ -51,18 +55,19 @@ private:
     std::string mCameraId;
     std::atomic<int> mDeviceRefCount{0};
 
-    // 订阅管理
-    struct Subscription
-    {
-        std::string id;
-        VideoFrameCallback callback;
-    };
-    std::vector<Subscription> mSubscriptions;
-    std::mutex mSubscriptionMutex;
+    VideoFrameSubscriptionRegistry mSubscriptions;
 
     std::thread mCaptureThread;
-    std::atomic<bool> mCapturing{false};
-    // Serializes start/stop of mCaptureThread. Never held by captureLoop.
+    // Serializes the one-time start of mCaptureThread. The thread stays alive
+    // and waits while there are no active subscriptions.
     std::mutex mCaptureThreadMutex;
+
+    // All fields below are guarded by mCaptureStateMutex. The subscription
+    // count is scheduling state for the condition-variable predicate; the
+    // registry remains the source of callback data.
+    std::mutex mCaptureStateMutex;
+    std::condition_variable mCaptureStateChanged;
+    std::size_t mActiveSubscriptionCount{0};
+    bool mStopping{false};
 };
 }

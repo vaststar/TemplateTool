@@ -1,7 +1,9 @@
 #include "CameraVideoCapture.h"
 #include "CameraDevice.h"
 
-#include <algorithm>
+#include <chrono>
+#include <exception>
+#include <utility>
 
 #include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
@@ -26,11 +28,18 @@ CameraVideoCapture::CameraVideoCapture(const media::CameraSource& source)
 
 CameraVideoCapture::~CameraVideoCapture()
 {
-    // 停止捕获线程
+    std::size_t activeSubscriptionCount = 0;
     {
-        std::scoped_lock lock(mSubscriptionMutex);
-        mCapturing = false;
+        std::scoped_lock lock(mCaptureStateMutex);
+        mStopping = true;
+        activeSubscriptionCount = mActiveSubscriptionCount;
+        mActiveSubscriptionCount = 0;
     }
+    mSubscriptions.deactivateAll();
+    mCaptureStateChanged.notify_all();
+
+    SERVICE_LOG_DEBUG("stopping capture thread, cameraId: " << mCameraId
+        << ", activeSubscriptions: " << activeSubscriptionCount);
     if (mCaptureThread.joinable())
     {
         mCaptureThread.join();
@@ -68,22 +77,32 @@ void CameraVideoCapture::addDeviceRef()
         return;
     }
 
-    mDeviceRefCount++;
+    int refCount = 0;
+    {
+        std::scoped_lock lock(mCaptureStateMutex);
+        refCount = ++mDeviceRefCount;
+    }
+    mCaptureStateChanged.notify_all();
     SERVICE_LOG_DEBUG("device ref added, cameraId: " << mCameraId
-        << ", refCount: " << mDeviceRefCount);
+        << ", refCount: " << refCount);
 }
 
 void CameraVideoCapture::releaseDeviceRef()
 {
-    if (mDeviceRefCount <= 0)
+    int refCount = 0;
     {
-        SERVICE_LOG_WARN("cannot release ref, refCount already 0, cameraId: " << mCameraId);
-        return;
-    }
+        std::scoped_lock lock(mCaptureStateMutex);
+        if (mDeviceRefCount <= 0)
+        {
+            SERVICE_LOG_WARN("cannot release ref, refCount already 0, cameraId: " << mCameraId);
+            return;
+        }
 
-    mDeviceRefCount--;
+        refCount = --mDeviceRefCount;
+    }
+    mCaptureStateChanged.notify_all();
     SERVICE_LOG_DEBUG("device ref released, cameraId: " << mCameraId
-        << ", refCount: " << mDeviceRefCount);
+        << ", refCount: " << refCount);
 
     // CameraManager drops its shared ownership when the count reaches zero.
     // CameraDevice is closed by CameraVideoCapture destruction after all
@@ -114,75 +133,109 @@ media::IVideoFramePtr CameraVideoCapture::readImageData()
 
 std::string CameraVideoCapture::addSubscription(VideoFrameCallback callback)
 {
-    if (!isOpened() || mDeviceRefCount <= 0)
+    if (!callback || !isOpened())
     {
         SERVICE_LOG_WARN("cannot add subscription, device not available, cameraId: " << mCameraId);
         return {};
     }
 
-    std::string subscriptionId = ucf::utilities::UUIDUtils::generateUUID();
-    bool shouldStart = false;
-
+    const auto subscriptionId = mSubscriptions.add(std::move(callback));
+    if (subscriptionId.empty())
     {
-        std::scoped_lock lock(mSubscriptionMutex);
-        shouldStart = mSubscriptions.empty();
-        mSubscriptions.push_back({subscriptionId, std::move(callback)});
+        SERVICE_LOG_WARN("failed to register camera callback, cameraId: " << mCameraId);
+        return {};
     }
 
-    if (shouldStart)
+    std::size_t activeSubscriptionCount = 0;
+    bool accepted = false;
     {
-        std::scoped_lock lifecycleLock(mCaptureThreadMutex);
-        if (mCaptureThread.joinable())
+        std::scoped_lock lock(mCaptureStateMutex);
+        if (!mStopping && mDeviceRefCount > 0)
         {
-            mCaptureThread.join();
+            accepted = true;
+            activeSubscriptionCount = ++mActiveSubscriptionCount;
         }
-        mCapturing = true;
-        mCaptureThread = std::thread(&CameraVideoCapture::captureLoop, this);
-        SERVICE_LOG_DEBUG("capture started, cameraId: " << mCameraId);
     }
+
+    if (!accepted)
+    {
+        mSubscriptions.remove(subscriptionId);
+        SERVICE_LOG_WARN("camera is unavailable; subscription rejected, cameraId: "
+            << mCameraId << ", subscriptionId: " << subscriptionId
+            << ", deviceRefCount: " << mDeviceRefCount.load());
+        return {};
+    }
+
+    if (!ensureCaptureThreadStarted())
+    {
+        mSubscriptions.remove(subscriptionId);
+        {
+            std::scoped_lock lock(mCaptureStateMutex);
+            --mActiveSubscriptionCount;
+        }
+        mCaptureStateChanged.notify_all();
+        SERVICE_LOG_ERROR("subscription rolled back because capture thread could not start, cameraId: "
+            << mCameraId << ", subscriptionId: " << subscriptionId);
+        return {};
+    }
+
+    mCaptureStateChanged.notify_all();
 
     SERVICE_LOG_DEBUG("subscription added, cameraId: " << mCameraId
-        << ", subscriptionId: " << subscriptionId);
+        << ", subscriptionId: " << subscriptionId
+        << ", activeCount: " << activeSubscriptionCount);
     return subscriptionId;
 }
 
 void CameraVideoCapture::removeSubscription(const std::string& subscriptionId)
 {
-    bool shouldStop = false;
-
+    if (!mSubscriptions.remove(subscriptionId))
     {
-        std::scoped_lock lock(mSubscriptionMutex);
-        auto it = std::find_if(mSubscriptions.begin(), mSubscriptions.end(),
-            [&subscriptionId](const Subscription& sub) { return sub.id == subscriptionId; });
+        SERVICE_LOG_WARN("subscription not found, cameraId: " << mCameraId
+            << ", subscriptionId: " << subscriptionId);
+        return;
+    }
 
-        if (it != mSubscriptions.end())
+    std::size_t activeSubscriptionCount = 0;
+    {
+        std::scoped_lock lock(mCaptureStateMutex);
+        if (mActiveSubscriptionCount == 0)
         {
-            mSubscriptions.erase(it);
-            SERVICE_LOG_DEBUG("subscription removed, cameraId: " << mCameraId
+            SERVICE_LOG_ERROR("subscription count underflow, cameraId: " << mCameraId
                 << ", subscriptionId: " << subscriptionId);
         }
         else
         {
-            SERVICE_LOG_WARN("subscription not found, cameraId: " << mCameraId
-                << ", subscriptionId: " << subscriptionId);
-            return;
+            --mActiveSubscriptionCount;
         }
+        activeSubscriptionCount = mActiveSubscriptionCount;
+    }
+    mCaptureStateChanged.notify_all();
 
-        if (mSubscriptions.empty())
-        {
-            mCapturing = false;
-            shouldStop = true;
-        }
+    SERVICE_LOG_DEBUG("subscription removed, cameraId: " << mCameraId
+        << ", subscriptionId: " << subscriptionId
+        << ", activeCount: " << activeSubscriptionCount);
+}
+
+bool CameraVideoCapture::ensureCaptureThreadStarted()
+{
+    std::scoped_lock lock(mCaptureThreadMutex);
+    if (mCaptureThread.joinable())
+    {
+        return true;
     }
 
-    if (shouldStop)
+    try
     {
-        std::scoped_lock lifecycleLock(mCaptureThreadMutex);
-        if (mCaptureThread.joinable())
-        {
-            mCaptureThread.join();
-        }
-        SERVICE_LOG_DEBUG("capture stopped, cameraId: " << mCameraId);
+        mCaptureThread = std::thread(&CameraVideoCapture::captureLoop, this);
+        SERVICE_LOG_DEBUG("capture thread started, cameraId: " << mCameraId);
+        return true;
+    }
+    catch (const std::exception& exception)
+    {
+        SERVICE_LOG_ERROR("failed to start capture thread, cameraId: "
+            << mCameraId << ", error: " << exception.what());
+        return false;
     }
 }
 
@@ -191,20 +244,42 @@ void CameraVideoCapture::captureLoop()
     SERVICE_LOG_DEBUG("capture loop started, cameraId: " << mCameraId);
     constexpr auto targetFrameTime = std::chrono::milliseconds(33);  // ~30fps
 
-    while (mCapturing && isOpened() && mDeviceRefCount > 0)
+    while (true)
     {
+        bool resumedFromIdle = false;
+        {
+            std::unique_lock lock(mCaptureStateMutex);
+            const bool shouldWait =
+                mActiveSubscriptionCount == 0 || mDeviceRefCount <= 0;
+            if (shouldWait && !mStopping)
+            {
+                SERVICE_LOG_DEBUG("capture thread entering idle state, cameraId: " << mCameraId
+                    << ", activeSubscriptions: " << mActiveSubscriptionCount
+                    << ", deviceRefCount: " << mDeviceRefCount.load());
+            }
+
+            mCaptureStateChanged.wait(lock, [this] {
+                return mStopping ||
+                    (mActiveSubscriptionCount > 0 && mDeviceRefCount > 0);
+            });
+
+            if (mStopping)
+            {
+                break;
+            }
+            resumedFromIdle = shouldWait;
+        }
+
+        if (resumedFromIdle)
+        {
+            SERVICE_LOG_DEBUG("capture thread resumed, cameraId: " << mCameraId);
+        }
+
         auto frameStart = std::chrono::steady_clock::now();
 
         if (auto frame = readImageData())
         {
-            std::scoped_lock lock(mSubscriptionMutex);
-            for (const auto& subscription : mSubscriptions)
-            {
-                if (subscription.callback)
-                {
-                    subscription.callback(frame);
-                }
-            }
+            mSubscriptions.dispatch(frame);
         }
 
         auto elapsed = std::chrono::steady_clock::now() - frameStart;
