@@ -23,7 +23,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoServiceApi
     ContactServiceApi
     CameraDirectoryServiceApi
-    MediaService
+    MediaServiceApi
     ImageServiceApi
     StabilityServiceApi
     PerformanceServiceApi

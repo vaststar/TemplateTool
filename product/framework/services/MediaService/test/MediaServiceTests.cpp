@@ -1,7 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
-#include "MediaService.h"
+#include <ucf/services/MediaService/MediaServiceCreator.h>
+
 #include "VideoFrame.h"
 
 TEST_CASE("MediaService can be constructed", "[MediaService]")
@@ -9,7 +10,7 @@ TEST_CASE("MediaService can be constructed", "[MediaService]")
     auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
     REQUIRE(fakeCoreFramework != nullptr);
 
-    auto service = std::make_shared<ucf::service::MediaService>(fakeCoreFramework);
+    auto service = ucf::service::impl::createMediaService(fakeCoreFramework);
     REQUIRE(service != nullptr);
 }
 

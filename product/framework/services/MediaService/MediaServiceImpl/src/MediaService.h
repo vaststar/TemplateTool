@@ -2,10 +2,11 @@
 
 #include <memory>
 #include <string>
-#include <ucf/services/MediaService/IMediaService.h>
-#include <ucf/services/MediaService/MediaServiceExport.h>
-#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
+
 #include <ucf/CoreFramework/CoreFrameworkCallbackDefault.h>
+#include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/MediaService/MediaServiceImplExport.h>
+#include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -13,10 +14,11 @@ namespace ucf::framework {
 }
 
 namespace ucf::service {
-class MEDIA_SERVICE_API MediaService final : public IMediaService,
-                                          public virtual ucf::utilities::NotificationHelper<IMediaServiceCallback>,
-                                          public ucf::framework::CoreFrameworkCallbackDefault,
-                                          public std::enable_shared_from_this<MediaService>
+class MEDIA_SERVICE_IMPL_API MediaService final
+    : public IMediaService
+    , public virtual ucf::utilities::NotificationHelper<IMediaServiceCallback>
+    , public ucf::framework::CoreFrameworkCallbackDefault
+    , public std::enable_shared_from_this<MediaService>
 {
 public:
     MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework);

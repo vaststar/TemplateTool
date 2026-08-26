@@ -13,6 +13,7 @@ BuildUnitTestModule(
         MediaCameraViewModelImpl
         CommonHeadFramework
         CoreFrameworkImpl
+        MediaServiceApi
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER

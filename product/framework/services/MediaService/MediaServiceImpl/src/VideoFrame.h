@@ -9,7 +9,7 @@ class VideoFrame : public IVideoFrame
 {
 public:
     VideoFrame() = default;
-    
+
     VideoFrame(std::vector<uint8_t> data, int width, int height, int bytesPerLine,
                PixelFormat format = PixelFormat::RGB888);
 

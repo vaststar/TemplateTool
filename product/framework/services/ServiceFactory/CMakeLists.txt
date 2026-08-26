@@ -25,7 +25,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     FeatureSettingsServiceImpl
     PerformanceServiceImpl
     StabilityServiceImpl
-    MediaService
+    MediaServiceImpl
     ImageServiceImpl
     ContactServiceImpl
     NetworkServiceImpl

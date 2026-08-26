@@ -1,13 +1,10 @@
 #include "MediaService.h"
 
-#include <thread>
-
 #include <ucf/CoreFramework/ICoreFramework.h>
-
-#include "MediaServiceLogger.h"
+#include <ucf/services/MediaService/MediaServiceCreator.h>
 
 #include "CameraManager.h"
-
+#include "MediaServiceLogger.h"
 
 namespace ucf::service{
 /////////////////////////////////////////////////////////////////////////////////////
@@ -46,10 +43,15 @@ std::shared_ptr<CameraManager> MediaService::DataPrivate::getCameraManager() con
 ////////////////////Finish DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<IMediaService> IMediaService::createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework)
+namespace impl {
+
+std::shared_ptr<IMediaService> createMediaService(
+    ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<MediaService>(coreFramework);
 }
+
+} // namespace impl
 
 MediaService::MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))

@@ -20,7 +20,7 @@ BuildModule(
     TARGET_SOURCE_PRIVATE
         ${TARGET_SOURCE_FILES_PRIVATE}
     TARGET_ADD_LINK_LIBRARY_PUBLIC
-        MediaService
+        MediaServiceApi
         trompeloeil
     TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/src

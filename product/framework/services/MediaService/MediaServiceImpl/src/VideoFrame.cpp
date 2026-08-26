@@ -24,7 +24,7 @@ std::size_t bytesPerPixel(PixelFormat format)
 
 } // namespace
 
-VideoFrame::VideoFrame(std::vector<uint8_t> data, int width, int height, 
+VideoFrame::VideoFrame(std::vector<uint8_t> data, int width, int height,
                        int bytesPerLine, PixelFormat format)
     : mData(std::move(data))
     , mWidth(width)

@@ -1,27 +1,21 @@
 #pragma once
 
-#include <memory>
-#include <optional>
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
-#include <ucf/services/ServiceDeclaration/IService.h>
-#include <ucf/services/MediaService/MediaTypes.h>
-#include <ucf/services/MediaService/IMediaServiceCallback.h>
-#include <ucf/services/MediaService/MediaServiceExport.h>
-#include <ucf/utilities/NotificationHelper/INotificationHelper.h>
 
-namespace ucf::framework {
-    class ICoreFramework;
-    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
-}
+#include <ucf/services/ServiceDeclaration/IService.h>
+#include <ucf/services/MediaService/IMediaServiceCallback.h>
+#include <ucf/services/MediaService/MediaTypes.h>
+#include <ucf/utilities/NotificationHelper/INotificationHelper.h>
 
 namespace ucf::service {
 
 using VideoFrameCallback = std::function<void(const media::IVideoFramePtr&)>;
 
-class MEDIA_SERVICE_API IMediaService : public IService,
-                                     public virtual ucf::utilities::INotificationHelper<IMediaServiceCallback>
+class IMediaService
+    : public IService
+    , public virtual ucf::utilities::INotificationHelper<IMediaServiceCallback>
 {
 public:
     IMediaService() = default;
@@ -30,7 +24,6 @@ public:
     IMediaService& operator=(const IMediaService&) = delete;
     IMediaService& operator=(IMediaService&&) = delete;
     virtual ~IMediaService() = default;
-    static std::shared_ptr<IMediaService> createInstance(ucf::framework::ICoreFrameworkWPtr coreFramework);
 
 public:
     /**
@@ -70,4 +63,4 @@ public:
         const std::string& cameraId,
         const std::string& subscriptionId) = 0;
 };
-}
+} // namespace ucf::service

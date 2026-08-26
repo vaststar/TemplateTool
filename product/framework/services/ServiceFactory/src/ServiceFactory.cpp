@@ -14,6 +14,7 @@
 #include <ucf/services/ImageService/IImageService.h>
 #include <ucf/services/ImageService/ImageServiceCreator.h>
 #include <ucf/services/MediaService/IMediaService.h>
+#include <ucf/services/MediaService/MediaServiceCreator.h>
 #include <ucf/services/StabilityService/IStabilityService.h>
 #include <ucf/services/StabilityService/StabilityServiceCreator.h>
 #include <ucf/services/PerformanceService/IPerformanceService.h>
@@ -62,7 +63,8 @@ void ServiceFactory::createServices()
     coreFramework->registerService<ucf::service::INetworkService>(ucf::service::impl::createNetworkService(coreFramework));
     coreFramework->registerService<ucf::service::IContactService>(ucf::service::impl::createContactService(coreFramework));
     coreFramework->registerService<ucf::service::IImageService>(ucf::service::impl::createImageService(coreFramework));
-    coreFramework->registerService<ucf::service::IMediaService>(ucf::service::IMediaService::createInstance(coreFramework));
+    coreFramework->registerService<ucf::service::IMediaService>(
+        ucf::service::impl::createMediaService(coreFramework));
     coreFramework->registerService<ucf::service::IFeatureSettingsService>(ucf::service::impl::createFeatureSettingsService(coreFramework));
     coreFramework->registerService<ucf::service::ICameraDirectoryService>(ucf::service::impl::createCameraDirectoryService(coreFramework));
     coreFramework->registerService<ucf::service::IUpgradeService>(ucf::service::impl::createUpgradeService(coreFramework));

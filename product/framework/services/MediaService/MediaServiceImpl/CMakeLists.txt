@@ -1,40 +1,38 @@
 include(BuildModule)
 
-# CameraDirectoryServiceImpl (SHARED) - concrete implementation.
-set(MODULE_MODULE_NAME CameraDirectoryServiceImpl)
+# MediaServiceImpl (SHARED) - concrete camera and frame-capture implementation.
+set(MODULE_MODULE_NAME MediaServiceImpl)
 set(MODULE_IDE_FOLDER framework/services)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
-    include/ucf/services/CameraDirectoryService/CameraDirectoryServiceImplExport.h
-    include/ucf/services/CameraDirectoryService/CameraDirectoryServiceCreator.h
+    include/ucf/services/MediaService/MediaServiceImplExport.h
+    include/ucf/services/MediaService/MediaServiceCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/CameraDirectoryServiceLogger.h
-    src/CameraDirectoryEntities.h
-    src/CameraDirectoryEntities.cpp
-    src/CameraDirectoryNotificationSink.h
-    src/CameraDirectoryModel.h
-    src/CameraDirectoryModel.cpp
-    src/CameraDirectoryDBAccess.h
-    src/CameraDirectoryDBAccess.cpp
-    src/CameraDirectoryManager.h
-    src/CameraDirectoryManager.cpp
-    src/CameraDirectoryService.h
-    src/CameraDirectoryService.cpp
+    src/MediaServiceLogger.h
+    src/MediaService.h
+    src/MediaService.cpp
+    src/CameraDevice.h
+    src/CameraDevice.cpp
+    src/CameraManager.h
+    src/CameraManager.cpp
+    src/CameraVideoCapture.h
+    src/CameraVideoCapture.cpp
+    src/VideoFrameSubscriptionRegistry.h
+    src/VideoFrameSubscriptionRegistry.cpp
+    src/VideoFrame.h
+    src/VideoFrame.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
-    CameraDirectoryServiceApi
+    MediaServiceApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    DataWarehouseServiceApi
-    DataWarehouseSchema
-    ClientInfoServiceApi
-    MediaServiceApi
     CoreFrameworkApi
-    LoggerUtils
     UUIDUtils
-    SinkNotifier
+    OSUtils
+    LoggerUtils
+    opencv
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(MODULE_INSTALL_INTERFACE_DIR include)
@@ -43,9 +41,9 @@ set(MODULE_BUILD_PRIVATE_DIR src)
 set(MODULE_PUBLIC_DEFINITIONS)
 set(MODULE_PRIVATE_DEFINITIONS)
 if (SERVICE_LIB_TYPE STREQUAL "STATIC_LIB")
-    set(MODULE_PUBLIC_DEFINITIONS CAMERA_DIRECTORY_SERVICE_IMPL_STATIC)
+    set(MODULE_PUBLIC_DEFINITIONS MEDIA_SERVICE_IMPL_STATIC)
 else()
-    set(MODULE_PRIVATE_DEFINITIONS CAMERA_DIRECTORY_SERVICE_IMPL_SHARED)
+    set(MODULE_PRIVATE_DEFINITIONS MEDIA_SERVICE_IMPL_SHARED)
 endif()
 
 BuildModule(
