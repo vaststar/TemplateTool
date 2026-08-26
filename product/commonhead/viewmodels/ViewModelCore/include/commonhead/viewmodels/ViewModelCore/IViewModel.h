@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include <commonhead/viewmodels/ViewModelCore/ViewModelCoreExport.h>
@@ -39,5 +40,6 @@ protected:
     commonHead::ICommonHeadFrameworkWptr getCommonHeadFramework() const;
 private:
     commonHead::ICommonHeadFrameworkWptr mCommonHeadFrameworkWptr;
+    std::once_flag mInitFlag;
 };
 }

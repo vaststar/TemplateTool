@@ -11,9 +11,11 @@ IViewModel::IViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 
 void IViewModel::initViewModel()
 {
-    VIEW_MODEL_CORE_LOG_DEBUG("start init ViewModel:" << getViewModelName());
-    init();
-    VIEW_MODEL_CORE_LOG_DEBUG("finish init ViewModel:" << getViewModelName());
+    std::call_once(mInitFlag, [this]() {
+        VIEW_MODEL_CORE_LOG_DEBUG("start init ViewModel:" << getViewModelName());
+        init();
+        VIEW_MODEL_CORE_LOG_DEBUG("finish init ViewModel:" << getViewModelName());
+    });
 }
 
 commonHead::ICommonHeadFrameworkWptr IViewModel::getCommonHeadFramework() const
