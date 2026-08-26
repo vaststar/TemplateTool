@@ -33,6 +33,5 @@ TEST_CASE("AppUIViewModel public API is safe without a framework", "[AppUIViewMo
 
     REQUIRE_NOTHROW(viewModel->registerCallback(callback));
     REQUIRE_NOTHROW(viewModel->initViewModel());
-    REQUIRE_NOTHROW(viewModel->initApplication());
     REQUIRE_NOTHROW(viewModel->unRegisterCallback(callback));
 }

@@ -21,7 +21,6 @@ public:
     ~AppUIViewModel() = default;
 public:
     virtual std::string getViewModelName() const override;
-    virtual void initApplication() override;
 
     // IClientInfoServiceCallback
     virtual void onClientInfoReady() override;

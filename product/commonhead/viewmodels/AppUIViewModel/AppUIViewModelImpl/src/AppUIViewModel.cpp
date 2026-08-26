@@ -31,34 +31,44 @@ std::string AppUIViewModel::getViewModelName() const
 
 void AppUIViewModel::init()
 {
-
-}
-
-void AppUIViewModel::initApplication()
-{
-    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::initApplication start");
-    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    auto commonHeadFramework = getCommonHeadFramework().lock();
+    if (!commonHeadFramework)
     {
-        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
-        {
-            if (auto clientInfoService = serviceLocator->getClientInfoService().lock())
-            {
-                // Register first so we do not miss the Ready event between the
-                // isReady probe and the initializeAppClient call.
-                clientInfoService->registerCallback(shared_from_this());
-                if (clientInfoService->isClientInfoReady())
-                {
-                    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::initApplication: already ready, dispatching synchronously");
-                    onClientInfoReady();
-                }
-                else
-                {
-                    clientInfoService->initializeAppClient();
-                }
-            }
-        }
+        APP_UI_VIEW_MODEL_LOG_ERROR(
+            "AppUIViewModel::init: CommonHeadFramework is not available");
+        return;
     }
-    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::initApplication finish");
+
+    auto serviceLocator = commonHeadFramework->getServiceLocator();
+    if (!serviceLocator)
+    {
+        APP_UI_VIEW_MODEL_LOG_ERROR(
+            "AppUIViewModel::init: ServiceLocator is not available");
+        return;
+    }
+
+    auto clientInfoService = serviceLocator->getClientInfoService().lock();
+    if (!clientInfoService)
+    {
+        APP_UI_VIEW_MODEL_LOG_ERROR(
+            "AppUIViewModel::init: ClientInfoService is not available");
+        return;
+    }
+
+    // Register first so we do not miss the Ready event between the
+    // isReady probe and the initializeAppClient call.
+    clientInfoService->registerCallback(shared_from_this());
+    if (clientInfoService->isClientInfoReady())
+    {
+        APP_UI_VIEW_MODEL_LOG_DEBUG(
+            "AppUIViewModel::init: ClientInfoService is already ready, dispatching synchronously");
+        onClientInfoReady();
+        return;
+    }
+
+    APP_UI_VIEW_MODEL_LOG_DEBUG(
+        "AppUIViewModel::init: requesting ClientInfoService initialization");
+    clientInfoService->initializeAppClient();
 }
 
 void AppUIViewModel::onClientInfoReady()

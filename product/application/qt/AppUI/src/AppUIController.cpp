@@ -71,7 +71,7 @@ void AppUIController::init()
     // Defer application initialization to the first event loop iteration,
     // ensuring QApplication::exec() is running before async callbacks fire.
     QTimer::singleShot(0, this, [this]() {
-        mAppUIViewModel->initApplication();
+        mAppUIViewModel->initViewModel();
     });
     APPUI_LOG_DEBUG("init AppUIController finish");
 }
