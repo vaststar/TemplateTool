@@ -1,8 +1,7 @@
 #pragma once
 
-#include <map>
 #include <memory>
-#include <string>
+#include <vector>
 
 #include <QObject>
 #include <QPointer>
@@ -27,17 +26,19 @@ public:
     TranslatorManager& operator=(const TranslatorManager&) = delete;
     TranslatorManager& operator=(TranslatorManager&&) = delete;
 
-    virtual void loadSystemTranslation() override;
+    [[nodiscard]] TranslationLoadResult loadSystemTranslation() override;
     // 加载特定语言的翻译文件
-    virtual void loadTranslation(UILanguage::LanguageType languageType) override;
+    [[nodiscard]] TranslationLoadResult loadTranslation(UILanguage::LanguageType languageType) override;
+    [[nodiscard]] std::vector<UILanguage::LanguageType> getAvailableLanguages() const override;
 private:
-    void loadTranslation(const QString& language);
-    std::string getLanguageString(UILanguage::LanguageType languageType) const;
-    std::map<UILanguage::LanguageType, std::string> getLanguageMap() const;
+    [[nodiscard]] TranslationLoadResult applySourceLanguage(const QString& language);
+    [[nodiscard]] TranslationLoadResult applyTranslatedLanguage(const QString& language);
+    void finishLanguageChange(const QString& language);
 private:
     const QPointer<UIAppCore::UIApplication> mApplication;
     const QPointer<UIAppCore::UIQmlEngine> mQmlEngine;
-    const std::unique_ptr<QTranslator> mTranslator;
+    // nullptr means that the source language (English) is active.
+    std::unique_ptr<QTranslator> mTranslator;
 
     QString mCurrentLanguage;
 };

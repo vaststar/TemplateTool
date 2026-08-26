@@ -1,0 +1,13 @@
+#pragma once
+
+#include <array>
+#include <string_view>
+
+namespace UIResourceTranslation::detail {
+
+inline constexpr std::array<std::string_view, @TRANSLATION_LOCALE_COUNT@>
+kPackagedTranslationLocales{
+@TRANSLATION_LOCALE_INITIALIZERS@
+};
+
+} // namespace UIResourceTranslation::detail

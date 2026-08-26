@@ -1,6 +1,8 @@
 #include "SettingsPage/LanguageSettingsController.h"
 #include "LoggerDefine.h"
 
+#include <algorithm>
+
 #include <commonhead/viewmodels/ClientInfoViewModel/IClientInfoViewModel.h>
 #include <commonhead/viewmodels/ClientInfoViewModel/ClientInfoModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
@@ -40,33 +42,92 @@ int LanguageSettingsController::getCurrentLanguageIndex() const
 void LanguageSettingsController::setLanguage(int index)
 {
     if (index < 0 || index >= static_cast<int>(m_languageValues.size()))
+    {
+        UIVIEW_LOG_WARN("invalid language index:" << index);
         return;
+    }
 
-    auto langType = static_cast<commonHead::viewModels::model::LanguageType>(m_languageValues[static_cast<size_t>(index)]);
-    UIVIEW_LOG_DEBUG("setLanguage index:" << index << " langType:" << m_languageValues[static_cast<size_t>(index)]);
+    if (!m_clientInfoViewModel)
+    {
+        UIVIEW_LOG_WARN("cannot set language because ClientInfoViewModel is unavailable");
+        return;
+    }
 
-    m_currentLanguageIndex = index;
-    emit currentLanguageIndexChanged();
+    auto translatorManager = getTranslatorManager();
+    if (!translatorManager)
+    {
+        UIVIEW_LOG_WARN("cannot set language because TranslatorManager is unavailable");
+        return;
+    }
 
-    m_clientInfoViewModel->setApplicationLanguage(langType);
-    getTranslatorManager()->loadTranslation(UILanguage::convertFromViewModel(langType));
+    const auto language = static_cast<commonHead::viewModels::model::LanguageType>(
+        m_languageValues[static_cast<std::size_t>(index)]);
+    const auto uiLanguage = UILanguage::convertFromViewModel(language);
+    UIVIEW_LOG_DEBUG("setLanguage index:" << index
+        << " langType:" << static_cast<int>(language));
+
+    const auto result = translatorManager->loadTranslation(uiLanguage);
+    if (!UIManager::isTranslationLoadSuccessful(result))
+    {
+        UIVIEW_LOG_WARN("setLanguage failed, index:" << index
+            << ", langType:" << static_cast<int>(language)
+            << ", result:" << static_cast<int>(result));
+
+        // The ComboBox has already selected the requested item. Re-emit the
+        // unchanged controller value so QML restores the previous selection.
+        emit currentLanguageIndexChanged();
+        return;
+    }
+
+    if (m_currentLanguageIndex != index)
+    {
+        m_currentLanguageIndex = index;
+        emit currentLanguageIndexChanged();
+    }
+
+    // Persist only after the presentation layer accepted the language.
+    m_clientInfoViewModel->setApplicationLanguage(language);
 }
 
 void LanguageSettingsController::buildLanguageData()
 {
     if (!m_clientInfoViewModel)
+    {
         return;
+    }
+
+    auto translatorManager = getTranslatorManager();
+    if (!translatorManager)
+    {
+        UIVIEW_LOG_WARN("cannot build language data because TranslatorManager is unavailable");
+        return;
+    }
 
     m_supportedLanguages.clear();
     m_languageValues.clear();
-    auto languages = m_clientInfoViewModel->getSupportedLanguages();
-    auto currentLang = m_clientInfoViewModel->getApplicationLanguage();
-    for (size_t i = 0; i < languages.size(); ++i)
+    m_currentLanguageIndex = 0;
+
+    const auto serviceLanguages = m_clientInfoViewModel->getSupportedLanguages();
+    const auto packagedLanguages = translatorManager->getAvailableLanguages();
+    const auto currentLanguage = m_clientInfoViewModel->getApplicationLanguage();
+
+    for (const auto language : serviceLanguages)
     {
-        m_languageValues.push_back(static_cast<int>(languages[i]));
-        m_supportedLanguages.append(languageTypeToDisplayString(static_cast<int>(languages[i])));
-        if (languages[i] == currentLang)
-            m_currentLanguageIndex = static_cast<int>(i);
+        const auto uiLanguage = UILanguage::convertFromViewModel(language);
+        if (std::find(packagedLanguages.begin(), packagedLanguages.end(), uiLanguage) ==
+            packagedLanguages.end())
+        {
+            continue;
+        }
+
+        const auto languageValue = static_cast<int>(language);
+        const auto languageIndex = static_cast<int>(m_languageValues.size());
+        m_languageValues.push_back(languageValue);
+        m_supportedLanguages.append(languageTypeToDisplayString(languageValue));
+        if (language == currentLanguage)
+        {
+            m_currentLanguageIndex = languageIndex;
+        }
     }
     emit supportedLanguagesChanged();
     emit currentLanguageIndexChanged();

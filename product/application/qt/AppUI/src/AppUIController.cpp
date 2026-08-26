@@ -81,9 +81,38 @@ void AppUIController::onAppConfigInitialized()
     APPUI_LOG_DEBUG("onAppConfigInitialized start");
     // 1. Load translation
     auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
-    APPUI_LOG_DEBUG("get language: " << static_cast<int>(clientInfoViewModel->getApplicationLanguage()));
-    getTranslatorManager()->loadTranslation(
-        UILanguage::convertFromViewModel(clientInfoViewModel->getApplicationLanguage()));
+    const auto configuredLanguage = clientInfoViewModel->getApplicationLanguage();
+    APPUI_LOG_DEBUG("get language: " << static_cast<int>(configuredLanguage));
+
+    if (auto translatorManager = getTranslatorManager())
+    {
+        const auto result = translatorManager->loadTranslation(
+            UILanguage::convertFromViewModel(configuredLanguage));
+        if (!UIManager::isTranslationLoadSuccessful(result))
+        {
+            APPUI_LOG_WARN("configured language could not be applied, languageType:"
+                << static_cast<int>(configuredLanguage)
+                << ", result:" << static_cast<int>(result)
+                << "; falling back to English");
+
+            const auto fallbackResult = translatorManager->loadTranslation(
+                UILanguage::LanguageType::LanguageType_ENGLISH);
+            if (UIManager::isTranslationLoadSuccessful(fallbackResult))
+            {
+                clientInfoViewModel->setApplicationLanguage(
+                    commonHead::viewModels::model::LanguageType::ENGLISH);
+            }
+            else
+            {
+                APPUI_LOG_ERROR("English translation fallback failed, result:"
+                    << static_cast<int>(fallbackResult));
+            }
+        }
+    }
+    else
+    {
+        APPUI_LOG_ERROR("TranslatorManager is unavailable");
+    }
 
     // 2. Load theme
     APPUI_LOG_DEBUG("get CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));

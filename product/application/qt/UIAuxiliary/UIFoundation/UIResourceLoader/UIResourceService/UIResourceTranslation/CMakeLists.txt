@@ -35,11 +35,57 @@ else()
     message(STATUS "[I18N] Using default translation dir: ${TRANSLATION_DIR}")
 endif()
 set(TRANSLATION_TARGET UIResourceTranslation)
-set(TRANSLATION_TS_FILES
-    ${TRANSLATION_DIR}/app_translations_en.ts
-    ${TRANSLATION_DIR}/app_translations_zh-Hans.ts
-    ${TRANSLATION_DIR}/app_translations_zh-Hant.ts
+set(TRANSLATION_LOCALES
+    en
+    zh-Hans
+    zh-Hant
 )
+
+list(LENGTH TRANSLATION_LOCALES TRANSLATION_LOCALE_COUNT)
+set(TRANSLATION_LOCALE_INITIALIZERS "")
+foreach(TRANSLATION_LOCALE IN LISTS TRANSLATION_LOCALES)
+    string(APPEND TRANSLATION_LOCALE_INITIALIZERS
+        "    std::string_view{\"${TRANSLATION_LOCALE}\"},\n"
+    )
+endforeach()
+
+set(TRANSLATION_CATALOG_HEADER_BASE_DIR
+    ${UCF_CODE_GENERATOR_DIR}
+)
+set(TRANSLATION_CATALOG_OUTPUT_DIR
+    ${TRANSLATION_CATALOG_HEADER_BASE_DIR}/UIResourceTranslation
+)
+set(TRANSLATION_CATALOG_OUTPUT_PATH
+    ${TRANSLATION_CATALOG_OUTPUT_DIR}/GeneratedTranslationCatalog.h
+)
+
+file(MAKE_DIRECTORY ${TRANSLATION_CATALOG_OUTPUT_DIR})
+configure_file(
+    templates/GeneratedTranslationCatalog.h.in
+    ${TRANSLATION_CATALOG_OUTPUT_PATH}
+    @ONLY
+)
+
+include(BuildInterface)
+BuildInterface(
+    NO_INSTALL
+    MODULE_NAME UIResourceTranslationCatalog
+    TARGET_SOURCE_HEADER_BASE_DIR
+        ${TRANSLATION_CATALOG_HEADER_BASE_DIR}
+    TARGET_SOURCE_PUBLIC_HEADER
+        ${TRANSLATION_CATALOG_OUTPUT_PATH}
+    TARGET_INCLUDE_DIRECTORIES_BUILD_INTERFACE
+        ${TRANSLATION_CATALOG_HEADER_BASE_DIR}
+    IDE_FOLDER
+        UI/codegen
+)
+
+set(TRANSLATION_TS_FILES)
+foreach(TRANSLATION_LOCALE IN LISTS TRANSLATION_LOCALES)
+    list(APPEND TRANSLATION_TS_FILES
+        "${TRANSLATION_DIR}/app_translations_${TRANSLATION_LOCALE}.ts"
+    )
+endforeach()
 
 add_library(${TRANSLATION_TARGET} OBJECT)
 

@@ -27,7 +27,20 @@ void MainWindowMenuBarController::init()
 
 void MainWindowMenuBarController::switchLanguage(UILanguage::LanguageType languageType)
 {
-    getTranslatorManager()->loadTranslation(languageType);
+    auto translatorManager = getTranslatorManager();
+    if (!translatorManager)
+    {
+        UIVIEW_LOG_WARN("cannot switch language because TranslatorManager is unavailable");
+        return;
+    }
+
+    const auto result = translatorManager->loadTranslation(languageType);
+    if (!UIManager::isTranslationLoadSuccessful(result))
+    {
+        UIVIEW_LOG_WARN("menu language switch failed, languageType:"
+            << static_cast<int>(languageType)
+            << ", result:" << static_cast<int>(result));
+    }
 }
 
 void MainWindowMenuBarController::buildMenuModel()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include <QObject>
 #include <QPointer>
@@ -17,6 +18,23 @@ namespace UIAppCore{
 
 namespace UIManager{
 
+enum class TranslationLoadResult
+{
+    Applied,
+    AlreadyActive,
+    UnsupportedLanguage,
+    ApplicationUnavailable,
+    ResourceLoadFailed,
+    InstallFailed
+};
+
+[[nodiscard]] constexpr bool isTranslationLoadSuccessful(
+    TranslationLoadResult result) noexcept
+{
+    return result == TranslationLoadResult::Applied ||
+           result == TranslationLoadResult::AlreadyActive;
+}
+
 class TranslatorManager_EXPORT ITranslatorManager: public QObject
 {
 Q_OBJECT
@@ -28,9 +46,10 @@ public:
     ITranslatorManager& operator=(ITranslatorManager&&) = delete;
     virtual ~ITranslatorManager() = default;
 public:
-    virtual void loadSystemTranslation() = 0;
+    [[nodiscard]] virtual TranslationLoadResult loadSystemTranslation() = 0;
     // 加载特定语言的翻译文件
-    virtual void loadTranslation(UILanguage::LanguageType languageType) = 0;
+    [[nodiscard]] virtual TranslationLoadResult loadTranslation(UILanguage::LanguageType languageType) = 0;
+    [[nodiscard]] virtual std::vector<UILanguage::LanguageType> getAvailableLanguages() const = 0;
 
     static std::unique_ptr<ITranslatorManager> createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine);
 signals:

@@ -3,12 +3,9 @@
 
 #include <commonhead/viewmodels/MainWindowViewModel/IMainWindowViewModel.h>
 
-#include <TranslatorManager/UILanguage.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIFabrication/IUIViewFactory.h>
-#include <UIManager/IUIManagerProvider.h>
 #include <UIQmlUtilities/QmlWindowPropertyResolver.h>
-#include <TranslatorManager/ITranslatorManager.h>
 #include <AppContext/AppContext.h>
 
 #include <UIUtilities/UIPlatformUtils.h>
@@ -76,9 +73,6 @@ bool MainWindowController::isVisible() const
 
 void MainWindowController::openCamera()
 {
-    getTranslatorManager()->loadTranslation(UILanguage::LanguageType::LanguageType_ENGLISH);
-    emit titleChanged();
-
     auto win = getViewFactory()->createQmlItemWindow(
         kMediaCameraViewQml);
     if (!win) return;

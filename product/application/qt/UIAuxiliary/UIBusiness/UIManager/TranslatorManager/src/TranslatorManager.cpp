@@ -1,71 +1,289 @@
 #include "TranslatorManager.h"
 
-#include <map>
+#include <algorithm>
+#include <array>
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include <QLocale>
+
+#include <UIResourceTranslation/GeneratedTranslationCatalog.h>
 
 #include "LoggerDefine.h"
 
-namespace UIManager{
+namespace UIManager {
 
-std::unique_ptr<ITranslatorManager> ITranslatorManager::createInstance(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine)
+namespace {
+
+using LanguageType = UILanguage::LanguageType;
+
+struct LanguageEntry
+{
+    LanguageType type;
+    std::string_view locale;
+};
+
+constexpr std::array<LanguageEntry, 11> kLanguageEntries{{
+    {LanguageType::LanguageType_ENGLISH, "en"},
+    {LanguageType::LanguageType_CHINESE_SIMPLIFIED, "zh-Hans"},
+    {LanguageType::LanguageType_CHINESE_TRADITIONAL, "zh-Hant"},
+    {LanguageType::LanguageType_FRENCH, "fr"},
+    {LanguageType::LanguageType_GERMAN, "de"},
+    {LanguageType::LanguageType_ITALIAN, "it"},
+    {LanguageType::LanguageType_SPANISH, "es"},
+    {LanguageType::LanguageType_PORTUGUESE, "pt"},
+    {LanguageType::LanguageType_JAPANESE, "ja"},
+    {LanguageType::LanguageType_KOREAN, "ko"},
+    {LanguageType::LanguageType_RUSSIAN, "ru"}
+}};
+
+std::optional<std::string_view> getLanguageTag(LanguageType type)
+{
+    const auto iter = std::find_if(
+        kLanguageEntries.begin(),
+        kLanguageEntries.end(),
+        [type](const LanguageEntry& entry) {
+            return entry.type == type;
+        });
+
+    if (iter == kLanguageEntries.end())
+    {
+        return std::nullopt;
+    }
+    return iter->locale;
+}
+
+std::optional<LanguageType> getLanguageType(std::string_view locale)
+{
+    const auto iter = std::find_if(
+        kLanguageEntries.begin(),
+        kLanguageEntries.end(),
+        [locale](const LanguageEntry& entry) {
+            return entry.locale == locale;
+        });
+
+    if (iter == kLanguageEntries.end())
+    {
+        return std::nullopt;
+    }
+    return iter->type;
+}
+
+bool isPackagedLanguage(std::string_view locale)
+{
+    return std::find(
+               UIResourceTranslation::detail::kPackagedTranslationLocales.begin(),
+               UIResourceTranslation::detail::kPackagedTranslationLocales.end(),
+               locale) != UIResourceTranslation::detail::kPackagedTranslationLocales.end();
+}
+
+QString toQString(std::string_view value)
+{
+    return QString::fromLatin1(value.data(), static_cast<int>(value.size()));
+}
+
+QString getTranslationResource(const QString& language)
+{
+    return QStringLiteral(":/i18n/app_translations_%1.qm").arg(language);
+}
+
+LanguageType getSystemLanguageType(const QLocale& locale)
+{
+    switch (locale.language())
+    {
+    case QLocale::Chinese:
+        if (locale.script() == QLocale::TraditionalHanScript)
+        {
+            return LanguageType::LanguageType_CHINESE_TRADITIONAL;
+        }
+        return LanguageType::LanguageType_CHINESE_SIMPLIFIED;
+    case QLocale::French:
+        return LanguageType::LanguageType_FRENCH;
+    case QLocale::German:
+        return LanguageType::LanguageType_GERMAN;
+    case QLocale::Italian:
+        return LanguageType::LanguageType_ITALIAN;
+    case QLocale::Spanish:
+        return LanguageType::LanguageType_SPANISH;
+    case QLocale::Portuguese:
+        return LanguageType::LanguageType_PORTUGUESE;
+    case QLocale::Japanese:
+        return LanguageType::LanguageType_JAPANESE;
+    case QLocale::Korean:
+        return LanguageType::LanguageType_KOREAN;
+    case QLocale::Russian:
+        return LanguageType::LanguageType_RUSSIAN;
+    case QLocale::English:
+    default:
+        return LanguageType::LanguageType_ENGLISH;
+    }
+}
+
+} // namespace
+
+std::unique_ptr<ITranslatorManager> ITranslatorManager::createInstance(
+    QPointer<UIAppCore::UIApplication> application,
+    QPointer<UIAppCore::UIQmlEngine> qmlEngine)
 {
     return std::make_unique<TranslatorManager>(application, qmlEngine);
 }
 
-TranslatorManager::TranslatorManager(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine)
+TranslatorManager::TranslatorManager(
+    QPointer<UIAppCore::UIApplication> application,
+    QPointer<UIAppCore::UIQmlEngine> qmlEngine)
     : mApplication(application)
     , mQmlEngine(qmlEngine)
-    , mTranslator(std::make_unique<QTranslator>())
 {
-    TranslatorManager_LOG_DEBUG("");
+    TranslatorManager_LOG_DEBUG("create TranslatorManager");
 }
 
 TranslatorManager::~TranslatorManager()
 {
-
+    if (mApplication && mTranslator &&
+        !mApplication->removeTranslator(mTranslator.get()))
+    {
+        TranslatorManager_LOG_WARN(
+            "failed to remove active translator during destruction, language:"
+            << mCurrentLanguage.toStdString());
+    }
 }
 
-void TranslatorManager::loadTranslation(const QString& language)
+TranslationLoadResult TranslatorManager::loadTranslation(LanguageType languageType)
 {
-    if (language.isEmpty())
+    const auto languageTag = getLanguageTag(languageType);
+    if (!languageTag || !isPackagedLanguage(*languageTag))
     {
-        TranslatorManager_LOG_WARN("empty language, check your code.");
-        return;
+        TranslatorManager_LOG_WARN(
+            "unsupported translation language, type:"
+            << static_cast<int>(languageType)
+            << ", currentLanguage:" << mCurrentLanguage.toStdString());
+        return TranslationLoadResult::UnsupportedLanguage;
     }
 
     if (!mApplication)
     {
-        TranslatorManager_LOG_WARN("application not found");
-        return;
+        TranslatorManager_LOG_ERROR(
+            "cannot apply translation because UIApplication is unavailable, language:"
+            << std::string(*languageTag));
+        return TranslationLoadResult::ApplicationUnavailable;
     }
 
+    const auto language = toQString(*languageTag);
     if (language == mCurrentLanguage)
     {
-        TranslatorManager_LOG_WARN("won't load same translation file, language:" << language.toStdString());
-        return;
+        TranslatorManager_LOG_DEBUG(
+            "translation already active, language:" << language.toStdString());
+        return TranslationLoadResult::AlreadyActive;
     }
 
-    if (!mApplication->removeTranslator(mTranslator.get()))
-    {//if no translator installed, removeTranslator will return false and this is expected
-        TranslatorManager_LOG_INFO("remove translation file failed");
-    }
-
-    //ps: if the language is en, it may failed because the translation.ts is empty
-    if (QString translationFileName = QString("app_translations_%1").arg(language); !mTranslator->load(translationFileName, ":/i18n"))
+    if (languageType == LanguageType::LanguageType_ENGLISH)
     {
-        TranslatorManager_LOG_WARN("load translation file failed, language:" << language.toStdString() << ", file:" << translationFileName.toStdString());
-        return;
+        return applySourceLanguage(language);
     }
+    return applyTranslatedLanguage(language);
+}
 
-    if (!mApplication->installTranslator(mTranslator.get()))
+TranslationLoadResult TranslatorManager::loadSystemTranslation()
+{
+    auto languageType = getSystemLanguageType(QLocale::system());
+    const auto languageTag = getLanguageTag(languageType);
+    if (!languageTag || !isPackagedLanguage(*languageTag))
     {
-        TranslatorManager_LOG_WARN("install translation file failed, language:" << language.toStdString());
-        return;
+        TranslatorManager_LOG_INFO(
+            "system language is not packaged; falling back to English");
+        languageType = LanguageType::LanguageType_ENGLISH;
+    }
+    return loadTranslation(languageType);
+}
+
+std::vector<LanguageType> TranslatorManager::getAvailableLanguages() const
+{
+    std::vector<LanguageType> result;
+    result.reserve(
+        UIResourceTranslation::detail::kPackagedTranslationLocales.size());
+
+    for (const auto locale :
+         UIResourceTranslation::detail::kPackagedTranslationLocales)
+    {
+        const auto languageType = getLanguageType(locale);
+        if (!languageType)
+        {
+            TranslatorManager_LOG_ERROR(
+                "packaged translation locale has no LanguageType mapping, locale:"
+                << std::string(locale));
+            continue;
+        }
+        result.push_back(*languageType);
+    }
+    return result;
+}
+
+TranslationLoadResult TranslatorManager::applySourceLanguage(const QString& language)
+{
+    if (mTranslator)
+    {
+        if (!mApplication->removeTranslator(mTranslator.get()))
+        {
+            TranslatorManager_LOG_WARN(
+                "active translator was not installed while switching to source language, currentLanguage:"
+                << mCurrentLanguage.toStdString());
+        }
+        mTranslator.reset();
     }
 
+    finishLanguageChange(language);
+    TranslatorManager_LOG_INFO(
+        "source language applied, language:" << language.toStdString());
+    return TranslationLoadResult::Applied;
+}
+
+TranslationLoadResult TranslatorManager::applyTranslatedLanguage(const QString& language)
+{
+    const auto resource = getTranslationResource(language);
+    auto candidate = std::make_unique<QTranslator>();
+    if (!candidate->load(resource))
+    {
+        TranslatorManager_LOG_WARN(
+            "translation resource load failed, requestedLanguage:"
+            << language.toStdString()
+            << ", currentLanguage:" << mCurrentLanguage.toStdString()
+            << ", resource:" << resource.toStdString());
+        return TranslationLoadResult::ResourceLoadFailed;
+    }
+
+    // The current translator remains installed until the candidate has been
+    // loaded and installed successfully.
+    if (!mApplication->installTranslator(candidate.get()))
+    {
+        TranslatorManager_LOG_ERROR(
+            "translation install failed, requestedLanguage:"
+            << language.toStdString()
+            << ", currentLanguage:" << mCurrentLanguage.toStdString()
+            << ", resource:" << resource.toStdString());
+        return TranslationLoadResult::InstallFailed;
+    }
+
+    if (mTranslator && !mApplication->removeTranslator(mTranslator.get()))
+    {
+        TranslatorManager_LOG_WARN(
+            "previous translator was not installed, previousLanguage:"
+            << mCurrentLanguage.toStdString()
+            << ", newLanguage:" << language.toStdString());
+    }
+
+    mTranslator = std::move(candidate);
+    finishLanguageChange(language);
+
+    TranslatorManager_LOG_INFO(
+        "translation applied, language:" << language.toStdString()
+        << ", resource:" << resource.toStdString());
+    return TranslationLoadResult::Applied;
+}
+
+void TranslatorManager::finishLanguageChange(const QString& language)
+{
     mCurrentLanguage = language;
-    TranslatorManager_LOG_INFO("load translation file succeed, language:" << language.toStdString());
-
     if (mQmlEngine)
     {
         mQmlEngine->setUiLanguage(language);
@@ -74,45 +292,4 @@ void TranslatorManager::loadTranslation(const QString& language)
     emit languageChanged(language);
 }
 
-void TranslatorManager::loadTranslation(UILanguage::LanguageType languageType)
-{
-    loadTranslation(QString::fromStdString(getLanguageString(languageType)));
-}
-
-void TranslatorManager::loadSystemTranslation()
-{
-    QString systemLanguage = QLocale::system().name().section('_', 0, 0);
-    loadTranslation(systemLanguage);
-}
-
-std::map<UILanguage::LanguageType, std::string> TranslatorManager::getLanguageMap() const
-{
-    const std::map<UILanguage::LanguageType, std::string> languageMap = {
-        {UILanguage::LanguageType::LanguageType_ENGLISH, "en"},
-        {UILanguage::LanguageType::LanguageType_CHINESE_SIMPLIFIED, "zh-Hans"},
-        {UILanguage::LanguageType::LanguageType_CHINESE_TRADITIONAL, "zh-Hant"},
-        {UILanguage::LanguageType::LanguageType_FRENCH, "fr"},
-        {UILanguage::LanguageType::LanguageType_GERMAN, "de"},
-        {UILanguage::LanguageType::LanguageType_ITALIAN, "it"},
-        {UILanguage::LanguageType::LanguageType_SPANISH, "es"},
-        {UILanguage::LanguageType::LanguageType_PORTUGUESE, "pt"},
-        {UILanguage::LanguageType::LanguageType_JAPANESE, "ja"},
-        {UILanguage::LanguageType::LanguageType_KOREAN, "ko"},
-        {UILanguage::LanguageType::LanguageType_RUSSIAN, "ru"}
-    };
-    return languageMap;
-}
-
-std::string TranslatorManager::getLanguageString(UILanguage::LanguageType languageType) const
-{
-    const auto& languageMap = getLanguageMap();
-    if (auto iter = languageMap.find(languageType); iter != languageMap.end())
-    {
-        return iter->second;
-    }
-    else
-    {
-        return "en";
-    }
-}
-}
+} // namespace UIManager
