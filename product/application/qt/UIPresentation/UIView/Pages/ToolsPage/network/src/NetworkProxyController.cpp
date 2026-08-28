@@ -39,8 +39,6 @@ NetworkProxyController::~NetworkProxyController()
 
 void NetworkProxyController::init()
 {
-    UIVIEW_LOG_DEBUG("NetworkProxyController::init");
-
     // Connect emitter signals to controller slots
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onProxyStateChanged,
             this, &NetworkProxyController::onProxyStateChanged);

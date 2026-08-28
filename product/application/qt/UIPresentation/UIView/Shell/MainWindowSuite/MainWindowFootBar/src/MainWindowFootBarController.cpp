@@ -17,7 +17,6 @@ MainWindowFootBarController::~MainWindowFootBarController()
 
 void MainWindowFootBarController::init()
 {
-    UIVIEW_LOG_DEBUG("");
 }
 
 QString MainWindowFootBarController::getFooterName() const

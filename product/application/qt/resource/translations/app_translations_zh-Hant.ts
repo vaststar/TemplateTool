@@ -37,22 +37,22 @@
 <context>
     <name>AppearanceSettingsController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="84"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="80"/>
         <source>System Default</source>
         <translation>跟隨系統</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="85"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="81"/>
         <source>Dark</source>
         <translation>深色</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="86"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="82"/>
         <source>Light</source>
         <translation>淺色</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="87"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="83"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
@@ -546,17 +546,17 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="542"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="540"/>
         <source>Exported %1 requests</source>
         <translation>已匯出 %1 個請求</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="770"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="768"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation>憑證資料夾尚不存在。請先啟動代理以產生 CA 憑證。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="784"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="782"/>
         <source>Certificate folder: %1</source>
         <translation>憑證資料夾：%1</translation>
     </message>
@@ -1205,32 +1205,32 @@ Double-click a rule to view details.</source>
         <translation>我的測試視窗標題列</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="66"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="64"/>
         <source>my test window aa</source>
         <translation>我的測試視窗 aa</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="25"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="24"/>
         <source>my footer bar</source>
         <translation>我的底部列</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="28"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="27"/>
         <source>oo window title bar</source>
         <translation>我的軟體</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="45"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="44"/>
         <source>Test Message</source>
         <translation>測試訊息</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="46"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="45"/>
         <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
         <translation>這是 UIViewMessageBoxHelper::showOkCancel 的測試。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="50"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="49"/>
         <source>Click any button to dismiss the dialog.</source>
         <translation>點擊任意按鈕關閉對話框。</translation>
     </message>
@@ -1475,32 +1475,32 @@ Double-click a rule to view details.</source>
         <translation>測試參數 {{0}}，僅 1 個參數</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="156"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="155"/>
         <source>seconds</source>
         <translation>秒</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="158"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="157"/>
         <source>minutes</source>
         <translation>分鐘</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="160"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="159"/>
         <source>hours</source>
         <translation>小時</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="162"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="161"/>
         <source>days</source>
         <translation>天</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="164"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="163"/>
         <source>ago</source>
         <translation>前</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="164"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="163"/>
         <source>from now</source>
         <translation>後</translation>
     </message>
@@ -1566,34 +1566,34 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="413"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="411"/>
         <source>Recordings folder not set</source>
         <translation>未設定錄製資料夾</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="431"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="449"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="470"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="429"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="447"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="468"/>
         <source>File not found: %1</source>
         <translation>檔案未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="460"/>
         <source>Delete Recording</source>
         <translation type="unfinished">刪除錄製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="463"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="461"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="464"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
         <source>Delete</source>
         <translation type="unfinished">刪除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="474"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="472"/>
         <source>Failed to delete file: %1</source>
         <translation type="unfinished">刪除檔案失敗: %1</translation>
     </message>
@@ -1765,40 +1765,40 @@ Press ESC to cancel</source>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="465"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="463"/>
         <source>Screenshots folder not set</source>
         <translation>未設定截圖資料夾</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="480"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="505"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="521"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="542"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="478"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="503"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="519"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
         <source>File not found: %1</source>
         <translation>檔案未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="496"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="494"/>
         <source>Failed to load image: %1</source>
         <translation>載入圖片失敗: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="534"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="532"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished">刪除截圖</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="535"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="533"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="534"/>
         <source>Delete</source>
         <translation type="unfinished">刪除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="546"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="544"/>
         <source>Failed to delete file: %1</source>
         <translation>刪除檔案失敗: %1</translation>
     </message>
@@ -2058,17 +2058,17 @@ Press ESC to cancel</source>
 <context>
     <name>TimestampToolController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="44"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="43"/>
         <source>Local</source>
         <translation>本地</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="173"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="172"/>
         <source>Invalid timestamp</source>
         <translation>無效的時間戳</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="222"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="221"/>
         <source>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</source>
         <translation>無法解析日期時間，支援格式: YYYY-MM-DD HH:MM:SS</translation>
     </message>
@@ -2283,12 +2283,12 @@ Press ESC to cancel</source>
 <context>
     <name>UuidToolController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="102"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="101"/>
         <source>✓ Valid UUID</source>
         <translation>✓ 有效的 UUID</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="102"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="101"/>
         <source>✗ Invalid UUID</source>
         <translation>✗ 無效的 UUID</translation>
     </message>

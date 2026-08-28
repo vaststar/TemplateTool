@@ -23,7 +23,6 @@ JsonToolController::~JsonToolController()
 
 void JsonToolController::init()
 {
-    UIVIEW_LOG_DEBUG("JsonToolController::init");
     m_jsonViewModel = getViewModelFactory()->createJsonToolViewModelInstance();
     m_jsonViewModel->initViewModel();
 }

@@ -24,14 +24,10 @@ LanguageSettingsController::~LanguageSettingsController()
 
 void LanguageSettingsController::init()
 {
-    UIVIEW_LOG_DEBUG("LanguageSettingsController::init");
-
     m_clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
     m_clientInfoViewModel->initViewModel();
 
     buildLanguageData();
-
-    UIVIEW_LOG_DEBUG("LanguageSettingsController::init done");
 }
 
 QStringList LanguageSettingsController::getSupportedLanguages() const

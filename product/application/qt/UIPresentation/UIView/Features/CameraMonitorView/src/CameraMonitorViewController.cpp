@@ -47,8 +47,6 @@ void CameraMonitorViewController::setLoadState(LoadState s)
 
 void CameraMonitorViewController::init()
 {
-    UIVIEW_LOG_DEBUG("CameraMonitorViewController::init");
-
     auto ctx = getAppContext();
     if (!ctx)
     {

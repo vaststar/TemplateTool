@@ -40,8 +40,6 @@ RecordingController::~RecordingController()
 
 void RecordingController::init()
 {
-    UIVIEW_LOG_DEBUG("RecordingController::init");
-
     // Phase 1: Connect emitter Qt signals → controller slots
     using Emitter = UIViewModelSignalBridge::RecordingViewModelEmitter;
     connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,

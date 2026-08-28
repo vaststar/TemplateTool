@@ -28,8 +28,6 @@ MainWindowSideBarController::~MainWindowSideBarController()
 
 void MainWindowSideBarController::init()
 {
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init start");
-
     // Connect signals from ViewModel emitter
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onSideBarReady,
             this, &MainWindowSideBarController::onSideBarReady);
@@ -44,20 +42,15 @@ void MainWindowSideBarController::init()
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SideBarViewModelEmitter::signals_onMenuActionClicked,
             this, &MainWindowSideBarController::onMenuActionClicked);
 
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init signals connected, creating ViewModel");
-
     m_sideBarViewModel = getViewModelFactory()->createSideBarViewModelInstance();
     if (!m_sideBarViewModel)
     {
-        UIVIEW_LOG_ERROR("Failed to create SideBarViewModel!");
+        UIVIEW_LOG_ERROR("failed to create SideBarViewModel");
         return;
     }
 
     m_sideBarViewModel->registerCallback(m_viewModelEmitter);
-
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init ViewModel created, initializing");
     m_sideBarViewModel->initViewModel();
-    UIVIEW_LOG_DEBUG("MainWindowSideBarController::init done");
 }
 
 NavItemModel* MainWindowSideBarController::topNavItems() const

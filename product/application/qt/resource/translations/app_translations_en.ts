@@ -37,22 +37,22 @@
 <context>
     <name>AppearanceSettingsController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="84"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="80"/>
         <source>System Default</source>
         <translation>System Default</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="85"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="81"/>
         <source>Dark</source>
         <translation>Dark</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="86"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="82"/>
         <source>Light</source>
         <translation>Light</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="87"/>
+        <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="83"/>
         <source>Unknown</source>
         <translation>Unknown</translation>
     </message>
@@ -546,17 +546,17 @@ Proxy: 127.0.0.1:%1</translation>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="542"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="540"/>
         <source>Exported %1 requests</source>
         <translation>Exported %1 requests</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="770"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="768"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="784"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="782"/>
         <source>Certificate folder: %1</source>
         <translation>Certificate folder: %1</translation>
     </message>
@@ -1205,32 +1205,32 @@ Double-click a rule to view details.</translation>
         <translation>my test window title bar</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="66"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="64"/>
         <source>my test window aa</source>
         <translation>my test window aa</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="25"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowFootBar/src/MainWindowFootBarController.cpp" line="24"/>
         <source>my footer bar</source>
         <translation>my footer bar</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="28"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/src/MainWindowTitleBarController.cpp" line="27"/>
         <source>oo window title bar</source>
         <translation>oo window title bar</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="45"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="44"/>
         <source>Test Message</source>
         <translation>Test Message</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="46"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="45"/>
         <source>This is a UIViewMessageBoxHelper::showOkCancel test.</source>
         <translation>This is a UIViewMessageBoxHelper::showOkCancel test.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="50"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/src/HomePageController.cpp" line="49"/>
         <source>Click any button to dismiss the dialog.</source>
         <translation>Click any button to dismiss the dialog.</translation>
     </message>
@@ -1475,32 +1475,32 @@ Double-click a rule to view details.</translation>
         <translation>test param {{0}}, only 1 param</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="156"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="155"/>
         <source>seconds</source>
         <translation>seconds</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="158"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="157"/>
         <source>minutes</source>
         <translation>minutes</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="160"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="159"/>
         <source>hours</source>
         <translation>hours</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="162"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="161"/>
         <source>days</source>
         <translation>days</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="164"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="163"/>
         <source>ago</source>
         <translation>ago</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="164"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="163"/>
         <source>from now</source>
         <translation>from now</translation>
     </message>
@@ -1566,34 +1566,34 @@ Double-click a rule to view details.</translation>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="413"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="411"/>
         <source>Recordings folder not set</source>
         <translation>Recordings folder not set</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="431"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="449"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="470"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="429"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="447"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="468"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="460"/>
         <source>Delete Recording</source>
         <translation type="unfinished">Delete Recording</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="463"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="461"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="464"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
         <source>Delete</source>
         <translation type="unfinished">Delete</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="474"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="472"/>
         <source>Failed to delete file: %1</source>
         <translation type="unfinished">Failed to delete file: %1</translation>
     </message>
@@ -1765,40 +1765,40 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="465"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="463"/>
         <source>Screenshots folder not set</source>
         <translation>Screenshots folder not set</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="480"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="505"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="521"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="542"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="478"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="503"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="519"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="496"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="494"/>
         <source>Failed to load image: %1</source>
         <translation>Failed to load image: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="534"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="532"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished">Delete Screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="535"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="533"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="534"/>
         <source>Delete</source>
         <translation type="unfinished">Delete</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="546"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="544"/>
         <source>Failed to delete file: %1</source>
         <translation>Failed to delete file: %1</translation>
     </message>
@@ -2058,17 +2058,17 @@ Press ESC to cancel</translation>
 <context>
     <name>TimestampToolController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="44"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="43"/>
         <source>Local</source>
         <translation>Local</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="173"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="172"/>
         <source>Invalid timestamp</source>
         <translation>Invalid timestamp</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="222"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="221"/>
         <source>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</source>
         <translation>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</translation>
     </message>
@@ -2283,12 +2283,12 @@ Press ESC to cancel</translation>
 <context>
     <name>UuidToolController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="102"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="101"/>
         <source>✓ Valid UUID</source>
         <translation>✓ Valid UUID</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="102"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/generators/src/UuidToolController.cpp" line="101"/>
         <source>✗ Invalid UUID</source>
         <translation>✗ Invalid UUID</translation>
     </message>

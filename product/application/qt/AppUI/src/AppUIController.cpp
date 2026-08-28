@@ -48,7 +48,6 @@ void AppUIController::start(QPointer<AppContext> appContext)
 
 void AppUIController::init()
 {
-    APPUI_LOG_DEBUG("init AppUIController start");
     auto appContext = getAppContext();
 
     // Create ViewModel and connect signals
@@ -76,7 +75,6 @@ void AppUIController::init()
     QTimer::singleShot(0, this, [this]() {
         mAppUIViewModel->initViewModel();
     });
-    APPUI_LOG_DEBUG("init AppUIController finish");
 }
 
 void AppUIController::onAppConfigInitialized()

@@ -20,7 +20,6 @@ TimestampToolController::~TimestampToolController()
 
 void TimestampToolController::init()
 {
-    UIVIEW_LOG_DEBUG("TimestampToolController::init");
     initTimezoneModel();
 
     connect(&m_clockTimer, &QTimer::timeout, this, &TimestampToolController::updateLiveClock);

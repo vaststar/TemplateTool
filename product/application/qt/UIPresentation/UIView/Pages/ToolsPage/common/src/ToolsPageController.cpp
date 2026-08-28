@@ -26,8 +26,6 @@ ToolsPageController::~ToolsPageController()
 
 void ToolsPageController::init()
 {
-    UIVIEW_LOG_DEBUG("ToolsPageController::init");
-
     // Connect signals from ViewModel emitter
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::ToolsViewModelEmitter::signals_onToolsTreeReady,
             this, &ToolsPageController::onToolsTreeReady);
@@ -43,10 +41,7 @@ void ToolsPageController::init()
 
     m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
     m_toolsViewModel->registerCallback(m_viewModelEmitter);
-    UIVIEW_LOG_DEBUG("ToolsPageController::init ViewModel created, initializing");
     m_toolsViewModel->initViewModel();
-
-    UIVIEW_LOG_DEBUG("ToolsPageController::init done");
 }
 
 ToolsTreeModel* ToolsPageController::getTreeModel() const

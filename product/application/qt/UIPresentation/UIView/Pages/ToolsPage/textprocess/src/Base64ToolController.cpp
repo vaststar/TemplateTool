@@ -20,7 +20,6 @@ Base64ToolController::~Base64ToolController()
 
 void Base64ToolController::init()
 {
-    UIVIEW_LOG_DEBUG("Base64ToolController::init");
     m_base64ViewModel = getViewModelFactory()->createBase64ToolViewModelInstance();
     m_base64ViewModel->initViewModel();
 }

@@ -43,8 +43,6 @@ MainWindowController::~MainWindowController()
 
 void MainWindowController::init()
 {
-    UIVIEW_LOG_DEBUG("");
-
     // Listen for events from EventBus
     listenUIEvents<UIMainWindowEvent, UIAboutEvent, UIScreenChangedEvent>();
 

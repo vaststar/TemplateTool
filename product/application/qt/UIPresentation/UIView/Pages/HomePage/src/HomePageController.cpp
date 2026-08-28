@@ -28,7 +28,6 @@ HomePageController::~HomePageController()
 
 void HomePageController::init()
 {
-    UIVIEW_LOG_DEBUG("HomePageController::init");
 }
 
 void HomePageController::showTestMessage()

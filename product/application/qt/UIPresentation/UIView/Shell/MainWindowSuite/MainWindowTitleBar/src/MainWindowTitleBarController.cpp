@@ -19,7 +19,6 @@ MainWindowTitleBarController::~MainWindowTitleBarController()
 
 void MainWindowTitleBarController::init()
 {
-    UIVIEW_LOG_DEBUG("");
     emit elementUpdated();
 }
 

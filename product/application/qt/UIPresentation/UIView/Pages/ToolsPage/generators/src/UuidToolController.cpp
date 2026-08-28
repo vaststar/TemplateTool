@@ -20,7 +20,6 @@ UuidToolController::~UuidToolController()
 
 void UuidToolController::init()
 {
-    UIVIEW_LOG_DEBUG("UuidToolController::init");
     m_uuidViewModel = getViewModelFactory()->createUuidToolViewModelInstance();
     m_uuidViewModel->initViewModel();
 }

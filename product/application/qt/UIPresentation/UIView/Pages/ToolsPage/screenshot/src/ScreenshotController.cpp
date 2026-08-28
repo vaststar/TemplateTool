@@ -56,8 +56,6 @@ ScreenshotController::~ScreenshotController()
 
 void ScreenshotController::init()
 {
-    UIVIEW_LOG_DEBUG("ScreenshotController::init");
-
     // Phase 1: Connect emitter Qt signals → controller slots
     using Emitter = UIViewModelSignalBridge::ScreenshotViewModelEmitter;
     connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,

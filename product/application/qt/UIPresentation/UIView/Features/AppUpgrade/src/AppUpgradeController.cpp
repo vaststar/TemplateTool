@@ -29,8 +29,6 @@ AppUpgradeController::~AppUpgradeController()
 
 void AppUpgradeController::init()
 {
-    UIVIEW_LOG_DEBUG("AppUpgradeController::init");
-
     // Listen for upgrade events from EventBus
     listenUIEvents<UIUpgradeEvent>();
 
@@ -49,8 +47,6 @@ void AppUpgradeController::init()
     m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
     m_viewModel->registerCallback(m_emitter);
     m_viewModel->initViewModel();
-
-    UIVIEW_LOG_DEBUG("AppUpgradeController::init done");
 }
 
 // ============================================================================

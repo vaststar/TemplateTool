@@ -21,14 +21,10 @@ AppearanceSettingsController::~AppearanceSettingsController()
 
 void AppearanceSettingsController::init()
 {
-    UIVIEW_LOG_DEBUG("AppearanceSettingsController::init");
-
     m_clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
     m_clientInfoViewModel->initViewModel();
 
     buildThemeData();
-
-    UIVIEW_LOG_DEBUG("AppearanceSettingsController::init done");
 }
 
 QStringList AppearanceSettingsController::getSupportedThemes() const

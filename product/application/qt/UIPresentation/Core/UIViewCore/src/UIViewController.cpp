@@ -20,19 +20,31 @@ bool UIViewController::isInitialized() const
 
 void UIViewController::initializeController(QPointer<AppContext> appContext)
 {
-    if (getAppContext())
+    const auto controllerName = getControllerName().toStdString();
+
+    if (isInitialized())
     {
-        UIViewCore_LOG_WARN("Controller " << getControllerName().toStdString() << " has been initialized already.");
+        UIViewCore_LOG_WARN(
+            controllerName
+            << " initialization skipped: already initialized, address: "
+            << this);
         return;
     }
 
     if (appContext.isNull())
     {
-        UIViewCore_LOG_ERROR("Failed to initialize Controller " << getControllerName().toStdString() << ": AppContext is null.");
+        UIViewCore_LOG_ERROR(
+            controllerName
+            << " initialization failed: AppContext is null, address: "
+            << this);
         return;
     }
 
-    UIViewCore_LOG_DEBUG("start initialize Controller: " << getControllerName().toStdString());
+    UIViewCore_LOG_DEBUG(
+        controllerName
+        << " initialization started, address: "
+        << this);
+
     mAppContext = appContext;
 
     if (auto translatorManager = getTranslatorManager())
@@ -55,7 +67,11 @@ void UIViewController::initializeController(QPointer<AppContext> appContext)
 
     init();
     emit controllerInitialized();
-    UIViewCore_LOG_DEBUG("finish initialize Controller: " << getControllerName().toStdString());
+
+    UIViewCore_LOG_DEBUG(
+        controllerName
+        << " initialization finished, address: "
+        << this);
 }
 
 QPointer<AppContext> UIViewController::getAppContext() const
@@ -112,32 +128,43 @@ void UIViewController::setupController(UIViewController* controller)
 {
     if (!controller)
     {
-        UIViewCore_LOG_WARN("setupController: controller is null");
+        UIViewCore_LOG_WARN(
+            "setupController failed: controller is null");
         return;
     }
 
+    const auto childControllerName =
+        controller->getControllerName().toStdString();
+
     if (controller->isInitialized())
     {
-        UIViewCore_LOG_DEBUG("setupController: controller "
-            << controller->getControllerName().toStdString()
-            << " has already been initialized; skipping setup");
+        UIViewCore_LOG_DEBUG(
+            childControllerName
+            << " setup skipped: already initialized, address: "
+            << controller);
         return;
     }
 
     auto appContext = getAppContext();
     if (!appContext)
     {
-        UIViewCore_LOG_WARN("setupController: appContext is null");
+        UIViewCore_LOG_WARN(
+            getControllerName().toStdString()
+            << " failed to set up child controller "
+            << childControllerName
+            << ": AppContext is null");
         return;
     }
 
-    UIViewCore_LOG_DEBUG("setupController start, from: " << getControllerName().toStdString()
-        << ", target: " << controller->getControllerName().toStdString());
+    UIViewCore_LOG_DEBUG(
+        getControllerName().toStdString()
+        << " setting up child controller "
+        << childControllerName
+        << ", child address: "
+        << controller);
 
     onSetupController(controller);
     controller->initializeController(appContext);
-
-    UIViewCore_LOG_DEBUG("setupController finish, target: " << controller->getControllerName().toStdString());
 }
 
 void UIViewController::onSetupController(UIViewController* controller)

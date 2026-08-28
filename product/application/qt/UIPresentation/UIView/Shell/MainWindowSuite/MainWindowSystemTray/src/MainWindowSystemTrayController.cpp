@@ -36,5 +36,4 @@ void MainWindowSystemTrayController::activateMainWindow()
 
 void MainWindowSystemTrayController::init()
 {
-    UIVIEW_LOG_DEBUG("initialize MainWindowSystemTrayController");
 }

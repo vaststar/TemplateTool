@@ -24,8 +24,6 @@ SettingsPageController::~SettingsPageController()
 
 void SettingsPageController::init()
 {
-    UIVIEW_LOG_DEBUG("SettingsPageController::init");
-
     // Connect signals from ViewModel emitter
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::SettingsViewModelEmitter::signals_onSettingsTreeReady,
             this, &SettingsPageController::onSettingsTreeReady);
@@ -41,9 +39,7 @@ void SettingsPageController::init()
 
     m_settingsViewModel = getViewModelFactory()->createSettingsViewModelInstance();
     m_settingsViewModel->registerCallback(m_viewModelEmitter);
-    UIVIEW_LOG_DEBUG("SettingsPageController::init ViewModel created, initializing");
     m_settingsViewModel->initViewModel();
-    UIVIEW_LOG_DEBUG("SettingsPageController::init done");
 }
 
 SettingsTreeModel* SettingsPageController::getTreeModel() const

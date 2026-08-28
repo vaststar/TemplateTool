@@ -44,7 +44,6 @@ void MediaCameraViewController::setVideoSink(QVideoSink* videoSink)
 }
 void MediaCameraViewController::init()
 {
-    UIVIEW_LOG_DEBUG("");
     QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraFrameReceived, this, &MediaCameraViewController::onCameraFrameReceived, Qt::QueuedConnection);
     QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraOpenFailed, this, &MediaCameraViewController::onCameraOpenFailed, Qt::QueuedConnection);
     mMediaCameraViewModel = getViewModelFactory()->createMediaCameraViewModelInstance();
