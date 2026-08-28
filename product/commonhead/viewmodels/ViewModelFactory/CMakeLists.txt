@@ -10,6 +10,7 @@ set(MODULE_HEADER_FILES #for include and install header
     include/commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/ViewModelFactory.h
     src/ViewModelFactory.cpp
 )
@@ -37,6 +38,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     NetworkProxyViewModelImpl
     ToolsViewModelImpl
     CommonHeadFramework
+    LoggerUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)

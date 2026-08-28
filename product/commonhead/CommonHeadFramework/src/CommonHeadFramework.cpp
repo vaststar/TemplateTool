@@ -21,6 +21,11 @@ CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr core
     COMMON_HEAD_FRAMEWORK_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
 }
 
+CommonHeadFramework::~CommonHeadFramework()
+{
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("delete CommonHeadFramework, address:" << this);
+}
+
 void CommonHeadFramework::initCommonheadFramework()
 {
     COMMON_HEAD_FRAMEWORK_LOG_DEBUG("init CommonHeadFramework, address:"<<this);

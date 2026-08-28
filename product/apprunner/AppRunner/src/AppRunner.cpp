@@ -27,6 +27,7 @@ public:
     void initApp();
     void exitApp();
     const FrameworkDependencies& getDependencies() const;
+    [[nodiscard]] bool isLoggerInitialized() const noexcept;
 private:
     void createApplicationConfig();
     void parseCommandLines(const std::vector<std::string>& args);
@@ -44,6 +45,7 @@ private:
     std::once_flag mCreate_flag;
     std::once_flag mInit_flag;
     std::once_flag mExit_flag;
+    bool mLoggerInitialized{false};
 };
 
 void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& args)
@@ -78,12 +80,18 @@ void ApplicationRunner::DataPrivate::initLogger()
     std::vector<std::shared_ptr<ucf::utilities::LoggerConfig>> logConfigs = {fileLogger};
     UCF_LOG_INIT(logConfigs);
 #endif
+    mLoggerInitialized = true;
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========Logger Initialzied==============");
     RUNNER_LOG_INFO("=Logger Folder Path: " << mApplicationConfig.appLogConfig.logDirPath << ", BaseFileName: " << mApplicationConfig.appLogConfig.logBaseFileName << " =");
     RUNNER_LOG_INFO("===========================================");
     RUNNER_LOG_INFO("===========================================");
+}
+
+bool ApplicationRunner::DataPrivate::isLoggerInitialized() const noexcept
+{
+    return mLoggerInitialized;
 }
 
 void ApplicationRunner::DataPrivate::initApp()
@@ -254,7 +262,25 @@ ApplicationRunner::ApplicationRunner()
 
 ApplicationRunner::~ApplicationRunner()
 {
+    const bool loggerInitialized =
+        mDataPrivate && mDataPrivate->isLoggerInitialized();
 
+    if (loggerInitialized)
+    {
+        RUNNER_LOG_INFO(
+            "ApplicationRunner is releasing owned dependencies before logger shutdown");
+    }
+
+    // Destroy frameworks and services while the logger is still available so
+    // their destructors can finish writing diagnostic information.
+    mDataPrivate.reset();
+
+    if (loggerInitialized)
+    {
+        RUNNER_LOG_INFO(
+            "ApplicationRunner owned dependencies released, stopping logger");
+        UCF_LOG_STOP();
+    }
 }
 
 void ApplicationRunner::initApp(int argc, char *argv[])

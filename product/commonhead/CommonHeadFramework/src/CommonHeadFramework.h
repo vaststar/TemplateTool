@@ -19,7 +19,7 @@ public:
     CommonHeadFramework(CommonHeadFramework&&) = delete;
     CommonHeadFramework& operator=(const CommonHeadFramework&) = delete;
     CommonHeadFramework& operator=(CommonHeadFramework&&) = delete;
-    ~CommonHeadFramework() = default;
+    ~CommonHeadFramework();
 public:
     virtual void initCommonheadFramework() override;
     virtual void exitCommonheadFramework() override;

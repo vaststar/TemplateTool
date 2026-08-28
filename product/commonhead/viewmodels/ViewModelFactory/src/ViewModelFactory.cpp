@@ -1,4 +1,5 @@
 #include "ViewModelFactory.h"
+#include "LoggerDefine.h"
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/viewmodels/InvocationViewModel/InvocationViewModelCreator.h>
 #include <commonhead/viewmodels/AppUIViewModel/AppUIViewModelCreator.h>
@@ -36,7 +37,7 @@ ViewModelFactory::ViewModelFactory(commonHead::ICommonHeadFrameworkWPtr commonHe
 
 ViewModelFactory::~ViewModelFactory()
 {
-
+    VIEW_MODEL_FACTORY_LOG_DEBUG("delete ViewModelFactory, address:" << this);
 }
 
 std::shared_ptr<commonHead::viewModels::IInvocationViewModel> ViewModelFactory::createInvocationViewModelInstance() const

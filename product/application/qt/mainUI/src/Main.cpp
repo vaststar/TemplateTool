@@ -83,7 +83,6 @@ Main::Main()
 Main::~Main()
 {
     MAINUI_LOG_DEBUG("delete Main");
-    LOG_WAIT_EXIT();
 }
 
 int Main::runMain(int argc, char *argv[])
