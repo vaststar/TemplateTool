@@ -42,8 +42,6 @@ std::string SettingsViewModel::getViewModelName() const
 
 void SettingsViewModel::init()
 {
-    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::init");
-
     if (!buildSettingsTree())
     {
         SETTINGS_VIEW_MODEL_LOG_ERROR("SettingsViewModel::init: failed to build settings tree");

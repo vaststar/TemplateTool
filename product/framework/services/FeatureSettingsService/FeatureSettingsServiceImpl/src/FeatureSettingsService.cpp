@@ -74,7 +74,6 @@ FeatureSettingsService::~FeatureSettingsService()
 
 void FeatureSettingsService::initService()
 {
-    SERVICE_LOG_DEBUG("FeatureSettingsService::initService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
@@ -87,7 +86,6 @@ void FeatureSettingsService::initService()
 
 void FeatureSettingsService::deinitService()
 {
-    SERVICE_LOG_DEBUG("FeatureSettingsService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

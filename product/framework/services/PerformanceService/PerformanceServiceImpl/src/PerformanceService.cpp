@@ -79,7 +79,6 @@ PerformanceService::~PerformanceService()
 
 void PerformanceService::initService()
 {
-    PERFORMANCE_LOG_INFO("PerformanceService::initService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
@@ -91,12 +90,10 @@ void PerformanceService::initService()
         std::static_pointer_cast<IPerformanceNotificationSink>(self));
 
     mDataPrivate->getPerformanceManager().initialize();
-    PERFORMANCE_LOG_INFO("PerformanceService initialized");
 }
 
 void PerformanceService::deinitService()
 {
-    PERFORMANCE_LOG_INFO("PerformanceService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

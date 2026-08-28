@@ -2,9 +2,10 @@
 
 #include "LoggerDefine.h"
 
-namespace commonHead::viewModels{
+namespace commonHead::viewModels {
 
-IViewModel::IViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+IViewModel::IViewModel(
+    commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : mCommonHeadFrameworkWptr(commonHeadFramework)
 {
 }
@@ -12,9 +13,15 @@ IViewModel::IViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 void IViewModel::initViewModel()
 {
     std::call_once(mInitFlag, [this]() {
-        VIEW_MODEL_CORE_LOG_DEBUG("start init ViewModel:" << getViewModelName());
+        const auto viewModelName = getViewModelName();
+
+        VIEW_MODEL_CORE_LOG_DEBUG(
+            viewModelName << " initialization started, address: " << this);
+
         init();
-        VIEW_MODEL_CORE_LOG_DEBUG("finish init ViewModel:" << getViewModelName());
+
+        VIEW_MODEL_CORE_LOG_DEBUG(
+            viewModelName << " initialization finished, address: " << this);
     });
 }
 
@@ -22,4 +29,5 @@ commonHead::ICommonHeadFrameworkWptr IViewModel::getCommonHeadFramework() const
 {
     return mCommonHeadFrameworkWptr;
 }
-}
+
+} // namespace commonHead::viewModels

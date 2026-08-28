@@ -27,6 +27,7 @@ void UIIPCServerHelper::start()
     mIPCViewModel = mAppContext->getViewModelFactory()->createInvocationViewModelInstance();
     mInvocationViewModelEmitter = std::make_shared<UIViewModelSignalBridge::InvocationViewModelEmitter>();
     mIPCViewModel->registerCallback(mInvocationViewModelEmitter);
+    mIPCViewModel->initViewModel();
 
     mIPCServer->setMessageHandler([wekPtr = std::weak_ptr<commonHead::viewModels::IInvocationViewModel>(mIPCViewModel)](const std::string& ipcMessage){
         if (auto ptr = wekPtr.lock())

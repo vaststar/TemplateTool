@@ -59,10 +59,10 @@ void NetworkProxyController::init()
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onError,
             this, &NetworkProxyController::onError);
 
-    // Create ViewModel via factory, init, and register emitter as callback
+    // Create the ViewModel, register its callback, then initialize it.
     m_viewModel = getViewModelFactory()->createNetworkProxyViewModelInstance();
-    m_viewModel->initViewModel();
     m_viewModel->registerCallback(m_viewModelEmitter);
+    m_viewModel->initViewModel();
 
     // Wire rules manager — serialize QJsonObject to string and send via ViewModel
     m_rulesManager->setSendCommandFn([this](const QJsonObject& cmd) {

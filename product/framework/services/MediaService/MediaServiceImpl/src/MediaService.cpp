@@ -71,7 +71,6 @@ std::string MediaService::getServiceName() const
 
 void MediaService::initService()
 {
-    SERVICE_LOG_INFO("MediaService::initService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->registerCallback(shared_from_this());
@@ -80,7 +79,6 @@ void MediaService::initService()
 
 void MediaService::deinitService()
 {
-    SERVICE_LOG_INFO("MediaService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

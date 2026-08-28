@@ -25,6 +25,7 @@ void UIStabilityMonitor::start()
     mStabilityViewModel = mAppContext->getViewModelFactory()->createStabilityViewModelInstance();
     mStabilityViewModelEmitter = std::make_shared<UIViewModelSignalBridge::StabilityViewModelEmitter>();
     mStabilityViewModel->registerCallback(mStabilityViewModelEmitter);
+    mStabilityViewModel->initViewModel();
 
     mHeartbeatTimer = new QTimer(this);
     QObject::connect(mHeartbeatTimer, &QTimer::timeout, this, [this](){

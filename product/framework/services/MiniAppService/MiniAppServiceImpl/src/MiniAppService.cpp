@@ -73,7 +73,6 @@ MiniAppService::~MiniAppService()
 
 void MiniAppService::initService()
 {
-    SERVICE_LOG_DEBUG("MiniAppService::initService()");
     // Inject the upward sink before any scan so no early events are lost.
     mDataPrivate->getMiniAppManager().setNotificationSink(
         std::static_pointer_cast<IMiniAppNotificationSink>(shared_from_this()));
@@ -86,7 +85,6 @@ void MiniAppService::initService()
 
 void MiniAppService::deinitService()
 {
-    SERVICE_LOG_DEBUG("MiniAppService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

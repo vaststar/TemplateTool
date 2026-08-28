@@ -8,6 +8,11 @@ set(TARGET_SOURCE_INCLUDE_HEADER_PUBLIC  #for include and install header
 
 set(TARGET_SOURCE_FILES_PRIVATE
     src/IService.cpp
+    src/LoggerDefine.h
+)
+
+set(MODULE_DEPENDENCIES_PRIVATE
+    LoggerUtils
 )
 
 set(MODULE_PUBLIC_DEFINITIONS)
@@ -26,6 +31,8 @@ BuildModule(
         ServiceDeclaration
     TARGET_SOURCE_PRIVATE
         ${TARGET_SOURCE_FILES_PRIVATE}
+    TARGET_ADD_LINK_LIBRARY_PRIVATE
+        ${MODULE_DEPENDENCIES_PRIVATE}
     TARGET_SOURCE_HEADER_BASE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     TARGET_SOURCE_PUBLIC_HEADER

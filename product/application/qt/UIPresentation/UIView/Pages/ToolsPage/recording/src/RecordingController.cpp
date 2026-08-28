@@ -61,10 +61,10 @@ void RecordingController::init()
 
     // Phase 2: Create ViewModel from factory
     m_viewModel = getViewModelFactory()->createRecordingViewModelInstance();
-    m_viewModel->initViewModel();
 
-    // Phase 3: Register emitter as callback
+    // Phase 3: Register callback before initialization
     m_viewModel->registerCallback(m_viewModelEmitter);
+    m_viewModel->initViewModel();
 
     // Notify QML that FFmpeg status is now resolved
     emit ffmpegStatusChanged();

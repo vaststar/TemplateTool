@@ -49,6 +49,7 @@ void MediaCameraViewController::init()
     QObject::connect(mMediaCameraViewModelEmitter.get(), &UIViewModelSignalBridge::MediaCameraViewModelEmitter::signals_onCameraOpenFailed, this, &MediaCameraViewController::onCameraOpenFailed, Qt::QueuedConnection);
     mMediaCameraViewModel = getViewModelFactory()->createMediaCameraViewModelInstance();
     mMediaCameraViewModel->registerCallback(mMediaCameraViewModelEmitter);
+    mMediaCameraViewModel->initViewModel();
     // Callers drive the camera lifecycle via openLocal/openNetworkCamera.
 }
 

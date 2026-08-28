@@ -47,8 +47,8 @@ void AppUpgradeController::init()
 
     // Create ViewModel
     m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
-    m_viewModel->initViewModel();
     m_viewModel->registerCallback(m_emitter);
+    m_viewModel->initViewModel();
 
     UIVIEW_LOG_DEBUG("AppUpgradeController::init done");
 }

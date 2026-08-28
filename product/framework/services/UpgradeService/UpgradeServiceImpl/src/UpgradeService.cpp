@@ -83,17 +83,21 @@ UpgradeService::~UpgradeService()
 
 void UpgradeService::initService()
 {
-    UPGRADE_LOG_INFO("UpgradeService::initService()");
-    if (auto coreFramework = mDataPrivate->getCoreFramework().lock()) {
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
         coreFramework->registerCallback(shared_from_this());
     }
-    // Inject this (as Listener) into the manager
+
+    // Callback registration must complete before the manager starts.
     mDataPrivate->getUpgradeManager().initialize(this);
 }
 
 void UpgradeService::deinitService()
 {
-    UPGRADE_LOG_INFO("UpgradeService::deinitService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+    }
 }
 
 std::string UpgradeService::getServiceName() const

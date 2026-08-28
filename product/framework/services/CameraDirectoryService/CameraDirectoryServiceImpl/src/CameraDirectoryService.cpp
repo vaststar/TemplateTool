@@ -76,7 +76,6 @@ CameraDirectoryService::~CameraDirectoryService()
 
 void CameraDirectoryService::initService()
 {
-    SERVICE_LOG_DEBUG("CameraDirectoryService::initService()");
     // Inject the sink first: must happen before registering any external callback that
     // could trigger a change, otherwise an early callback would arrive before the sink
     // is in place and events would be lost.
@@ -96,7 +95,6 @@ void CameraDirectoryService::initService()
 
 void CameraDirectoryService::deinitService()
 {
-    SERVICE_LOG_DEBUG("CameraDirectoryService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

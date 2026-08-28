@@ -82,7 +82,10 @@ void InvocationService::initService()
 
 void InvocationService::deinitService()
 {
-    SERVICE_LOG_DEBUG("InvocationService::deinitService()");
+    if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
+    {
+        coreFramework->unRegisterCallback(shared_from_this());
+    }
 }
 
 std::string InvocationService::getServiceName() const

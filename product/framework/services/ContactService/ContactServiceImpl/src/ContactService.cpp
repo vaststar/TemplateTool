@@ -75,7 +75,6 @@ ContactService::~ContactService()
 
 void ContactService::initService()
 {
-    SERVICE_LOG_DEBUG("ContactService::initService()");
     // Inject sink before registering DB callback so no early events are lost.
     auto self = shared_from_this();
     mDataPrivate->getManager().setNotificationSink(
@@ -102,7 +101,6 @@ void ContactService::initService()
 
 void ContactService::deinitService()
 {
-    SERVICE_LOG_DEBUG("ContactService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

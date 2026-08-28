@@ -26,6 +26,7 @@ void MainWindowMenuBarController::init()
     UIVIEW_LOG_DEBUG("");
 
     auto clientInfoVM = getViewModelFactory()->createClientInfoViewModelInstance();
+    clientInfoVM->initViewModel();
     auto res = clientInfoVM->getSupportedLanguages();
     buildMenuModel();
 }

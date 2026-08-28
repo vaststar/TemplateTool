@@ -42,8 +42,6 @@ std::string ToolsViewModel::getViewModelName() const
 
 void ToolsViewModel::init()
 {
-    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::init");
-
     if (!buildToolsTree())
     {
         TOOLS_VIEW_MODEL_LOG_ERROR("ToolsViewModel::init: failed to build tools tree");

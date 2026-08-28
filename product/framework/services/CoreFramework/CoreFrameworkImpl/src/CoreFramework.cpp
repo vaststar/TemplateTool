@@ -200,9 +200,7 @@ void CoreFramework::initServices()
     {
         if (auto servicePtr = weakService.lock())
         {
-            CORE_LOG_INFO("start init service: " << servicePtr->getServiceName());
             servicePtr->initComponent();
-            CORE_LOG_INFO("finish init service: " << servicePtr->getServiceName());
         }
     }
 
@@ -218,9 +216,7 @@ void CoreFramework::deinitServices()
     {
         if (auto servicePtr = iter->lock())
         {
-            CORE_LOG_INFO("start deinit service: " << servicePtr->getServiceName());
             servicePtr->deinitComponent();
-            CORE_LOG_INFO("finish deinit service: " << servicePtr->getServiceName());
         }
     }
 }

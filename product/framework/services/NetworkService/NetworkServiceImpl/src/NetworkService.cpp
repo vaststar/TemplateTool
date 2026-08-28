@@ -74,17 +74,14 @@ network::http::INetworkHttpManagerWPtr NetworkService::getNetworkHttpManager()
 
 void NetworkService::initService()
 {
-    SERVICE_LOG_DEBUG("init NetworkService start, address:" << this);
     // if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     // {
     //     coreFramework->registerCallback(shared_from_this());
     // }
-    SERVICE_LOG_DEBUG("init NetworkService done, address:" << this);
 }
 
 void NetworkService::deinitService()
 {
-    SERVICE_LOG_DEBUG("NetworkService::deinitService()");
 }
 
 std::string NetworkService::getServiceName() const

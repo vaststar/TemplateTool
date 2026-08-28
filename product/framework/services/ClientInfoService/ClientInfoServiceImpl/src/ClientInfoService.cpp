@@ -84,7 +84,6 @@ ClientInfoService::~ClientInfoService()
 
 void ClientInfoService::initService()
 {
-    SERVICE_LOG_DEBUG("ClientInfoService::initService()");
     // Wire reverse notification via internal sink: the model invokes our sink
     // methods after a state change and we forward them through NotificationHelper.
     // Sink is stored as weak_ptr inside the model so async DB callbacks arriving
@@ -106,7 +105,6 @@ void ClientInfoService::initService()
 
 void ClientInfoService::deinitService()
 {
-    SERVICE_LOG_DEBUG("ClientInfoService::deinitService()");
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());

@@ -75,10 +75,10 @@ void ScreenshotController::init()
 
     // Phase 2: Create ViewModel from factory
     m_viewModel = getViewModelFactory()->createScreenshotViewModelInstance();
-    m_viewModel->initViewModel();
 
-    // Phase 3: Register emitter as callback
+    // Phase 3: Register callback before initialization
     m_viewModel->registerCallback(m_viewModelEmitter);
+    m_viewModel->initViewModel();
 
     // Sync initial settings from ViewModel
     auto settings = m_viewModel->getSettings();

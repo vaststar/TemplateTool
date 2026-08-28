@@ -40,8 +40,6 @@ std::string SideBarViewModel::getViewModelName() const
 
 void SideBarViewModel::init()
 {
-    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("SideBarViewModel::init");
-
     if (!initDefaultNavItems())
     {
         SIDE_BAR_VIEW_MODEL_LOG_ERROR("SideBarViewModel::init: failed to initialize navigation items");

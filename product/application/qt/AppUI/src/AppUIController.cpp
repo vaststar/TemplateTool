@@ -84,6 +84,7 @@ void AppUIController::onAppConfigInitialized()
     APPUI_LOG_DEBUG("onAppConfigInitialized start");
     // 1. Load translation
     auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
+    clientInfoViewModel->initViewModel();
     const auto configuredLanguage = clientInfoViewModel->getApplicationLanguage();
     APPUI_LOG_DEBUG("get language: " << static_cast<int>(configuredLanguage));
 
@@ -122,6 +123,7 @@ void AppUIController::onAppConfigInitialized()
 
     connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
         auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
+        clientInfoViewModel->initViewModel();
         APPUI_LOG_DEBUG("system color scheme changed, CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
         if (clientInfoViewModel->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
         {
