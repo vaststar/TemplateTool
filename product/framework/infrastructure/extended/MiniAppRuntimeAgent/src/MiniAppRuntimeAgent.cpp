@@ -1,4 +1,5 @@
 #include "MiniAppRuntimeAgent.h"
+#include "LoggerDefine.h"
 
 #include <algorithm>
 #include <memory>
@@ -120,10 +121,12 @@ void RuntimeWebViewCallback::onWebViewReady()
 MiniAppRuntimeAgent::MiniAppRuntimeAgent()
     : m_impl(std::make_unique<Impl>())
 {
+    MINI_APP_RUNTIME_AGENT_LOG_DEBUG("MiniAppRuntimeAgent constructed, address: " << this);
 }
 
 MiniAppRuntimeAgent::~MiniAppRuntimeAgent()
 {
+    MINI_APP_RUNTIME_AGENT_LOG_DEBUG("MiniAppRuntimeAgent destroying, address: " << this);
     shutdown();
 }
 

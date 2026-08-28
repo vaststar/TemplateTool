@@ -1,4 +1,5 @@
 #include "ScreenshotViewModel.h"
+#include "LoggerDefine.h"
 
 #include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
 #include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
@@ -37,6 +38,12 @@ std::shared_ptr<IScreenshotViewModel> createScreenshotViewModel(
 ScreenshotViewModel::ScreenshotViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : IScreenshotViewModel(framework)
 {
+    SCREENSHOT_VIEW_MODEL_LOG_DEBUG("ScreenshotViewModel constructed, address: " << this);
+}
+
+ScreenshotViewModel::~ScreenshotViewModel()
+{
+    SCREENSHOT_VIEW_MODEL_LOG_DEBUG("ScreenshotViewModel destroying, address: " << this);
 }
 
 std::string ScreenshotViewModel::getViewModelName() const

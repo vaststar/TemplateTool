@@ -49,13 +49,13 @@ HangManager::HangManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     , mMainThreadId(std::this_thread::get_id())
     , mLastHeartbeat(std::chrono::steady_clock::now())
 {
-    CRASHHANDLER_LOG_DEBUG("HangManager created");
+    CRASHHANDLER_LOG_DEBUG("HangManager constructed, address: " << this);
 }
 
 HangManager::~HangManager()
 {
     cleanup();
-    CRASHHANDLER_LOG_DEBUG("HangManager destroyed");
+    CRASHHANDLER_LOG_DEBUG("HangManager destroying, address: " << this);
 }
 
 void HangManager::initialize()

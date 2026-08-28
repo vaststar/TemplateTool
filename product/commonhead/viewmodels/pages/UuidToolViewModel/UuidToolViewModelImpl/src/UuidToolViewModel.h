@@ -8,7 +8,7 @@ class UuidToolViewModel final : public IUuidToolViewModel
 {
 public:
     explicit UuidToolViewModel(commonHead::ICommonHeadFrameworkWptr framework);
-    ~UuidToolViewModel() override = default;
+    ~UuidToolViewModel() override;
 
     [[nodiscard]] std::string getViewModelName() const override;
     [[nodiscard]] std::string generate() const override;

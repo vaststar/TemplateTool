@@ -25,7 +25,12 @@ std::shared_ptr<IToolsViewModel> impl::createToolsViewModel(
 ToolsViewModel::ToolsViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : IToolsViewModel(framework)
 {
-    TOOLS_VIEW_MODEL_LOG_DEBUG("create ToolsViewModel");
+    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel constructed, address: " << this);
+}
+
+ToolsViewModel::~ToolsViewModel()
+{
+    TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel destroying, address: " << this);
 }
 
 // ==================== IViewModel ====================

@@ -18,12 +18,12 @@ CommonHeadFramework::CommonHeadFramework(ucf::framework::ICoreFrameworkWPtr core
     , mServiceLocator(impl::createServiceLocator(coreframework))
     , mResourceLoader(impl::createResourceLoader(coreframework))
 {
-    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("create CommonHeadFramework, address:"<<this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("CommonHeadFramework constructed, address: " << this);
 }
 
 CommonHeadFramework::~CommonHeadFramework()
 {
-    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("delete CommonHeadFramework, address:" << this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("CommonHeadFramework destroying, address: " << this);
 }
 
 void CommonHeadFramework::initCommonheadFramework()

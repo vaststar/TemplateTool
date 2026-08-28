@@ -17,12 +17,12 @@ MiniAppListPageController::MiniAppListPageController(QObject* parent)
     : UIViewController(parent)
     , mEmitter(std::make_shared<UIViewModelSignalBridge::MiniAppListViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create MiniAppListPageController");
+    UIVIEW_LOG_DEBUG("MiniAppListPageController constructed, address: " << this);
 }
 
 MiniAppListPageController::~MiniAppListPageController()
 {
-    UIVIEW_LOG_DEBUG("delete MiniAppListPageController");
+    UIVIEW_LOG_DEBUG("MiniAppListPageController destroying, address: " << this);
     // The host windows are top-level (unparented), so close any that are still
     // open. Clear the registry first so the destroyed() handler is a no-op and
     // we do not mutate the container while iterating.

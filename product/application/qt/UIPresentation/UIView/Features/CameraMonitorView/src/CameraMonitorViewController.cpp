@@ -25,12 +25,12 @@ CameraMonitorViewController::CameraMonitorViewController(QObject* parent)
     : UIViewController(parent)
     , mCameraDirectoryEmitter(std::make_shared<UIViewModelSignalBridge::CameraDirectoryViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create CameraMonitorViewController");
+    UIVIEW_LOG_DEBUG("CameraMonitorViewController constructed, address: " << this);
 }
 
 CameraMonitorViewController::~CameraMonitorViewController()
 {
-    UIVIEW_LOG_DEBUG("delete CameraMonitorViewController");
+    UIVIEW_LOG_DEBUG("CameraMonitorViewController destroying, address: " << this);
 }
 
 QAbstractItemModel* CameraMonitorViewController::getCameraTreeModel() const  { return mCameraTreeModel; }

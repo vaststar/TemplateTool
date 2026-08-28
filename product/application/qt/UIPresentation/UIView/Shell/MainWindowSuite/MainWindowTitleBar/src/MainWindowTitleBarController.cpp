@@ -9,7 +9,12 @@
 MainWindowTitleBarController::MainWindowTitleBarController(QObject *parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create MainWindowTitleBarController");
+    UIVIEW_LOG_DEBUG("MainWindowTitleBarController constructed, address: " << this);
+}
+
+MainWindowTitleBarController::~MainWindowTitleBarController()
+{
+    UIVIEW_LOG_DEBUG("MainWindowTitleBarController destroying, address: " << this);
 }
 
 void MainWindowTitleBarController::init()

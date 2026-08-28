@@ -1,4 +1,5 @@
 #include "Base64ToolViewModel.h"
+#include "LoggerDefine.h"
 
 #include <commonhead/viewmodels/Base64ToolViewModel/Base64ToolViewModelCreator.h>
 #include <ucf/utilities/Base64Utils/Base64Utils.h>
@@ -15,6 +16,12 @@ Base64ToolViewModel::Base64ToolViewModel(
     commonHead::ICommonHeadFrameworkWptr framework)
     : IBase64ToolViewModel(framework)
 {
+    BASE64_TOOL_VIEW_MODEL_LOG_DEBUG("Base64ToolViewModel constructed, address: " << this);
+}
+
+Base64ToolViewModel::~Base64ToolViewModel()
+{
+    BASE64_TOOL_VIEW_MODEL_LOG_DEBUG("Base64ToolViewModel destroying, address: " << this);
 }
 
 std::string Base64ToolViewModel::getViewModelName() const

@@ -63,12 +63,12 @@ std::shared_ptr<IMiniAppService> createMiniAppService(ucf::framework::ICoreFrame
 MiniAppService::MiniAppService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create MiniAppService, address:" << this);
+    SERVICE_LOG_DEBUG("MiniAppService constructed, address: " << this);
 }
 
 MiniAppService::~MiniAppService()
 {
-    SERVICE_LOG_DEBUG("Delete MiniAppService, address:" << this);
+    SERVICE_LOG_DEBUG("MiniAppService destroying, address: " << this);
 }
 
 void MiniAppService::initService()

@@ -23,11 +23,12 @@ RecordingController::RecordingController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::RecordingViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create RecordingController");
+    UIVIEW_LOG_DEBUG("RecordingController constructed, address: " << this);
 }
 
 RecordingController::~RecordingController()
 {
+    UIVIEW_LOG_DEBUG("RecordingController destroying, address: " << this);
     if (m_isRecording) {
         stopRecording();
     }

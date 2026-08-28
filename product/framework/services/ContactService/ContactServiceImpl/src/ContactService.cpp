@@ -65,12 +65,12 @@ std::shared_ptr<IContactService> createContactService(ucf::framework::ICoreFrame
 ContactService::ContactService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create ContactService, address:" << this);
+    SERVICE_LOG_DEBUG("ContactService constructed, address: " << this);
 }
 
 ContactService::~ContactService()
 {
-    SERVICE_LOG_DEBUG("Delete ContactService, address:" << this);
+    SERVICE_LOG_DEBUG("ContactService destroying, address: " << this);
 }
 
 void ContactService::initService()

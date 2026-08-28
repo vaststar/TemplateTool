@@ -19,13 +19,13 @@ PerformanceManager::PerformanceManager(ucf::framework::ICoreFrameworkWPtr coreFr
     , mCPUMonitor(ICPUMonitor::create())
     , mTimingTracker(std::make_unique<TimingTracker>())
 {
-    PERFORMANCE_LOG_DEBUG("PerformanceManager created");
+    PERFORMANCE_LOG_DEBUG("PerformanceManager constructed, address: " << this);
 }
 
 PerformanceManager::~PerformanceManager()
 {
     stopMonitoring();
-    PERFORMANCE_LOG_DEBUG("PerformanceManager destroyed");
+    PERFORMANCE_LOG_DEBUG("PerformanceManager destroying, address: " << this);
 }
 
 void PerformanceManager::initialize()

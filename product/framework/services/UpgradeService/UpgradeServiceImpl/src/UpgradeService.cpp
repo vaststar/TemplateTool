@@ -73,12 +73,12 @@ std::shared_ptr<IUpgradeService> createUpgradeService(
 UpgradeService::UpgradeService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    UPGRADE_LOG_DEBUG("Create UpgradeService, address:" << this);
+    UPGRADE_LOG_DEBUG("UpgradeService constructed, address: " << this);
 }
 
 UpgradeService::~UpgradeService()
 {
-    UPGRADE_LOG_DEBUG("Delete UpgradeService, address:" << this);
+    UPGRADE_LOG_DEBUG("UpgradeService destroying, address: " << this);
 }
 
 void UpgradeService::initService()

@@ -101,8 +101,14 @@ void ProcessBridge::failStart(const std::string& errorMessage)
 //  Lifecycle
 // ════════════════════════════════════════════════════════════
 
+ProcessBridge::ProcessBridge()
+{
+    PB_LOG_DEBUG("ProcessBridge constructed, address: " << this);
+}
+
 ProcessBridge::~ProcessBridge()
 {
+    PB_LOG_DEBUG("ProcessBridge destroying, address: " << this);
     stop();
     // Ensure the monitor thread is joined even if the process exited
     // naturally (monitorLoop returned on its own without stop() joining it).

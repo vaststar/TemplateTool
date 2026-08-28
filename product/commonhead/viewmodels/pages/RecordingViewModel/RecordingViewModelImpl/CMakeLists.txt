@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonhead/viewmodels/RecordingViewModel/RecordingViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/RecordingViewModel.h
     src/RecordingViewModel.cpp
 )
@@ -25,6 +26,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ThreadPoolUtils
     FilePathUtils
     ViewModelUtils
+    LoggerUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

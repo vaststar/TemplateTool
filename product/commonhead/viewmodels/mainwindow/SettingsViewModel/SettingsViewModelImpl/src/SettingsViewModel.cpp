@@ -27,7 +27,12 @@ std::shared_ptr<ISettingsViewModel> createSettingsViewModel(
 SettingsViewModel::SettingsViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : ISettingsViewModel(framework)
 {
-    SETTINGS_VIEW_MODEL_LOG_DEBUG("create SettingsViewModel");
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel constructed, address: " << this);
+}
+
+SettingsViewModel::~SettingsViewModel()
+{
+    SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel destroying, address: " << this);
 }
 
 std::string SettingsViewModel::getViewModelName() const

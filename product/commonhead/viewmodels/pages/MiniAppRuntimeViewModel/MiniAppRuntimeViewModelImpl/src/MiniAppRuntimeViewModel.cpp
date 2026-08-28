@@ -41,11 +41,12 @@ createMiniAppRuntimeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFra
 MiniAppRuntimeViewModel::MiniAppRuntimeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMiniAppRuntimeViewModel(commonHeadFramework)
 {
-    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("create MiniAppRuntimeViewModel");
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel constructed, address: " << this);
 }
 
 MiniAppRuntimeViewModel::~MiniAppRuntimeViewModel()
 {
+    MINI_APP_RUNTIME_VIEW_MODEL_LOG_DEBUG("MiniAppRuntimeViewModel destroying, address: " << this);
     stop();
 }
 

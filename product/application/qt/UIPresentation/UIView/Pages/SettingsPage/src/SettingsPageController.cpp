@@ -14,7 +14,12 @@ SettingsPageController::SettingsPageController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::SettingsViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create SettingsPageController");
+    UIVIEW_LOG_DEBUG("SettingsPageController constructed, address: " << this);
+}
+
+SettingsPageController::~SettingsPageController()
+{
+    UIVIEW_LOG_DEBUG("SettingsPageController destroying, address: " << this);
 }
 
 void SettingsPageController::init()

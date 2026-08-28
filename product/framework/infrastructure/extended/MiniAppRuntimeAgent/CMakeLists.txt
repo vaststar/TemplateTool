@@ -16,6 +16,7 @@ set(MODULE_HEADER_FILES
 )
 
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/MiniAppSdk.h
     src/MiniAppBridgeCore.h
     src/MiniAppBridgeCore.cpp
@@ -34,6 +35,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
+    LoggerUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

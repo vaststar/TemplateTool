@@ -6,6 +6,7 @@
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIManager/IUIManagerProvider.h>
 
+#include "LoggerDefine.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -42,12 +43,12 @@ AppContext::Impl::Impl(QPointer<UIAppCore::UIApplication> application, QPointer<
 AppContext::AppContext(QPointer<UIAppCore::UIApplication> application, QPointer<UIAppCore::UIQmlEngine> qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mImpl(std::make_unique<AppContext::Impl>(application, qmlEngine, commonheadFramework))
 {
-
+    AppContext_LOG_DEBUG("AppContext constructed, address: " << this);
 }
 
 AppContext::~AppContext()
 {
-
+    AppContext_LOG_DEBUG("AppContext destroying, address: " << this);
 }
 
 QPointer<UIFabrication::IUIViewFactory> AppContext::getViewFactory() const

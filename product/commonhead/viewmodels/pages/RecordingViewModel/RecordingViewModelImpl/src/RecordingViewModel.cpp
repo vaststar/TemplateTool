@@ -1,4 +1,5 @@
 #include "RecordingViewModel.h"
+#include "LoggerDefine.h"
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/ServiceLocator/IServiceLocator.h>
@@ -36,10 +37,12 @@ RecordingViewModel::RecordingViewModel(commonHead::ICommonHeadFrameworkWptr fram
     : IRecordingViewModel(framework)
     , m_agent(ucf::agents::IScreenRecordingAgent::create())
 {
+    RECORDING_VIEW_MODEL_LOG_DEBUG("RecordingViewModel constructed, address: " << this);
 }
 
 RecordingViewModel::~RecordingViewModel()
 {
+    RECORDING_VIEW_MODEL_LOG_DEBUG("RecordingViewModel destroying, address: " << this);
 }
 
 std::string RecordingViewModel::getViewModelName() const

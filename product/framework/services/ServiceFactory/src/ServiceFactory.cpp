@@ -38,12 +38,12 @@ std::shared_ptr<IServiceFactory> IServiceFactory::createInstance(ucf::framework:
 ServiceFactory::ServiceFactory(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
-    SERVICE_LOG_INFO("create ServiceFactory, address:" << this);
+    SERVICE_LOG_DEBUG("ServiceFactory constructed, address: " << this);
 }
 
 ServiceFactory::~ServiceFactory()
 {
-    SERVICE_LOG_INFO("delete ServiceFactory, address:" << this);
+    SERVICE_LOG_DEBUG("ServiceFactory destroying, address: " << this);
 }
 
 void ServiceFactory::createServices()

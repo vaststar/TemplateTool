@@ -10,11 +10,12 @@
 namespace ucf::service{
 CameraManager::CameraManager()
 {
-    SERVICE_LOG_INFO("create CameraManager, address:" << this);
+    SERVICE_LOG_DEBUG("CameraManager constructed, address: " << this);
 }
 
 CameraManager::~CameraManager()
 {
+    SERVICE_LOG_DEBUG("CameraManager destroying, address: " << this);
     std::vector<std::shared_ptr<CameraVideoCapture>> cameras;
     {
         std::scoped_lock loc(mCamerasMutex);

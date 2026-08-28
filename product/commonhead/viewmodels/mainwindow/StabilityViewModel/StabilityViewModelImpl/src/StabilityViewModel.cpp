@@ -18,13 +18,13 @@ std::shared_ptr<IStabilityViewModel> createStabilityViewModel(
 
 StabilityViewModel::~StabilityViewModel()
 {
-    STABILITY_VIEW_MODEL_LOG_DEBUG("");
+    STABILITY_VIEW_MODEL_LOG_DEBUG("StabilityViewModel destroying, address: " << this);
 }
 
 StabilityViewModel::StabilityViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IStabilityViewModel(commonHeadFramework)
 {
-    STABILITY_VIEW_MODEL_LOG_DEBUG("create StabilityViewModel");
+    STABILITY_VIEW_MODEL_LOG_DEBUG("StabilityViewModel constructed, address: " << this);
 }
 
 std::string StabilityViewModel::getViewModelName() const

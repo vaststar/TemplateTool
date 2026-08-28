@@ -73,13 +73,13 @@ std::shared_ptr<INetworkProxyViewModel> createNetworkProxyViewModel(
 NetworkProxyViewModel::NetworkProxyViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : INetworkProxyViewModel(commonHeadFramework)
 {
-    NETWORK_PROXY_VIEW_MODEL_LOG_DEBUG("create NetworkProxyViewModel");
+    NETWORK_PROXY_VIEW_MODEL_LOG_DEBUG("NetworkProxyViewModel constructed, address: " << this);
 }
 
 NetworkProxyViewModel::~NetworkProxyViewModel()
 {
     stopProxy();
-    NETWORK_PROXY_VIEW_MODEL_LOG_DEBUG("destroy NetworkProxyViewModel");
+    NETWORK_PROXY_VIEW_MODEL_LOG_DEBUG("NetworkProxyViewModel destroying, address: " << this);
 }
 
 std::string NetworkProxyViewModel::getViewModelName() const

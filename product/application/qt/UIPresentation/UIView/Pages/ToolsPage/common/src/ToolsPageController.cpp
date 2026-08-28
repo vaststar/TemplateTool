@@ -16,7 +16,12 @@ ToolsPageController::ToolsPageController(QObject* parent)
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::ToolsViewModelEmitter>())
     , m_panelRegistry(new ToolsPanelRegistry(this))
 {
-    UIVIEW_LOG_DEBUG("create ToolsPageController");
+    UIVIEW_LOG_DEBUG("ToolsPageController constructed, address: " << this);
+}
+
+ToolsPageController::~ToolsPageController()
+{
+    UIVIEW_LOG_DEBUG("ToolsPageController destroying, address: " << this);
 }
 
 void ToolsPageController::init()

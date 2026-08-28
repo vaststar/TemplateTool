@@ -43,9 +43,9 @@ LibCurlMultiHandleManager::DataPrivate::DataPrivate()
 
 LibCurlMultiHandleManager::DataPrivate::~DataPrivate()
 {
-    LIBCURL_LOG_DEBUG("delete LibCurlMultiHandleManager::DataPrivate");
+    LIBCURL_LOG_DEBUG("LibCurlMultiHandleManager loop shutdown starting");
     stopLoop();
-    LIBCURL_LOG_DEBUG("delete LibCurlMultiHandleManager::DataPrivate done");
+    LIBCURL_LOG_DEBUG("LibCurlMultiHandleManager loop shutdown completed");
 }
 
 void LibCurlMultiHandleManager::DataPrivate::insertRequest(std::shared_ptr<LibCurlEasyHandle> request)
@@ -105,12 +105,12 @@ void LibCurlMultiHandleManager::DataPrivate::stopLoop()
 LibCurlMultiHandleManager::LibCurlMultiHandleManager()
     : mDataPrivate(std::make_unique<LibCurlMultiHandleManager::DataPrivate>())
 {
-    LIBCURL_LOG_DEBUG("created, address:" << this);
+    LIBCURL_LOG_DEBUG("LibCurlMultiHandleManager constructed, address: " << this);
 }
 
 LibCurlMultiHandleManager::~LibCurlMultiHandleManager()
 {
-    LIBCURL_LOG_DEBUG("destoryed, address:" << this);
+    LIBCURL_LOG_DEBUG("LibCurlMultiHandleManager destroying, address: " << this);
 }
 
 void LibCurlMultiHandleManager::runLoop()

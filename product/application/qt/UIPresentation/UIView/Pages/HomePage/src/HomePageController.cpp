@@ -18,7 +18,12 @@ const QString kCameraMonitorViewQml = QStringLiteral("UIView/CameraMonitorView/q
 HomePageController::HomePageController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create HomePageController");
+    UIVIEW_LOG_DEBUG("HomePageController constructed, address: " << this);
+}
+
+HomePageController::~HomePageController()
+{
+    UIVIEW_LOG_DEBUG("HomePageController destroying, address: " << this);
 }
 
 void HomePageController::init()

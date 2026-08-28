@@ -30,6 +30,7 @@ class JsonToolController : public UIViewController
 
 public:
     explicit JsonToolController(QObject* parent = nullptr);
+    ~JsonToolController() override;
 
     QString getInputText() const;
     void setInputText(const QString& text);

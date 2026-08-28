@@ -9,12 +9,12 @@
 AboutPageController::AboutPageController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create AboutPageController");
+    UIVIEW_LOG_DEBUG("AboutPageController constructed, address: " << this);
 }
 
 AboutPageController::~AboutPageController()
 {
-    UIVIEW_LOG_DEBUG("destroy AboutPageController");
+    UIVIEW_LOG_DEBUG("AboutPageController destroying, address: " << this);
 }
 
 void AboutPageController::init()

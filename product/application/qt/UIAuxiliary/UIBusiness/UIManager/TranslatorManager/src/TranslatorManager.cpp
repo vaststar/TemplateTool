@@ -135,11 +135,12 @@ TranslatorManager::TranslatorManager(
     : mApplication(application)
     , mQmlEngine(qmlEngine)
 {
-    TranslatorManager_LOG_DEBUG("create TranslatorManager");
+    TranslatorManager_LOG_DEBUG("TranslatorManager constructed, address: " << this);
 }
 
 TranslatorManager::~TranslatorManager()
 {
+    TranslatorManager_LOG_DEBUG("TranslatorManager destroying, address: " << this);
     if (mApplication && mTranslator &&
         !mApplication->removeTranslator(mTranslator.get()))
     {

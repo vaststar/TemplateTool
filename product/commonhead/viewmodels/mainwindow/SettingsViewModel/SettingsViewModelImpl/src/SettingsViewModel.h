@@ -17,7 +17,7 @@ class SettingsViewModel : public virtual ISettingsViewModel,
 {
 public:
     explicit SettingsViewModel(commonHead::ICommonHeadFrameworkWptr framework);
-    ~SettingsViewModel() override = default;
+    ~SettingsViewModel() override;
 
     std::string getViewModelName() const override;
 

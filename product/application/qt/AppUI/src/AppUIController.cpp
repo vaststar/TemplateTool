@@ -33,10 +33,13 @@ const QString kMainWindowQml = QStringLiteral("UIView/MainWindowSuite/MainWindow
 AppUIController::AppUIController(QObject* parent)
     : UIViewController(parent)
 {
-    APPUI_LOG_DEBUG("create AppUIController, address: " << this);
+    APPUI_LOG_DEBUG("AppUIController constructed, address: " << this);
 }
 
-AppUIController::~AppUIController() = default;
+AppUIController::~AppUIController()
+{
+    APPUI_LOG_DEBUG("AppUIController destroying, address: " << this);
+}
 
 void AppUIController::start(QPointer<AppContext> appContext)
 {

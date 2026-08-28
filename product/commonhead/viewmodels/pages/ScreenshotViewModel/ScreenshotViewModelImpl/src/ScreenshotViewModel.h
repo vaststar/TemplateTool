@@ -15,7 +15,7 @@ class ScreenshotViewModel
 {
 public:
     explicit ScreenshotViewModel(commonHead::ICommonHeadFrameworkWptr framework);
-    ~ScreenshotViewModel() override = default;
+    ~ScreenshotViewModel() override;
 
     std::string getViewModelName() const override;
 

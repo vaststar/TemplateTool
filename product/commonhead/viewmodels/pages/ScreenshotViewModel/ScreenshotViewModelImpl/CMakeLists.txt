@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonhead/viewmodels/ScreenshotViewModel/ScreenshotViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/ScreenshotViewModel.h
     src/ScreenshotViewModel.cpp
 )
@@ -22,6 +23,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ScreenCaptureUtils
     ImageProcessUtils
     ViewModelUtils
+    LoggerUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

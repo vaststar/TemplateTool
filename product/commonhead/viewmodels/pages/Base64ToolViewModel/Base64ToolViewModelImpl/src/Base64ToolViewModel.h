@@ -8,7 +8,7 @@ class Base64ToolViewModel final : public IBase64ToolViewModel
 {
 public:
     explicit Base64ToolViewModel(commonHead::ICommonHeadFrameworkWptr framework);
-    ~Base64ToolViewModel() override = default;
+    ~Base64ToolViewModel() override;
 
     [[nodiscard]] std::string getViewModelName() const override;
     [[nodiscard]] Base64Result encode(

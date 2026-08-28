@@ -26,7 +26,12 @@ std::shared_ptr<IClientInfoViewModel> createClientInfoViewModel(
 ClientInfoViewModel::ClientInfoViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IClientInfoViewModel(commonHeadFramework)
 {
-    CLIENT_INFO_VIEW_MODEL_LOG_DEBUG("create ClientInfoViewModel");
+    CLIENT_INFO_VIEW_MODEL_LOG_DEBUG("ClientInfoViewModel constructed, address: " << this);
+}
+
+ClientInfoViewModel::~ClientInfoViewModel()
+{
+    CLIENT_INFO_VIEW_MODEL_LOG_DEBUG("ClientInfoViewModel destroying, address: " << this);
 }
 
 std::string ClientInfoViewModel::getViewModelName() const

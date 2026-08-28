@@ -64,12 +64,12 @@ std::shared_ptr<ucf::service::IInvocationService> createInvocationService(ucf::f
 InvocationService::InvocationService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create InvocationService, address:" << this);
+    SERVICE_LOG_DEBUG("InvocationService constructed, address: " << this);
 }
 
 InvocationService::~InvocationService()
 {
-    SERVICE_LOG_DEBUG("Delete InvocationService, address:" << this);
+    SERVICE_LOG_DEBUG("InvocationService destroying, address: " << this);
 }
 
 void InvocationService::initService()

@@ -155,13 +155,13 @@ NetworkProxyAgent::NetworkProxyAgent()
 {
     mProcessBridge = ucf::utilities::IProcessBridge::create();
     mTcpChannel = ucf::utilities::ITcpChannel::create();
-    NPA_LOG_DEBUG("NetworkProxyAgent created");
+    NPA_LOG_DEBUG("NetworkProxyAgent constructed, address: " << this);
 }
 
 NetworkProxyAgent::~NetworkProxyAgent()
 {
     stop();
-    NPA_LOG_DEBUG("NetworkProxyAgent destroyed");
+    NPA_LOG_DEBUG("NetworkProxyAgent destroying, address: " << this);
 }
 
 // ════════════════════════════════════════════════════════════

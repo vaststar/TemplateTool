@@ -18,13 +18,13 @@ std::shared_ptr<IInvocationViewModel> createInvocationViewModel(
 
 InvocationViewModel::~InvocationViewModel()
 {
-    INVOCATION_VIEW_MODEL_LOG_DEBUG("");
+    INVOCATION_VIEW_MODEL_LOG_DEBUG("InvocationViewModel destroying, address: " << this);
 }
 
 InvocationViewModel::InvocationViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IInvocationViewModel(commonHeadFramework)
 {
-    INVOCATION_VIEW_MODEL_LOG_DEBUG("create InvocationViewModel");
+    INVOCATION_VIEW_MODEL_LOG_DEBUG("InvocationViewModel constructed, address: " << this);
 }
 
 std::string InvocationViewModel::getViewModelName() const

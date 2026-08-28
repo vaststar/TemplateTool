@@ -21,7 +21,12 @@ std::shared_ptr<IAppUIViewModel> createAppUIViewModel(
 AppUIViewModel::AppUIViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IAppUIViewModel(commonHeadFramework)
 {
-    APP_UI_VIEW_MODEL_LOG_DEBUG("create AppUIViewModel");
+    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel constructed, address: " << this);
+}
+
+AppUIViewModel::~AppUIViewModel()
+{
+    APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel destroying, address: " << this);
 }
 
 std::string AppUIViewModel::getViewModelName() const

@@ -21,6 +21,7 @@ class AppearanceSettingsController : public UIViewController
 
 public:
     explicit AppearanceSettingsController(QObject* parent = nullptr);
+    ~AppearanceSettingsController() override;
 
     QStringList getSupportedThemes() const;
     int getCurrentThemeIndex() const;

@@ -33,12 +33,12 @@ MainWindowController::MainWindowController(QObject* parent)
     : UIViewController(parent)
     , m_pageRegistry(new MainWindowContentPageRegistry(this))
 {
-    UIVIEW_LOG_DEBUG("create MainWindowController");
+    UIVIEW_LOG_DEBUG("MainWindowController constructed, address: " << this);
 }
 
 MainWindowController::~MainWindowController()
 {
-    UIVIEW_LOG_DEBUG("destroy MainWindowController");
+    UIVIEW_LOG_DEBUG("MainWindowController destroying, address: " << this);
 }
 
 void MainWindowController::init()

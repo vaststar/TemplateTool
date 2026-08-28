@@ -23,12 +23,12 @@ ContactsPageController::ContactsPageController(QObject* parent)
     : UIViewController(parent)
     , mContactListEmitter(std::make_shared<UIViewModelSignalBridge::ContactListViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create ContactsPageController");
+    UIVIEW_LOG_DEBUG("ContactsPageController constructed, address: " << this);
 }
 
 ContactsPageController::~ContactsPageController()
 {
-    UIVIEW_LOG_DEBUG("delete ContactsPageController");
+    UIVIEW_LOG_DEBUG("ContactsPageController destroying, address: " << this);
 }
 
 void ContactsPageController::init()

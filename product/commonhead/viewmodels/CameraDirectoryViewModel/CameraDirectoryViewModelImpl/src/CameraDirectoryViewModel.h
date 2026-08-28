@@ -30,7 +30,7 @@ public:
     CameraDirectoryViewModel(CameraDirectoryViewModel&&) = delete;
     CameraDirectoryViewModel& operator=(const CameraDirectoryViewModel&) = delete;
     CameraDirectoryViewModel& operator=(CameraDirectoryViewModel&&) = delete;
-    ~CameraDirectoryViewModel() override = default;
+    ~CameraDirectoryViewModel() override;
 
 public:
     // IViewModel

@@ -78,11 +78,12 @@ int Main::DataPrivate::runApp(int argc, char *argv[])
 Main::Main()
     : mDataPrivate(std::make_unique<Main::DataPrivate>())
 {
+    MAINUI_LOG_DEBUG("Main constructed, address: " << this);
 }
 
 Main::~Main()
 {
-    MAINUI_LOG_DEBUG("delete Main");
+    MAINUI_LOG_DEBUG("Main destroying, address: " << this);
 }
 
 int Main::runMain(int argc, char *argv[])

@@ -20,7 +20,12 @@ std::shared_ptr<IMainWindowViewModel> createMainWindowViewModel(
 MainWindowViewModel::MainWindowViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMainWindowViewModel(commonHeadFramework)
 {
-    MAIN_WINDOW_VIEW_MODEL_LOG_DEBUG("create MainWindowViewModel");
+    MAIN_WINDOW_VIEW_MODEL_LOG_DEBUG("MainWindowViewModel constructed, address: " << this);
+}
+
+MainWindowViewModel::~MainWindowViewModel()
+{
+    MAIN_WINDOW_VIEW_MODEL_LOG_DEBUG("MainWindowViewModel destroying, address: " << this);
 }
 
 std::string MainWindowViewModel::getViewModelName() const

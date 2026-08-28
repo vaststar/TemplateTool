@@ -14,7 +14,7 @@ class JsonToolViewModel final : public IJsonToolViewModel
 {
 public:
     explicit JsonToolViewModel(commonHead::ICommonHeadFrameworkWptr framework);
-    ~JsonToolViewModel() override = default;
+    ~JsonToolViewModel() override;
 
     std::string getViewModelName() const override;
 

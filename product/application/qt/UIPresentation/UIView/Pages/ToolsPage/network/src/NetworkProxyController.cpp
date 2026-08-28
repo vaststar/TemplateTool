@@ -24,15 +24,15 @@ NetworkProxyController::NetworkProxyController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::NetworkProxyViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create NetworkProxyController, this=" << (void*)this);
+    UIVIEW_LOG_DEBUG("NetworkProxyController constructed, address: " << this);
     m_requestModel = new ProxyRequestModel(this);
     m_rulesManager = new ProxyRulesManager(this);
 }
 
 NetworkProxyController::~NetworkProxyController()
 {
+    UIVIEW_LOG_DEBUG("NetworkProxyController destroying, address: " << this);
     stopProxy();
-    UIVIEW_LOG_DEBUG("destroy NetworkProxyController");
 }
 
 // ====================== init ======================

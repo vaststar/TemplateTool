@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonhead/viewmodels/JsonToolViewModel/JsonToolViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/JsonTreeModel.h
     src/JsonTreeModel.cpp
     src/JsonToolViewModel.h
@@ -21,6 +22,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ResourceLoaderApi
     JsonUtils
+    LoggerUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

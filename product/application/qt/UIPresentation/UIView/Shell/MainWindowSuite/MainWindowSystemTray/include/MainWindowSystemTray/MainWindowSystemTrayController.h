@@ -13,6 +13,7 @@ class MainWindowSystemTrayController: public UIViewController
     QML_ELEMENT
 public:
     explicit MainWindowSystemTrayController(QObject *parent = nullptr);
+    ~MainWindowSystemTrayController() override;
     QString getTitle() const;
 
     Q_INVOKABLE void quit();

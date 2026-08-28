@@ -1,4 +1,5 @@
 #include "UuidToolViewModel.h"
+#include "LoggerDefine.h"
 
 #include <commonhead/viewmodels/UuidToolViewModel/UuidToolViewModelCreator.h>
 #include <ucf/utilities/UUIDUtils/UUIDUtils.h>
@@ -15,6 +16,12 @@ UuidToolViewModel::UuidToolViewModel(
     commonHead::ICommonHeadFrameworkWptr framework)
     : IUuidToolViewModel(framework)
 {
+    UUID_TOOL_VIEW_MODEL_LOG_DEBUG("UuidToolViewModel constructed, address: " << this);
+}
+
+UuidToolViewModel::~UuidToolViewModel()
+{
+    UUID_TOOL_VIEW_MODEL_LOG_DEBUG("UuidToolViewModel destroying, address: " << this);
 }
 
 std::string UuidToolViewModel::getViewModelName() const

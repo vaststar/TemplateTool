@@ -35,6 +35,7 @@ class ToolsPageController : public UIViewController
 
 public:
     explicit ToolsPageController(QObject* parent = nullptr);
+    ~ToolsPageController() override;
 
     ToolsTreeModel* getTreeModel() const;
     int getCurrentPanelType() const;

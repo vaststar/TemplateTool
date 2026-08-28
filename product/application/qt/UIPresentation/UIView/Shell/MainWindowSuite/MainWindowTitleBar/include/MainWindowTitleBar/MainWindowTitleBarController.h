@@ -17,6 +17,7 @@ class MainWindowTitleBarController: public UIViewController
     QML_ELEMENT
 public:
     explicit MainWindowTitleBarController(QObject *parent = nullptr);
+    ~MainWindowTitleBarController() override;
 public:
     QString getTitle() const;
     bool isVisible() const;

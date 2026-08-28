@@ -76,7 +76,12 @@ createMiniAppListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramew
 MiniAppListViewModel::MiniAppListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IMiniAppListViewModel(commonHeadFramework)
 {
-    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("create MiniAppListViewModel");
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("MiniAppListViewModel constructed, address: " << this);
+}
+
+MiniAppListViewModel::~MiniAppListViewModel()
+{
+    MINI_APP_LIST_VIEW_MODEL_LOG_DEBUG("MiniAppListViewModel destroying, address: " << this);
 }
 
 std::string MiniAppListViewModel::getViewModelName() const

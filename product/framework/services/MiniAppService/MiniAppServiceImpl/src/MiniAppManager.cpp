@@ -61,12 +61,12 @@ bool isSafeRelativeIcon(const std::string& icon)
 MiniAppManager::MiniAppManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
-    SERVICE_LOG_DEBUG("Create MiniAppManager, address:" << this);
+    SERVICE_LOG_DEBUG("MiniAppManager constructed, address: " << this);
 }
 
 MiniAppManager::~MiniAppManager()
 {
-    SERVICE_LOG_DEBUG("Delete MiniAppManager, address:" << this);
+    SERVICE_LOG_DEBUG("MiniAppManager destroying, address: " << this);
 }
 
 std::string MiniAppManager::packagesRoot() const

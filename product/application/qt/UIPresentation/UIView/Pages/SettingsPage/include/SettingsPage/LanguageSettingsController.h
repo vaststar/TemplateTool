@@ -21,6 +21,7 @@ class LanguageSettingsController : public UIViewController
 
 public:
     explicit LanguageSettingsController(QObject* parent = nullptr);
+    ~LanguageSettingsController() override;
 
     QStringList getSupportedLanguages() const;
     int getCurrentLanguageIndex() const;

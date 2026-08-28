@@ -13,12 +13,12 @@ namespace ucf::service::impl{
 InvocationManager::InvocationManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
-    SERVICE_LOG_DEBUG("Create InvocationManager, address:" << this);
+    SERVICE_LOG_DEBUG("InvocationManager constructed, address: " << this);
 }
 
 InvocationManager::~InvocationManager()
 {
-
+    SERVICE_LOG_DEBUG("InvocationManager destroying, address: " << this);
 }
 
 void InvocationManager::processStartupParameters()

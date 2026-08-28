@@ -13,7 +13,12 @@
 MainWindowMenuBarController::MainWindowMenuBarController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create MainWindowMenuBarController");
+    UIVIEW_LOG_DEBUG("MainWindowMenuBarController constructed, address: " << this);
+}
+
+MainWindowMenuBarController::~MainWindowMenuBarController()
+{
+    UIVIEW_LOG_DEBUG("MainWindowMenuBarController destroying, address: " << this);
 }
 
 void MainWindowMenuBarController::init()

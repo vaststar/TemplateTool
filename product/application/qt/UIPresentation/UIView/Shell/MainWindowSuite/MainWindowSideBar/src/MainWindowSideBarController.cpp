@@ -18,12 +18,12 @@ MainWindowSideBarController::MainWindowSideBarController(QObject* parent)
     , m_topNavItems(new NavItemModel(this))
     , m_bottomNavItems(new NavItemModel(this))
 {
-    UIVIEW_LOG_DEBUG("create MainWindowSideBarController");
+    UIVIEW_LOG_DEBUG("MainWindowSideBarController constructed, address: " << this);
 }
 
 MainWindowSideBarController::~MainWindowSideBarController()
 {
-    UIVIEW_LOG_DEBUG("destroy MainWindowSideBarController");
+    UIVIEW_LOG_DEBUG("MainWindowSideBarController destroying, address: " << this);
 }
 
 void MainWindowSideBarController::init()

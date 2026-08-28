@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonhead/viewmodels/UuidToolViewModel/UuidToolViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/UuidToolViewModel.h
     src/UuidToolViewModel.cpp
 )
@@ -17,6 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     UUIDUtils
+    LoggerUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

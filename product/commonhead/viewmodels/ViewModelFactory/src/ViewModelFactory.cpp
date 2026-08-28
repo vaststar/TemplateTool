@@ -32,12 +32,12 @@ std::shared_ptr<IViewModelFactory> IViewModelFactory::createInstance(commonHead:
 ViewModelFactory::ViewModelFactory(commonHead::ICommonHeadFrameworkWPtr commonHeadFramework)
     : mCommonHeadFramework(commonHeadFramework)
 {
-
+    VIEW_MODEL_FACTORY_LOG_DEBUG("ViewModelFactory constructed, address: " << this);
 }
 
 ViewModelFactory::~ViewModelFactory()
 {
-    VIEW_MODEL_FACTORY_LOG_DEBUG("delete ViewModelFactory, address:" << this);
+    VIEW_MODEL_FACTORY_LOG_DEBUG("ViewModelFactory destroying, address: " << this);
 }
 
 std::shared_ptr<commonHead::viewModels::IInvocationViewModel> ViewModelFactory::createInvocationViewModelInstance() const

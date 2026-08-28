@@ -16,12 +16,12 @@ MediaCameraViewController::MediaCameraViewController(QObject *parent)
     : UIViewController(parent)
     , mMediaCameraViewModelEmitter(std::make_shared<UIViewModelSignalBridge::MediaCameraViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create MediaCameraViewController");
+    UIVIEW_LOG_DEBUG("MediaCameraViewController constructed, address: " << this);
 }
 
 MediaCameraViewController::~MediaCameraViewController()
 {
-    UIVIEW_LOG_DEBUG("delete MediaCameraViewController");
+    UIVIEW_LOG_DEBUG("MediaCameraViewController destroying, address: " << this);
 }
 
 QVideoSink* MediaCameraViewController::getVideoSink() const

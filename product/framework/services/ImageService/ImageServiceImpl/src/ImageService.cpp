@@ -16,12 +16,12 @@ std::shared_ptr<IImageService> createImageService(ucf::framework::ICoreFramework
 ImageService::ImageService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
-    SERVICE_LOG_INFO("create ImageService, address:" << this);
+    SERVICE_LOG_DEBUG("ImageService constructed, address: " << this);
 }
 
 ImageService::~ImageService()
 {
-    SERVICE_LOG_INFO("delete ImageService, address:" << this);
+    SERVICE_LOG_DEBUG("ImageService destroying, address: " << this);
 }
 
 std::string ImageService::getServiceName() const

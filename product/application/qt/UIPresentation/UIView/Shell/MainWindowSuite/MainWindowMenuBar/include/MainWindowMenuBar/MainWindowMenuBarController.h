@@ -18,6 +18,7 @@ class MainWindowMenuBarController : public UIViewController
     QML_ELEMENT
 public:
     MainWindowMenuBarController(QObject* parent = nullptr);
+    ~MainWindowMenuBarController() override;
 
     QVariantList menuModel() const { return m_menuModel; }
 

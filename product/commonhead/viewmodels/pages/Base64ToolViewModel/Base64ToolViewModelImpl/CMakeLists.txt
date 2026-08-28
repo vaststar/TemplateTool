@@ -9,6 +9,7 @@ set(MODULE_HEADER_FILES
     include/commonhead/viewmodels/Base64ToolViewModel/Base64ToolViewModelCreator.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/LoggerDefine.h
     src/Base64ToolViewModel.h
     src/Base64ToolViewModel.cpp
 )
@@ -17,6 +18,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     Base64Utils
+    LoggerUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

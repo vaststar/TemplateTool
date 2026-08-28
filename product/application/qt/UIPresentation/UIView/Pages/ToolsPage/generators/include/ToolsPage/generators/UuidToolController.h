@@ -22,6 +22,7 @@ class UuidToolController : public UIViewController
 
 public:
     explicit UuidToolController(QObject* parent = nullptr);
+    ~UuidToolController() override;
 
     QString getGeneratedUuid() const;
     QString getValidateInput() const;

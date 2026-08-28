@@ -10,7 +10,12 @@
 Base64ToolController::Base64ToolController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create Base64ToolController");
+    UIVIEW_LOG_DEBUG("Base64ToolController constructed, address: " << this);
+}
+
+Base64ToolController::~Base64ToolController()
+{
+    UIVIEW_LOG_DEBUG("Base64ToolController destroying, address: " << this);
 }
 
 void Base64ToolController::init()

@@ -46,13 +46,13 @@ ucf::utilities::Instant toInstant(
 CrashManager::CrashManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
 {
-    CRASHHANDLER_LOG_DEBUG("CrashManager created");
+    CRASHHANDLER_LOG_DEBUG("CrashManager constructed, address: " << this);
 }
 
 CrashManager::~CrashManager()
 {
     cleanup();
-    CRASHHANDLER_LOG_DEBUG("CrashManager destroyed");
+    CRASHHANDLER_LOG_DEBUG("CrashManager destroying, address: " << this);
 }
 
 void CrashManager::initialize()

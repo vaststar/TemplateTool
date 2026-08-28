@@ -19,12 +19,12 @@ AppUpgradeController::AppUpgradeController(QObject* parent)
     : UIViewController(parent)
     , m_emitter(std::make_shared<UIViewModelSignalBridge::UpgradeViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create AppUpgradeController");
+    UIVIEW_LOG_DEBUG("AppUpgradeController constructed, address: " << this);
 }
 
 AppUpgradeController::~AppUpgradeController()
 {
-    UIVIEW_LOG_DEBUG("destroy AppUpgradeController");
+    UIVIEW_LOG_DEBUG("AppUpgradeController destroying, address: " << this);
 }
 
 void AppUpgradeController::init()

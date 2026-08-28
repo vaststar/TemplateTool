@@ -69,12 +69,12 @@ std::shared_ptr<IPerformanceService> createPerformanceService(
 PerformanceService::PerformanceService(std::shared_ptr<ucf::framework::ICoreFramework> coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    PERFORMANCE_LOG_DEBUG("Create PerformanceService, address:" << this);
+    PERFORMANCE_LOG_DEBUG("PerformanceService constructed, address: " << this);
 }
 
 PerformanceService::~PerformanceService()
 {
-    PERFORMANCE_LOG_DEBUG("Delete PerformanceService, address:" << this);
+    PERFORMANCE_LOG_DEBUG("PerformanceService destroying, address: " << this);
 }
 
 void PerformanceService::initService()

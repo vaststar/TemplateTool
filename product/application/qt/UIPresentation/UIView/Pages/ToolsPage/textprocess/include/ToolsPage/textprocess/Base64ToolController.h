@@ -22,6 +22,7 @@ class Base64ToolController : public UIViewController
 
 public:
     explicit Base64ToolController(QObject* parent = nullptr);
+    ~Base64ToolController() override;
 
     QString getInputText() const;
     void setInputText(const QString& text);

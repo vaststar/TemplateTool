@@ -21,7 +21,12 @@ std::shared_ptr<IUpgradeViewModel> createUpgradeViewModel(
 UpgradeViewModel::UpgradeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IUpgradeViewModel(commonHeadFramework)
 {
-    UPGRADE_VIEW_MODEL_LOG_DEBUG("create UpgradeViewModel");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("UpgradeViewModel constructed, address: " << this);
+}
+
+UpgradeViewModel::~UpgradeViewModel()
+{
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("UpgradeViewModel destroying, address: " << this);
 }
 
 std::string UpgradeViewModel::getViewModelName() const

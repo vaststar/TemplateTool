@@ -11,7 +11,12 @@
 AppearanceSettingsController::AppearanceSettingsController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create AppearanceSettingsController");
+    UIVIEW_LOG_DEBUG("AppearanceSettingsController constructed, address: " << this);
+}
+
+AppearanceSettingsController::~AppearanceSettingsController()
+{
+    UIVIEW_LOG_DEBUG("AppearanceSettingsController destroying, address: " << this);
 }
 
 void AppearanceSettingsController::init()

@@ -59,12 +59,12 @@ std::shared_ptr<INetworkService> createNetworkService(ucf::framework::ICoreFrame
 NetworkService::NetworkService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create NetworkService, address:" << this);
+    SERVICE_LOG_DEBUG("NetworkService constructed, address: " << this);
 }
 
 NetworkService::~NetworkService()
 {
-   SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG("NetworkService destroying, address: " << this);
 }
 
 network::http::INetworkHttpManagerWPtr NetworkService::getNetworkHttpManager()

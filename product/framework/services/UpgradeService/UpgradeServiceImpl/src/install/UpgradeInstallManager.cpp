@@ -23,12 +23,12 @@ namespace ucf::service {
 UpgradeInstallManager::UpgradeInstallManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
 {
-    UPGRADE_LOG_DEBUG("UpgradeInstallManager created");
+    UPGRADE_LOG_DEBUG("UpgradeInstallManager constructed, address: " << this);
 }
 
 UpgradeInstallManager::~UpgradeInstallManager()
 {
-    UPGRADE_LOG_DEBUG("UpgradeInstallManager destroyed");
+    UPGRADE_LOG_DEBUG("UpgradeInstallManager destroying, address: " << this);
 }
 
 std::filesystem::path UpgradeInstallManager::getTempDirectory() const

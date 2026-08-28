@@ -25,7 +25,8 @@ UpgradeDownloadManager::UpgradeDownloadManager(ucf::framework::ICoreFrameworkWPt
     : mCoreFramework(coreFramework)
 {
     ensureDownloadDirectory();
-    UPGRADE_LOG_DEBUG("UpgradeDownloadManager created, dir=" << ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
+    UPGRADE_LOG_DEBUG("UpgradeDownloadManager constructed, address: " << this
+                      << ", directory: " << ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
 }
 
 UpgradeDownloadManager::~UpgradeDownloadManager()
@@ -34,7 +35,7 @@ UpgradeDownloadManager::~UpgradeDownloadManager()
     cancelDownload();
     mVerifyThread.request_stop();
     mRetryThread.request_stop();
-    UPGRADE_LOG_DEBUG("UpgradeDownloadManager destroyed");
+    UPGRADE_LOG_DEBUG("UpgradeDownloadManager destroying, address: " << this);
     // mVerifyThread / mRetryThread join automatically as the last members destroyed.
 }
 

@@ -13,12 +13,12 @@ CameraDirectoryManager::CameraDirectoryManager(ucf::framework::ICoreFrameworkWPt
     : mCoreFrameworkWPtr(coreFramework)
     , mCameraDirectoryModel(std::make_unique<CameraDirectoryModel>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create CameraDirectoryManager, address:" << this);
+    SERVICE_LOG_DEBUG("CameraDirectoryManager constructed, address: " << this);
 }
 
 CameraDirectoryManager::~CameraDirectoryManager()
 {
-    SERVICE_LOG_DEBUG("Delete CameraDirectoryManager, address:" << this);
+    SERVICE_LOG_DEBUG("CameraDirectoryManager destroying, address: " << this);
 }
 
 // ===== Read =====

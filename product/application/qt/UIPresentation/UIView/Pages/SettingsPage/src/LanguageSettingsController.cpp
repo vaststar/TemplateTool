@@ -14,7 +14,12 @@
 LanguageSettingsController::LanguageSettingsController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create LanguageSettingsController");
+    UIVIEW_LOG_DEBUG("LanguageSettingsController constructed, address: " << this);
+}
+
+LanguageSettingsController::~LanguageSettingsController()
+{
+    UIVIEW_LOG_DEBUG("LanguageSettingsController destroying, address: " << this);
 }
 
 void LanguageSettingsController::init()

@@ -90,12 +90,12 @@ StabilityService::StabilityService(
     std::shared_ptr<ucf::framework::ICoreFramework> coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    CRASHHANDLER_LOG_DEBUG("StabilityService created");
+    CRASHHANDLER_LOG_DEBUG("StabilityService constructed, address: " << this);
 }
 
 StabilityService::~StabilityService()
 {
-    CRASHHANDLER_LOG_DEBUG("StabilityService destroyed");
+    CRASHHANDLER_LOG_DEBUG("StabilityService destroying, address: " << this);
 }
 
 void StabilityService::initService()

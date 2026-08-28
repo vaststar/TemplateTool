@@ -29,7 +29,12 @@ createContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramew
 ContactListViewModel::ContactListViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : IContactListViewModel(commonHeadFramework)
 {
-    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("create ContactListViewModel");
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("ContactListViewModel constructed, address: " << this);
+}
+
+ContactListViewModel::~ContactListViewModel()
+{
+    CONTACT_LIST_VIEW_MODEL_LOG_DEBUG("ContactListViewModel destroying, address: " << this);
 }
 
 std::string ContactListViewModel::getViewModelName() const

@@ -59,12 +59,12 @@ std::shared_ptr<ucf::infrastructure::network::http::INetworkHttpClient> NetworkH
 NetworkHttpManager::NetworkHttpManager()
     : mDataPrivate(std::make_unique<DataPrivate>())
 {
-    SERVICE_LOG_DEBUG("Create NetworkHttpManager, address:" << this);
+    SERVICE_LOG_DEBUG("NetworkHttpManager constructed, address: " << this);
 }
 
 NetworkHttpManager::~NetworkHttpManager()
 {
-   SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG("NetworkHttpManager destroying, address: " << this);
 }
 
 void NetworkHttpManager::sendHttpRestRequest(const ucf::service::network::http::HttpRestRequest& restRequest, const HttpRestResponseCallbackFunc& restResponseCallback, const std::source_location location)

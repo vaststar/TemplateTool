@@ -17,12 +17,12 @@ namespace ucf::service {
 UpgradeCheckManager::UpgradeCheckManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
 {
-    UPGRADE_LOG_DEBUG("UpgradeCheckManager created");
+    UPGRADE_LOG_DEBUG("UpgradeCheckManager constructed, address: " << this);
 }
 
 UpgradeCheckManager::~UpgradeCheckManager()
 {
-    UPGRADE_LOG_DEBUG("UpgradeCheckManager destroyed");
+    UPGRADE_LOG_DEBUG("UpgradeCheckManager destroying, address: " << this);
 }
 
 bool UpgradeCheckManager::canCheck() const

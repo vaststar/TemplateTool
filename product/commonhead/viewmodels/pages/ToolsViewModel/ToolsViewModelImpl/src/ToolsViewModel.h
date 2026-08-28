@@ -19,7 +19,7 @@ class ToolsViewModel : public virtual IToolsViewModel,
 {
 public:
     explicit ToolsViewModel(commonHead::ICommonHeadFrameworkWptr framework);
-    ~ToolsViewModel() override = default;
+    ~ToolsViewModel() override;
 
     std::string getViewModelName() const override;
 

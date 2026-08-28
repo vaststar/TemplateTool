@@ -406,12 +406,12 @@ bool DataWarehouseManager::DataPrivate::atomicWrite(const std::string& dbId, std
 DataWarehouseManager::DataWarehouseManager()
     : mDataPrivate(std::make_unique<DataWarehouseManager::DataPrivate>())
 {
-
+    SERVICE_LOG_DEBUG("DataWarehouseManager constructed, address: " << this);
 }
 
 DataWarehouseManager::~DataWarehouseManager()
 {
-
+    SERVICE_LOG_DEBUG("DataWarehouseManager destroying, address: " << this);
 }
 
 InitializeDBResult DataWarehouseManager::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)

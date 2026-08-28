@@ -18,7 +18,7 @@ public:
     AppUIViewModel(AppUIViewModel&&) = delete;
     AppUIViewModel& operator=(const AppUIViewModel&) = delete;
     AppUIViewModel& operator=(AppUIViewModel&&) = delete;
-    ~AppUIViewModel() = default;
+    ~AppUIViewModel() override;
 public:
     virtual std::string getViewModelName() const override;
 

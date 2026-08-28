@@ -74,12 +74,12 @@ std::shared_ptr<IClientInfoService> createClientInfoService(ucf::framework::ICor
 ClientInfoService::ClientInfoService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create ClientInfoService, address:" << this);
+    SERVICE_LOG_DEBUG("ClientInfoService constructed, address: " << this);
 }
 
 ClientInfoService::~ClientInfoService()
 {
-    SERVICE_LOG_DEBUG("Delete ClientInfoService, address:" << this);
+    SERVICE_LOG_DEBUG("ClientInfoService destroying, address: " << this);
 }
 
 void ClientInfoService::initService()

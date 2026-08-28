@@ -46,7 +46,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
     APPUI_LOG_INFO("===========================================");
-    APPUI_LOG_INFO("===========create AppUIManagerImpl=========");
+    APPUI_LOG_INFO("==========initialize UI runtime============");
     APPUI_LOG_INFO("Qt Version: " << qVersion());
     APPUI_LOG_INFO("Qt Build ABI: " << QSysInfo::buildAbi().toStdString());
     APPUI_LOG_INFO("Qt Platform Plugin: " << QGuiApplication::platformName().toStdString());
@@ -68,7 +68,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
             << ", refreshRate: " << screen->refreshRate() << "Hz");
     }
     registerQmlTypes();
-    APPUI_LOG_INFO("===========create AppUIManagerImpl done====");
+    APPUI_LOG_INFO("==========UI runtime initialized===========");
     APPUI_LOG_INFO("===========================================");
 }
 
@@ -91,14 +91,12 @@ void AppUIManager::Impl::registerQmlTypes()
 AppUIManager::AppUIManager(const AppUIManager::ApplicationConfig& config)
     : mImpl(std::make_unique<AppUIManager::Impl>(config))
 {
-    APPUI_LOG_INFO("===========================================");
-    APPUI_LOG_INFO("create AppUIManager, address:" << this);
-    APPUI_LOG_INFO("============================================");
+    APPUI_LOG_DEBUG("AppUIManager constructed, address: " << this);
 }
 
 AppUIManager::~AppUIManager()
 {
-    APPUI_LOG_INFO("exit AppUIManager, address:" << this);
+    APPUI_LOG_DEBUG("AppUIManager destroying, address: " << this);
 }
 
 int AppUIManager::runApp()

@@ -15,12 +15,12 @@ ContactManager::ContactManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     , mContactModel(std::make_unique<ContactModel>(coreFramework))
     , mContactAdapter(std::make_unique<ucf::adapter::ContactAdapter>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create ContactManager, address:" << this);
+    SERVICE_LOG_DEBUG("ContactManager constructed, address: " << this);
 }
 
 ContactManager::~ContactManager()
 {
-    SERVICE_LOG_DEBUG("Delete ContactManager, address:" << this);
+    SERVICE_LOG_DEBUG("ContactManager destroying, address: " << this);
 }
 
 // ===== Read =====
@@ -152,4 +152,3 @@ void ContactManager::setNotificationSink(std::weak_ptr<IContactNotificationSink>
 }
 
 } // namespace ucf::service
-

@@ -17,7 +17,7 @@ namespace ucf::utilities {
 class ProcessBridge final : public virtual IProcessBridge, public virtual NotificationHelper<IProcessBridgeCallback>
 {
 public:
-    ProcessBridge() = default;
+    ProcessBridge();
     ~ProcessBridge() override;
 
     ProcessBridge(const ProcessBridge&) = delete;

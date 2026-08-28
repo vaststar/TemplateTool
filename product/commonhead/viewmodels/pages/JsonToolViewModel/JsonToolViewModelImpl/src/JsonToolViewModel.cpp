@@ -1,5 +1,6 @@
 #include "JsonToolViewModel.h"
 #include "JsonTreeModel.h"
+#include "LoggerDefine.h"
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/ResourceLoader/IResourceLoader.h>
@@ -22,6 +23,12 @@ std::shared_ptr<IJsonToolViewModel> createJsonToolViewModel(
 JsonToolViewModel::JsonToolViewModel(commonHead::ICommonHeadFrameworkWptr framework)
     : IJsonToolViewModel(framework)
 {
+    JSON_TOOL_VIEW_MODEL_LOG_DEBUG("JsonToolViewModel constructed, address: " << this);
+}
+
+JsonToolViewModel::~JsonToolViewModel()
+{
+    JSON_TOOL_VIEW_MODEL_LOG_DEBUG("JsonToolViewModel destroying, address: " << this);
 }
 
 void JsonToolViewModel::init()

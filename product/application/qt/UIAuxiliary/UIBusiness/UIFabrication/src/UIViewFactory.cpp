@@ -25,9 +25,13 @@ UIViewFactory::UIViewFactory(QPointer<UIAppCore::UIQmlEngine> qmlEngine)
             UIFabrication_LOG_DEBUG("QML Import Paths:" << path.toStdString());
         }
     }
+    UIFabrication_LOG_DEBUG("UIViewFactory constructed, address: " << this);
 }
 
-UIViewFactory::~UIViewFactory() = default;
+UIViewFactory::~UIViewFactory()
+{
+    UIFabrication_LOG_DEBUG("UIViewFactory destroying, address: " << this);
+}
 
 void UIViewFactory::installCloseHandler(QQuickWindow* window)
 {

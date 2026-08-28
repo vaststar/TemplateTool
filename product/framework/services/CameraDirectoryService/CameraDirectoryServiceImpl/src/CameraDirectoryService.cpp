@@ -66,12 +66,12 @@ std::shared_ptr<ICameraDirectoryService> createCameraDirectoryService(ucf::frame
 CameraDirectoryService::CameraDirectoryService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create CameraDirectoryService, address:" << this);
+    SERVICE_LOG_DEBUG("CameraDirectoryService constructed, address: " << this);
 }
 
 CameraDirectoryService::~CameraDirectoryService()
 {
-    SERVICE_LOG_DEBUG("Delete CameraDirectoryService, address:" << this);
+    SERVICE_LOG_DEBUG("CameraDirectoryService destroying, address: " << this);
 }
 
 void CameraDirectoryService::initService()

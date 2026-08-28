@@ -122,12 +122,12 @@ std::shared_ptr<IDataWarehouseService> createDataWarehouseService(ucf::framework
 DataWarehouseService::DataWarehouseService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataWarehouseService::DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_INFO("create DataWarehouseService");
+    SERVICE_LOG_DEBUG("DataWarehouseService constructed, address: " << this);
 }
 
 DataWarehouseService::~DataWarehouseService()
 {
-    SERVICE_LOG_INFO("delete DataWarehouseService");
+    SERVICE_LOG_DEBUG("DataWarehouseService destroying, address: " << this);
 }
 
 std::string DataWarehouseService::getServiceName() const

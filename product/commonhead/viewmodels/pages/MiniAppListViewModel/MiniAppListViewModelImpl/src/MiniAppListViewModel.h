@@ -25,7 +25,7 @@ public:
     MiniAppListViewModel(MiniAppListViewModel&&) = delete;
     MiniAppListViewModel& operator=(const MiniAppListViewModel&) = delete;
     MiniAppListViewModel& operator=(MiniAppListViewModel&&) = delete;
-    ~MiniAppListViewModel() override = default;
+    ~MiniAppListViewModel() override;
 public:
     std::string getViewModelName() const override;
     std::vector<commonHead::viewModels::model::MiniAppInfo> getMiniApps() const override;

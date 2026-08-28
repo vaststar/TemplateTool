@@ -22,10 +22,14 @@ std::shared_ptr<IScreenRecordingAgent> IScreenRecordingAgent::create()
 // Construction / Destruction
 // ============================================================================
 
-ScreenRecordingAgent::ScreenRecordingAgent() = default;
+ScreenRecordingAgent::ScreenRecordingAgent()
+{
+    SRA_LOG_DEBUG("ScreenRecordingAgent constructed, address: " << this);
+}
 
 ScreenRecordingAgent::~ScreenRecordingAgent()
 {
+    SRA_LOG_DEBUG("ScreenRecordingAgent destroying, address: " << this);
     // Wait for any pending async stop operation
     if (m_stopThread.joinable())
     {

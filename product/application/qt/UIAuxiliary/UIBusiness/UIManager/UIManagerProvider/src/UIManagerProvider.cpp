@@ -22,12 +22,12 @@ UIManagerProvider::UIManagerProvider(QPointer<UIAppCore::UIApplication> applicat
     , mUIResourceLoaderManager(UIResource::IUIResourceLoaderManager::createInstance(application, qmlEngine, commonheadFramework))
     , mUIEventBus(IUIEventBus::createInstance(this))
 {
-    UIManager_LOG_DEBUG("create UIManagerProvider: " << this);
+    UIManager_LOG_DEBUG("UIManagerProvider constructed, address: " << this);
 }
 
 UIManagerProvider::~UIManagerProvider()
 {
-
+    UIManager_LOG_DEBUG("UIManagerProvider destroying, address: " << this);
 }
 
 QPointer<ITranslatorManager> UIManagerProvider::getTranslatorManager() const

@@ -67,13 +67,13 @@ std::shared_ptr<commonHead::IResourceLoader> UIResourceLoaderManager::Impl::getR
 UIResourceLoaderManager::UIResourceLoaderManager(UICore::CoreApplication* application, UICore::CoreQmlEngine* qmlEngine, commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
     : mImpl(std::make_unique<UIResourceLoaderManager::Impl>(application, qmlEngine, commonheadFramework))
 {
-    UIResourceLoaderManager_LOG_INFO("create UIResourceLoaderManager: " << this);
+    UIResourceLoaderManager_LOG_DEBUG("UIResourceLoaderManager constructed, address: " << this);
     registerTypes();
 }
 
 UIResourceLoaderManager::~UIResourceLoaderManager()
 {
-
+    UIResourceLoaderManager_LOG_DEBUG("UIResourceLoaderManager destroying, address: " << this);
 }
 
 void UIResourceLoaderManager::registerTypes()

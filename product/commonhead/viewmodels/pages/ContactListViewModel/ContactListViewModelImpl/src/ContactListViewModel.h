@@ -32,7 +32,7 @@ public:
     ContactListViewModel(ContactListViewModel&&) = delete;
     ContactListViewModel& operator=(const ContactListViewModel&) = delete;
     ContactListViewModel& operator=(ContactListViewModel&&) = delete;
-    ~ContactListViewModel() override = default;
+    ~ContactListViewModel() override;
 public:
     std::string getViewModelName() const override;
     model::ContactTreePtr getContactList() const override;

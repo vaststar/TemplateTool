@@ -64,12 +64,12 @@ std::shared_ptr<IFeatureSettingsService> createFeatureSettingsService(ucf::frame
 FeatureSettingsService::FeatureSettingsService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create FeatureSettingsService, address:" << this);
+    SERVICE_LOG_DEBUG("FeatureSettingsService constructed, address: " << this);
 }
 
 FeatureSettingsService::~FeatureSettingsService()
 {
-    SERVICE_LOG_DEBUG("Delete FeatureSettingsService, address:" << this);
+    SERVICE_LOG_DEBUG("FeatureSettingsService destroying, address: " << this);
 }
 
 void FeatureSettingsService::initService()

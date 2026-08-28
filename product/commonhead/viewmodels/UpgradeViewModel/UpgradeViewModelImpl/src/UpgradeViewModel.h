@@ -18,7 +18,7 @@ public:
     UpgradeViewModel(UpgradeViewModel&&) = delete;
     UpgradeViewModel& operator=(const UpgradeViewModel&) = delete;
     UpgradeViewModel& operator=(UpgradeViewModel&&) = delete;
-    ~UpgradeViewModel() = default;
+    ~UpgradeViewModel() override;
 public:
     std::string getViewModelName() const override;
 

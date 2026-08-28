@@ -10,10 +10,13 @@
 TimestampToolController::TimestampToolController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create TimestampToolController");
+    UIVIEW_LOG_DEBUG("TimestampToolController constructed, address: " << this);
 }
 
-TimestampToolController::~TimestampToolController() = default;
+TimestampToolController::~TimestampToolController()
+{
+    UIVIEW_LOG_DEBUG("TimestampToolController destroying, address: " << this);
+}
 
 void TimestampToolController::init()
 {

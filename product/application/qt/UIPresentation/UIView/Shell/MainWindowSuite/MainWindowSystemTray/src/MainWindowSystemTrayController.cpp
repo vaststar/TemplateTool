@@ -8,7 +8,12 @@
 MainWindowSystemTrayController::MainWindowSystemTrayController(QObject *parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create MainWindowSystemTrayController");
+    UIVIEW_LOG_DEBUG("MainWindowSystemTrayController constructed, address: " << this);
+}
+
+MainWindowSystemTrayController::~MainWindowSystemTrayController()
+{
+    UIVIEW_LOG_DEBUG("MainWindowSystemTrayController destroying, address: " << this);
 }
 
 QString MainWindowSystemTrayController::getTitle() const

@@ -42,10 +42,13 @@ ScreenshotController::ScreenshotController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::ScreenshotViewModelEmitter>())
 {
-    UIVIEW_LOG_DEBUG("create ScreenshotController");
+    UIVIEW_LOG_DEBUG("ScreenshotController constructed, address: " << this);
 }
 
-ScreenshotController::~ScreenshotController() = default;
+ScreenshotController::~ScreenshotController()
+{
+    UIVIEW_LOG_DEBUG("ScreenshotController destroying, address: " << this);
+}
 
 // ============================================================================
 // init — called after AppContext injection

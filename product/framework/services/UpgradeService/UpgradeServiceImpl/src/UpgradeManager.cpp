@@ -16,13 +16,13 @@ UpgradeManager::UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     , mDownloadManager(std::make_unique<UpgradeDownloadManager>(coreFramework))
     , mInstallManager(std::make_unique<UpgradeInstallManager>(coreFramework))
 {
-    UPGRADE_LOG_DEBUG("UpgradeManager created");
+    UPGRADE_LOG_DEBUG("UpgradeManager constructed, address: " << this);
 }
 
 UpgradeManager::~UpgradeManager()
 {
     stopAutoCheckTimer();
-    UPGRADE_LOG_DEBUG("UpgradeManager destroyed");
+    UPGRADE_LOG_DEBUG("UpgradeManager destroying, address: " << this);
 }
 
 void UpgradeManager::initialize(Listener* listener)

@@ -17,12 +17,14 @@ MiniAppInstanceController::MiniAppInstanceController(QString appId, QObject* par
     , mEmitter(std::make_shared<UIViewModelSignalBridge::MiniAppRuntimeViewModelEmitter>())
     , mAppId(std::move(appId))
 {
-    UIVIEW_LOG_DEBUG("create MiniAppInstanceController id=" << mAppId.toStdString());
+    UIVIEW_LOG_DEBUG("MiniAppInstanceController constructed, address: " << this
+                     << ", appId: " << mAppId.toStdString());
 }
 
 MiniAppInstanceController::~MiniAppInstanceController()
 {
-    UIVIEW_LOG_DEBUG("delete MiniAppInstanceController id=" << mAppId.toStdString());
+    UIVIEW_LOG_DEBUG("MiniAppInstanceController destroying, address: " << this
+                     << ", appId: " << mAppId.toStdString());
     if (mViewModel)
     {
         mViewModel->stop();

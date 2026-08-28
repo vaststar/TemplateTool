@@ -34,6 +34,7 @@ class SettingsPageController : public UIViewController
 
 public:
     explicit SettingsPageController(QObject* parent = nullptr);
+    ~SettingsPageController() override;
 
     SettingsTreeModel* getTreeModel() const;
     QString getCurrentPanelQml() const;

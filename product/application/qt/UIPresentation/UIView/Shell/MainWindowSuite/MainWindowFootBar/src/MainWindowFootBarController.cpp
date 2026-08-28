@@ -7,7 +7,12 @@
 MainWindowFootBarController::MainWindowFootBarController(QObject *parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create MainWindowFootBarController");
+    UIVIEW_LOG_DEBUG("MainWindowFootBarController constructed, address: " << this);
+}
+
+MainWindowFootBarController::~MainWindowFootBarController()
+{
+    UIVIEW_LOG_DEBUG("MainWindowFootBarController destroying, address: " << this);
 }
 
 void MainWindowFootBarController::init()

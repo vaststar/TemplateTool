@@ -41,7 +41,7 @@ ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFram
     : mCoreFrameworkWPtr(coreFramework)
     , mClientInfoModel(std::make_unique<ClientInfoModel>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create ClientInfoManager, address:" << this);
+    SERVICE_LOG_DEBUG("ClientInfoManager constructed, address: " << this);
     if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(getDataStoragePath()))
     {
         SERVICE_LOG_DEBUG("Create data storage directory failed, path:" << getDataStoragePath());
@@ -52,7 +52,10 @@ ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFram
     }
 }
 
-ClientInfoManager::~ClientInfoManager() = default;
+ClientInfoManager::~ClientInfoManager()
+{
+    SERVICE_LOG_DEBUG("ClientInfoManager destroying, address: " << this);
+}
 
 // ===== Static metadata =====
 

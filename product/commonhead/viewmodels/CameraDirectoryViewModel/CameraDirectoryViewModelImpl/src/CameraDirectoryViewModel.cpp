@@ -29,7 +29,12 @@ std::shared_ptr<ICameraDirectoryViewModel> createCameraDirectoryViewModel(
 CameraDirectoryViewModel::CameraDirectoryViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : ICameraDirectoryViewModel(commonHeadFramework)
 {
-    CAMERA_DIRECTORY_VIEW_MODEL_LOG_DEBUG("create CameraDirectoryViewModel");
+    CAMERA_DIRECTORY_VIEW_MODEL_LOG_DEBUG("CameraDirectoryViewModel constructed, address: " << this);
+}
+
+CameraDirectoryViewModel::~CameraDirectoryViewModel()
+{
+    CAMERA_DIRECTORY_VIEW_MODEL_LOG_DEBUG("CameraDirectoryViewModel destroying, address: " << this);
 }
 
 std::string CameraDirectoryViewModel::getViewModelName() const

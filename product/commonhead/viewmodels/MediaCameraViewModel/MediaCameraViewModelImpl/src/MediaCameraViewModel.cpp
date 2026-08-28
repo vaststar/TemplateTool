@@ -52,12 +52,12 @@ MediaCameraViewModel::MediaCameraViewModel(
     : IMediaCameraViewModel(commonHeadFramework)
     , mWorker(&MediaCameraViewModel::workerLoop, this)
 {
-    MEDIA_CAMERA_VIEW_MODEL_LOG_DEBUG("create MediaCameraViewModel");
+    MEDIA_CAMERA_VIEW_MODEL_LOG_DEBUG("MediaCameraViewModel constructed, address: " << this);
 }
 
 MediaCameraViewModel::~MediaCameraViewModel()
 {
-    MEDIA_CAMERA_VIEW_MODEL_LOG_DEBUG("");
+    MEDIA_CAMERA_VIEW_MODEL_LOG_DEBUG("MediaCameraViewModel destroying, address: " << this);
 
     mOpenRequested = false;
     ++mOperationGeneration;

@@ -56,12 +56,12 @@ std::shared_ptr<IMediaService> createMediaService(
 MediaService::MediaService(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreFramework))
 {
-    SERVICE_LOG_INFO("create MediaService, address:" << this);
+    SERVICE_LOG_DEBUG("MediaService constructed, address: " << this);
 }
 
 MediaService::~MediaService()
 {
-    SERVICE_LOG_INFO("delete MediaService, address:" << this);
+    SERVICE_LOG_DEBUG("MediaService destroying, address: " << this);
 }
 
 std::string MediaService::getServiceName() const

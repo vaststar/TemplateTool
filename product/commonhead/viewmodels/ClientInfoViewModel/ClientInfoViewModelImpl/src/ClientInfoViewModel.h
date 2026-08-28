@@ -26,7 +26,7 @@ public:
     ClientInfoViewModel(ClientInfoViewModel&&) = delete;
     ClientInfoViewModel& operator=(const ClientInfoViewModel&) = delete;
     ClientInfoViewModel& operator=(ClientInfoViewModel&&) = delete;
-    ~ClientInfoViewModel() = default;
+    ~ClientInfoViewModel() override;
 public:
     virtual std::string getViewModelName() const override;
     virtual std::string getApplicationVersion() const override;

@@ -13,7 +13,12 @@ JsonToolController::JsonToolController(QObject* parent)
     : UIViewController(parent)
     , m_treeModel(new JsonTreeItemModel(this))
 {
-    UIVIEW_LOG_DEBUG("create JsonToolController");
+    UIVIEW_LOG_DEBUG("JsonToolController constructed, address: " << this);
+}
+
+JsonToolController::~JsonToolController()
+{
+    UIVIEW_LOG_DEBUG("JsonToolController destroying, address: " << this);
 }
 
 void JsonToolController::init()

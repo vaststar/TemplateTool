@@ -10,7 +10,12 @@
 UuidToolController::UuidToolController(QObject* parent)
     : UIViewController(parent)
 {
-    UIVIEW_LOG_DEBUG("create UuidToolController");
+    UIVIEW_LOG_DEBUG("UuidToolController constructed, address: " << this);
+}
+
+UuidToolController::~UuidToolController()
+{
+    UIVIEW_LOG_DEBUG("UuidToolController destroying, address: " << this);
 }
 
 void UuidToolController::init()

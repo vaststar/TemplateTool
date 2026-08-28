@@ -25,12 +25,12 @@ std::shared_ptr<ISideBarViewModel> createSideBarViewModel(
 SideBarViewModel::SideBarViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
     : ISideBarViewModel(commonHeadFramework)
 {
-    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("create SideBarViewModel");
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("SideBarViewModel constructed, address: " << this);
 }
 
 SideBarViewModel::~SideBarViewModel()
 {
-    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("destroy SideBarViewModel");
+    SIDE_BAR_VIEW_MODEL_LOG_DEBUG("SideBarViewModel destroying, address: " << this);
 }
 
 std::string SideBarViewModel::getViewModelName() const

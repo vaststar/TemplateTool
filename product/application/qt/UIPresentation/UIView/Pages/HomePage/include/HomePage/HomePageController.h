@@ -11,6 +11,7 @@ class HomePageController : public UIViewController
 
 public:
     explicit HomePageController(QObject* parent = nullptr);
+    ~HomePageController() override;
 
     Q_INVOKABLE void showTestMessage();
     Q_INVOKABLE void openCamera();

@@ -18,12 +18,12 @@ namespace ucf::service {
 FeatureSettingsManager::FeatureSettingsManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
-    SERVICE_LOG_DEBUG("Create FeatureSettingsManager, address:" << this);
+    SERVICE_LOG_DEBUG("FeatureSettingsManager constructed, address: " << this);
 }
 
 FeatureSettingsManager::~FeatureSettingsManager()
 {
-    SERVICE_LOG_DEBUG("Delete FeatureSettingsManager, address:" << this);
+    SERVICE_LOG_DEBUG("FeatureSettingsManager destroying, address: " << this);
 }
 
 model::ScreenshotFeatureSettings FeatureSettingsManager::getScreenshotSettings() const

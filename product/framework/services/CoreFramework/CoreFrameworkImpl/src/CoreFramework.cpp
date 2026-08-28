@@ -44,7 +44,6 @@ private:
 CoreFramework::DataPrivate::DataPrivate()
     : mState(CoreFrameworkState::InitialState)
 {
-    CORE_LOG_DEBUG("create CoreFramework::DataPrivate, address:" << this);
 }
 
 bool CoreFramework::DataPrivate::isRunnable() const
@@ -119,12 +118,12 @@ std::shared_ptr<ICoreFramework> createCoreFramework()
 CoreFramework::CoreFramework()
     : mDataPrivate(std::make_unique<CoreFramework::DataPrivate>())
 {
-    CORE_LOG_DEBUG("create CoreFramework, address:" << this);
+    CORE_LOG_DEBUG("CoreFramework constructed, address: " << this);
 }
 
 CoreFramework::~CoreFramework()
 {
-    CORE_LOG_DEBUG("delete CoreFramework, address:" << this);
+    CORE_LOG_DEBUG("CoreFramework destroying, address: " << this);
 }
 
 void CoreFramework::initCoreFramework()
