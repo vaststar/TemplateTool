@@ -4,6 +4,7 @@
 #include "SettingsModel.h"
 
 #include <functional>
+#include <utility>
 
 #include <commonhead/ResourceStringLoader/ResourceString.h>
 
@@ -37,7 +38,13 @@ std::string SettingsViewModel::getViewModelName() const
 void SettingsViewModel::init()
 {
     SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::init");
-    buildSettingsTree();
+
+    if (!buildSettingsTree())
+    {
+        SETTINGS_VIEW_MODEL_LOG_ERROR("SettingsViewModel::init: failed to build settings tree");
+        return;
+    }
+
     m_ready = true;
     fireNotification(&ISettingsViewModelCallback::onSettingsTreeReady);
 }
@@ -63,20 +70,34 @@ void SettingsViewModel::reloadTree()
 
     if (!m_settingsTree)
     {
-        buildSettingsTree();
+        if (!buildSettingsTree())
+        {
+            SETTINGS_VIEW_MODEL_LOG_ERROR("SettingsViewModel::reloadTree: failed to build settings tree");
+            return;
+        }
+
         m_ready = true;
         fireNotification(&ISettingsViewModelCallback::onSettingsTreeReady);
         return;
     }
 
-    refreshTreeNodeData();
+    if (!refreshTreeNodeData())
+    {
+        SETTINGS_VIEW_MODEL_LOG_ERROR("SettingsViewModel::reloadTree: failed to refresh settings tree");
+        return;
+    }
+
     fireNotification(&ISettingsViewModelCallback::onSettingsNodesUpdated,
                      snapshotAllNodes());
 }
 
-void SettingsViewModel::refreshTreeNodeData()
+bool SettingsViewModel::refreshTreeNodeData()
 {
-    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+    auto resourceLoader = lockResourceLoader();
+    if (!resourceLoader)
+    {
+        return false;
+    }
 
     static const std::vector<std::pair<std::string, commonHead::model::LocalizedString>> nodeTokenMap = {
         { "general",              commonHead::model::LocalizedString::SettingsCategoryGeneral },
@@ -94,6 +115,8 @@ void SettingsViewModel::refreshTreeNodeData()
             node->setNodeData(data);
         }
     }
+
+    return true;
 }
 
 std::vector<model::SettingsNodeData> SettingsViewModel::snapshotAllNodes() const
@@ -132,10 +155,36 @@ std::vector<model::SettingsNodeData> SettingsViewModel::snapshotAllNodes() const
     return out;
 }
 
-void SettingsViewModel::buildSettingsTree()
+std::shared_ptr<commonHead::IResourceLoader> SettingsViewModel::lockResourceLoader() const
 {
+    auto framework = getCommonHeadFramework().lock();
+    if (!framework)
+    {
+        SETTINGS_VIEW_MODEL_LOG_ERROR(
+            "SettingsViewModel::lockResourceLoader: CommonHeadFramework is not available");
+        return {};
+    }
+
+    auto resourceLoader = framework->getResourceLoader();
+    if (!resourceLoader)
+    {
+        SETTINGS_VIEW_MODEL_LOG_ERROR(
+            "SettingsViewModel::lockResourceLoader: ResourceLoader is not available");
+        return {};
+    }
+
+    return resourceLoader;
+}
+
+bool SettingsViewModel::buildSettingsTree()
+{
+    auto resourceLoader = lockResourceLoader();
+    if (!resourceLoader)
+    {
+        return false;
+    }
+
     auto tree = std::make_shared<model::SettingsTree>();
-    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
 
     tree->addNode("", {
         "general",
@@ -161,9 +210,11 @@ void SettingsViewModel::buildSettingsTree()
         model::SettingsPanelType::Language
     });
 
-    m_settingsTree = tree;
+    m_settingsTree = std::move(tree);
 
     SETTINGS_VIEW_MODEL_LOG_DEBUG("SettingsViewModel::buildSettingsTree completed");
+
+    return true;
 }
 
 } // namespace commonHead::viewModels

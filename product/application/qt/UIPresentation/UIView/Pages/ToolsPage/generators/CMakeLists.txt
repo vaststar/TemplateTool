@@ -9,5 +9,5 @@ UIViewAppendBuildInputs(
         include
         include/ToolsPage/generators
     PRIVATE_DEPENDENCIES
-        ToolsViewModelApi
+        UuidToolViewModelApi
 )

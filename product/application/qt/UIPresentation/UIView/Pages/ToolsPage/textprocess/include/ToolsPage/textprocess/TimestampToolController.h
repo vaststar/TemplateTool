@@ -1,16 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include <QObject>
 #include <QTimer>
 #include <QTimeZone>
 #include <QtQml>
 #include <UIViewCore/UIViewController.h>
-
-namespace commonHead::viewModels {
-    class IToolsViewModel;
-}
 
 class TimestampToolController : public UIViewController
 {
@@ -92,7 +86,6 @@ private:
     void initTimezoneModel();
     void appendTimezone(const QString& label, const QTimeZone& tz);
 
-    std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
     QTimer m_clockTimer;
 
     // Live clock

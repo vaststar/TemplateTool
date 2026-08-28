@@ -11,7 +11,9 @@
 #include <commonhead/viewmodels/SettingsViewModel/SettingsViewModelCreator.h>
 #include <commonhead/viewmodels/StabilityViewModel/StabilityViewModelCreator.h>
 #include <commonhead/viewmodels/ToolsViewModel/ToolsViewModelCreator.h>
-#include <commonhead/viewmodels/JsonTreeViewModel/JsonTreeViewModelCreator.h>
+#include <commonhead/viewmodels/Base64ToolViewModel/Base64ToolViewModelCreator.h>
+#include <commonhead/viewmodels/JsonToolViewModel/JsonToolViewModelCreator.h>
+#include <commonhead/viewmodels/UuidToolViewModel/UuidToolViewModelCreator.h>
 #include <commonhead/viewmodels/NetworkProxyViewModel/NetworkProxyViewModelCreator.h>
 #include <commonhead/viewmodels/ScreenshotViewModel/ScreenshotViewModelCreator.h>
 #include <commonhead/viewmodels/RecordingViewModel/RecordingViewModelCreator.h>
@@ -92,9 +94,19 @@ std::shared_ptr<commonHead::viewModels::IToolsViewModel> ViewModelFactory::creat
     return impl::createToolsViewModel(mCommonHeadFramework);
 }
 
-std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> ViewModelFactory::createJsonTreeViewModelInstance() const
+std::shared_ptr<commonHead::viewModels::IBase64ToolViewModel> ViewModelFactory::createBase64ToolViewModelInstance() const
 {
-    return impl::createJsonTreeViewModel(mCommonHeadFramework);
+    return impl::createBase64ToolViewModel(mCommonHeadFramework);
+}
+
+std::shared_ptr<commonHead::viewModels::IJsonToolViewModel> ViewModelFactory::createJsonToolViewModelInstance() const
+{
+    return impl::createJsonToolViewModel(mCommonHeadFramework);
+}
+
+std::shared_ptr<commonHead::viewModels::IUuidToolViewModel> ViewModelFactory::createUuidToolViewModelInstance() const
+{
+    return impl::createUuidToolViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> ViewModelFactory::createNetworkProxyViewModelInstance() const

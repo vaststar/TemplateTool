@@ -7,7 +7,6 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES
     include/commonhead/viewmodels/ToolsViewModel/ToolsViewModelTypesExport.h
     include/commonhead/viewmodels/ToolsViewModel/IToolsModel.h
-    include/commonhead/viewmodels/ToolsViewModel/ToolsOperationTypes.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/ToolsViewModelTypes.cpp

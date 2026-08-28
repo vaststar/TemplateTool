@@ -1,10 +1,15 @@
 #pragma once
 
+#include <memory>
 #include <mutex>
 #include <optional>
 
 #include <commonhead/utilities/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonhead/viewmodels/SideBarViewModel/ISideBarViewModel.h>
+
+namespace commonHead {
+class IResourceLoader;
+}
 
 namespace commonHead::viewModels {
 
@@ -38,7 +43,8 @@ protected:
     void init() override;
 
 private:
-    void initDefaultNavItems();
+    [[nodiscard]] std::shared_ptr<commonHead::IResourceLoader> lockResourceLoader() const;
+    [[nodiscard]] bool initDefaultNavItems();
 
     // Find nav item by pageId (thread-safe)
     // Returns nullopt if not found

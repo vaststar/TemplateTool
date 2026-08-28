@@ -1,9 +1,6 @@
 #include "ToolsPage/textprocess/TimestampToolController.h"
 #include "LoggerDefine.h"
 
-#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
-#include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
-#include <AppContext/AppContext.h>
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QDateTime>
@@ -21,9 +18,6 @@ TimestampToolController::~TimestampToolController() = default;
 void TimestampToolController::init()
 {
     UIVIEW_LOG_DEBUG("TimestampToolController::init");
-    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
-    m_toolsViewModel->initViewModel();
-
     initTimezoneModel();
 
     connect(&m_clockTimer, &QTimer::timeout, this, &TimestampToolController::updateLiveClock);

@@ -7,7 +7,7 @@
 #include <UIViewCore/UIViewController.h>
 
 namespace commonHead::viewModels {
-    class IToolsViewModel;
+    class IUuidToolViewModel;
 }
 
 class UuidToolController : public UIViewController
@@ -46,7 +46,7 @@ signals:
     void uuidHistoryChanged();
 
 private:
-    std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
+    std::shared_ptr<commonHead::viewModels::IUuidToolViewModel> m_uuidViewModel;
     QString m_generatedUuid;
     QString m_validateInput;
     QString m_validateResult;

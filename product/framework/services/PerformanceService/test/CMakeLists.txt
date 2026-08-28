@@ -13,7 +13,9 @@ BuildUnitTestModule(
         PerformanceServiceImpl
         CoreFrameworkApi
         FakeCoreFramework
+        JsonUtils
         SinkNotifier
+        TimeUtils
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER

@@ -5,16 +5,19 @@ set(MODULE_IDE_FOLDER commonhead/viewmodels)
 
 set(MODULE_HEADER_BASE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/LogOperationUtils/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimeDisplayUtils/include
 )
 
 set(MODULE_HEADER_FILES
     LogOperationUtils/include/commonhead/viewmodels/ViewModelUtils/ViewModelUtilsExport.h
     LogOperationUtils/include/commonhead/viewmodels/ViewModelUtils/LogOperationUtils.h
+    TimeDisplayUtils/include/commonhead/viewmodels/ViewModelUtils/TimeDisplayUtils.h
 )
 
 set(MODULE_SOURCE_PRIVATE
     LogOperationUtils/src/LoggerDefine.h
     LogOperationUtils/src/LogOperationUtils.cpp
+    TimeDisplayUtils/src/TimeDisplayUtils.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC)
@@ -25,11 +28,15 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ClientInfoServiceApi
     ArchiveUtils
     LoggerUtils
+    TimeUtils
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)
-set(MODULE_BUILD_PRIVATE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/LogOperationUtils/src)
+set(MODULE_BUILD_PRIVATE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR}/LogOperationUtils/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/TimeDisplayUtils/src
+)
 
 set(MODULE_PUBLIC_DEFINITIONS)
 set(MODULE_PRIVATE_DEFINITIONS)
@@ -54,3 +61,5 @@ TARGET_PUBLIC_DEFINITIONS ${MODULE_PUBLIC_DEFINITIONS}
 TARGET_PRIVATE_DEFINITIONS ${MODULE_PRIVATE_DEFINITIONS}
 IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
+
+add_subdirectory(test)

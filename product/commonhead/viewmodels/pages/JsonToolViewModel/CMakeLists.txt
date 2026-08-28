@@ -1,0 +1,4 @@
+add_subdirectory(JsonToolViewModelTypes)
+add_subdirectory(JsonToolViewModelApi)
+add_subdirectory(JsonToolViewModelImpl)
+add_subdirectory(test)

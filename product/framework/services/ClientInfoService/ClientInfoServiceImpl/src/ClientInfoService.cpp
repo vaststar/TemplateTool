@@ -171,7 +171,18 @@ void ClientInfoService::printClientInfo() const
     SERVICE_LOG_DEBUG("os cpu arch: " << ucf::utilities::OSUtils::getCPUArch());
     SERVICE_LOG_DEBUG("os cpu info: " << ucf::utilities::OSUtils::getCPUInfo());
     SERVICE_LOG_DEBUG("os local language: " << ucf::utilities::OSUtils::getSystemLanguage());
-    SERVICE_LOG_DEBUG("os timezone: " << ucf::utilities::TimeUtils::getLocalTimeZoneName());
+    const auto systemTimeZone = ucf::utilities::TimeUtils::systemTimeZone();
+    if (systemTimeZone)
+    {
+        SERVICE_LOG_DEBUG("os timezone: " << systemTimeZone.value().id());
+    }
+    else
+    {
+        SERVICE_LOG_DEBUG(
+            "os timezone unavailable, code: "
+            << static_cast<int>(systemTimeZone.error().code)
+            << ", reason: " << systemTimeZone.error().diagnostic);
+    }
     SERVICE_LOG_DEBUG("os total memory: " << ucf::utilities::OSUtils::getMemoryInfo().totalMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os available memory: " << ucf::utilities::OSUtils::getMemoryInfo().availableMemoryBytes / (1024 * 1024) << " MB");
     SERVICE_LOG_DEBUG("os gpu info: " << ucf::utilities::OSUtils::getGPUInfo());

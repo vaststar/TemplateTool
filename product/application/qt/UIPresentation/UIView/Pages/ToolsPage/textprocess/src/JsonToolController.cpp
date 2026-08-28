@@ -2,9 +2,8 @@
 #include "ToolsPage/textprocess/JsonTreeItemModel.h"
 #include "LoggerDefine.h"
 
-#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
-#include <commonhead/viewmodels/JsonTreeViewModel/IJsonTreeViewModel.h>
-#include <commonhead/viewmodels/JsonTreeViewModel/IJsonTreeModel.h>
+#include <commonhead/viewmodels/JsonToolViewModel/IJsonToolViewModel.h>
+#include <commonhead/viewmodels/JsonToolViewModel/IJsonTreeModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <QClipboard>
@@ -20,11 +19,8 @@ JsonToolController::JsonToolController(QObject* parent)
 void JsonToolController::init()
 {
     UIVIEW_LOG_DEBUG("JsonToolController::init");
-    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
-    m_toolsViewModel->initViewModel();
-
-    m_jsonTreeViewModel = getViewModelFactory()->createJsonTreeViewModelInstance();
-    m_jsonTreeViewModel->initViewModel();
+    m_jsonViewModel = getViewModelFactory()->createJsonToolViewModelInstance();
+    m_jsonViewModel->initViewModel();
 }
 
 QString JsonToolController::getInputText() const
@@ -65,7 +61,7 @@ void JsonToolController::setIndentSize(int indent)
 
 void JsonToolController::format()
 {
-    if (!m_toolsViewModel)
+    if (!m_jsonViewModel)
         return;
 
     if (m_treeViewMode) {
@@ -73,7 +69,7 @@ void JsonToolController::format()
         emit treeViewModeChanged();
     }
 
-    auto result = m_toolsViewModel->jsonFormat(m_inputText.toStdString(), m_indentSize);
+    auto result = m_jsonViewModel->format(m_inputText.toStdString(), m_indentSize);
 
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);
@@ -89,7 +85,7 @@ void JsonToolController::format()
 
 void JsonToolController::minify()
 {
-    if (!m_toolsViewModel)
+    if (!m_jsonViewModel)
         return;
 
     if (m_treeViewMode) {
@@ -97,7 +93,7 @@ void JsonToolController::minify()
         emit treeViewModeChanged();
     }
 
-    auto result = m_toolsViewModel->jsonMinify(m_inputText.toStdString());
+    auto result = m_jsonViewModel->minify(m_inputText.toStdString());
 
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);
@@ -113,7 +109,7 @@ void JsonToolController::minify()
 
 void JsonToolController::validate()
 {
-    if (!m_toolsViewModel)
+    if (!m_jsonViewModel)
         return;
 
     if (m_treeViewMode) {
@@ -121,7 +117,7 @@ void JsonToolController::validate()
         emit treeViewModeChanged();
     }
 
-    auto result = m_toolsViewModel->jsonValidate(m_inputText.toStdString());
+    auto result = m_jsonViewModel->validate(m_inputText.toStdString());
 
     m_outputText = QString::fromStdString(result.data);
     m_errorMessage = result.success ? QString() : QString::fromStdString(result.errorMessage);
@@ -169,12 +165,12 @@ bool JsonToolController::isTreeViewMode() const
 
 void JsonToolController::parseTree()
 {
-    if (!m_jsonTreeViewModel)
+    if (!m_jsonViewModel)
         return;
 
-    auto tree = m_jsonTreeViewModel->parseJsonTree(m_inputText.toStdString());
+    auto tree = m_jsonViewModel->parseJsonTree(m_inputText.toStdString());
     if (!tree) {
-        m_errorMessage = QString::fromStdString(m_jsonTreeViewModel->getLastError());
+        m_errorMessage = QString::fromStdString(m_jsonViewModel->getLastError());
         m_currentTree.reset();
         m_treeModel->clearTree();
         m_treeViewMode = false;

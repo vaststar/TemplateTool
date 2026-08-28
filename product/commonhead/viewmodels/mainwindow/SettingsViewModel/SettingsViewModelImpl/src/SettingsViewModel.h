@@ -1,9 +1,14 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <commonhead/utilities/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonhead/viewmodels/SettingsViewModel/ISettingsViewModel.h>
+
+namespace commonHead {
+class IResourceLoader;
+}
 
 namespace commonHead::viewModels {
 
@@ -25,8 +30,9 @@ protected:
     void init() override;
 
 private:
-    void buildSettingsTree();
-    void refreshTreeNodeData();
+    [[nodiscard]] std::shared_ptr<commonHead::IResourceLoader> lockResourceLoader() const;
+    [[nodiscard]] bool buildSettingsTree();
+    [[nodiscard]] bool refreshTreeNodeData();
     // DFS-collect the full node list (excluding the virtual root), in pre-order.
     std::vector<model::SettingsNodeData> snapshotAllNodes() const;
 

@@ -1,58 +1,65 @@
 #pragma once
 
 #include <chrono>
-#include <cstdint>
-#include <ctime>
+#include <optional>
 #include <string>
+#include <string_view>
 
+#include <ucf/utilities/TimeUtils/Clock.h>
+#include <ucf/utilities/TimeUtils/TimeZone.h>
 #include <ucf/utilities/TimeUtils/TimeUtilsExport.h>
 
 namespace ucf::utilities {
 
-// Non-instantiable bag of free helpers that complement Instant /
-// LocalDate / LocalDateTime. Prefer the value types for new code;
-// the helpers here are kept for ergonomics at boundaries (time_t,
-// int64_t ms) and for duration formatting.
 class TIME_UTILS_API TimeUtils final
 {
 public:
-    // ---- Current time as numeric values ----
-    static int64_t getCurrentUTCMilliseconds();
-    static std::time_t getCurrentUTCSeconds();
+    [[nodiscard]] static Instant now() noexcept;
 
-    // ---- Current time as fixed-format strings ----
-    // "YYYY-MM-DD HH:MM:SS".
-    static std::string getCurrentUTCTimeString();
-    // IANA name when available, otherwise abbreviation, otherwise "UTC".
-    static std::string getLocalTimeZoneName();
+    // Named-zone support is compile-time dependent on the standard library's
+    // C++20 tzdb implementation. UTC and fixed offsets are always supported.
+    [[nodiscard]] static bool supportsNamedTimeZones() noexcept;
+    // Accepts UTC or an IANA region ID. Abbreviations such as EST are rejected.
+    [[nodiscard]] static TimeResult<TimeZone> findTimeZone(std::string_view id);
+    [[nodiscard]] static TimeResult<TimeZone> systemTimeZone();
+    [[nodiscard]] static std::optional<std::string> timeZoneDatabaseVersion();
 
-    // ---- Custom format (caller provides time_t) ----
-    // Pattern follows std::strftime. Empty pattern returns empty string;
-    // invalid pattern falls back to "%Y-%m-%d %H:%M:%S".
-    static std::string formatLocalTime(std::time_t time, const std::string& pattern);
-    static std::string formatUTCTime(std::time_t time, const std::string& pattern);
+    [[nodiscard]] static TimeResult<ZonedDateTime> toZonedDateTime(
+        Instant instant,
+        const TimeZone& timeZone);
+    [[nodiscard]] static TimeResult<Instant> toInstant(
+        const LocalDateTime& localDateTime,
+        const TimeZone& timeZone,
+        LocalTimeResolvePolicy policy = {});
+    [[nodiscard]] static TimeResult<ZonedDateTime> now(const TimeZone& timeZone);
+    [[nodiscard]] static TimeResult<LocalDate> today(const TimeZone& timeZone);
 
-    // ---- Custom format (auto-captures current time) ----
-    static std::string formatCurrentLocalTime(const std::string& pattern);
-    static std::string formatCurrentUTCTime(const std::string& pattern);
+    // Portable pattern subset: %Y %m %d %H %M %S %f %z %Z %%.
+    // LocalDateTime parsing/formatting rejects timezone directives.
+    [[nodiscard]] static TimeResult<LocalDateTime> parseLocalDateTime(
+        std::string_view text,
+        std::string_view pattern);
+    [[nodiscard]] static TimeResult<std::string> format(
+        const LocalDateTime& localDateTime,
+        std::string_view pattern);
+    [[nodiscard]] static TimeResult<std::string> format(
+        const ZonedDateTime& zonedDateTime,
+        std::string_view pattern);
+    [[nodiscard]] static TimeResult<std::string> format(
+        Instant instant,
+        const TimeZone& timeZone,
+        std::string_view pattern);
 
-    // ---- Duration formatting ----
-    // "HH:MM:SS", e.g. 3661 -> "01:01:01". Negative clamps to zero.
-    static std::string formatSecondsToHMS(int totalSeconds);
-    // "MM:SS", e.g. 125 -> "02:05". Negative clamps to zero.
-    static std::string formatSecondsToMS(int totalSeconds);
+    [[nodiscard]] static std::string formatHoursMinutesSeconds(std::chrono::seconds duration);
+    [[nodiscard]] static std::string formatMinutesSeconds(std::chrono::seconds duration);
+    [[nodiscard]] static std::string formatDuration(std::chrono::milliseconds duration);
+    [[nodiscard]] static std::string formatDurationHuman(std::chrono::milliseconds duration);
 
-    // "HH:MM:SS.fff", millisecond precision. Negative clamps to zero.
-    static std::string formatDuration(std::chrono::milliseconds duration);
-    // Human-readable, e.g. "1h 2m 3s", "500 ms". Negative clamps to zero.
-    static std::string formatDurationHuman(std::chrono::milliseconds duration);
-
-public:
     TimeUtils() = delete;
-    TimeUtils(const TimeUtils& rhs) = delete;
-    TimeUtils& operator=(const TimeUtils& rhs) = delete;
-    TimeUtils(TimeUtils&& rhs) = delete;
-    TimeUtils& operator=(TimeUtils&& rhs) = delete;
+    TimeUtils(const TimeUtils&) = delete;
+    TimeUtils& operator=(const TimeUtils&) = delete;
+    TimeUtils(TimeUtils&&) = delete;
+    TimeUtils& operator=(TimeUtils&&) = delete;
     ~TimeUtils() = delete;
 };
 

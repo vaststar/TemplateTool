@@ -3,6 +3,8 @@
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
 #include <ucf/services/PerformanceService/IPerformanceService.h>
 #include <ucf/services/PerformanceService/PerformanceServiceCreator.h>
+#include <ucf/utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/TimeUtils/Instant.h>
 #include "TimingTracker.h"
 
 #include <thread>
@@ -126,7 +128,12 @@ TEST_CASE("PerformanceService JSON export", "[PerformanceService]")
     auto json = performanceService->exportReportAsJson();
 
     REQUIRE(!json.empty());
-    REQUIRE(json.find("timestamp") != std::string::npos);
+    const auto parsed = ucf::utilities::JsonValue::parseEx(json);
+    REQUIRE(parsed.ok());
+
+    const auto timestamp = parsed.value.get("timestamp").asString();
+    REQUIRE(timestamp);
+    REQUIRE(ucf::utilities::Instant::parseRfc3339(timestamp.value()));
     REQUIRE(json.find("memory") != std::string::npos);
     REQUIRE(json.find("JsonTest") != std::string::npos);
 }

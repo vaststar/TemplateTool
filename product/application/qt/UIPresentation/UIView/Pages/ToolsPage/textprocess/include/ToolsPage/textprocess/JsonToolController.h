@@ -8,8 +8,7 @@
 #include "ToolsPage/textprocess/JsonTreeItemModel.h"
 
 namespace commonHead::viewModels {
-    class IToolsViewModel;
-    class IJsonTreeViewModel;
+    class IJsonToolViewModel;
 }
 
 namespace commonHead::viewModels::model {
@@ -62,8 +61,7 @@ signals:
     void treeViewModeChanged();
 
 private:
-    std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
-    std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> m_jsonTreeViewModel;
+    std::shared_ptr<commonHead::viewModels::IJsonToolViewModel> m_jsonViewModel;
     JsonTreeItemModel* m_treeModel = nullptr;
     std::shared_ptr<commonHead::viewModels::model::IJsonTree> m_currentTree;
     QString m_inputText;

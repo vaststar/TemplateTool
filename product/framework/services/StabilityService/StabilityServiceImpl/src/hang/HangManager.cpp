@@ -10,8 +10,39 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <string_view>
+#include <utility>
 
 namespace ucf::service {
+
+namespace {
+
+std::string formatUtc(
+    ucf::utilities::Instant instant,
+    std::string_view pattern,
+    std::string_view fallback)
+{
+    auto result = ucf::utilities::TimeUtils::format(
+        instant,
+        ucf::utilities::TimeZone::utc(),
+        pattern);
+
+    return result
+        ? std::move(result).value()
+        : std::string{fallback};
+}
+
+ucf::utilities::Instant toInstant(
+    std::chrono::system_clock::time_point timePoint) noexcept
+{
+    const auto milliseconds =
+        std::chrono::floor<std::chrono::milliseconds>(timePoint);
+
+    return ucf::utilities::Instant::fromUnixMilliseconds(
+        milliseconds.time_since_epoch().count());
+}
+
+} // namespace
 
 HangManager::HangManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
@@ -392,15 +423,22 @@ void HangManager::writeHangLog(const HangInfo& hangInfo)
     CRASHHANDLER_LOG_INFO("Hang log written to: " << logPath.string());
 }
 
-std::string HangManager::formatTimestamp(std::chrono::system_clock::time_point tp) const
+std::string HangManager::formatTimestamp(
+    std::chrono::system_clock::time_point timePoint) const
 {
-    auto time = std::chrono::system_clock::to_time_t(tp);
-    return ucf::utilities::TimeUtils::formatLocalTime(time, "%Y-%m-%d %H:%M:%S");
+    return formatUtc(
+        toInstant(timePoint),
+        "%Y-%m-%d %H:%M:%SZ",
+        "unknown");
 }
 
 std::filesystem::path HangManager::generateHangLogPath() const
 {
-    auto filename = ucf::utilities::TimeUtils::formatCurrentLocalTime("hang_%Y%m%d_%H%M%S.hang");
+    const auto filename = formatUtc(
+        ucf::utilities::TimeUtils::now(),
+        "hang_%Y%m%d_%H%M%SZ.hang",
+        "hang_unknown.hang");
+
     return mHangDirectory / filename;
 }
 

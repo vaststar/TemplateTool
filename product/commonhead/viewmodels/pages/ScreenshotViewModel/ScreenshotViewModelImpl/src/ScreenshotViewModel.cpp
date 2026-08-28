@@ -2,10 +2,10 @@
 
 #include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
 #include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
-#include <ucf/utilities/TimeUtils/TimeUtils.h>
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/ServiceLocator/IServiceLocator.h>
+#include <commonhead/viewmodels/ViewModelUtils/TimeDisplayUtils.h>
 #include <commonhead/viewmodels/ScreenshotViewModel/ScreenshotViewModelCreator.h>
 #include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
 
@@ -502,7 +502,13 @@ void ScreenshotViewModel::updateSettings(const model::ScreenshotSettings& settin
 std::string ScreenshotViewModel::generateFilename() const
 {
     // Format: Screenshot_YYYYMMDD_HHmmss.ext
-    auto timestamp = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y%m%d_%H%M%S");
+    const auto timestamp =
+        commonHead::utilities::TimeDisplayUtils::formatCurrentUserTime({
+            .localPattern = "%Y%m%d_%H%M%S",
+            .utcFallbackPattern = "%Y%m%d_%H%M%SZ",
+            .failureText = "unknown"
+        });
+
     return "Screenshot_" + timestamp + "." + m_settings.imageFormat;
 }
 
@@ -564,7 +570,12 @@ void ScreenshotViewModel::addTimestampWatermark(ucf::utilities::imageprocess::Im
     if (!image.isValid()) return;
 
     // Generate timestamp string: "YYYY-MM-DD HH:MM:SS"
-    std::string timestampText = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y-%m-%d %H:%M:%S");
+    const auto timestampText =
+        commonHead::utilities::TimeDisplayUtils::formatCurrentUserTime({
+            .localPattern = "%Y-%m-%d %H:%M:%S",
+            .utcFallbackPattern = "%Y-%m-%d %H:%M:%SZ",
+            .failureText = "Time unavailable"
+        });
 
     // Calculate font size based on image dimensions (roughly 2% of the shorter side)
     int shorterSide = std::min(image.width, image.height);

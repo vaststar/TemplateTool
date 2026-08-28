@@ -29,3 +29,18 @@ TEST_CASE("SettingsViewModel exposes standalone public types", "[SettingsViewMod
     REQUIRE(node.parentId == "general");
     REQUIRE(node.panelType == commonHead::viewModels::model::SettingsPanelType::Appearance);
 }
+
+TEST_CASE("SettingsViewModel safely handles a missing framework",
+          "[SettingsViewModel][Safety]")
+{
+    auto viewModel = commonHead::viewModels::impl::createSettingsViewModel(
+        commonHead::ICommonHeadFrameworkWptr{});
+
+    REQUIRE_NOTHROW(viewModel->initViewModel());
+    REQUIRE_FALSE(viewModel->isSettingsTreeReady());
+    REQUIRE(viewModel->getSettingsTree() == nullptr);
+
+    REQUIRE_NOTHROW(viewModel->reloadTree());
+    REQUIRE_FALSE(viewModel->isSettingsTreeReady());
+    REQUIRE(viewModel->getSettingsTree() == nullptr);
+}

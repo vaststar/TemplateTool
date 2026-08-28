@@ -77,3 +77,18 @@ TEST_CASE("SideBarViewModel forwards valid menu actions", "[SideBarViewModel][Ap
     REQUIRE_FALSE(viewModel->navigateTo(commonHead::viewModels::model::PageId::Unknown));
     viewModel->unRegisterCallback(callback);
 }
+
+TEST_CASE("SideBarViewModel safely handles a missing framework",
+          "[SideBarViewModel][Safety]")
+{
+    auto viewModel = commonHead::viewModels::impl::createSideBarViewModel(
+        commonHead::ICommonHeadFrameworkWptr{});
+
+    REQUIRE_NOTHROW(viewModel->initViewModel());
+    REQUIRE_FALSE(viewModel->isSideBarReady());
+    REQUIRE(viewModel->getNavItems().empty());
+
+    REQUIRE_NOTHROW(viewModel->reloadNavConfig());
+    REQUIRE_FALSE(viewModel->isSideBarReady());
+    REQUIRE(viewModel->getNavItems().empty());
+}

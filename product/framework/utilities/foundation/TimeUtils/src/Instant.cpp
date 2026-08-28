@@ -1,241 +1,266 @@
 #include <ucf/utilities/TimeUtils/Instant.h>
 
-#include <ucf/utilities/TimeUtils/LocalDateTime.h>
+#include "TimeConversion.h"
 
-#include <charconv>
-#include <chrono>
 #include <cstdio>
-#include <cstring>
-#include <ctime>
-#include <system_error>
+#include <limits>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 
 namespace ucf::utilities {
 
 namespace {
 
-std::tm toLocalTm(std::time_t t)
+TimeResult<Instant> invalidRfc3339(std::string diagnostic)
 {
-    std::tm tm{};
-#if defined(_WIN32)
-    localtime_s(&tm, &t);
-#else
-    localtime_r(&t, &tm);
-#endif
-    return tm;
-}
-
-std::tm toUTCTm(std::time_t t)
-{
-    std::tm tm{};
-#if defined(_WIN32)
-    gmtime_s(&tm, &t);
-#else
-    gmtime_r(&t, &tm);
-#endif
-    return tm;
-}
-
-LocalDateTime fromTmAndMs(const std::tm& tm, unsigned ms) noexcept
-{
-    LocalDate d{tm.tm_year + 1900, static_cast<unsigned>(tm.tm_mon + 1), static_cast<unsigned>(tm.tm_mday)};
-    return LocalDateTime{d,
-                         static_cast<unsigned>(tm.tm_hour),
-                         static_cast<unsigned>(tm.tm_min),
-                         static_cast<unsigned>(tm.tm_sec),
-                         ms};
-}
-
-std::time_t timegmPortable(std::tm& tm)
-{
-#if defined(_WIN32)
-    return _mkgmtime(&tm);
-#else
-    return timegm(&tm);
-#endif
+    return TimeResult<Instant>::failure(
+        TimeErrorCode::InvalidFormat,
+        std::move(diagnostic));
 }
 
 } // namespace
 
-Instant::Instant(TimePoint tp) noexcept
-    : mTp{tp}
+Instant::Instant(TimePoint timePoint) noexcept
+    : mTimePoint{timePoint}
 {
 }
 
-Instant Instant::now() noexcept
+Instant Instant::fromUnixMilliseconds(int64_t milliseconds) noexcept
 {
-    return Instant{std::chrono::time_point_cast<std::chrono::milliseconds>(Clock::now())};
+    return Instant{TimePoint{std::chrono::milliseconds{milliseconds}}};
 }
 
-Instant Instant::fromUnixMilliseconds(int64_t ms) noexcept
+TimeResult<Instant> Instant::fromUnixSeconds(int64_t seconds)
 {
-    return Instant{TimePoint{std::chrono::milliseconds{ms}}};
-}
-
-Instant Instant::fromUnixSeconds(int64_t s) noexcept
-{
-    return Instant{TimePoint{std::chrono::milliseconds{s * 1000}}};
-}
-
-std::optional<Instant> Instant::parseISO8601(std::string_view text)
-{
-    // Accepted forms:
-    //   2026-05-21T10:30:00Z
-    //   2026-05-21T10:30:00.123Z
-    if (text.size() < 20 || text.back() != 'Z')
+    int64_t milliseconds = 0;
+    if (!detail::checkedMultiply(seconds, detail::kMillisecondsPerSecond, milliseconds))
     {
-        return std::nullopt;
+        return TimeResult<Instant>::failure(
+            TimeErrorCode::OutOfRange,
+            "Unix seconds cannot be represented with millisecond precision");
     }
-    if (text[4] != '-' || text[7] != '-' || text[10] != 'T'
-        || text[13] != ':' || text[16] != ':')
+    return TimeResult<Instant>::success(fromUnixMilliseconds(milliseconds));
+}
+
+TimeResult<Instant> Instant::fromTimeT(std::time_t time)
+{
+    static_assert(std::is_integral_v<std::time_t>, "TimeUtils requires an integral time_t");
+    if (!std::in_range<int64_t>(time))
     {
-        return std::nullopt;
+        return TimeResult<Instant>::failure(
+            TimeErrorCode::OutOfRange,
+            "time_t value exceeds the Instant range");
     }
+    return fromUnixSeconds(static_cast<int64_t>(time));
+}
 
-    auto parseField = [](std::string_view s, auto& out) -> bool
+TimeResult<Instant> Instant::parseRfc3339(std::string_view text)
+{
+    if (text.size() < 20)
     {
-        const char* finish = s.data() + s.size();
-        auto [ptr, ec] = std::from_chars(s.data(), finish, out);
-        return ec == std::errc{} && ptr == finish;
-    };
-
-    int y = 0;
-    unsigned mo = 0;
-    unsigned d = 0;
-    unsigned h = 0;
-    unsigned mi = 0;
-    unsigned s = 0;
-    if (!parseField(text.substr(0, 4), y)
-        || !parseField(text.substr(5, 2), mo)
-        || !parseField(text.substr(8, 2), d)
-        || !parseField(text.substr(11, 2), h)
-        || !parseField(text.substr(14, 2), mi)
-        || !parseField(text.substr(17, 2), s))
-    {
-        return std::nullopt;
+        return invalidRfc3339("RFC 3339 timestamp is too short");
     }
 
-    unsigned ms = 0;
-    if (text.size() > 20)
+    std::size_t localEnd = 0;
+    int32_t offsetSeconds = 0;
+    if (text.back() == 'Z')
     {
-        // Must look like ".fff" before 'Z'.
-        if (text[19] != '.')
+        localEnd = text.size() - 1;
+    }
+    else
+    {
+        if (text.size() < 25)
         {
-            return std::nullopt;
+            return invalidRfc3339("RFC 3339 timestamp requires Z or an explicit offset");
         }
-        auto frac = text.substr(20, text.size() - 21);
-        if (frac.empty() || frac.size() > 3)
+        const std::size_t offsetStart = text.size() - 6;
+        if ((text[offsetStart] != '+' && text[offsetStart] != '-')
+            || text[offsetStart + 3] != ':')
         {
-            return std::nullopt;
+            return invalidRfc3339("RFC 3339 offset must match +HH:MM or -HH:MM");
         }
-        std::string padded{frac};
-        while (padded.size() < 3)
+        unsigned offsetHours = 0;
+        unsigned offsetMinutes = 0;
+        if (!detail::parseUnsigned(text.substr(offsetStart + 1, 2), offsetHours)
+            || !detail::parseUnsigned(text.substr(offsetStart + 4, 2), offsetMinutes)
+            || offsetHours > 18
+            || offsetMinutes >= 60
+            || (offsetHours == 18 && offsetMinutes != 0))
         {
-            padded.push_back('0');
+            return invalidRfc3339("RFC 3339 offset is outside the supported +/-18:00 range");
         }
-        if (!parseField(padded, ms))
-        {
-            return std::nullopt;
-        }
+        const int32_t magnitude = static_cast<int32_t>(offsetHours * 3600 + offsetMinutes * 60);
+        offsetSeconds = text[offsetStart] == '-' ? -magnitude : magnitude;
+        localEnd = offsetStart;
     }
 
-    std::tm tm{};
-    tm.tm_year = y - 1900;
-    tm.tm_mon = static_cast<int>(mo) - 1;
-    tm.tm_mday = static_cast<int>(d);
-    tm.tm_hour = static_cast<int>(h);
-    tm.tm_min = static_cast<int>(mi);
-    tm.tm_sec = static_cast<int>(s);
-    std::time_t t = timegmPortable(tm);
-    if (t == static_cast<std::time_t>(-1))
+    const bool hasFraction = localEnd >= 21 && localEnd <= 23;
+    if ((localEnd != 19 && !hasFraction)
+        || text[4] != '-'
+        || text[7] != '-'
+        || text[10] != 'T'
+        || text[13] != ':'
+        || text[16] != ':'
+        || (hasFraction && text[19] != '.'))
     {
-        return std::nullopt;
+        return invalidRfc3339("RFC 3339 timestamp has an invalid field layout");
     }
-    auto tp = TimePoint{std::chrono::milliseconds{static_cast<int64_t>(t) * 1000 + ms}};
-    return Instant{tp};
-}
 
-Instant::TimePoint Instant::timePoint() const noexcept
-{
-    return mTp;
+    detail::CalendarFields fields;
+    if (!detail::parseYear(text.substr(0, 4), fields.year)
+        || !detail::parseUnsigned(text.substr(5, 2), fields.month)
+        || !detail::parseUnsigned(text.substr(8, 2), fields.day)
+        || !detail::parseUnsigned(text.substr(11, 2), fields.hour)
+        || !detail::parseUnsigned(text.substr(14, 2), fields.minute)
+        || !detail::parseUnsigned(text.substr(17, 2), fields.second))
+    {
+        return invalidRfc3339("RFC 3339 timestamp contains a non-numeric field");
+    }
+    if (hasFraction)
+    {
+        const auto fraction = text.substr(20, localEnd - 20);
+        if (!detail::parseUnsigned(fraction, fields.millisecond))
+        {
+            return invalidRfc3339("RFC 3339 fractional second is not numeric");
+        }
+        if (fraction.size() == 1)
+        {
+            fields.millisecond *= 100;
+        }
+        else if (fraction.size() == 2)
+        {
+            fields.millisecond *= 10;
+        }
+    }
+
+    auto milliseconds = detail::calendarToUnixMilliseconds(fields, offsetSeconds);
+    if (!milliseconds)
+    {
+        return TimeResult<Instant>::failure(
+            milliseconds.error().code,
+            milliseconds.error().diagnostic);
+    }
+    return TimeResult<Instant>::success(
+        fromUnixMilliseconds(std::move(milliseconds).value()));
 }
 
 int64_t Instant::toUnixMilliseconds() const noexcept
 {
-    return mTp.time_since_epoch().count();
+    return mTimePoint.time_since_epoch().count();
 }
 
 int64_t Instant::toUnixSeconds() const noexcept
 {
-    return std::chrono::duration_cast<std::chrono::seconds>(mTp.time_since_epoch()).count();
+    return detail::floorDivide(toUnixMilliseconds(), detail::kMillisecondsPerSecond);
 }
 
-std::string Instant::toISO8601() const
+TimeResult<std::time_t> Instant::toTimeT() const
 {
-    auto secs = std::chrono::time_point_cast<std::chrono::seconds>(mTp);
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(mTp - secs).count();
-    std::time_t t = static_cast<std::time_t>(secs.time_since_epoch().count());
-    std::tm tm = toUTCTm(t);
-    char buf[40]{};
-    std::snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d.%03lldZ",
-                  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
-                  tm.tm_hour, tm.tm_min, tm.tm_sec,
-                  static_cast<long long>(ms));
-    return buf;
+    const int64_t seconds = toUnixSeconds();
+    if (!std::in_range<std::time_t>(seconds))
+    {
+        return TimeResult<std::time_t>::failure(
+            TimeErrorCode::OutOfRange,
+            "Instant seconds cannot be represented by time_t");
+    }
+    return TimeResult<std::time_t>::success(static_cast<std::time_t>(seconds));
 }
 
-LocalDateTime Instant::toUTCDateTime() const
+TimeResult<std::string> Instant::toRfc3339() const
 {
-    auto secs = std::chrono::time_point_cast<std::chrono::seconds>(mTp);
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(mTp - secs).count();
-    std::time_t t = static_cast<std::time_t>(secs.time_since_epoch().count());
-    return fromTmAndMs(toUTCTm(t), static_cast<unsigned>(ms));
+    auto fields = detail::unixMillisecondsToCalendar(toUnixMilliseconds());
+    if (!fields)
+    {
+        return TimeResult<std::string>::failure(
+            fields.error().code,
+            fields.error().diagnostic);
+    }
+    const auto value = std::move(fields).value();
+    if (value.year < 0 || value.year > 9999)
+    {
+        return TimeResult<std::string>::failure(
+            TimeErrorCode::OutOfRange,
+            "RFC 3339 representation requires a four-digit year");
+    }
+
+    char buffer[32]{};
+    const int length = std::snprintf(
+        buffer,
+        sizeof(buffer),
+        "%04d-%02u-%02uT%02u:%02u:%02u.%03uZ",
+        value.year,
+        value.month,
+        value.day,
+        value.hour,
+        value.minute,
+        value.second,
+        value.millisecond);
+    if (length <= 0 || static_cast<std::size_t>(length) >= sizeof(buffer))
+    {
+        return TimeResult<std::string>::failure(
+            TimeErrorCode::OutOfRange,
+            "RFC 3339 output exceeded its fixed representation");
+    }
+    return TimeResult<std::string>::success(
+        std::string{buffer, static_cast<std::size_t>(length)});
 }
 
-LocalDateTime Instant::toLocalDateTime() const
+Instant& Instant::operator+=(std::chrono::milliseconds duration)
 {
-    auto secs = std::chrono::time_point_cast<std::chrono::seconds>(mTp);
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(mTp - secs).count();
-    std::time_t t = static_cast<std::time_t>(secs.time_since_epoch().count());
-    return fromTmAndMs(toLocalTm(t), static_cast<unsigned>(ms));
-}
-
-Instant& Instant::operator+=(std::chrono::milliseconds d) noexcept
-{
-    mTp += d;
+    int64_t result = 0;
+    if (!detail::checkedAdd(toUnixMilliseconds(), duration.count(), result))
+    {
+        throw std::overflow_error{"Instant addition overflow"};
+    }
+    mTimePoint = TimePoint{std::chrono::milliseconds{result}};
     return *this;
 }
 
-Instant& Instant::operator-=(std::chrono::milliseconds d) noexcept
+Instant& Instant::operator-=(std::chrono::milliseconds duration)
 {
-    mTp -= d;
+    int64_t result = 0;
+    if (!detail::checkedSubtract(toUnixMilliseconds(), duration.count(), result))
+    {
+        throw std::overflow_error{"Instant subtraction overflow"};
+    }
+    mTimePoint = TimePoint{std::chrono::milliseconds{result}};
     return *this;
 }
 
 std::strong_ordering operator<=>(const Instant& lhs, const Instant& rhs) noexcept
 {
-    return lhs.mTp <=> rhs.mTp;
+    return lhs.mTimePoint <=> rhs.mTimePoint;
 }
 
 bool operator==(const Instant& lhs, const Instant& rhs) noexcept
 {
-    return lhs.mTp == rhs.mTp;
+    return lhs.mTimePoint == rhs.mTimePoint;
 }
 
-Instant operator+(Instant lhs, std::chrono::milliseconds rhs) noexcept
+Instant operator+(Instant lhs, std::chrono::milliseconds rhs)
 {
     lhs += rhs;
     return lhs;
 }
 
-Instant operator-(Instant lhs, std::chrono::milliseconds rhs) noexcept
+Instant operator-(Instant lhs, std::chrono::milliseconds rhs)
 {
     lhs -= rhs;
     return lhs;
 }
 
-std::chrono::milliseconds operator-(const Instant& lhs, const Instant& rhs) noexcept
+std::chrono::milliseconds operator-(const Instant& lhs, const Instant& rhs)
 {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(lhs.mTp - rhs.mTp);
+    int64_t difference = 0;
+    if (!detail::checkedSubtract(
+            lhs.toUnixMilliseconds(),
+            rhs.toUnixMilliseconds(),
+            difference))
+    {
+        throw std::overflow_error{"Instant difference overflow"};
+    }
+    return std::chrono::milliseconds{difference};
 }
 
 } // namespace ucf::utilities

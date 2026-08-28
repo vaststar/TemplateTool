@@ -1,6 +1,6 @@
 #include "ToolsPage/textprocess/JsonTreeItemModel.h"
 
-#include <commonhead/viewmodels/JsonTreeViewModel/IJsonTreeModel.h>
+#include <commonhead/viewmodels/JsonToolViewModel/IJsonTreeModel.h>
 
 JsonTreeItemModel::JsonTreeItemModel(QObject* parent)
     : QAbstractItemModel(parent)

@@ -9,8 +9,39 @@
 
 #include <fstream>
 #include <sstream>
+#include <string_view>
+#include <utility>
 
 namespace ucf::service {
+
+namespace {
+
+std::string formatUtc(
+    ucf::utilities::Instant instant,
+    std::string_view pattern,
+    std::string_view fallback)
+{
+    auto result = ucf::utilities::TimeUtils::format(
+        instant,
+        ucf::utilities::TimeZone::utc(),
+        pattern);
+
+    return result
+        ? std::move(result).value()
+        : std::string{fallback};
+}
+
+ucf::utilities::Instant toInstant(
+    std::chrono::system_clock::time_point timePoint) noexcept
+{
+    const auto milliseconds =
+        std::chrono::floor<std::chrono::milliseconds>(timePoint);
+
+    return ucf::utilities::Instant::fromUnixMilliseconds(
+        milliseconds.time_since_epoch().count());
+}
+
+} // namespace
 
 CrashManager::CrashManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
@@ -246,15 +277,22 @@ void CrashManager::writeCrashLog(int signalCode, const char* signalName,
     fclose(fp);
 }
 
-std::string CrashManager::formatTimestamp(std::chrono::system_clock::time_point tp) const
+std::string CrashManager::formatTimestamp(
+    std::chrono::system_clock::time_point timePoint) const
 {
-    auto time = std::chrono::system_clock::to_time_t(tp);
-    return ucf::utilities::TimeUtils::formatLocalTime(time, "%Y-%m-%d %H:%M:%S");
+    return formatUtc(
+        toInstant(timePoint),
+        "%Y-%m-%d %H:%M:%SZ",
+        "unknown");
 }
 
 std::filesystem::path CrashManager::generateCrashLogPath() const
 {
-    auto filename = ucf::utilities::TimeUtils::formatCurrentLocalTime("crash_%Y%m%d_%H%M%S.crash");
+    const auto filename = formatUtc(
+        ucf::utilities::TimeUtils::now(),
+        "crash_%Y%m%d_%H%M%SZ.crash",
+        "crash_unknown.crash");
+
     return mCrashDirectory / filename;
 }
 

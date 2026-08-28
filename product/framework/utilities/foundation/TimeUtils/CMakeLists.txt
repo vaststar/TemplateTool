@@ -7,16 +7,20 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/utilities/TimeUtils/TimeUtilsExport.h
-    include/ucf/utilities/TimeUtils/TimeUtils.h
+    include/ucf/utilities/TimeUtils/TimeResult.h
     include/ucf/utilities/TimeUtils/Instant.h
-    include/ucf/utilities/TimeUtils/LocalDate.h
-    include/ucf/utilities/TimeUtils/LocalDateTime.h
+    include/ucf/utilities/TimeUtils/CivilTime.h
+    include/ucf/utilities/TimeUtils/TimeZone.h
+    include/ucf/utilities/TimeUtils/Clock.h
+    include/ucf/utilities/TimeUtils/TimeUtils.h
 )
 set(MODULE_SOURCE_PRIVATE
-    src/TimeUtils.cpp
+    src/TimeConversion.h
     src/Instant.cpp
-    src/LocalDate.cpp
-    src/LocalDateTime.cpp
+    src/CivilTime.cpp
+    src/TimeZone.cpp
+    src/Clock.cpp
+    src/TimeUtils.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )

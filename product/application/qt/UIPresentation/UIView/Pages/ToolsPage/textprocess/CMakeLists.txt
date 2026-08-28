@@ -18,6 +18,6 @@ UIViewAppendBuildInputs(
         include
         include/ToolsPage/textprocess
     PRIVATE_DEPENDENCIES
-        JsonTreeViewModelApi
-        ToolsViewModelApi
+        Base64ToolViewModelApi
+        JsonToolViewModelApi
 )

@@ -1,0 +1,4 @@
+add_subdirectory(Base64ToolViewModelTypes)
+add_subdirectory(Base64ToolViewModelApi)
+add_subdirectory(Base64ToolViewModelImpl)
+add_subdirectory(test)

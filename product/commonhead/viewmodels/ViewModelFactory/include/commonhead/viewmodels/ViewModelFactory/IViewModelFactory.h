@@ -21,7 +21,9 @@ namespace commonHead::viewModels{
     class ISideBarViewModel;
     class IStabilityViewModel;
     class IToolsViewModel;
-    class IJsonTreeViewModel;
+    class IBase64ToolViewModel;
+    class IJsonToolViewModel;
+    class IUuidToolViewModel;
     class INetworkProxyViewModel;
     class IScreenshotViewModel;
     class IRecordingViewModel;
@@ -53,7 +55,9 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const = 0;
-    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IJsonTreeViewModel> createJsonTreeViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IBase64ToolViewModel> createBase64ToolViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IJsonToolViewModel> createJsonToolViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IUuidToolViewModel> createUuidToolViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> createNetworkProxyViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> createScreenshotViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IRecordingViewModel> createRecordingViewModelInstance() const = 0;

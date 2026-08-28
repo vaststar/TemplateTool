@@ -6,10 +6,10 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/utilities/JsonUtils/JsonValue.h>
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
 
 #include <algorithm>
 #include <fstream>
-#include <ctime>
 
 namespace ucf::service {
 
@@ -256,15 +256,14 @@ std::string PerformanceManager::exportReportAsJson() const
     auto snapshot = takeSnapshot();
 
     // Timestamp
-    auto time_t = std::chrono::system_clock::to_time_t(snapshot.timestamp);
-    std::tm tm_buf{};
-#ifdef _WIN32
-    gmtime_s(&tm_buf, &time_t);
-#else
-    gmtime_r(&time_t, &tm_buf);
-#endif
-    char timeBuf[32];
-    std::strftime(timeBuf, sizeof(timeBuf), "%Y-%m-%dT%H:%M:%SZ", &tm_buf);
+    const auto unixMilliseconds =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            snapshot.timestamp.time_since_epoch())
+            .count();
+    const auto timestamp = utilities::TimeUtils::format(
+        utilities::Instant::fromUnixMilliseconds(unixMilliseconds),
+        utilities::TimeZone::utc(),
+        "%Y-%m-%dT%H:%M:%SZ");
 
     // Memory
     utilities::JsonValue memory = utilities::JsonValue::object();
@@ -289,7 +288,18 @@ std::string PerformanceManager::exportReportAsJson() const
 
     // Build report
     utilities::JsonValue report = utilities::JsonValue::object();
-    report.set("timestamp", utilities::JsonValue(timeBuf));
+    if (timestamp)
+    {
+        report.set("timestamp", utilities::JsonValue(timestamp.value()));
+    }
+    else
+    {
+        PERFORMANCE_LOG_WARN(
+            "Failed to format performance report timestamp, code: "
+            << static_cast<int>(timestamp.error().code)
+            << ", reason: " << timestamp.error().diagnostic);
+        report.set("timestamp", utilities::JsonValue(nullptr));
+    }
     report.set("memory", std::move(memory));
     report.set("cpuUsagePercent", utilities::JsonValue(snapshot.cpuUsagePercent));
     report.set("timingStats", std::move(timingArray));

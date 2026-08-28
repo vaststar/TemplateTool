@@ -24,7 +24,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ScreenRecordingUtils
     ThreadPoolUtils
     FilePathUtils
-    TimeUtils
+    ViewModelUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

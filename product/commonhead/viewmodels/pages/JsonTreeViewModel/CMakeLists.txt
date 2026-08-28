@@ -1,4 +1,0 @@
-add_subdirectory(JsonTreeViewModelTypes)
-add_subdirectory(JsonTreeViewModelApi)
-add_subdirectory(JsonTreeViewModelImpl)
-add_subdirectory(test)

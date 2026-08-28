@@ -7,7 +7,7 @@
 #include <UIViewCore/UIViewController.h>
 
 namespace commonHead::viewModels {
-    class IToolsViewModel;
+    class IBase64ToolViewModel;
 }
 
 class Base64ToolController : public UIViewController
@@ -46,7 +46,7 @@ signals:
     void urlSafeChanged();
 
 private:
-    std::shared_ptr<commonHead::viewModels::IToolsViewModel> m_toolsViewModel;
+    std::shared_ptr<commonHead::viewModels::IBase64ToolViewModel> m_base64ViewModel;
     QString m_inputText;
     QString m_outputText;
     QString m_errorMessage;

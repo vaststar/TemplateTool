@@ -1,8 +1,7 @@
 #include <commonhead/viewmodels/ViewModelUtils/LogOperationUtils.h>
+#include <commonhead/viewmodels/ViewModelUtils/TimeDisplayUtils.h>
 
-#include <chrono>
-#include <iomanip>
-#include <sstream>
+#include <exception>
 #include <filesystem>
 
 #include "LoggerDefine.h"
@@ -15,13 +14,13 @@ namespace commonHead::utilities {
 
 std::string LogOperationUtils::generateTimestampedArchiveName(const std::string& prefix)
 {
-    auto now = std::chrono::system_clock::now();
-    auto time = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << prefix << "_";
-    ss << std::put_time(std::localtime(&time), "%Y%m%d_%H%M%S");
-    ss << ".zip";
-    return ss.str();
+    const auto timestamp = TimeDisplayUtils::formatCurrentUserTime({
+        .localPattern = "%Y%m%d_%H%M%S",
+        .utcFallbackPattern = "%Y%m%d_%H%M%SZ",
+        .failureText = "unknown"
+    });
+
+    return prefix + "_" + timestamp + ".zip";
 }
 
 LogOperationResult LogOperationUtils::packLogs(

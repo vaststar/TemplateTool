@@ -1,0 +1,3 @@
+add_subdirectory(UuidToolViewModelApi)
+add_subdirectory(UuidToolViewModelImpl)
+add_subdirectory(test)

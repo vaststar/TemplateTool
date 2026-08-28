@@ -1,7 +1,7 @@
 #include "ToolsPage/generators/UuidToolController.h"
 #include "LoggerDefine.h"
 
-#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
+#include <commonhead/viewmodels/UuidToolViewModel/IUuidToolViewModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <QClipboard>
@@ -16,8 +16,8 @@ UuidToolController::UuidToolController(QObject* parent)
 void UuidToolController::init()
 {
     UIVIEW_LOG_DEBUG("UuidToolController::init");
-    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
-    m_toolsViewModel->initViewModel();
+    m_uuidViewModel = getViewModelFactory()->createUuidToolViewModelInstance();
+    m_uuidViewModel->initViewModel();
 }
 
 QString UuidToolController::getGeneratedUuid() const
@@ -50,10 +50,10 @@ QStringList UuidToolController::getUuidHistory() const
 
 void UuidToolController::generate()
 {
-    if (!m_toolsViewModel)
+    if (!m_uuidViewModel)
         return;
 
-    m_generatedUuid = QString::fromStdString(m_toolsViewModel->generateUuid());
+    m_generatedUuid = QString::fromStdString(m_uuidViewModel->generate());
     m_uuidHistory.prepend(m_generatedUuid);
 
     // Limit history to 20 items
@@ -67,11 +67,11 @@ void UuidToolController::generate()
 
 void UuidToolController::generateMultiple(int count)
 {
-    if (!m_toolsViewModel || count <= 0)
+    if (!m_uuidViewModel || count <= 0)
         return;
 
     for (int i = 0; i < count; ++i) {
-        QString uuid = QString::fromStdString(m_toolsViewModel->generateUuid());
+        QString uuid = QString::fromStdString(m_uuidViewModel->generate());
         m_uuidHistory.prepend(uuid);
 
         if (i == 0) {
@@ -90,10 +90,10 @@ void UuidToolController::generateMultiple(int count)
 
 void UuidToolController::validate()
 {
-    if (!m_toolsViewModel)
+    if (!m_uuidViewModel)
         return;
 
-    bool isValid = m_toolsViewModel->isValidUuid(m_validateInput.toStdString());
+    bool isValid = m_uuidViewModel->isValid(m_validateInput.toStdString());
     m_validateResult = isValid ? tr("✓ Valid UUID") : tr("✗ Invalid UUID");
 
     emit validateResultChanged();

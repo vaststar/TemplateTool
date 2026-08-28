@@ -1475,32 +1475,32 @@ Double-click a rule to view details.</translation>
         <translation>test param {{0}}, only 1 param</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="159"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="153"/>
         <source>seconds</source>
         <translation>seconds</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="161"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="155"/>
         <source>minutes</source>
         <translation>minutes</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="163"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="157"/>
         <source>hours</source>
         <translation>hours</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="165"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="159"/>
         <source>days</source>
         <translation>days</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="161"/>
         <source>ago</source>
         <translation>ago</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="161"/>
         <source>from now</source>
         <translation>from now</translation>
     </message>
@@ -2058,17 +2058,17 @@ Press ESC to cancel</translation>
 <context>
     <name>TimestampToolController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="47"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="41"/>
         <source>Local</source>
         <translation>Local</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="176"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="170"/>
         <source>Invalid timestamp</source>
         <translation>Invalid timestamp</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="225"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/textprocess/src/TimestampToolController.cpp" line="219"/>
         <source>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</source>
         <translation>Cannot parse datetime, supported format: YYYY-MM-DD HH:MM:SS</translation>
     </message>

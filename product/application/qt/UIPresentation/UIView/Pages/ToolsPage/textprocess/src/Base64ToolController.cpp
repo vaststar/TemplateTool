@@ -1,7 +1,7 @@
 #include "ToolsPage/textprocess/Base64ToolController.h"
 #include "LoggerDefine.h"
 
-#include <commonhead/viewmodels/ToolsViewModel/IToolsViewModel.h>
+#include <commonhead/viewmodels/Base64ToolViewModel/IBase64ToolViewModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <AppContext/AppContext.h>
 #include <QClipboard>
@@ -16,8 +16,8 @@ Base64ToolController::Base64ToolController(QObject* parent)
 void Base64ToolController::init()
 {
     UIVIEW_LOG_DEBUG("Base64ToolController::init");
-    m_toolsViewModel = getViewModelFactory()->createToolsViewModelInstance();
-    m_toolsViewModel->initViewModel();
+    m_base64ViewModel = getViewModelFactory()->createBase64ToolViewModelInstance();
+    m_base64ViewModel->initViewModel();
 }
 
 QString Base64ToolController::getInputText() const
@@ -58,10 +58,10 @@ void Base64ToolController::setUrlSafe(bool urlSafe)
 
 void Base64ToolController::encode()
 {
-    if (!m_toolsViewModel)
+    if (!m_base64ViewModel)
         return;
 
-    auto result = m_toolsViewModel->base64Encode(m_inputText.toStdString(), m_urlSafe);
+    auto result = m_base64ViewModel->encode(m_inputText.toStdString(), m_urlSafe);
 
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);
@@ -77,10 +77,10 @@ void Base64ToolController::encode()
 
 void Base64ToolController::decode()
 {
-    if (!m_toolsViewModel)
+    if (!m_base64ViewModel)
         return;
 
-    auto result = m_toolsViewModel->base64Decode(m_inputText.toStdString());
+    auto result = m_base64ViewModel->decode(m_inputText.toStdString());
 
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);

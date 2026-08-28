@@ -24,7 +24,9 @@ set(MODULE_DEPENDENCIES_PRIVATE
     SideBarViewModelImpl
     SettingsViewModelImpl
     StabilityViewModelImpl
-    JsonTreeViewModelImpl
+    Base64ToolViewModelImpl
+    JsonToolViewModelImpl
+    UuidToolViewModelImpl
     MediaCameraViewModelImpl
     CameraDirectoryViewModelImpl
     ContactListViewModelImpl

@@ -2,10 +2,10 @@
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/ServiceLocator/IServiceLocator.h>
+#include <commonhead/viewmodels/ViewModelUtils/TimeDisplayUtils.h>
 #include <commonhead/viewmodels/RecordingViewModel/RecordingViewModelCreator.h>
 #include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/services/ClientInfoService/IClientInfoService.h>
-#include <ucf/utilities/TimeUtils/TimeUtils.h>
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <chrono>
@@ -413,8 +413,14 @@ void RecordingViewModel::onError(const std::string& message)
 
 std::string RecordingViewModel::generateOutputPath() const
 {
-    auto timestamp = ucf::utilities::TimeUtils::formatCurrentLocalTime("%Y%m%d_%H%M%S");
-    std::string filename = "Recording_" + timestamp + "." + m_settings.videoFormat;
+    const auto timestamp =
+        commonHead::utilities::TimeDisplayUtils::formatCurrentUserTime({
+            .localPattern = "%Y%m%d_%H%M%S",
+            .utcFallbackPattern = "%Y%m%d_%H%M%SZ",
+            .failureText = "unknown"
+        });
+    const std::string filename =
+        "Recording_" + timestamp + "." + m_settings.videoFormat;
 
     std::string dir = m_settings.outputDirectory;
     if (dir.empty()) {

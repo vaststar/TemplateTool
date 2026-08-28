@@ -2,6 +2,7 @@
 #include "LoggerDefine.h"
 
 #include <algorithm>
+#include <utility>
 
 #include <commonhead/ResourceStringLoader/ResourceString.h>
 
@@ -40,7 +41,13 @@ std::string SideBarViewModel::getViewModelName() const
 void SideBarViewModel::init()
 {
     SIDE_BAR_VIEW_MODEL_LOG_DEBUG("SideBarViewModel::init");
-    initDefaultNavItems();
+
+    if (!initDefaultNavItems())
+    {
+        SIDE_BAR_VIEW_MODEL_LOG_ERROR("SideBarViewModel::init: failed to initialize navigation items");
+        return;
+    }
+
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_ready = true;
@@ -48,12 +55,36 @@ void SideBarViewModel::init()
     fireNotification(&ISideBarViewModelCallback::onSideBarReady);
 }
 
-void SideBarViewModel::initDefaultNavItems()
+std::shared_ptr<commonHead::IResourceLoader> SideBarViewModel::lockResourceLoader() const
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    auto framework = getCommonHeadFramework().lock();
+    if (!framework)
+    {
+        SIDE_BAR_VIEW_MODEL_LOG_ERROR(
+            "SideBarViewModel::lockResourceLoader: CommonHeadFramework is not available");
+        return {};
+    }
 
-    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
-    m_navItems =
+    auto resourceLoader = framework->getResourceLoader();
+    if (!resourceLoader)
+    {
+        SIDE_BAR_VIEW_MODEL_LOG_ERROR(
+            "SideBarViewModel::lockResourceLoader: ResourceLoader is not available");
+        return {};
+    }
+
+    return resourceLoader;
+}
+
+bool SideBarViewModel::initDefaultNavItems()
+{
+    auto resourceLoader = lockResourceLoader();
+    if (!resourceLoader)
+    {
+        return false;
+    }
+
+    std::vector<model::NavItemData> navItems =
     {
         {
             model::PageId::Home,
@@ -157,6 +188,13 @@ void SideBarViewModel::initDefaultNavItems()
             }
         },
     };
+
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_navItems = std::move(navItems);
+    }
+
+    return true;
 }
 
 std::optional<model::NavItemData> SideBarViewModel::findNavItem(model::PageId pageId) const
@@ -378,7 +416,11 @@ void SideBarViewModel::reloadNavConfig()
         }
     }
 
-    initDefaultNavItems();
+    if (!initDefaultNavItems())
+    {
+        SIDE_BAR_VIEW_MODEL_LOG_ERROR("reloadNavConfig: failed to initialize navigation items");
+        return;
+    }
 
     std::vector<model::NavItemData> newItems;
     {

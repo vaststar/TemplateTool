@@ -1,219 +1,468 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ucf/utilities/TimeUtils/Instant.h"
-#include "ucf/utilities/TimeUtils/LocalDate.h"
-#include "ucf/utilities/TimeUtils/LocalDateTime.h"
-#include "ucf/utilities/TimeUtils/TimeUtils.h"
+// Public headers intentionally compile without relying on an include order.
+#include <ucf/utilities/TimeUtils/TimeUtils.h>
+#include <ucf/utilities/TimeUtils/CivilTime.h>
+#include <ucf/utilities/TimeUtils/Clock.h>
+#include <ucf/utilities/TimeUtils/Instant.h>
+#include <ucf/utilities/TimeUtils/TimeResult.h>
+#include <ucf/utilities/TimeUtils/TimeZone.h>
 
+#include <atomic>
 #include <chrono>
+#include <cstdint>
+#include <ctime>
+#include <limits>
+#include <stdexcept>
+#include <string>
 #include <thread>
+#include <utility>
+#include <vector>
 
+namespace {
 
-// =================== LocalDate ===================
+using namespace std::chrono_literals;
+using ucf::utilities::AmbiguousTimePolicy;
+using ucf::utilities::IClock;
+using ucf::utilities::Instant;
+using ucf::utilities::LocalDate;
+using ucf::utilities::LocalDateTime;
+using ucf::utilities::LocalTime;
+using ucf::utilities::LocalTimeResolvePolicy;
+using ucf::utilities::NonexistentTimePolicy;
+using ucf::utilities::SystemClock;
+using ucf::utilities::TimeErrorCode;
+using ucf::utilities::TimeResult;
+using ucf::utilities::TimeUtils;
+using ucf::utilities::TimeZone;
+using ucf::utilities::TimeZoneKind;
+using ucf::utilities::UtcOffset;
 
-TEST_CASE("LocalDate - construct and accessors", "[LocalDate]")
+template<typename T>
+T requireValue(TimeResult<T> result)
 {
-    ucf::utilities::LocalDate d{2026, 5, 21};
-    REQUIRE(d.isValid());
-    REQUIRE(d.year() == 2026);
-    REQUIRE(d.month() == 5);
-    REQUIRE(d.day() == 21);
-    REQUIRE(d.toString() == "2026-05-21");
+    if (!result)
+    {
+        throw std::runtime_error{result.error().diagnostic};
+    }
+    return std::move(result).value();
 }
 
-TEST_CASE("LocalDate - invalid date", "[LocalDate]")
+LocalDate date(int year, unsigned month, unsigned day)
 {
-    ucf::utilities::LocalDate bad{2026, 2, 30};
-    REQUIRE_FALSE(bad.isValid());
+    return requireValue(LocalDate::create(year, month, day));
 }
 
-TEST_CASE("LocalDate::parse", "[LocalDate][Parse]")
+LocalTime time(
+    unsigned hour,
+    unsigned minute,
+    unsigned second,
+    unsigned millisecond = 0)
 {
-    REQUIRE(ucf::utilities::LocalDate::parse("2026-05-21").has_value());
-    REQUIRE(ucf::utilities::LocalDate::parse("2026-05-21")->toString() == "2026-05-21");
-    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("2026-5-21").has_value());     // strict width
-    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("2026/05/21").has_value());    // wrong separator
-    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("2026-13-01").has_value());    // bad month
-    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("").has_value());
-    REQUIRE_FALSE(ucf::utilities::LocalDate::parse("abcd-ef-gh").has_value());
+    return requireValue(LocalTime::create(hour, minute, second, millisecond));
 }
 
-TEST_CASE("LocalDate - weekday and dayOfYear", "[LocalDate]")
+LocalDateTime dateTime(
+    int year,
+    unsigned month,
+    unsigned day,
+    unsigned hour,
+    unsigned minute,
+    unsigned second,
+    unsigned millisecond = 0)
 {
-    // 2026-05-21 is a Thursday → ISO weekday 4.
-    ucf::utilities::LocalDate d{2026, 5, 21};
-    REQUIRE(d.weekday() == 4);
-    // Jan 1 + 31 + 28 + 31 + 30 + 21 = 141.
-    REQUIRE(d.dayOfYear() == 141);
-
-    ucf::utilities::LocalDate jan1{2026, 1, 1};
-    REQUIRE(jan1.dayOfYear() == 1);
+    return LocalDateTime{
+        date(year, month, day),
+        time(hour, minute, second, millisecond)};
 }
 
-TEST_CASE("LocalDate - arithmetic", "[LocalDate]")
+class FixedClock final : public IClock
 {
-    ucf::utilities::LocalDate base{2026, 5, 21};
-    auto next = base + std::chrono::days{10};
-    REQUIRE(next == ucf::utilities::LocalDate{2026, 5, 31});
+public:
+    explicit FixedClock(Instant value)
+        : mValue{value}
+    {
+    }
 
-    auto rollover = base + std::chrono::days{11};
-    REQUIRE(rollover == ucf::utilities::LocalDate{2026, 6, 1});
+    Instant now() const noexcept override
+    {
+        return mValue;
+    }
 
-    REQUIRE((next - base) == std::chrono::days{10});
-    REQUIRE((base - next) == std::chrono::days{-10});
+private:
+    Instant mValue;
+};
+
+} // namespace
+
+TEST_CASE("Civil values are valid by construction", "[TimeUtils][Civil]")
+{
+    const auto leapDay = LocalDate::create(2024, 2, 29);
+    REQUIRE(leapDay);
+    REQUIRE(leapDay.value().weekday() == 4);
+    REQUIRE(leapDay.value().dayOfYear() == 60);
+    REQUIRE(leapDay.value().toIsoString() == "2024-02-29");
+
+    const auto invalidDate = LocalDate::create(2023, 2, 29);
+    REQUIRE_FALSE(invalidDate);
+    REQUIRE(invalidDate.error().code == TimeErrorCode::InvalidDate);
+    const auto invalidYear = LocalDate::create(40000, 1, 1);
+    REQUIRE_FALSE(invalidYear);
+    REQUIRE(invalidYear.error().code == TimeErrorCode::OutOfRange);
+    REQUIRE_FALSE(LocalDate::create(2026, 257, 1));
+    REQUIRE_FALSE(LocalDate::create(2026, 1, 257));
+
+    REQUIRE_FALSE(LocalTime::create(24, 0, 0));
+    REQUIRE_FALSE(LocalTime::create(0, 60, 0));
+    REQUIRE_FALSE(LocalTime::create(0, 0, 60));
+    REQUIRE_FALSE(LocalTime::create(0, 0, 0, 1000));
+
+    const auto finalMillisecond = LocalTime::create(23, 59, 59, 999);
+    REQUIRE(finalMillisecond);
+    REQUIRE(finalMillisecond.value().toIsoString() == "23:59:59.999");
 }
 
-TEST_CASE("LocalDate - ordering", "[LocalDate]")
+TEST_CASE("Civil ISO representations round-trip", "[TimeUtils][Civil]")
 {
-    ucf::utilities::LocalDate a{2026, 5, 21};
-    ucf::utilities::LocalDate b{2026, 5, 22};
-    ucf::utilities::LocalDate c{2026, 6, 1};
+    const auto parsedDate = LocalDate::parseIso("2026-05-21");
+    REQUIRE(parsedDate);
+    REQUIRE(parsedDate.value() == date(2026, 5, 21));
+    REQUIRE_FALSE(LocalDate::parseIso("2026-5-21"));
 
-    REQUIRE(a < b);
-    REQUIRE(b < c);
-    REQUIRE(a < c);
-    REQUIRE(c > a);
-    REQUIRE_FALSE(a == b);
+    const auto parsedTime = LocalTime::parseIso("10:30:45.12");
+    REQUIRE(parsedTime);
+    REQUIRE(parsedTime.value() == time(10, 30, 45, 120));
+    REQUIRE_FALSE(LocalTime::parseIso("10:30:45.1234"));
+
+    const auto parsed = LocalDateTime::parseIso("2026-05-21T10:30:45.007");
+    REQUIRE(parsed);
+    REQUIRE(parsed.value() == dateTime(2026, 5, 21, 10, 30, 45, 7));
+    REQUIRE(parsed.value().toIsoString() == "2026-05-21T10:30:45.007");
+
+    const auto expandedPositive = date(10000, 1, 2);
+    const auto expandedNegative = date(-1, 12, 31);
+    REQUIRE(expandedPositive.toIsoString() == "+10000-01-02");
+    REQUIRE(expandedNegative.toIsoString() == "-0001-12-31");
+    REQUIRE(LocalDate::parseIso(expandedPositive.toIsoString()).value()
+            == expandedPositive);
+    REQUIRE(LocalDate::parseIso(expandedNegative.toIsoString()).value()
+            == expandedNegative);
+    const LocalDateTime expandedDateTime{
+        expandedPositive,
+        time(10, 30, 45, 7)};
+    REQUIRE(LocalDateTime::parseIso(
+                expandedPositive.toIsoString() + "T10:30:45.007").value()
+            == expandedDateTime);
 }
 
-// =================== LocalDateTime ===================
-
-TEST_CASE("LocalDateTime - construct and accessors", "[LocalDateTime]")
+TEST_CASE("LocalDate arithmetic retains calendar invariants", "[TimeUtils][Civil]")
 {
-    ucf::utilities::LocalDateTime dt{ucf::utilities::LocalDate{2026, 5, 21}, 10, 30, 45, 123};
-    REQUIRE(dt.date() == ucf::utilities::LocalDate{2026, 5, 21});
-    REQUIRE(dt.hour() == 10);
-    REQUIRE(dt.minute() == 30);
-    REQUIRE(dt.second() == 45);
-    REQUIRE(dt.millisecond() == 123);
+    const auto base = date(2026, 5, 21);
+    REQUIRE(base + std::chrono::days{11} == date(2026, 6, 1));
+    REQUIRE((base + std::chrono::days{10}) - base == std::chrono::days{10});
+
+    const auto maximum = date(static_cast<int>(std::chrono::year::max()), 12, 31);
+    const auto minimum = date(static_cast<int>(std::chrono::year::min()), 1, 1);
+    REQUIRE_THROWS_AS(maximum + std::chrono::days{1}, std::out_of_range);
+    REQUIRE_THROWS_AS(minimum - std::chrono::days{1}, std::out_of_range);
 }
 
-TEST_CASE("LocalDateTime - format including %f", "[LocalDateTime][Format]")
+TEST_CASE("Instant parses RFC 3339 UTC and numeric offsets", "[TimeUtils][Instant]")
 {
-    ucf::utilities::LocalDateTime dt{ucf::utilities::LocalDate{2026, 5, 21}, 10, 30, 45, 7};
-    REQUIRE(dt.format("%Y-%m-%d %H:%M:%S") == "2026-05-21 10:30:45");
-    REQUIRE(dt.format("%Y-%m-%d %H:%M:%S.%f") == "2026-05-21 10:30:45.007");
+    const auto utc = Instant::parseRfc3339("2025-05-21T16:10:45.123Z");
+    const auto positiveOffset = Instant::parseRfc3339(
+        "2025-05-22T00:10:45.123+08:00");
+    const auto negativeOffset = Instant::parseRfc3339(
+        "2025-05-21T10:40:45.123-05:30");
+    REQUIRE(utc);
+    REQUIRE(positiveOffset);
+    REQUIRE(negativeOffset);
+    REQUIRE(utc.value().toUnixMilliseconds() == 1747843845123LL);
+    REQUIRE(positiveOffset.value() == utc.value());
+    REQUIRE(negativeOffset.value() == utc.value());
+    REQUIRE(utc.value().toRfc3339().value()
+            == "2025-05-21T16:10:45.123Z");
+
+    REQUIRE(Instant::parseRfc3339("2026-05-21T10:30:00.5Z")
+                .value().toRfc3339().value()
+            == "2026-05-21T10:30:00.500Z");
+    REQUIRE_FALSE(Instant::parseRfc3339("2026-05-21T10:30:00"));
+    REQUIRE_FALSE(Instant::parseRfc3339("2026-02-30T10:30:00Z"));
+    REQUIRE_FALSE(Instant::parseRfc3339("2026-05-21T10:30:60Z"));
+    REQUIRE_FALSE(Instant::parseRfc3339("2026-05-21T10:30:00.1234Z"));
+    REQUIRE_FALSE(Instant::parseRfc3339("2026-05-21T10:30:00+18:01"));
 }
 
-TEST_CASE("LocalDateTime - ordering", "[LocalDateTime][Compare]")
+TEST_CASE("Instant floors negative Unix seconds", "[TimeUtils][Instant]")
 {
-    ucf::utilities::LocalDateTime a{ucf::utilities::LocalDate{2026, 5, 21}, 10, 0, 0, 0};
-    ucf::utilities::LocalDateTime b{ucf::utilities::LocalDate{2026, 5, 21}, 10, 0, 0, 1};
-    ucf::utilities::LocalDateTime c{ucf::utilities::LocalDate{2026, 5, 21}, 10, 0, 1, 0};
-
-    REQUIRE(a < b);
-    REQUIRE(b < c);
+    REQUIRE(Instant::fromUnixMilliseconds(-1).toUnixSeconds() == -1);
+    REQUIRE(Instant::fromUnixMilliseconds(-999).toUnixSeconds() == -1);
+    REQUIRE(Instant::fromUnixMilliseconds(-1000).toUnixSeconds() == -1);
+    REQUIRE(Instant::fromUnixMilliseconds(-1001).toUnixSeconds() == -2);
+    REQUIRE(Instant::fromUnixMilliseconds(-1).toRfc3339().value()
+            == "1969-12-31T23:59:59.999Z");
 }
 
-// =================== Instant ===================
-
-TEST_CASE("Instant - unix milliseconds roundtrip", "[Instant]")
+TEST_CASE("Instant validates Unix, time_t, and arithmetic ranges", "[TimeUtils][Instant]")
 {
-    auto t = ucf::utilities::Instant::fromUnixMilliseconds(1747843845123LL);
-    REQUIRE(t.toUnixMilliseconds() == 1747843845123LL);
-    REQUIRE(t.toUnixSeconds() == 1747843845LL);
+    constexpr int64_t minimumSeconds = std::numeric_limits<int64_t>::min() / 1000;
+    constexpr int64_t maximumSeconds = std::numeric_limits<int64_t>::max() / 1000;
+    REQUIRE(Instant::fromUnixSeconds(minimumSeconds));
+    REQUIRE(Instant::fromUnixSeconds(maximumSeconds));
+    REQUIRE_FALSE(Instant::fromUnixSeconds(minimumSeconds - 1));
+    REQUIRE_FALSE(Instant::fromUnixSeconds(maximumSeconds + 1));
+
+    const std::time_t value = static_cast<std::time_t>(1747843845);
+    const auto fromTime = Instant::fromTimeT(value);
+    REQUIRE(fromTime);
+    REQUIRE(fromTime.value().toTimeT().value() == value);
+
+    const auto maximum = Instant::fromUnixMilliseconds(std::numeric_limits<int64_t>::max());
+    const auto minimum = Instant::fromUnixMilliseconds(std::numeric_limits<int64_t>::min());
+    REQUIRE_THROWS_AS(maximum + 1ms, std::overflow_error);
+    REQUIRE_THROWS_AS(minimum - 1ms, std::overflow_error);
+    REQUIRE_THROWS_AS(maximum - minimum, std::overflow_error);
+    REQUIRE_FALSE(maximum.toRfc3339());
+    REQUIRE_FALSE(TimeUtils::toZonedDateTime(maximum, TimeZone::utc()));
 }
 
-TEST_CASE("Instant - ISO 8601 roundtrip", "[Instant][ISO8601]")
+TEST_CASE("UTC offsets and fixed zones are bounded values", "[TimeUtils][TimeZone]")
 {
-    auto t = ucf::utilities::Instant::fromUnixMilliseconds(1747843845123LL);
-    auto s = t.toISO8601();
-    REQUIRE(s == "2025-05-21T16:10:45.123Z");
+    REQUIRE(UtcOffset::utc().toString() == "+00:00");
+    REQUIRE(UtcOffset::fromHoursMinutes(8, 0).value().toString() == "+08:00");
+    REQUIRE(UtcOffset::fromHoursMinutes(-5, 30).value().toString() == "-05:30");
+    REQUIRE(UtcOffset::fromHoursMinutes(0, -30).value().toString() == "-00:30");
+    REQUIRE_FALSE(UtcOffset::fromHoursMinutes(18, 1));
+    REQUIRE_FALSE(UtcOffset::fromSeconds(18 * 3600 + 1));
 
-    auto back = ucf::utilities::Instant::parseISO8601(s);
-    REQUIRE(back.has_value());
-    REQUIRE(*back == t);
+    const auto fixed = TimeZone::fixedOffset(
+        UtcOffset::fromHoursMinutes(8, 0).value());
+    REQUIRE(fixed.kind() == TimeZoneKind::FixedOffset);
+    REQUIRE(fixed.id() == "+08:00");
+    REQUIRE(fixed.configuredOffset().value().totalSeconds() == 8 * 3600);
 }
 
-TEST_CASE("Instant::parseISO8601 - acceptance", "[Instant][ISO8601]")
+TEST_CASE("UTC and fixed offset conversions round-trip", "[TimeUtils][TimeZone]")
 {
-    REQUIRE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00Z").has_value());
-    REQUIRE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00.5Z").has_value());
-    REQUIRE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00.123Z").has_value());
+    const auto instant = Instant::parseRfc3339("2025-05-21T16:10:45.123Z").value();
+    const auto utc = TimeUtils::toZonedDateTime(instant, TimeZone::utc());
+    REQUIRE(utc);
+    REQUIRE(utc.value().localDateTime()
+            == dateTime(2025, 5, 21, 16, 10, 45, 123));
+    REQUIRE(utc.value().abbreviation() == "UTC");
+    REQUIRE_FALSE(utc.value().isDaylightSavingTime());
+    REQUIRE(TimeUtils::toInstant(
+                utc.value().localDateTime(),
+                utc.value().timeZone()).value()
+            == instant);
 
-    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00").has_value());
-    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026-05-21 10:30:00Z").has_value());
-    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026/05/21T10:30:00Z").has_value());
-    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("2026-05-21T10:30:00.1234Z").has_value());
-    REQUIRE_FALSE(ucf::utilities::Instant::parseISO8601("").has_value());
+    const auto plusEight = TimeZone::fixedOffset(
+        UtcOffset::fromHoursMinutes(8, 0).value());
+    const auto east = TimeUtils::toZonedDateTime(instant, plusEight);
+    REQUIRE(east);
+    REQUIRE(east.value().localDateTime()
+            == dateTime(2025, 5, 22, 0, 10, 45, 123));
+    REQUIRE(TimeUtils::toInstant(east.value().localDateTime(), plusEight).value()
+            == instant);
+
+    const auto minusFiveThirty = TimeZone::fixedOffset(
+        UtcOffset::fromHoursMinutes(-5, 30).value());
+    const auto west = TimeUtils::toZonedDateTime(instant, minusFiveThirty);
+    REQUIRE(west);
+    REQUIRE(west.value().localDateTime()
+            == dateTime(2025, 5, 21, 10, 40, 45, 123));
+    REQUIRE(TimeUtils::toInstant(
+                west.value().localDateTime(),
+                minusFiveThirty).value()
+            == instant);
 }
 
-TEST_CASE("Instant - ordering and arithmetic", "[Instant][Compare]")
+TEST_CASE("One Instant can map to different calendar dates", "[TimeUtils][TimeZone]")
 {
-    auto a = ucf::utilities::Instant::fromUnixMilliseconds(1000);
-    auto b = ucf::utilities::Instant::fromUnixMilliseconds(2500);
-
-    REQUIRE(a < b);
-    REQUIRE(b - a == std::chrono::milliseconds{1500});
-    REQUIRE((a + std::chrono::milliseconds{1500}) == b);
-    REQUIRE((b - std::chrono::milliseconds{1500}) == a);
+    const auto instant = Instant::parseRfc3339("2025-05-21T01:00:00Z").value();
+    const auto west = TimeZone::fixedOffset(
+        UtcOffset::fromHoursMinutes(-5, 0).value());
+    REQUIRE(TimeUtils::toZonedDateTime(instant, TimeZone::utc())
+                .value().localDateTime().date()
+            == date(2025, 5, 21));
+    REQUIRE(TimeUtils::toZonedDateTime(instant, west)
+                .value().localDateTime().date()
+            == date(2025, 5, 20));
 }
 
-TEST_CASE("Instant - now monotonicity within a thread", "[Instant]")
+TEST_CASE("Named timezone capability is explicit", "[TimeUtils][TimeZone]")
 {
-    auto a = ucf::utilities::Instant::now();
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-    auto b = ucf::utilities::Instant::now();
-    REQUIRE(b >= a);
+    const auto abbreviation = TimeUtils::findTimeZone("EST");
+    REQUIRE_FALSE(abbreviation);
+    REQUIRE(abbreviation.error().code == TimeErrorCode::UnknownTimeZone);
+
+    const auto newYork = TimeUtils::findTimeZone("America/New_York");
+    if (!TimeUtils::supportsNamedTimeZones())
+    {
+        REQUIRE_FALSE(newYork);
+        REQUIRE(newYork.error().code == TimeErrorCode::TimeZoneNotSupported);
+        REQUIRE_FALSE(TimeUtils::systemTimeZone());
+        REQUIRE_FALSE(TimeUtils::timeZoneDatabaseVersion());
+    }
+    else
+    {
+        REQUIRE(newYork);
+        REQUIRE(newYork.value().kind() == TimeZoneKind::Named);
+        REQUIRE(TimeUtils::timeZoneDatabaseVersion());
+    }
 }
 
-TEST_CASE("Instant - toUTCDateTime", "[Instant]")
+TEST_CASE("DST resolution policies handle gaps and overlaps", "[TimeUtils][TimeZone][DST]")
 {
-    auto t = ucf::utilities::Instant::fromUnixMilliseconds(1747843845123LL);
-    auto dt = t.toUTCDateTime();
-    REQUIRE(dt.date() == ucf::utilities::LocalDate{2025, 5, 21});
-    REQUIRE(dt.hour() == 16);
-    REQUIRE(dt.minute() == 10);
-    REQUIRE(dt.second() == 45);
-    REQUIRE(dt.millisecond() == 123);
+    if (!TimeUtils::supportsNamedTimeZones())
+    {
+        SUCCEED("standard library has no C++20 tzdb support");
+        return;
+    }
+
+    const auto zone = TimeUtils::findTimeZone("America/New_York");
+    REQUIRE(zone);
+
+    const auto nonexistent = dateTime(2024, 3, 10, 2, 30, 0);
+    const auto rejectedGap = TimeUtils::toInstant(nonexistent, zone.value());
+    REQUIRE_FALSE(rejectedGap);
+    REQUIRE(rejectedGap.error().code == TimeErrorCode::NonexistentLocalTime);
+
+    LocalTimeResolvePolicy forward;
+    forward.nonexistent = NonexistentTimePolicy::ShiftForward;
+    LocalTimeResolvePolicy backward;
+    backward.nonexistent = NonexistentTimePolicy::ShiftBackward;
+    const auto shiftedForward = TimeUtils::toInstant(nonexistent, zone.value(), forward);
+    const auto shiftedBackward = TimeUtils::toInstant(nonexistent, zone.value(), backward);
+    REQUIRE(shiftedForward);
+    REQUIRE(shiftedBackward);
+    REQUIRE(TimeUtils::toZonedDateTime(shiftedForward.value(), zone.value())
+                .value().localDateTime()
+            == dateTime(2024, 3, 10, 3, 30, 0));
+    REQUIRE(TimeUtils::toZonedDateTime(shiftedBackward.value(), zone.value())
+                .value().localDateTime()
+            == dateTime(2024, 3, 10, 1, 30, 0));
+
+    const auto ambiguous = dateTime(2024, 11, 3, 1, 30, 0);
+    const auto rejectedOverlap = TimeUtils::toInstant(ambiguous, zone.value());
+    REQUIRE_FALSE(rejectedOverlap);
+    REQUIRE(rejectedOverlap.error().code == TimeErrorCode::AmbiguousLocalTime);
+
+    LocalTimeResolvePolicy earlier;
+    earlier.ambiguous = AmbiguousTimePolicy::Earlier;
+    LocalTimeResolvePolicy later;
+    later.ambiguous = AmbiguousTimePolicy::Later;
+    const auto earlierInstant = TimeUtils::toInstant(ambiguous, zone.value(), earlier);
+    const auto laterInstant = TimeUtils::toInstant(ambiguous, zone.value(), later);
+    REQUIRE(earlierInstant);
+    REQUIRE(laterInstant);
+    REQUIRE(laterInstant.value() - earlierInstant.value() == 1h);
 }
 
-// =================== TimeUtils helpers ===================
-
-TEST_CASE("TimeUtils::formatSecondsToHMS", "[TimeUtils][Duration]")
+TEST_CASE("Portable pattern parsing and formatting are strict", "[TimeUtils][Format]")
 {
-    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToHMS(0) == "00:00:00");
-    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToHMS(3661) == "01:01:01");
-    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToHMS(-5) == "00:00:00");
+    const auto value = dateTime(2026, 5, 21, 10, 30, 45, 7);
+    REQUIRE(TimeUtils::format(value, "%Y-%m-%d %H:%M:%S.%f").value()
+            == "2026-05-21 10:30:45.007");
+    REQUIRE(TimeUtils::format(value, "%%Z").value() == "%Z");
+    REQUIRE_FALSE(TimeUtils::format(value, "%Y-%m-%d %z"));
+    REQUIRE_FALSE(TimeUtils::format(value, "%Y-%m-%d %Z"));
+    REQUIRE_FALSE(TimeUtils::format(value, "%c"));
+
+    const auto parsed = TimeUtils::parseLocalDateTime(
+        "12 2026-05-21 10:30:45",
+        "%f %Y-%m-%d %H:%M:%S");
+    REQUIRE(parsed);
+    REQUIRE(parsed.value() == dateTime(2026, 5, 21, 10, 30, 45, 120));
+    REQUIRE_FALSE(TimeUtils::parseLocalDateTime(
+        "2026-05-21 10:30:45 trailing",
+        "%Y-%m-%d %H:%M:%S"));
+    REQUIRE_FALSE(TimeUtils::parseLocalDateTime(
+        "2026-05-21 UTC",
+        "%Y-%m-%d %Z"));
+    REQUIRE_FALSE(TimeUtils::parseLocalDateTime(
+        "2026-05-21 10:30:45 1 2",
+        "%Y-%m-%d %H:%M:%S %f %f"));
+
+    const auto fixed = TimeZone::fixedOffset(
+        UtcOffset::fromHoursMinutes(8, 0).value());
+    const auto zoned = TimeUtils::toZonedDateTime(
+        Instant::parseRfc3339("2025-05-21T16:10:45.123Z").value(),
+        fixed);
+    REQUIRE(zoned);
+    REQUIRE(TimeUtils::format(zoned.value(), "%Y-%m-%d %H:%M %z %Z").value()
+            == "2025-05-22 00:10 +08:00 +08:00");
 }
 
-TEST_CASE("TimeUtils::formatSecondsToMS", "[TimeUtils][Duration]")
+TEST_CASE("Duration formatting preserves negative signs and large hours", "[TimeUtils][Duration]")
 {
-    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToMS(0) == "00:00");
-    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToMS(125) == "02:05");
-    REQUIRE(ucf::utilities::TimeUtils::formatSecondsToMS(-1) == "00:00");
+    REQUIRE(TimeUtils::formatHoursMinutesSeconds(3661s) == "01:01:01");
+    REQUIRE(TimeUtils::formatHoursMinutesSeconds(-3661s) == "-01:01:01");
+    REQUIRE(TimeUtils::formatMinutesSeconds(125s) == "02:05");
+    REQUIRE(TimeUtils::formatMinutesSeconds(-65s) == "-01:05");
+    REQUIRE(TimeUtils::formatDuration(3661050ms) == "01:01:01.050");
+    REQUIRE(TimeUtils::formatDuration(-1500ms) == "-00:00:01.500");
+    REQUIRE(TimeUtils::formatDurationHuman(0ms) == "0 ms");
+    REQUIRE(TimeUtils::formatDurationHuman(500ms) == "500 ms");
+    REQUIRE(TimeUtils::formatDurationHuman(-500ms) == "-500 ms");
+    REQUIRE(TimeUtils::formatDurationHuman(-1500ms) == "-1s 500ms");
+    REQUIRE(TimeUtils::formatHoursMinutesSeconds(100h) == "100:00:00");
+
+    const auto minimumMilliseconds = std::chrono::milliseconds{
+        std::numeric_limits<std::chrono::milliseconds::rep>::min()};
+    REQUIRE_FALSE(TimeUtils::formatDuration(minimumMilliseconds).empty());
+    REQUIRE_FALSE(TimeUtils::formatDurationHuman(minimumMilliseconds).empty());
 }
 
-TEST_CASE("TimeUtils::formatDuration", "[TimeUtils][Duration]")
+TEST_CASE("Fixed-zone operations are deterministic under concurrency", "[TimeUtils][Threading]")
 {
-    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(0)) == "00:00:00.000");
-    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(123)) == "00:00:00.123");
-    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(1000)) == "00:00:01.000");
-    REQUIRE(ucf::utilities::TimeUtils::formatDuration(std::chrono::milliseconds(3661050)) == "01:01:01.050");
-    REQUIRE(ucf::utilities::TimeUtils::formatDuration(-std::chrono::milliseconds(100)) == "00:00:00.000");
+    const auto zone = TimeZone::fixedOffset(
+        UtcOffset::fromHoursMinutes(8, 0).value());
+    const auto instant = Instant::parseRfc3339("2025-05-21T16:10:45.123Z").value();
+    constexpr std::size_t threadCount = 8;
+    constexpr int iterationCount = 300;
+    std::atomic<bool> consistent{true};
+    std::vector<std::thread> threads;
+    for (std::size_t index = 0; index < threadCount; ++index)
+    {
+        threads.emplace_back([&]
+        {
+            for (int iteration = 0; iteration < iterationCount; ++iteration)
+            {
+                const auto formatted = TimeUtils::format(
+                    instant,
+                    zone,
+                    "%Y-%m-%dT%H:%M:%S.%f%z");
+                if (!formatted
+                    || formatted.value() != "2025-05-22T00:10:45.123+08:00")
+                {
+                    consistent.store(false, std::memory_order_relaxed);
+                    return;
+                }
+            }
+        });
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+    REQUIRE(consistent.load(std::memory_order_relaxed));
 }
 
-TEST_CASE("TimeUtils::formatDurationHuman", "[TimeUtils][Duration]")
+TEST_CASE("Clock abstraction is injectable without global mutable state", "[TimeUtils][Clock]")
 {
-    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(0)) == "0 ms");
-    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(500)) == "500 ms");
-    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(1000)) == "1s");
-    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(125000)) == "2m 5s");
-    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(std::chrono::milliseconds(3661000)) == "1h 1m 1s");
-    REQUIRE(ucf::utilities::TimeUtils::formatDurationHuman(-std::chrono::milliseconds(100)) == "0 ms");
-}
+    const auto fixedValue = Instant::fromUnixMilliseconds(1234);
+    const FixedClock fixed{fixedValue};
+    REQUIRE(fixed.now() == fixedValue);
 
-TEST_CASE("TimeUtils::formatUTCTime - fixed pattern", "[TimeUtils][Format]")
-{
-    std::time_t t = static_cast<std::time_t>(1747843845);  // 2025-05-21 16:10:45 UTC
-    REQUIRE(ucf::utilities::TimeUtils::formatUTCTime(t, "%Y-%m-%d %H:%M:%S") == "2025-05-21 16:10:45");
-    REQUIRE(ucf::utilities::TimeUtils::formatUTCTime(t, "").empty());
-}
-
-TEST_CASE("TimeUtils - current time round-trip consistency", "[TimeUtils]")
-{
-    auto ms = ucf::utilities::TimeUtils::getCurrentUTCMilliseconds();
-    auto sec = ucf::utilities::TimeUtils::getCurrentUTCSeconds();
-    REQUIRE(ms >= sec * 1000);
-    REQUIRE(ms <  sec * 1000 + 5000);   // wall-clock skew tolerance
+    const auto before = Instant::fromUnixMilliseconds(
+        std::chrono::floor<std::chrono::milliseconds>(
+            std::chrono::system_clock::now()).time_since_epoch().count());
+    const auto observed = SystemClock::instance().now();
+    const auto after = Instant::fromUnixMilliseconds(
+        std::chrono::floor<std::chrono::milliseconds>(
+            std::chrono::system_clock::now()).time_since_epoch().count());
+    REQUIRE(observed >= before);
+    REQUIRE(observed <= after);
+    REQUIRE(TimeUtils::now() >= before);
 }

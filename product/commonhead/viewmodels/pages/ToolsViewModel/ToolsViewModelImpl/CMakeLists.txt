@@ -22,10 +22,6 @@ set(MODULE_DEPENDENCIES_PRIVATE
     LoggerUtils
     CommonHeadFramework
     ResourceLoaderApi
-    Base64Utils
-    JsonUtils
-    TimeUtils
-    UUIDUtils
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})
 set(MODULE_INSTALL_INTERFACE_DIR include)

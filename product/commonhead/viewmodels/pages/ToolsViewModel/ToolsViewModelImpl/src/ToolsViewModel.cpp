@@ -1,16 +1,8 @@
 #include "ToolsViewModel.h"
 #include "LoggerDefine.h"
 
-#include <chrono>
-#include <ctime>
 #include <functional>
-#include <iomanip>
-#include <sstream>
-
-#include <ucf/utilities/Base64Utils/Base64Utils.h>
-#include <ucf/utilities/JsonUtils/JsonValue.h>
-#include <ucf/utilities/TimeUtils/TimeUtils.h>
-#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
+#include <utility>
 
 #include <commonhead/ResourceStringLoader/ResourceString.h>
 
@@ -46,7 +38,13 @@ std::string ToolsViewModel::getViewModelName() const
 void ToolsViewModel::init()
 {
     TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::init");
-    buildToolsTree();
+
+    if (!buildToolsTree())
+    {
+        TOOLS_VIEW_MODEL_LOG_ERROR("ToolsViewModel::init: failed to build tools tree");
+        return;
+    }
+
     m_ready = true;
     fireNotification(&IToolsViewModelCallback::onToolsTreeReady);
 }
@@ -74,9 +72,14 @@ void ToolsViewModel::reloadTree()
 {
     TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::reloadTree");
 
-    if (!m_toolsTree) {
-        // First-time build path: act like init().
-        buildToolsTree();
+    if (!m_toolsTree)
+    {
+        if (!buildToolsTree())
+        {
+            TOOLS_VIEW_MODEL_LOG_ERROR("ToolsViewModel::reloadTree: failed to build tools tree");
+            return;
+        }
+
         m_ready = true;
         fireNotification(&IToolsViewModelCallback::onToolsTreeReady);
         return;
@@ -84,14 +87,23 @@ void ToolsViewModel::reloadTree()
 
     // In-place refresh of all node titles/properties; ids and parent links stay
     // stable, so the UI can patch its mirror without any structural change.
-    refreshTreeNodeData();
+    if (!refreshTreeNodeData())
+    {
+        TOOLS_VIEW_MODEL_LOG_ERROR("ToolsViewModel::reloadTree: failed to refresh tools tree");
+        return;
+    }
+
     fireNotification(&IToolsViewModelCallback::onToolsNodesUpdated,
                      snapshotAllNodes());
 }
 
-void ToolsViewModel::refreshTreeNodeData()
+bool ToolsViewModel::refreshTreeNodeData()
 {
-    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
+    auto resourceLoader = lockResourceLoader();
+    if (!resourceLoader)
+    {
+        return false;
+    }
 
     static const std::vector<std::pair<std::string, commonHead::model::LocalizedString>> nodeTokenMap = {
         { "text",               commonHead::model::LocalizedString::ToolsCategoryText },
@@ -116,6 +128,8 @@ void ToolsViewModel::refreshTreeNodeData()
             node->setNodeData(data);
         }
     }
+
+    return true;
 }
 
 std::vector<model::ToolNodeData> ToolsViewModel::snapshotAllNodes() const
@@ -144,205 +158,38 @@ std::vector<model::ToolNodeData> ToolsViewModel::snapshotAllNodes() const
     return out;
 }
 
-// ==================== Base64 工具 ====================
-
-Base64Result ToolsViewModel::base64Encode(const std::string& input, bool urlSafe)
-{
-    Base64Result result;
-
-    auto variant = urlSafe ? ucf::utilities::Base64Variant::UrlSafe
-                           : ucf::utilities::Base64Variant::Standard;
-    auto encodeResult = ucf::utilities::Base64Utils::encode(input, variant);
-
-    result.success = encodeResult.success;
-    result.data = encodeResult.data;
-    result.errorMessage = encodeResult.errorMessage;
-
-    return result;
-}
-
-Base64Result ToolsViewModel::base64Decode(const std::string& input)
-{
-    Base64Result result;
-
-    auto decodeResult = ucf::utilities::Base64Utils::decode(input);
-
-    result.success = decodeResult.success;
-    if (decodeResult.success)
-    {
-        result.data = std::string(decodeResult.data.begin(), decodeResult.data.end());
-    }
-    result.errorMessage = decodeResult.errorMessage;
-
-    return result;
-}
-
-// ==================== JSON 工具 ====================
-
-JsonFormatResult ToolsViewModel::jsonFormat(const std::string& input, int indent)
-{
-    JsonFormatResult result;
-
-    auto parseResult = ucf::utilities::JsonValue::parseEx(input);
-    if (!parseResult.ok())
-    {
-        result.success = false;
-        result.errorMessage = parseResult.error;
-        return result;
-    }
-
-    result.success = true;
-    result.data = parseResult.value.dumpPretty(indent);
-    return result;
-}
-
-JsonFormatResult ToolsViewModel::jsonMinify(const std::string& input)
-{
-    JsonFormatResult result;
-
-    auto parseResult = ucf::utilities::JsonValue::parseEx(input);
-    if (!parseResult.ok())
-    {
-        result.success = false;
-        result.errorMessage = parseResult.error;
-        return result;
-    }
-
-    result.success = true;
-    result.data = parseResult.value.dump();
-    return result;
-}
-
-JsonFormatResult ToolsViewModel::jsonValidate(const std::string& input)
-{
-    JsonFormatResult result;
-
-    auto parseResult = ucf::utilities::JsonValue::parseEx(input);
-    result.success = parseResult.ok();
-    if (!result.success)
-    {
-        result.errorMessage = parseResult.error;
-    }
-    else
-    {
-        auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
-        result.data = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsJsonValid);
-    }
-    return result;
-}
-
-// ==================== 时间戳工具 ====================
-
-TimestampResult ToolsViewModel::timestampToDateTime(int64_t timestamp, bool isMilliseconds)
-{
-    TimestampResult result;
-
-    try
-    {
-        // Convert to seconds if milliseconds
-        time_t seconds = isMilliseconds ? (timestamp / 1000) : timestamp;
-
-        std::tm* tm = std::localtime(&seconds);
-        if (!tm)
-        {
-            result.success = false;
-            auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
-            result.errorMessage = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsInvalidTimestamp);
-            return result;
-        }
-
-        std::ostringstream oss;
-        oss << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
-
-        result.success = true;
-        result.timestamp = timestamp;
-        result.dateTimeStr = oss.str();
-        result.timezone = ucf::utilities::TimeUtils::getLocalTimeZoneName();
-    }
-    catch (const std::exception& e)
-    {
-        result.success = false;
-        result.errorMessage = e.what();
-    }
-
-    return result;
-}
-
-TimestampResult ToolsViewModel::dateTimeToTimestamp(const std::string& dateTimeStr, const std::string& format)
-{
-    TimestampResult result;
-
-    try
-    {
-        std::tm tm = {};
-        std::istringstream iss(dateTimeStr);
-
-        std::string fmt = format.empty() ? "%Y-%m-%d %H:%M:%S" : format;
-        iss >> std::get_time(&tm, fmt.c_str());
-
-        if (iss.fail())
-        {
-            result.success = false;
-            auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
-            result.errorMessage = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsDateTimeParseFailed);
-            return result;
-        }
-
-        time_t seconds = std::mktime(&tm);
-        if (seconds == -1)
-        {
-            result.success = false;
-            auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
-            result.errorMessage = resourceLoader->getLocalizedString(commonHead::model::LocalizedString::ToolsInvalidDateTime);
-            return result;
-        }
-
-        result.success = true;
-        result.timestamp = static_cast<int64_t>(seconds) * 1000;  // Return milliseconds
-        result.dateTimeStr = dateTimeStr;
-        result.timezone = ucf::utilities::TimeUtils::getLocalTimeZoneName();
-    }
-    catch (const std::exception& e)
-    {
-        result.success = false;
-        result.errorMessage = e.what();
-    }
-
-    return result;
-}
-
-TimestampResult ToolsViewModel::getCurrentTimestamp()
-{
-    TimestampResult result;
-
-    result.success = true;
-    result.timestamp = ucf::utilities::TimeUtils::getCurrentUTCMilliseconds();
-    result.dateTimeStr = ucf::utilities::TimeUtils::getCurrentUTCTimeString();
-    result.timezone = ucf::utilities::TimeUtils::getLocalTimeZoneName();
-
-    return result;
-}
-
-// ==================== UUID 工具 ====================
-
-std::string ToolsViewModel::generateUuid()
-{
-    return ucf::utilities::UUIDUtils::generateUUID();
-}
-
-bool ToolsViewModel::isValidUuid(const std::string& uuid)
-{
-    return ucf::utilities::UUIDUtils::isValidUUID(uuid);
-}
-
 // ==================== Private methods ====================
 
-void ToolsViewModel::buildToolsTree()
+std::shared_ptr<commonHead::IResourceLoader> ToolsViewModel::lockResourceLoader() const
 {
+    auto framework = getCommonHeadFramework().lock();
+    if (!framework)
+    {
+        TOOLS_VIEW_MODEL_LOG_ERROR(
+            "ToolsViewModel::lockResourceLoader: CommonHeadFramework is not available");
+        return {};
+    }
+
+    auto resourceLoader = framework->getResourceLoader();
+    if (!resourceLoader)
+    {
+        TOOLS_VIEW_MODEL_LOG_ERROR(
+            "ToolsViewModel::lockResourceLoader: ResourceLoader is not available");
+        return {};
+    }
+
+    return resourceLoader;
+}
+
+bool ToolsViewModel::buildToolsTree()
+{
+    auto resourceLoader = lockResourceLoader();
+    if (!resourceLoader)
+    {
+        return false;
+    }
+
     auto tree = std::make_shared<model::ToolsTree>();
-
-
-    auto resourceLoader = getCommonHeadFramework().lock()->getResourceLoader();
 
     // Note: ToolsTree::addNode() stamps the parentId argument into the node data;
     // we still pass an explicit empty string here so the initializer matches the
@@ -456,9 +303,11 @@ void ToolsViewModel::buildToolsTree()
         model::ToolPanelType::ScreenRecording
     });
 
-    m_toolsTree = tree;
+    m_toolsTree = std::move(tree);
 
     TOOLS_VIEW_MODEL_LOG_DEBUG("ToolsViewModel::buildToolsTree completed");
+
+    return true;
 }
 
 } // namespace commonHead::viewModels

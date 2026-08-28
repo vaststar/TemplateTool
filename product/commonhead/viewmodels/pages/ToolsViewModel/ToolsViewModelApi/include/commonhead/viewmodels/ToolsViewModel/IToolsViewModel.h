@@ -7,7 +7,6 @@
 #include <commonhead/utilities/VMNotificationHelper/IVMNotificationHelper.h>
 #include <commonhead/viewmodels/ViewModelCore/IViewModel.h>
 #include <commonhead/viewmodels/ToolsViewModel/IToolsModel.h>
-#include <commonhead/viewmodels/ToolsViewModel/ToolsOperationTypes.h>
 
 namespace commonHead::viewModels {
 
@@ -54,7 +53,7 @@ public:
 };
 
 /**
- * @brief 工具 ViewModel 接口
+ * @brief 工具树导航 ViewModel 接口
  */
 class IToolsViewModel
     : public IViewModel
@@ -99,33 +98,6 @@ public:
      *        onToolsNodesUpdated with the full node list.
      */
     virtual void reloadTree() = 0;
-
-    //========================================
-    // Base64 工具
-    //========================================
-    virtual Base64Result base64Encode(const std::string& input, bool urlSafe = false) = 0;
-    virtual Base64Result base64Decode(const std::string& input) = 0;
-
-    //========================================
-    // JSON 工具
-    //========================================
-    virtual JsonFormatResult jsonFormat(const std::string& input, int indent = 2) = 0;
-    virtual JsonFormatResult jsonMinify(const std::string& input) = 0;
-    virtual JsonFormatResult jsonValidate(const std::string& input) = 0;
-
-    //========================================
-    // 时间戳工具
-    //========================================
-    virtual TimestampResult timestampToDateTime(int64_t timestamp, bool isMilliseconds = true) = 0;
-    virtual TimestampResult dateTimeToTimestamp(const std::string& dateTimeStr, const std::string& format = "") = 0;
-    virtual TimestampResult getCurrentTimestamp() = 0;
-
-    //========================================
-    // UUID 工具
-    //========================================
-    virtual std::string generateUuid() = 0;
-    virtual bool isValidUuid(const std::string& uuid) = 0;
-
 };
 
 } // namespace commonHead::viewModels
