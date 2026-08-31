@@ -16,7 +16,7 @@ inline UTMessageOptions info(QString title, QString message,
 {
     return { std::move(title), std::move(message), std::move(detail),
              UTMessageIcon::Info,
-             { UTMessageButtonPresets::ok() }, parent };
+             { UTMessageButtonPresets::acknowledge() }, parent };
 }
 
 inline UTMessageOptions warning(QString title, QString message,
@@ -24,7 +24,7 @@ inline UTMessageOptions warning(QString title, QString message,
 {
     return { std::move(title), std::move(message), std::move(detail),
              UTMessageIcon::Warning,
-             { UTMessageButtonPresets::ok() }, parent };
+             { UTMessageButtonPresets::acknowledge() }, parent };
 }
 
 inline UTMessageOptions error(QString title, QString message,
@@ -32,7 +32,7 @@ inline UTMessageOptions error(QString title, QString message,
 {
     return { std::move(title), std::move(message), std::move(detail),
              UTMessageIcon::Error,
-             { UTMessageButtonPresets::ok() }, parent };
+             { UTMessageButtonPresets::acknowledge() }, parent };
 }
 
 inline UTMessageOptions success(QString title, QString message,
@@ -40,7 +40,7 @@ inline UTMessageOptions success(QString title, QString message,
 {
     return { std::move(title), std::move(message), std::move(detail),
              UTMessageIcon::Success,
-             { UTMessageButtonPresets::ok() }, parent };
+             { UTMessageButtonPresets::acknowledge() }, parent };
 }
 
 // Two-button [Yes][No] confirmation. Default = Yes, Esc = No.

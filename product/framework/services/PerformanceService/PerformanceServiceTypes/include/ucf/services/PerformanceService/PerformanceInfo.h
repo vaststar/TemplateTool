@@ -20,27 +20,34 @@ struct PERFORMANCE_SERVICE_TYPES_API MemoryInfo {
     std::optional<uint64_t> systemAvailablePhysicalBytes;    ///< Estimated physical memory currently available
 };
 
-/// Timing statistics for a specific operation
+using TimingDuration = std::chrono::microseconds;
+
+/// Timing statistics for a specific operation.
 struct PERFORMANCE_SERVICE_TYPES_API TimingStats {
     std::string operationName;
     uint64_t callCount{0};
-    std::chrono::milliseconds totalTime{0};
-    std::chrono::milliseconds minTime{std::chrono::milliseconds::max()};
-    std::chrono::milliseconds maxTime{0};
+    TimingDuration totalDuration{0};
+    std::optional<TimingDuration> minimumDuration;
+    std::optional<TimingDuration> maximumDuration;
 
-    [[nodiscard]] std::chrono::milliseconds avgTime() const {
-        return callCount > 0 ? std::chrono::milliseconds(totalTime.count() / callCount)
-                             : std::chrono::milliseconds{0};
+    [[nodiscard]] std::optional<TimingDuration> averageDuration() const
+    {
+        if (callCount == 0)
+        {
+            return std::nullopt;
+        }
+
+        return TimingDuration{
+            totalDuration.count() / static_cast<TimingDuration::rep>(callCount)
+        };
     }
 };
 
-/// Token returned by beginTiming, used to end timing
+/// Opaque identifier returned by beginTiming and consumed by endTiming.
 struct PERFORMANCE_SERVICE_TYPES_API TimingToken {
     uint64_t id{0};
-    std::string operationName;
-    std::chrono::steady_clock::time_point startTime;
 
-    [[nodiscard]] bool isValid() const { return id != 0; }
+    [[nodiscard]] bool isValid() const noexcept { return id != 0; }
 };
 
 /// Complete performance snapshot

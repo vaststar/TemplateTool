@@ -6,6 +6,8 @@
 #include <atomic>
 #include <chrono>
 #include <mutex>
+#include <optional>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -20,13 +22,14 @@ public:
 
     /// Begin timing an operation
     /// @return Token to be used with endTiming
-    TimingToken beginTiming(const std::string& operationName);
+    [[nodiscard]] TimingToken beginTiming(const std::string& operationName);
 
     /// End timing and record the duration
     void endTiming(const TimingToken& token);
 
     /// Get statistics for a specific operation
-    [[nodiscard]] TimingStats getStats(const std::string& operationName) const;
+    [[nodiscard]] std::optional<TimingStats> getStats(
+        const std::string& operationName) const;
 
     /// Get all statistics
     [[nodiscard]] std::vector<TimingStats> getAllStats() const;
@@ -35,9 +38,18 @@ public:
     void reset();
 
 private:
+    struct ActiveTiming
+    {
+        std::string operationName;
+        std::chrono::steady_clock::time_point startTime;
+    };
+
+private:
+    inline static std::atomic<uint64_t> sNextTokenId{1};
+
     mutable std::mutex mMutex;
+    std::unordered_map<uint64_t, ActiveTiming> mActiveTimings;
     std::unordered_map<std::string, TimingStats> mStats;
-    std::atomic<uint64_t> mNextTokenId{1};
 };
 
 } // namespace ucf::service

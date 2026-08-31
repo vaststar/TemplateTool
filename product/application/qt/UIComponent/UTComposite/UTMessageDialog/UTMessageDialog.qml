@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import UTComponent 1.0
 import UTComposite 1.0
+import UIResourceLoader 1.0
 
 /**
  * UTMessageDialog - Generic message dialog driven by UTMessageDialogController.

@@ -1,6 +1,7 @@
 #include "PerformanceManager.h"
 #include "PerformanceServiceLogger.h"
 #include "PerformanceCpuCalculator.h"
+#include "PerformanceMonitoringSchedule.h"
 #include "TimingTracker.h"
 #include "IMemoryMonitor.h"
 #include "ICPUMonitor.h"
@@ -46,6 +47,14 @@ std::string formatMemorySize(std::optional<uint64_t> bytes)
 utilities::JsonValue optionalByteCountToJson(std::optional<uint64_t> bytes)
 {
     return bytes ? utilities::JsonValue(*bytes) : utilities::JsonValue(nullptr);
+}
+
+utilities::JsonValue optionalTimingDurationToJson(
+    std::optional<TimingDuration> duration)
+{
+    return duration
+        ? utilities::JsonValue(static_cast<int64_t>(duration->count()))
+        : utilities::JsonValue(nullptr);
 }
 
 } // namespace
@@ -182,16 +191,20 @@ void PerformanceManager::monitorLoop()
     CpuUsageWindow systemCpuWindow;
 
     // Establish independent process and system baselines before the first wait.
+    const auto initialProcessCpuTime = mCPUMonitor
+        ? mCPUMonitor->getProcessCpuTime()
+        : std::nullopt;
+    const auto initialSystemCpuTimes = mCPUMonitor
+        ? mCPUMonitor->getSystemCpuTimes()
+        : std::nullopt;
+    const auto scheduleStartTime = PerformanceMonitoringSchedule::Clock::now();
     static_cast<void>(cpuCalculator.update(
-        mCPUMonitor ? mCPUMonitor->getProcessCpuTime() : std::nullopt,
-        mCPUMonitor ? mCPUMonitor->getSystemCpuTimes() : std::nullopt,
-        std::chrono::steady_clock::now()));
+        initialProcessCpuTime,
+        initialSystemCpuTimes,
+        scheduleStartTime));
 
-    // Periodic usage report cadence (e.g. every minute), expressed in sample ticks.
-    const uint64_t reportEverySamples = (mSampleInterval.count() > 0)
-        ? std::max<uint64_t>(1, mReportInterval.count() / mSampleInterval.count())
-        : 1;
-    uint64_t sampleCount = 0;
+    PerformanceMonitoringSchedule schedule(
+        scheduleStartTime, mSampleInterval, mReportInterval);
     bool processSamplingFailureReported = false;
     bool systemSamplingFailureReported = false;
     bool processResidentMemorySamplingFailureReported = false;
@@ -199,15 +212,21 @@ void PerformanceManager::monitorLoop()
     while (mMonitorRunning.load())
     {
         {
-            // Sleep until the next sample tick, but wake immediately when stopped.
+            // Wait for the absolute sample deadline, but wake immediately when stopped.
             std::unique_lock<std::mutex> lock(mMonitorMutex);
-            mMonitorCv.wait_for(lock, mSampleInterval, [this] { return !mMonitorRunning.load(); });
+            mMonitorCv.wait_until(
+                lock,
+                schedule.nextSampleDeadline(),
+                [this] { return !mMonitorRunning.load(); });
         }
         if (!mMonitorRunning.load())
         {
             break;
         }
-        ++sampleCount;
+
+        // Keep the original cadence. If execution was delayed, skip all elapsed
+        // slots and schedule the next sample strictly in the future.
+        schedule.advanceSampleDeadline(PerformanceMonitoringSchedule::Clock::now());
 
         // --- CPU: compute usage from monotonic cumulative counter deltas ---
         if (mCPUMonitor)
@@ -338,7 +357,7 @@ void PerformanceManager::monitorLoop()
         }
 
         // --- Periodic usage report (CPU averaged over the window) ---
-        if (sampleCount % reportEverySamples == 0)
+        if (schedule.consumeReportDeadline(PerformanceMonitoringSchedule::Clock::now()))
         {
             const auto avgProcessCpu = processCpuWindow.average();
             const auto avgSystemCpu = systemCpuWindow.average();
@@ -380,7 +399,8 @@ void PerformanceManager::endTiming(const TimingToken& token)
     mTimingTracker->endTiming(token);
 }
 
-TimingStats PerformanceManager::getTimingStats(const std::string& operationName) const
+std::optional<TimingStats> PerformanceManager::getTimingStats(
+    const std::string& operationName) const
 {
     return mTimingTracker->getStats(operationName);
 }
@@ -449,10 +469,18 @@ std::string PerformanceManager::exportReportAsJson() const
         utilities::JsonValue timing = utilities::JsonValue::object();
         timing.set("operation", utilities::JsonValue(stats.operationName));
         timing.set("callCount", utilities::JsonValue(static_cast<uint64_t>(stats.callCount)));
-        timing.set("totalMs", utilities::JsonValue(static_cast<int64_t>(stats.totalTime.count())));
-        timing.set("avgMs", utilities::JsonValue(static_cast<int64_t>(stats.avgTime().count())));
-        timing.set("minMs", utilities::JsonValue(static_cast<int64_t>(stats.minTime == std::chrono::milliseconds::max() ? 0 : stats.minTime.count())));
-        timing.set("maxMs", utilities::JsonValue(static_cast<int64_t>(stats.maxTime.count())));
+        timing.set(
+            "totalDurationMicroseconds",
+            utilities::JsonValue(static_cast<int64_t>(stats.totalDuration.count())));
+        timing.set(
+            "averageDurationMicroseconds",
+            optionalTimingDurationToJson(stats.averageDuration()));
+        timing.set(
+            "minimumDurationMicroseconds",
+            optionalTimingDurationToJson(stats.minimumDuration));
+        timing.set(
+            "maximumDurationMicroseconds",
+            optionalTimingDurationToJson(stats.maximumDuration));
         timingArray.push_back(std::move(timing));
     }
 

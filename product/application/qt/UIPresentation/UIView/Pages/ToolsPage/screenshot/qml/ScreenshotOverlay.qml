@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import UTComponent
+import UIResourceLoader 1.0
 
 /**
  * ScreenshotOverlay - Fullscreen overlay for region selection and annotation

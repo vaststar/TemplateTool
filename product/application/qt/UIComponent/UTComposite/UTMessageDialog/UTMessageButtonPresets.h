@@ -5,9 +5,18 @@
 // Convenience factories for the most common dialog buttons.
 namespace UTMessageButtonPresets {
 
-inline UTMessageButton ok()
+// Sole acknowledgement button: Enter, Esc, and window close all dismiss the
+// dialog through the same OK result.
+inline UTMessageButton acknowledge()
 {
     return { QStringLiteral("OK"), {}, UTButtonRole::Accept, true, true, true };
+}
+
+// OK action in a multi-button dialog. Esc/window close must be handled by a
+// separate Cancel-style button.
+inline UTMessageButton ok()
+{
+    return { QStringLiteral("OK"), {}, UTButtonRole::Accept, true, false, true };
 }
 
 inline UTMessageButton cancel()

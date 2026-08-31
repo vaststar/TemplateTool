@@ -162,7 +162,8 @@ void PerformanceService::endTiming(const TimingToken& token)
     mDataPrivate->getPerformanceManager().endTiming(token);
 }
 
-TimingStats PerformanceService::getTimingStats(const std::string& operationName) const
+std::optional<TimingStats> PerformanceService::getTimingStats(
+    const std::string& operationName) const
 {
     return mDataPrivate->getPerformanceManager().getTimingStats(operationName);
 }

@@ -44,7 +44,8 @@ public:
     // Timing
     [[nodiscard]] TimingToken beginTiming(const std::string& operationName) override;
     void endTiming(const TimingToken& token) override;
-    [[nodiscard]] TimingStats getTimingStats(const std::string& operationName) const override;
+    [[nodiscard]] std::optional<TimingStats> getTimingStats(
+        const std::string& operationName) const override;
     [[nodiscard]] std::vector<TimingStats> getAllTimingStats() const override;
     void resetTimingStats() override;
 

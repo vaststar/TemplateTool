@@ -7,11 +7,63 @@
 #include <ucf/utilities/JsonUtils/JsonValue.h>
 #include <ucf/utilities/TimeUtils/Instant.h>
 #include "PerformanceCpuCalculator.h"
+#include "PerformanceMonitoringSchedule.h"
 #include "TimingTracker.h"
 
 #include <chrono>
 #include <optional>
 #include <thread>
+#include <vector>
+
+TEST_CASE("Performance monitoring schedule keeps absolute sample cadence",
+          "[PerformanceService][MonitoringSchedule]")
+{
+    using namespace std::chrono_literals;
+    using Schedule = ucf::service::PerformanceMonitoringSchedule;
+
+    const Schedule::TimePoint startTime{};
+    Schedule schedule(startTime, 1s, 30s);
+
+    REQUIRE(schedule.nextSampleDeadline() == startTime + 1s);
+
+    schedule.advanceSampleDeadline(startTime + 1s + 25ms);
+    REQUIRE(schedule.nextSampleDeadline() == startTime + 2s);
+
+    schedule.advanceSampleDeadline(startTime + 2s);
+    REQUIRE(schedule.nextSampleDeadline() == startTime + 3s);
+}
+
+TEST_CASE("Performance monitoring schedule skips elapsed slots without catch-up bursts",
+          "[PerformanceService][MonitoringSchedule]")
+{
+    using namespace std::chrono_literals;
+    using Schedule = ucf::service::PerformanceMonitoringSchedule;
+
+    const Schedule::TimePoint startTime{};
+    Schedule schedule(startTime, 1s, 30s);
+
+    schedule.advanceSampleDeadline(startTime + 5s + 400ms);
+    REQUIRE(schedule.nextSampleDeadline() == startTime + 6s);
+
+    REQUIRE_FALSE(schedule.consumeReportDeadline(startTime + 29s + 999ms));
+    REQUIRE(schedule.consumeReportDeadline(startTime + 30s + 25ms));
+    REQUIRE(schedule.nextReportDeadline() == startTime + 60s);
+
+    REQUIRE(schedule.consumeReportDeadline(startTime + 125s));
+    REQUIRE(schedule.nextReportDeadline() == startTime + 150s);
+    REQUIRE_FALSE(schedule.consumeReportDeadline(startTime + 125s));
+}
+
+TEST_CASE("Performance monitoring schedule rejects non-positive intervals",
+          "[PerformanceService][MonitoringSchedule]")
+{
+    using namespace std::chrono_literals;
+    using Schedule = ucf::service::PerformanceMonitoringSchedule;
+
+    const Schedule::TimePoint startTime{};
+    REQUIRE_THROWS_AS(Schedule(startTime, 0s, 30s), std::invalid_argument);
+    REQUIRE_THROWS_AS(Schedule(startTime, 1s, 0s), std::invalid_argument);
+}
 
 TEST_CASE("PerformanceService creation", "[PerformanceService]")
 {
@@ -64,60 +116,165 @@ TEST_CASE("PerformanceService memory threshold", "[PerformanceService]")
 
 TEST_CASE("TimingTracker basic timing", "[PerformanceService][TimingTracker]")
 {
+    using namespace std::chrono_literals;
+
     ucf::service::TimingTracker tracker;
 
     auto token = tracker.beginTiming("TestOperation");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(10ms);
     tracker.endTiming(token);
 
-    auto stats = tracker.getStats("TestOperation");
-    REQUIRE(stats.operationName == "TestOperation");
-    REQUIRE(stats.callCount == 1);
-    REQUIRE(stats.totalTime.count() >= 10);
+    const auto stats = tracker.getStats("TestOperation");
+    REQUIRE(stats);
+    REQUIRE(stats->operationName == "TestOperation");
+    REQUIRE(stats->callCount == 1);
+    REQUIRE(stats->totalDuration >= 10ms);
+    REQUIRE(stats->minimumDuration == stats->totalDuration);
+    REQUIRE(stats->maximumDuration == stats->totalDuration);
+    REQUIRE(stats->averageDuration() == stats->totalDuration);
 }
 
 TEST_CASE("TimingTracker multiple calls", "[PerformanceService][TimingTracker]")
 {
+    using namespace std::chrono_literals;
+
     ucf::service::TimingTracker tracker;
 
     for (int i = 0; i < 5; ++i)
     {
         auto token = tracker.beginTiming("MultiCall");
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(5ms);
         tracker.endTiming(token);
     }
 
-    auto stats = tracker.getStats("MultiCall");
-    REQUIRE(stats.callCount == 5);
-    REQUIRE(stats.totalTime.count() >= 25);
+    const auto stats = tracker.getStats("MultiCall");
+    REQUIRE(stats);
+    REQUIRE(stats->callCount == 5);
+    REQUIRE(stats->totalDuration >= 25ms);
+    REQUIRE(stats->minimumDuration);
+    REQUIRE(stats->maximumDuration);
+    REQUIRE(stats->averageDuration());
 }
 
-TEST_CASE("TimingTracker getAllStats", "[PerformanceService][TimingTracker]")
+TEST_CASE("TimingTracker getAllStats returns stable operation-name order",
+          "[PerformanceService][TimingTracker]")
 {
     ucf::service::TimingTracker tracker;
 
-    auto token1 = tracker.beginTiming("Op1");
+    auto token1 = tracker.beginTiming("ZuluOperation");
     tracker.endTiming(token1);
 
-    auto token2 = tracker.beginTiming("Op2");
+    auto token2 = tracker.beginTiming("AlphaOperation");
     tracker.endTiming(token2);
 
-    auto allStats = tracker.getAllStats();
+    const auto allStats = tracker.getAllStats();
     REQUIRE(allStats.size() == 2);
+    REQUIRE(allStats[0].operationName == "AlphaOperation");
+    REQUIRE(allStats[1].operationName == "ZuluOperation");
 }
 
-TEST_CASE("TimingTracker reset", "[PerformanceService][TimingTracker]")
+TEST_CASE("TimingTracker reset clears statistics and invalidates active tokens",
+          "[PerformanceService][TimingTracker]")
 {
     ucf::service::TimingTracker tracker;
 
-    auto token = tracker.beginTiming("ToBeReset");
-    tracker.endTiming(token);
+    auto completedToken = tracker.beginTiming("CompletedBeforeReset");
+    tracker.endTiming(completedToken);
+    auto activeToken = tracker.beginTiming("ActiveDuringReset");
 
     REQUIRE(tracker.getAllStats().size() == 1);
 
     tracker.reset();
+    tracker.endTiming(activeToken);
 
     REQUIRE(tracker.getAllStats().empty());
+    REQUIRE_FALSE(tracker.getStats("ActiveDuringReset"));
+}
+
+TEST_CASE("TimingTracker records sub-millisecond durations in microseconds",
+          "[PerformanceService][TimingTracker]")
+{
+    using namespace std::chrono_literals;
+
+    ucf::service::TimingTracker tracker;
+    auto token = tracker.beginTiming("SubMillisecond");
+    std::this_thread::sleep_for(500us);
+    tracker.endTiming(token);
+
+    const auto stats = tracker.getStats("SubMillisecond");
+    REQUIRE(stats);
+    REQUIRE(stats->totalDuration >= 500us);
+}
+
+TEST_CASE("TimingTracker consumes each token only once",
+          "[PerformanceService][TimingTracker]")
+{
+    ucf::service::TimingTracker tracker;
+    const auto token = tracker.beginTiming("CompleteOnce");
+
+    tracker.endTiming(token);
+    tracker.endTiming(token);
+
+    const auto stats = tracker.getStats("CompleteOnce");
+    REQUIRE(stats);
+    REQUIRE(stats->callCount == 1);
+}
+
+TEST_CASE("TimingTracker rejects tokens from another tracker",
+          "[PerformanceService][TimingTracker]")
+{
+    ucf::service::TimingTracker firstTracker;
+    ucf::service::TimingTracker secondTracker;
+    const auto token = firstTracker.beginTiming("OwnedByFirstTracker");
+
+    secondTracker.endTiming(token);
+    REQUIRE_FALSE(secondTracker.getStats("OwnedByFirstTracker"));
+
+    firstTracker.endTiming(token);
+    REQUIRE(firstTracker.getStats("OwnedByFirstTracker"));
+}
+
+TEST_CASE("TimingTracker rejects empty operation names",
+          "[PerformanceService][TimingTracker]")
+{
+    ucf::service::TimingTracker tracker;
+    const auto token = tracker.beginTiming("");
+
+    REQUIRE_FALSE(token.isValid());
+    REQUIRE(tracker.getAllStats().empty());
+    REQUIRE_FALSE(tracker.getStats(""));
+}
+
+TEST_CASE("TimingTracker supports concurrent samples",
+          "[PerformanceService][TimingTracker]")
+{
+    constexpr int threadCount = 4;
+    constexpr int samplesPerThread = 10;
+
+    ucf::service::TimingTracker tracker;
+    std::vector<std::thread> workers;
+    workers.reserve(threadCount);
+
+    for (int threadIndex = 0; threadIndex < threadCount; ++threadIndex)
+    {
+        workers.emplace_back([&tracker]
+        {
+            for (int sampleIndex = 0; sampleIndex < samplesPerThread; ++sampleIndex)
+            {
+                const auto token = tracker.beginTiming("ConcurrentOperation");
+                tracker.endTiming(token);
+            }
+        });
+    }
+
+    for (auto& worker : workers)
+    {
+        worker.join();
+    }
+
+    const auto stats = tracker.getStats("ConcurrentOperation");
+    REQUIRE(stats);
+    REQUIRE(stats->callCount == threadCount * samplesPerThread);
 }
 
 TEST_CASE("PerformanceService snapshot", "[PerformanceService]")
@@ -169,7 +326,16 @@ TEST_CASE("PerformanceService JSON export", "[PerformanceService]")
 #endif
     REQUIRE(json.find("processCpuUsagePercent") != std::string::npos);
     REQUIRE(json.find("systemCpuUsagePercent") != std::string::npos);
-    REQUIRE(json.find("JsonTest") != std::string::npos);
+    const auto timingStats = parsed.value.get("timingStats");
+    REQUIRE(timingStats.isArray());
+    REQUIRE(timingStats.size() == 1);
+    const auto timing = timingStats.get(static_cast<size_t>(0));
+    REQUIRE(timing.get("operation").asString() == "JsonTest");
+    REQUIRE(timing.contains("totalDurationMicroseconds"));
+    REQUIRE(timing.contains("averageDurationMicroseconds"));
+    REQUIRE(timing.contains("minimumDurationMicroseconds"));
+    REQUIRE(timing.contains("maximumDurationMicroseconds"));
+    REQUIRE_FALSE(timing.contains("totalMs"));
 }
 
 TEST_CASE("ScopedTiming RAII", "[PerformanceService]")
@@ -182,9 +348,10 @@ TEST_CASE("ScopedTiming RAII", "[PerformanceService]")
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
-    auto stats = performanceService->getTimingStats("ScopedTest");
-    REQUIRE(stats.callCount == 1);
-    REQUIRE(stats.totalTime.count() >= 5);
+    const auto stats = performanceService->getTimingStats("ScopedTest");
+    REQUIRE(stats);
+    REQUIRE(stats->callCount == 1);
+    REQUIRE(stats->totalDuration >= std::chrono::milliseconds(5));
 }
 
 TEST_CASE("PerformanceCpuCalculator establishes baselines before reporting usage",

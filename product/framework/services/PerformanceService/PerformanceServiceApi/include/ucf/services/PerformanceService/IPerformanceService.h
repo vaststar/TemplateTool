@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 #include <filesystem>
 
@@ -73,8 +74,10 @@ public:
     /// @param token Token returned by beginTiming
     virtual void endTiming(const TimingToken& token) = 0;
 
-    /// Get timing statistics for a specific operation
-    [[nodiscard]] virtual TimingStats getTimingStats(const std::string& operationName) const = 0;
+    /// Get timing statistics for a specific operation.
+    /// Returns nullopt when the operation has no completed samples.
+    [[nodiscard]] virtual std::optional<TimingStats> getTimingStats(
+        const std::string& operationName) const = 0;
 
     /// Get all timing statistics
     [[nodiscard]] virtual std::vector<TimingStats> getAllTimingStats() const = 0;
@@ -108,14 +111,21 @@ class ScopedTiming
 {
 public:
     ScopedTiming(IPerformanceServiceWPtr service, const std::string& operationName)
-        : mService(service)
-        , mToken(service.lock() ? service.lock()->beginTiming(operationName) : TimingToken{})
-    {}
+        : mService(std::move(service))
+    {
+        if (auto lockedService = mService.lock())
+        {
+            mToken = lockedService->beginTiming(operationName);
+        }
+    }
 
-    ~ScopedTiming() {
-        if (auto service = mService.lock()) {
-            if (mToken.isValid()) {
-                service->endTiming(mToken);
+    ~ScopedTiming()
+    {
+        if (auto lockedService = mService.lock())
+        {
+            if (mToken.isValid())
+            {
+                lockedService->endTiming(mToken);
             }
         }
     }
