@@ -11,7 +11,7 @@ class IPerformanceNotificationSink
 public:
     virtual ~IPerformanceNotificationSink() = default;
 
-    /// Memory physical usage exceeded the configured warning threshold.
+    /// Process resident memory exceeded the configured warning threshold.
     virtual void onMemoryWarning(const MemoryInfo& memoryInfo) = 0;
 
     /// Process CPU usage exceeded the configured warning threshold.

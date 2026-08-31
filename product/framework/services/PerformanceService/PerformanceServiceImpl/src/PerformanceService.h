@@ -32,11 +32,12 @@ public:
 
     // Memory Monitoring
     [[nodiscard]] MemoryInfo getCurrentMemoryUsage() const override;
-    void setMemoryWarningThreshold(uint64_t bytes) override;
-    [[nodiscard]] uint64_t getMemoryWarningThreshold() const override;
+    void setProcessResidentMemoryWarningThreshold(uint64_t bytes) override;
+    [[nodiscard]] uint64_t getProcessResidentMemoryWarningThreshold() const override;
 
     // CPU Monitoring
-    [[nodiscard]] double getCPUUsage() const override;
+    [[nodiscard]] std::optional<double> getProcessCpuUsagePercent() const override;
+    [[nodiscard]] std::optional<double> getSystemCpuUsagePercent() const override;
     void setCpuWarningThreshold(double percent) override;
     [[nodiscard]] double getCpuWarningThreshold() const override;
 

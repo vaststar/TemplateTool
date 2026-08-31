@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -9,12 +10,14 @@
 
 namespace ucf::service {
 
-/// Memory usage information
+/// Memory usage information. A field is nullopt when the current platform does
+/// not expose that metric or the sample could not be obtained.
 struct PERFORMANCE_SERVICE_TYPES_API MemoryInfo {
-    uint64_t physicalBytes{0};       ///< Physical memory used by process
-    uint64_t virtualBytes{0};        ///< Virtual memory used by process
-    uint64_t peakPhysicalBytes{0};   ///< Peak physical memory usage
-    uint64_t availableSystemBytes{0}; ///< Available system memory
+    std::optional<uint64_t> processResidentBytes;            ///< Current resident set size
+    std::optional<uint64_t> processPeakResidentBytes;        ///< Peak resident set size
+    std::optional<uint64_t> processVirtualAddressSpaceBytes; ///< Process virtual address-space size
+    std::optional<uint64_t> processPrivateCommittedBytes;    ///< Private committed process memory
+    std::optional<uint64_t> systemAvailablePhysicalBytes;    ///< Estimated physical memory currently available
 };
 
 /// Timing statistics for a specific operation
@@ -44,7 +47,8 @@ struct PERFORMANCE_SERVICE_TYPES_API TimingToken {
 struct PERFORMANCE_SERVICE_TYPES_API PerformanceSnapshot {
     std::chrono::system_clock::time_point timestamp;
     MemoryInfo memory;
-    double cpuUsagePercent{0.0};
+    std::optional<double> processCpuUsagePercent;
+    std::optional<double> systemCpuUsagePercent;
     std::vector<TimingStats> timingStats;
 };
 

@@ -7,6 +7,7 @@
 #include <ucf/services/PerformanceService/IPerformanceServiceCallback.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 #include <filesystem>
@@ -28,26 +29,35 @@ public:
     // Memory Monitoring
     // ==========================================
 
-    /// Get current memory usage
+    /// Get the currently available process and system memory metrics.
+    /// Unsupported or failed metrics are represented by nullopt fields.
     [[nodiscard]] virtual MemoryInfo getCurrentMemoryUsage() const = 0;
 
-    /// Set memory warning threshold (callback triggered when exceeded)
-    virtual void setMemoryWarningThreshold(uint64_t bytes) = 0;
+    /// Set the process resident-memory warning threshold in bytes.
+    /// A value of 0 disables the warning.
+    virtual void setProcessResidentMemoryWarningThreshold(uint64_t bytes) = 0;
 
-    /// Get current memory warning threshold
-    [[nodiscard]] virtual uint64_t getMemoryWarningThreshold() const = 0;
+    /// Get the process resident-memory warning threshold in bytes.
+    [[nodiscard]] virtual uint64_t getProcessResidentMemoryWarningThreshold() const = 0;
 
     // ==========================================
     // CPU Monitoring
     // ==========================================
 
-    /// Get current process CPU usage (0.0 - 100.0+)
-    [[nodiscard]] virtual double getCPUUsage() const = 0;
+    /// Get current process CPU usage.
+    /// 100% means one logical CPU core is fully utilized, so a multi-threaded
+    /// process may exceed 100%. Returns nullopt until a valid sample exists.
+    [[nodiscard]] virtual std::optional<double> getProcessCpuUsagePercent() const = 0;
 
-    /// Set CPU warning threshold in percent (callback triggered when exceeded). 0 or negative = disabled.
+    /// Get current system-wide CPU usage normalized to 0%-100%.
+    /// Returns nullopt until a valid sample exists.
+    [[nodiscard]] virtual std::optional<double> getSystemCpuUsagePercent() const = 0;
+
+    /// Set the process CPU warning threshold in percent. The threshold follows
+    /// the one-logical-core-equals-100% convention. 0 or negative = disabled.
     virtual void setCpuWarningThreshold(double percent) = 0;
 
-    /// Get current CPU warning threshold in percent
+    /// Get the current process CPU warning threshold in percent.
     [[nodiscard]] virtual double getCpuWarningThreshold() const = 0;
 
     // ==========================================

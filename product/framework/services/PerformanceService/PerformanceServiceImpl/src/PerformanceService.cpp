@@ -114,23 +114,28 @@ MemoryInfo PerformanceService::getCurrentMemoryUsage() const
     return mDataPrivate->getPerformanceManager().getCurrentMemoryUsage();
 }
 
-void PerformanceService::setMemoryWarningThreshold(uint64_t bytes)
+void PerformanceService::setProcessResidentMemoryWarningThreshold(uint64_t bytes)
 {
-    mDataPrivate->getPerformanceManager().setMemoryWarningThreshold(bytes);
+    mDataPrivate->getPerformanceManager().setProcessResidentMemoryWarningThreshold(bytes);
 }
 
-uint64_t PerformanceService::getMemoryWarningThreshold() const
+uint64_t PerformanceService::getProcessResidentMemoryWarningThreshold() const
 {
-    return mDataPrivate->getPerformanceManager().getMemoryWarningThreshold();
+    return mDataPrivate->getPerformanceManager().getProcessResidentMemoryWarningThreshold();
 }
 
 // ==========================================
 // CPU Monitoring
 // ==========================================
 
-double PerformanceService::getCPUUsage() const
+std::optional<double> PerformanceService::getProcessCpuUsagePercent() const
 {
-    return mDataPrivate->getPerformanceManager().getCPUUsage();
+    return mDataPrivate->getPerformanceManager().getProcessCpuUsagePercent();
+}
+
+std::optional<double> PerformanceService::getSystemCpuUsagePercent() const
+{
+    return mDataPrivate->getPerformanceManager().getSystemCpuUsagePercent();
 }
 
 void PerformanceService::setCpuWarningThreshold(double percent)
@@ -197,7 +202,17 @@ void PerformanceService::exportReportToFile(const std::filesystem::path& path) c
 
 void PerformanceService::onMemoryWarning(const MemoryInfo& memoryInfo)
 {
-    PERFORMANCE_LOG_DEBUG("Memory warning triggered, usage: " << memoryInfo.physicalBytes / 1024 / 1024 << " MB");
+    if (memoryInfo.processResidentBytes)
+    {
+        PERFORMANCE_LOG_DEBUG(
+            "Process resident-memory warning triggered, usage: "
+            << *memoryInfo.processResidentBytes / 1024 / 1024 << " MiB");
+    }
+    else
+    {
+        PERFORMANCE_LOG_DEBUG(
+            "Process resident-memory warning triggered, usage: unavailable");
+    }
     fireNotification(&IPerformanceServiceCallback::onMemoryWarning, memoryInfo);
 }
 

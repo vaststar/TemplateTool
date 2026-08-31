@@ -1,5 +1,6 @@
 #include "PerformanceManager.h"
 #include "PerformanceServiceLogger.h"
+#include "PerformanceCpuCalculator.h"
 #include "TimingTracker.h"
 #include "IMemoryMonitor.h"
 #include "ICPUMonitor.h"
@@ -10,8 +11,44 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 
 namespace ucf::service {
+namespace {
+
+std::string formatPercentage(std::optional<double> percentage)
+{
+    if (!percentage)
+    {
+        return "unavailable";
+    }
+
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(2) << *percentage << '%';
+    return stream.str();
+}
+
+std::string formatMemorySize(std::optional<uint64_t> bytes)
+{
+    if (!bytes)
+    {
+        return "unavailable";
+    }
+
+    constexpr double bytesPerMebibyte = 1024.0 * 1024.0;
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(2)
+           << static_cast<double>(*bytes) / bytesPerMebibyte << " MiB";
+    return stream.str();
+}
+
+utilities::JsonValue optionalByteCountToJson(std::optional<uint64_t> bytes)
+{
+    return bytes ? utilities::JsonValue(*bytes) : utilities::JsonValue(nullptr);
+}
+
+} // namespace
 
 PerformanceManager::PerformanceManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
@@ -52,24 +89,39 @@ MemoryInfo PerformanceManager::getCurrentMemoryUsage() const
     return MemoryInfo{};
 }
 
-void PerformanceManager::setMemoryWarningThreshold(uint64_t bytes)
+void PerformanceManager::setProcessResidentMemoryWarningThreshold(uint64_t bytes)
 {
-    mMemoryWarningThreshold.store(bytes);
-    PERFORMANCE_LOG_INFO("Memory warning threshold set to " << bytes / 1024 / 1024 << " MB");
+    mProcessResidentMemoryWarningThreshold.store(bytes);
+    PERFORMANCE_LOG_INFO(
+        "Process resident-memory warning threshold set to "
+        << formatMemorySize(bytes) << (bytes == 0 ? " (disabled)" : ""));
 }
 
-uint64_t PerformanceManager::getMemoryWarningThreshold() const
+uint64_t PerformanceManager::getProcessResidentMemoryWarningThreshold() const
 {
-    return mMemoryWarningThreshold.load();
+    return mProcessResidentMemoryWarningThreshold.load();
 }
 
 // ==========================================
 // CPU Monitoring
 // ==========================================
 
-double PerformanceManager::getCPUUsage() const
+std::optional<double> PerformanceManager::getProcessCpuUsagePercent() const
 {
-    return mCpuUsage.load();
+    if (!mProcessCpuUsageAvailable.load())
+    {
+        return std::nullopt;
+    }
+    return mProcessCpuUsagePercent.load();
+}
+
+std::optional<double> PerformanceManager::getSystemCpuUsagePercent() const
+{
+    if (!mSystemCpuUsageAvailable.load())
+    {
+        return std::nullopt;
+    }
+    return mSystemCpuUsagePercent.load();
 }
 
 void PerformanceManager::setCpuWarningThreshold(double percent)
@@ -125,23 +177,24 @@ void PerformanceManager::monitorLoop()
 {
     PERFORMANCE_LOG_DEBUG("PerformanceManager monitoring loop started, address: " << this);
 
-    uint64_t prevCpuMicros = mCPUMonitor ? mCPUMonitor->getProcessCpuTimeMicros() : 0;
-    SystemCpuTimes prevSysTimes = mCPUMonitor ? mCPUMonitor->getSystemCpuTimes() : SystemCpuTimes{};
-    auto prevWallTime = std::chrono::steady_clock::now();
+    PerformanceCpuCalculator cpuCalculator;
+    CpuUsageWindow processCpuWindow;
+    CpuUsageWindow systemCpuWindow;
 
-    // Core count is used to normalize process CPU to a whole-machine 0-100% scale,
-    // so it is comparable to (and never exceeds) the system-wide CPU usage.
-    const double coreCount = mCPUMonitor
-        ? std::max(1u, mCPUMonitor->getCpuCoreCount())
-        : 1u;
+    // Establish independent process and system baselines before the first wait.
+    static_cast<void>(cpuCalculator.update(
+        mCPUMonitor ? mCPUMonitor->getProcessCpuTime() : std::nullopt,
+        mCPUMonitor ? mCPUMonitor->getSystemCpuTimes() : std::nullopt,
+        std::chrono::steady_clock::now()));
 
     // Periodic usage report cadence (e.g. every minute), expressed in sample ticks.
     const uint64_t reportEverySamples = (mSampleInterval.count() > 0)
         ? std::max<uint64_t>(1, mReportInterval.count() / mSampleInterval.count())
         : 1;
     uint64_t sampleCount = 0;
-    double cpuSumInWindow = 0.0;      // accumulates per-sample process CPU usage within a report window
-    double sysCpuSumInWindow = 0.0;   // accumulates per-sample system CPU usage within a report window
+    bool processSamplingFailureReported = false;
+    bool systemSamplingFailureReported = false;
+    bool processResidentMemorySamplingFailureReported = false;
 
     while (mMonitorRunning.load())
     {
@@ -156,71 +209,157 @@ void PerformanceManager::monitorLoop()
         }
         ++sampleCount;
 
-        // --- CPU: compute usage from cumulative CPU time delta ---
+        // --- CPU: compute usage from monotonic cumulative counter deltas ---
         if (mCPUMonitor)
         {
-            uint64_t currCpuMicros = mCPUMonitor->getProcessCpuTimeMicros();
-            auto currWallTime = std::chrono::steady_clock::now();
+            const CpuUsageSample cpuSample = cpuCalculator.update(
+                mCPUMonitor->getProcessCpuTime(),
+                mCPUMonitor->getSystemCpuTimes(),
+                std::chrono::steady_clock::now());
 
-            if (auto wallMicros = std::chrono::duration_cast<std::chrono::microseconds>(currWallTime - prevWallTime).count(); wallMicros > 0)
+            if (cpuSample.process.status == CpuSampleStatus::Valid)
             {
-                // Normalize by core count -> whole-machine percentage (0-100%).
-                double usage = (static_cast<double>(currCpuMicros - prevCpuMicros) /
-                                static_cast<double>(wallMicros)) * 100.0 / coreCount;
-                mCpuUsage.store(usage);
-                cpuSumInWindow += usage;
+                const double usage = *cpuSample.process.percent;
+                mProcessCpuUsagePercent.store(usage);
+                mProcessCpuUsageAvailable.store(true);
+                processCpuWindow.add(usage);
 
-                double cpuThreshold = mCpuWarningThreshold.load();
+                if (processSamplingFailureReported)
+                {
+                    PERFORMANCE_LOG_INFO("Process CPU sampling recovered");
+                    processSamplingFailureReported = false;
+                }
+
+                const double cpuThreshold = mCpuWarningThreshold.load();
                 if (cpuThreshold > 0.0 && usage > cpuThreshold)
                 {
                     PERFORMANCE_LOG_WARN("CPU warning: usage " << usage << "% exceeded threshold " << cpuThreshold << "%");
                     notifySink(&IPerformanceNotificationSink::onCpuWarning, usage);
                 }
             }
-
-            // System-wide CPU usage from busy/total delta
-            SystemCpuTimes currSysTimes = mCPUMonitor->getSystemCpuTimes();
-            if (uint64_t totalDelta = currSysTimes.totalMicros - prevSysTimes.totalMicros; totalDelta > 0)
+            else
             {
-                uint64_t busyDelta = currSysTimes.busyMicros - prevSysTimes.busyMicros;
-                double sysUsage = (static_cast<double>(busyDelta) / static_cast<double>(totalDelta)) * 100.0;
-                mSystemCpuUsage.store(sysUsage);
-                sysCpuSumInWindow += sysUsage;
+                mProcessCpuUsageAvailable.store(false);
+                if (cpuSample.process.status == CpuSampleStatus::CounterReset)
+                {
+                    PERFORMANCE_LOG_WARN(
+                        "Process CPU counter moved backwards; baseline reset, previous: "
+                        << cpuSample.process.previousTime.count()
+                        << " us, current: " << cpuSample.process.currentTime.count() << " us");
+                }
+                else if ((cpuSample.process.status == CpuSampleStatus::Unavailable ||
+                          cpuSample.process.status == CpuSampleStatus::Invalid) &&
+                         !processSamplingFailureReported)
+                {
+                    PERFORMANCE_LOG_WARN("Process CPU sampling became unavailable");
+                    processSamplingFailureReported = true;
+                }
             }
 
-            prevCpuMicros = currCpuMicros;
-            prevSysTimes = currSysTimes;
-            prevWallTime = currWallTime;
+            if (cpuSample.system.status == CpuSampleStatus::Valid)
+            {
+                const double usage = *cpuSample.system.percent;
+                mSystemCpuUsagePercent.store(usage);
+                mSystemCpuUsageAvailable.store(true);
+                systemCpuWindow.add(usage);
+
+                if (systemSamplingFailureReported)
+                {
+                    PERFORMANCE_LOG_INFO("System CPU sampling recovered");
+                    systemSamplingFailureReported = false;
+                }
+            }
+            else
+            {
+                mSystemCpuUsageAvailable.store(false);
+                if (cpuSample.system.status == CpuSampleStatus::CounterReset)
+                {
+                    PERFORMANCE_LOG_WARN(
+                        "System CPU counters moved backwards; baseline reset, previous: {busy: "
+                        << cpuSample.system.previousTimes.busyTicks
+                        << ", total: " << cpuSample.system.previousTimes.totalTicks
+                        << "}, current: {busy: " << cpuSample.system.currentTimes.busyTicks
+                        << ", total: " << cpuSample.system.currentTimes.totalTicks << '}');
+                }
+                else if ((cpuSample.system.status == CpuSampleStatus::Unavailable ||
+                          cpuSample.system.status == CpuSampleStatus::Invalid) &&
+                         !systemSamplingFailureReported)
+                {
+                    PERFORMANCE_LOG_WARN("System CPU sampling became unavailable");
+                    systemSamplingFailureReported = true;
+                }
+            }
+        }
+        else
+        {
+            mProcessCpuUsageAvailable.store(false);
+            mSystemCpuUsageAvailable.store(false);
+            if (!processSamplingFailureReported)
+            {
+                PERFORMANCE_LOG_WARN("Process CPU sampling became unavailable: monitor is not available");
+                processSamplingFailureReported = true;
+            }
+            if (!systemSamplingFailureReported)
+            {
+                PERFORMANCE_LOG_WARN("System CPU sampling became unavailable: monitor is not available");
+                systemSamplingFailureReported = true;
+            }
         }
 
-        // --- Memory: compare physical usage against threshold ---
-        if (uint64_t memThreshold = mMemoryWarningThreshold.load(); memThreshold > 0 && mMemoryMonitor)
+        // --- Memory: compare process resident memory against its threshold ---
+        if (const uint64_t memoryThreshold = mProcessResidentMemoryWarningThreshold.load();
+            memoryThreshold > 0)
         {
-            MemoryInfo info = mMemoryMonitor->getMemoryUsage();
-            if (info.physicalBytes > memThreshold)
+            const MemoryInfo info = mMemoryMonitor
+                ? mMemoryMonitor->getMemoryUsage()
+                : MemoryInfo{};
+            if (info.processResidentBytes)
             {
-                PERFORMANCE_LOG_WARN("Memory warning: physical " << info.physicalBytes / 1024 / 1024
-                    << " MB exceeded threshold " << memThreshold / 1024 / 1024 << " MB");
-                notifySink(&IPerformanceNotificationSink::onMemoryWarning, info);
+                if (processResidentMemorySamplingFailureReported)
+                {
+                    PERFORMANCE_LOG_INFO("Process resident-memory sampling recovered");
+                    processResidentMemorySamplingFailureReported = false;
+                }
+
+                if (*info.processResidentBytes > memoryThreshold)
+                {
+                    PERFORMANCE_LOG_WARN(
+                        "Process resident-memory warning: usage "
+                        << formatMemorySize(info.processResidentBytes)
+                        << " exceeded threshold " << formatMemorySize(memoryThreshold));
+                    notifySink(&IPerformanceNotificationSink::onMemoryWarning, info);
+                }
+            }
+            else if (!processResidentMemorySamplingFailureReported)
+            {
+                PERFORMANCE_LOG_WARN("Process resident-memory sampling became unavailable");
+                processResidentMemorySamplingFailureReported = true;
             }
         }
 
         // --- Periodic usage report (CPU averaged over the window) ---
         if (sampleCount % reportEverySamples == 0)
         {
-            double avgCpu = cpuSumInWindow / static_cast<double>(reportEverySamples);
-            double avgSysCpu = sysCpuSumInWindow / static_cast<double>(reportEverySamples);
-            cpuSumInWindow = 0.0;
-            sysCpuSumInWindow = 0.0;
+            const auto avgProcessCpu = processCpuWindow.average();
+            const auto avgSystemCpu = systemCpuWindow.average();
 
-            MemoryInfo mem = mMemoryMonitor ? mMemoryMonitor->getMemoryUsage() : MemoryInfo{};
+            const MemoryInfo mem = mMemoryMonitor
+                ? mMemoryMonitor->getMemoryUsage()
+                : MemoryInfo{};
             PERFORMANCE_LOG_INFO("Performance usage: "
-                << "CPU{process: avg " << avgCpu << "%, last " << mCpuUsage.load() << "%; "
-                << "system: avg " << avgSysCpu << "%, last " << mSystemCpuUsage.load() << "%} "
-                << "MEM{process[physical " << mem.physicalBytes / 1024 / 1024 << " MB, "
-                << "private " << mem.virtualBytes / 1024 / 1024 << " MB, "
-                << "peak " << mem.peakPhysicalBytes / 1024 / 1024 << " MB], "
-                << "system[avail " << mem.availableSystemBytes / 1024 / 1024 << " MB]}");
+                << "CPU{process: avg " << formatPercentage(avgProcessCpu)
+                << ", last " << formatPercentage(getProcessCpuUsagePercent()) << "; "
+                << "system: avg " << formatPercentage(avgSystemCpu)
+                << ", last " << formatPercentage(getSystemCpuUsagePercent()) << "} "
+                << "MEM{process[resident " << formatMemorySize(mem.processResidentBytes)
+                << ", peak resident " << formatMemorySize(mem.processPeakResidentBytes)
+                << ", virtual address space " << formatMemorySize(mem.processVirtualAddressSpaceBytes)
+                << ", private committed " << formatMemorySize(mem.processPrivateCommittedBytes)
+                << "], system[available physical "
+                << formatMemorySize(mem.systemAvailablePhysicalBytes) << "]}");
+
+            processCpuWindow.reset();
+            systemCpuWindow.reset();
         }
     }
 
@@ -265,7 +404,8 @@ PerformanceSnapshot PerformanceManager::takeSnapshot() const
     PerformanceSnapshot snapshot;
     snapshot.timestamp = std::chrono::system_clock::now();
     snapshot.memory = getCurrentMemoryUsage();
-    snapshot.cpuUsagePercent = getCPUUsage();
+    snapshot.processCpuUsagePercent = getProcessCpuUsagePercent();
+    snapshot.systemCpuUsagePercent = getSystemCpuUsagePercent();
     snapshot.timingStats = getAllTimingStats();
     return snapshot;
 }
@@ -286,10 +426,21 @@ std::string PerformanceManager::exportReportAsJson() const
 
     // Memory
     utilities::JsonValue memory = utilities::JsonValue::object();
-    memory.set("physicalMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.physicalBytes / 1024 / 1024)));
-    memory.set("virtualMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.virtualBytes / 1024 / 1024)));
-    memory.set("peakPhysicalMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.peakPhysicalBytes / 1024 / 1024)));
-    memory.set("availableSystemMB", utilities::JsonValue(static_cast<uint64_t>(snapshot.memory.availableSystemBytes / 1024 / 1024)));
+    memory.set(
+        "processResidentBytes",
+        optionalByteCountToJson(snapshot.memory.processResidentBytes));
+    memory.set(
+        "processPeakResidentBytes",
+        optionalByteCountToJson(snapshot.memory.processPeakResidentBytes));
+    memory.set(
+        "processVirtualAddressSpaceBytes",
+        optionalByteCountToJson(snapshot.memory.processVirtualAddressSpaceBytes));
+    memory.set(
+        "processPrivateCommittedBytes",
+        optionalByteCountToJson(snapshot.memory.processPrivateCommittedBytes));
+    memory.set(
+        "systemAvailablePhysicalBytes",
+        optionalByteCountToJson(snapshot.memory.systemAvailablePhysicalBytes));
 
     // Timing stats
     utilities::JsonValue timingArray = utilities::JsonValue::array();
@@ -320,7 +471,16 @@ std::string PerformanceManager::exportReportAsJson() const
         report.set("timestamp", utilities::JsonValue(nullptr));
     }
     report.set("memory", std::move(memory));
-    report.set("cpuUsagePercent", utilities::JsonValue(snapshot.cpuUsagePercent));
+    report.set(
+        "processCpuUsagePercent",
+        snapshot.processCpuUsagePercent
+            ? utilities::JsonValue(*snapshot.processCpuUsagePercent)
+            : utilities::JsonValue(nullptr));
+    report.set(
+        "systemCpuUsagePercent",
+        snapshot.systemCpuUsagePercent
+            ? utilities::JsonValue(*snapshot.systemCpuUsagePercent)
+            : utilities::JsonValue(nullptr));
     report.set("timingStats", std::move(timingArray));
 
     return report.dumpPretty(2);

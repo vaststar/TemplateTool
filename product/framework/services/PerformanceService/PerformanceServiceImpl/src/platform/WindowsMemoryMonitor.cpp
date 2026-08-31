@@ -10,26 +10,25 @@ namespace ucf::service {
 MemoryInfo WindowsMemoryMonitor::getMemoryUsage() const
 {
     MemoryInfo info;
-    
-    // Get process memory info
-    PROCESS_MEMORY_COUNTERS_EX pmc;
+
+    PROCESS_MEMORY_COUNTERS_EX pmc{};
+    pmc.cb = sizeof(pmc);
     if (GetProcessMemoryInfo(GetCurrentProcess(), 
                              reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc), 
                              sizeof(pmc)))
     {
-        info.physicalBytes = pmc.WorkingSetSize;
-        info.virtualBytes = pmc.PrivateUsage;
-        info.peakPhysicalBytes = pmc.PeakWorkingSetSize;
+        info.processResidentBytes = pmc.WorkingSetSize;
+        info.processPeakResidentBytes = pmc.PeakWorkingSetSize;
+        info.processPrivateCommittedBytes = pmc.PrivateUsage;
     }
-    
-    // Get available system memory
-    MEMORYSTATUSEX memStatus;
+
+    MEMORYSTATUSEX memStatus{};
     memStatus.dwLength = sizeof(memStatus);
     if (GlobalMemoryStatusEx(&memStatus))
     {
-        info.availableSystemBytes = memStatus.ullAvailPhys;
+        info.systemAvailablePhysicalBytes = memStatus.ullAvailPhys;
     }
-    
+
     return info;
 }
 

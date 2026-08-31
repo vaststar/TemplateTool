@@ -4,6 +4,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <thread>
 #include <chrono>
 #include <filesystem>
@@ -42,11 +43,12 @@ public:
 public:
     // Memory Monitoring
     [[nodiscard]] MemoryInfo getCurrentMemoryUsage() const;
-    void setMemoryWarningThreshold(uint64_t bytes);
-    [[nodiscard]] uint64_t getMemoryWarningThreshold() const;
+    void setProcessResidentMemoryWarningThreshold(uint64_t bytes);
+    [[nodiscard]] uint64_t getProcessResidentMemoryWarningThreshold() const;
 
     // CPU Monitoring
-    [[nodiscard]] double getCPUUsage() const;
+    [[nodiscard]] std::optional<double> getProcessCpuUsagePercent() const;
+    [[nodiscard]] std::optional<double> getSystemCpuUsagePercent() const;
     void setCpuWarningThreshold(double percent);
     [[nodiscard]] double getCpuWarningThreshold() const;
 
@@ -73,10 +75,12 @@ private:
     std::unique_ptr<ICPUMonitor> mCPUMonitor;
     std::unique_ptr<TimingTracker> mTimingTracker;
 
-    std::atomic<uint64_t> mMemoryWarningThreshold{0};  // 0 = disabled
+    std::atomic<uint64_t> mProcessResidentMemoryWarningThreshold{0}; // 0 = disabled
     std::atomic<double> mCpuWarningThreshold{0.0};      // 0 or negative = disabled
-    std::atomic<double> mCpuUsage{0.0};                 // last computed process CPU usage %
-    std::atomic<double> mSystemCpuUsage{0.0};           // last computed system-wide CPU usage %
+    std::atomic<double> mProcessCpuUsagePercent{0.0};
+    std::atomic<double> mSystemCpuUsagePercent{0.0};
+    std::atomic<bool> mProcessCpuUsageAvailable{false};
+    std::atomic<bool> mSystemCpuUsageAvailable{false};
 
     std::chrono::milliseconds mSampleInterval{1000}; //ms between samples in monitoring loop
     std::chrono::milliseconds mReportInterval{30000};  // ms periodic usage log cadence

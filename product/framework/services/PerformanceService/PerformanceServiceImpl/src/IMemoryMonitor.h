@@ -12,7 +12,8 @@ class IMemoryMonitor
 public:
     virtual ~IMemoryMonitor() = default;
     
-    /// Get current memory usage
+    /// Get current memory metrics. Each field independently expresses whether
+    /// the metric is supported and whether its latest sample succeeded.
     [[nodiscard]] virtual MemoryInfo getMemoryUsage() const = 0;
     
     /// Factory method

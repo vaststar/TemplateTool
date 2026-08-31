@@ -4,16 +4,9 @@
 #include <windows.h>
 #endif
 
-#include <thread>
-
 namespace ucf::service {
 
-unsigned int WindowsCPUMonitor::getCpuCoreCount() const
-{
-    return std::thread::hardware_concurrency();
-}
-
-uint64_t WindowsCPUMonitor::getProcessCpuTimeMicros() const
+std::optional<ProcessCpuTime> WindowsCPUMonitor::getProcessCpuTime() const
 {
 #ifdef _WIN32
     FILETIME createTime, exitTime, kernelTime, userTime;
@@ -27,15 +20,14 @@ uint64_t WindowsCPUMonitor::getProcessCpuTimeMicros() const
         user.HighPart = userTime.dwHighDateTime;
 
         // Convert 100-ns intervals to microseconds
-        return (kernel.QuadPart + user.QuadPart) / 10;
+        return ProcessCpuTime{(kernel.QuadPart + user.QuadPart) / 10};
     }
 #endif
-    return 0;
+    return std::nullopt;
 }
 
-SystemCpuTimes WindowsCPUMonitor::getSystemCpuTimes() const
+std::optional<SystemCpuTimes> WindowsCPUMonitor::getSystemCpuTimes() const
 {
-    SystemCpuTimes times;
 #ifdef _WIN32
     FILETIME idleTime, kernelTime, userTime;
     if (GetSystemTimes(&idleTime, &kernelTime, &userTime))
@@ -52,12 +44,13 @@ SystemCpuTimes WindowsCPUMonitor::getSystemCpuTimes() const
         uint64_t total = kernel.QuadPart + user.QuadPart;  // busy + idle (idle is inside kernel)
         uint64_t busy = total - idle.QuadPart;
 
-        // Convert 100-ns intervals to microseconds
-        times.totalMicros = total / 10;
-        times.busyMicros = busy / 10;
+        return SystemCpuTimes{
+            .busyTicks = busy,
+            .totalTicks = total
+        };
     }
 #endif
-    return times;
+    return std::nullopt;
 }
 
 } // namespace ucf::service

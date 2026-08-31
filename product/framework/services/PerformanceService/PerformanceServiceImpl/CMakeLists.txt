@@ -17,6 +17,8 @@ set(MODULE_SOURCE_COMMON
     src/PerformanceNotificationSink.h
     src/PerformanceManager.h
     src/PerformanceManager.cpp
+    src/PerformanceCpuCalculator.h
+    src/PerformanceCpuCalculator.cpp
     src/TimingTracker.h
     src/TimingTracker.cpp
     src/IMemoryMonitor.h

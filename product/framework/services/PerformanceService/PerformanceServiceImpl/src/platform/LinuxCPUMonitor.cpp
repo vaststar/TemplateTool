@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <thread>
 #include <unistd.h>
 
 namespace ucf::service {
@@ -12,65 +11,72 @@ LinuxCPUMonitor::LinuxCPUMonitor()
 {
 }
 
-unsigned int LinuxCPUMonitor::getCpuCoreCount() const
-{
-    return std::thread::hardware_concurrency();
-}
-
-uint64_t LinuxCPUMonitor::getProcessCpuTimeMicros() const
+std::optional<ProcessCpuTime> LinuxCPUMonitor::getProcessCpuTime() const
 {
     if (mClockTicksPerSecond <= 0)
     {
-        return 0;
+        return std::nullopt;
     }
+
+    const auto ticks = getProcessCpuTicks();
+    if (!ticks)
+    {
+        return std::nullopt;
+    }
+
     // ticks -> microseconds
-    return (getProcessCpuTicks() * 1000000ULL) / static_cast<uint64_t>(mClockTicksPerSecond);
+    return ProcessCpuTime{
+        (*ticks * 1000000ULL) / static_cast<uint64_t>(mClockTicksPerSecond)
+    };
 }
 
-SystemCpuTimes LinuxCPUMonitor::getSystemCpuTimes() const
+std::optional<SystemCpuTimes> LinuxCPUMonitor::getSystemCpuTimes() const
 {
-    SystemCpuTimes times;
     if (mClockTicksPerSecond <= 0)
     {
-        return times;
+        return std::nullopt;
     }
 
     // First line of /proc/stat: "cpu user nice system idle iowait irq softirq steal guest guest_nice"
     std::ifstream stat("/proc/stat");
     if (!stat.is_open())
     {
-        return times;
+        return std::nullopt;
     }
 
     std::string cpuLabel;
     stat >> cpuLabel;
     if (cpuLabel != "cpu")
     {
-        return times;
+        return std::nullopt;
     }
 
     uint64_t user = 0, nice = 0, system = 0, idle = 0, iowait = 0,
              irq = 0, softirq = 0, steal = 0, guest = 0, guestNice = 0;
     stat >> user >> nice >> system >> idle >> iowait
          >> irq >> softirq >> steal >> guest >> guestNice;
+    if (!stat)
+    {
+        return std::nullopt;
+    }
 
     uint64_t idleTicks = idle + iowait;
     uint64_t totalTicks = user + nice + system + idle + iowait + irq + softirq + steal;
     uint64_t busyTicks = (totalTicks > idleTicks) ? (totalTicks - idleTicks) : 0;
 
-    const uint64_t clk = static_cast<uint64_t>(mClockTicksPerSecond);
-    times.totalMicros = (totalTicks * 1000000ULL) / clk;
-    times.busyMicros = (busyTicks * 1000000ULL) / clk;
-    return times;
+    return SystemCpuTimes{
+        .busyTicks = busyTicks,
+        .totalTicks = totalTicks
+    };
 }
 
-uint64_t LinuxCPUMonitor::getProcessCpuTicks() const
+std::optional<uint64_t> LinuxCPUMonitor::getProcessCpuTicks() const
 {
     // Read from /proc/self/stat
     std::ifstream stat("/proc/self/stat");
     if (!stat.is_open())
     {
-        return 0;
+        return std::nullopt;
     }
 
     std::string line;
@@ -80,7 +86,7 @@ uint64_t LinuxCPUMonitor::getProcessCpuTicks() const
     size_t start = line.rfind(')');
     if (start == std::string::npos)
     {
-        return 0;
+        return std::nullopt;
     }
 
     std::istringstream iss(line.substr(start + 2));
@@ -94,6 +100,10 @@ uint64_t LinuxCPUMonitor::getProcessCpuTicks() const
 
     iss >> state >> ppid >> pgrp >> session >> tty_nr >> tpgid >> flags
         >> minflt >> cminflt >> majflt >> cmajflt >> utime >> stime;
+    if (!iss)
+    {
+        return std::nullopt;
+    }
 
     return utime + stime;
 }
