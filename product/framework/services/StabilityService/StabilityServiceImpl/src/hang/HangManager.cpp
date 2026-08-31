@@ -49,18 +49,20 @@ HangManager::HangManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     , mMainThreadId(std::this_thread::get_id())
     , mLastHeartbeat(std::chrono::steady_clock::now())
 {
+    CRASHHANDLER_LOG_DEBUG("HangManager constructing, address: " << this);
     CRASHHANDLER_LOG_DEBUG("HangManager constructed, address: " << this);
 }
 
 HangManager::~HangManager()
 {
-    cleanup();
     CRASHHANDLER_LOG_DEBUG("HangManager destroying, address: " << this);
+    cleanup();
+    CRASHHANDLER_LOG_DEBUG("HangManager destructor body finished, address: " << this);
 }
 
 void HangManager::initialize()
 {
-    CRASHHANDLER_LOG_INFO("HangManager::initialize() starting...");
+    CRASHHANDLER_LOG_INFO("HangManager initialization started, address: " << this);
 
     // Get configuration from ClientInfoService
     if (auto coreFramework = mCoreFramework.lock())
@@ -96,14 +98,19 @@ void HangManager::initialize()
     {
         CRASHHANDLER_LOG_ERROR("Failed to get CoreFramework");
     }
+
+    CRASHHANDLER_LOG_INFO("HangManager initialization finished, address: " << this);
 }
 
 void HangManager::cleanup()
 {
+    CRASHHANDLER_LOG_INFO("HangManager cleanup started, address: " << this);
+
     stopWatchdog();
     mPlatformHandler.reset();
     mEnabled = false;
-    CRASHHANDLER_LOG_INFO("HangManager cleaned up");
+
+    CRASHHANDLER_LOG_INFO("HangManager cleanup finished, address: " << this);
 }
 
 void HangManager::setHangDirectory(const std::filesystem::path& dir)
@@ -147,8 +154,13 @@ void HangManager::setHangThreshold(std::chrono::milliseconds threshold)
 
 void HangManager::startWatchdog()
 {
+    CRASHHANDLER_LOG_INFO("HangManager watchdog startup started, address: " << this);
+
     if (mWatchdogRunning)
     {
+        CRASHHANDLER_LOG_DEBUG(
+            "HangManager watchdog startup skipped: watchdog is already running, address: "
+            << this);
         return;
     }
 
@@ -159,13 +171,18 @@ void HangManager::startWatchdog()
     mWatchdogThread = std::thread(&HangManager::watchdogLoop, this);
     mWatchdogRunning = true;
 
-    CRASHHANDLER_LOG_INFO("Watchdog started");
+    CRASHHANDLER_LOG_INFO("HangManager watchdog startup finished, address: " << this);
 }
 
 void HangManager::stopWatchdog()
 {
+    CRASHHANDLER_LOG_INFO("HangManager watchdog shutdown started, address: " << this);
+
     if (!mWatchdogRunning)
     {
+        CRASHHANDLER_LOG_DEBUG(
+            "HangManager watchdog shutdown skipped: watchdog is not running, address: "
+            << this);
         return;
     }
 
@@ -183,12 +200,12 @@ void HangManager::stopWatchdog()
     }
 
     mWatchdogRunning = false;
-    CRASHHANDLER_LOG_INFO("Watchdog stopped");
+    CRASHHANDLER_LOG_INFO("HangManager watchdog shutdown finished, address: " << this);
 }
 
 void HangManager::watchdogLoop()
 {
-    CRASHHANDLER_LOG_DEBUG("Watchdog thread started");
+    CRASHHANDLER_LOG_DEBUG("HangManager watchdog loop started, address: " << this);
 
     // Check interval (half of threshold for responsiveness)
     auto checkInterval = mHangThreshold.load() / 2;
@@ -248,7 +265,7 @@ void HangManager::watchdogLoop()
         checkInterval = newCheckInterval;
     }
 
-    CRASHHANDLER_LOG_DEBUG("Watchdog thread exiting");
+    CRASHHANDLER_LOG_DEBUG("HangManager watchdog loop finished, address: " << this);
 }
 
 std::string HangManager::captureMainThreadStack()

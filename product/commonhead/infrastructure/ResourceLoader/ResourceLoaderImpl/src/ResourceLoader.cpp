@@ -35,14 +35,27 @@ ResourceLoader::ResourceLoader(std::weak_ptr<ucf::framework::ICoreFramework> cor
     , mResourceFontLoader(impl::createResourceFontLoader())
     , mResourceAssetLoader(impl::createResourceAssetLoader())
 {
-    RESOURCE_LOADER_LOG_DEBUG("create ResourceLoader, this:" << this);
+    RESOURCE_LOADER_LOG_DEBUG(
+        "ResourceLoader constructing, address: " << this);
+
+    RESOURCE_LOADER_LOG_DEBUG(
+        "ResourceLoader constructed, address: " << this);
 }
 
-ResourceLoader::~ResourceLoader() = default;
+ResourceLoader::~ResourceLoader()
+{
+    RESOURCE_LOADER_LOG_DEBUG(
+        "ResourceLoader destroying, address: " << this);
+
+    RESOURCE_LOADER_LOG_DEBUG(
+        "ResourceLoader destructor body finished, address: " << this);
+}
 
 void ResourceLoader::initResourceLoader()
 {
-    RESOURCE_LOADER_LOG_DEBUG("");
+    RESOURCE_LOADER_LOG_DEBUG(
+        "ResourceLoader initialization started, address: " << this);
+
     if (auto coreFramework = mCoreFramework.lock())
     {
         if (auto service = coreFramework->getService<ucf::service::IClientInfoService>().lock())
@@ -50,6 +63,9 @@ void ResourceLoader::initResourceLoader()
             service->registerCallback(shared_from_this());
         }
     }
+
+    RESOURCE_LOADER_LOG_DEBUG(
+        "ResourceLoader initialization finished, address: " << this);
 }
 
 model::Font ResourceLoader::getFont(model::FontToken fontToken) const

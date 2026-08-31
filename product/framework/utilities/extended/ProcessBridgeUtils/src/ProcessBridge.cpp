@@ -82,19 +82,34 @@ bool ProcessBridge::beginStop()
 {
     if (!tryTransition(ProcessState::Stopping))
     {
-        PB_LOG_DEBUG("Stop skipped, state=" << magic_enum::enum_name(state()));
+        PB_LOG_DEBUG(
+            "ProcessBridge shutdown skipped, state: "
+            << magic_enum::enum_name(state())
+            << ", address: " << this);
         return false;
     }
 
-    PB_LOG_INFO("Stop begin, state=" << magic_enum::enum_name(state()));
+    PB_LOG_INFO(
+        "ProcessBridge shutdown started, state: "
+        << magic_enum::enum_name(state())
+        << ", address: " << this);
     return true;
 }
 
 void ProcessBridge::failStart(const std::string& errorMessage)
 {
+    PB_LOG_DEBUG(
+        "ProcessBridge startup failure handling started, reason: "
+        << errorMessage
+        << ", address: " << this);
+
     mPid = 0;
     tryTransition(ProcessState::Terminated);
     fireNotification(&IProcessBridgeCallback::onProcessError, errorMessage);
+
+    PB_LOG_DEBUG(
+        "ProcessBridge startup failure handling finished, address: "
+        << this);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -103,6 +118,7 @@ void ProcessBridge::failStart(const std::string& errorMessage)
 
 ProcessBridge::ProcessBridge()
 {
+    PB_LOG_DEBUG("ProcessBridge constructing, address: " << this);
     PB_LOG_DEBUG("ProcessBridge constructed, address: " << this);
 }
 
@@ -116,13 +132,21 @@ ProcessBridge::~ProcessBridge()
     {
         mMonitorThread.join();
     }
+
+    PB_LOG_DEBUG(
+        "ProcessBridge destructor body finished, address: " << this);
 }
 
 bool ProcessBridge::start(const ProcessBridgeConfig& config)
 {
+    PB_LOG_INFO("ProcessBridge startup started, address: " << this);
+
     if (!tryTransition(ProcessState::Starting))
     {
-        PB_LOG_WARN("start() rejected, state=" << magic_enum::enum_name(state()));
+        PB_LOG_WARN(
+            "ProcessBridge startup rejected, state: "
+            << magic_enum::enum_name(state())
+            << ", address: " << this);
         return false;
     }
 
@@ -153,7 +177,10 @@ bool ProcessBridge::start(const ProcessBridgeConfig& config)
 
         if (!handle.valid)
         {
-            PB_LOG_ERROR("Failed to launch: " << handle.errorMessage);
+            PB_LOG_ERROR(
+                "ProcessBridge startup failed: "
+                << handle.errorMessage
+                << ", address: " << this);
             mPid = 0;
             errorMsg = handle.errorMessage;
             launchFailed = true;
@@ -180,12 +207,17 @@ bool ProcessBridge::start(const ProcessBridgeConfig& config)
     {
         // stop() has intervened (Starting → Stopping) while we were launching.
         // The monitor thread will handle cleanup via its exit path.
-        PB_LOG_WARN("start() interrupted by concurrent stop(), state="
-                    << magic_enum::enum_name(state()));
+        PB_LOG_WARN(
+            "ProcessBridge startup interrupted by concurrent shutdown, state: "
+            << magic_enum::enum_name(state())
+            << ", address: " << this);
         return false;
     }
 
-    PB_LOG_INFO("Process started, PID=" << mPid.load());
+    PB_LOG_INFO(
+        "ProcessBridge startup finished, PID: "
+        << mPid.load()
+        << ", address: " << this);
     fireNotification(&IProcessBridgeCallback::onProcessStarted, mPid.load());
 
     return true;
@@ -193,8 +225,14 @@ bool ProcessBridge::start(const ProcessBridgeConfig& config)
 
 void ProcessBridge::stop()
 {
+    PB_LOG_DEBUG(
+        "ProcessBridge shutdown request started, address: " << this);
+
     if (!beginStop())
     {
+        PB_LOG_DEBUG(
+            "ProcessBridge shutdown request finished without action, address: "
+            << this);
         return;
     }
 
@@ -210,6 +248,9 @@ void ProcessBridge::stop()
     if (!mHandle.valid)
     {
         tryTransition(ProcessState::Terminated);
+        PB_LOG_INFO(
+            "ProcessBridge shutdown finished: process handle is invalid, address: "
+            << this);
         return;
     }
 
@@ -217,7 +258,9 @@ void ProcessBridge::stop()
     // join ourselves. The monitorLoop exit path will do deferred cleanup.
     if (std::this_thread::get_id() == mMonitorThread.get_id())
     {
-        PB_LOG_INFO("stop() called from monitor thread, cleanup deferred to monitorLoop exit");
+        PB_LOG_INFO(
+            "ProcessBridge shutdown request finished: cleanup deferred to monitoring loop, address: "
+            << this);
         return;
     }
 
@@ -234,6 +277,9 @@ void ProcessBridge::stop()
         int exitCode = terminateAndWait();
         finalizeStop(exitCode, false);
     }
+
+    PB_LOG_DEBUG(
+        "ProcessBridge shutdown request finished, address: " << this);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -285,7 +331,10 @@ void ProcessBridge::closeStdin()
 
 void ProcessBridge::monitorLoop()
 {
-    PB_LOG_DEBUG("Monitor thread started for PID=" << mPid.load());
+    PB_LOG_DEBUG(
+        "ProcessBridge monitoring loop started, PID: "
+        << mPid.load()
+        << ", address: " << this);
 
     bool naturalExit = false;
 
@@ -321,7 +370,7 @@ void ProcessBridge::monitorLoop()
     // (stop() called from callback on this thread set Stopping but could not join/cleanup)
     if (state() == ProcessState::Stopping)
     {
-        PB_LOG_INFO(naturalExit ? "Cleanup after natural process exit" : "Deferred cleanup in monitorLoop exit");
+        PB_LOG_INFO((naturalExit ? "Cleanup after natural process exit" : "Deferred cleanup in monitorLoop exit"));
 
         // Deferred stop: process may still be alive (stop() only set Stopping
         // but couldn't terminate because it returned early to avoid self-join).
@@ -336,6 +385,9 @@ void ProcessBridge::monitorLoop()
             finalizeStop(exitCode, naturalExit && exitCode != 0);
         }
     }
+
+    PB_LOG_DEBUG(
+        "ProcessBridge monitoring loop finished, address: " << this);
 }
 
 void ProcessBridge::readAndFirePipes()
@@ -375,12 +427,19 @@ int ProcessBridge::terminateAndWait()
 
 void ProcessBridge::finalizeStop(int exitCode, bool crashed)
 {
+    PB_LOG_DEBUG(
+        "ProcessBridge shutdown finalization started, address: " << this);
+
     readAndFirePipes();
     detail::ProcessLauncher::closeHandles(mHandle);
     mPid = 0;
     tryTransition(ProcessState::Terminated);
 
-    PB_LOG_INFO("Process finalized, exitCode=" << exitCode << ", crashed=" << crashed);
+    PB_LOG_INFO(
+        "ProcessBridge shutdown finished, exitCode: "
+        << exitCode
+        << ", crashed: " << crashed
+        << ", address: " << this);
     fireNotification(&IProcessBridgeCallback::onProcessStopped, exitCode, crashed);
 }
 

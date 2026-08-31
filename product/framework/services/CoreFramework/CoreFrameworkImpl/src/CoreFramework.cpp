@@ -60,29 +60,48 @@ bool CoreFramework::DataPrivate::isInitializable() const
 
 void CoreFramework::DataPrivate::onExiting()
 {
-    std::scoped_lock<std::mutex> loc(mStateMutex);
+    std::scoped_lock<std::mutex> lock(mStateMutex);
     mState = CoreFrameworkState::AboutExitingState;
-    CORE_LOG_DEBUG("about exiting coreframework, address:" << this);
+
+    CORE_LOG_DEBUG(
+        "CoreFramework internal state changed: "
+        "InitializedState -> AboutExitingState"
+        ", dataAddress: "
+        << this);
 }
 
 void CoreFramework::DataPrivate::exitFinished()
 {
-    std::scoped_lock<std::mutex> loc(mStateMutex);
+    std::scoped_lock<std::mutex> lock(mStateMutex);
     mState = CoreFrameworkState::FinishExitingState;
-    CORE_LOG_DEBUG("finish exiting coreframework, address:" << this);
+
+    CORE_LOG_DEBUG(
+        "CoreFramework internal state changed: "
+        "AboutExitingState -> FinishExitingState"
+        ", dataAddress: "
+        << this);
 }
 
 void CoreFramework::DataPrivate::initialize()
 {
-    std::scoped_lock<std::mutex> loc(mStateMutex);
+    std::scoped_lock<std::mutex> lock(mStateMutex);
     if (CoreFrameworkState::InitialState == mState)
     {
         mState = CoreFrameworkState::InitializedState;
-        CORE_LOG_DEBUG("initialize coreframework, address:" << this);
+
+        CORE_LOG_DEBUG(
+            "CoreFramework internal state changed: "
+            "InitialState -> InitializedState"
+            ", dataAddress: "
+            << this);
     }
     else
     {
-        CORE_LOG_DEBUG("duplicate initialize coreframework, address:" << this);
+        CORE_LOG_WARN(
+            "CoreFramework internal initialization skipped: "
+            "current state is not InitialState"
+            ", dataAddress: "
+            << this);
     }
 }
 
@@ -90,7 +109,11 @@ void CoreFramework::DataPrivate::setStartupParameters(const std::vector<std::str
 {
     std::scoped_lock<std::mutex> loc(mStartupParametersMutex);
     mStartupParameters = args;
-    CORE_LOG_DEBUG("set startup parameters, count: " << mStartupParameters.size() << ", address:" << this);
+    CORE_LOG_DEBUG(
+        "Startup parameters updated, count: "
+        << mStartupParameters.size()
+        << ", dataAddress: "
+        << this);
 }
 
 std::vector<std::string> CoreFramework::DataPrivate::getStartupParameters() const
@@ -128,43 +151,91 @@ CoreFramework::~CoreFramework()
 
 void CoreFramework::initCoreFramework()
 {
-    if (mDataPrivate->isInitializable())
+    if (!mDataPrivate->isInitializable())
     {
-        CORE_LOG_DEBUG("about initialize CoreFramework, address:" << this);
-        mDataPrivate->initialize();
-        CORE_LOG_DEBUG("finish initialize CoreFramework, address:" << this);
+        CORE_LOG_WARN(
+            "CoreFramework initialization skipped: "
+            "not initializable in current state"
+            ", address: "
+            << this);
+        return;
     }
-    else
-    {
-        CORE_LOG_INFO("CoreFramework is not isInitializable, address:" << this);
-    }
+
+    CORE_LOG_DEBUG(
+        "CoreFramework initialization started, address: "
+        << this);
+
+    mDataPrivate->initialize();
+
+    CORE_LOG_DEBUG(
+        "CoreFramework initialization finished, address: "
+        << this);
 }
 
 void CoreFramework::exitCoreFramework()
 {
-    if (mDataPrivate->isRunnable())
+    if (!mDataPrivate->isRunnable())
     {
-        CORE_LOG_DEBUG("about exiting CoreFramework, address:" << this);
-        mDataPrivate->onExiting();
-
-        CORE_LOG_DEBUG("fire onCoreFrameworkExit, address:" << this);
-        fireNotification(&ICoreFrameworkCallback::onCoreFrameworkExit);
-
-        CORE_LOG_DEBUG("start exiting CoreFramework, address:" << this);
-        deinitServices();
-
-        CORE_LOG_DEBUG("unregister all services, address:" << this);
-        unRegisterServices();
-
-        CORE_LOG_DEBUG("finish exiting CoreFramework, address:" << this);
-        mDataPrivate->exitFinished();
-
-        CORE_LOG_DEBUG("CoreFramework exited, address:" << this);
+        CORE_LOG_WARN(
+            "CoreFramework shutdown skipped: "
+            "framework is not running"
+            ", address: "
+            << this);
+        return;
     }
-    else
-    {
-        CORE_LOG_INFO("CoreFramework is not runnable, address:" << this);
-    }
+
+    CORE_LOG_DEBUG(
+        "CoreFramework shutdown started, address: "
+        << this);
+
+    mDataPrivate->onExiting();
+
+    CORE_LOG_DEBUG(
+        "CoreFramework exit notification dispatch started"
+        ", address: "
+        << this);
+
+    fireNotification(&ICoreFrameworkCallback::onCoreFrameworkExit);
+
+    CORE_LOG_DEBUG(
+        "CoreFramework exit notification dispatch finished"
+        ", address: "
+        << this);
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service deinitialization started"
+        ", address: "
+        << this);
+
+    deinitServices();
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service deinitialization finished"
+        ", address: "
+        << this);
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service unregistration started"
+        ", address: "
+        << this);
+
+    unRegisterServices();
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service unregistration finished"
+        ", address: "
+        << this);
+
+    CORE_LOG_DEBUG(
+        "CoreFramework shutdown finalization started"
+        ", address: "
+        << this);
+
+    mDataPrivate->exitFinished();
+
+    CORE_LOG_DEBUG(
+        "CoreFramework shutdown finished, address: "
+        << this);
 }
 
 std::string CoreFramework::getName() const
@@ -186,13 +257,21 @@ void CoreFramework::initServices()
 {
     if (!mDataPrivate->isRunnable())
     {
-        CORE_LOG_INFO("CoreFramework is not runnable, address:" << this);
+        CORE_LOG_WARN(
+            "Service initialization skipped: "
+            "CoreFramework is not running"
+            ", address: "
+            << this);
         return;
     }
 
     if (!sortServicesByDependency())
     {
-        CORE_LOG_ERROR("failed to resolve service init order, abort initServices, address:" << this);
+        CORE_LOG_ERROR(
+            "Service initialization failed: "
+            "unable to resolve dependency order"
+            ", address: "
+            << this);
         return;
     }
 

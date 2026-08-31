@@ -43,7 +43,13 @@ AppUIController::~AppUIController()
 
 void AppUIController::start(QPointer<AppContext> appContext)
 {
+    APPUI_LOG_DEBUG(
+        "AppUIController startup started, address: " << this);
+
     initializeController(appContext);
+
+    APPUI_LOG_DEBUG(
+        "AppUIController startup finished, address: " << this);
 }
 
 void AppUIController::init()
@@ -79,7 +85,10 @@ void AppUIController::init()
 
 void AppUIController::onAppConfigInitialized()
 {
-    APPUI_LOG_DEBUG("onAppConfigInitialized start");
+    APPUI_LOG_DEBUG(
+        "AppUIController application configuration processing started, address: "
+        << this);
+
     // 1. Load translation
     auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
     clientInfoViewModel->initViewModel();
@@ -136,17 +145,24 @@ void AppUIController::onAppConfigInitialized()
         showMainWindow();
     });
 
-    APPUI_LOG_DEBUG("onAppConfigInitialized finish");
+    APPUI_LOG_DEBUG(
+        "AppUIController application configuration processing finished, address: "
+        << this);
 }
 
 void AppUIController::showMainWindow()
 {
-    APPUI_LOG_DEBUG("start load main qml");
+    APPUI_LOG_DEBUG(
+        "AppUIController main window loading started, address: " << this);
+
     auto win = getViewFactory()->createQmlWindow(
         kMainWindowQml);
     if (!win)
     {
-        APPUI_LOG_WARN("failed to create main window");
+        APPUI_LOG_WARN(
+            "AppUIController main window loading failed: unable to create QML window"
+            ", address: "
+            << this);
         return;
     }
     if (auto* mainController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UIViewController>(
@@ -162,5 +178,6 @@ void AppUIController::showMainWindow()
     UIUtilities::WindowGeometry::centerOnScreen(win.data());
 
     win->show();
-    APPUI_LOG_DEBUG("finish load main qml");
+    APPUI_LOG_DEBUG(
+        "AppUIController main window loading finished, address: " << this);
 }

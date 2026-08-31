@@ -45,8 +45,7 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mQmlEngine(std::make_unique<UIAppCore::UIQmlEngine>())
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
-    APPUI_LOG_INFO("===========================================");
-    APPUI_LOG_INFO("==========initialize UI runtime============");
+    APPUI_LOG_INFO("UI runtime initialization started");
     APPUI_LOG_INFO("Qt Version: " << qVersion());
     APPUI_LOG_INFO("Qt Build ABI: " << QSysInfo::buildAbi().toStdString());
     APPUI_LOG_INFO("Qt Platform Plugin: " << QGuiApplication::platformName().toStdString());
@@ -68,19 +67,18 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
             << ", refreshRate: " << screen->refreshRate() << "Hz");
     }
     registerQmlTypes();
-    APPUI_LOG_INFO("==========UI runtime initialized===========");
-    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO("UI runtime initialization finished");
 }
 
 void AppUIManager::Impl::registerQmlTypes()
 {
-    APPUI_LOG_DEBUG("");
+    APPUI_LOG_DEBUG("QML type registration started");
     UIViewModule::ensureLoaded();
     UIViewModelSignalBridge::registerAllViewModelMetaTypes();
     UILanguage::registerMetaObject();
     UTComponent::registerUTComponent();
     UTComposite::registerUTComposite();
-    APPUI_LOG_DEBUG("done");
+    APPUI_LOG_DEBUG("QML type registration finished");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -101,20 +99,24 @@ AppUIManager::~AppUIManager()
 
 int AppUIManager::runApp()
 {
-    APPUI_LOG_INFO("===========================================");
-    APPUI_LOG_INFO("run AppUIManager, address:" << this << ", appContext's address: " << mImpl->getAppContext());
-    auto controller = std::make_unique<AppUIController>();
-    APPUI_LOG_INFO("=======start UI with AppUIController======");
-    controller->start(mImpl->getAppContext());
-    APPUI_LOG_INFO("=====start UI with AppUIController done===");
-    APPUI_LOG_INFO("===========================================");
+    APPUI_LOG_INFO(
+        "AppUIManager run started, address: "
+        << this
+        << ", appContext address: "
+        << mImpl->getAppContext());
 
-    APPUI_LOG_INFO("===========================================");
-    APPUI_LOG_INFO("==start runApp in AppUIController==========");
-    APPUI_LOG_INFO("===========================================");
-    int res = mImpl->runApp();
-    APPUI_LOG_INFO("===========================================");
-    APPUI_LOG_INFO("======quit mainApp in AppUIController======");
-    APPUI_LOG_INFO("===========================================");
-    return res;
+    auto controller = std::make_unique<AppUIController>();
+
+    APPUI_LOG_INFO("AppUIController startup started");
+    controller->start(mImpl->getAppContext());
+    APPUI_LOG_INFO("AppUIController startup finished");
+
+    APPUI_LOG_INFO("UI event loop started");
+    const auto result = mImpl->runApp();
+
+    APPUI_LOG_INFO(
+        "AppUIManager run finished, exitCode: "
+        << result);
+
+    return result;
 }

@@ -19,8 +19,22 @@ std::unique_ptr<IResourceFontLoader> createResourceFontLoader()
 
 ResourceFontLoader::ResourceFontLoader()
 {
-    RESOURCE_FONT_LOADER_LOG_DEBUG("ResourceFontLoader created");
+    RESOURCE_FONT_LOADER_LOG_DEBUG(
+        "ResourceFontLoader constructing, address: " << this);
+
     buildThemeFontSets();
+
+    RESOURCE_FONT_LOADER_LOG_DEBUG(
+        "ResourceFontLoader constructed, address: " << this);
+}
+
+ResourceFontLoader::~ResourceFontLoader()
+{
+    RESOURCE_FONT_LOADER_LOG_DEBUG(
+        "ResourceFontLoader destroying, address: " << this);
+
+    RESOURCE_FONT_LOADER_LOG_DEBUG(
+        "ResourceFontLoader destructor body finished, address: " << this);
 }
 
 model::Font ResourceFontLoader::getFont(

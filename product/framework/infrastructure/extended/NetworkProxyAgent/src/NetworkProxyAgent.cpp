@@ -74,12 +74,16 @@ bool NetworkProxyAgent::beginShutdown(ShutdownReason reason)
 {
     if (!tryTransition(AgentState::Stopping))
     {
-        NPA_LOG_DEBUG("Shutdown skipped, reason=" << magic_enum::enum_name(reason)
-                      << ", state=" << magic_enum::enum_name(state()));
+        NPA_LOG_DEBUG("NetworkProxyAgent shutdown skipped, reason: "
+                      << magic_enum::enum_name(reason)
+                      << ", state: " << magic_enum::enum_name(state())
+                      << ", address: " << this);
         return false;
     }
 
-    NPA_LOG_INFO("Shutdown begin, reason=" << magic_enum::enum_name(reason));
+    NPA_LOG_INFO("NetworkProxyAgent shutdown started, reason: "
+                 << magic_enum::enum_name(reason)
+                 << ", address: " << this);
     fireNotification(&INetworkProxyAgentCallback::onAgentStateChanged,
                      AgentState::Stopping);
     return true;
@@ -89,6 +93,10 @@ void NetworkProxyAgent::finalizeShutdown(ShutdownReason reason,
                                          int exitCode,
                                          bool crashed)
 {
+    NPA_LOG_DEBUG("NetworkProxyAgent shutdown finalization started, reason: "
+                  << magic_enum::enum_name(reason)
+                  << ", address: " << this);
+
     // Sync barrier — ensures start() has finished writing mConfig
     {
         std::lock_guard<std::mutex> lock(mLifecycleMutex);
@@ -104,9 +112,10 @@ void NetworkProxyAgent::finalizeShutdown(ShutdownReason reason,
 
     if (!tryTransition(AgentState::Terminated))
     {
-        NPA_LOG_DEBUG("Finalize shutdown skipped terminal transition, reason="
+        NPA_LOG_DEBUG("NetworkProxyAgent shutdown finalization skipped terminal transition, reason: "
                       << magic_enum::enum_name(reason)
-                      << ", state=" << magic_enum::enum_name(state()));
+                      << ", state: " << magic_enum::enum_name(state())
+                      << ", address: " << this);
         return;
     }
 
@@ -136,6 +145,10 @@ void NetworkProxyAgent::finalizeShutdown(ShutdownReason reason,
                              + ")");
         break;
     }
+
+    NPA_LOG_INFO("NetworkProxyAgent shutdown finished, reason: "
+                 << magic_enum::enum_name(reason)
+                 << ", address: " << this);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -153,6 +166,7 @@ std::shared_ptr<INetworkProxyAgent> INetworkProxyAgent::create()
 
 NetworkProxyAgent::NetworkProxyAgent()
 {
+    NPA_LOG_DEBUG("NetworkProxyAgent constructing, address: " << this);
     mProcessBridge = ucf::utilities::IProcessBridge::create();
     mTcpChannel = ucf::utilities::ITcpChannel::create();
     NPA_LOG_DEBUG("NetworkProxyAgent constructed, address: " << this);
@@ -160,8 +174,9 @@ NetworkProxyAgent::NetworkProxyAgent()
 
 NetworkProxyAgent::~NetworkProxyAgent()
 {
-    stop();
     NPA_LOG_DEBUG("NetworkProxyAgent destroying, address: " << this);
+    stop();
+    NPA_LOG_DEBUG("NetworkProxyAgent destructor body finished, address: " << this);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -170,9 +185,13 @@ NetworkProxyAgent::~NetworkProxyAgent()
 
 bool NetworkProxyAgent::start(const AgentConfig& config)
 {
+    NPA_LOG_INFO("NetworkProxyAgent startup started, address: " << this);
+
     if (!tryTransition(AgentState::Starting))
     {
-        NPA_LOG_WARN("start() rejected, state=" << magic_enum::enum_name(state()));
+        NPA_LOG_WARN("NetworkProxyAgent startup rejected, state: "
+                     << magic_enum::enum_name(state())
+                     << ", address: " << this);
         return false;
     }
 
@@ -191,7 +210,8 @@ bool NetworkProxyAgent::start(const AgentConfig& config)
     std::string addonPath = detail::AddonLocator::findAddonExecutable();
     if (addonPath.empty())
     {
-        NPA_LOG_ERROR("Addon executable not found");
+        NPA_LOG_ERROR("NetworkProxyAgent startup failed: addon executable not found, address: "
+                      << this);
         failStart("Proxy addon executable not found");
         return false;
     }
@@ -206,7 +226,8 @@ bool NetworkProxyAgent::start(const AgentConfig& config)
 
     if (!mTcpChannel->startListening(tcpConfig))
     {
-        NPA_LOG_ERROR("Failed to start TCP control channel");
+        NPA_LOG_ERROR("NetworkProxyAgent startup failed: unable to start TCP control channel, address: "
+                      << this);
         failStart("Failed to start control channel");
         return false;
     }
@@ -229,7 +250,8 @@ bool NetworkProxyAgent::start(const AgentConfig& config)
 
     if (!mProcessBridge->start(pbConfig))
     {
-        NPA_LOG_ERROR("Failed to start addon process");
+        NPA_LOG_ERROR("NetworkProxyAgent startup failed: unable to start addon process, address: "
+                      << this);
         failStart("Failed to start proxy addon process");
         return false;
     }
@@ -237,30 +259,47 @@ bool NetworkProxyAgent::start(const AgentConfig& config)
     // Remain in Starting state until addon connects via TCP (onClientConnected)
     fireNotification(&INetworkProxyAgentCallback::onStatusMessage,
                      std::string("Process started, waiting for addon connection..."));
+    NPA_LOG_INFO("NetworkProxyAgent startup preparation finished: waiting for addon connection, address: "
+                 << this);
     return true;
 }
 
 void NetworkProxyAgent::stop()
 {
+    NPA_LOG_DEBUG("NetworkProxyAgent shutdown request started, address: " << this);
+
     if (!beginShutdown(ShutdownReason::UserRequest))
     {
+        NPA_LOG_DEBUG("NetworkProxyAgent shutdown request finished without action, address: "
+                      << this);
         return;
     }
 
     finalizeShutdown(ShutdownReason::UserRequest);
+
+    NPA_LOG_DEBUG("NetworkProxyAgent shutdown request finished, address: " << this);
 }
 
 void NetworkProxyAgent::failStart(const std::string& errorMessage)
 {
+    NPA_LOG_DEBUG("NetworkProxyAgent startup failure handling started, reason: "
+                  << errorMessage
+                  << ", address: " << this);
+
     doCleanup();
     tryTransition(AgentState::Terminated);
     fireNotification(&INetworkProxyAgentCallback::onAgentStateChanged,
                      AgentState::Terminated);
     fireNotification(&INetworkProxyAgentCallback::onError, errorMessage);
+
+    NPA_LOG_DEBUG("NetworkProxyAgent startup failure handling finished, address: "
+                  << this);
 }
 
 void NetworkProxyAgent::doCleanup()
 {
+    NPA_LOG_DEBUG("NetworkProxyAgent cleanup started, address: " << this);
+
     if (mTcpChannel)
     {
         mTcpChannel->stop();
@@ -273,6 +312,8 @@ void NetworkProxyAgent::doCleanup()
         std::lock_guard<std::mutex> lock(mBufferMutex);
         mTcpBuffer.clear();
     }
+
+    NPA_LOG_DEBUG("NetworkProxyAgent cleanup finished, address: " << this);
 }
 
 // ════════════════════════════════════════════════════════════
@@ -422,6 +463,8 @@ void NetworkProxyAgent::onClientConnected()
         fireNotification(&INetworkProxyAgentCallback::onStatusMessage,
                          std::string("Addon connected, proxy running on port ")
                              + std::to_string(mConfig.proxyPort));
+
+        NPA_LOG_INFO("NetworkProxyAgent startup finished, address: " << this);
     }
     else
     {

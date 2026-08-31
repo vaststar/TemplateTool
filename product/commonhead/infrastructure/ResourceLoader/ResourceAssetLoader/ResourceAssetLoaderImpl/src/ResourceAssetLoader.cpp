@@ -18,8 +18,22 @@ std::unique_ptr<IResourceAssetLoader> createResourceAssetLoader()
 
 ResourceAssetLoader::ResourceAssetLoader()
 {
-    RESOURCE_ASSET_LOADER_LOG_DEBUG("ResourceAssetLoader created");
+    RESOURCE_ASSET_LOADER_LOG_DEBUG(
+        "ResourceAssetLoader constructing, address: " << this);
+
     buildThemeAssetSets();
+
+    RESOURCE_ASSET_LOADER_LOG_DEBUG(
+        "ResourceAssetLoader constructed, address: " << this);
+}
+
+ResourceAssetLoader::~ResourceAssetLoader()
+{
+    RESOURCE_ASSET_LOADER_LOG_DEBUG(
+        "ResourceAssetLoader destroying, address: " << this);
+
+    RESOURCE_ASSET_LOADER_LOG_DEBUG(
+        "ResourceAssetLoader destructor body finished, address: " << this);
 }
 
 std::string ResourceAssetLoader::getAssetImageTokenName(

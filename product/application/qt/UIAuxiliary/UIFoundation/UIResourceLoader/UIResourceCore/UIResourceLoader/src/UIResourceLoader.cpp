@@ -9,12 +9,18 @@
 #include <UIResourceFontLoader/UIResourceFontLoader.h>
 #include <UIResourceAssetLoader/UIResourceAssetLoader.h>
 
+#include "LoggerDefine.h"
+
 namespace UIResource{
 void UIResourceLoader::registerUIResourceLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
+    UIResourceLoader_LOG_DEBUG("UIResourceLoader registration started");
+
     UIResourceColorLoader::registerUIResourceColorLoader();
     UIResourceStringLoader::registerUIResourceStringLoader(commonheadFramework);
     UIResourceFontLoader::registerUIResourceFontLoader();
     UIResourceAssetLoader::registerUIResourceAssetLoader();
+
+    UIResourceLoader_LOG_DEBUG("UIResourceLoader registration finished");
 }
 };

@@ -121,6 +121,7 @@ void RuntimeWebViewCallback::onWebViewReady()
 MiniAppRuntimeAgent::MiniAppRuntimeAgent()
     : m_impl(std::make_unique<Impl>())
 {
+    MINI_APP_RUNTIME_AGENT_LOG_DEBUG("MiniAppRuntimeAgent constructing, address: " << this);
     MINI_APP_RUNTIME_AGENT_LOG_DEBUG("MiniAppRuntimeAgent constructed, address: " << this);
 }
 
@@ -128,15 +129,21 @@ MiniAppRuntimeAgent::~MiniAppRuntimeAgent()
 {
     MINI_APP_RUNTIME_AGENT_LOG_DEBUG("MiniAppRuntimeAgent destroying, address: " << this);
     shutdown();
+    MINI_APP_RUNTIME_AGENT_LOG_DEBUG("MiniAppRuntimeAgent destructor body finished, address: " << this);
 }
 
 bool MiniAppRuntimeAgent::initialize(const MiniAppRuntimeAgentConfig& config)
 {
+    MINI_APP_RUNTIME_AGENT_LOG_INFO("MiniAppRuntimeAgent initialization started, address: " << this);
+
     bool fireReady = false;
     {
         std::lock_guard<std::mutex> lock(m_impl->mutex);
         if (m_impl->initialized)
         {
+            MINI_APP_RUNTIME_AGENT_LOG_DEBUG(
+                "MiniAppRuntimeAgent initialization skipped: agent is already initialized, address: "
+                << this);
             return false;
         }
 
@@ -144,6 +151,9 @@ bool MiniAppRuntimeAgent::initialize(const MiniAppRuntimeAgentConfig& config)
         m_impl->webView = ucf::infrastructure::webview::createWebView();
         if (!m_impl->webView)
         {
+            MINI_APP_RUNTIME_AGENT_LOG_ERROR(
+                "MiniAppRuntimeAgent initialization failed: unable to create WebView, address: "
+                << this);
             return false;
         }
 
@@ -174,6 +184,9 @@ bool MiniAppRuntimeAgent::initialize(const MiniAppRuntimeAgentConfig& config)
 
         if (!m_impl->webView->initialize(options))
         {
+            MINI_APP_RUNTIME_AGENT_LOG_ERROR(
+                "MiniAppRuntimeAgent initialization failed: WebView initialization failed, address: "
+                << this);
             return false;
         }
 
@@ -211,16 +224,26 @@ bool MiniAppRuntimeAgent::initialize(const MiniAppRuntimeAgentConfig& config)
     {
         fireNotification(&IMiniAppRuntimeAgentCallback::onReadyChanged, true);
     }
+
+    MINI_APP_RUNTIME_AGENT_LOG_INFO(
+        "MiniAppRuntimeAgent initialization finished, WebView ready: "
+        << fireReady
+        << ", address: " << this);
     return true;
 }
 
 void MiniAppRuntimeAgent::shutdown()
 {
+    MINI_APP_RUNTIME_AGENT_LOG_INFO("MiniAppRuntimeAgent shutdown started, address: " << this);
+
     bool fireNotReady = false;
     {
         std::lock_guard<std::mutex> lock(m_impl->mutex);
         if (!m_impl->initialized)
         {
+            MINI_APP_RUNTIME_AGENT_LOG_DEBUG(
+                "MiniAppRuntimeAgent shutdown skipped: agent is not initialized, address: "
+                << this);
             return;
         }
 
@@ -252,6 +275,8 @@ void MiniAppRuntimeAgent::shutdown()
     {
         fireNotification(&IMiniAppRuntimeAgentCallback::onReadyChanged, false);
     }
+
+    MINI_APP_RUNTIME_AGENT_LOG_INFO("MiniAppRuntimeAgent shutdown finished, address: " << this);
 }
 
 bool MiniAppRuntimeAgent::isReady() const
@@ -338,6 +363,8 @@ void MiniAppRuntimeAgent::onWebViewReady()
     }
     if (fireReady)
     {
+        MINI_APP_RUNTIME_AGENT_LOG_INFO("MiniAppRuntimeAgent WebView readiness finished, address: "
+                                        << this);
         fireNotification(&IMiniAppRuntimeAgentCallback::onReadyChanged, true);
     }
     if (doPendingLoad)

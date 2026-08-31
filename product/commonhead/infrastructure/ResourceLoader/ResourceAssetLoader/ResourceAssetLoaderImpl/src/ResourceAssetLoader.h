@@ -12,6 +12,7 @@ class ResourceAssetLoader final : public IResourceAssetLoader
 {
 public:
     ResourceAssetLoader();
+    ~ResourceAssetLoader() override;
 
     [[nodiscard]] std::string getAssetImageTokenName(
         model::AssetImageToken assetImageToken,

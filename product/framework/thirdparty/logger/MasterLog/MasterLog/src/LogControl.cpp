@@ -14,6 +14,23 @@
 #include "LogConsoleLogger.h"
 #include "LogFileLogger.h"
 
+namespace {
+
+std::string formatSourceLocation(
+    const std::string& filePath,
+    int lineNumber)
+{
+    const auto separatorPosition = filePath.find_last_of("/\\");
+    const auto fileName =
+        separatorPosition == std::string::npos
+        ? filePath
+        : filePath.substr(separatorPosition + 1);
+
+    return fileName + ":" + std::to_string(lineNumber);
+}
+
+} // namespace
+
 namespace LogLogSpace{
 std::shared_ptr<LogControl> LogControl::_instance = nullptr;
 std::shared_ptr<LogControl> LogControl::getInstance()
@@ -99,9 +116,9 @@ std::string LogControl::getCurrentFormatedTime() const
 
 std::string LogControl::getCurrentThreadId() const
 {
-    std::stringstream ss;
-    ss << "0x" << std::hex << std::this_thread::get_id();
-    return ss.str();
+    std::ostringstream stream;
+    stream << std::this_thread::get_id();
+    return stream.str();
 }
 
 std::string LogControl::getLogLevelString(int logLevel) const
@@ -111,9 +128,9 @@ std::string LogControl::getLogLevelString(int logLevel) const
     case 1<<0:
         return "DEBUG";
     case 1<<1:
-        return "INFO ";
+        return "INFO";
     case 1<<2:
-        return "WARN ";
+        return "WARN";
     case 1<<3:
         return "ERROR";
     case 1<<4:
@@ -126,17 +143,17 @@ std::string LogControl::getLogLevelString(int logLevel) const
 std::string LogControl::formatMessage(const std::string& logTag, int logLevel, const std::string& filePath,
                           int lineNumber,const std::string& functionName, const std::string& logMessage)const
 {
-    //filepath+linenumber
-    std::string fileString = filePath + "(" + std::to_string(lineNumber) + ")";
-    if(fileString.length() > 40)
-    {
-        fileString = fileString.substr(fileString.length()-40,40);
-    }
-    else if(fileString.length() < 40)
-    {
-        fileString = std::string(40 - fileString.length(),' ') + fileString;
-    }
+    const auto sourceLocation =
+        formatSourceLocation(filePath, lineNumber);
 
-    return std::format("{} {} [{}] [{}] [{}] [{}] {}\n", getCurrentFormatedTime(), getLogLevelString(logLevel), getCurrentThreadId(), fileString, logTag, functionName, logMessage);
+    return std::format(
+        "{} [{}] [{}] [{}] [{}] [{}] {}\n",
+        getCurrentFormatedTime(),
+        getLogLevelString(logLevel),
+        getCurrentThreadId(),
+        sourceLocation,
+        logTag,
+        functionName,
+        logMessage);
 }
 }

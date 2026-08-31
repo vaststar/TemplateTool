@@ -1,0 +1,12 @@
+#pragma once
+
+#include <ucf/utilities/LoggerUtils/LoggerExport.h>
+
+static inline const char* UIResourceLoaderLoggerName = ucf::utilities::kAppLoggerName;
+static inline const char* UIResourceLoaderLoggerTag = "UIResourceLoader";
+
+#define UIResourceLoader_LOG_DEBUG(message)     UCF_LOG_DEBUG(UIResourceLoaderLoggerTag, message, UIResourceLoaderLoggerName)
+#define UIResourceLoader_LOG_INFO(message)      UCF_LOG_INFO(UIResourceLoaderLoggerTag, message, UIResourceLoaderLoggerName)
+#define UIResourceLoader_LOG_WARN(message)      UCF_LOG_WARN(UIResourceLoaderLoggerTag, message, UIResourceLoaderLoggerName)
+#define UIResourceLoader_LOG_ERROR(message)     UCF_LOG_ERROR(UIResourceLoaderLoggerTag, message, UIResourceLoaderLoggerName)
+#define UIResourceLoader_LOG_FATAL(message)     UCF_LOG_FATAL(UIResourceLoaderLoggerTag, message, UIResourceLoaderLoggerName)

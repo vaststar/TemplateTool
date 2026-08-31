@@ -20,8 +20,22 @@ std::unique_ptr<IResourceColorLoader> createResourceColorLoader()
 
 ResourceColorLoader::ResourceColorLoader()
 {
-    RESOURCE_COLOR_LOADER_LOG_DEBUG("ResourceColorLoader created");
+    RESOURCE_COLOR_LOADER_LOG_DEBUG(
+        "ResourceColorLoader constructing, address: " << this);
+
     buildThemeColorSets();
+
+    RESOURCE_COLOR_LOADER_LOG_DEBUG(
+        "ResourceColorLoader constructed, address: " << this);
+}
+
+ResourceColorLoader::~ResourceColorLoader()
+{
+    RESOURCE_COLOR_LOADER_LOG_DEBUG(
+        "ResourceColorLoader destroying, address: " << this);
+
+    RESOURCE_COLOR_LOADER_LOG_DEBUG(
+        "ResourceColorLoader destructor body finished, address: " << this);
 }
 
 model::Color ResourceColorLoader::getColor(

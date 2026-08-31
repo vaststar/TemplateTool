@@ -47,27 +47,26 @@ void Main::DataPrivate::exitApp()
 int Main::DataPrivate::runApp(int argc, char *argv[])
 {
     initApp(argc, argv);
-    MAINUI_LOG_DEBUG("init dependencies done");
+    MAINUI_LOG_DEBUG("Application dependencies initialized");
 
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========start run mainApp===============");
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG("UI application execution started");
+
     int runResult = 0;
     {
-        AppUIManager AppUIManager(AppUIManager::ApplicationConfig{argc, argv, getCommonHeadFramework()});
-        runResult = AppUIManager.runApp();
+        AppUIManager appUIManager(
+            AppUIManager::ApplicationConfig{
+                argc,
+                argv,
+                getCommonHeadFramework()});
+        runResult = appUIManager.runApp();
     }
-    MAINUI_LOG_DEBUG("===========mainApp run result:" << runResult << "=======");
 
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========start quit mainApp==============");
-    MAINUI_LOG_DEBUG("===========================================");
+    MAINUI_LOG_DEBUG(
+        "UI application execution finished, exitCode: "
+        << runResult);
+
     exitApp();
-    MAINUI_LOG_DEBUG("===========================================");
-    MAINUI_LOG_DEBUG("===========finish quit mainApp=============");
-    MAINUI_LOG_DEBUG("===========================================");
+
     return runResult;
 }
 /////////////////////////////////////////////////////////////////////////////////////
@@ -91,10 +90,6 @@ int Main::runMain(int argc, char *argv[])
     if (UIUtilities::UISingleInstanceChecker singleInstanceChecker(SINGLE_INSTANCE_NAME); singleInstanceChecker.tryToRun())
     {
         int result = mDataPrivate->runApp(argc, argv);
-        MAINUI_LOG_DEBUG("===========================================");
-        MAINUI_LOG_DEBUG("===========================================");
-        MAINUI_LOG_DEBUG("===========================================");
-        MAINUI_LOG_DEBUG("===========================================");
         return result;
     }
     else

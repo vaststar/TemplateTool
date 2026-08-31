@@ -19,19 +19,24 @@ PerformanceManager::PerformanceManager(ucf::framework::ICoreFrameworkWPtr coreFr
     , mCPUMonitor(ICPUMonitor::create())
     , mTimingTracker(std::make_unique<TimingTracker>())
 {
+    PERFORMANCE_LOG_DEBUG("PerformanceManager constructing, address: " << this);
     PERFORMANCE_LOG_DEBUG("PerformanceManager constructed, address: " << this);
 }
 
 PerformanceManager::~PerformanceManager()
 {
-    stopMonitoring();
     PERFORMANCE_LOG_DEBUG("PerformanceManager destroying, address: " << this);
+    stopMonitoring();
+    PERFORMANCE_LOG_DEBUG("PerformanceManager destructor body finished, address: " << this);
 }
 
 void PerformanceManager::initialize()
 {
+    PERFORMANCE_LOG_INFO("PerformanceManager initialization started, address: " << this);
+
     startMonitoring();
-    PERFORMANCE_LOG_INFO("PerformanceManager initialized");
+
+    PERFORMANCE_LOG_INFO("PerformanceManager initialization finished, address: " << this);
 }
 
 // ==========================================
@@ -84,18 +89,28 @@ double PerformanceManager::getCpuWarningThreshold() const
 
 void PerformanceManager::startMonitoring()
 {
+    PERFORMANCE_LOG_INFO("PerformanceManager monitoring startup started, address: " << this);
+
     if (mMonitorRunning.exchange(true))
     {
+        PERFORMANCE_LOG_DEBUG(
+            "PerformanceManager monitoring startup skipped: monitoring is already running, address: "
+            << this);
         return;
     }
     mMonitorThread = std::thread(&PerformanceManager::monitorLoop, this);
-    PERFORMANCE_LOG_INFO("Performance monitoring started");
+    PERFORMANCE_LOG_INFO("PerformanceManager monitoring startup finished, address: " << this);
 }
 
 void PerformanceManager::stopMonitoring()
 {
+    PERFORMANCE_LOG_INFO("PerformanceManager monitoring shutdown started, address: " << this);
+
     if (!mMonitorRunning.exchange(false))
     {
+        PERFORMANCE_LOG_DEBUG(
+            "PerformanceManager monitoring shutdown skipped: monitoring is not running, address: "
+            << this);
         return;
     }
     mMonitorCv.notify_all();
@@ -103,11 +118,13 @@ void PerformanceManager::stopMonitoring()
     {
         mMonitorThread.join();
     }
-    PERFORMANCE_LOG_INFO("Performance monitoring stopped");
+    PERFORMANCE_LOG_INFO("PerformanceManager monitoring shutdown finished, address: " << this);
 }
 
 void PerformanceManager::monitorLoop()
 {
+    PERFORMANCE_LOG_DEBUG("PerformanceManager monitoring loop started, address: " << this);
+
     uint64_t prevCpuMicros = mCPUMonitor ? mCPUMonitor->getProcessCpuTimeMicros() : 0;
     SystemCpuTimes prevSysTimes = mCPUMonitor ? mCPUMonitor->getSystemCpuTimes() : SystemCpuTimes{};
     auto prevWallTime = std::chrono::steady_clock::now();
@@ -206,6 +223,8 @@ void PerformanceManager::monitorLoop()
                 << "system[avail " << mem.availableSystemBytes / 1024 / 1024 << " MB]}");
         }
     }
+
+    PERFORMANCE_LOG_DEBUG("PerformanceManager monitoring loop finished, address: " << this);
 }
 
 // ==========================================

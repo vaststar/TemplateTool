@@ -6,7 +6,20 @@
 
 AppUIStringLoader::AppUIStringLoader()
 {
-    UIResourceStringLoader_LOG_DEBUG("create string loader");
+    UIResourceStringLoader_LOG_DEBUG(
+        "AppUIStringLoader constructing, address: " << this);
+
+    UIResourceStringLoader_LOG_DEBUG(
+        "AppUIStringLoader constructed, address: " << this);
+}
+
+AppUIStringLoader::~AppUIStringLoader()
+{
+    UIResourceStringLoader_LOG_DEBUG(
+        "AppUIStringLoader destroying, address: " << this);
+
+    UIResourceStringLoader_LOG_DEBUG(
+        "AppUIStringLoader destructor body finished, address: " << this);
 }
 
 std::string AppUIStringLoader::getNonLocalizedStringOrigin(commonHead::model::NonLocalizedString stringId) const

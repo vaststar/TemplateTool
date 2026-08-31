@@ -24,6 +24,7 @@ std::shared_ptr<IScreenRecordingAgent> IScreenRecordingAgent::create()
 
 ScreenRecordingAgent::ScreenRecordingAgent()
 {
+    SRA_LOG_DEBUG("ScreenRecordingAgent constructing, address: " << this);
     SRA_LOG_DEBUG("ScreenRecordingAgent constructed, address: " << this);
 }
 
@@ -48,6 +49,8 @@ ScreenRecordingAgent::~ScreenRecordingAgent()
         }
         m_recorder.reset();
     }
+
+    SRA_LOG_DEBUG("ScreenRecordingAgent destructor body finished, address: " << this);
 }
 
 // ============================================================================
@@ -127,8 +130,12 @@ bool ScreenRecordingAgent::casFrom(std::initializer_list<State> fromStates, Stat
 
 bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 {
+    SRA_LOG_INFO("ScreenRecordingAgent startup started, address: " << this);
+
     if (!tryTransition(State::Starting))
     {
+        SRA_LOG_WARN("ScreenRecordingAgent startup rejected: recording is already in progress, address: "
+                     << this);
         fireNotification(&IScreenRecordingAgentCallback::onError,
                          std::string("Recording already in progress"));
         return false;
@@ -146,6 +153,8 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
     // Pre-check screen recording permission to fail fast with a clear error
     if (!ucf::utilities::screenrecording::IScreenRecorder::hasScreenRecordingPermission())
     {
+        SRA_LOG_ERROR("ScreenRecordingAgent startup failed: screen recording permission is not granted, address: "
+                      << this);
         m_state.store(State::Idle, std::memory_order_release);
         fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
                          RecordingAgentState::Idle);
@@ -171,6 +180,8 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
         m_recorder = ucf::utilities::screenrecording::IScreenRecorder::create();
         if (!m_recorder || !m_recorder->start(lowLevelConfig))
         {
+            SRA_LOG_ERROR("ScreenRecordingAgent startup failed: unable to start recorder, address: "
+                          << this);
             m_recorder.reset();
             m_isGifMode = false;
             // Revert state
@@ -185,6 +196,8 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 
     if (!tryTransition(State::Recording))
     {
+        SRA_LOG_ERROR("ScreenRecordingAgent startup failed: unable to enter recording state, address: "
+                      << this);
         // Shouldn't happen given we just set Starting, but guard anyway
         m_isGifMode = false;
         std::lock_guard lock(m_sessionMutex);
@@ -198,7 +211,9 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 
     startDurationTimer();
 
-    SRA_LOG_INFO("Recording started: " << config.outputPath);
+    SRA_LOG_INFO("ScreenRecordingAgent startup finished, output path: "
+                 << config.outputPath
+                 << ", address: " << this);
     fireNotification(&IScreenRecordingAgentCallback::onAgentStateChanged,
                      RecordingAgentState::Recording);
     fireNotification(&IScreenRecordingAgentCallback::onRecordingStarted);
@@ -207,8 +222,12 @@ bool ScreenRecordingAgent::start(const RecordingAgentConfig& config)
 
 void ScreenRecordingAgent::stop()
 {
+    SRA_LOG_INFO("ScreenRecordingAgent shutdown request started, address: " << this);
+
     if (state() == State::Idle)
     {
+        SRA_LOG_DEBUG("ScreenRecordingAgent shutdown request skipped: agent is idle, address: "
+                      << this);
         return;
     }
 
@@ -216,6 +235,8 @@ void ScreenRecordingAgent::stop()
     bool expected = false;
     if (!m_stopping.compare_exchange_strong(expected, true))
     {
+        SRA_LOG_DEBUG("ScreenRecordingAgent shutdown request skipped: shutdown is already in progress, address: "
+                      << this);
         return;
     }
 
@@ -225,6 +246,8 @@ void ScreenRecordingAgent::stop()
     // Transition to Stopping
     if (!tryTransition(State::Stopping))
     {
+        SRA_LOG_WARN("ScreenRecordingAgent shutdown request failed: unable to enter stopping state, address: "
+                     << this);
         m_stopping.store(false);
         return;
     }
@@ -240,6 +263,8 @@ void ScreenRecordingAgent::stop()
     // Run heavy FFmpeg teardown on a background thread
     m_stopThread = std::thread([this, wasPaused]()
     {
+        SRA_LOG_INFO("ScreenRecordingAgent asynchronous shutdown started, address: " << this);
+
         // Grace period: let FFmpeg continue capturing for a short time after
         // the user clicks stop.  This compensates for the inherent latency
         // between the button press and the point where `q` reaches FFmpeg's
@@ -326,7 +351,11 @@ void ScreenRecordingAgent::stop()
         }
 
         m_stopping.store(false);
+        SRA_LOG_INFO("ScreenRecordingAgent shutdown finished, address: " << this);
     });
+
+    SRA_LOG_INFO("ScreenRecordingAgent shutdown request finished: asynchronous cleanup scheduled, address: "
+                 << this);
 }
 
 void ScreenRecordingAgent::abort()

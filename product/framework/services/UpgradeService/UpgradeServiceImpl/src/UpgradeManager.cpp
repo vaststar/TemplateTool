@@ -16,17 +16,21 @@ UpgradeManager::UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     , mDownloadManager(std::make_unique<UpgradeDownloadManager>(coreFramework))
     , mInstallManager(std::make_unique<UpgradeInstallManager>(coreFramework))
 {
+    UPGRADE_LOG_DEBUG("UpgradeManager constructing, address: " << this);
     UPGRADE_LOG_DEBUG("UpgradeManager constructed, address: " << this);
 }
 
 UpgradeManager::~UpgradeManager()
 {
-    stopAutoCheckTimer();
     UPGRADE_LOG_DEBUG("UpgradeManager destroying, address: " << this);
+    stopAutoCheckTimer();
+    UPGRADE_LOG_DEBUG("UpgradeManager destructor body finished, address: " << this);
 }
 
 void UpgradeManager::initialize(Listener* listener)
 {
+    UPGRADE_LOG_INFO("UpgradeManager initialization started, address: " << this);
+
     mListener = listener;
 
     // 1. Check for interrupted upgrade from last session
@@ -50,7 +54,7 @@ void UpgradeManager::initialize(Listener* listener)
     // 4. Start auto-check timer
     //startAutoCheckTimer();
 
-    UPGRADE_LOG_INFO("UpgradeManager initialized");
+    UPGRADE_LOG_INFO("UpgradeManager initialization finished, address: " << this);
 }
 
 void UpgradeManager::bindFsmCallbacks()
@@ -317,8 +321,12 @@ std::string UpgradeManager::getCurrentArch() const
 
 void UpgradeManager::startAutoCheckTimer()
 {
+    UPGRADE_LOG_INFO("UpgradeManager auto-check timer startup started, address: " << this);
+
     mStopRequested.store(false);
     mAutoCheckThread = std::thread([this]() {
+        UPGRADE_LOG_DEBUG("UpgradeManager auto-check thread started, address: " << this);
+
         // Initial delay: 30 seconds after startup
         for (int i = 0; i < 30 && !mStopRequested.load(); ++i) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -333,15 +341,23 @@ void UpgradeManager::startAutoCheckTimer()
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
+
+        UPGRADE_LOG_DEBUG("UpgradeManager auto-check thread finished, address: " << this);
     });
+
+    UPGRADE_LOG_INFO("UpgradeManager auto-check timer startup finished, address: " << this);
 }
 
 void UpgradeManager::stopAutoCheckTimer()
 {
+    UPGRADE_LOG_INFO("UpgradeManager auto-check timer shutdown started, address: " << this);
+
     mStopRequested.store(true);
     if (mAutoCheckThread.joinable()) {
         mAutoCheckThread.join();
     }
+
+    UPGRADE_LOG_INFO("UpgradeManager auto-check timer shutdown finished, address: " << this);
 }
 
 } // namespace ucf::service

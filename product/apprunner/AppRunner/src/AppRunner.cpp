@@ -81,12 +81,11 @@ void ApplicationRunner::DataPrivate::initLogger()
     UCF_LOG_INIT(logConfigs);
 #endif
     mLoggerInitialized = true;
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========Logger Initialzied==============");
-    RUNNER_LOG_INFO("=Logger Folder Path: " << mApplicationConfig.appLogConfig.logDirPath << ", BaseFileName: " << mApplicationConfig.appLogConfig.logBaseFileName << " =");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO(
+        "Logger initialized, directory: "
+        << mApplicationConfig.appLogConfig.logDirPath
+        << ", baseFileName: "
+        << mApplicationConfig.appLogConfig.logBaseFileName);
 }
 
 bool ApplicationRunner::DataPrivate::isLoggerInitialized() const noexcept
@@ -96,38 +95,24 @@ bool ApplicationRunner::DataPrivate::isLoggerInitialized() const noexcept
 
 void ApplicationRunner::DataPrivate::initApp()
 {
-    std::call_once(mInit_flag, [this](){
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========start init App==================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
-        //1. init frameworks
+    std::call_once(mInit_flag, [this]() {
+        RUNNER_LOG_INFO("Application initialization started");
+
         initFrameworks();
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========App initialized=================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
-        //2. store command line args if exists
         injectStartupParameters();
+
+        RUNNER_LOG_INFO("Application initialization finished");
     });
 }
 
 void ApplicationRunner::DataPrivate::exitApp()
 {
-    std::call_once(mExit_flag, [this](){
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========start exit App==================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
+    std::call_once(mExit_flag, [this]() {
+        RUNNER_LOG_INFO("Application shutdown started");
+
         exitFrameworks();
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========App exited======================");
-        RUNNER_LOG_INFO("===========================================");
-        RUNNER_LOG_INFO("===========================================");
+
+        RUNNER_LOG_INFO("Application shutdown finished");
     });
 }
 
@@ -181,19 +166,13 @@ void ApplicationRunner::DataPrivate::createApplicationConfig()
 
 void ApplicationRunner::DataPrivate::createFrameworks()
 {
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========start create Frameworks=========");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
+    RUNNER_LOG_INFO("Framework creation started");
+
     mFrameworkDependencies.coreFramework = ucf::framework::createCoreFramework();
     mServiceFactory = ucf::service::IServiceFactory::createInstance(mFrameworkDependencies.coreFramework);
     mFrameworkDependencies.commonHeadFramework = commonHead::ICommonHeadFramework::createInstance(mFrameworkDependencies.coreFramework);
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========Frameworks Created==============");
-    RUNNER_LOG_INFO("===========================================");
-    RUNNER_LOG_INFO("===========================================");
+
+    RUNNER_LOG_INFO("Framework creation finished");
 }
 
 void ApplicationRunner::DataPrivate::initFrameworks()
@@ -279,6 +258,8 @@ ApplicationRunner::~ApplicationRunner()
     {
         RUNNER_LOG_INFO(
             "ApplicationRunner owned dependencies released, stopping logger");
+        RUNNER_LOG_INFO(
+            "==================== Application run ended ====================");
         UCF_LOG_STOP();
     }
 }

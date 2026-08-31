@@ -14,14 +14,19 @@ void IViewModel::initViewModel()
 {
     std::call_once(mInitFlag, [this]() {
         const auto viewModelName = getViewModelName();
+        const auto* objectAddress = dynamic_cast<const void*>(this);
 
         VIEW_MODEL_CORE_LOG_DEBUG(
-            viewModelName << " initialization started, address: " << this);
+            viewModelName
+            << " initialization started, address: "
+            << objectAddress);
 
         init();
 
         VIEW_MODEL_CORE_LOG_DEBUG(
-            viewModelName << " initialization finished, address: " << this);
+            viewModelName
+            << " initialization finished, address: "
+            << objectAddress);
     });
 }
 

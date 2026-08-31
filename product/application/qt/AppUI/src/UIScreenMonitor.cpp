@@ -48,7 +48,8 @@ UIScreenMonitor::~UIScreenMonitor()
 
 void UIScreenMonitor::start()
 {
-    APPUI_LOG_DEBUG("start screen monitor");
+    APPUI_LOG_DEBUG(
+        "UIScreenMonitor startup started, address: " << this);
 
     // Coalesce a burst of screen signals into one event.
     mDebounceTimer = new QTimer(this);
@@ -77,15 +78,33 @@ void UIScreenMonitor::start()
         APPUI_LOG_DEBUG("primaryScreenChanged: " << describeScreen(screen));
         scheduleNotify();
     });
+
+    APPUI_LOG_DEBUG(
+        "UIScreenMonitor startup finished, screen count: "
+        << static_cast<int>(screens.size())
+        << ", address: "
+        << this);
 }
 
 void UIScreenMonitor::stop()
 {
+    APPUI_LOG_DEBUG(
+        "UIScreenMonitor shutdown started, address: " << this);
+
     if (mDebounceTimer)
     {
         mDebounceTimer->stop();
         mDebounceTimer = nullptr;
     }
+    else
+    {
+        APPUI_LOG_DEBUG(
+            "UIScreenMonitor debounce timer stop skipped: timer is not available, address: "
+            << this);
+    }
+
+    APPUI_LOG_DEBUG(
+        "UIScreenMonitor shutdown finished, address: " << this);
 }
 
 void UIScreenMonitor::connectScreen(QScreen* screen)

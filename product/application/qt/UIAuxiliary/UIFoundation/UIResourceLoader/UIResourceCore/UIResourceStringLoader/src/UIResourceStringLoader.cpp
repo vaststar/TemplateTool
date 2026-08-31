@@ -12,7 +12,8 @@
 namespace UIResource{
 void UIResourceStringLoader::registerUIResourceStringLoader(commonHead::ICommonHeadFrameworkWPtr commonheadFramework)
 {
-    UIResourceStringLoader_LOG_DEBUG("");
+    UIResourceStringLoader_LOG_DEBUG("UIResourceStringLoader registration started");
+
     qmlRegisterUncreatableMetaObject(
 	    UILocalizedStringToken::staticMetaObject,      // The meta-object of the namespace
 	    "UIResourceLoader",                            // The URI or module name
@@ -43,5 +44,7 @@ void UIResourceStringLoader::registerUIResourceStringLoader(commonHead::ICommonH
             resourceLoader->setLocalizedStringLoader(std::make_unique<AppUIStringLoader>());
         }
     }
+
+    UIResourceStringLoader_LOG_DEBUG("UIResourceStringLoader registration finished");
 }
 }

@@ -12,6 +12,7 @@ class ResourceColorLoader final : public IResourceColorLoader
 {
 public:
     ResourceColorLoader();
+    ~ResourceColorLoader() override;
 
     [[nodiscard]] model::Color getColor(
         model::ColorToken token,

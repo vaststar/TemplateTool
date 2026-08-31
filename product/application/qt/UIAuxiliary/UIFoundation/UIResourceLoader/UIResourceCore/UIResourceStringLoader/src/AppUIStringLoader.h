@@ -10,6 +10,8 @@ class AppUIStringLoader: public commonHead::IResourceStringLoader
 {
 public:
     AppUIStringLoader();
+    ~AppUIStringLoader() override;
+
 protected:
     virtual std::string getNonLocalizedStringOrigin(commonHead::model::NonLocalizedString stringId) const override;
     virtual std::string getLocalizedStringOrigin(commonHead::model::LocalizedString stringId) const override;

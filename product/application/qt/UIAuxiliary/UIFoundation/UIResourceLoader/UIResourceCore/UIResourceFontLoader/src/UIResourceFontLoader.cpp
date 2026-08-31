@@ -10,7 +10,8 @@ namespace UIResource{
 
 void UIResourceFontLoader::registerUIResourceFontLoader()
 {
-    UIResourceFontLoader_LOG_DEBUG("");
+    UIResourceFontLoader_LOG_DEBUG("UIResourceFontLoader registration started");
+
     qmlRegisterUncreatableMetaObject(
 	    UIFontToken::staticMetaObject,      // The meta-object of the namespace
 	    "UIResourceLoader",                      // The URI or module name
@@ -18,5 +19,7 @@ void UIResourceFontLoader::registerUIResourceFontLoader()
 	    "UIFontToken",                      // The name used in QML
 	    "Access to enums only"         // Error message for attempting to create an instance
 	);
+
+    UIResourceFontLoader_LOG_DEBUG("UIResourceFontLoader registration finished");
 }
 }

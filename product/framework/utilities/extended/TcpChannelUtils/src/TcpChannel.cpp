@@ -87,18 +87,32 @@ bool TcpChannel::beginStop()
 {
     if (!tryTransition(ChannelState::Stopping))
     {
-        TC_LOG_DEBUG("Stop skipped, state=" << magic_enum::enum_name(currentState()));
+        TC_LOG_DEBUG(
+            "TcpChannel shutdown skipped, state: "
+            << magic_enum::enum_name(currentState())
+            << ", address: " << this);
         return false;
     }
 
-    TC_LOG_INFO("Stop begin, state=" << magic_enum::enum_name(currentState()));
+    TC_LOG_INFO(
+        "TcpChannel shutdown started, state: "
+        << magic_enum::enum_name(currentState())
+        << ", address: " << this);
     return true;
 }
 
 void TcpChannel::failStart(const std::string& errorMessage)
 {
+    TC_LOG_DEBUG(
+        "TcpChannel startup failure handling started, reason: "
+        << errorMessage
+        << ", address: " << this);
+
     tryTransition(ChannelState::Terminated);
     fireNotification(&ITcpChannelCallback::onError, errorMessage);
+
+    TC_LOG_DEBUG(
+        "TcpChannel startup failure handling finished, address: " << this);
 }
 
 // ════════════════════════════════════════════════
@@ -107,11 +121,14 @@ void TcpChannel::failStart(const std::string& errorMessage)
 
 TcpChannel::TcpChannel()
 {
+    TC_LOG_DEBUG("TcpChannel constructing, address: " << this);
     detail::SocketHelper::initialize();
+    TC_LOG_DEBUG("TcpChannel constructed, address: " << this);
 }
 
 TcpChannel::~TcpChannel()
 {
+    TC_LOG_DEBUG("TcpChannel destroying, address: " << this);
     stop();
     // Ensure the I/O thread is joined even if it exited on its own
     // (e.g. select() error → ioLoop returned without stop() joining it).
@@ -120,13 +137,20 @@ TcpChannel::~TcpChannel()
         mIoThread.join();
     }
     detail::SocketHelper::cleanup();
+
+    TC_LOG_DEBUG("TcpChannel destructor body finished, address: " << this);
 }
 
 bool TcpChannel::startListening(const TcpChannelConfig& config)
 {
+    TC_LOG_INFO("TcpChannel startup started, address: " << this);
+
     if (!tryTransition(ChannelState::Starting))
     {
-        TC_LOG_WARN("startListening() rejected, state=" << magic_enum::enum_name(currentState()));
+        TC_LOG_WARN(
+            "TcpChannel startup rejected, state: "
+            << magic_enum::enum_name(currentState())
+            << ", address: " << this);
         return false;
     }
 
@@ -151,7 +175,10 @@ bool TcpChannel::startListening(const TcpChannelConfig& config)
         if (mServerSocket == kInvalidSocket)
         {
             errorMsg = "Failed to create socket: " + detail::SocketHelper::lastError();
-            TC_LOG_ERROR(errorMsg);
+            TC_LOG_ERROR(
+                "TcpChannel startup failed: "
+                << errorMsg
+                << ", address: " << this);
             setupFailed = true;
         }
         else
@@ -163,7 +190,10 @@ bool TcpChannel::startListening(const TcpChannelConfig& config)
             {
                 errorMsg = "Failed to bind/listen on port " + std::to_string(config.listenPort)
                            + ": " + detail::SocketHelper::lastError();
-                TC_LOG_ERROR(errorMsg);
+                TC_LOG_ERROR(
+                    "TcpChannel startup failed: "
+                    << errorMsg
+                    << ", address: " << this);
                 detail::SocketHelper::closeSocket(mServerSocket);
                 setupFailed = true;
             }
@@ -190,18 +220,31 @@ bool TcpChannel::startListening(const TcpChannelConfig& config)
     if (!tryTransition(ChannelState::Listening))
     {
         // stop() intervened during setup
-        TC_LOG_WARN("startListening() interrupted by concurrent stop(), state="
-                    << magic_enum::enum_name(currentState()));
+        TC_LOG_WARN(
+            "TcpChannel startup interrupted by concurrent shutdown, state: "
+            << magic_enum::enum_name(currentState())
+            << ", address: " << this);
         return false;
     }
 
+    TC_LOG_INFO(
+        "TcpChannel startup finished, listening address: "
+        << config.listenAddress
+        << ", port: " << mPort.load()
+        << ", address: " << this);
     return true;
 }
 
 void TcpChannel::stop()
 {
+    TC_LOG_DEBUG(
+        "TcpChannel shutdown request started, address: " << this);
+
     if (!beginStop())
     {
+        TC_LOG_DEBUG(
+            "TcpChannel shutdown request finished without action, address: "
+            << this);
         return;
     }
 
@@ -217,7 +260,9 @@ void TcpChannel::stop()
     // join ourselves. The ioLoop exit path will do deferred cleanup.
     if (std::this_thread::get_id() == mIoThread.get_id())
     {
-        TC_LOG_INFO("stop() called from I/O thread, cleanup deferred to ioLoop exit");
+        TC_LOG_INFO(
+            "TcpChannel shutdown request finished: cleanup deferred to I/O loop, address: "
+            << this);
         return;
     }
 
@@ -232,7 +277,8 @@ void TcpChannel::stop()
     {
         finalizeStop();
     }
-    TC_LOG_INFO("TcpChannel stopped");
+    TC_LOG_DEBUG(
+        "TcpChannel shutdown request finished, address: " << this);
 }
 
 // ════════════════════════════════════════════════
@@ -280,7 +326,7 @@ int TcpChannel::listeningPort() const
 
 void TcpChannel::ioLoop()
 {
-    TC_LOG_DEBUG("I/O thread started");
+    TC_LOG_DEBUG("TcpChannel I/O loop started, address: " << this);
 
     while (true)
     {
@@ -357,7 +403,7 @@ void TcpChannel::ioLoop()
         }
     }
 
-    TC_LOG_DEBUG("I/O thread exiting");
+    TC_LOG_DEBUG("TcpChannel I/O loop stopping, address: " << this);
 
     // Deferred cleanup: if stop() was called from a callback on this thread,
     // it set Stopping but could not join/cleanup. We do it here.
@@ -371,6 +417,8 @@ void TcpChannel::ioLoop()
         TC_LOG_INFO("Deferred cleanup in ioLoop exit");
         finalizeStop();
     }
+
+    TC_LOG_DEBUG("TcpChannel I/O loop finished, address: " << this);
 }
 
 void TcpChannel::handleNewConnection()
@@ -435,6 +483,9 @@ void TcpChannel::disconnectClient()
 
 void TcpChannel::finalizeStop()
 {
+    TC_LOG_DEBUG(
+        "TcpChannel shutdown finalization started, address: " << this);
+
     {
         std::lock_guard<std::mutex> lock(mClientMutex);
         detail::SocketHelper::closeSocket(mClientSocket);
@@ -442,6 +493,8 @@ void TcpChannel::finalizeStop()
     detail::SocketHelper::closeSocket(mServerSocket);
     mPort = 0;
     tryTransition(ChannelState::Terminated);
+
+    TC_LOG_INFO("TcpChannel shutdown finished, address: " << this);
 }
 
 } // namespace ucf::utilities

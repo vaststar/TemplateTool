@@ -28,13 +28,26 @@ CommonHeadFramework::~CommonHeadFramework()
 
 void CommonHeadFramework::initCommonheadFramework()
 {
-    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("init CommonHeadFramework, address:"<<this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG(
+        "CommonHeadFramework initialization started, address: "
+        << this);
+
     mResourceLoader->initResourceLoader();
+
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG(
+        "CommonHeadFramework initialization finished, address: "
+        << this);
 }
 
 void CommonHeadFramework::exitCommonheadFramework()
 {
-    COMMON_HEAD_FRAMEWORK_LOG_DEBUG("exit CommonHeadFramework, address:"<<this);
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG(
+        "CommonHeadFramework shutdown started, address: "
+        << this);
+
+    COMMON_HEAD_FRAMEWORK_LOG_DEBUG(
+        "CommonHeadFramework shutdown finished, address: "
+        << this);
 }
 
 std::string CommonHeadFramework::getName() const

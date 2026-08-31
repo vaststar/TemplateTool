@@ -10,7 +10,8 @@ namespace UIResource{
 
 void UIResourceAssetLoader::registerUIResourceAssetLoader()
 {
-    UIResourceAssetLoader_LOG_DEBUG("");
+    UIResourceAssetLoader_LOG_DEBUG("UIResourceAssetLoader registration started");
+
     qmlRegisterUncreatableMetaObject(
 	    UIAssetImageToken::staticMetaObject,      // The meta-object of the namespace
 	    "UIResourceLoader",                      // The URI or module name
@@ -25,5 +26,7 @@ void UIResourceAssetLoader::registerUIResourceAssetLoader()
 	    "UIAssetVideoToken",                      // The name used in QML
 	    "Access to enums only"         // Error message for attempting to create an instance
 	);
+
+    UIResourceAssetLoader_LOG_DEBUG("UIResourceAssetLoader registration finished");
 }
 }

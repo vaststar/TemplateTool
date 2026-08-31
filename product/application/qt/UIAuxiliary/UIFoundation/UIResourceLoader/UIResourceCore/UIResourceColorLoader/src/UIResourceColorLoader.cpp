@@ -10,7 +10,8 @@
 namespace UIResource{
 void UIResourceColorLoader::registerUIResourceColorLoader()
 {
-    UIResourceColorLoader_LOG_DEBUG("");
+    UIResourceColorLoader_LOG_DEBUG("UIResourceColorLoader registration started");
+
     qmlRegisterUncreatableMetaObject(
 	    UIColorToken::staticMetaObject,      // The meta-object of the namespace
 	    "UIResourceLoader",                      // The URI or module name
@@ -26,6 +27,8 @@ void UIResourceColorLoader::registerUIResourceColorLoader()
 	    "UIColorState",                      // The name used in QML
 	    "Access to enums only"         // Error message for attempting to create an instance
 	);
+
+    UIResourceColorLoader_LOG_DEBUG("UIResourceColorLoader registration finished");
 }
 
 

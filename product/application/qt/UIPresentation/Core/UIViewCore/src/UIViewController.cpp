@@ -21,13 +21,14 @@ bool UIViewController::isInitialized() const
 void UIViewController::initializeController(QPointer<AppContext> appContext)
 {
     const auto controllerName = getControllerName().toStdString();
+    const auto* objectAddress = dynamic_cast<const void*>(this);
 
     if (isInitialized())
     {
         UIViewCore_LOG_WARN(
             controllerName
             << " initialization skipped: already initialized, address: "
-            << this);
+            << objectAddress);
         return;
     }
 
@@ -36,14 +37,14 @@ void UIViewController::initializeController(QPointer<AppContext> appContext)
         UIViewCore_LOG_ERROR(
             controllerName
             << " initialization failed: AppContext is null, address: "
-            << this);
+            << objectAddress);
         return;
     }
 
     UIViewCore_LOG_DEBUG(
         controllerName
         << " initialization started, address: "
-        << this);
+        << objectAddress);
 
     mAppContext = appContext;
 
@@ -71,7 +72,7 @@ void UIViewController::initializeController(QPointer<AppContext> appContext)
     UIViewCore_LOG_DEBUG(
         controllerName
         << " initialization finished, address: "
-        << this);
+        << objectAddress);
 }
 
 QPointer<AppContext> UIViewController::getAppContext() const
@@ -133,6 +134,8 @@ void UIViewController::setupController(UIViewController* controller)
         return;
     }
 
+    const auto* childObjectAddress =
+        dynamic_cast<const void*>(controller);
     const auto childControllerName =
         controller->getControllerName().toStdString();
 
@@ -141,7 +144,7 @@ void UIViewController::setupController(UIViewController* controller)
         UIViewCore_LOG_DEBUG(
             childControllerName
             << " setup skipped: already initialized, address: "
-            << controller);
+            << childObjectAddress);
         return;
     }
 
@@ -161,7 +164,7 @@ void UIViewController::setupController(UIViewController* controller)
         << " setting up child controller "
         << childControllerName
         << ", child address: "
-        << controller);
+        << childObjectAddress);
 
     onSetupController(controller);
     controller->initializeController(appContext);

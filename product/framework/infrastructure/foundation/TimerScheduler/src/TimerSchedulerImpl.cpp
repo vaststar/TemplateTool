@@ -11,12 +11,24 @@ namespace ucf::infrastructure::scheduling {
 
 TimerSchedulerImpl::TimerSchedulerImpl()
 {
+    TS_LOG_DEBUG(
+        "TimerSchedulerImpl constructing, address: " << this);
+
     mWorker = std::thread{[this]() { workerLoop(); }};
+
+    TS_LOG_DEBUG(
+        "TimerSchedulerImpl constructed, address: " << this);
 }
 
 TimerSchedulerImpl::~TimerSchedulerImpl()
 {
+    TS_LOG_DEBUG(
+        "TimerSchedulerImpl destroying, address: " << this);
+
     shutdown();
+
+    TS_LOG_DEBUG(
+        "TimerSchedulerImpl destructor body finished, address: " << this);
 }
 
 TimerHandle TimerSchedulerImpl::scheduleOnce(
@@ -100,6 +112,9 @@ bool TimerSchedulerImpl::cancel(TimerHandle handle)
 
 void TimerSchedulerImpl::shutdown()
 {
+    TS_LOG_INFO(
+        "TimerSchedulerImpl shutdown started, address: " << this);
+
     mRunning.store(false, std::memory_order_release);
     mCv.notify_all();
 
@@ -114,10 +129,16 @@ void TimerSchedulerImpl::shutdown()
         mQueue.pop();
     }
     mCancelled.clear();
+
+    TS_LOG_INFO(
+        "TimerSchedulerImpl shutdown finished, address: " << this);
 }
 
 void TimerSchedulerImpl::workerLoop()
 {
+    TS_LOG_DEBUG(
+        "TimerSchedulerImpl worker loop started, address: " << this);
+
     std::unique_lock<std::mutex> lk{mMutex};
     while (mRunning.load(std::memory_order_acquire))
     {
@@ -182,6 +203,9 @@ void TimerSchedulerImpl::workerLoop()
         }
         mQueue.push(top);
     }
+
+    TS_LOG_DEBUG(
+        "TimerSchedulerImpl worker loop finished, address: " << this);
 }
 
 void TimerSchedulerImpl::runCallback(const std::shared_ptr<Task>& task) noexcept

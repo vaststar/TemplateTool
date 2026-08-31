@@ -46,18 +46,20 @@ ucf::utilities::Instant toInstant(
 CrashManager::CrashManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
 {
+    CRASHHANDLER_LOG_DEBUG("CrashManager constructing, address: " << this);
     CRASHHANDLER_LOG_DEBUG("CrashManager constructed, address: " << this);
 }
 
 CrashManager::~CrashManager()
 {
-    cleanup();
     CRASHHANDLER_LOG_DEBUG("CrashManager destroying, address: " << this);
+    cleanup();
+    CRASHHANDLER_LOG_DEBUG("CrashManager destructor body finished, address: " << this);
 }
 
 void CrashManager::initialize()
 {
-    CRASHHANDLER_LOG_INFO("CrashManager::initialize() starting...");
+    CRASHHANDLER_LOG_INFO("CrashManager initialization started, address: " << this);
 
     // Get configuration from ClientInfoService
     if (auto coreFramework = mCoreFramework.lock())
@@ -88,11 +90,17 @@ void CrashManager::initialize()
     {
         CRASHHANDLER_LOG_ERROR("CoreFramework is null, crash handler not installed");
     }
+
+    CRASHHANDLER_LOG_INFO("CrashManager initialization finished, address: " << this);
 }
 
 void CrashManager::cleanup()
 {
+    CRASHHANDLER_LOG_INFO("CrashManager cleanup started, address: " << this);
+
     uninstall();
+
+    CRASHHANDLER_LOG_INFO("CrashManager cleanup finished, address: " << this);
 }
 
 void CrashManager::setCrashDirectory(const std::filesystem::path& dir)
@@ -108,15 +116,21 @@ void CrashManager::setCrashDirectory(const std::filesystem::path& dir)
 
 void CrashManager::install()
 {
+    CRASHHANDLER_LOG_INFO("CrashManager installation started, address: " << this);
+
     if (mInstalled)
     {
-        CRASHHANDLER_LOG_WARN("CrashHandler already installed");
+        CRASHHANDLER_LOG_WARN(
+            "CrashManager installation skipped: crash handler is already installed, address: "
+            << this);
         return;
     }
 
     if (mCrashDirectory.empty())
     {
-        CRASHHANDLER_LOG_ERROR("Crash directory not set");
+        CRASHHANDLER_LOG_ERROR(
+            "CrashManager installation failed: crash directory is not set, address: "
+            << this);
         return;
     }
 
@@ -130,18 +144,29 @@ void CrashManager::install()
 
     if (!mPlatformHandler)
     {
-        CRASHHANDLER_LOG_ERROR("Failed to create platform crash handler");
+        CRASHHANDLER_LOG_ERROR(
+            "CrashManager installation failed: unable to create platform crash handler, address: "
+            << this);
         return;
     }
 
     mInstalled = true;
-    CRASHHANDLER_LOG_INFO("CrashHandler installed, crash directory: " << mCrashDirectory);
+    CRASHHANDLER_LOG_INFO(
+        "CrashManager installation finished, crash directory: "
+        << mCrashDirectory
+        << ", address: "
+        << this);
 }
 
 void CrashManager::uninstall()
 {
+    CRASHHANDLER_LOG_INFO("CrashManager uninstallation started, address: " << this);
+
     if (!mInstalled)
     {
+        CRASHHANDLER_LOG_DEBUG(
+            "CrashManager uninstallation skipped: crash handler is not installed, address: "
+            << this);
         return;
     }
 
@@ -149,7 +174,7 @@ void CrashManager::uninstall()
     mPlatformHandler.reset();
 
     mInstalled = false;
-    CRASHHANDLER_LOG_INFO("CrashHandler uninstalled");
+    CRASHHANDLER_LOG_INFO("CrashManager uninstallation finished, address: " << this);
 }
 
 bool CrashManager::hasPendingCrashReport() const

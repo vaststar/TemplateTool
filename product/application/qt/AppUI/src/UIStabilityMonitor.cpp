@@ -21,7 +21,9 @@ UIStabilityMonitor::~UIStabilityMonitor()
 
 void UIStabilityMonitor::start()
 {
-    APPUI_LOG_DEBUG("start heartbeat");
+    APPUI_LOG_DEBUG(
+        "UIStabilityMonitor startup started, address: " << this);
+
     mStabilityViewModel = mAppContext->getViewModelFactory()->createStabilityViewModelInstance();
     mStabilityViewModelEmitter = std::make_shared<UIViewModelSignalBridge::StabilityViewModelEmitter>();
     mStabilityViewModel->registerCallback(mStabilityViewModelEmitter);
@@ -35,14 +37,31 @@ void UIStabilityMonitor::start()
         }
     });
     mHeartbeatTimer->start(mStabilityViewModel->getHeartbeatIntervalMs());
-    APPUI_LOG_DEBUG("heartbeat started with interval: " << mStabilityViewModel->getHeartbeatIntervalMs() << "ms");
+
+    APPUI_LOG_DEBUG(
+        "UIStabilityMonitor startup finished, heartbeat interval: "
+        << mStabilityViewModel->getHeartbeatIntervalMs()
+        << " ms, address: "
+        << this);
 }
 
 void UIStabilityMonitor::stop()
 {
+    APPUI_LOG_DEBUG(
+        "UIStabilityMonitor shutdown started, address: " << this);
+
     if (mHeartbeatTimer)
     {
         mHeartbeatTimer->stop();
         mHeartbeatTimer = nullptr;
     }
+    else
+    {
+        APPUI_LOG_DEBUG(
+            "UIStabilityMonitor heartbeat timer stop skipped: timer is not running, address: "
+            << this);
+    }
+
+    APPUI_LOG_DEBUG(
+        "UIStabilityMonitor shutdown finished, address: " << this);
 }

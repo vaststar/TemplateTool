@@ -12,6 +12,7 @@ class ResourceFontLoader final : public IResourceFontLoader
 {
 public:
     ResourceFontLoader();
+    ~ResourceFontLoader() override;
 
     [[nodiscard]] model::Font getFont(
         model::FontToken fontToken,
