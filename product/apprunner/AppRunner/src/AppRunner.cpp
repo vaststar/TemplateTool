@@ -82,6 +82,8 @@ void ApplicationRunner::DataPrivate::initLogger()
 #endif
     mLoggerInitialized = true;
     RUNNER_LOG_INFO(
+        "==================== Application run started ====================");
+    RUNNER_LOG_INFO(
         "Logger initialized, directory: "
         << mApplicationConfig.appLogConfig.logDirPath
         << ", baseFileName: "
