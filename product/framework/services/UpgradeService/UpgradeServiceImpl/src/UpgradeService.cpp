@@ -120,7 +120,7 @@ void UpgradeService::onServiceInitialized()
 
 void UpgradeService::onCoreFrameworkExit()
 {
-    UPGRADE_LOG_DEBUG("UpgradeService::onCoreFrameworkExit()");
+    UPGRADE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 // ── IUpgradeService — one-line delegation ──

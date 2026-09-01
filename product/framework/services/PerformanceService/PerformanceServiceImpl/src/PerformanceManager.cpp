@@ -72,7 +72,7 @@ PerformanceManager::PerformanceManager(ucf::framework::ICoreFrameworkWPtr coreFr
 PerformanceManager::~PerformanceManager()
 {
     PERFORMANCE_LOG_DEBUG("PerformanceManager destroying, address: " << this);
-    stopMonitoring();
+    cleanup();
     PERFORMANCE_LOG_DEBUG("PerformanceManager destructor body finished, address: " << this);
 }
 
@@ -83,6 +83,20 @@ void PerformanceManager::initialize()
     startMonitoring();
 
     PERFORMANCE_LOG_INFO("PerformanceManager initialization finished, address: " << this);
+}
+
+void PerformanceManager::cleanup()
+{
+    PERFORMANCE_LOG_INFO("PerformanceManager cleanup started, address: " << this);
+
+    // Stop the producer first. After join() returns, no monitoring callback can
+    // still be executing or start executing.
+    stopMonitoring();
+
+    // Break the Manager -> Service notification path explicitly.
+    setNotificationSink(std::weak_ptr<IPerformanceNotificationSink>{});
+
+    PERFORMANCE_LOG_INFO("PerformanceManager cleanup finished, address: " << this);
 }
 
 // ==========================================
@@ -172,12 +186,14 @@ void PerformanceManager::stopMonitoring()
         PERFORMANCE_LOG_DEBUG(
             "PerformanceManager monitoring shutdown skipped: monitoring is not running, address: "
             << this);
-        return;
     }
-    mMonitorCv.notify_all();
-    if (mMonitorThread.joinable())
+    else
     {
-        mMonitorThread.join();
+        mMonitorCv.notify_all();
+        if (mMonitorThread.joinable())
+        {
+            mMonitorThread.join();
+        }
     }
     PERFORMANCE_LOG_INFO("PerformanceManager monitoring shutdown finished, address: " << this);
 }

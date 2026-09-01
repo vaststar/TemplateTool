@@ -132,12 +132,14 @@ void ContactService::onServiceInitialized()
 
 void ContactService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("ContactService exiting");
+    SERVICE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 void ContactService::OnDatabaseInitialized(const std::string& dbId)
 {
-    SERVICE_LOG_DEBUG("OnDatabaseInitialized, dbId:" << dbId);
+    SERVICE_LOG_DEBUG(
+        "Database-initialized notification received, databaseId: "
+        << dbId);
     mDataPrivate->getManager().bindDatabase(dbId);
 }
 

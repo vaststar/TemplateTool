@@ -2,6 +2,10 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
+#include <stdexcept>
+#include <string>
+
+#include <curl/curl.h>
 
 #include "LibCurlMultiHandle.h"
 #include "LibCurlEasyHandle.h"
@@ -10,6 +14,50 @@
 #include "LibCurlClientLogger.h"
 
 namespace ucf::infrastructure::network::libcurl{
+
+namespace {
+
+class CurlGlobalRuntime final
+{
+public:
+    CurlGlobalRuntime()
+    {
+        LIBCURL_LOG_DEBUG("libcurl global initialization started");
+
+        const auto result = curl_global_init(CURL_GLOBAL_ALL);
+        if (result != CURLE_OK)
+        {
+            LIBCURL_LOG_ERROR(
+                "libcurl global initialization failed, errorCode: "
+                << static_cast<int>(result)
+                << ", error: "
+                << curl_easy_strerror(result));
+
+            throw std::runtime_error(
+                std::string("libcurl global initialization failed: ")
+                + curl_easy_strerror(result));
+        }
+
+        LIBCURL_LOG_DEBUG("libcurl global initialization finished");
+    }
+
+    ~CurlGlobalRuntime()
+    {
+        LIBCURL_LOG_DEBUG("libcurl global cleanup started");
+
+        curl_global_cleanup();
+
+        LIBCURL_LOG_DEBUG("libcurl global cleanup finished");
+    }
+
+    CurlGlobalRuntime(const CurlGlobalRuntime&) = delete;
+    CurlGlobalRuntime(CurlGlobalRuntime&&) = delete;
+    CurlGlobalRuntime& operator=(const CurlGlobalRuntime&) = delete;
+    CurlGlobalRuntime& operator=(CurlGlobalRuntime&&) = delete;
+};
+
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -25,6 +73,7 @@ public:
     void stopLoop();
     bool cancelRequest(const std::string& requestId);
 private:
+    CurlGlobalRuntime mCurlGlobalRuntime;
     std::unique_ptr<LibCurlMultiHandle> mMultiHandle;
     std::atomic_bool mStop;
     std::thread mLoopThread;
@@ -34,7 +83,8 @@ private:
 };
 
 LibCurlMultiHandleManager::DataPrivate::DataPrivate()
-    : mMultiHandle(std::make_unique<LibCurlMultiHandle>())
+    : mCurlGlobalRuntime()
+    , mMultiHandle(std::make_unique<LibCurlMultiHandle>())
     , mStop(false)
     , mHasRequests(false)
 {
@@ -43,9 +93,15 @@ LibCurlMultiHandleManager::DataPrivate::DataPrivate()
 
 LibCurlMultiHandleManager::DataPrivate::~DataPrivate()
 {
-    LIBCURL_LOG_DEBUG("LibCurlMultiHandleManager loop shutdown starting");
+    LIBCURL_LOG_DEBUG(
+        "LibCurlMultiHandleManager DataPrivate shutdown started, address: "
+        << this);
+
     stopLoop();
-    LIBCURL_LOG_DEBUG("LibCurlMultiHandleManager loop shutdown completed");
+
+    LIBCURL_LOG_DEBUG(
+        "LibCurlMultiHandleManager DataPrivate shutdown finished, address: "
+        << this);
 }
 
 void LibCurlMultiHandleManager::DataPrivate::insertRequest(std::shared_ptr<LibCurlEasyHandle> request)
@@ -61,6 +117,9 @@ void LibCurlMultiHandleManager::DataPrivate::insertRequest(std::shared_ptr<LibCu
 void LibCurlMultiHandleManager::DataPrivate::runLoop()
 {
     mLoopThread = std::thread([this](){
+        LIBCURL_LOG_DEBUG(
+            "LibCurlMultiHandleManager worker loop started, address: " << this);
+
         while(!mStop.load(std::memory_order_acquire))
         {
             {
@@ -73,11 +132,17 @@ void LibCurlMultiHandleManager::DataPrivate::runLoop()
             }
             if (mStop.load(std::memory_order_acquire))
             {
-                LIBCURL_LOG_DEBUG("already stopped, won't perform requests any more");
+                LIBCURL_LOG_DEBUG(
+                    "LibCurlMultiHandleManager request processing stopped: "
+                    "shutdown was requested, address: "
+                    << this);
                 break;
             }
             mMultiHandle->performRequests();
         }
+
+        LIBCURL_LOG_DEBUG(
+            "LibCurlMultiHandleManager worker loop finished, address: " << this);
     });
 }
 
@@ -115,16 +180,24 @@ LibCurlMultiHandleManager::~LibCurlMultiHandleManager()
 
 void LibCurlMultiHandleManager::runLoop()
 {
-    LIBCURL_LOG_DEBUG("start looping, address:" << this);
+    LIBCURL_LOG_DEBUG(
+        "LibCurlMultiHandleManager worker startup started, address: " << this);
+
     mDataPrivate->runLoop();
-    LIBCURL_LOG_DEBUG("start looping done, address:" << this);
+
+    LIBCURL_LOG_DEBUG(
+        "LibCurlMultiHandleManager worker startup finished, address: " << this);
 }
 
 void LibCurlMultiHandleManager::stopLoop()
 {
-    LIBCURL_LOG_DEBUG("start stopping loop, address:" << this);
+    LIBCURL_LOG_DEBUG(
+        "LibCurlMultiHandleManager worker shutdown started, address: " << this);
+
     mDataPrivate->stopLoop();
-    LIBCURL_LOG_DEBUG("finish stopping loop, address:" << this);
+
+    LIBCURL_LOG_DEBUG(
+        "LibCurlMultiHandleManager worker shutdown finished, address: " << this);
 }
 
 void LibCurlMultiHandleManager::insert(std::shared_ptr<LibCurlEasyHandle> request)

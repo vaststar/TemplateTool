@@ -169,8 +169,13 @@ std::optional<model::MiniAppManifest> MiniAppManager::loadManifest(
         return std::nullopt;
     }
 
-    SERVICE_LOG_INFO("Loaded mini-app '" << manifest.name << "' (id:" << manifest.id
-                                         << ", version:" << manifest.version << ")");
+    SERVICE_LOG_INFO(
+        "Mini-app manifest loaded, name: "
+        << manifest.name
+        << ", id: "
+        << manifest.id
+        << ", version: "
+        << manifest.version);
     return manifest;
 }
 

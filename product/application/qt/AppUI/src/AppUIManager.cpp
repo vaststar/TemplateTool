@@ -46,6 +46,15 @@ AppUIManager::Impl::Impl(const AppUIManager::ApplicationConfig& config)
     , mAppContext(std::make_unique<AppContext>(mainApp.get(), mQmlEngine.get(), config.commonHeadFramework))
 {
     APPUI_LOG_INFO("UI runtime initialization started");
+
+    QObject::connect(
+        mainApp.get(),
+        &QCoreApplication::aboutToQuit,
+        mainApp.get(),
+        []() {
+            APPUI_LOG_INFO("Application shutdown started");
+        });
+
     APPUI_LOG_INFO("Qt Version: " << qVersion());
     APPUI_LOG_INFO("Qt Build ABI: " << QSysInfo::buildAbi().toStdString());
     APPUI_LOG_INFO("Qt Platform Plugin: " << QGuiApplication::platformName().toStdString());

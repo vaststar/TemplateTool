@@ -44,8 +44,7 @@ std::shared_ptr<LogControl> LogControl::getInstance()
 
 LogControl::~LogControl()
 {
-    std::scoped_lock<std::mutex> lo(m_loggerMutex);
-    m_currentLogger.clear();
+    stopLogger();
 }
 
 void LogControl::initConsoleLogger(int logLevels, const std::string& loggerName)

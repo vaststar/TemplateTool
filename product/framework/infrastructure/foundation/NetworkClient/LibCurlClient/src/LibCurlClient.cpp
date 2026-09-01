@@ -42,20 +42,33 @@ LibCurlClient::DataPrivate::DataPrivate()
 void LibCurlClient::DataPrivate::ensureStarted()
 {
     std::call_once(start_flag, [this]() {
-        LIBCURL_LOG_DEBUG("auto starting service");
+        LIBCURL_LOG_DEBUG(
+            "LibCurlClient automatic startup started, address: " << this);
+
         mMultiHandleManager->runLoop();
+
+        LIBCURL_LOG_DEBUG(
+            "LibCurlClient automatic startup finished, address: " << this);
     });
 }
 
 void LibCurlClient::DataPrivate::stop()
 {
-    LIBCURL_LOG_DEBUG("start stop service");
+    LIBCURL_LOG_DEBUG(
+        "LibCurlClient DataPrivate shutdown started, address: " << this);
+
     std::call_once(stop_flag, [this]() {
-        LIBCURL_LOG_DEBUG("stop service");
+        LIBCURL_LOG_DEBUG(
+            "LibCurlClient one-time shutdown started, address: " << this);
+
         mMultiHandleManager->stopLoop();
-        LIBCURL_LOG_DEBUG("stop service done");
+
+        LIBCURL_LOG_DEBUG(
+            "LibCurlClient one-time shutdown finished, address: " << this);
     });
-    LIBCURL_LOG_DEBUG("finish stop service done");
+
+    LIBCURL_LOG_DEBUG(
+        "LibCurlClient DataPrivate shutdown finished, address: " << this);
 }
 
 void LibCurlClient::DataPrivate::insertEasyHandle(std::shared_ptr<LibCurlEasyHandle> handle)
@@ -119,34 +132,62 @@ std::shared_ptr<LibCurlEasyHandle> LibCurlClient::DataPrivate::buildEasyHandle(c
 LibCurlClient::LibCurlClient()
     : mDataPrivate(std::make_unique<DataPrivate>())
 {
-    ensureCurlGlobalInit();
-    LIBCURL_LOG_DEBUG("create LibCurlClient, "<<this);
+    LIBCURL_LOG_DEBUG(
+        "LibCurlClient constructed, address: " << this);
 }
 
 LibCurlClient::~LibCurlClient()
 {
-    LIBCURL_LOG_DEBUG("delete LibCurlClient, " << this);
+    LIBCURL_LOG_DEBUG(
+        "LibCurlClient destruction started, address: " << this);
+
     mDataPrivate->stop();
-    LIBCURL_LOG_DEBUG("delete LibCurlClient done, " << this);
+    mDataPrivate.reset();
+
+    LIBCURL_LOG_DEBUG(
+        "LibCurlClient destruction finished, address: " << this);
 }
 
 void LibCurlClient::makeGenericRequest(const ucf::infrastructure::network::http::NetworkHttpRequest& request, ucf::infrastructure::network::http::HttpHeaderCallback headerCallback, ucf::infrastructure::network::http::HttpBodyCallback bodyCallback, ucf::infrastructure::network::http::HttpCompletionCallback completionCallback)
 {
+    LIBCURL_LOG_DEBUG(
+        "Network request submission started, requestId: "
+        << request.getRequestId()
+        << ", trackingId: "
+        << request.getTrackingId());
+
     mDataPrivate->ensureStarted();
-    LIBCURL_LOG_DEBUG("make request, requestId: " << request.getRequestId() << ", trackingId: " << request.getTrackingId());
+
     auto easyHandle = mDataPrivate->buildEasyHandle(request, headerCallback, bodyCallback, completionCallback);
     mDataPrivate->insertEasyHandle(easyHandle);
+
+    LIBCURL_LOG_DEBUG(
+        "Network request submission finished, requestId: "
+        << request.getRequestId()
+        << ", trackingId: "
+        << request.getTrackingId());
 }
 
 bool LibCurlClient::cancelRequest(const std::string& requestId)
 {
-    LIBCURL_LOG_INFO("[CANCEL_REQUEST] requestId: " << requestId);
-    bool result = mDataPrivate->cancelRequest(requestId);
-    if (result) {
-        LIBCURL_LOG_INFO("[CANCEL_REQUEST] requestId: " << requestId << " cancelled successfully");
-    } else {
-        LIBCURL_LOG_WARN("[CANCEL_REQUEST] requestId: " << requestId << " not found or already completed");
+    LIBCURL_LOG_INFO(
+        "Network request cancellation started, requestId: " << requestId);
+
+    const bool result = mDataPrivate->cancelRequest(requestId);
+
+    if (result)
+    {
+        LIBCURL_LOG_INFO(
+            "Network request cancellation finished, requestId: " << requestId);
     }
+    else
+    {
+        LIBCURL_LOG_WARN(
+            "Network request cancellation failed: request was not found "
+            "or already completed, requestId: "
+            << requestId);
+    }
+
     return result;
 }
 

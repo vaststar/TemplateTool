@@ -91,7 +91,9 @@ std::string NetworkService::getServiceName() const
 
 void NetworkService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("about exit NetworkService, address:" << this);
+    SERVICE_LOG_DEBUG(
+        "CoreFramework exit notification received, address: "
+        << this);
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

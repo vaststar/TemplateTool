@@ -114,7 +114,7 @@ void MiniAppService::onServiceInitialized()
 
 void MiniAppService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("MiniAppService exiting");
+    SERVICE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 bool MiniAppService::isReady() const

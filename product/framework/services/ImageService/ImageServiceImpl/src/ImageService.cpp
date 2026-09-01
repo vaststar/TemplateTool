@@ -47,6 +47,6 @@ void ImageService::deinitService()
 
 void ImageService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_INFO("ImageService::onCoreFrameworkExit()");
+    SERVICE_LOG_INFO("CoreFramework exit notification received");
 }
 }

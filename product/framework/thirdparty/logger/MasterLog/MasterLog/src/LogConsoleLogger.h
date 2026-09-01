@@ -7,7 +7,7 @@ namespace LogLogSpace{
     {
     public:
         explicit LogConsoleLogger(int loggerLevels, const std::string& loggerName);
-        ~LogConsoleLogger()=default;
+        ~LogConsoleLogger() override;
     protected:
         void initialize() override;
         void processMessage(const std::string& message) override;

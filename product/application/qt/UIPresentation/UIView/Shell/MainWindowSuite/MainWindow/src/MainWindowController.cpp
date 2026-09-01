@@ -85,12 +85,6 @@ void MainWindowController::openCamera()
     win->show();
 }
 
-void MainWindowController::testFunc()
-{
-    UIVIEW_LOG_DEBUG("");
-    UIUtilities::UIPlatformUtils::openLinkInDefaultBrowser("https://www.baidu.com");
-}
-
 void MainWindowController::activateMainWindow()
 {
     emit activateWindow();

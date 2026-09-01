@@ -126,7 +126,7 @@ void CameraDirectoryService::onServiceInitialized()
 
 void CameraDirectoryService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("CameraDirectoryService exiting");
+    SERVICE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 void CameraDirectoryService::OnDatabaseInitialized(const std::string& dbId)

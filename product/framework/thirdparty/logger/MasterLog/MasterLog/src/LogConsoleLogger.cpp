@@ -7,6 +7,11 @@ namespace LogLogSpace{
     {
 
     }
+
+    LogConsoleLogger::~LogConsoleLogger()
+    {
+        stopLog();
+    }
     
     void LogConsoleLogger::initialize()
     {

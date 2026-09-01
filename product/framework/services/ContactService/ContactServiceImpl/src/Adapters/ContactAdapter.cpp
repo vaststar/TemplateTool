@@ -73,12 +73,12 @@ INetworkHttpManagerWPtr ContactAdapter::DataPrivate::getHttpManager() const
 ContactAdapter::ContactAdapter(ucf::framework::ICoreFrameworkWPtr coreframework)
     : mDataPrivate(std::make_unique<DataPrivate>(coreframework))
 {
-    SERVICE_LOG_DEBUG("Create ContactAdapter, address:" << this);
+    SERVICE_LOG_DEBUG("ContactAdapter constructed, address: " << this);
 }
 
 ContactAdapter::~ContactAdapter()
 {
-    SERVICE_LOG_DEBUG("Delete ContactAdapter, address:" << this);
+    SERVICE_LOG_DEBUG("ContactAdapter destroying, address: " << this);
 }
 
 void ContactAdapter::fetchContactInfo(const std::string& contactId, fetchContactInfoCallBack)

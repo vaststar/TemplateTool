@@ -165,12 +165,21 @@ void AppUIController::showMainWindow()
             << this);
         return;
     }
-    if (auto* mainController = UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UIViewController>(
-            win, "controller"))
+
+    auto* mainController =
+        UIUtilities::QmlWindowPropertyResolver::resolveObjectAs<UIViewController>(
+            win, "controller");
+    if (mainController)
     {
         APPUI_LOG_DEBUG("MainWindow.qml load done, will initialize its root controller");
         setupController(mainController);
         APPUI_LOG_DEBUG("MainWindow root controller initialization done");
+    }
+    else
+    {
+        APPUI_LOG_ERROR(
+            "Main window root controller is unavailable, mainWindow address: "
+            << win.data());
     }
 
     // First placement: fit into the screen's available area, then center.
@@ -180,4 +189,13 @@ void AppUIController::showMainWindow()
     win->show();
     APPUI_LOG_DEBUG(
         "AppUIController main window loading finished, address: " << this);
+
+    if (mainController)
+    {
+        APPUI_LOG_INFO(
+            "Application ready, mainWindow address: "
+            << win.data()
+            << ", rootController address: "
+            << mainController);
+    }
 }

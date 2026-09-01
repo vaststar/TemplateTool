@@ -53,7 +53,6 @@ signals:
     void screenChanged();
 public slots:
     void openCamera();
-    void testFunc();
     void activateMainWindow();
     void packLogs();
     void onLogsPackComplete(bool success, const QString& archivePath);

@@ -275,13 +275,34 @@ void CoreFramework::initServices()
         return;
     }
 
-    for (const auto& weakService : getAllServices())
+    const auto services = getAllServices();
+    const auto registeredCount = services.size();
+    std::size_t initializedCount = 0;
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service initialization plan"
+        ", registeredCount: "
+        << registeredCount
+        << ", address: "
+        << this);
+
+    for (const auto& weakService : services)
     {
         if (auto servicePtr = weakService.lock())
         {
             servicePtr->initComponent();
+            ++initializedCount;
         }
     }
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service initialization completed"
+        ", initializedCount: "
+        << initializedCount
+        << ", registeredCount: "
+        << registeredCount
+        << ", address: "
+        << this);
 
     fireNotification(&ICoreFrameworkCallback::onServiceInitialized);
 }
@@ -291,11 +312,43 @@ void CoreFramework::deinitServices()
     // The storage is already sorted in initialization order, so shut services
     // down in its exact reverse: a service is torn down before its dependencies.
     auto services = getAllServices();
+    std::size_t remainingCount = services.size();
+
+    CORE_LOG_DEBUG(
+        "CoreFramework service deinitialization plan"
+        ", totalCount: "
+        << remainingCount
+        << ", address: "
+        << this);
+
     for (auto iter = services.rbegin(); iter != services.rend(); ++iter)
     {
         if (auto servicePtr = iter->lock())
         {
+            const auto serviceName = servicePtr->getServiceName();
             servicePtr->deinitComponent();
+            --remainingCount;
+
+            CORE_LOG_DEBUG(
+                "CoreFramework service deinitialization progress"
+                ", serviceName: "
+                << serviceName
+                << ", remainingCount: "
+                << remainingCount
+                << ", address: "
+                << this);
+        }
+        else
+        {
+            --remainingCount;
+
+            CORE_LOG_WARN(
+                "CoreFramework service deinitialization skipped: "
+                "service instance expired"
+                ", remainingCount: "
+                << remainingCount
+                << ", address: "
+                << this);
         }
     }
 }

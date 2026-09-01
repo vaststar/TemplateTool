@@ -127,12 +127,14 @@ std::vector<ServiceDependency> ClientInfoService::dependencies() const
 
 void ClientInfoService::onServiceInitialized()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG(
+        "CoreFramework service-initialized notification received");
 }
 
 void ClientInfoService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG(
+        "CoreFramework exit notification received");
 }
 
 model::Version ClientInfoService::getApplicationVersion() const

@@ -47,7 +47,8 @@ static size_t request_body_callback(char *data, size_t size, size_t nmemb, void 
 {
     if (userp == nullptr)
     {
-        LIBCURL_LOG_ERROR("user data is null");
+        LIBCURL_LOG_ERROR(
+            "Request-body callback failed: user data is null");
         return 0;
     }
     const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
@@ -58,7 +59,8 @@ int seek_body_callback(void *userp, curl_off_t offset, int origin)
 {
     if (userp == nullptr)
     {
-        LIBCURL_LOG_ERROR("user data is null");
+        LIBCURL_LOG_ERROR(
+            "Request-body seek callback failed: user data is null");
         return CURL_SEEKFUNC_CANTSEEK;
     }
     const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
@@ -159,7 +161,17 @@ public:
         auto const code = curl_easy_setopt(mHandle, option, args...);
         if (code != CURLE_OK)
         {
-            LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code));
+            LIBCURL_LOG_ERROR(
+                "curl easy option update failed, option: "
+                << static_cast<int>(option)
+                << ", errorCode: "
+                << static_cast<int>(code)
+                << ", error: "
+                << curl_easy_strerror(code)
+                << ", requestId: "
+                << mRequestId
+                << ", trackingId: "
+                << mTrackingId);
         }
         return code;
     }
@@ -170,7 +182,17 @@ public:
         auto const code = curl_easy_getinfo(mHandle, info, args...);
         if (code != CURLE_OK)
         {
-            LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code));
+            LIBCURL_LOG_WARN(
+                "curl easy information query failed, info: "
+                << static_cast<int>(info)
+                << ", errorCode: "
+                << static_cast<int>(code)
+                << ", error: "
+                << curl_easy_strerror(code)
+                << ", requestId: "
+                << mRequestId
+                << ", trackingId: "
+                << mTrackingId);
         }
         return code;
     }
@@ -297,7 +319,9 @@ int LibCurlEasyHandle::DataPrivate::setHttpMethod(ucf::infrastructure::network::
             result = setOption(CURLOPT_CUSTOMREQUEST, "OPTIONS");
             break;
         default:
-            LIBCURL_LOG_DEBUG("Unknown HTTP Method");
+            LIBCURL_LOG_ERROR(
+                "HTTP method configuration failed: unsupported method, method: "
+                << static_cast<int>(method));
     }
     return result;
 }
@@ -308,7 +332,11 @@ int LibCurlEasyHandle::DataPrivate::setURI(const std::string& uri)
 
     if (code != CURLUE_OK)
     {
-        LIBCURL_LOG_WARN("Error parsing url: " << curl_url_strerror(code));
+        LIBCURL_LOG_ERROR(
+            "Request URL parsing failed, errorCode: "
+            << static_cast<int>(code)
+            << ", error: "
+            << curl_url_strerror(code));
     }
 
     setOption(CURLOPT_CURLU, mUrl);
@@ -325,7 +353,9 @@ int LibCurlEasyHandle::DataPrivate::setHeaders(const ucf::infrastructure::networ
     }
     if (!mHeaders)
     {
-        LIBCURL_LOG_WARN("Error setting headers");
+        LIBCURL_LOG_ERROR(
+            "Request header construction failed, headerCount: "
+            << headers.size());
     }
     return setOption(CURLOPT_HTTPHEADER, mHeaders);
 }
@@ -512,10 +542,16 @@ void LibCurlEasyHandle::headersCompleted()
 
 void LibCurlEasyHandle::finishHandle(CURLcode code)
 {
-    LIBCURL_LOG_INFO("[REQUEST_FINISH] requestId=" << mDataPrivate->getRequestId()
-                     << ", trackingId=" << mDataPrivate->getTrackingId()
-                     << ", code=" << static_cast<int>(code)
-                     << " (" << curl_easy_strerror(code) << ")");
+    LIBCURL_LOG_INFO(
+        "Network request finished, requestId: "
+        << mDataPrivate->getRequestId()
+        << ", trackingId: "
+        << mDataPrivate->getTrackingId()
+        << ", curlCode: "
+        << static_cast<int>(code)
+        << ", curlError: "
+        << curl_easy_strerror(code));
+
     if (code == CURLE_OK)
     {
         if (mDataPrivate->getBodyCallback() != nullptr)
@@ -526,7 +562,19 @@ void LibCurlEasyHandle::finishHandle(CURLcode code)
     }
     else
     {
-        LIBCURL_LOG_DEBUG("CURL Error (" << static_cast<int>(code) << "): " << curl_easy_strerror(code) << ", trackingId=" << mDataPrivate->getTrackingId());
+        if (code != CURLE_ABORTED_BY_CALLBACK)
+        {
+            LIBCURL_LOG_WARN(
+                "Network request failed, requestId: "
+                << mDataPrivate->getRequestId()
+                << ", trackingId: "
+                << mDataPrivate->getTrackingId()
+                << ", curlCode: "
+                << static_cast<int>(code)
+                << ", curlError: "
+                << curl_easy_strerror(code));
+        }
+
         if (mDataPrivate->getHeaderCallback() != nullptr)
         {
             mDataPrivate->getHeaderCallback()(static_cast<int>(mDataPrivate->getResponseCode()), mDataPrivate->getResponseHeader(), makeErrorData(code));

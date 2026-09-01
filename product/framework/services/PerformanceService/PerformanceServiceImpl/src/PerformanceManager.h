@@ -39,6 +39,7 @@ public:
 
 public:
     void initialize();
+    void cleanup();
 
 public:
     // Memory Monitoring

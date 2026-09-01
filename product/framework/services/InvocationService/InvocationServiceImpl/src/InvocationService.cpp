@@ -95,18 +95,23 @@ std::string InvocationService::getServiceName() const
 
 void InvocationService::onServiceInitialized()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG(
+        "CoreFramework service-initialized notification received");
 }
 
 void InvocationService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG(
+        "CoreFramework exit notification received");
 }
 
 void InvocationService::processStartupParameters()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG("Startup parameter processing started");
+
     mDataPrivate->getInvocationManager().processStartupParameters();
+
+    SERVICE_LOG_DEBUG("Startup parameter processing finished");
 }
 
 std::vector<std::string> InvocationService::getStartupParameters() const

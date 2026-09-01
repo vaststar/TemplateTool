@@ -94,6 +94,10 @@ void PerformanceService::initService()
 
 void PerformanceService::deinitService()
 {
+    // Reverse initService(): stop the internal producer and detach its sink
+    // before unregistering the Service from CoreFramework callbacks.
+    mDataPrivate->getPerformanceManager().cleanup();
+
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());
@@ -102,7 +106,7 @@ void PerformanceService::deinitService()
 
 void PerformanceService::onCoreFrameworkExit()
 {
-    PERFORMANCE_LOG_INFO("PerformanceService::onCoreFrameworkExit()");
+    PERFORMANCE_LOG_INFO("CoreFramework exit notification received");
 }
 
 // ==========================================

@@ -50,7 +50,9 @@ bool SqliteDatabaseWrapper::DataPrivate::openDatabase()
 
     if (mDatabase)
     {
-        DBCLIENT_LOG_WARN("database already open, dbname: " << mDatabaseConfig.fileName);
+        DBCLIENT_LOG_WARN(
+            "Database open skipped: database is already open, databasePath: "
+            << mDatabaseConfig.fileName);
         return true;
     }
 
@@ -61,9 +63,10 @@ bool SqliteDatabaseWrapper::DataPrivate::openDatabase()
     if (SQLITE_OK != result)
     {
         std::string errorMsg = mDatabase ? sqlite3_errmsg(mDatabase) : "unknown error";
-        DBCLIENT_LOG_ERROR("open db failed, dbname: " << mDatabaseConfig.fileName
-                          << ", error code: " << result
-                          << ", error: " << errorMsg);
+        DBCLIENT_LOG_ERROR(
+            "Database open failed, databasePath: " << mDatabaseConfig.fileName
+            << ", errorCode: " << result
+            << ", error: " << errorMsg);
         if (mDatabase)
         {
             sqlite3_close(mDatabase);
@@ -72,24 +75,36 @@ bool SqliteDatabaseWrapper::DataPrivate::openDatabase()
         return false;
     }
 
-    DBCLIENT_LOG_INFO("open db successfully, dbname: " << mDatabaseConfig.fileName);
+    DBCLIENT_LOG_INFO(
+        "Database open succeeded, databasePath: "
+        << mDatabaseConfig.fileName);
 
     // Enable WAL mode for better concurrency
     char* sqlError = nullptr;
     if (SQLITE_OK != sqlite3_exec(mDatabase, "PRAGMA journal_mode=WAL", nullptr, nullptr, &sqlError))
     {
-        DBCLIENT_LOG_WARN("failed to enable WAL mode: " << (sqlError ? sqlError : "unknown"));
+        DBCLIENT_LOG_WARN(
+            "SQLite WAL mode enable failed, databasePath: "
+            << mDatabaseConfig.fileName
+            << ", error: "
+            << (sqlError ? sqlError : "unknown"));
         if (sqlError) sqlite3_free(sqlError);
     }
     else
     {
-        DBCLIENT_LOG_DEBUG("WAL mode enabled for: " << mDatabaseConfig.fileName);
+        DBCLIENT_LOG_DEBUG(
+            "SQLite WAL mode enabled, databasePath: "
+            << mDatabaseConfig.fileName);
     }
 
     // Set synchronous mode for performance/safety balance
     if (SQLITE_OK != sqlite3_exec(mDatabase, "PRAGMA synchronous=NORMAL", nullptr, nullptr, &sqlError))
     {
-        DBCLIENT_LOG_WARN("failed to set synchronous mode: " << (sqlError ? sqlError : "unknown"));
+        DBCLIENT_LOG_WARN(
+            "SQLite synchronous mode configuration failed, databasePath: "
+            << mDatabaseConfig.fileName
+            << ", error: "
+            << (sqlError ? sqlError : "unknown"));
         if (sqlError) sqlite3_free(sqlError);
     }
 
@@ -105,12 +120,16 @@ void SqliteDatabaseWrapper::DataPrivate::closeDatabase()
         int result = sqlite3_close(mDatabase);
         if (SQLITE_OK != result)
         {
-            DBCLIENT_LOG_WARN("close db warning, dbname: " << mDatabaseConfig.fileName
-                             << ", error code: " << result);
+            DBCLIENT_LOG_WARN(
+                "Database close failed, databasePath: "
+                << mDatabaseConfig.fileName
+                << ", errorCode: " << result);
         }
         else
         {
-            DBCLIENT_LOG_INFO("close db successfully, dbname: " << mDatabaseConfig.fileName);
+            DBCLIENT_LOG_INFO(
+                "Database close succeeded, databasePath: "
+                << mDatabaseConfig.fileName);
         }
         mDatabase = nullptr;
     }
@@ -138,10 +157,12 @@ bool SqliteDatabaseWrapper::DataPrivate::execute(const std::string& commandStr)
     {
         std::string errorMessage = sqlError ? sqlError : "unknown error";
         if (sqlError) sqlite3_free(sqlError);
-        DBCLIENT_LOG_ERROR("execute db command failed, dbname: " << mDatabaseConfig.fileName
-                          << ", result code: " << result
-                          << ", error: " << errorMessage
-                          << ", sql: " << commandStr.substr(0, 100));
+        DBCLIENT_LOG_ERROR(
+            "Database command execution failed, databasePath: "
+            << mDatabaseConfig.fileName
+            << ", resultCode: " << result
+            << ", error: " << errorMessage
+            << ", sql: " << commandStr.substr(0, 100));
         return false;
     }
     return true;
@@ -328,12 +349,16 @@ void SqliteDatabaseWrapper::DataPrivate::extractResultsFromStatement(sqlite3_stm
 SqliteDatabaseWrapper::SqliteDatabaseWrapper(const SqliteDatabaseConfig& config)
     : mDataPrivate(std::make_unique<SqliteDatabaseWrapper::DataPrivate>(config))
 {
-    DBCLIENT_LOG_INFO("create SqliteDatabaseWrapper");
+    DBCLIENT_LOG_DEBUG(
+        "SqliteDatabaseWrapper constructed, address: "
+        << this);
 }
 
 SqliteDatabaseWrapper::~SqliteDatabaseWrapper()
 {
-    DBCLIENT_LOG_INFO("delete SqliteDatabaseWrapper");
+    DBCLIENT_LOG_DEBUG(
+        "SqliteDatabaseWrapper destroying, address: "
+        << this);
     try
     {
         close();
@@ -346,6 +371,10 @@ SqliteDatabaseWrapper::~SqliteDatabaseWrapper()
     {
         DBCLIENT_LOG_ERROR("close db unknown exception");
     }
+
+    DBCLIENT_LOG_DEBUG(
+        "SqliteDatabaseWrapper destructor body finished, address: "
+        << this);
 }
 
 bool SqliteDatabaseWrapper::open()

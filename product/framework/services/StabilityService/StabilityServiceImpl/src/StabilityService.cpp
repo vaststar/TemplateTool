@@ -114,6 +114,11 @@ void StabilityService::initService()
 
 void StabilityService::deinitService()
 {
+    // Reverse initService(): HangManager was initialized last, so clean it
+    // first, followed by CrashManager.
+    mDataPrivate->getHangManager().cleanup();
+    mDataPrivate->getCrashManager().cleanup();
+
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());
@@ -122,7 +127,7 @@ void StabilityService::deinitService()
 
 void StabilityService::onCoreFrameworkExit()
 {
-    CRASHHANDLER_LOG_INFO("StabilityService::onCoreFrameworkExit()");
+    CRASHHANDLER_LOG_INFO("CoreFramework exit notification received");
 }
 
 std::vector<ServiceDependency> StabilityService::dependencies() const

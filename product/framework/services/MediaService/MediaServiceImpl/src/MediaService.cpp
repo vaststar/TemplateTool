@@ -87,7 +87,7 @@ void MediaService::deinitService()
 
 void MediaService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_INFO("MediaService::onCoreFrameworkExit()");
+    SERVICE_LOG_INFO("CoreFramework exit notification received");
 }
 
 std::string MediaService::openCamera(const media::CameraSource& source)

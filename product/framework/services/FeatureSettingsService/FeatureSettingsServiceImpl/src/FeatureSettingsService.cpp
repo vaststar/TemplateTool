@@ -116,7 +116,7 @@ void FeatureSettingsService::onServiceInitialized()
 
 void FeatureSettingsService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("FeatureSettingsService exiting");
+    SERVICE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 void FeatureSettingsService::OnDatabaseInitialized(const std::string& dbId)

@@ -44,11 +44,15 @@ ClientInfoManager::ClientInfoManager(ucf::framework::ICoreFrameworkWPtr coreFram
     SERVICE_LOG_DEBUG("ClientInfoManager constructed, address: " << this);
     if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(getDataStoragePath()))
     {
-        SERVICE_LOG_DEBUG("Create data storage directory failed, path:" << getDataStoragePath());
+        SERVICE_LOG_ERROR(
+            "Data storage directory creation failed, path: "
+            << getDataStoragePath());
     }
     if (!ucf::utilities::FilePathUtils::EnsureDirectoryExists(getLogStoragePath()))
     {
-        SERVICE_LOG_DEBUG("Create log storage directory failed, path:" << getLogStoragePath());
+        SERVICE_LOG_ERROR(
+            "Log storage directory creation failed, path: "
+            << getLogStoragePath());
     }
 }
 
@@ -129,7 +133,11 @@ void ClientInfoManager::initializeAppClient()
     }
 
     auto dbConfig = getSharedDBConfig();
-    SERVICE_LOG_DEBUG("initializeAppClient with dbId:" << dbConfig.getDBId() << ", dbFilePath:" << dbConfig.getDBFilePath());
+    SERVICE_LOG_DEBUG(
+        "Application client initialization requested, databaseId: "
+        << dbConfig.getDBId()
+        << ", databasePath: "
+        << dbConfig.getDBFilePath());
     std::vector<ucf::service::model::DBTableModel> tables{
         db::schema::UserContactTable{},
         db::schema::PersonContactTable{},
@@ -154,12 +162,18 @@ void ClientInfoManager::databaseInitialized(const std::string& dbId)
 {
     if (const auto myDbId = getSharedDBConfig().getDBId(); dbId != myDbId)
     {
-        SERVICE_LOG_DEBUG("databaseInitialized ignored, other db, dbId:" << dbId);
+        SERVICE_LOG_DEBUG(
+            "Database-initialized notification ignored: unexpected database"
+            ", databaseId: "
+            << dbId);
         return;
     }
     mClientInfoModel->bindDatabase(dbId);
 
-    SERVICE_LOG_DEBUG("Loading client settings after database initialized, dbId:" << dbId);
+    SERVICE_LOG_DEBUG(
+        "Loading client settings after database initialization"
+        ", databaseId: "
+        << dbId);
     loadSettings();
 }
 

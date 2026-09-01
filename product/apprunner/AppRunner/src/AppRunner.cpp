@@ -96,23 +96,23 @@ bool ApplicationRunner::DataPrivate::isLoggerInitialized() const noexcept
 void ApplicationRunner::DataPrivate::initApp()
 {
     std::call_once(mInit_flag, [this]() {
-        RUNNER_LOG_INFO("Application initialization started");
+        RUNNER_LOG_INFO("Framework initialization started");
 
         initFrameworks();
         injectStartupParameters();
 
-        RUNNER_LOG_INFO("Application initialization finished");
+        RUNNER_LOG_INFO("Framework initialization finished");
     });
 }
 
 void ApplicationRunner::DataPrivate::exitApp()
 {
     std::call_once(mExit_flag, [this]() {
-        RUNNER_LOG_INFO("Application shutdown started");
+        RUNNER_LOG_INFO("Framework shutdown started");
 
         exitFrameworks();
 
-        RUNNER_LOG_INFO("Application shutdown finished");
+        RUNNER_LOG_INFO("Framework shutdown finished");
     });
 }
 
@@ -205,14 +205,14 @@ void ApplicationRunner::DataPrivate::injectStartupParameters()
 
 void ApplicationRunner::DataPrivate::exitFrameworks()
 {
-    if (mFrameworkDependencies.coreFramework)
-    {
-        mFrameworkDependencies.coreFramework->exitCoreFramework();
-    }
-
     if (mFrameworkDependencies.commonHeadFramework)
     {
         mFrameworkDependencies.commonHeadFramework->exitCommonheadFramework();
+    }
+
+    if (mFrameworkDependencies.coreFramework)
+    {
+        mFrameworkDependencies.coreFramework->exitCoreFramework();
     }
 }
 

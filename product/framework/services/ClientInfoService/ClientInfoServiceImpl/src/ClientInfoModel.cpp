@@ -11,12 +11,12 @@ namespace ucf::service {
 ClientInfoModel::ClientInfoModel(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mDBAccess(std::make_unique<ClientInfoDBAccess>(coreFramework))
 {
-    SERVICE_LOG_DEBUG("Create ClientInfoModel, address:" << this);
+    SERVICE_LOG_DEBUG("ClientInfoModel constructed, address: " << this);
 }
 
 ClientInfoModel::~ClientInfoModel()
 {
-    SERVICE_LOG_DEBUG("Delete ClientInfoModel, address:" << this);
+    SERVICE_LOG_DEBUG("ClientInfoModel destroying, address: " << this);
 }
 
 model::LanguageType ClientInfoModel::getLanguage() const
@@ -58,11 +58,15 @@ void ClientInfoModel::bindDatabase(const std::string& dbId)
 {
     if (auto expected = LoadStage::Uninit; !mLoadStage.compare_exchange_strong(expected, LoadStage::DbBound))
     {
-        SERVICE_LOG_DEBUG("bindDatabase ignored, stage already:" << static_cast<int>(expected));
+        SERVICE_LOG_DEBUG(
+            "Database binding skipped: model has already left the uninitialized stage"
+            ", currentStage: "
+            << static_cast<int>(expected));
         return;
     }
     mDBAccess->setDatabaseId(dbId);
-    SERVICE_LOG_DEBUG("ClientInfoModel bindDatabase, dbId:" << dbId);
+    SERVICE_LOG_DEBUG(
+        "ClientInfoModel database bound, databaseId: " << dbId);
 
     if (mLoadPending.exchange(false))
     {

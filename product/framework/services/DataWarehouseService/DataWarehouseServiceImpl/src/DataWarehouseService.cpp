@@ -153,12 +153,14 @@ void DataWarehouseService::deinitService()
 
 void DataWarehouseService::onServiceInitialized()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG(
+        "CoreFramework service-initialized notification received");
 }
 
 void DataWarehouseService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG("");
+    SERVICE_LOG_DEBUG(
+        "CoreFramework exit notification received");
 }
 
 InitializeDBResult DataWarehouseService::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
@@ -170,14 +172,22 @@ InitializeDBResult DataWarehouseService::initializeDB(std::shared_ptr<model::DBC
     switch (result)
     {
     case InitializeDBResult::Created:
-        SERVICE_LOG_INFO("initializeDB created, dbId:" << dbConfig->getDBId() << ", firing OnDatabaseInitialized");
+        SERVICE_LOG_INFO(
+            "Database initialization succeeded, databaseId: "
+            << dbConfig->getDBId()
+            << ", result: created; dispatching OnDatabaseInitialized");
         fireNotification(&IDataWarehouseServiceCallback::OnDatabaseInitialized, dbConfig->getDBId());
         break;
     case InitializeDBResult::AlreadyExists:
-        SERVICE_LOG_DEBUG("initializeDB no-op, already initialized, dbId:" << dbConfig->getDBId());
+        SERVICE_LOG_DEBUG(
+            "Database initialization skipped: database is already initialized"
+            ", databaseId: "
+            << dbConfig->getDBId());
         break;
     case InitializeDBResult::Failed:
-        SERVICE_LOG_ERROR("initializeDB failed, dbId:" << dbConfig->getDBId());
+        SERVICE_LOG_ERROR(
+            "Database initialization failed, databaseId: "
+            << dbConfig->getDBId());
         break;
     }
     return result;
@@ -247,7 +257,7 @@ int64_t DataWarehouseService::count(const std::string& dbId, const std::string& 
 
 bool DataWarehouseService::atomicWrite(const std::string& dbId, std::function<bool()> work)
 {
-    SERVICE_LOG_DEBUG("about to perform atomic write on dbId: " << dbId);
+    SERVICE_LOG_DEBUG("Atomic write requested, databaseId: " << dbId);
     return mDataPrivate->atomicWrite(dbId, std::move(work));
 }
 
