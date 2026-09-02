@@ -23,6 +23,16 @@ function(BuildRCFileModule)
         message(FATAL_ERROR
             "[BuildRCFileModule] Unknown arguments: ${MODULE_UNPARSED_ARGUMENTS}")
     endif()
+
+    get_target_property(target_type "${MODULE_MODULE_NAME}" TYPE)
+    if(target_type STREQUAL "EXECUTABLE")
+        set(file_type VFT_APP)
+    elseif(target_type STREQUAL "SHARED_LIBRARY" OR target_type STREQUAL "MODULE_LIBRARY")
+        set(file_type VFT_DLL)
+    else()
+        message(FATAL_ERROR "[BuildRCFileModule] Unsupported target type '${target_type}' for '${MODULE_MODULE_NAME}'")
+    endif()
+
     get_required_target_property(
         TARGET AppVersionMetadata
         PROPERTY UCF_APP_VERSION_JSON_FILE
@@ -69,6 +79,7 @@ function(BuildRCFileModule)
         INTERNAL_NAME "${MODULE_MODULE_NAME}"
         FILE_DESCRIPTION "${MODULE_FILE_DESCRIPTION}"
         ORIGINAL_FILENAME "$<TARGET_FILE_NAME:${MODULE_MODULE_NAME}>"
+        FILE_TYPE "${file_type}"
         OUTPUT_TARGET_VAR app_rc_target
     )
 

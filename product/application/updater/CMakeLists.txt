@@ -1,4 +1,5 @@
 include(ApplyProjectTargetOptions)
+include(BuildRCFileModule)
 
 message(STATUS
     "[Application] updater (standalone executable, no library dependencies)")
@@ -23,6 +24,10 @@ add_executable(updater
     platform/PlatformUtils.h
     ${PLATFORM_SOURCES}
 )
+
+if(WIN32)
+    BuildRCFileModule(MODULE_NAME updater FILE_DESCRIPTION "TemplateTool Updater")
+endif()
 
 # updater MUST be a single standalone exe with ZERO dynamic library dependencies.
 # All functionality uses only C++ stdlib and platform system commands.

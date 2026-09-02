@@ -33,15 +33,35 @@ if(CMAKE_SCRIPT_MODE_FILE)
     string(JSON COMPANY_NAME GET "${json_content}" "COMPANY" "NAME")
     string(JSON COPYRIGHT GET "${json_content}" "COMPANY" "COPYRIGHT")
     string(JSON PRODUCT_NAME GET "${json_content}" "PRODUCT" "NAME")
+    string(JSON PRODUCT_IDENTIFIER GET "${json_content}" "PRODUCT" "IDENTIFIER")
     string(JSON PRODUCT_DESCRIPTION GET
         "${json_content}" "PRODUCT" "DESCRIPTION")
 
-    set(FILE_VERSION
-        "${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH},${VERSION_BUILD}")
+    foreach(version_component VERSION_MAJOR VERSION_MINOR VERSION_PATCH VERSION_BUILD)
+        if(NOT "${${version_component}}" MATCHES "^[0-9]+$")
+            message(FATAL_ERROR "[GenerateAppInfoFiles] ${version_component} must contain only digits")
+        endif()
+
+        string(REGEX REPLACE "^0+" "" normalized_component "${${version_component}}")
+        if(normalized_component STREQUAL "")
+            set(normalized_component 0)
+        endif()
+        if(FILE_TYPE AND normalized_component GREATER 65535)
+            message(FATAL_ERROR "[GenerateAppInfoFiles] ${version_component} exceeds the Windows version component limit")
+        endif()
+
+        set("${version_component}_NUMERIC" "${normalized_component}")
+    endforeach()
+
+    set(FILE_VERSION "${VERSION_MAJOR_NUMERIC},${VERSION_MINOR_NUMERIC},${VERSION_PATCH_NUMERIC},${VERSION_BUILD_NUMERIC}")
     set(PRODUCT_VERSION "${FILE_VERSION}")
     set(FILE_VERSION_STR
         "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_BUILD}")
     set(PRODUCT_VERSION_STR "${FILE_VERSION_STR}")
+    set(MACOS_BUNDLE_VERSION "${VERSION_BUILD}")
+    if(MACOS_BUNDLE_VERSION STREQUAL "0")
+        set(MACOS_BUNDLE_VERSION "1")
+    endif()
 
     get_filename_component(output_directory "${OUTPUT_H}" DIRECTORY)
     file(MAKE_DIRECTORY "${output_directory}")
@@ -60,6 +80,7 @@ else()
             INTERNAL_NAME
             FILE_DESCRIPTION
             ORIGINAL_FILENAME
+            FILE_TYPE
             OUTPUT_TARGET_VAR
         )
         cmake_parse_arguments(
@@ -133,6 +154,7 @@ else()
             "internal_name=${ARG_INTERNAL_NAME}\n"
             "description=${ARG_FILE_DESCRIPTION}\n"
             "original_name=${ARG_ORIGINAL_FILENAME}\n"
+            "file_type=${ARG_FILE_TYPE}\n"
             "script=${generator_script}\n"
         )
         string(SHA256 registration_signature "${registration_data}")
@@ -163,6 +185,7 @@ else()
                 "-DFILE_DESCRIPTION=${ARG_FILE_DESCRIPTION}"
                 "-DINTERNAL_NAME=${ARG_INTERNAL_NAME}"
                 "-DORIGINAL_FILENAME=${ARG_ORIGINAL_FILENAME}"
+                "-DFILE_TYPE=${ARG_FILE_TYPE}"
                 "-DOUTPUT_H=${output_file}"
                 -P "${generator_script}"
             DEPENDS

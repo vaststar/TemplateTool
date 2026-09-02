@@ -9,6 +9,7 @@
         "copyright": "Copyright \u00A9 2026 Vast Star"
     },
     "product": {
+        "identifier": "com.vaststar.templatetool",
         "name": "Template-Factory",
         "description": "Industry-leading software solution"
     }

@@ -88,12 +88,20 @@ function(BuildBundlePListModule)
         ORIGINAL_FILENAME "$<TARGET_FILE_NAME:${MODULE_MODULE_NAME}>"
         OUTPUT_TARGET_VAR plist_target
     )
-    add_dependencies("${MODULE_MODULE_NAME}" "${plist_target}")
 
-    add_custom_command(TARGET "${MODULE_MODULE_NAME}" POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-            "${plist_path}"
-            "$<TARGET_BUNDLE_DIR:${MODULE_MODULE_NAME}>/Contents/Info.plist"
-        COMMENT "Copying updated Info.plist into app bundle"
+    set(plist_sync_target "${MODULE_MODULE_NAME}_sync_bundle_plist")
+    if(TARGET "${plist_sync_target}")
+        message(FATAL_ERROR "[BuildBundlePListModule] Target already exists: ${plist_sync_target}")
+    endif()
+
+    add_custom_target("${plist_sync_target}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_BUNDLE_DIR:${MODULE_MODULE_NAME}>/Contents"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${plist_path}" "$<TARGET_BUNDLE_DIR:${MODULE_MODULE_NAME}>/Contents/Info.plist"
+        DEPENDS "${plist_path}"
+        COMMENT "Synchronizing generated Info.plist into app bundle"
+        VERBATIM
     )
+    add_dependencies("${plist_sync_target}" "${plist_target}")
+    add_dependencies("${MODULE_MODULE_NAME}" "${plist_sync_target}")
+    set_target_properties("${plist_sync_target}" PROPERTIES FOLDER codegen)
 endfunction()
