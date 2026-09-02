@@ -36,6 +36,7 @@ public:
     bool isVisible() const;
 
     Q_INVOKABLE void componentCompleted();
+    Q_INVOKABLE void onWindowClosing();
     Q_INVOKABLE bool startSystemResize(QWindow *window, int edges);
 
     // Returns the geometry fitted into the available screen area; QML applies it.

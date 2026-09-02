@@ -34,7 +34,7 @@ public:
     // Idempotent: a second call with the same dbId returns AlreadyExists and does
     // NOT re-fire OnDatabaseInitialized. Late subscribers must use isDatabaseReady()
     // to short-circuit on registration because the ready event fires exactly once.
-    virtual InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables) = 0;
+    virtual InitializeDBResult initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables) = 0;
 
     // True iff initializeDB has previously succeeded for dbId and the DB is still open.
     [[nodiscard]] virtual bool isDatabaseReady(const std::string& dbId) const = 0;

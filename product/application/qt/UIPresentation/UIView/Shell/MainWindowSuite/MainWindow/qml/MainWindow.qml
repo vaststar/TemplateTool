@@ -8,7 +8,12 @@ import UIResourceLoader 1.0
 ApplicationWindow
 {
     id: root
+    objectName: "MainWindow"
     property MainWindowController controller: MainWindowController{}
+
+    onClosing: function(closeEvent) {
+        root.controller.onWindowClosing()
+    }
 
     visible: root.controller.visible
     width: 1024

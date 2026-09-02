@@ -23,7 +23,7 @@ public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ~DataPrivate();
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
-    InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    InitializeDBResult initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables);
     bool isDatabaseReady(const std::string& dbId) const;
     bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
     void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
@@ -34,8 +34,8 @@ public:
     int64_t count(const std::string& dbId, const std::string& tableName, const model::ListsOfWhereCondition& whereConditions);
     bool atomicWrite(const std::string& dbId, std::function<bool()> work);
 private:
-    std::unique_ptr<DataWarehouseManager> mDataWarehouseManager;
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
+    std::unique_ptr<DataWarehouseManager> mDataWarehouseManager;
 };
 
 DataWarehouseService::DataPrivate::DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework)
@@ -54,7 +54,7 @@ ucf::framework::ICoreFrameworkWPtr DataWarehouseService::DataPrivate::getCoreFra
     return mCoreFramework;
 }
 
-InitializeDBResult DataWarehouseService::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+InitializeDBResult DataWarehouseService::DataPrivate::initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     return mDataWarehouseManager->initializeDB(dbConfig, tables);
 }
@@ -163,31 +163,32 @@ void DataWarehouseService::onCoreFrameworkExit()
         "CoreFramework exit notification received");
 }
 
-InitializeDBResult DataWarehouseService::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+InitializeDBResult DataWarehouseService::initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     // Reentrancy: Manager dedupes by dbId. Only fire OnDatabaseInitialized for the
     // first successful open so subscribers do not see a duplicate ready event on
     // repeat calls. Late subscribers should use isDatabaseReady() to short-circuit.
+    const auto dbId = dbConfig.getDBId();
     const auto result = mDataPrivate->initializeDB(dbConfig, tables);
     switch (result)
     {
     case InitializeDBResult::Created:
         SERVICE_LOG_INFO(
             "Database initialization succeeded, databaseId: "
-            << dbConfig->getDBId()
+            << dbId
             << ", result: created; dispatching OnDatabaseInitialized");
-        fireNotification(&IDataWarehouseServiceCallback::OnDatabaseInitialized, dbConfig->getDBId());
+        fireNotification(&IDataWarehouseServiceCallback::OnDatabaseInitialized, dbId);
         break;
     case InitializeDBResult::AlreadyExists:
         SERVICE_LOG_DEBUG(
             "Database initialization skipped: database is already initialized"
             ", databaseId: "
-            << dbConfig->getDBId());
+            << dbId);
         break;
     case InitializeDBResult::Failed:
         SERVICE_LOG_ERROR(
             "Database initialization failed, databaseId: "
-            << dbConfig->getDBId());
+            << dbId);
         break;
     }
     return result;

@@ -68,7 +68,7 @@ protected:
         {
             if (auto lockedCallback = callback.lock())
             {
-                std::invoke(func, lockedCallback, std::forward<Args>(args)...);
+                std::invoke(func, lockedCallback, args...);
             }
         }
     }

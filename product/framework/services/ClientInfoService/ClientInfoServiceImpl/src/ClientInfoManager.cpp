@@ -26,8 +26,11 @@
 #endif
 
 namespace ucf::service{
+#if defined(_DEBUG) || !defined(NDEBUG)
+static constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
+#else
 static constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
-static constexpr const char* APP_INTERNAL_NAME_DEBUG = "TemplateToolAppDebug";
+#endif
 static constexpr const char* APP_DATA_FOLDER_NAME = "app_data";
 static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
 static constexpr const char* APP_CRASH_FOLDER_NAME = "app_crash";
@@ -153,9 +156,7 @@ void ClientInfoManager::initializeAppClient()
         db::schema::CameraTable{},
         db::schema::CameraDirectoryRelationTable{}
     };
-    dataWarehouseService->initializeDB(
-        std::make_shared<ucf::service::model::SqliteDBConfig>(dbConfig.getDBId(), dbConfig.getDBFilePath()),
-        tables);
+    dataWarehouseService->initializeDB(dbConfig, tables);
 }
 
 void ClientInfoManager::databaseInitialized(const std::string& dbId)
@@ -197,96 +198,52 @@ void ClientInfoManager::setNotificationSink(std::weak_ptr<IClientInfoNotificatio
 
 std::string ClientInfoManager::getDataStoragePath() const
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME_DEBUG,
-        APP_DATA_FOLDER_NAME
-    ).string();
-#else
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_DATA_FOLDER_NAME
     ).string();
-#endif
 }
 
 std::string ClientInfoManager::getLogStoragePath() const
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME_DEBUG,
-        APP_LOG_FOLDER_NAME
-    ).string();
-#else
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_LOG_FOLDER_NAME
     ).string();
-#endif
 }
 
 std::string ClientInfoManager::getCrashStoragePath() const
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME_DEBUG,
-        APP_CRASH_FOLDER_NAME
-    ).string();
-#else
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_CRASH_FOLDER_NAME
     ).string();
-#endif
 }
 
 std::string ClientInfoManager::getHangStoragePath() const
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME_DEBUG,
-        APP_HANG_FOLDER_NAME
-    ).string();
-#else
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_HANG_FOLDER_NAME
     ).string();
-#endif
 }
 
 std::string ClientInfoManager::getCacheStoragePath() const
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    return ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseCacheDir(),
-        APP_INTERNAL_NAME_DEBUG,
-        APP_CACHE_FOLDER_NAME
-    ).string();
-#else
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseCacheDir(),
         APP_INTERNAL_NAME,
         APP_CACHE_FOLDER_NAME
     ).string();
-#endif
 }
 
 std::string ClientInfoManager::getTempStoragePath() const
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    return (std::filesystem::temp_directory_path() / APP_INTERNAL_NAME_DEBUG).string();
-#else
     return (std::filesystem::temp_directory_path() / APP_INTERNAL_NAME).string();
-#endif
 }
 
 std::string ClientInfoManager::getExecutablePath() const

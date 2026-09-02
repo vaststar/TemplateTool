@@ -28,7 +28,7 @@ public:
     virtual std::string getServiceName() const override;
 
     //IDataWarehouseService
-    virtual InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables) override;
+    virtual InitializeDBResult initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables) override;
     virtual bool isDatabaseReady(const std::string& dbId) const override;
     virtual bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location = std::source_location::current()) override;
     virtual void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit = 0, const std::source_location location = std::source_location::current()) override;

@@ -36,7 +36,7 @@ public:
 
     // IDataWarehouseService
     MAKE_MOCK2(initializeDB,
-        InitializeDBResult(std::shared_ptr<model::DBConfig>, const std::vector<model::DBTableModel>&), override);
+        InitializeDBResult(const model::DBConfig&, const std::vector<model::DBTableModel>&), override);
     MAKE_CONST_MOCK1(isDatabaseReady, bool(const std::string&), override);
 
     MAKE_MOCK5(insertIntoDatabase,

@@ -102,6 +102,8 @@ Rectangle {
                 id: closeBtn
                 text: "✕"
                 onClicked: {
+                    controller.logInfo(
+                        "Main window close requested, source: title bar close button")
                     if (appWindow)
                         appWindow.close()
                     else

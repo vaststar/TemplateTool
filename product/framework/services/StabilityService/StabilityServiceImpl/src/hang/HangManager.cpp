@@ -275,13 +275,17 @@ std::string HangManager::captureMainThreadStack()
         return "[Platform hang handler not available]";
     }
 
+    CRASHHANDLER_LOG_DEBUG("HangManager main thread stack capture started, mainThreadId: " << mMainThreadId);
+    const auto platformStackTrace = mPlatformHandler->captureMainThreadStack(mMainThreadId);
+    CRASHHANDLER_LOG_DEBUG("HangManager main thread stack capture finished, capturedBytes: " << platformStackTrace.size());
+
     std::ostringstream oss;
     oss << "[Hang detected]\n";
     oss << "Threshold: " << mHangThreshold.load().count() << "ms\n";
     oss << "Main thread capture supported: "
         << (mPlatformHandler->isMainThreadCaptureSupported() ? "yes" : "no") << "\n\n";
 
-    oss << mPlatformHandler->captureMainThreadStack(mMainThreadId);
+    oss << platformStackTrace;
 
     return oss.str();
 }

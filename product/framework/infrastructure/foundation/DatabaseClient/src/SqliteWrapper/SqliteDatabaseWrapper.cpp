@@ -723,8 +723,6 @@ std::string SqliteDatabaseWrapper::createWhereCondition(const ListsOfWhereCondit
     }
 
     std::stringstream whereStatement;
-    unsigned int index = 1;
-
     std::map<std::string, std::vector<std::pair<WhereCondition, int>>> groupedWhereConditions;
     for (size_t i = 0; i < arguments.size(); ++i)
     {

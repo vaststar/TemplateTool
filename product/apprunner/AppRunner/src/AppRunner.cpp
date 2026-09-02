@@ -136,23 +136,18 @@ void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::st
 void ApplicationRunner::DataPrivate::createApplicationConfig()
 {
     //1, setup log config
-    constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
-    constexpr const char* APP_INTERNAL_NAME_DEBUG = "TemplateToolAppDebug";
-    constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
-    std::filesystem::path logDirPath;
 #if defined(_DEBUG) || !defined(NDEBUG)
-    logDirPath = ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME_DEBUG,
-        APP_LOG_FOLDER_NAME
-    );
+    constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
 #else
-    logDirPath = ucf::utilities::FilePathUtils::joinPaths(
+    constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
+#endif
+    constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
+
+    const auto logDirPath = ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
         APP_INTERNAL_NAME,
         APP_LOG_FOLDER_NAME
     );
-#endif
     ucf::utilities::FilePathUtils::EnsureDirectoryExists(logDirPath);
 
     AppLogConfig logConfig{

@@ -3,6 +3,10 @@
 #include "MacOSHangHandler.h"
 #include "../../StabilityServiceLogger.h"
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 #include <execinfo.h>
 #include <cxxabi.h>
 #include <dlfcn.h>
@@ -10,10 +14,53 @@
 #include <cstring>
 
 #include <mach/mach.h>
+#include <mach/mach_vm.h>
 #include <mach/thread_act.h>
 #include <mach/mach_init.h>
 
 namespace ucf::service {
+
+namespace {
+
+constexpr std::size_t kMaxCapturedFrames = 128;
+
+struct RawStackCapture
+{
+    std::array<void*, kMaxCapturedFrames> frames{};
+    int frameCount{0};
+    kern_return_t threadStateResult{KERN_FAILURE};
+    kern_return_t resumeResult{KERN_FAILURE};
+};
+
+struct StackFrameRecord
+{
+    mach_vm_address_t previousFramePointer{0};
+    mach_vm_address_t returnAddress{0};
+};
+
+class ThreadResumeGuard final
+{
+public:
+    ThreadResumeGuard(thread_act_t thread, kern_return_t& resumeResult) noexcept
+        : mThread(thread)
+        , mResumeResult(resumeResult)
+    {
+    }
+
+    ThreadResumeGuard(const ThreadResumeGuard&) = delete;
+    ThreadResumeGuard& operator=(const ThreadResumeGuard&) = delete;
+
+    ~ThreadResumeGuard() noexcept
+    {
+        mResumeResult = thread_resume(mThread);
+    }
+
+private:
+    thread_act_t mThread;
+    kern_return_t& mResumeResult;
+};
+
+} // namespace
 
 MacOSHangHandler::MacOSHangHandler()
     : mMainThreadPthread(pthread_self())
@@ -23,123 +70,125 @@ MacOSHangHandler::MacOSHangHandler()
 
 std::string MacOSHangHandler::captureMachThreadStack(pthread_t targetThread) const
 {
-    mach_port_t machThread = pthread_mach_thread_np(targetThread);
+    const mach_port_t machThread = pthread_mach_thread_np(targetThread);
     if (machThread == MACH_PORT_NULL)
     {
         return "[Failed to get mach thread port]";
     }
-    
-    kern_return_t kr = thread_suspend(machThread);
-    if (kr != KERN_SUCCESS)
+
+    const kern_return_t suspendResult = thread_suspend(machThread);
+    if (suspendResult != KERN_SUCCESS)
     {
-        return "[Failed to suspend thread: " + std::to_string(kr) + "]";
+        return "[Failed to suspend thread: " + std::to_string(suspendResult) + "]";
     }
-    
-#if defined(__arm64__) || defined(__aarch64__)
-    arm_thread_state64_t state;
-    mach_msg_type_number_t count = ARM_THREAD_STATE64_COUNT;
-    kr = thread_get_state(machThread, ARM_THREAD_STATE64, 
-                          reinterpret_cast<thread_state_t>(&state), &count);
-#else
-    x86_thread_state64_t state;
-    mach_msg_type_number_t count = x86_THREAD_STATE64_COUNT;
-    kr = thread_get_state(machThread, x86_THREAD_STATE64,
-                          reinterpret_cast<thread_state_t>(&state), &count);
-#endif
-    
-    std::ostringstream oss;
-    
-    if (kr == KERN_SUCCESS)
+
+    RawStackCapture capture;
+
+    // While the main thread is suspended, do not log, allocate memory,
+    // construct strings or perform symbol lookup.
     {
+        ThreadResumeGuard resumeGuard(machThread, capture.resumeResult);
+
 #if defined(__arm64__) || defined(__aarch64__)
-        uint64_t fp = state.__fp;
-        uint64_t pc = state.__pc;
+        arm_thread_state64_t state{};
+        mach_msg_type_number_t stateCount = ARM_THREAD_STATE64_COUNT;
+        capture.threadStateResult = thread_get_state(machThread, ARM_THREAD_STATE64, reinterpret_cast<thread_state_t>(&state), &stateCount);
 #else
-        uint64_t fp = state.__rbp;
-        uint64_t pc = state.__rip;
+        x86_thread_state64_t state{};
+        mach_msg_type_number_t stateCount = x86_THREAD_STATE64_COUNT;
+        capture.threadStateResult = thread_get_state(machThread, x86_THREAD_STATE64, reinterpret_cast<thread_state_t>(&state), &stateCount);
 #endif
-        
-        constexpr int kMaxFrames = 128;
-        void* frames[kMaxFrames];
-        int frameCount = 0;
-        
-        frames[frameCount++] = reinterpret_cast<void*>(pc);
-        
-        while (fp != 0 && frameCount < kMaxFrames)
+
+        if (capture.threadStateResult == KERN_SUCCESS)
         {
-            uint64_t* framePtr = reinterpret_cast<uint64_t*>(fp);
-            
-            vm_size_t size = sizeof(uint64_t) * 2;
-            vm_region_basic_info_data_64_t info;
-            mach_msg_type_number_t infoCount = VM_REGION_BASIC_INFO_COUNT_64;
-            mach_port_t objectName;
-            vm_address_t address = fp;
-            
-            kr = vm_region_64(mach_task_self(), &address, &size, VM_REGION_BASIC_INFO_64,
-                             reinterpret_cast<vm_region_info_t>(&info), &infoCount, &objectName);
-            
-            if (kr != KERN_SUCCESS || address > fp)
+#if defined(__arm64__) || defined(__aarch64__)
+            mach_vm_address_t framePointer = state.__fp;
+            const mach_vm_address_t programCounter = state.__pc;
+#else
+            mach_vm_address_t framePointer = state.__rbp;
+            const mach_vm_address_t programCounter = state.__rip;
+#endif
+
+            if (programCounter != 0)
             {
-                break;
+                capture.frames[capture.frameCount++] = reinterpret_cast<void*>(programCounter);
             }
-            
-            uint64_t nextFp = framePtr[0];
-            uint64_t returnAddr = framePtr[1];
-            
-            if (returnAddr == 0)
+
+            while (framePointer != 0 && capture.frameCount < static_cast<int>(capture.frames.size()))
             {
-                break;
-            }
-            
-            frames[frameCount++] = reinterpret_cast<void*>(returnAddr);
-            
-            if (nextFp <= fp)
-            {
-                break;
-            }
-            fp = nextFp;
-        }
-        
-        char** symbols = backtrace_symbols(frames, frameCount);
-        
-        oss << "Main Thread Stack Trace (" << frameCount << " frames):\n";
-        
-        if (symbols)
-        {
-            for (int i = 0; i < frameCount; ++i)
-            {
-                oss << "  #" << i << ": " << demangleSymbol(symbols[i]) << "\n";
-            }
-            free(symbols);
-        }
-        else
-        {
-            for (int i = 0; i < frameCount; ++i)
-            {
-                Dl_info dlinfo;
-                if (dladdr(frames[i], &dlinfo) && dlinfo.dli_sname)
+                if (framePointer % alignof(StackFrameRecord) != 0)
                 {
-                    oss << "  #" << i << ": " << dlinfo.dli_fname << " " << dlinfo.dli_sname << "\n";
+                    break;
                 }
-                else
+
+                StackFrameRecord frame{};
+                mach_vm_size_t bytesRead{0};
+                const kern_return_t readResult = mach_vm_read_overwrite(mach_task_self(), framePointer, sizeof(frame), reinterpret_cast<mach_vm_address_t>(&frame), &bytesRead);
+                if (readResult != KERN_SUCCESS || bytesRead != sizeof(frame) || frame.returnAddress == 0)
                 {
-                    oss << "  #" << i << ": " << frames[i] << "\n";
+                    break;
                 }
+
+                capture.frames[capture.frameCount++] = reinterpret_cast<void*>(frame.returnAddress);
+                if (frame.previousFramePointer <= framePointer)
+                {
+                    break;
+                }
+
+                framePointer = frame.previousFramePointer;
             }
         }
+    }
+
+    if (capture.resumeResult != KERN_SUCCESS)
+    {
+        return "[Failed to resume main thread: " + std::to_string(capture.resumeResult) + "]";
+    }
+
+    CRASHHANDLER_LOG_DEBUG("macOS main thread resumed after raw stack capture, frameCount: " << capture.frameCount);
+
+    std::ostringstream oss;
+    if (capture.threadStateResult != KERN_SUCCESS)
+    {
+        oss << "[Failed to get thread state: " << capture.threadStateResult << "]";
+        return oss.str();
+    }
+
+    oss << "Main Thread Stack Trace (" << capture.frameCount << " frames):\n";
+
+    // Symbol resolution may allocate memory or acquire dyld locks, so it must
+    // run only after the main thread has resumed.
+    char** symbols = backtrace_symbols(capture.frames.data(), capture.frameCount);
+    if (symbols)
+    {
+        for (int i = 0; i < capture.frameCount; ++i)
+        {
+            oss << "  #" << i << ": " << demangleSymbol(symbols[i]) << "\n";
+        }
+        free(symbols);
     }
     else
     {
-        oss << "[Failed to get thread state: " << kr << "]";
+        for (int i = 0; i < capture.frameCount; ++i)
+        {
+            Dl_info dlinfo{};
+            if (dladdr(capture.frames[i], &dlinfo) && dlinfo.dli_sname)
+            {
+                oss << "  #" << i << ": " << dlinfo.dli_fname << " " << dlinfo.dli_sname << "\n";
+            }
+            else
+            {
+                oss << "  #" << i << ": " << capture.frames[i] << "\n";
+            }
+        }
     }
-    
-    thread_resume(machThread);
-    
+
     return oss.str();
 }
 
 std::string MacOSHangHandler::captureMainThreadStack(std::thread::id mainThreadId) const
 {
+    static_cast<void>(mainThreadId);
     std::ostringstream oss;
     
     oss << "[Hang Detected - Main Thread Stack Capture]\n";

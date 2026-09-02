@@ -106,7 +106,7 @@ void PerformanceService::deinitService()
 
 void PerformanceService::onCoreFrameworkExit()
 {
-    PERFORMANCE_LOG_INFO("CoreFramework exit notification received");
+    PERFORMANCE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 // ==========================================

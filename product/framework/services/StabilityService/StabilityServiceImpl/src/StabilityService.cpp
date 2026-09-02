@@ -127,7 +127,7 @@ void StabilityService::deinitService()
 
 void StabilityService::onCoreFrameworkExit()
 {
-    CRASHHANDLER_LOG_INFO("CoreFramework exit notification received");
+    CRASHHANDLER_LOG_DEBUG("CoreFramework exit notification received");
 }
 
 std::vector<ServiceDependency> StabilityService::dependencies() const

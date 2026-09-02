@@ -146,6 +146,14 @@ void MainWindowController::componentCompleted()
     emit visibleChanged();
 }
 
+void MainWindowController::onWindowClosing()
+{
+    UIVIEW_LOG_INFO(
+        "Main window close event received; UI teardown starts after this point"
+        ", controller address: "
+        << this);
+}
+
 MainWindowContentPageRegistry* MainWindowController::pageRegistry() const
 {
     return m_pageRegistry;

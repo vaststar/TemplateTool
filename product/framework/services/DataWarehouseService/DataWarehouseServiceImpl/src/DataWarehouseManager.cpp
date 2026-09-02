@@ -32,7 +32,7 @@ class DataWarehouseManager::DataPrivate
 public:
     DataPrivate();
     ~DataPrivate();
-    InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    InitializeDBResult initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables);
     bool isDatabaseReady(const std::string& dbId) const;
     bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
     void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
@@ -102,19 +102,20 @@ bool DataWarehouseManager::DataPrivate::isDatabaseReady(const std::string& dbId)
     return mDatabaseWrapper.find(dbId) != mDatabaseWrapper.end();
 }
 
-InitializeDBResult DataWarehouseManager::DataPrivate::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+InitializeDBResult DataWarehouseManager::DataPrivate::initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     std::scoped_lock<std::mutex> loc(mDatabaseMutex);
-    if (mDatabaseWrapper.find(dbConfig->getDBId()) != mDatabaseWrapper.end())
+    const auto dbId = dbConfig.getDBId();
+    if (mDatabaseWrapper.find(dbId) != mDatabaseWrapper.end())
     {
-        SERVICE_LOG_DEBUG("initializeDB no-op, already have db:" << dbConfig->getDBId());
+        SERVICE_LOG_DEBUG("initializeDB no-op, already have db:" << dbId);
         return InitializeDBResult::AlreadyExists;
     }
 
-    auto sqliteConfig = std::dynamic_pointer_cast<model::SqliteDBConfig>(dbConfig);
+    const auto* sqliteConfig = dynamic_cast<const model::SqliteDBConfig*>(&dbConfig);
     if (!sqliteConfig)
     {
-        SERVICE_LOG_ERROR("initializeDB unsupported db config type, dbId:" << dbConfig->getDBId());
+        SERVICE_LOG_ERROR("initializeDB unsupported db config type, dbId:" << dbId);
         return InitializeDBResult::Failed;
     }
 
@@ -126,16 +127,16 @@ InitializeDBResult DataWarehouseManager::DataPrivate::initializeDB(std::shared_p
 
     if (!dataBaseWrapper || !dataBaseWrapper->open())
     {
-        SERVICE_LOG_ERROR("failed to open database: " << dbConfig->getDBId());
+        SERVICE_LOG_ERROR("failed to open database: " << dbId);
         return InitializeDBResult::Failed;
     }
 
-    mDatabaseWrapper[dbConfig->getDBId()] = dataBaseWrapper;
+    mDatabaseWrapper[dbId] = dataBaseWrapper;
     if (!tables.empty())
     {
         dataBaseWrapper->createTables(convertToDatabaseSchemas(tables));
     }
-    SERVICE_LOG_INFO("database created and opened: " << dbConfig->getDBId());
+    SERVICE_LOG_INFO("database created and opened: " << dbId);
     return InitializeDBResult::Created;
 }
 
@@ -414,7 +415,7 @@ DataWarehouseManager::~DataWarehouseManager()
     SERVICE_LOG_DEBUG("DataWarehouseManager destroying, address: " << this);
 }
 
-InitializeDBResult DataWarehouseManager::initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables)
+InitializeDBResult DataWarehouseManager::initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables)
 {
     return mDataPrivate->initializeDB(dbConfig, tables);
 }

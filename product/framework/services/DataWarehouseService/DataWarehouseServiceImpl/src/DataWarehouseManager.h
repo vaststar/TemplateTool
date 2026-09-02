@@ -22,7 +22,7 @@ public:
     DataWarehouseManager& operator=(const DataWarehouseManager&) = delete;
     DataWarehouseManager& operator=(DataWarehouseManager&&) = delete;
 public:
-    InitializeDBResult initializeDB(std::shared_ptr<model::DBConfig> dbConfig, const std::vector<model::DBTableModel>& tables);
+    InitializeDBResult initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables);
     bool isDatabaseReady(const std::string& dbId) const;
     bool insertIntoDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListOfDBValues& values, const std::source_location location);
     void fetchFromDatabase(const std::string& dbId, const std::string& tableName, const model::DBColumnFields& columnFields, const model::ListsOfWhereCondition& whereConditions, model::DatabaseDataRecordsCallback func, int limit, const std::source_location location);
