@@ -1,3 +1,4 @@
+add_subdirectory(NetworkTransportUtils)
 add_subdirectory(TcpChannelUtils)
 add_subdirectory(ProcessBridgeUtils)
 add_subdirectory(FFmpegUtils)
