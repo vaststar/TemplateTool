@@ -4,25 +4,24 @@ import QtQuick.Layouts
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
-Rectangle {
+ItemDelegate {
     id: navItem
     height: isVisible ? 44 : 0
     visible: isVisible
-    radius: 8
-    color: isSelected
-          ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-          : (delegateMouseArea.containsMouse
-             ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-             : UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Normal))
-    focus: true
+    enabled: isEnabled
+    hoverEnabled: true
     activeFocusOnTab: true
+    leftPadding: 9
+    rightPadding: 8
+    topPadding: 0
+    bottomPadding: 0
 
     required property int index
     required property int pageId
     required property string itemId
     required property string title
-    required property var icon
-    required property var iconSelected
+    required property var iconToken
+    required property var selectedIconToken
     required property int badge
     required property bool isEnabled
     required property bool isVisible
@@ -31,22 +30,28 @@ Rectangle {
     property bool isSelected: false
     property bool showText: false
     property int animationDuration: 200
-    signal clicked()
 
-    onIsSelectedChanged: {
-        if (isSelected && activeFocus) {
-            forceActiveFocus()
+    background: Rectangle {
+        radius: 8
+        color: {
+            if (navItem.down) {
+                return UTComponentUtil.getPlainUIColor(
+                    UIColorToken.Sidebar_Item_Background, UIColorState.Pressed)
+            }
+            if (navItem.isSelected) {
+                return UTComponentUtil.getPlainUIColor(
+                    UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
+            }
+            if (navItem.hovered) {
+                return UTComponentUtil.getPlainUIColor(
+                    UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
+            }
+            return UTComponentUtil.getPlainUIColor(
+                UIColorToken.Sidebar_Item_Background, UIColorState.Normal)
         }
     }
 
-    Keys.onReturnPressed: navItem.clicked()
-    Keys.onEnterPressed: navItem.clicked()
-    Keys.onSpacePressed: navItem.clicked()
-
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 9
-        anchors.rightMargin: 8
+    contentItem: RowLayout {
         spacing: 8
 
         // Icon (tinted to match sidebar theme)
@@ -54,7 +59,7 @@ Rectangle {
             id: navIcon
             Layout.preferredWidth: iconSize
             Layout.preferredHeight: iconSize
-            imageSourceEnum: navItem.isSelected ? navItem.iconSelected : navItem.icon
+            imageSourceEnum: navItem.isSelected ? navItem.selectedIconToken : navItem.iconToken
             colorEnum: UIColorToken.Sidebar_Item_Text
             colorState: navItem.isSelected ? UIColorState.Selected : UIColorState.Normal
         }
@@ -108,20 +113,9 @@ Rectangle {
     // Disabled overlay
     Rectangle {
         anchors.fill: parent
-        radius: parent.radius
+        radius: 8
         color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Background, UIColorState.Normal), 0.5)
         visible: !navItem.isEnabled
-    }
-
-    MouseArea {
-        id: delegateMouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        enabled: navItem.isEnabled
-        onClicked: {
-            navItem.forceActiveFocus()
-            navItem.clicked()
-        }
     }
 
     // Focus ring (pill / fully rounded)
@@ -132,9 +126,9 @@ Rectangle {
 
     // Tooltip when collapsed
     UTToolTip {
-        visible: !navItem.showText && delegateMouseArea.containsMouse && navItem.isVisible
+        visible: !navItem.showText && navItem.hovered && navItem.isVisible
         text: navItem.title
-        cursorX: delegateMouseArea.mouseX
-        cursorY: delegateMouseArea.mouseY
+        cursorX: navItem.width
+        cursorY: navItem.height / 2
     }
 }

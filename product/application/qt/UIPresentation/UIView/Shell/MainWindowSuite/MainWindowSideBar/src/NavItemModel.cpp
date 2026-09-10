@@ -27,19 +27,19 @@ QVariant NavItemModel::data(const QModelIndex& index, int role) const
 
     switch (role)
     {
-        case PageIdRole:        return item.pageId;
-        case IdRole:            return item.itemId;
-        case TitleRole:         return item.title;
-        case IconRole:          return item.icon;
-        case IconSelectedRole:  return item.iconSelected;
-        case BadgeRole:         return item.badge;
-        case StateRole:         return item.state;
-        case PositionRole:      return item.position;
-        case SortOrderRole:     return item.sortOrder;
-        case IsEnabledRole:     return item.isEnabled;
-        case IsVisibleRole:     return item.isVisible;
-        case HasSubMenuRole:    return item.hasSubMenu;
-        default:                return {};
+        case PageIdRole:            return item.pageId;
+        case IdRole:                return item.itemId;
+        case TitleRole:             return item.title;
+        case IconTokenRole:         return item.icon;
+        case SelectedIconTokenRole: return item.iconSelected;
+        case BadgeRole:             return item.badge;
+        case StateRole:             return item.state;
+        case PositionRole:          return item.position;
+        case SortOrderRole:         return item.sortOrder;
+        case IsEnabledRole:         return item.isEnabled;
+        case IsVisibleRole:         return item.isVisible;
+        case HasSubMenuRole:        return item.hasSubMenu;
+        default:                    return {};
     }
 }
 
@@ -49,8 +49,8 @@ QHash<int, QByteArray> NavItemModel::roleNames() const
         {PageIdRole, "pageId"},
         {IdRole, "itemId"},
         {TitleRole, "title"},
-        {IconRole, "icon"},
-        {IconSelectedRole, "iconSelected"},
+        {IconTokenRole, "iconToken"},
+        {SelectedIconTokenRole, "selectedIconToken"},
         {BadgeRole, "badge"},
         {StateRole, "state"},
         {PositionRole, "position"},
