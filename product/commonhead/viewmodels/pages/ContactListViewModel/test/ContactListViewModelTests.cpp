@@ -19,7 +19,16 @@ TEST_CASE("ContactListViewModel creator returns its public API",
     REQUIRE_FALSE(viewModel->canAddContact("", model::ContactNodeType::Person));
     REQUIRE_FALSE(viewModel->canRemoveContact("missing"));
 
-    model::ContactNodeData contact{"", "Person", model::ContactNodeType::Person};
+    model::ContactDetail contact;
+    contact.displayName = "Person";
+    contact.type = model::ContactNodeType::Person;
+    contact.person = model::PersonContactDetail{
+        "First",
+        "Last",
+        model::Gender::Unspecified,
+        "",
+        "",
+    };
     REQUIRE(viewModel->addContact("", contact).empty());
 }
 
@@ -41,9 +50,27 @@ TEST_CASE("ContactListViewModel exposes standalone contact types",
     REQUIRE(relation.type == RelationType::Reporting);
 
     ContactDetail detail;
+    detail.id = "person";
+    detail.displayName = "Ada Lovelace";
+    detail.type = ContactNodeType::Person;
+    detail.person = PersonContactDetail{
+        "Ada",
+        "Lovelace",
+        Gender::Female,
+        "+44 20 0000 0000",
+        "ada@example.com",
+    };
+
+    REQUIRE(detail.id == "person");
+    REQUIRE(detail.displayName == "Ada Lovelace");
     REQUIRE(detail.type == ContactNodeType::Person);
     REQUIRE(detail.status == ContactStatus::Active);
-    REQUIRE_FALSE(detail.person.has_value());
+    REQUIRE(detail.person.has_value());
+    REQUIRE(detail.person->firstName == "Ada");
+    REQUIRE(detail.person->lastName == "Lovelace");
+    REQUIRE(detail.person->gender == Gender::Female);
+    REQUIRE(detail.person->phone == "+44 20 0000 0000");
+    REQUIRE(detail.person->email == "ada@example.com");
     REQUIRE_FALSE(detail.department.has_value());
     REQUIRE_FALSE(detail.team.has_value());
 }

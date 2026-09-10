@@ -235,12 +235,6 @@ std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const
         return std::nullopt;
     }
 
-    auto toVMStatus = [](ucf::service::model::IContact::ContactStatus s) {
-        return static_cast<model::ContactStatus>(static_cast<int>(s));
-    };
-    auto toVMGender = [](ucf::service::model::IPersonContact::Gender g) {
-        return static_cast<model::Gender>(static_cast<int>(g));
-    };
     auto resolvePersonName = [&](const std::string& id) -> std::string {
         if (id.empty()) return {};
         if (auto p = service->getPersonContact(id))
@@ -256,11 +250,11 @@ std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const
         d.id          = person->getContactId();
         d.displayName = person->getPersonName();
         d.type        = model::ContactNodeType::Person;
-        d.status      = toVMStatus(person->getContactStatus());
+        d.status      = utils::toVMContactStatus(person->getContactStatus());
         d.person      = model::PersonContactDetail{
             person->getFirstName(),
             person->getLastName(),
-            toVMGender(person->getGender()),
+            utils::toVMGender(person->getGender()),
             person->getPhone(),
             person->getEmail(),
         };
@@ -273,8 +267,8 @@ std::optional<model::ContactDetail> ContactListViewModel::getContactDetail(const
         d.id          = group->getContactId();
         d.displayName = group->getGroupName();
         d.type        = model::ContactNodeType::Group;
-        d.groupType   = static_cast<model::GroupType>(static_cast<int>(group->getGroupType()));
-        d.status      = toVMStatus(group->getContactStatus());
+        d.groupType   = utils::toVMGroupType(group->getGroupType());
+        d.status      = utils::toVMContactStatus(group->getContactStatus());
 
         // Concrete sub-types fill an extra optional. dynamic_pointer_cast is safe: each
         // typed sub-row is its own interface; missing sub-row simply leaves the optional
@@ -455,12 +449,18 @@ bool ContactListViewModel::canAddContact(const std::string& parentId, model::Con
     return parentNode->getNodeData().type == model::ContactNodeType::Group;
 }
 
-std::string ContactListViewModel::addContact(const std::string& parentId, const model::ContactNodeData& data)
+std::string ContactListViewModel::addContact(const std::string& parentId,
+                                             const model::ContactDetail& detail)
 {
-    if (!canAddContact(parentId, data.type))
+    if (detail.displayName.empty())
+    {
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("addContact rejected: displayName is empty");
+        return {};
+    }
+    if (!canAddContact(parentId, detail.type))
     {
         CONTACT_LIST_VIEW_MODEL_LOG_WARN("addContact rejected: parentId=" << (parentId.empty() ? "<root>" : parentId)
-                            << ", type=" << static_cast<int>(data.type));
+                            << ", type=" << static_cast<int>(detail.type));
         return {};
     }
     auto service = lockService();
@@ -471,24 +471,36 @@ std::string ContactListViewModel::addContact(const std::string& parentId, const 
     }
 
     const std::string newId = ucf::utilities::UUIDUtils::generateUUID();
-    CONTACT_LIST_VIEW_MODEL_LOG_INFO("addContact: id=" << newId << ", name=" << data.displayName
-                        << ", type=" << static_cast<int>(data.type)
+    CONTACT_LIST_VIEW_MODEL_LOG_INFO("addContact: id=" << newId << ", name=" << detail.displayName
+                        << ", type=" << static_cast<int>(detail.type)
                         << ", parent=" << (parentId.empty() ? "<root>" : parentId));
 
-    if (data.type == model::ContactNodeType::Person)
+    if (detail.type == model::ContactNodeType::Person)
     {
+        const auto person = detail.person.value_or(model::PersonContactDetail{});
         service->addPersonContacts({
-            std::make_shared<utils::VMPersonContact>(newId, data.displayName)
+            std::make_shared<utils::VMPersonContact>(
+                newId,
+                detail.displayName,
+                person.firstName,
+                person.lastName,
+                utils::toServiceGender(person.gender),
+                person.phone,
+                person.email,
+                utils::toServiceContactStatus(detail.status))
         });
     }
     else
     {
         // Force the slice's group type so the new node is not filtered out of this view;
         // canAddContact has already guaranteed the slice carries a group type.
-        const auto groupType = utils::groupTypeFor(mInterestedRelationType).value_or(data.groupType);
+        const auto groupType = utils::groupTypeFor(mInterestedRelationType).value_or(detail.groupType);
         service->addGroupContacts({
-            std::make_shared<utils::VMGroupContact>(newId, data.displayName,
-                                                    utils::toServiceGroupType(groupType))
+            std::make_shared<utils::VMGroupContact>(
+                newId,
+                detail.displayName,
+                utils::toServiceGroupType(groupType),
+                utils::toServiceContactStatus(detail.status))
         });
     }
 
@@ -502,10 +514,11 @@ std::string ContactListViewModel::addContact(const std::string& parentId, const 
     return newId;
 }
 
-void ContactListViewModel::updateContact(const model::ContactNodeData& data)
+void ContactListViewModel::updateContact(const model::ContactDetail& detail)
 {
-    if (data.id.empty())
+    if (detail.id.empty() || detail.displayName.empty())
     {
+        CONTACT_LIST_VIEW_MODEL_LOG_WARN("updateContact rejected: id or displayName is empty");
         return;
     }
     auto service = lockService();
@@ -515,33 +528,55 @@ void ContactListViewModel::updateContact(const model::ContactNodeData& data)
         return;
     }
 
-    // Resolve the node type from the current tree so we route to the correct write path
-    // regardless of what the caller put in data.type.
-    model::ContactNodeData node = data;
+    // Resolve the real entity type from the service. The caller cannot change a
+    // person into a group, or change a group's concrete group type.
+    if (auto existingPerson = service->getPersonContact(detail.id))
     {
-        if (auto n = findNode(snapshotTree(), data.id))
+        model::PersonContactDetail person{
+            existingPerson->getFirstName(),
+            existingPerson->getLastName(),
+            utils::toVMGender(existingPerson->getGender()),
+            existingPerson->getPhone(),
+            existingPerson->getEmail(),
+        };
+        if (detail.person)
         {
-            node.type      = n->getNodeData().type;
-            node.groupType = n->getNodeData().groupType;
+            person = *detail.person;
         }
-    }
 
-    CONTACT_LIST_VIEW_MODEL_LOG_INFO("updateContact: id=" << node.id << ", name=" << node.displayName
-                        << ", type=" << static_cast<int>(node.type));
-
-    if (node.type == model::ContactNodeType::Person)
-    {
+        CONTACT_LIST_VIEW_MODEL_LOG_INFO("updateContact: id=" << detail.id
+                            << ", name=" << detail.displayName
+                            << ", type=" << static_cast<int>(model::ContactNodeType::Person));
         service->updatePersonContacts({
-            std::make_shared<utils::VMPersonContact>(node.id, node.displayName)
+            std::make_shared<utils::VMPersonContact>(
+                detail.id,
+                detail.displayName,
+                person.firstName,
+                person.lastName,
+                utils::toServiceGender(person.gender),
+                person.phone,
+                person.email,
+                utils::toServiceContactStatus(detail.status))
         });
+        return;
     }
-    else
+
+    if (auto existingGroup = service->getGroupContact(detail.id))
     {
+        CONTACT_LIST_VIEW_MODEL_LOG_INFO("updateContact: id=" << detail.id
+                            << ", name=" << detail.displayName
+                            << ", type=" << static_cast<int>(model::ContactNodeType::Group));
         service->updateGroupContacts({
-            std::make_shared<utils::VMGroupContact>(node.id, node.displayName,
-                                                    utils::toServiceGroupType(node.groupType))
+            std::make_shared<utils::VMGroupContact>(
+                detail.id,
+                detail.displayName,
+                existingGroup->getGroupType(),
+                utils::toServiceContactStatus(detail.status))
         });
+        return;
     }
+
+    CONTACT_LIST_VIEW_MODEL_LOG_WARN("updateContact rejected: unknown contactId=" << detail.id);
 }
 
 bool ContactListViewModel::canRemoveContact(const std::string& contactId) const

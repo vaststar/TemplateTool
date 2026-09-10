@@ -80,14 +80,13 @@ public:
 
     // Create a new contact (Person or Group) under parentId. The VM mints the contact id
     // and, when parentId is non-empty, attaches the node to the parent in the slice this
-    // VM owns. Returns the freshly-minted contact id (empty on failure) so callers can
-    // track the node once the add callbacks arrive.
+    // VM owns. ContactDetail carries the full person profile and initial status.
     virtual std::string addContact(const std::string& parentId,
-                                   const model::ContactNodeData& data) = 0;
+                                   const model::ContactDetail& detail) = 0;
 
-    // Rename / re-state an existing contact. Only fields the slice understands are applied;
-    // changing a group's groupType is not supported.
-    virtual void updateContact(const model::ContactNodeData& data) = 0;
+    // Update an existing contact from a complete ContactDetail. Changing the concrete
+    // contact type or a group's groupType is not supported.
+    virtual void updateContact(const model::ContactDetail& detail) = 0;
 
     [[nodiscard]] virtual bool canRemoveContact(const std::string& contactId) const = 0;
 

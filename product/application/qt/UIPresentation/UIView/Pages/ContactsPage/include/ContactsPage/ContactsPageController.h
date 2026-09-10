@@ -18,6 +18,7 @@ namespace UIViewModelSignalBridge
 {
     class ContactListViewModelEmitter;
 }
+class ContactFilterProxyModel;
 
 class ContactsPageController : public UIViewController
 {
@@ -29,6 +30,7 @@ class ContactsPageController : public UIViewController
     // simply bind to it instead of imperatively re-fetching.
     Q_PROPERTY(QVariantMap currentContactInfo READ getCurrentContactInfo NOTIFY currentContactInfoChanged)
     Q_PROPERTY(LoadState loadState READ getLoadState NOTIFY loadStateChanged)
+    Q_PROPERTY(QString searchText READ getSearchText WRITE setSearchText NOTIFY searchTextChanged)
     QML_ELEMENT
 
 public:
@@ -47,9 +49,11 @@ public:
     QString getCurrentContactId() const;
     QVariantMap getCurrentContactInfo() const;
     LoadState getLoadState() const;
+    QString getSearchText() const;
 
 public slots:
     void buttonClicked();
+    void setSearchText(const QString& text);
     Q_INVOKABLE void selectContact(const QString& contactId);
     Q_INVOKABLE QVariantMap getContactInfo(const QString& contactId) const;
     Q_INVOKABLE bool canDropOn(const QString& srcId, const QString& targetParentId) const;
@@ -61,8 +65,8 @@ public slots:
     Q_INVOKABLE QVariantList contextMenuModel(const QString& contactId, int nodeType) const;
     Q_INVOKABLE void handleContextAction(const QString& action, const QString& contactId, int nodeType);
 
-    // Dialog commands, invoked by the edit / delete dialog windows. fields carries
-    // {displayName, nodeType, groupType} for add and {displayName} for edit.
+    // Dialog commands, invoked by the edit / delete dialog windows. Person fields carry
+    // {displayName, nodeType, firstName, lastName, gender, phone, email}.
     Q_INVOKABLE void addContact(const QString& parentId, const QVariantMap& fields);
     Q_INVOKABLE void updateContact(const QString& contactId, const QVariantMap& fields);
     Q_INVOKABLE void removeContact(const QString& contactId);
@@ -88,6 +92,7 @@ signals:
     void currentContactIdChanged();
     void currentContactInfoChanged();
     void loadStateChanged();
+    void searchTextChanged();
     void nodeMoved(QString newParentId);
     // Fired once a freshly-added contact has materialised in the tree model, so the view
     // can expand its parent and select it.
@@ -101,15 +106,20 @@ private:
     void notifyInfoIfCurrentUpdated(const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
     // Spawn the standalone dialog windows (created via the view factory, centered on the
     // app window) and inject this controller plus the initial field values.
-    void openEditDialog(const QString& mode, const QString& parentId, const QString& editId,
-                        int nodeType, const QString& initialName);
+    void openEditDialog(const QString& mode,
+                        const QString& parentId,
+                        const QString& editId,
+                        int nodeType,
+                        const QVariantMap& initialInfo);
     void openDeleteDialog(const QString& contactId);
 
 private:
     std::shared_ptr<commonHead::viewModels::IContactListViewModel> mContactListViewModel;
     std::shared_ptr<UIViewModelSignalBridge::ContactListViewModelEmitter> mContactListEmitter;
     ContactListItemModel* mOrgTreeModel = nullptr;
+    ContactFilterProxyModel* mContactFilterModel = nullptr;
     QString m_currentContactId;
+    QString m_searchText;
     LoadState m_loadState = Loading;
     bool    mHasPendingMove = false;
     QString mPendingMoveParent;

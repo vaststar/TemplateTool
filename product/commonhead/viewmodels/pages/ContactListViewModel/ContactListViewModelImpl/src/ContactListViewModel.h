@@ -44,8 +44,8 @@ public:
     bool canMoveContact(const std::string& childId, const std::string& newParentId) const override;
     void moveContact(const std::string& childId, const std::string& newParentId) override;
     bool canAddContact(const std::string& parentId, model::ContactNodeType type) const override;
-    std::string addContact(const std::string& parentId, const model::ContactNodeData& data) override;
-    void updateContact(const model::ContactNodeData& data) override;
+    std::string addContact(const std::string& parentId, const model::ContactDetail& detail) override;
+    void updateContact(const model::ContactDetail& detail) override;
     bool canRemoveContact(const std::string& contactId) const override;
     void removeContact(const std::string& contactId) override;
 

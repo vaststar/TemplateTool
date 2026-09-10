@@ -133,6 +133,58 @@ model::GroupType toVMGroupType(ucf::service::model::IGroupContact::GroupType typ
     return model::GroupType::Folder;
 }
 
+ucf::service::model::IContact::ContactStatus toServiceContactStatus(model::ContactStatus status)
+{
+    using S = ucf::service::model::IContact::ContactStatus;
+    switch (status)
+    {
+    case model::ContactStatus::Active:   return S::Active;
+    case model::ContactStatus::Inactive: return S::Inactive;
+    case model::ContactStatus::Deleted:  return S::Deleted;
+    case model::ContactStatus::Archived: return S::Archived;
+    }
+    return S::Active;
+}
+
+model::ContactStatus toVMContactStatus(ucf::service::model::IContact::ContactStatus status)
+{
+    using S = ucf::service::model::IContact::ContactStatus;
+    switch (status)
+    {
+    case S::Active:   return model::ContactStatus::Active;
+    case S::Inactive: return model::ContactStatus::Inactive;
+    case S::Deleted:  return model::ContactStatus::Deleted;
+    case S::Archived: return model::ContactStatus::Archived;
+    }
+    return model::ContactStatus::Active;
+}
+
+ucf::service::model::IPersonContact::Gender toServiceGender(model::Gender gender)
+{
+    using S = ucf::service::model::IPersonContact::Gender;
+    switch (gender)
+    {
+    case model::Gender::Unspecified: return S::Unspecified;
+    case model::Gender::Male:        return S::Male;
+    case model::Gender::Female:      return S::Female;
+    case model::Gender::Other:       return S::Other;
+    }
+    return S::Unspecified;
+}
+
+model::Gender toVMGender(ucf::service::model::IPersonContact::Gender gender)
+{
+    using S = ucf::service::model::IPersonContact::Gender;
+    switch (gender)
+    {
+    case S::Unspecified: return model::Gender::Unspecified;
+    case S::Male:        return model::Gender::Male;
+    case S::Female:      return model::Gender::Female;
+    case S::Other:       return model::Gender::Other;
+    }
+    return model::Gender::Unspecified;
+}
+
 std::optional<model::GroupType> groupTypeFor(model::RelationType relationType)
 {
     switch (relationType)
@@ -192,19 +244,31 @@ std::string                     VMContactRelation::getChildId()      const { ret
 std::string                     VMContactRelation::getParentId()     const { return mParentId;     }
 VMContactRelation::RelationType VMContactRelation::getRelationType() const { return mRelationType; }
 
-VMPersonContact::VMPersonContact(std::string contactId, std::string personName, ContactStatus status)
+VMPersonContact::VMPersonContact(std::string contactId,
+                                 std::string personName,
+                                 std::string firstName,
+                                 std::string lastName,
+                                 Gender gender,
+                                 std::string phone,
+                                 std::string email,
+                                 ContactStatus status)
     : mContactId(std::move(contactId))
     , mPersonName(std::move(personName))
+    , mFirstName(std::move(firstName))
+    , mLastName(std::move(lastName))
+    , mGender(gender)
+    , mPhone(std::move(phone))
+    , mEmail(std::move(email))
     , mStatus(status) {}
 
 std::string                  VMPersonContact::getContactId()     const { return mContactId; }
 VMPersonContact::ContactStatus VMPersonContact::getContactStatus() const { return mStatus; }
 std::string                  VMPersonContact::getPersonName()    const { return mPersonName; }
-std::string                  VMPersonContact::getFirstName()     const { return {}; }
-std::string                  VMPersonContact::getLastName()      const { return {}; }
-VMPersonContact::Gender      VMPersonContact::getGender()        const { return Gender::Unspecified; }
-std::string                  VMPersonContact::getPhone()         const { return {}; }
-std::string                  VMPersonContact::getEmail()         const { return {}; }
+std::string                  VMPersonContact::getFirstName()     const { return mFirstName; }
+std::string                  VMPersonContact::getLastName()      const { return mLastName; }
+VMPersonContact::Gender      VMPersonContact::getGender()        const { return mGender; }
+std::string                  VMPersonContact::getPhone()         const { return mPhone; }
+std::string                  VMPersonContact::getEmail()         const { return mEmail; }
 
 VMGroupContact::VMGroupContact(std::string contactId, std::string groupName, GroupType groupType, ContactStatus status)
     : mContactId(std::move(contactId))

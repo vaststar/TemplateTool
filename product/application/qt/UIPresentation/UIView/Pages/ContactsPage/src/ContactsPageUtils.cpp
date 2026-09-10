@@ -67,11 +67,12 @@ namespace {
 QVariantMap toPersonMap(const commonHead::viewModels::model::PersonContactDetail& person)
 {
     QVariantMap personMap;
-    personMap["firstName"] = QString::fromStdString(person.firstName);
-    personMap["lastName"]  = QString::fromStdString(person.lastName);
-    personMap["gender"]    = genderLabel(person.gender);
-    personMap["phone"]     = QString::fromStdString(person.phone);
-    personMap["email"]     = QString::fromStdString(person.email);
+    personMap["firstName"]   = QString::fromStdString(person.firstName);
+    personMap["lastName"]    = QString::fromStdString(person.lastName);
+    personMap["gender"]      = genderLabel(person.gender);
+    personMap["genderValue"] = static_cast<int>(person.gender);
+    personMap["phone"]       = QString::fromStdString(person.phone);
+    personMap["email"]       = QString::fromStdString(person.email);
     return personMap;
 }
 
@@ -119,18 +120,85 @@ QVariantMap toVariantMap(const commonHead::viewModels::model::ContactDetail& det
     return result;
 }
 
-commonHead::viewModels::model::ContactNodeData toNodeData(const QString& id, const QVariantMap& fields)
+commonHead::viewModels::model::ContactDetail toContactDetail(
+    const QString& id,
+    const QVariantMap& fields)
 {
     using namespace commonHead::viewModels::model;
-    ContactNodeData data;
-    data.id          = id.toStdString();
-    data.displayName = fields.value(QStringLiteral("displayName")).toString().toStdString();
-    data.type        = fields.value(QStringLiteral("nodeType")).toInt() == 1
-                           ? ContactNodeType::Group
-                           : ContactNodeType::Person;
-    data.groupType   = static_cast<GroupType>(fields.value(QStringLiteral("groupType"),
-                                               static_cast<int>(GroupType::Folder)).toInt());
-    return data;
+
+    ContactDetail detail;
+    detail.id = id.toStdString();
+    detail.type = fields.value(QStringLiteral("nodeType")).toInt() == 1
+        ? ContactNodeType::Group
+        : ContactNodeType::Person;
+    detail.groupType = static_cast<GroupType>(
+        fields.value(QStringLiteral("groupType"),
+                     static_cast<int>(GroupType::Folder)).toInt());
+
+    applyEditableFields(detail, fields);
+    return detail;
+}
+
+void applyEditableFields(
+    commonHead::viewModels::model::ContactDetail& detail,
+    const QVariantMap& fields)
+{
+    using namespace commonHead::viewModels::model;
+
+    if (fields.contains(QStringLiteral("displayName")))
+    {
+        detail.displayName = fields.value(QStringLiteral("displayName"))
+                                 .toString()
+                                 .trimmed()
+                                 .toStdString();
+    }
+
+    if (detail.type != ContactNodeType::Person)
+    {
+        return;
+    }
+
+    PersonContactDetail person = detail.person.value_or(PersonContactDetail{});
+
+    if (fields.contains(QStringLiteral("firstName")))
+    {
+        person.firstName = fields.value(QStringLiteral("firstName"))
+                               .toString()
+                               .trimmed()
+                               .toStdString();
+    }
+    if (fields.contains(QStringLiteral("lastName")))
+    {
+        person.lastName = fields.value(QStringLiteral("lastName"))
+                              .toString()
+                              .trimmed()
+                              .toStdString();
+    }
+    if (fields.contains(QStringLiteral("gender")))
+    {
+        const int genderValue = fields.value(QStringLiteral("gender")).toInt();
+        if (genderValue >= static_cast<int>(Gender::Unspecified)
+            && genderValue <= static_cast<int>(Gender::Other))
+        {
+            person.gender = static_cast<Gender>(genderValue);
+        }
+    }
+    if (fields.contains(QStringLiteral("phone")))
+    {
+        person.phone = fields.value(QStringLiteral("phone"))
+                           .toString()
+                           .trimmed()
+                           .toStdString();
+    }
+    if (fields.contains(QStringLiteral("email")))
+    {
+        person.email = fields.value(QStringLiteral("email"))
+                           .toString()
+                           .trimmed()
+                           .toStdString();
+    }
+
+    detail.person = person;
 }
 
 } // namespace ContactsPage::Utils

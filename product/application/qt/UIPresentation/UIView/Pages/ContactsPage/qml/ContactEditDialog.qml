@@ -5,46 +5,89 @@ import UTComponent 1.0
 import UIResourceLoader 1.0
 
 /**
- * ContactEditDialog - Modal add / rename dialog for the contact tree.
+ * ContactEditDialog - Modal add / edit dialog for the contact tree.
  *
- * A standalone window spawned by ContactsPageController via createQmlWindow().
- * The controller injects itself plus the initial field values; this view only
- * collects input and forwards the result. Centering is handled by the C++ side.
+ * Person contacts expose their full profile. Group contacts continue to expose
+ * only the display name.
  */
 UTDialog {
     id: dialog
 
-    // Injected via createWithInitialProperties() by the controller.
     required property var controller
     required property string mode        // "add" | "edit"
     required property string parentId
     required property string editId
-    required property int    nodeType    // 0 = Person, 1 = Group
-    required property string initialName
+    required property int nodeType       // 0 = Person, 1 = Group
+    required property var initialInfo
+
+    readonly property bool isPerson: nodeType === 0
+    readonly property bool formValid: nameField.text.trim() !== ""
+    readonly property var genderOptions: [
+        { text: "未指定", value: 0 },
+        { text: "男", value: 1 },
+        { text: "女", value: 2 },
+        { text: "其他", value: 3 }
+    ]
 
     title: mode === "add"
-           ? (nodeType === 1 ? "新增分组" : "新增联系人")
-           : "重命名"
-    width: 360
+           ? (isPerson ? "新增联系人" : "新增分组")
+           : (isPerson ? "编辑联系人" : "重命名分组")
+    width: 440
     height: contentColumn.implicitHeight + 48
-    minimumWidth: 320
+    minimumWidth: 400
     minimumHeight: 150
 
-    function _confirm() {
-        const name = nameField.text.trim();
-        if (name === "") return;
-        if (mode === "add") {
-            controller.addContact(parentId, { displayName: name, nodeType: nodeType });
-        } else {
-            controller.updateContact(editId, { displayName: name });
+    function _fields() {
+        const fields = {
+            displayName: nameField.text.trim(),
+            nodeType: nodeType
         }
-        close();
+
+        if (isPerson) {
+            fields.firstName = firstNameField.text.trim()
+            fields.lastName = lastNameField.text.trim()
+            fields.gender = genderField.currentValue
+            fields.phone = phoneField.text.trim()
+            fields.email = emailField.text.trim()
+        }
+
+        return fields
+    }
+
+    function _confirm() {
+        if (!formValid)
+            return
+
+        const fields = _fields()
+
+        if (mode === "add")
+            controller.addContact(parentId, fields)
+        else
+            controller.updateContact(editId, fields)
+
+        close()
     }
 
     Component.onCompleted: {
-        nameField.text = initialName;
-        nameField.forceActiveFocus();
-        nameField.selectAll();
+        const info = initialInfo || {}
+        const person = info.person || {}
+
+        nameField.text = info.name || ""
+        firstNameField.text = person.firstName || ""
+        lastNameField.text = person.lastName || ""
+        phoneField.text = person.phone || ""
+        emailField.text = person.email || ""
+
+        const initialGender = Number(person.genderValue ?? 0)
+        for (let i = 0; i < genderOptions.length; ++i) {
+            if (genderOptions[i].value === initialGender) {
+                genderField.currentIndex = i
+                break
+            }
+        }
+
+        nameField.forceActiveFocus()
+        nameField.selectAll()
     }
 
     Shortcut {
@@ -58,11 +101,98 @@ UTDialog {
         anchors.margins: 24
         spacing: 16
 
-        UTTextField {
-            id: nameField
+        GridLayout {
             Layout.fillWidth: true
-            placeholderText: "名称"
-            onAccepted: dialog._confirm()
+            columns: 2
+            columnSpacing: 12
+            rowSpacing: 12
+
+            UTText {
+                text: "显示名称"
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            UTTextField {
+                id: nameField
+                Layout.fillWidth: true
+                maximumLength: 128
+                placeholderText: "名称"
+                onAccepted: dialog._confirm()
+            }
+
+            UTText {
+                text: "名"
+                visible: dialog.isPerson
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            UTTextField {
+                id: firstNameField
+                Layout.fillWidth: true
+                visible: dialog.isPerson
+                maximumLength: 64
+                onAccepted: dialog._confirm()
+            }
+
+            UTText {
+                text: "姓"
+                visible: dialog.isPerson
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            UTTextField {
+                id: lastNameField
+                Layout.fillWidth: true
+                visible: dialog.isPerson
+                maximumLength: 64
+                onAccepted: dialog._confirm()
+            }
+
+            UTText {
+                text: "性别"
+                visible: dialog.isPerson
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            UTComboBox {
+                id: genderField
+                Layout.fillWidth: true
+                visible: dialog.isPerson
+                model: dialog.genderOptions
+                textRole: "text"
+                valueRole: "value"
+                currentIndex: 0
+            }
+
+            UTText {
+                text: "电话"
+                visible: dialog.isPerson
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            UTTextField {
+                id: phoneField
+                Layout.fillWidth: true
+                visible: dialog.isPerson
+                maximumLength: 64
+                inputMethodHints: Qt.ImhDialableCharactersOnly
+                onAccepted: dialog._confirm()
+            }
+
+            UTText {
+                text: "邮箱"
+                visible: dialog.isPerson
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            UTTextField {
+                id: emailField
+                Layout.fillWidth: true
+                visible: dialog.isPerson
+                maximumLength: 254
+                inputMethodHints: Qt.ImhEmailCharactersOnly
+                onAccepted: dialog._confirm()
+            }
         }
 
         RowLayout {
@@ -82,7 +212,7 @@ UTDialog {
                 text: "确定"
                 implicitWidth: 72
                 implicitHeight: 30
-                enabled: nameField.text.trim() !== ""
+                enabled: dialog.formValid
                 onClicked: dialog._confirm()
             }
         }

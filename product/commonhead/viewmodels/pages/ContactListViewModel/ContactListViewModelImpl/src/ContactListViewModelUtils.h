@@ -32,6 +32,10 @@ ucf::service::model::IContactRelation::RelationType toServiceRelationType(model:
 model::RelationType                                  toVMRelationType(ucf::service::model::IContactRelation::RelationType type);
 ucf::service::model::IGroupContact::GroupType        toServiceGroupType(model::GroupType type);
 model::GroupType                                     toVMGroupType(ucf::service::model::IGroupContact::GroupType type);
+ucf::service::model::IContact::ContactStatus         toServiceContactStatus(model::ContactStatus status);
+model::ContactStatus                                 toVMContactStatus(ucf::service::model::IContact::ContactStatus status);
+ucf::service::model::IPersonContact::Gender          toServiceGender(model::Gender gender);
+model::Gender                                        toVMGender(ucf::service::model::IPersonContact::Gender gender);
 
 // Maps a relation slice to the kind of group it expects as the parent node, when one
 // exists. RelationTypes whose parent is always a Person (Reporting / Mentor) or whose
@@ -70,14 +74,18 @@ private:
     RelationType mRelationType;
 };
 
-// Minimal ucf::service::IPersonContact impl owned by the VM so add/updateContact can
-// synthesize person rows to push down to the service without pulling in the
-// service-private ContactEntities.h. Only the fields the service write path consumes
-// (id / name / status) are carried; profile sub-fields are reported empty.
+// Minimal ucf::service::IPersonContact implementation owned by the VM. It carries
+// the complete editable person profile into the ContactService write path.
 class VMPersonContact final : public ucf::service::model::IPersonContact
 {
 public:
-    VMPersonContact(std::string contactId, std::string personName,
+    VMPersonContact(std::string contactId,
+                    std::string personName,
+                    std::string firstName,
+                    std::string lastName,
+                    Gender gender,
+                    std::string phone,
+                    std::string email,
                     ContactStatus status = ContactStatus::Active);
 
     std::string   getContactId()     const override;
@@ -92,6 +100,11 @@ public:
 private:
     std::string   mContactId;
     std::string   mPersonName;
+    std::string   mFirstName;
+    std::string   mLastName;
+    Gender        mGender{Gender::Unspecified};
+    std::string   mPhone;
+    std::string   mEmail;
     ContactStatus mStatus;
 };
 

@@ -1,7 +1,9 @@
 UIViewAppendBuildInputs(
     SOURCES
+        include/ContactsPage/ContactFilterProxyModel.h
         include/ContactsPage/ContactListItemModel.h
         include/ContactsPage/ContactsPageController.h
+        src/ContactFilterProxyModel.cpp
         src/ContactsPageUtils.h
         src/ContactListItemModel.cpp
         src/ContactsPageController.cpp

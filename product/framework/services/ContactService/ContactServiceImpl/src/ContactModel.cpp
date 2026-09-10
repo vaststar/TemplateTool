@@ -104,6 +104,11 @@ model::PersonContactArray ContactModel::addPersonContactsInMemory(const model::P
         }
         auto impl = std::make_shared<model::PersonContact>(contactId);
         impl->setPersonName(p->getPersonName());
+        impl->setFirstName(p->getFirstName());
+        impl->setLastName(p->getLastName());
+        impl->setGender(p->getGender());
+        impl->setPhone(p->getPhone());
+        impl->setEmail(p->getEmail());
         impl->setContactStatus(p->getContactStatus());
         mPersonContacts.emplace(contactId, impl);
         accepted.push_back(impl);
@@ -128,6 +133,11 @@ model::PersonContactArray ContactModel::updatePersonContactsInMemory(const model
             continue;
         }
         it->second->setPersonName(p->getPersonName());
+        it->second->setFirstName(p->getFirstName());
+        it->second->setLastName(p->getLastName());
+        it->second->setGender(p->getGender());
+        it->second->setPhone(p->getPhone());
+        it->second->setEmail(p->getEmail());
         it->second->setContactStatus(p->getContactStatus());
         accepted.push_back(it->second);
     }

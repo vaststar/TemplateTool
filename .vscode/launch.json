@@ -16,7 +16,7 @@
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "${command:cmake.getLaunchTargetDirectory};${command:cmake.buildDirectory}/bin;${env:PATH}"
+                    "value": "${command:cmake.getLaunchTargetDirectory};${command:cmake.buildDirectory}/bin;${env:PATH};C:/work/qt/qt6_64/bin"
                 }
             ],
             "console": "integratedTerminal"

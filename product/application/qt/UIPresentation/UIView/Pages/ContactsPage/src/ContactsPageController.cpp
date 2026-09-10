@@ -1,4 +1,5 @@
 #include "ContactsPage/ContactsPageController.h"
+#include "ContactsPage/ContactFilterProxyModel.h"
 #include "ContactsPageUtils.h"
 #include "LoggerDefine.h"
 #include "UIWindowUtilities/WindowGeometry.h"
@@ -61,6 +62,9 @@ void ContactsPageController::init()
     QObject::connect(e, &Emitter::signals_onContactRelationsRemoved,  this, &ContactsPageController::onContactRelationsRemoved);
 
     mOrgTreeModel = new ContactListItemModel(this);
+    mContactFilterModel = new ContactFilterProxyModel(this);
+    mContactFilterModel->setSourceModel(mOrgTreeModel);
+    mContactFilterModel->setSearchText(m_searchText);
     emit orgTreeModelChanged();
 
     // registerCallback may synchronously fire Ready/LoadFailed; otherwise the result
@@ -81,10 +85,27 @@ void ContactsPageController::buttonClicked()
     win->show();
 }
 
-QAbstractItemModel* ContactsPageController::getOrgTreeModel() const          { return mOrgTreeModel; }
+QAbstractItemModel* ContactsPageController::getOrgTreeModel() const          { return mContactFilterModel; }
 QString ContactsPageController::getCurrentContactId() const                  { return m_currentContactId; }
 QVariantMap ContactsPageController::getCurrentContactInfo() const            { return getContactInfo(m_currentContactId); }
 ContactsPageController::LoadState ContactsPageController::getLoadState() const { return m_loadState; }
+QString ContactsPageController::getSearchText() const                         { return m_searchText; }
+
+void ContactsPageController::setSearchText(const QString& text)
+{
+    const QString normalized = text.trimmed();
+    if (m_searchText == normalized)
+    {
+        return;
+    }
+
+    m_searchText = normalized;
+    if (mContactFilterModel)
+    {
+        mContactFilterModel->setSearchText(normalized);
+    }
+    emit searchTextChanged();
+}
 
 void ContactsPageController::setLoadState(LoadState s)
 {
@@ -209,7 +230,10 @@ QVariantList ContactsPageController::contextMenuModel(const QString& contactId, 
         {
             items.append(QVariantMap{{QStringLiteral("separator"), true}});
         }
-        items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("重命名")},
+        const QString editLabel = isGroup
+            ? QStringLiteral("重命名分组")
+            : QStringLiteral("编辑联系人");
+        items.append(QVariantMap{{QStringLiteral("text"), editLabel},
                                  {QStringLiteral("action"), QStringLiteral("edit")}});
         if (canRemove(contactId))
         {
@@ -224,17 +248,16 @@ void ContactsPageController::handleContextAction(const QString& action, const QS
 {
     if (action == QLatin1String("add_person"))
     {
-        openEditDialog(QStringLiteral("add"), contactId, QString{}, 0, QString{});
+        openEditDialog(QStringLiteral("add"), contactId, QString{}, 0, QVariantMap{});
     }
     else if (action == QLatin1String("add_group"))
     {
-        openEditDialog(QStringLiteral("add"), contactId, QString{}, 1, QString{});
+        openEditDialog(QStringLiteral("add"), contactId, QString{}, 1, QVariantMap{});
     }
     else if (action == QLatin1String("edit"))
     {
-        const auto info = getContactInfo(contactId);
         openEditDialog(QStringLiteral("edit"), QString{}, contactId, nodeType,
-                       info.value(QStringLiteral("name")).toString());
+                       getContactInfo(contactId));
     }
     else if (action == QLatin1String("delete"))
     {
@@ -243,7 +266,8 @@ void ContactsPageController::handleContextAction(const QString& action, const QS
 }
 
 void ContactsPageController::openEditDialog(const QString& mode, const QString& parentId,
-                                            const QString& editId, int nodeType, const QString& initialName)
+                                             const QString& editId, int nodeType,
+                                             const QVariantMap& initialInfo)
 {
     auto ctx = getAppContext();
     if (!ctx)
@@ -258,7 +282,7 @@ void ContactsPageController::openEditDialog(const QString& mode, const QString& 
             { QStringLiteral("parentId"),    parentId },
             { QStringLiteral("editId"),      editId },
             { QStringLiteral("nodeType"),    nodeType },
-            { QStringLiteral("initialName"), initialName },
+            { QStringLiteral("initialInfo"), initialInfo },
         });
     if (!win)
     {
@@ -295,8 +319,8 @@ void ContactsPageController::addContact(const QString& parentId, const QVariantM
     {
         return;
     }
-    const auto data  = ContactsPage::Utils::toNodeData(QString{}, fields);
-    const auto newId = mContactListViewModel->addContact(parentId.toStdString(), data);
+    const auto detail = ContactsPage::Utils::toContactDetail(QString{}, fields);
+    const auto newId = mContactListViewModel->addContact(parentId.toStdString(), detail);
     if (newId.empty())
     {
         return;
@@ -311,7 +335,14 @@ void ContactsPageController::updateContact(const QString& contactId, const QVari
     {
         return;
     }
-    mContactListViewModel->updateContact(ContactsPage::Utils::toNodeData(contactId, fields));
+    auto detail = mContactListViewModel->getContactDetail(contactId.toStdString());
+    if (!detail)
+    {
+        return;
+    }
+
+    ContactsPage::Utils::applyEditableFields(*detail, fields);
+    mContactListViewModel->updateContact(*detail);
 }
 
 void ContactsPageController::removeContact(const QString& contactId)

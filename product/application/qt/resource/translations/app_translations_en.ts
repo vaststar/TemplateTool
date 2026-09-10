@@ -153,6 +153,24 @@
     </message>
 </context>
 <context>
+    <name>ContactListPanel</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="64"/>
+        <source>联系人列表</source>
+        <translation>Contacts</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="74"/>
+        <source>搜索联系人</source>
+        <translation>Search contacts</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="220"/>
+        <source>没有找到匹配的联系人</source>
+        <translation>No matching contacts found</translation>
+    </message>
+</context>
+<context>
     <name>HomePage</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="48"/>

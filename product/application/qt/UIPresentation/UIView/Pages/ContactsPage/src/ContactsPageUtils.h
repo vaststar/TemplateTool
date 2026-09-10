@@ -14,12 +14,19 @@ QString kindLabel (commonHead::viewModels::model::ContactNodeType nodeType,
 QString statusLabel(commonHead::viewModels::model::ContactStatus status);
 QString genderLabel(commonHead::viewModels::model::Gender gender);
 
-// model -> QML: flattens a ContactDetail into a QVariantMap for the detail panel.
+// model -> QML: flattens a ContactDetail into a QVariantMap for the detail panel
+// and the edit dialog.
 QVariantMap toVariantMap(const commonHead::viewModels::model::ContactDetail& detail);
 
-// QML -> model: inverse of toVariantMap for the editable subset. Builds a
-// ContactNodeData from {displayName, nodeType, groupType}; id may be empty for new nodes.
-commonHead::viewModels::model::ContactNodeData toNodeData(const QString& id,
-                                                          const QVariantMap& fields);
+// Creates a new ContactDetail from dialog fields. id may be empty for new contacts.
+commonHead::viewModels::model::ContactDetail toContactDetail(
+    const QString& id,
+    const QVariantMap& fields);
+
+// Applies only user-editable dialog fields to an existing ContactDetail.
+// Type, groupType, status and group-specific details are preserved.
+void applyEditableFields(
+    commonHead::viewModels::model::ContactDetail& detail,
+    const QVariantMap& fields);
 
 } // namespace ContactsPage::Utils

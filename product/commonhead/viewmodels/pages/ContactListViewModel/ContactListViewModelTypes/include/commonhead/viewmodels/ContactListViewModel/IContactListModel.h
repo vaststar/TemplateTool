@@ -67,10 +67,10 @@ struct CONTACT_LIST_VIEW_MODEL_TYPES_API RemovedRelationInfo
     std::string oldParentId;  // empty if the child was at the virtual root
 };
 
-// ===== Detail-view payload =====
-// The tree model only carries id/displayName/type so it stays cheap to broadcast. The
-// detail panel needs richer fields; ContactDetail is the one-shot payload returned by
-// IContactListViewModel::getContactDetail for a single contact.
+// ===== Full contact payload =====
+// The tree model only carries id/displayName/type so it stays cheap to broadcast.
+// ContactDetail is the complete single-contact payload used by the detail panel and
+// by the create/update commands.
 
 enum class ContactStatus
 {
