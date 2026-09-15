@@ -2,6 +2,7 @@
 #include "ContactsPage/ContactFilterProxyModel.h"
 #include "ContactsPageUtils.h"
 #include "LoggerDefine.h"
+#include "UIViewMessageBox/UIViewMessageBoxHelper.h"
 #include "UIWindowUtilities/WindowGeometry.h"
 #include <UIViewModelSignalBridge/emitters/ContactListViewModelEmitter.h>
 #include <commonhead/viewmodels/ContactListViewModel/IContactListViewModel.h>
@@ -11,7 +12,9 @@
 #include <UIFabrication/IUIViewFactory.h>
 #include <QVariantMap>
 #include <QVariantList>
+#include <QTimer>
 #include <algorithm>
+#include <utility>
 
 namespace {
 // QML resource paths used by this controller.
@@ -51,6 +54,7 @@ void ContactsPageController::init()
     auto* e = mContactListEmitter.get();
     QObject::connect(e, &Emitter::signals_onContactDirectoryReady,      this, &ContactsPageController::onContactDirectoryReady);
     QObject::connect(e, &Emitter::signals_onContactDirectoryLoadFailed, this, &ContactsPageController::onContactDirectoryLoadFailed);
+    QObject::connect(e, &Emitter::signals_onContactSaveFailed,           this, &ContactsPageController::onContactSaveFailed);
     QObject::connect(e, &Emitter::signals_onPersonContactsAdded,      this, &ContactsPageController::onPersonContactsAdded);
     QObject::connect(e, &Emitter::signals_onPersonContactsUpdated,    this, &ContactsPageController::onPersonContactsUpdated);
     QObject::connect(e, &Emitter::signals_onPersonContactsRemoved,    this, &ContactsPageController::onPersonContactsRemoved);
@@ -256,8 +260,7 @@ void ContactsPageController::handleContextAction(const QString& action, const QS
     }
     else if (action == QLatin1String("edit"))
     {
-        openEditDialog(QStringLiteral("edit"), QString{}, contactId, nodeType,
-                       getContactInfo(contactId));
+        openEditDialog(QStringLiteral("edit"), QString{}, contactId, nodeType, getContactInfo(contactId));
     }
     else if (action == QLatin1String("delete"))
     {
@@ -265,9 +268,7 @@ void ContactsPageController::handleContextAction(const QString& action, const QS
     }
 }
 
-void ContactsPageController::openEditDialog(const QString& mode, const QString& parentId,
-                                             const QString& editId, int nodeType,
-                                             const QVariantMap& initialInfo)
+void ContactsPageController::openEditDialog(const QString& mode, const QString& parentId, const QString& editId, int nodeType, const QVariantMap& initialInfo)
 {
     auto ctx = getAppContext();
     if (!ctx)
@@ -370,6 +371,40 @@ void ContactsPageController::onContactDirectoryLoadFailed(commonHead::viewModels
 {
     UIVIEW_LOG_ERROR("onContactDirectoryLoadFailed received, error:" << static_cast<int>(error));
     setLoadState(Error);
+}
+
+void ContactsPageController::onContactSaveFailed(const ContactSaveFailure& failure)
+{
+    UIVIEW_LOG_ERROR("onContactSaveFailed received, target:" << static_cast<int>(failure.target)
+                     << ", action:" << static_cast<int>(failure.action)
+                     << ", count:" << failure.targetIds.size()
+                     << ", error:" << static_cast<int>(failure.error));
+    mPendingSaveFailures.push_back(failure);
+    if (mSaveFailureDialogScheduled)
+    {
+        return;
+    }
+    mSaveFailureDialogScheduled = true;
+    QTimer::singleShot(0, this, &ContactsPageController::showSaveFailureDialog);
+}
+
+void ContactsPageController::showSaveFailureDialog()
+{
+    mSaveFailureDialogScheduled = false;
+    auto failures = std::exchange(mPendingSaveFailures, std::vector<ContactSaveFailure>{});
+    if (failures.empty())
+    {
+        return;
+    }
+    auto ctx = getAppContext();
+    if (!ctx)
+    {
+        return;
+    }
+    UIView::UIViewMessageBoxHelper::showError(*ctx,
+                                              tr("保存失败"),
+                                              tr("修改已应用到当前页面，但未能写入本地数据库。"),
+                                              tr("关闭应用后这些修改可能丢失，请稍后重新操作。"));
 }
 
 void ContactsPageController::onPersonContactsAdded(const std::vector<commonHead::viewModels::model::ContactNodeData>& v)

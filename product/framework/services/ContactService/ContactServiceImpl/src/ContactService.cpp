@@ -296,6 +296,15 @@ void ContactService::onContactRelationsRemoved(const std::vector<std::string>& r
     fireNotification(&IContactServiceCallback::onContactRelationsRemoved, relationIds);
 }
 
+void ContactService::onContactWriteFailed(const ContactWriteFailure& failure)
+{
+    SERVICE_LOG_ERROR("fire onContactWriteFailed, target:" << static_cast<int>(failure.target)
+                      << ", action:" << static_cast<int>(failure.action)
+                      << ", count:" << failure.targetIds.size()
+                      << ", error:" << static_cast<int>(failure.error));
+    fireNotification(&IContactServiceCallback::onContactWriteFailed, failure);
+}
+
 void ContactService::onDirectoryLoaded()
 {
     SERVICE_LOG_DEBUG("fire onContactDirectoryReady");

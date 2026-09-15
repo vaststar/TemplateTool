@@ -1,5 +1,7 @@
 #include "ContactModel.h"
 
+#include <utility>
+
 #include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include "ContactDBAccess.h"
@@ -355,6 +357,19 @@ std::vector<std::string> ContactModel::removeContactRelationsInMemory(const std:
 
 // ===== Public write: memory first, then persist =====
 
+void ContactModel::notifyWriteFailure(ContactWriteFailure failure)
+{
+    if (failure.error == ContactWriteError::None || failure.targetIds.empty())
+    {
+        return;
+    }
+    SERVICE_LOG_ERROR("contact database write failed, target:" << static_cast<int>(failure.target)
+                      << ", action:" << static_cast<int>(failure.action)
+                      << ", count:" << failure.targetIds.size()
+                      << ", error:" << static_cast<int>(failure.error));
+    notifySink(&IContactNotificationSink::onContactWriteFailed, failure);
+}
+
 model::PersonContactArray ContactModel::addPersonContacts(const model::PersonContactArray& persons)
 {
     SERVICE_LOG_DEBUG("addPersonContacts requested, count:" << persons.size());
@@ -362,8 +377,15 @@ model::PersonContactArray ContactModel::addPersonContacts(const model::PersonCon
     SERVICE_LOG_DEBUG("addPersonContacts accepted, count:" << accepted.size());
     if (!accepted.empty())
     {
-        mContactDBAccess->insertPersonContacts(accepted);
+        const auto error = mContactDBAccess->insertPersonContacts(accepted);
         notifySink(&IContactNotificationSink::onPersonContactsAdded, accepted, ContactNotificationSource::Local);
+        std::vector<std::string> ids;
+        ids.reserve(accepted.size());
+        for (const auto& person : accepted)
+        {
+            ids.push_back(person->getContactId());
+        }
+        notifyWriteFailure({ContactWriteTarget::Person, ContactWriteAction::Add, std::move(ids), error});
     }
     return accepted;
 }
@@ -373,13 +395,22 @@ model::PersonContactArray ContactModel::updatePersonContacts(const model::Person
     SERVICE_LOG_DEBUG("updatePersonContacts requested, count:" << persons.size());
     auto accepted = updatePersonContactsInMemory(persons);
     SERVICE_LOG_DEBUG("updatePersonContacts accepted, count:" << accepted.size());
+    std::vector<ContactWriteFailure> failures;
     for (const auto& p : accepted)
     {
-        mContactDBAccess->updatePersonContact(p);
+        const auto error = mContactDBAccess->updatePersonContact(p);
+        if (error != ContactWriteError::None)
+        {
+            failures.push_back({ContactWriteTarget::Person, ContactWriteAction::Update, {p->getContactId()}, error});
+        }
     }
     if (!accepted.empty())
     {
         notifySink(&IContactNotificationSink::onPersonContactsUpdated, accepted, ContactNotificationSource::Local);
+    }
+    for (auto& failure : failures)
+    {
+        notifyWriteFailure(std::move(failure));
     }
     return accepted;
 }
@@ -389,13 +420,22 @@ std::vector<std::string> ContactModel::removePersonContacts(const std::vector<st
     SERVICE_LOG_DEBUG("removePersonContacts requested, count:" << contactIds.size());
     auto accepted = removePersonContactsInMemory(contactIds);
     SERVICE_LOG_DEBUG("removePersonContacts accepted, count:" << accepted.size());
+    std::vector<ContactWriteFailure> failures;
     for (const auto& id : accepted)
     {
-        mContactDBAccess->deletePersonContact(id);
+        const auto error = mContactDBAccess->deletePersonContact(id);
+        if (error != ContactWriteError::None)
+        {
+            failures.push_back({ContactWriteTarget::Person, ContactWriteAction::Remove, {id}, error});
+        }
     }
     if (!accepted.empty())
     {
         notifySink(&IContactNotificationSink::onPersonContactsRemoved, accepted, ContactNotificationSource::Local);
+    }
+    for (auto& failure : failures)
+    {
+        notifyWriteFailure(std::move(failure));
     }
     return accepted;
 }
@@ -407,8 +447,15 @@ model::GroupContactArray ContactModel::addGroupContacts(const model::GroupContac
     SERVICE_LOG_DEBUG("addGroupContacts accepted, count:" << accepted.size());
     if (!accepted.empty())
     {
-        mContactDBAccess->insertGroupContacts(accepted);
+        const auto error = mContactDBAccess->insertGroupContacts(accepted);
         notifySink(&IContactNotificationSink::onGroupContactsAdded, accepted, ContactNotificationSource::Local);
+        std::vector<std::string> ids;
+        ids.reserve(accepted.size());
+        for (const auto& group : accepted)
+        {
+            ids.push_back(group->getContactId());
+        }
+        notifyWriteFailure({ContactWriteTarget::Group, ContactWriteAction::Add, std::move(ids), error});
     }
     return accepted;
 }
@@ -418,13 +465,22 @@ model::GroupContactArray ContactModel::updateGroupContacts(const model::GroupCon
     SERVICE_LOG_DEBUG("updateGroupContacts requested, count:" << groups.size());
     auto accepted = updateGroupContactsInMemory(groups);
     SERVICE_LOG_DEBUG("updateGroupContacts accepted, count:" << accepted.size());
+    std::vector<ContactWriteFailure> failures;
     for (const auto& g : accepted)
     {
-        mContactDBAccess->updateGroupContact(g);
+        const auto error = mContactDBAccess->updateGroupContact(g);
+        if (error != ContactWriteError::None)
+        {
+            failures.push_back({ContactWriteTarget::Group, ContactWriteAction::Update, {g->getContactId()}, error});
+        }
     }
     if (!accepted.empty())
     {
         notifySink(&IContactNotificationSink::onGroupContactsUpdated, accepted, ContactNotificationSource::Local);
+    }
+    for (auto& failure : failures)
+    {
+        notifyWriteFailure(std::move(failure));
     }
     return accepted;
 }
@@ -434,13 +490,22 @@ std::vector<std::string> ContactModel::removeGroupContacts(const std::vector<std
     SERVICE_LOG_DEBUG("removeGroupContacts requested, count:" << contactIds.size());
     auto accepted = removeGroupContactsInMemory(contactIds);
     SERVICE_LOG_DEBUG("removeGroupContacts accepted, count:" << accepted.size());
+    std::vector<ContactWriteFailure> failures;
     for (const auto& id : accepted)
     {
-        mContactDBAccess->deleteGroupContact(id);
+        const auto error = mContactDBAccess->deleteGroupContact(id);
+        if (error != ContactWriteError::None)
+        {
+            failures.push_back({ContactWriteTarget::Group, ContactWriteAction::Remove, {id}, error});
+        }
     }
     if (!accepted.empty())
     {
         notifySink(&IContactNotificationSink::onGroupContactsRemoved, accepted, ContactNotificationSource::Local);
+    }
+    for (auto& failure : failures)
+    {
+        notifyWriteFailure(std::move(failure));
     }
     return accepted;
 }
@@ -452,8 +517,15 @@ model::ContactRelationArray ContactModel::addContactRelations(const model::Conta
     SERVICE_LOG_DEBUG("addContactRelations accepted, count:" << accepted.size());
     if (!accepted.empty())
     {
-        mContactDBAccess->insertContactRelations(accepted);
+        const auto error = mContactDBAccess->insertContactRelations(accepted);
         notifySink(&IContactNotificationSink::onContactRelationsAdded, accepted, ContactNotificationSource::Local);
+        std::vector<std::string> ids;
+        ids.reserve(accepted.size());
+        for (const auto& relation : accepted)
+        {
+            ids.push_back(relation->getRelationId());
+        }
+        notifyWriteFailure({ContactWriteTarget::Relation, ContactWriteAction::Add, std::move(ids), error});
     }
     return accepted;
 }
@@ -463,13 +535,22 @@ model::ContactRelationArray ContactModel::updateContactRelations(const model::Co
     SERVICE_LOG_DEBUG("updateContactRelations requested, count:" << relations.size());
     auto accepted = updateContactRelationsInMemory(relations);
     SERVICE_LOG_DEBUG("updateContactRelations accepted, count:" << accepted.size());
+    std::vector<ContactWriteFailure> failures;
     for (const auto& r : accepted)
     {
-        mContactDBAccess->updateContactRelation(r);
+        const auto error = mContactDBAccess->updateContactRelation(r);
+        if (error != ContactWriteError::None)
+        {
+            failures.push_back({ContactWriteTarget::Relation, ContactWriteAction::Update, {r->getRelationId()}, error});
+        }
     }
     if (!accepted.empty())
     {
         notifySink(&IContactNotificationSink::onContactRelationsUpdated, accepted, ContactNotificationSource::Local);
+    }
+    for (auto& failure : failures)
+    {
+        notifyWriteFailure(std::move(failure));
     }
     return accepted;
 }
@@ -479,13 +560,22 @@ std::vector<std::string> ContactModel::removeContactRelations(const std::vector<
     SERVICE_LOG_DEBUG("removeContactRelations requested, count:" << relationIds.size());
     auto accepted = removeContactRelationsInMemory(relationIds);
     SERVICE_LOG_DEBUG("removeContactRelations accepted, count:" << accepted.size());
+    std::vector<ContactWriteFailure> failures;
     for (const auto& id : accepted)
     {
-        mContactDBAccess->deleteContactRelation(id);
+        const auto error = mContactDBAccess->deleteContactRelation(id);
+        if (error != ContactWriteError::None)
+        {
+            failures.push_back({ContactWriteTarget::Relation, ContactWriteAction::Remove, {id}, error});
+        }
     }
     if (!accepted.empty())
     {
         notifySink(&IContactNotificationSink::onContactRelationsRemoved, accepted, ContactNotificationSource::Local);
+    }
+    for (auto& failure : failures)
+    {
+        notifyWriteFailure(std::move(failure));
     }
     return accepted;
 }
@@ -615,4 +705,3 @@ void ContactModel::finishLoadFailure(ContactDirectoryLoadError error)
 }
 
 } // namespace ucf::service
-

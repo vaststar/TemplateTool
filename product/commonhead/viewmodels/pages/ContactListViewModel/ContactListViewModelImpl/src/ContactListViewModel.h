@@ -55,6 +55,7 @@ protected:
     // IContactServiceCallback overrides
     void onContactDirectoryReady() override;
     void onContactDirectoryLoadFailed(ucf::service::ContactDirectoryLoadError error) override;
+    void onContactWriteFailed(const ucf::service::ContactWriteFailure& failure) override;
     void onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons) override;
     void onPersonContactsUpdated(const ucf::service::model::PersonContactArray& persons) override;
     void onPersonContactsRemoved(const std::vector<std::string>& contactIds) override;

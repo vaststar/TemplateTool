@@ -4,8 +4,12 @@
 #include <utility>
 
 #include <fakes/ucf/CoreFramework/FakeCoreFramework.h>
+#include <fakes/ucf/services/FakeClientInfoService.h>
+#include <fakes/ucf/services/FakeDataWarehouseService.h>
 #include <ucf/services/ContactService/ContactServiceCreator.h>
 #include <ucf/services/ContactService/IContactService.h>
+#include <ucf/services/ContactService/IContactServiceCallback.h>
+#include <ucf/services/DataWarehouseService/IDataWarehouseServiceCallback.h>
 
 namespace {
 
@@ -49,6 +53,16 @@ private:
     std::string mPhone;
     std::string mEmail;
     ContactStatus mStatus{ContactStatus::Active};
+};
+
+class TestContactCallback final : public ucf::service::IContactServiceCallback
+{
+public:
+    void onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons) override { addedCount += persons.size(); }
+    void onContactWriteFailed(const ucf::service::ContactWriteFailure& failure) override { failures.push_back(failure); }
+
+    std::size_t addedCount{0};
+    std::vector<ucf::service::ContactWriteFailure> failures;
 };
 
 } // namespace
@@ -116,4 +130,45 @@ TEST_CASE("ContactService preserves person profile fields", "[ContactService][Pe
     REQUIRE(stored->getPhone() == "+44 20 1111 1111");
     REQUIRE(stored->getEmail() == "ada.byron@example.com");
     REQUIRE(stored->getContactStatus() == ContactStatus::Inactive);
+}
+
+TEST_CASE("ContactService keeps memory changes and reports persistence failures", "[ContactService][Persistence]")
+{
+    auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
+    auto fakeClientInfoService = std::make_shared<ucf::service::fakes::FakeClientInfoService>();
+    auto fakeDataWarehouseService = std::make_shared<ucf::service::fakes::FakeDataWarehouseService>();
+    ALLOW_CALL(*fakeCoreFramework, getServiceInternal(ANY(std::type_index)))
+        .WITH(_1 == std::type_index(typeid(ucf::service::IClientInfoService)))
+        .RETURN(std::static_pointer_cast<ucf::service::IService>(fakeClientInfoService));
+    ALLOW_CALL(*fakeCoreFramework, getServiceInternal(ANY(std::type_index)))
+        .WITH(_1 == std::type_index(typeid(ucf::service::IDataWarehouseService)))
+        .RETURN(std::static_pointer_cast<ucf::service::IService>(fakeDataWarehouseService));
+    ALLOW_CALL(*fakeClientInfoService, getSharedDBConfig()).RETURN(ucf::service::model::SqliteDBConfig{"contact-db", ""});
+    ALLOW_CALL(*fakeDataWarehouseService,
+               fetchFromDatabase(ANY(std::string), ANY(std::string), ANY(ucf::service::model::DBColumnFields),
+                                 ANY(ucf::service::model::ListsOfWhereCondition), ANY(ucf::service::model::DatabaseDataRecordsCallback),
+                                 ANY(int), ANY(std::source_location)))
+        .LR_SIDE_EFFECT(_5(ucf::service::model::DatabaseDataRecords{}));
+    ALLOW_CALL(*fakeDataWarehouseService, atomicWrite(ANY(std::string), ANY(std::function<bool()>))).RETURN(false);
+    auto service = ucf::service::impl::createContactService(fakeCoreFramework);
+    auto callback = std::make_shared<TestContactCallback>();
+    service->registerCallback(callback);
+    service->initComponent();
+    auto databaseCallback = std::dynamic_pointer_cast<ucf::service::IDataWarehouseServiceCallback>(service);
+    REQUIRE(databaseCallback != nullptr);
+    databaseCallback->OnDatabaseInitialized("contact-db");
+
+    service->addPersonContacts({std::make_shared<TestPersonContact>("person-2", "Grace Hopper", "Grace", "Hopper", TestPersonContact::Gender::Female, "", "grace@example.com")});
+
+    const auto stored = service->getPersonContact("person-2");
+    REQUIRE(stored != nullptr);
+    REQUIRE(stored->getPersonName() == "Grace Hopper");
+    REQUIRE(callback->addedCount == 1);
+    REQUIRE(callback->failures.size() == 1);
+    REQUIRE(callback->failures.front().target == ucf::service::ContactWriteTarget::Person);
+    REQUIRE(callback->failures.front().action == ucf::service::ContactWriteAction::Add);
+    REQUIRE(callback->failures.front().targetIds == std::vector<std::string>{"person-2"});
+    REQUIRE(callback->failures.front().error == ucf::service::ContactWriteError::DatabaseWriteFailed);
+
+    service->deinitComponent();
 }

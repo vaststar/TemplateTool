@@ -20,6 +20,7 @@ class UIViewModelSignalBridge_EXPORT ContactListViewModelEmitter
 public:
     using NodeData = commonHead::viewModels::model::ContactNodeData;
     using RelationData = commonHead::viewModels::model::ContactRelationData;
+    using SaveFailure = commonHead::viewModels::model::ContactSaveFailure;
 
     explicit ContactListViewModelEmitter(QObject* parent = nullptr)
         : QObject(parent) {}
@@ -29,6 +30,8 @@ public:
 
     void onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error) override
     { emit signals_onContactDirectoryLoadFailed(error); }
+
+    void onContactSaveFailed(const SaveFailure& failure) override { emit signals_onContactSaveFailed(failure); }
 
     void onPersonContactsAdded(const std::vector<NodeData>& persons) override
     { emit signals_onPersonContactsAdded(persons); }
@@ -54,6 +57,7 @@ public:
 signals:
     void signals_onContactDirectoryReady();
     void signals_onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error);
+    void signals_onContactSaveFailed(const SaveFailure& failure);
 
     void signals_onPersonContactsAdded(const std::vector<NodeData>& persons);
     void signals_onPersonContactsUpdated(const std::vector<NodeData>& persons);

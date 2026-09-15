@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <ucf/services/ContactService/IContactServiceCallback.h>
+
 #include "ContactEntities.h"
 
 namespace ucf::framework {
@@ -39,17 +41,17 @@ public:
     void loadContactRelations(LoadRelationsCallback callback) const;
 
     // ===== Persist (sync) =====
-    void insertPersonContacts(const model::PersonContactArray& persons) const;
-    void updatePersonContact(const model::IPersonContactPtr& person) const;
-    void deletePersonContact(const std::string& contactId) const;
+    ContactWriteError insertPersonContacts(const model::PersonContactArray& persons) const;
+    ContactWriteError updatePersonContact(const model::IPersonContactPtr& person) const;
+    ContactWriteError deletePersonContact(const std::string& contactId) const;
 
-    void insertGroupContacts(const model::GroupContactArray& groups) const;
-    void updateGroupContact(const model::IGroupContactPtr& group) const;
-    void deleteGroupContact(const std::string& contactId) const;
+    ContactWriteError insertGroupContacts(const model::GroupContactArray& groups) const;
+    ContactWriteError updateGroupContact(const model::IGroupContactPtr& group) const;
+    ContactWriteError deleteGroupContact(const std::string& contactId) const;
 
-    void insertContactRelations(const model::ContactRelationArray& relations) const;
-    void updateContactRelation(const model::IContactRelationPtr& relation) const;
-    void deleteContactRelation(const std::string& relationId) const;
+    ContactWriteError insertContactRelations(const model::ContactRelationArray& relations) const;
+    ContactWriteError updateContactRelation(const model::IContactRelationPtr& relation) const;
+    ContactWriteError deleteContactRelation(const std::string& relationId) const;
 
 private:
     std::string resolveDatabaseId() const;

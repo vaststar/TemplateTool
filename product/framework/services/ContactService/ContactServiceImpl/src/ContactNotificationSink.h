@@ -34,6 +34,7 @@ public:
     virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations,    ContactNotificationSource src) = 0;
     virtual void onContactRelationsRemoved (const std::vector<std::string>& relationIds,     ContactNotificationSource src) = 0;
 
+    virtual void onContactWriteFailed(const ContactWriteFailure& /*failure*/) {}
     virtual void onDirectoryLoaded() {}
     virtual void onDirectoryLoadFailed(ContactDirectoryLoadError /*error*/) {}
 };

@@ -22,6 +22,7 @@ public:
 public:
     virtual void onContactDirectoryReady() {}
     virtual void onContactDirectoryLoadFailed(model::ContactDirectoryLoadError /*error*/) {}
+    virtual void onContactSaveFailed(const model::ContactSaveFailure& /*failure*/) {}
     virtual void onPersonContactsAdded(const std::vector<model::ContactNodeData>& /*persons*/) {}
     virtual void onPersonContactsUpdated(const std::vector<model::ContactNodeData>& /*persons*/) {}
     virtual void onPersonContactsRemoved(const std::vector<std::string>& /*contactIds*/) {}

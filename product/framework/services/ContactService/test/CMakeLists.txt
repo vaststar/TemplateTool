@@ -15,6 +15,8 @@ BuildUnitTestModule(
         CoreFrameworkApi
         DataWarehouseServiceApi
         FakeCoreFramework
+        FakeClientInfoService
+        FakeDataWarehouseService
     TARGET_INCLUDE_FOLDER
         .
     IDE_FOLDER

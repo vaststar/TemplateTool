@@ -213,6 +213,35 @@ model::ContactDirectoryLoadError toVMLoadError(ucf::service::ContactDirectoryLoa
     }
 }
 
+model::ContactSaveFailure toVMSaveFailure(const ucf::service::ContactWriteFailure& serviceFailure)
+{
+    model::ContactSaveFailure failure;
+    failure.targetIds = serviceFailure.targetIds;
+
+    switch (serviceFailure.target)
+    {
+    case ucf::service::ContactWriteTarget::Person:   failure.target = model::ContactSaveTarget::Person; break;
+    case ucf::service::ContactWriteTarget::Group:    failure.target = model::ContactSaveTarget::Group; break;
+    case ucf::service::ContactWriteTarget::Relation: failure.target = model::ContactSaveTarget::Relation; break;
+    }
+
+    switch (serviceFailure.action)
+    {
+    case ucf::service::ContactWriteAction::Add:    failure.action = model::ContactSaveAction::Add; break;
+    case ucf::service::ContactWriteAction::Update: failure.action = model::ContactSaveAction::Update; break;
+    case ucf::service::ContactWriteAction::Remove: failure.action = model::ContactSaveAction::Remove; break;
+    }
+
+    switch (serviceFailure.error)
+    {
+    case ucf::service::ContactWriteError::None:               failure.error = model::ContactSaveError::None; break;
+    case ucf::service::ContactWriteError::StorageUnavailable: failure.error = model::ContactSaveError::StorageUnavailable; break;
+    case ucf::service::ContactWriteError::DatabaseNotReady:   failure.error = model::ContactSaveError::DatabaseNotReady; break;
+    case ucf::service::ContactWriteError::DatabaseWriteFailed: failure.error = model::ContactSaveError::DatabaseWriteFailed; break;
+    }
+    return failure;
+}
+
 bool isAncestorOf(const std::shared_ptr<model::ContactTree>& contactTree,
                   const std::string& ancestorCandidateId,
                   const std::string& startNodeId)

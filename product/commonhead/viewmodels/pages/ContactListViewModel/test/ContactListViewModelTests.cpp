@@ -73,4 +73,10 @@ TEST_CASE("ContactListViewModel exposes standalone contact types",
     REQUIRE(detail.person->email == "ada@example.com");
     REQUIRE_FALSE(detail.department.has_value());
     REQUIRE_FALSE(detail.team.has_value());
+
+    ContactSaveFailure failure{ContactSaveTarget::Person, ContactSaveAction::Update, {"person"}, ContactSaveError::DatabaseWriteFailed};
+    REQUIRE(failure.target == ContactSaveTarget::Person);
+    REQUIRE(failure.action == ContactSaveAction::Update);
+    REQUIRE(failure.targetIds == std::vector<std::string>{"person"});
+    REQUIRE(failure.error == ContactSaveError::DatabaseWriteFailed);
 }

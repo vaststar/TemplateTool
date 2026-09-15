@@ -17,6 +17,15 @@
 
 namespace ucf::service {
 
+namespace {
+
+ContactWriteError toContactWriteError(bool succeeded)
+{
+    return succeeded ? ContactWriteError::None : ContactWriteError::DatabaseWriteFailed;
+}
+
+} // namespace
+
 ContactDBAccess::ContactDBAccess(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFrameworkWPtr(coreFramework)
 {
@@ -451,26 +460,26 @@ void ContactDBAccess::loadContactRelations(LoadRelationsCallback callback) const
 
 // ===== Persist =====
 
-void ContactDBAccess::insertPersonContacts(const model::PersonContactArray& persons) const
+ContactWriteError ContactDBAccess::insertPersonContacts(const model::PersonContactArray& persons) const
 {
     if (persons.empty())
     {
-        return;
+        return ContactWriteError::None;
     }
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     model::ListOfDBValues values;
@@ -502,7 +511,7 @@ void ContactDBAccess::insertPersonContacts(const model::PersonContactArray& pers
     }
 
     // CTI write: main + sub rows must commit together.
-    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+    const bool succeeded = dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         if (!dataWarehouseService->insertIntoDatabase(
                 dbId,
                 db::schema::UserContactTable::TableName,
@@ -532,34 +541,35 @@ void ContactDBAccess::insertPersonContacts(const model::PersonContactArray& pers
         }
         return true;
     });
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::updatePersonContact(const model::IPersonContactPtr& person) const
+ContactWriteError ContactDBAccess::updatePersonContact(const model::IPersonContactPtr& person) const
 {
     if (!person)
     {
-        return;
+        return ContactWriteError::DatabaseWriteFailed;
     }
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     // CTI update: main row UPDATE + sub-row UPSERT, atomically. The sub-row uses
     // insertIntoDatabase (INSERT OR REPLACE) deliberately so that legacy persons
     // whose profile sub-row does not exist yet get one created on first edit.
-    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+    const bool succeeded = dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         model::DBDataValues mainValues{
             person->getPersonName(),
             static_cast<int>(person->getContactStatus())
@@ -574,7 +584,7 @@ void ContactDBAccess::updatePersonContact(const model::IPersonContactPtr& person
                 mainValues,
                 {
                     {db::schema::UserContactTable::ContactIdField, person->getContactId(), model::DBOperatorType::Equal}
-                }) < 0)
+                }) != 1)
         {
             return false;
         }
@@ -599,29 +609,30 @@ void ContactDBAccess::updatePersonContact(const model::IPersonContactPtr& person
                 person->getEmail()
             }});
     });
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::deletePersonContact(const std::string& contactId) const
+ContactWriteError ContactDBAccess::deletePersonContact(const std::string& contactId) const
 {
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     // CTI delete: main + sub rows atomically. Deleting a sub-row that does not
     // exist is a harmless no-op.
-    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+    const bool succeeded = dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         if (dataWarehouseService->deleteFromDatabase(
                 dbId,
                 db::schema::UserContactTable::TableName,
@@ -634,28 +645,29 @@ void ContactDBAccess::deletePersonContact(const std::string& contactId) const
                    db::schema::PersonContactTable::TableName,
                    {{db::schema::PersonContactTable::ContactIdField, contactId, model::DBOperatorType::Equal}}) >= 0;
     });
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups) const
+ContactWriteError ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups) const
 {
     if (groups.empty())
     {
-        return;
+        return ContactWriteError::None;
     }
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     // Main GroupContact rows (every group writes one).
@@ -704,7 +716,7 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
     }
 
     // CTI write: main + sub rows must commit together.
-    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+    const bool succeeded = dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         if (!dataWarehouseService->insertIntoDatabase(
                 dbId,
                 db::schema::GroupContactTable::TableName,
@@ -754,28 +766,29 @@ void ContactDBAccess::insertGroupContacts(const model::GroupContactArray& groups
         }
         return true;
     });
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) const
+ContactWriteError ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) const
 {
     if (!group)
     {
-        return;
+        return ContactWriteError::DatabaseWriteFailed;
     }
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     // CTI update: main row UPDATE + sub-row UPSERT, atomically. The sub-row uses
@@ -783,7 +796,7 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
     // silently 0-affect when the sub-row doesn't exist yet (e.g. a Department
     // group whose typed fields are being set for the first time, or a row
     // created before the CTI sub-tables existed).
-    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+    const bool succeeded = dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         model::DBDataValues mainValues{
             group->getGroupName(),
             static_cast<int>(group->getGroupType()),
@@ -800,7 +813,7 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
                 mainValues,
                 {
                     {db::schema::GroupContactTable::GroupIdField, group->getContactId(), model::DBOperatorType::Equal}
-                }) < 0)
+                }) != 1)
         {
             return false;
         }
@@ -849,29 +862,30 @@ void ContactDBAccess::updateGroupContact(const model::IGroupContactPtr& group) c
         }
         return true;  // Project / Custom: main-only update.
     });
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::deleteGroupContact(const std::string& contactId) const
+ContactWriteError ContactDBAccess::deleteGroupContact(const std::string& contactId) const
 {
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     // CTI delete: remove from main + all sub-tables atomically. We don't read the
     // type first; deleting from a sub-table that has no row is a harmless no-op.
-    dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
+    const bool succeeded = dataWarehouseService->atomicWrite(dbId, [&]() -> bool {
         const auto where = model::ListsOfWhereCondition{
             {db::schema::GroupContactTable::GroupIdField, contactId, model::DBOperatorType::Equal}
         };
@@ -903,28 +917,29 @@ void ContactDBAccess::deleteGroupContact(const std::string& contactId) const
         }
         return true;
     });
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::insertContactRelations(const model::ContactRelationArray& relations) const
+ContactWriteError ContactDBAccess::insertContactRelations(const model::ContactRelationArray& relations) const
 {
     if (relations.empty())
     {
-        return;
+        return ContactWriteError::None;
     }
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     model::ListOfDBValues values;
@@ -938,7 +953,7 @@ void ContactDBAccess::insertContactRelations(const model::ContactRelationArray& 
             static_cast<int>(r->getRelationType())
         });
     }
-    dataWarehouseService->insertIntoDatabase(
+    const bool succeeded = dataWarehouseService->insertIntoDatabase(
         dbId,
         db::schema::ContactRelationTable::TableName,
         {
@@ -948,35 +963,36 @@ void ContactDBAccess::insertContactRelations(const model::ContactRelationArray& 
             db::schema::ContactRelationTable::RelationTypeField
         },
         values);
+    return toContactWriteError(succeeded);
 }
 
-void ContactDBAccess::updateContactRelation(const model::IContactRelationPtr& relation) const
+ContactWriteError ContactDBAccess::updateContactRelation(const model::IContactRelationPtr& relation) const
 {
     if (!relation)
     {
-        return;
+        return ContactWriteError::DatabaseWriteFailed;
     }
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
     model::DBDataValues values{
         relation->getParentId(),
         static_cast<int>(relation->getRelationType())
     };
-    dataWarehouseService->updateInDatabase(
+    const auto updatedCount = dataWarehouseService->updateInDatabase(
         dbId,
         db::schema::ContactRelationTable::TableName,
         {
@@ -987,32 +1003,34 @@ void ContactDBAccess::updateContactRelation(const model::IContactRelationPtr& re
         {
             {db::schema::ContactRelationTable::RelationIdField, relation->getRelationId(), model::DBOperatorType::Equal}
         });
+    return toContactWriteError(updatedCount == 1);
 }
 
-void ContactDBAccess::deleteContactRelation(const std::string& relationId) const
+ContactWriteError ContactDBAccess::deleteContactRelation(const std::string& relationId) const
 {
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
-        return;
+        return ContactWriteError::StorageUnavailable;
     }
     const std::string dbId = resolveDatabaseId();
     if (dbId.empty())
     {
-        return;
+        return ContactWriteError::DatabaseNotReady;
     }
 
-    dataWarehouseService->deleteFromDatabase(
+    const auto deletedCount = dataWarehouseService->deleteFromDatabase(
         dbId,
         db::schema::ContactRelationTable::TableName,
         {
             {db::schema::ContactRelationTable::RelationIdField, relationId, model::DBOperatorType::Equal}
         });
+    return toContactWriteError(deletedCount >= 0);
 }
 
 } // namespace ucf::service

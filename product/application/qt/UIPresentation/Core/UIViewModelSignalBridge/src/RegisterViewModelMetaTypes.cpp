@@ -51,6 +51,7 @@ void registerAllViewModelMetaTypes()
         qRegisterMetaType<commonHead::viewModels::model::ContactRelationData>();
         qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactRelationData>>();
         qRegisterMetaType<commonHead::viewModels::model::ContactDirectoryLoadError>();
+        qRegisterMetaType<commonHead::viewModels::model::ContactSaveFailure>();
 
         qRegisterMetaType<commonHead::viewModels::model::RecordingSettings>();
         qRegisterMetaType<commonHead::viewModels::model::ScreenshotSettings>();

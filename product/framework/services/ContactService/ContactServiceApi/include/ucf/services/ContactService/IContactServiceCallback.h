@@ -15,6 +15,36 @@ enum class ContactDirectoryLoadError
     DatabaseReadFailed,
 };
 
+enum class ContactWriteTarget
+{
+    Person,
+    Group,
+    Relation,
+};
+
+enum class ContactWriteAction
+{
+    Add,
+    Update,
+    Remove,
+};
+
+enum class ContactWriteError
+{
+    None,
+    StorageUnavailable,
+    DatabaseNotReady,
+    DatabaseWriteFailed,
+};
+
+struct ContactWriteFailure
+{
+    ContactWriteTarget target{ContactWriteTarget::Person};
+    ContactWriteAction action{ContactWriteAction::Update};
+    std::vector<std::string> targetIds;
+    ContactWriteError error{ContactWriteError::None};
+};
+
 class IContactServiceCallback
 {
 public:
@@ -31,6 +61,9 @@ public:
 
     // Directory load failed; retry via loadContactDirectory().
     virtual void onContactDirectoryLoadFailed(ContactDirectoryLoadError /*error*/) {}
+
+    // Memory was updated, but the corresponding database write failed.
+    virtual void onContactWriteFailed(const ContactWriteFailure& /*failure*/) {}
 
     // ===== Person contacts =====
     virtual void onPersonContactsAdded(const model::PersonContactArray& /*persons*/) {}

@@ -85,6 +85,7 @@ private:
     virtual void onContactRelationsAdded   (const model::ContactRelationArray& relations,    ContactNotificationSource src) override;
     virtual void onContactRelationsUpdated (const model::ContactRelationArray& relations,    ContactNotificationSource src) override;
     virtual void onContactRelationsRemoved (const std::vector<std::string>& relationIds, ContactNotificationSource src) override;
+    virtual void onContactWriteFailed(const ContactWriteFailure& failure) override;
     virtual void onDirectoryLoaded() override;
     virtual void onDirectoryLoadFailed(ContactDirectoryLoadError error) override;
 

@@ -80,6 +80,7 @@ private:
     // Single exit points for load completion / failure (fires exactly once per load).
     void finishLoadSuccess();
     void finishLoadFailure(ContactDirectoryLoadError error);
+    void notifyWriteFailure(ContactWriteFailure failure);
 
     enum class LoadStage : std::uint8_t {
         Uninit,

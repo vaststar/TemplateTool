@@ -139,6 +139,36 @@ enum class ContactDirectoryLoadError
     DatabaseReadFailed,
 };
 
+enum class ContactSaveTarget
+{
+    Person,
+    Group,
+    Relation,
+};
+
+enum class ContactSaveAction
+{
+    Add,
+    Update,
+    Remove,
+};
+
+enum class ContactSaveError
+{
+    None,
+    StorageUnavailable,
+    DatabaseNotReady,
+    DatabaseWriteFailed,
+};
+
+struct CONTACT_LIST_VIEW_MODEL_TYPES_API ContactSaveFailure
+{
+    ContactSaveTarget target{ContactSaveTarget::Person};
+    ContactSaveAction action{ContactSaveAction::Update};
+    std::vector<std::string> targetIds;
+    ContactSaveError error{ContactSaveError::None};
+};
+
 class CONTACT_LIST_VIEW_MODEL_TYPES_API IContactTreeNode
 {
 public:

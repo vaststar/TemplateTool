@@ -668,6 +668,16 @@ void ContactListViewModel::onContactDirectoryLoadFailed(ucf::service::ContactDir
     fireNotification(&IContactListViewModelCallback::onContactDirectoryLoadFailed, utils::toVMLoadError(error));
 }
 
+void ContactListViewModel::onContactWriteFailed(const ucf::service::ContactWriteFailure& failure)
+{
+    CONTACT_LIST_VIEW_MODEL_LOG_ERROR("onContactWriteFailed received from service, slice:" << static_cast<int>(mInterestedRelationType)
+                         << ", target:" << static_cast<int>(failure.target)
+                         << ", action:" << static_cast<int>(failure.action)
+                         << ", count:" << failure.targetIds.size()
+                         << ", error:" << static_cast<int>(failure.error));
+    fireNotification(&IContactListViewModelCallback::onContactSaveFailed, utils::toVMSaveFailure(failure));
+}
+
 void ContactListViewModel::onPersonContactsAdded(const ucf::service::model::PersonContactArray& persons)
 {
     auto vmNodes = utils::toVMNodeDatas(persons);

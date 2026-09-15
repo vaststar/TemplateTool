@@ -26,6 +26,7 @@ std::vector<model::ContactNodeData>     toVMNodeDatas(const ucf::service::model:
 std::vector<model::ContactRelationData> toVMRelations(const ucf::service::model::ContactRelationArray& serviceRelations);
 
 model::ContactDirectoryLoadError toVMLoadError(ucf::service::ContactDirectoryLoadError serviceError);
+model::ContactSaveFailure toVMSaveFailure(const ucf::service::ContactWriteFailure& serviceFailure);
 
 // ===== Enum bridges between VM and service layers =====
 ucf::service::model::IContactRelation::RelationType toServiceRelationType(model::RelationType type);

@@ -171,6 +171,24 @@
     </message>
 </context>
 <context>
+    <name>ContactsPageController</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="405"/>
+        <source>保存失败</source>
+        <translation>保存失败</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="406"/>
+        <source>修改已应用到当前页面，但未能写入本地数据库。</source>
+        <translation>修改已应用到当前页面，但未能写入本地数据库。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="407"/>
+        <source>关闭应用后这些修改可能丢失，请稍后重新操作。</source>
+        <translation>关闭应用后这些修改可能丢失，请稍后重新操作。</translation>
+    </message>
+</context>
+<context>
     <name>HomePage</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="48"/>

@@ -75,8 +75,12 @@ protected:
     void init() override;
 
 private:
+    using ContactSaveFailure = commonHead::viewModels::model::ContactSaveFailure;
+
     void onContactDirectoryReady();
     void onContactDirectoryLoadFailed(commonHead::viewModels::model::ContactDirectoryLoadError error);
+    void onContactSaveFailed(const ContactSaveFailure& failure);
+    void showSaveFailureDialog();
     void onPersonContactsAdded   (const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
     void onPersonContactsUpdated (const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
     void onPersonContactsRemoved (const std::vector<std::string>& v);
@@ -106,11 +110,7 @@ private:
     void notifyInfoIfCurrentUpdated(const std::vector<commonHead::viewModels::model::ContactNodeData>& v);
     // Spawn the standalone dialog windows (created via the view factory, centered on the
     // app window) and inject this controller plus the initial field values.
-    void openEditDialog(const QString& mode,
-                        const QString& parentId,
-                        const QString& editId,
-                        int nodeType,
-                        const QVariantMap& initialInfo);
+    void openEditDialog(const QString& mode, const QString& parentId, const QString& editId, int nodeType, const QVariantMap& initialInfo);
     void openDeleteDialog(const QString& contactId);
 
 private:
@@ -125,4 +125,6 @@ private:
     QString mPendingMoveParent;
     QString mPendingAddId;
     QString mPendingAddParent;
+    std::vector<ContactSaveFailure> mPendingSaveFailures;
+    bool mSaveFailureDialogScheduled = false;
 };
