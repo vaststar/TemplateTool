@@ -1,6 +1,8 @@
-#include <optional>
 #include <algorithm>
 #include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 #include <ucf/utilities/SystemUtils/SystemUtils.h>
@@ -29,7 +31,6 @@ public:
     const FrameworkDependencies& getDependencies() const;
     [[nodiscard]] bool isLoggerInitialized() const noexcept;
 private:
-    void createApplicationConfig();
     void parseCommandLines(const std::vector<std::string>& args);
     void createFrameworks();
     void initFrameworks();
@@ -38,7 +39,6 @@ private:
     void initLogger();
 
 private:
-    ApplicationConfig mApplicationConfig;
     std::vector<std::string> mCommandLineValues;
     FrameworkDependencies mFrameworkDependencies;
     std::shared_ptr<ucf::service::IServiceFactory> mServiceFactory;
@@ -51,43 +51,58 @@ private:
 void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& args)
 {
     std::call_once(mCreate_flag, [args, this](){
-        //1. parse args and create application config
-        //2. create frameworks
         parseCommandLines(args);
-        createApplicationConfig();
-
-        //init logger
         initLogger();
-
         createFrameworks();
     });
 }
 void ApplicationRunner::DataPrivate::initLogger()
 {
-	auto fileLogger = std::make_shared<ucf::utilities::FileLoggerConfig>(
-                        mApplicationConfig.appLogConfig.logLevel,
-                        mApplicationConfig.appLogConfig.logDirPath,
-                        mApplicationConfig.appLogConfig.logBaseFileName,
-                        mApplicationConfig.appLogConfig.logMaxKeepDays,
-                        mApplicationConfig.appLogConfig.logMaxSingleFileSize,
-                        mApplicationConfig.appLogConfig.loggerName
-                    );
-#if defined(_DEBUG)
-    auto consoleLogger = std::make_shared<ucf::utilities::ConsoleLoggerConfig>(mApplicationConfig.appLogConfig.logLevel, mApplicationConfig.appLogConfig.loggerName);
-    std::vector<std::shared_ptr<ucf::utilities::LoggerConfig>> logConfigs = {fileLogger, consoleLogger};
-    UCF_LOG_INIT(logConfigs);
+#if defined(_DEBUG) || !defined(NDEBUG)
+    constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
 #else
-    std::vector<std::shared_ptr<ucf::utilities::LoggerConfig>> logConfigs = {fileLogger};
-    UCF_LOG_INIT(logConfigs);
+    constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
 #endif
+    constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
+    constexpr const char* APP_LOG_BASE_NAME = "AppLog";
+
+    const auto logDirPath = ucf::utilities::FilePathUtils::joinPaths(
+        ucf::utilities::SystemUtils::getBaseStorageDir(),
+        APP_INTERNAL_NAME,
+        APP_LOG_FOLDER_NAME);
+    ucf::utilities::FilePathUtils::EnsureDirectoryExists(logDirPath);
+
+    ucf::utilities::FileOutputConfig fileOutput;
+    fileOutput.minimumLevel = ucf::utilities::LogLevel::Debug;
+    fileOutput.directory = logDirPath;
+    fileOutput.baseName = APP_LOG_BASE_NAME;
+    fileOutput.maxFileBytes = 50ULL * 1024ULL * 1024ULL;
+    fileOutput.retentionDays = 180;
+    fileOutput.calendarRotation = ucf::utilities::FileOutputConfig::CalendarRotation::Daily;
+
+    ucf::utilities::LoggerConfig appLogger;
+    appLogger.loggerName = ucf::utilities::kAppLoggerName;
+    appLogger.fileOutputs.emplace_back(std::move(fileOutput));
+
+#if defined(_DEBUG)
+    ucf::utilities::ConsoleOutputConfig consoleOutput;
+    consoleOutput.minimumLevel = ucf::utilities::LogLevel::Debug;
+    consoleOutput.colorMode = ucf::utilities::ConsoleOutputConfig::ColorMode::Automatic;
+    appLogger.consoleOutput = consoleOutput;
+#endif
+
+    ucf::utilities::LoggingConfig loggingConfig;
+    loggingConfig.loggers.emplace_back(std::move(appLogger));
+    ucf::utilities::initializeLogging(std::move(loggingConfig));
+
     mLoggerInitialized = true;
     RUNNER_LOG_INFO(
         "==================== Application run started ====================");
     RUNNER_LOG_INFO(
         "Logger initialized, directory: "
-        << mApplicationConfig.appLogConfig.logDirPath
+        << ucf::utilities::FilePathUtils::utf8FromPath(logDirPath)
         << ", baseFileName: "
-        << mApplicationConfig.appLogConfig.logBaseFileName);
+        << APP_LOG_BASE_NAME);
 }
 
 bool ApplicationRunner::DataPrivate::isLoggerInitialized() const noexcept
@@ -126,39 +141,11 @@ void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::st
     }
 
     std::for_each(args.cbegin(), args.cend(), [this](const std::string& arg){
-        if(!arg.empty())
+        if (!arg.empty())
         {
             mCommandLineValues.push_back(arg);
         }
     });
-}
-
-void ApplicationRunner::DataPrivate::createApplicationConfig()
-{
-    //1, setup log config
-#if defined(_DEBUG) || !defined(NDEBUG)
-    constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
-#else
-    constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
-#endif
-    constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
-
-    const auto logDirPath = ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME,
-        APP_LOG_FOLDER_NAME
-    );
-    ucf::utilities::FilePathUtils::EnsureDirectoryExists(logDirPath);
-
-    AppLogConfig logConfig{
-        logDirPath.string(),
-        "AppLog",
-        ucf::utilities::kAllLogLevels,
-        180,
-        50 * 1024 * 1024
-    };
-
-    mApplicationConfig.appLogConfig = logConfig;
 }
 
 void ApplicationRunner::DataPrivate::createFrameworks()
@@ -257,7 +244,7 @@ ApplicationRunner::~ApplicationRunner()
             "ApplicationRunner owned dependencies released, stopping logger");
         RUNNER_LOG_INFO(
             "==================== Application run ended ====================");
-        UCF_LOG_STOP();
+        ucf::utilities::shutdownLogging();
     }
 }
 

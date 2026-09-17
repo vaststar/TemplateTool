@@ -2,8 +2,9 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <mutex>
 #include <stdexcept>
-#include <syncstream>
+#include <string>
 
 #if defined(_WIN32)
 #ifndef NOMINMAX
@@ -19,6 +20,8 @@
 
 namespace sablelog::detail {
 namespace {
+
+std::mutex consoleOutputMutex;
 
 [[nodiscard]] bool environmentAllowsColor() noexcept
 {
@@ -110,25 +113,20 @@ ConsoleOutput::~ConsoleOutput() = default;
 
 void ConsoleOutput::write(Level level, std::string_view renderedLine)
 {
-    std::osyncstream output{std::cerr};
-
     const auto color = mUseColor ? colorForLevel(level) : std::string_view{};
-    if (!color.empty())
-    {
-        output << color;
-    }
+    const auto resetColor = color.empty() ? std::string_view{} : std::string_view{"\x1b[0m"};
 
-    output << renderedLine;
+    std::string output;
+    output.reserve(color.size() + renderedLine.size() + resetColor.size() + 1U);
+    output.append(color);
+    output.append(renderedLine);
+    output.append(resetColor);
+    output.push_back('\n');
 
-    if (!color.empty())
-    {
-        output << "\x1b[0m";
-    }
+    const std::lock_guard lock{consoleOutputMutex};
+    std::cerr.write(output.data(), static_cast<std::streamsize>(output.size()));
 
-    output << '\n';
-    output.emit();
-
-    if (!output.good() || !std::cerr.good())
+    if (!std::cerr.good())
     {
         throw std::ios_base::failure{"SableLog console output failed"};
     }
@@ -136,11 +134,10 @@ void ConsoleOutput::write(Level level, std::string_view renderedLine)
 
 void ConsoleOutput::flush()
 {
-    std::osyncstream output{std::cerr};
-    output << std::flush;
-    output.emit();
+    const std::lock_guard lock{consoleOutputMutex};
+    std::cerr.flush();
 
-    if (!output.good() || !std::cerr.good())
+    if (!std::cerr.good())
     {
         throw std::ios_base::failure{"SableLog console flush failed"};
     }

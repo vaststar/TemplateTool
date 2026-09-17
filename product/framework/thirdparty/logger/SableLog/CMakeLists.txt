@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.24)
 
 project(SableLog VERSION 0.1.0 LANGUAGES CXX)
 
-option(SABLELOG_BUILD_SHARED "Build SableLog as a shared library" OFF)
-
 set(SABLELOG_BUILD_TESTS_DEFAULT ${PROJECT_IS_TOP_LEVEL})
 if(TARGET Catch2::Catch2WithMain)
     set(SABLELOG_BUILD_TESTS_DEFAULT ON)
@@ -36,13 +34,8 @@ set(SABLELOG_PRIVATE_SOURCES
 
 find_package(Threads REQUIRED)
 
-if(SABLELOG_BUILD_SHARED)
-    add_library(SableLog SHARED)
-    target_compile_definitions(SableLog PRIVATE SABLELOG_SHARED)
-else()
-    add_library(SableLog STATIC)
-    target_compile_definitions(SableLog PUBLIC SABLELOG_STATIC)
-endif()
+add_library(SableLog SHARED)
+target_compile_definitions(SableLog PRIVATE SABLELOG_SHARED)
 
 add_library(SableLog::SableLog ALIAS SableLog)
 
@@ -61,7 +54,8 @@ target_link_libraries(SableLog PRIVATE Threads::Threads)
 
 target_include_directories(SableLog
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
 
 set_target_properties(SableLog PROPERTIES
@@ -69,12 +63,22 @@ set_target_properties(SableLog PROPERTIES
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
     POSITION_INDEPENDENT_CODE ON
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-if(SABLELOG_BUILD_SHARED)
+if(APPLE)
     set_target_properties(SableLog PROPERTIES
-        VERSION ${PROJECT_VERSION}
-        SOVERSION ${PROJECT_VERSION_MAJOR}
+        INSTALL_NAME_DIR "@rpath"
+        INSTALL_RPATH "@loader_path;@executable_path"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH OFF
+    )
+elseif(UNIX)
+    set_target_properties(SableLog PROPERTIES
+        INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH OFF
     )
 endif()
 
@@ -98,6 +102,27 @@ source_group(
     FILES
         ${SABLELOG_PUBLIC_HEADERS}
         ${SABLELOG_PRIVATE_SOURCES}
+)
+
+if(UNIX)
+    set(SABLELOG_LIBRARY_INSTALL_DIR bin)
+else()
+    set(SABLELOG_LIBRARY_INSTALL_DIR lib)
+endif()
+
+install(TARGETS SableLog
+    EXPORT SableLogTargets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION ${SABLELOG_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION lib
+    FILE_SET HEADERS DESTINATION include
+    INCLUDES DESTINATION include
+)
+
+install(EXPORT SableLogTargets
+    FILE SableLogConfig.cmake
+    DESTINATION cmake/SableLog
+    NAMESPACE SableLog::
 )
 
 if(SABLELOG_BUILD_TESTS)

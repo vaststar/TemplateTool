@@ -7,15 +7,20 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES
     include/ucf/utilities/LoggerUtils/LoggerUtilsExport.h
+    include/ucf/utilities/LoggerUtils/Config.h
     include/ucf/utilities/LoggerUtils/LoggerExport.h
 )
 set(MODULE_SOURCE_PRIVATE
     src/LoggerExport.cpp
+    src/LoggerRegistry.h
+    src/LoggerRegistry.cpp
+    src/SableLogConfigAdapter.h
+    src/SableLogConfigAdapter.cpp
 )
 set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
-    MasterLog
+    SableLog::SableLog
 )
 
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR})

@@ -43,9 +43,26 @@ using PathStringView = std::basic_string_view<PathCharacter>;
     return text.str();
 }
 
-[[nodiscard]] std::chrono::sys_days toUtcDay(std::filesystem::file_time_type timestamp) noexcept
+template <typename Clock, typename Duration>
+[[nodiscard]] auto toSystemTime(std::chrono::time_point<Clock, Duration> timestamp)
 {
-    return std::chrono::floor<std::chrono::days>(std::chrono::file_clock::to_sys(timestamp));
+    if constexpr (requires { Clock::to_sys(timestamp); })
+    {
+        return Clock::to_sys(timestamp);
+    }
+    else
+    {
+        using UtcTimePoint = decltype(Clock::to_utc(timestamp));
+        using UtcClock = typename UtcTimePoint::clock;
+
+        const auto utcTimestamp = Clock::to_utc(timestamp);
+        return UtcClock::to_sys(utcTimestamp);
+    }
+}
+
+[[nodiscard]] std::chrono::sys_days toUtcDay(std::filesystem::file_time_type timestamp)
+{
+    return std::chrono::floor<std::chrono::days>(toSystemTime(timestamp));
 }
 
 [[nodiscard]] bool crossedCalendarBoundary(FileConfig::CalendarRotation rotation,
@@ -373,11 +390,13 @@ void FileOutput::removeExpiredArchives() noexcept
 
         using FileDuration = std::filesystem::file_time_type::duration;
         using Hours = std::chrono::hours;
+        using FloatingHours = std::chrono::duration<long double, Hours::period>;
 
         const auto retentionHours = static_cast<std::uint64_t>(mConfig.retentionDays) * 24U;
-        const auto maximumHours = std::chrono::duration_cast<Hours>(FileDuration::max()).count();
+        const auto maximumHours =
+            std::chrono::duration_cast<FloatingHours>(FileDuration::max()).count();
 
-        if (maximumHours <= 0 || retentionHours > static_cast<std::uint64_t>(maximumHours))
+        if (maximumHours <= 0.0L || static_cast<long double>(retentionHours) > maximumHours)
         {
             return;
         }
