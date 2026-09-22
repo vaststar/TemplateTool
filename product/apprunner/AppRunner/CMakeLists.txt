@@ -12,6 +12,7 @@ set(MODULE_IDE_FOLDER main)
 set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(MODULE_HEADER_FILES #for include and install header
+    include/AppRunner/ApplicationConfig.h
     include/AppRunner/AppRunner.h
     include/AppRunner/AppRunnerExport.h
 )
@@ -23,6 +24,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
+    InvocationServiceApi
     ServiceFactory
     CoreFrameworkImpl
     FilePathUtils

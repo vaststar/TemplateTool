@@ -1,5 +1,7 @@
 #include "InvocationService.h"
 
+#include <utility>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/services/InvocationService/InvocationServiceCreator.h>
 
@@ -12,7 +14,8 @@ namespace ucf::service::impl{
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-class InvocationService::DataPrivate{
+class InvocationService::DataPrivate
+{
 public:
     explicit DataPrivate(ucf::framework::ICoreFrameworkWPtr coreFramework);
     ucf::framework::ICoreFrameworkWPtr getCoreFramework() const;
@@ -95,28 +98,26 @@ std::string InvocationService::getServiceName() const
 
 void InvocationService::onServiceInitialized()
 {
-    SERVICE_LOG_DEBUG(
-        "CoreFramework service-initialized notification received");
+    SERVICE_LOG_DEBUG("CoreFramework service-initialized notification received");
 }
 
 void InvocationService::onCoreFrameworkExit()
 {
-    SERVICE_LOG_DEBUG(
-        "CoreFramework exit notification received");
+    SERVICE_LOG_DEBUG("CoreFramework exit notification received");
 }
 
-void InvocationService::processStartupParameters()
+void InvocationService::processStartupParameters(StartupContext context)
 {
     SERVICE_LOG_DEBUG("Startup parameter processing started");
 
-    mDataPrivate->getInvocationManager().processStartupParameters();
+    mDataPrivate->getInvocationManager().processStartupParameters(std::move(context));
 
     SERVICE_LOG_DEBUG("Startup parameter processing finished");
 }
 
-std::vector<std::string> InvocationService::getStartupParameters() const
+std::optional<StartupContext> InvocationService::getStartupContext() const
 {
-    return mDataPrivate->getInvocationManager().getStartupParameters();
+    return mDataPrivate->getInvocationManager().getStartupContext();
 }
 
 void InvocationService::processCommandMessage(const std::string& message)

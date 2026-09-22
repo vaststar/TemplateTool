@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include <ucf/utilities/NotificationHelper/NotificationHelper.h>
 
@@ -34,8 +35,8 @@ public:
     virtual void onCoreFrameworkExit() override;
 
     //IInvocationService
-    virtual void processStartupParameters() override;
-    virtual std::vector<std::string> getStartupParameters() const override;
+    virtual void processStartupParameters(StartupContext context) override;
+    [[nodiscard]] virtual std::optional<StartupContext> getStartupContext() const override;
     virtual void processCommandMessage(const std::string& message) override;
 protected:
     //IService

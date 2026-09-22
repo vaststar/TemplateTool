@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include <commonhead/utilities/VMNotificationHelper/VMNotificationHelper.h>
 #include <commonhead/viewmodels/InvocationViewModel/IInvocationViewModel.h>
@@ -22,8 +21,6 @@ public:
     ~InvocationViewModel() override;
 public:
     std::string getViewModelName() const override;
-    void processStartupParameters() override;
-    std::vector<std::string> getStartupParameters() const override;
     void processCommandMessage(const std::string& message) override;
 protected:
     void init() override;

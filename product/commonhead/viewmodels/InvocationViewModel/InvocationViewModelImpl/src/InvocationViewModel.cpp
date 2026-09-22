@@ -36,35 +36,6 @@ void InvocationViewModel::init()
 {
 }
 
-void InvocationViewModel::processStartupParameters()
-{
-    if (auto commonHeadFramework = getCommonHeadFramework().lock())
-    {
-        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
-        {
-            if (auto invocationService = serviceLocator->getInvocationService().lock())
-            {
-                invocationService->processStartupParameters();
-            }
-        }
-    }
-}
-
-std::vector<std::string> InvocationViewModel::getStartupParameters() const
-{
-    if (auto commonHeadFramework = getCommonHeadFramework().lock())
-    {
-        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
-        {
-            if (auto invocationService = serviceLocator->getInvocationService().lock())
-            {
-                return invocationService->getStartupParameters();
-            }
-        }
-    }
-    return {};
-}
-
 void InvocationViewModel::processCommandMessage(const std::string& message)
 {
     if (auto commonHeadFramework = getCommonHeadFramework().lock())

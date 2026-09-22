@@ -9,6 +9,7 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES
     include/ucf/services/InvocationService/IInvocationService.h
     include/ucf/services/InvocationService/IInvocationServiceCallback.h
+    include/ucf/services/InvocationService/StartupContext.h
 )
 set(MODULE_DEPENDENCIES_PUBLIC
     ServiceDeclaration

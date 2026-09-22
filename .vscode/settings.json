@@ -29,7 +29,7 @@
 
     // CMake
     "cmake.configureOnOpen": true,
-    "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitVendor}-${buildType}",
+    // "cmake.buildDirectory": "${workspaceFolder}/build/${buildKitVendor}-${buildType}",
 
     // 编辑器
     "editor.formatOnSave": false,

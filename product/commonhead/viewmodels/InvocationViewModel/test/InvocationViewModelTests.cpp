@@ -31,8 +31,6 @@ TEST_CASE("InvocationViewModel public API is safe without a framework", "[Invoca
 
     REQUIRE_NOTHROW(viewModel->registerCallback(callback));
     REQUIRE_NOTHROW(viewModel->initViewModel());
-    REQUIRE_NOTHROW(viewModel->processStartupParameters());
-    REQUIRE(viewModel->getStartupParameters().empty());
     REQUIRE_NOTHROW(viewModel->processCommandMessage("test-command"));
     REQUIRE_NOTHROW(viewModel->unRegisterCallback(callback));
 }

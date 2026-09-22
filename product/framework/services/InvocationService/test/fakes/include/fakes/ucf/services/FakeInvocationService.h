@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <trompeloeil.hpp>
 #include <ucf/services/InvocationService/IInvocationService.h>
 #include <ucf/utilities/NotificationHelper/NotificationHelper.h>
@@ -11,7 +13,7 @@ namespace ucf::service::fakes {
  *
  * Usage:
  *   auto fakeService = std::make_shared<FakeInvocationService>();
- *   ALLOW_CALL(*fakeService, getStartupParameters()).RETURN(std::vector<std::string>{});
+ *   ALLOW_CALL(*fakeService, getStartupContext()).RETURN(std::nullopt);
  */
 class FakeInvocationService
     : public IInvocationService
@@ -25,8 +27,8 @@ public:
     MAKE_CONST_MOCK0(getServiceName, std::string(), override);
 
     // IInvocationService
-    MAKE_MOCK0(processStartupParameters, void(), override);
-    MAKE_CONST_MOCK0(getStartupParameters, std::vector<std::string>(), override);
+    MAKE_MOCK1(processStartupParameters, void(StartupContext), override);
+    MAKE_CONST_MOCK0(getStartupContext, std::optional<StartupContext>(), override);
     MAKE_MOCK1(processCommandMessage, void(const std::string&), override);
 
 protected:

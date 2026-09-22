@@ -1,5 +1,5 @@
-#include <algorithm>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -9,6 +9,8 @@
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/CoreFramework/CoreFrameworkCreator.h>
+#include <ucf/services/InvocationService/IInvocationService.h>
+#include <ucf/services/InvocationService/StartupContext.h>
 #include <ucf/services/ServiceFactory/IServiceFactory.h>
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
@@ -17,6 +19,57 @@
 #include "LoggerDefine.h"
 namespace AppRunner
 {
+namespace {
+
+class StartupArgumentParser final
+{
+public:
+    [[nodiscard]] ApplicationConfig parse(const std::vector<std::string>& arguments) const
+    {
+        ApplicationConfig applicationConfig;
+        applicationConfig.startupConfig.commandLineArguments = arguments;
+        return applicationConfig;
+    }
+};
+
+[[nodiscard]] ucf::utilities::LogLevel toLoggerLevel(AppLogConfig::Level level)
+{
+    switch (level)
+    {
+    case AppLogConfig::Level::Debug:
+        return ucf::utilities::LogLevel::Debug;
+    case AppLogConfig::Level::Info:
+        return ucf::utilities::LogLevel::Info;
+    case AppLogConfig::Level::Warn:
+        return ucf::utilities::LogLevel::Warn;
+    case AppLogConfig::Level::Error:
+        return ucf::utilities::LogLevel::Error;
+    case AppLogConfig::Level::Fatal:
+        return ucf::utilities::LogLevel::Fatal;
+    case AppLogConfig::Level::Off:
+        return ucf::utilities::LogLevel::Off;
+    }
+
+    throw std::invalid_argument{"AppRunner log level is invalid"};
+}
+
+[[nodiscard]] ucf::utilities::FileOutputConfig::CalendarRotation toLoggerRotation(AppLogConfig::CalendarRotation rotation)
+{
+    switch (rotation)
+    {
+    case AppLogConfig::CalendarRotation::None:
+        return ucf::utilities::FileOutputConfig::CalendarRotation::None;
+    case AppLogConfig::CalendarRotation::Daily:
+        return ucf::utilities::FileOutputConfig::CalendarRotation::Daily;
+    case AppLogConfig::CalendarRotation::Monthly:
+        return ucf::utilities::FileOutputConfig::CalendarRotation::Monthly;
+    }
+
+    throw std::invalid_argument{"AppRunner log calendar rotation is invalid"};
+}
+
+} // namespace
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -31,15 +84,15 @@ public:
     const FrameworkDependencies& getDependencies() const;
     [[nodiscard]] bool isLoggerInitialized() const noexcept;
 private:
-    void parseCommandLines(const std::vector<std::string>& args);
+    void createApplicationConfig(const std::vector<std::string>& args);
     void createFrameworks();
     void initFrameworks();
-    void injectStartupParameters();
+    void processStartupParameters();
     void exitFrameworks();
     void initLogger();
 
 private:
-    std::vector<std::string> mCommandLineValues;
+    ApplicationConfig mApplicationConfig;
     FrameworkDependencies mFrameworkDependencies;
     std::shared_ptr<ucf::service::IServiceFactory> mServiceFactory;
     std::once_flag mCreate_flag;
@@ -50,35 +103,43 @@ private:
 
 void ApplicationRunner::DataPrivate::createApp(const std::vector<std::string>& args)
 {
-    std::call_once(mCreate_flag, [args, this](){
-        parseCommandLines(args);
+    std::call_once(mCreate_flag, [args, this]() {
+        createApplicationConfig(args);
         initLogger();
         createFrameworks();
     });
 }
+
+void ApplicationRunner::DataPrivate::createApplicationConfig(const std::vector<std::string>& args)
+{
+    mApplicationConfig = StartupArgumentParser{}.parse(args);
+}
+
 void ApplicationRunner::DataPrivate::initLogger()
 {
-#if defined(_DEBUG) || !defined(NDEBUG)
-    constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
-#else
-    constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
-#endif
-    constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
-    constexpr const char* APP_LOG_BASE_NAME = "AppLog";
+    auto& logConfig = mApplicationConfig.appLogConfig;
 
-    const auto logDirPath = ucf::utilities::FilePathUtils::joinPaths(
-        ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME,
-        APP_LOG_FOLDER_NAME);
-    ucf::utilities::FilePathUtils::EnsureDirectoryExists(logDirPath);
+    if (logConfig.directory.empty())
+    {
+#if defined(_DEBUG) || !defined(NDEBUG)
+        constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
+#else
+        constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
+#endif
+        constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
+
+        logConfig.directory = ucf::utilities::FilePathUtils::joinPaths(
+            ucf::utilities::SystemUtils::getBaseStorageDir(), APP_INTERNAL_NAME, APP_LOG_FOLDER_NAME);
+    }
+    ucf::utilities::FilePathUtils::EnsureDirectoryExists(logConfig.directory);
 
     ucf::utilities::FileOutputConfig fileOutput;
-    fileOutput.minimumLevel = ucf::utilities::LogLevel::Debug;
-    fileOutput.directory = logDirPath;
-    fileOutput.baseName = APP_LOG_BASE_NAME;
-    fileOutput.maxFileBytes = 50ULL * 1024ULL * 1024ULL;
-    fileOutput.retentionDays = 180;
-    fileOutput.calendarRotation = ucf::utilities::FileOutputConfig::CalendarRotation::Daily;
+    fileOutput.minimumLevel = toLoggerLevel(logConfig.minimumLevel);
+    fileOutput.directory = logConfig.directory;
+    fileOutput.baseName = logConfig.baseName;
+    fileOutput.maxFileBytes = logConfig.maxFileBytes;
+    fileOutput.retentionDays = logConfig.retentionDays;
+    fileOutput.calendarRotation = toLoggerRotation(logConfig.calendarRotation);
 
     ucf::utilities::LoggerConfig appLogger;
     appLogger.loggerName = ucf::utilities::kAppLoggerName;
@@ -86,7 +147,7 @@ void ApplicationRunner::DataPrivate::initLogger()
 
 #if defined(_DEBUG)
     ucf::utilities::ConsoleOutputConfig consoleOutput;
-    consoleOutput.minimumLevel = ucf::utilities::LogLevel::Debug;
+    consoleOutput.minimumLevel = toLoggerLevel(logConfig.minimumLevel);
     consoleOutput.colorMode = ucf::utilities::ConsoleOutputConfig::ColorMode::Automatic;
     appLogger.consoleOutput = consoleOutput;
 #endif
@@ -96,13 +157,10 @@ void ApplicationRunner::DataPrivate::initLogger()
     ucf::utilities::initializeLogging(std::move(loggingConfig));
 
     mLoggerInitialized = true;
-    RUNNER_LOG_INFO(
-        "==================== Application run started ====================");
-    RUNNER_LOG_INFO(
-        "Logger initialized, directory: "
-        << ucf::utilities::FilePathUtils::utf8FromPath(logDirPath)
-        << ", baseFileName: "
-        << APP_LOG_BASE_NAME);
+    RUNNER_LOG_INFO("==================== Application run started ====================");
+    RUNNER_LOG_INFO("Logger initialized, directory: "
+        << ucf::utilities::FilePathUtils::utf8FromPath(logConfig.directory)
+        << ", baseFileName: " << ucf::utilities::FilePathUtils::utf8FromPath(logConfig.baseName));
 }
 
 bool ApplicationRunner::DataPrivate::isLoggerInitialized() const noexcept
@@ -116,7 +174,7 @@ void ApplicationRunner::DataPrivate::initApp()
         RUNNER_LOG_INFO("Framework initialization started");
 
         initFrameworks();
-        injectStartupParameters();
+        processStartupParameters();
 
         RUNNER_LOG_INFO("Framework initialization finished");
     });
@@ -130,21 +188,6 @@ void ApplicationRunner::DataPrivate::exitApp()
         exitFrameworks();
 
         RUNNER_LOG_INFO("Framework shutdown finished");
-    });
-}
-
-void ApplicationRunner::DataPrivate::parseCommandLines(const std::vector<std::string>& args)
-{
-    if (args.empty())
-    {
-        return;
-    }
-
-    std::for_each(args.cbegin(), args.cend(), [this](const std::string& arg){
-        if (!arg.empty())
-        {
-            mCommandLineValues.push_back(arg);
-        }
     });
 }
 
@@ -175,16 +218,27 @@ void ApplicationRunner::DataPrivate::initFrameworks()
     }
 }
 
-void ApplicationRunner::DataPrivate::injectStartupParameters()
+void ApplicationRunner::DataPrivate::processStartupParameters()
 {
-    if (!mCommandLineValues.empty())
+    auto coreFramework = mFrameworkDependencies.coreFramework;
+    if (!coreFramework)
     {
-        RUNNER_LOG_DEBUG("Will set command line args, size: " << mCommandLineValues.size());
-        if (auto coreFramework = mFrameworkDependencies.coreFramework)
-        {
-            coreFramework->setStartupParameters(mCommandLineValues);
-        }
+        RUNNER_LOG_ERROR("Cannot process startup parameters: CoreFramework is unavailable");
+        return;
     }
+
+    auto invocationService = coreFramework->getService<ucf::service::IInvocationService>().lock();
+    if (!invocationService)
+    {
+        RUNNER_LOG_ERROR("Cannot process startup parameters: InvocationService is unavailable");
+        return;
+    }
+
+    ucf::service::StartupContext startupContext;
+    startupContext.commandLineArguments = mApplicationConfig.startupConfig.commandLineArguments;
+
+    RUNNER_LOG_DEBUG("Will process startup parameters, size: " << startupContext.commandLineArguments.size());
+    invocationService->processStartupParameters(std::move(startupContext));
 }
 
 void ApplicationRunner::DataPrivate::exitFrameworks()
@@ -225,13 +279,11 @@ ApplicationRunner::ApplicationRunner()
 
 ApplicationRunner::~ApplicationRunner()
 {
-    const bool loggerInitialized =
-        mDataPrivate && mDataPrivate->isLoggerInitialized();
+    const bool loggerInitialized = mDataPrivate && mDataPrivate->isLoggerInitialized();
 
     if (loggerInitialized)
     {
-        RUNNER_LOG_INFO(
-            "ApplicationRunner is releasing owned dependencies before logger shutdown");
+        RUNNER_LOG_INFO("ApplicationRunner is releasing owned dependencies before logger shutdown");
     }
 
     // Destroy frameworks and services while the logger is still available so
@@ -240,10 +292,8 @@ ApplicationRunner::~ApplicationRunner()
 
     if (loggerInitialized)
     {
-        RUNNER_LOG_INFO(
-            "ApplicationRunner owned dependencies released, stopping logger");
-        RUNNER_LOG_INFO(
-            "==================== Application run ended ====================");
+        RUNNER_LOG_INFO("ApplicationRunner owned dependencies released, stopping logger");
+        RUNNER_LOG_INFO("==================== Application run ended ====================");
         ucf::utilities::shutdownLogging();
     }
 }

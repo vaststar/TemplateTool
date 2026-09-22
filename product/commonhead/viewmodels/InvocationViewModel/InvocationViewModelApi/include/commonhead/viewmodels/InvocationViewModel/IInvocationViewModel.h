@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 #include <commonhead/utilities/VMNotificationHelper/IVMNotificationHelper.h>
 #include <commonhead/viewmodels/ViewModelCore/IViewModel.h>
@@ -29,8 +28,6 @@ public:
     IInvocationViewModel& operator=(IInvocationViewModel&&) = delete;
     virtual ~IInvocationViewModel() = default;
 public:
-    virtual void processStartupParameters() = 0;
-    [[nodiscard]] virtual std::vector<std::string> getStartupParameters() const = 0;
     virtual void processCommandMessage(const std::string& message) = 0;
 };
 

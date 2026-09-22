@@ -1,5 +1,7 @@
 #include "LoggerBackend.h"
 
+#include "FunctionName.h"
+
 #include <chrono>
 #include <ctime>
 #include <iomanip>
@@ -114,7 +116,7 @@ void LoggerBackend::enqueue(Level level, std::string_view category, std::string_
             .category = std::string{category},
             .message = std::string{message},
             .fileName = std::string{location.file_name()},
-            .functionName = std::string{location.function_name()},
+            .functionName = compactFunctionName(location.function_name()),
             .line = location.line(),
             .column = location.column(),
         };
@@ -301,10 +303,15 @@ std::string LoggerBackend::render(const LogRecord& record) const
            << " [" << levelName(record.level) << ']'
            << " [" << record.threadId << ']'
            << " [" << mName << ']'
-           << " [" << record.category << "] "
-           << record.message
-           << " (" << baseFileName(record.fileName) << ':' << record.line
-           << ' ' << record.functionName << ')';
+           << " [" << record.category << ']'
+           << " [" << baseFileName(record.fileName) << ':' << record.line;
+
+    if (!record.functionName.empty())
+    {
+        stream << ' ' << record.functionName;
+    }
+
+    stream << "] " << record.message;
     return stream.str();
 }
 

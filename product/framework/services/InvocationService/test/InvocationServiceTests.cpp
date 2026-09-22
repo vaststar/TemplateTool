@@ -13,3 +13,31 @@ TEST_CASE("InvocationService can be created through its public creator", "[Invoc
     REQUIRE(service != nullptr);
     REQUIRE(service->getServiceName() == "InvocationService");
 }
+
+TEST_CASE("InvocationService stores startup context once", "[InvocationService]")
+{
+    auto fakeCoreFramework = std::make_shared<ucf::framework::fakes::FakeCoreFramework>();
+    auto service = ucf::service::impl::createInvocationService(fakeCoreFramework);
+
+    REQUIRE_FALSE(service->getStartupContext().has_value());
+
+    SECTION("empty startup context is stored")
+    {
+        service->processStartupParameters({});
+
+        const auto storedContext = service->getStartupContext();
+        REQUIRE(storedContext.has_value());
+        REQUIRE(storedContext->commandLineArguments.empty());
+    }
+
+    SECTION("the first startup context is preserved")
+    {
+        const ucf::service::StartupContext firstContext{{"--first", "first-value"}};
+        service->processStartupParameters(firstContext);
+        service->processStartupParameters({{"--second", "second-value"}});
+
+        const auto storedContext = service->getStartupContext();
+        REQUIRE(storedContext.has_value());
+        REQUIRE(storedContext->commandLineArguments == firstContext.commandLineArguments);
+    }
+}

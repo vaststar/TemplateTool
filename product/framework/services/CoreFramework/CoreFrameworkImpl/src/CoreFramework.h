@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include <ucf/CoreFramework/CoreFrameworkImplExport.h>
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -28,8 +27,6 @@ public:
     virtual void initCoreFramework() override;
     virtual void initServices() override;
     virtual void exitCoreFramework() override;
-    virtual void setStartupParameters(const std::vector<std::string>& args) override;
-    virtual std::vector<std::string> getStartupParameters() const override;
 private:
     // Tears down services in the exact reverse of initialization order.
     void deinitServices();

@@ -1,5 +1,7 @@
 #include "InvocationManager.h"
 
+#include <utility>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 
 #include "InvocationServiceLogger.h"
@@ -21,19 +23,28 @@ InvocationManager::~InvocationManager()
     SERVICE_LOG_DEBUG("InvocationManager destroying, address: " << this);
 }
 
-void InvocationManager::processStartupParameters()
+void InvocationManager::processStartupParameters(StartupContext context)
 {
-    auto params = getStartupParameters();
-    SERVICE_LOG_DEBUG("Processing startup parameters, count: " << params.size());
+    const auto parameterCount = context.commandLineArguments.size();
+
+    {
+        std::scoped_lock lock(mStartupContextMutex);
+        if (mStartupContext.has_value())
+        {
+            SERVICE_LOG_WARN("Startup parameter processing skipped: context was already supplied");
+            return;
+        }
+
+        mStartupContext.emplace(std::move(context));
+    }
+
+    SERVICE_LOG_DEBUG("Startup parameters stored, count: " << parameterCount);
 }
 
-std::vector<std::string> InvocationManager::getStartupParameters() const
+std::optional<StartupContext> InvocationManager::getStartupContext() const
 {
-    if (auto coreFramework = mCoreFrameworkWPtr.lock())
-    {
-        return coreFramework->getStartupParameters();
-    }
-    return {};
+    std::scoped_lock lock(mStartupContextMutex);
+    return mStartupContext;
 }
 
 void InvocationManager::processCommandMessage(const std::string& message)

@@ -2,7 +2,6 @@
 
 #include <string>
 #include <memory>
-#include <vector>
 
 #include <ucf/CoreFramework/IServiceAccessor.h>
 #include <ucf/CoreFramework/ICoreFrameworkCallback.h>
@@ -27,12 +26,6 @@ public:
     virtual void initCoreFramework() = 0;
     virtual void initServices() = 0;
     virtual void exitCoreFramework() = 0;
-
-    // Startup parameters (e.g. command line args) captured by the application entry
-    // point before services exist. Stored here as bootstrap context so services can
-    // read them on demand. Set once during startup; reads are thread-safe.
-    virtual void setStartupParameters(const std::vector<std::string>& args) = 0;
-    [[nodiscard]] virtual std::vector<std::string> getStartupParameters() const = 0;
 };
 
 using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;

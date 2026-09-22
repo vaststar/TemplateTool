@@ -1,4 +1,5 @@
 #pragma once
+#include "AppRunner/ApplicationConfig.h"
 #include "AppRunner/AppRunnerExport.h"
 #include <memory>
 
