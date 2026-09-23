@@ -27,6 +27,7 @@ struct ConsoleOutputConfig final
         Never,
     };
 
+    // LogLevel::Off disables this output.
     LogLevel minimumLevel{LogLevel::Info};
     ColorMode colorMode{ColorMode::Automatic};
 };
@@ -40,10 +41,13 @@ struct FileOutputConfig final
         Monthly,
     };
 
+    // LogLevel::Off disables this output; no file operations are performed.
     LogLevel minimumLevel{LogLevel::Info};
+    // The caller must ensure that this active path has only one Runtime/process writer.
     std::filesystem::path directory;
     std::filesystem::path baseName{"application"};
     std::uint64_t maxFileBytes{20U * 1024U * 1024U};
+    // Zero disables archive retention cleanup.
     std::uint32_t retentionDays{180U};
     CalendarRotation calendarRotation{CalendarRotation::Daily};
 };

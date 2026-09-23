@@ -107,6 +107,7 @@ LogOperationResult LogOperationUtils::packLogs(
     result.archivePath = fullArchivePath.string();
     
     LOG_OPERATION_UTILS_LOG_DEBUG("Packing logs from: " << logDirectoryPath << " to: " << result.archivePath);
+    ucf::utilities::flushLogging();
     
     // Create archive
     ucf::utilities::ArchiveWrapper archiveWrapper;

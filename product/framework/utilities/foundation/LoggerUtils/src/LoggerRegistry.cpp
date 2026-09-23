@@ -245,6 +245,22 @@ void write(std::string_view loggerName, std::string_view category, LogLevel leve
     }
 }
 
+void flush() noexcept
+{
+    try
+    {
+        const auto session = activeSession();
+        if (session && session->runtime)
+        {
+            session->runtime->flush();
+        }
+    }
+    catch (...)
+    {
+        // Flushing is best-effort and must not affect business execution.
+    }
+}
+
 void shutdown() noexcept
 {
     shutdownImpl();

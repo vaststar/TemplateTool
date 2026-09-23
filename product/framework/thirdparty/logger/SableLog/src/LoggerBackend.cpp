@@ -92,6 +92,12 @@ namespace {
 LoggerBackend::LoggerBackend(const LoggerConfig& config)
     : mName(config.loggerName), mOutputs(OutputFactory::create(config))
 {
+    if (mOutputs.empty())
+    {
+        mState = State::Stopped;
+        return;
+    }
+
     mWorker = std::thread{&LoggerBackend::run, this};
 }
 

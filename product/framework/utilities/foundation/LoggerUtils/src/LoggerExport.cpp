@@ -11,6 +11,11 @@ void initializeLogging(LoggingConfig config)
     detail::logger_registry::initialize(std::move(config));
 }
 
+void flushLogging() noexcept
+{
+    detail::logger_registry::flush();
+}
+
 void shutdownLogging() noexcept
 {
     detail::logger_registry::shutdown();

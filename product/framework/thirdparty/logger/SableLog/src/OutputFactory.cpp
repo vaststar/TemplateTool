@@ -1,5 +1,6 @@
 #include "OutputFactory.h"
 
+#include "FileArchiveName.h"
 #include "outputimpl/ConsoleOutput.h"
 #include "outputimpl/FileOutput.h"
 
@@ -104,8 +105,15 @@ void validateCalendarRotation(FileConfig::CalendarRotation rotation)
     return path.lexically_normal();
 }
 
-[[nodiscard]] bool sameActivePath(const std::filesystem::path& left,
-                                  const std::filesystem::path& right)
+struct FileTarget final
+{
+    std::filesystem::path directory;
+    std::filesystem::path baseName;
+    std::filesystem::path activePath;
+};
+
+[[nodiscard]] bool samePath(
+    const std::filesystem::path& left, const std::filesystem::path& right)
 {
     std::error_code error;
     if (std::filesystem::equivalent(left, right, error))
@@ -116,11 +124,23 @@ void validateCalendarRotation(FileConfig::CalendarRotation rotation)
     return left == right;
 }
 
+[[nodiscard]] bool overlapsArchiveNamespace(
+    const FileTarget& left, const FileTarget& right)
+{
+    if (!samePath(left.directory, right.directory))
+    {
+        return false;
+    }
+
+    return FileArchiveName::matches(left.activePath.filename(), right.baseName) ||
+           FileArchiveName::matches(right.activePath.filename(), left.baseName);
+}
+
 } // namespace
 
 void OutputFactory::normalizeAndValidate(RuntimeConfig& config)
 {
-    std::vector<std::filesystem::path> activePaths;
+    std::vector<FileTarget> fileTargets;
 
     for (auto& logger : config.loggers)
     {
@@ -150,18 +170,36 @@ void OutputFactory::normalizeAndValidate(RuntimeConfig& config)
             }
 
             file.directory = normalizeDirectory(file.directory);
-            auto candidate = activePath(file);
 
-            for (const auto& existing : activePaths)
+            // Disabled outputs do not create, rotate or remove files and therefore
+            // do not participate in active-path conflict detection.
+            if (file.minimumLevel == Level::Off)
             {
-                if (sameActivePath(existing, candidate))
+                continue;
+            }
+
+            FileTarget candidate{
+                .directory = file.directory,
+                .baseName = file.baseName,
+                .activePath = activePath(file),
+            };
+
+            for (const auto& existing : fileTargets)
+            {
+                if (samePath(existing.activePath, candidate.activePath))
                 {
                     throw std::invalid_argument{
                         "SableLog active log file is configured more than once"};
                 }
+
+                if (overlapsArchiveNamespace(existing, candidate))
+                {
+                    throw std::invalid_argument{
+                        "SableLog active log file overlaps another output's archive namespace"};
+                }
             }
 
-            activePaths.emplace_back(std::move(candidate));
+            fileTargets.emplace_back(std::move(candidate));
         }
     }
 }
@@ -174,25 +212,29 @@ std::vector<OutputEntry> OutputFactory::create(const LoggerConfig& config)
     if (config.console.has_value())
     {
         validateMinimumLevel(config.console->minimumLevel);
-        outputs.emplace_back(OutputEntry{
-            .minimumLevel = config.console->minimumLevel,
-            .output = std::make_unique<ConsoleOutput>(*config.console),
-        });
+        if (config.console->minimumLevel != Level::Off)
+        {
+            outputs.emplace_back(OutputEntry{
+                .minimumLevel = config.console->minimumLevel,
+                .output = std::make_unique<ConsoleOutput>(*config.console),
+            });
+        }
     }
 
     for (const auto& file : config.files)
     {
         validateMinimumLevel(file.minimumLevel);
         validateCalendarRotation(file.calendarRotation);
+
+        if (file.minimumLevel == Level::Off)
+        {
+            continue;
+        }
+
         outputs.emplace_back(OutputEntry{
             .minimumLevel = file.minimumLevel,
             .output = std::make_unique<FileOutput>(file),
         });
-    }
-
-    if (outputs.empty())
-    {
-        throw std::invalid_argument{"SableLog logger requires at least one output"};
     }
 
     return outputs;

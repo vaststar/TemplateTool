@@ -145,7 +145,7 @@ void ApplicationRunner::DataPrivate::initLogger()
     appLogger.loggerName = ucf::utilities::kAppLoggerName;
     appLogger.fileOutputs.emplace_back(std::move(fileOutput));
 
-#if defined(_DEBUG)
+#if defined(_DEBUG) || !defined(NDEBUG)
     ucf::utilities::ConsoleOutputConfig consoleOutput;
     consoleOutput.minimumLevel = toLoggerLevel(logConfig.minimumLevel);
     consoleOutput.colorMode = ucf::utilities::ConsoleOutputConfig::ColorMode::Automatic;

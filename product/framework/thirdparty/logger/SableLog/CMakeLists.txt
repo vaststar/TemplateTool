@@ -18,6 +18,8 @@ set(SABLELOG_PUBLIC_HEADERS
 )
 
 set(SABLELOG_PRIVATE_SOURCES
+    src/FileArchiveName.cpp
+    src/FileArchiveName.h
     src/FunctionName.cpp
     src/FunctionName.h
     src/Logger.cpp

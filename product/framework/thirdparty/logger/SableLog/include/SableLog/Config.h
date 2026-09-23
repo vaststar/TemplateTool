@@ -32,6 +32,7 @@ struct ConsoleConfig final
         Never,
     };
 
+    // Level::Off disables this output; no output object is created.
     Level minimumLevel{Level::Info};
     ColorMode colorMode{ColorMode::Automatic};
 };
@@ -45,12 +46,15 @@ struct FileConfig final
         Monthly,
     };
 
+    // Level::Off disables this output; it does not create, rotate or remove files.
     Level minimumLevel{Level::Info};
+    // The caller must ensure that this active path has only one Runtime/process writer.
     std::filesystem::path directory;
     // A filename stem, not a path. The active file is <baseName>.log; rotated files are
     // <baseName>.YYYYMMDD.<sequence>.log, using the last successful UTC write date.
     std::filesystem::path baseName{"application"};
     std::uint64_t maxFileBytes{20U * 1024U * 1024U};
+    // Zero disables archive retention cleanup.
     std::uint32_t retentionDays{180U};
     CalendarRotation calendarRotation{CalendarRotation::Daily};
 };
