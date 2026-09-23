@@ -47,7 +47,8 @@ private:
     struct LogRecord final
     {
         std::chrono::system_clock::time_point timestamp;
-        std::thread::id threadId;
+        std::uint64_t processId;
+        std::uint64_t threadId;
         Level level;
         std::string category;
         std::string message;

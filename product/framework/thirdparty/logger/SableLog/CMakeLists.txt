@@ -27,6 +27,8 @@ set(SABLELOG_PRIVATE_SOURCES
     src/Output.h
     src/OutputFactory.cpp
     src/OutputFactory.h
+    src/ProcessThreadId.cpp
+    src/ProcessThreadId.h
     src/Runtime.cpp
     src/outputimpl/ConsoleOutput.cpp
     src/outputimpl/ConsoleOutput.h

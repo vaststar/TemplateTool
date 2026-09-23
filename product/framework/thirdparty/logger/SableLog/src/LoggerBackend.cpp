@@ -1,6 +1,7 @@
 #include "LoggerBackend.h"
 
 #include "FunctionName.h"
+#include "ProcessThreadId.h"
 
 #include <chrono>
 #include <ctime>
@@ -109,9 +110,12 @@ void LoggerBackend::enqueue(Level level, std::string_view category, std::string_
 
     try
     {
+        const auto processThreadId = currentProcessThreadId();
+
         LogRecord record{
             .timestamp = std::chrono::system_clock::now(),
-            .threadId = std::this_thread::get_id(),
+            .processId = processThreadId.processId,
+            .threadId = processThreadId.threadId,
             .level = level,
             .category = std::string{category},
             .message = std::string{message},
@@ -301,7 +305,7 @@ std::string LoggerBackend::render(const LogRecord& record) const
     std::ostringstream stream;
     stream << formatUtcTimestamp(record.timestamp)
            << " [" << levelName(record.level) << ']'
-           << " [" << record.threadId << ']'
+           << " [" << record.processId << ":0x" << std::hex << record.threadId << std::dec << ']'
            << " [" << mName << ']'
            << " [" << record.category << ']'
            << " [" << baseFileName(record.fileName) << ':' << record.line;
