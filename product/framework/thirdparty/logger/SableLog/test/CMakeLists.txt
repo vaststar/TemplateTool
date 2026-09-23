@@ -9,11 +9,40 @@ set_target_properties(SableLogTests PROPERTIES CXX_EXTENSIONS OFF)
 
 target_link_libraries(SableLogTests
     PRIVATE
-        Catch2::Catch2WithMain
         SableLog::SableLog
 )
 
-include(Catch)
-catch_discover_tests(SableLogTests)
+add_test(
+    NAME SableLog.PublicApi.FinalTextMethods
+    COMMAND $<TARGET_FILE:SableLogTests> logger-final-text-api
+)
+
+add_test(
+    NAME SableLog.PublicApi.ExplicitOutputConfiguration
+    COMMAND $<TARGET_FILE:SableLogTests> console-output-configuration
+)
+
+add_test(
+    NAME SableLog.Config.RejectsInvalidCalendarRotation
+    COMMAND $<TARGET_FILE:SableLogTests> invalid-calendar-rotation
+)
+
+set_tests_properties(
+    SableLog.PublicApi.FinalTextMethods
+    SableLog.PublicApi.ExplicitOutputConfiguration
+    SableLog.Config.RejectsInvalidCalendarRotation
+    PROPERTIES LABELS SableLog
+)
+
+if(WIN32)
+    set_tests_properties(
+        SableLog.PublicApi.FinalTextMethods
+        SableLog.PublicApi.ExplicitOutputConfiguration
+        SableLog.Config.RejectsInvalidCalendarRotation
+        PROPERTIES
+            ENVIRONMENT_MODIFICATION
+                "PATH=path_list_prepend:$<TARGET_FILE_DIR:SableLog>"
+    )
+endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SABLELOG_TEST_SOURCES})

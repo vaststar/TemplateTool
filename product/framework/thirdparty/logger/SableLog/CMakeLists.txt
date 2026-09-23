@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.24)
 project(SableLog VERSION 0.1.0 LANGUAGES CXX)
 
 set(SABLELOG_BUILD_TESTS_DEFAULT ${PROJECT_IS_TOP_LEVEL})
-if(TARGET Catch2::Catch2WithMain)
-    set(SABLELOG_BUILD_TESTS_DEFAULT ON)
+if(DEFINED BUILD_TESTING)
+    set(SABLELOG_BUILD_TESTS_DEFAULT ${BUILD_TESTING})
 endif()
 option(SABLELOG_BUILD_TESTS "Build SableLog tests" ${SABLELOG_BUILD_TESTS_DEFAULT})
 unset(SABLELOG_BUILD_TESTS_DEFAULT)
@@ -130,10 +130,6 @@ install(EXPORT SableLogTargets
 )
 
 if(SABLELOG_BUILD_TESTS)
-    if(NOT TARGET Catch2::Catch2WithMain)
-        find_package(Catch2 3 CONFIG REQUIRED)
-    endif()
-
     enable_testing()
     add_subdirectory(test)
 endif()

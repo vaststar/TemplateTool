@@ -25,7 +25,7 @@ else()
     message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 endif()
 
-# 启用 CTest 支持
-enable_testing()
+# 启用 CTest 支持并提供 BUILD_TESTING 开关
+include(CTest)
 
 add_subdirectory(product)
