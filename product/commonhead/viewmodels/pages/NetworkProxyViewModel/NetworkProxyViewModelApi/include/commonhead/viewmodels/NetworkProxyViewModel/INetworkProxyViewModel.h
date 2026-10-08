@@ -41,6 +41,11 @@ public:
     virtual void onRequestIntercepted(const std::string& flowId,
                                       const std::string& detailJson) = 0;
 
+    /// An intercepted request finished waiting; reason comes from the addon.
+    /// Defaults to no action for subscribers that do not track interceptions.
+    virtual void onInterceptFinished(const std::string& /*flowId*/,
+                                     const std::string& /*reason*/) {}
+
     /// Human-readable status message for the UI.
     virtual void onStatusMessage(const std::string& message) = 0;
 

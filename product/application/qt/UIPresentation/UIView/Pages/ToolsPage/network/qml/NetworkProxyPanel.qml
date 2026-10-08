@@ -10,20 +10,6 @@ Item {
     id: proxyPanel
     property NetworkProxyController controller: NetworkProxyController {}
 
-    // ── Intercepted (paused) flows model (shared by Capture + Rules tabs) ──
-    ListModel { id: interceptedFlowsModel }
-
-    Connections {
-        target: controller
-        function onInterceptedRequest(flowId, detail) {
-            interceptedFlowsModel.append({
-                flowId: flowId,
-                method: detail["method"] || "",
-                url: detail["url"] || ""
-            })
-        }
-    }
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
@@ -59,11 +45,11 @@ Item {
             Item { Layout.fillWidth: true }
 
             UTText {
-                text: qsTr("%1 requests").arg(controller.requestCount)
+                text: qsTr("%1 retained requests").arg(controller.requestCount)
                 fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text
             }
             UTButton { text: qsTr("Clear"); onClicked: controller.clearRequests() }
-            UTButton { text: qsTr("Export"); enabled: controller.requestCount > 0; onClicked: exportDialog.open() }
+            UTButton { text: qsTr("Export Retained"); enabled: controller.requestCount > 0; onClicked: exportDialog.open() }
         }
 
         // Status message
@@ -90,14 +76,12 @@ Item {
 
             NetworkCaptureTab {
                 controller: proxyPanel.controller
-                interceptedFlowsModel: interceptedFlowsModel
                 onGoToBreakpoints: { mainTabBar.currentIndex = 1; rulesTab.currentRuleSection = 1 }
             }
 
             NetworkRulesTab {
                 id: rulesTab
                 controller: proxyPanel.controller
-                interceptedFlowsModel: interceptedFlowsModel
                 onTestPattern: function(pattern) { patternTestDialog.openWithPattern(pattern) }
                 onShowMockDetail: function(data) { mockDetailDialog.openWithRule(data) }
             }
@@ -126,7 +110,7 @@ Item {
     }
 
     FileDialog {
-        id: exportDialog; title: qsTr("Export Requests"); fileMode: FileDialog.SaveFile
+        id: exportDialog; title: qsTr("Export Retained Requests"); fileMode: FileDialog.SaveFile
         nameFilters: ["JSON files (*.json)"]; onAccepted: controller.exportRequests(selectedFile)
     }
 }

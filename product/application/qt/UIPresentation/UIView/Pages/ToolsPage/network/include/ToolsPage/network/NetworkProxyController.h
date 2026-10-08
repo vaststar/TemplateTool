@@ -7,6 +7,7 @@
 #include <memory>
 #include <UIViewCore/UIViewController.h>
 #include "ToolsPage/network/ProxyRequestModel.h"
+#include "ToolsPage/network/ProxyInterceptModel.h"
 #include "ToolsPage/network/ProxyRulesManager.h"
 
 namespace commonHead::viewModels {
@@ -50,6 +51,9 @@ class NetworkProxyController : public UIViewController
 
     // --------------- Current request detail ---------------
     Q_PROPERTY(int     selectedIndex      READ getSelectedIndex WRITE setSelectedIndex NOTIFY selectedIndexChanged)
+    Q_PROPERTY(QString selectedFlowId     READ getSelectedFlowId NOTIFY selectedIndexChanged)
+    Q_PROPERTY(bool    selectedCaptureTruncated READ isSelectedCaptureTruncated NOTIFY detailTextChanged)
+    Q_PROPERTY(QString selectedRewriteSummary READ getSelectedRewriteSummary NOTIFY detailTextChanged)
     Q_PROPERTY(int     detailTab          READ getDetailTab     WRITE setDetailTab     NOTIFY detailTabChanged)
     Q_PROPERTY(QString detailText         READ getDetailText    NOTIFY detailTextChanged)
     Q_PROPERTY(int     requestTabIndex    READ getRequestTabIndex  WRITE setRequestTabIndex  NOTIFY requestTabIndexChanged)
@@ -59,6 +63,8 @@ class NetworkProxyController : public UIViewController
 
     // --------------- Model ---------------
     Q_PROPERTY(ProxyRequestModel* requestModel READ getRequestModel CONSTANT)
+    Q_PROPERTY(ProxyInterceptModel* interceptedModel READ getInterceptedModel CONSTANT)
+    Q_PROPERTY(int interceptedCount READ getInterceptedCount NOTIFY interceptedCountChanged)
 
     // --------------- Delegated managers ---------------
     Q_PROPERTY(ProxyRulesManager* rulesManager READ getRulesManager CONSTANT)
@@ -87,6 +93,9 @@ public:
     QString getFilterStatusCode() const;
     QString getFilterContentType() const;
     int     getSelectedIndex() const;
+    QString getSelectedFlowId() const;
+    bool    isSelectedCaptureTruncated() const;
+    QString getSelectedRewriteSummary() const;
     int     getDetailTab()     const;
     int     getRequestTabIndex() const;
     int     getResponseTabIndex() const;
@@ -94,6 +103,8 @@ public:
     QString getRequestDetailText() const;
     QString getResponseDetailText() const;
     ProxyRequestModel* getRequestModel() const;
+    ProxyInterceptModel* getInterceptedModel() const;
+    int getInterceptedCount() const;
     ProxyRulesManager* getRulesManager() const;
     bool    isCACertInstalled() const;
     bool    isCertInstalling()  const;
@@ -123,6 +134,8 @@ public:
     // Intercept actions (for breakpointed requests)
     Q_INVOKABLE void resumeRequest(const QString& flowId);
     Q_INVOKABLE void dropRequest(const QString& flowId);
+    Q_INVOKABLE void resumeAllRequests();
+    Q_INVOKABLE void dropAllRequests();
 
     // Copy helpers
     Q_INVOKABLE void copyRequestUrl();
@@ -154,9 +167,9 @@ signals:
     void detailTextChanged();
     void statusMessageChanged();
     void requestCountChanged();
+    void interceptedCountChanged();
     void caCertInstalledChanged();
     void certInstallingChanged();
-    void interceptedRequest(const QString& flowId, const QJsonObject& detail);
 
 private:
     // ── ViewModel emitter slots ──
@@ -164,13 +177,17 @@ private:
     void onAddonConnectionChanged(bool connected);
     void onRequestCaptured(const QString& flowId, const QString& rawJson);
     void onResponseCaptured(const QString& flowId, const QString& rawJson);
-    void onRequestIntercepted(const QString& flowId, const QString& detailJson);
+    void onRequestIntercepted(const QString& flowId, const QString& detailJson, quint64 generation);
+    void onInterceptFinished(const QString& flowId, const QString& reason, quint64 generation);
     void onStatusMessage(const QString& message);
     void onCertStatusChanged(int status);
     void onError(const QString& errorMessage);
 
     void updateDetailText();
     void setStatusMessage(const QString& msg);
+    void clearInterceptedRequests();
+    void sendInterceptAction(const QString& flowId, bool drop);
+    void updateCapturedInterceptState(const QString& flowId, bool intercepted);
 
     // ViewModel
     std::shared_ptr<commonHead::viewModels::INetworkProxyViewModel> m_viewModel;
@@ -182,6 +199,8 @@ private:
     int     m_proxyPort        = 8080;
     bool    m_autoSystemProxy  = true;
     bool    m_interceptEnabled = false;
+    bool    m_proxyRequested = false;
+    bool    m_acceptInterceptEvents = false;
 
     // Filter
     QString m_filterText;
@@ -197,6 +216,7 @@ private:
 
     // Model
     ProxyRequestModel* m_requestModel = nullptr;
+    ProxyInterceptModel* m_interceptedModel = nullptr;
 
     // Delegated managers
     ProxyRulesManager* m_rulesManager = nullptr;

@@ -5,8 +5,10 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
+#include <unordered_set>
 
 namespace ucf::framework {
     class ICoreFramework;
@@ -15,11 +17,14 @@ namespace ucf::framework {
 
 namespace ucf::service {
 
+class AsyncCallbackGate;
+
 /// Responsible for checking a remote server for available upgrades.
 class UpgradeCheckManager final
 {
 public:
-    explicit UpgradeCheckManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
+    UpgradeCheckManager(ucf::framework::ICoreFrameworkWPtr coreFramework,
+                        std::shared_ptr<AsyncCallbackGate> callbackGate);
     ~UpgradeCheckManager();
 
     UpgradeCheckManager(const UpgradeCheckManager&) = delete;
@@ -54,7 +59,13 @@ public:
     /// Reset cached result (not the last-check timestamp)
     void reset();
 
+    /// Cancel requests currently known to be in flight. Call after closing the
+    /// callback gate, and repeat after admitted submissions have drained.
+    void cancelOutstandingRequests();
+
 private:
+    bool canCheckLocked(std::chrono::steady_clock::time_point now) const;
+
     model::UpgradeCheckResult parseCheckResponse(
         const std::string& jsonBody,
         const std::string& currentVersion,
@@ -62,10 +73,14 @@ private:
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
+    std::shared_ptr<AsyncCallbackGate> mCallbackGate;
+
+    mutable std::mutex mStateMutex;
     std::string mCheckUrl{upgrade::constants::kDefaultManifestUrl};
     std::chrono::minutes mMinCheckInterval{5};
     std::chrono::steady_clock::time_point mLastCheckTime{};
     std::optional<model::UpgradeCheckResult> mCachedResult;
+    std::unordered_set<std::string> mOutstandingRequestIds;
 };
 
 } // namespace ucf::service

@@ -447,134 +447,139 @@
 <context>
     <name>NetworkCaptureTab</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="101"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="100"/>
         <source>%1 request(s) paused by breakpoint</source>
         <translation>%1 个请求被断点暂停</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="105"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="104"/>
         <source>Go to Breakpoints</source>
         <translation>前往断点</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="109"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="108"/>
         <source>Forward All</source>
         <translation>全部放行</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="144"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="140"/>
         <source>Method</source>
         <translation>方法</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="162"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="218"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="316"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="158"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="214"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="312"/>
         <source>ALL</source>
         <translation>全部</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="200"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="196"/>
         <source>Status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="256"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="455"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="252"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="451"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="260"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="256"/>
         <source>Filter...</source>
         <translation>过滤...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="271"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="267"/>
         <source>Time</source>
         <translation>时间</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="278"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="274"/>
         <source>Size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="288"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="284"/>
         <source>Process</source>
         <translation>进程</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="344"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="340"/>
         <source>No processes captured</source>
         <translation>未捕获到进程</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="420"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="416"/>
         <source>Waiting for requests...
 Proxy: 127.0.0.1:%1</source>
         <translation>等待请求...
 代理：127.0.0.1:%1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="420"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="416"/>
         <source>Click ▶ Start to begin capturing</source>
         <translation>点击 ▶ Start 开始抓包</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="443"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="439"/>
         <source>Request</source>
         <translation>请求</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="446"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="484"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="442"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="490"/>
         <source>Headers</source>
         <translation>请求头</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="446"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="484"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="442"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="490"/>
         <source>Body</source>
         <translation>Body</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="446"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="442"/>
         <source>Params</source>
         <translation>参数</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="455"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="451"/>
         <source>Copy URL</source>
         <translation>复制 URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="456"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="452"/>
         <source>cURL</source>
         <translation>cURL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="456"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="452"/>
         <source>Copy as cURL</source>
         <translation>以 cURL 形式复制</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="481"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="458"/>
+        <source>Captured data was truncated. Details and exports may be incomplete.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="487"/>
         <source>Response</source>
         <translation>响应</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="484"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="490"/>
         <source>Summary</source>
         <translation>摘要</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="493"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="499"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="493"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="499"/>
         <source>Copy response body</source>
         <translation>复制响应体</translation>
     </message>
@@ -582,118 +587,228 @@ Proxy: 127.0.0.1:%1</source>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="540"/>
-        <source>Exported %1 requests</source>
-        <translation>已导出 %1 个请求</translation>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="646"/>
+        <source>Cannot operate on paused requests: addon is disconnected</source>
+        <translation>无法操作暂停的请求：代理连接已断开</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="768"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="868"/>
+        <source>Paused request limit reached; forwarding request</source>
+        <translation>暂停请求数量已达上限，正在放行请求</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="887"/>
+        <source>Paused request timed out and was forwarded</source>
+        <translation>暂停请求已超时并自动放行</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="889"/>
+        <source>Paused request limit reached; request was forwarded</source>
+        <translation>暂停请求数量已达上限，请求已放行</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="891"/>
+        <source>Request forwarded because interception was disabled</source>
+        <translation>拦截已关闭，请求已放行</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="893"/>
+        <source>Paused request forwarded</source>
+        <translation>暂停请求已放行</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="895"/>
+        <source>Paused request dropped</source>
+        <translation>暂停请求已丢弃</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="610"/>
+        <source>Exported %1 retained requests</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="701"/>
+        <source>Cannot copy cURL: request headers were not retained</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="713"/>
+        <source>Cannot copy cURL: complete request body was not captured</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="720"/>
+        <source>Cannot copy cURL: request body cannot be replayed accurately</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="740"/>
+        <source>Copied request as cURL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="753"/>
+        <source>Cannot copy response body: captured body is unavailable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="761"/>
+        <source>Copied base64-encoded truncated captured response body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="763"/>
+        <source>Copied base64-encoded captured response body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="765"/>
+        <source>Copied truncated captured response body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="767"/>
+        <source>Copied response body</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="964"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation>证书目录尚不存在。请先启动代理以生成 CA 证书。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="782"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="978"/>
         <source>Certificate folder: %1</source>
         <translation>证书目录：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="129"/>
+        <source>%1: %2 rewrite rule(s) applied, %3 failed</source>
+        <translation>%1：已应用 %2 条改写规则，%3 条失败</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="134"/>
+        <source>Rule %1: %2</source>
+        <translation>规则 %1：%2</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="139"/>
+        <source>%1 more rewrite error(s); see the exported record for details</source>
+        <translation>另有 %1 项改写错误，详情见导出的记录</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="142"/>
+        <source>Request</source>
+        <translation>请求</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="143"/>
+        <source>Response</source>
+        <translation>响应</translation>
     </message>
 </context>
 <context>
     <name>NetworkProxyPanel</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="43"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="29"/>
         <source>Port:</source>
         <translation>端口:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="55"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="41"/>
         <source>Connected</source>
         <translation>已连接</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="55"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="41"/>
         <source>Disconnected</source>
         <translation>未连接</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="65"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="48"/>
+        <source>%1 retained requests</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="51"/>
         <source>Clear</source>
         <translation>清空</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="62"/>
-        <source>%1 requests</source>
-        <translation>%1 个请求</translation>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="52"/>
+        <source>Export Retained</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="39"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="113"/>
+        <source>Export Retained Requests</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="25"/>
         <source>■ Stop</source>
         <translation>■ 停止</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="39"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="25"/>
         <source>▶ Start</source>
         <translation>▶ 启动</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="66"/>
-        <source>Export</source>
-        <translation>导出</translation>
-    </message>
-    <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="82"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="68"/>
         <source>📡 Capture</source>
         <translation>📡 抓包</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="83"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="69"/>
         <source>📋 Rules</source>
         <translation>📋 规则</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="84"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="70"/>
         <source>⚙ Settings</source>
         <translation>⚙ 设置</translation>
-    </message>
-    <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="129"/>
-        <source>Export Requests</source>
-        <translation>导出请求</translation>
     </message>
 </context>
 <context>
     <name>NetworkRulesTab</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="56"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="210"/>
+        <source>Waiting...</source>
+        <translation>等待确认…</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="55"/>
         <source>Mock Response</source>
         <translation>Mock 响应</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="57"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="56"/>
         <source>Breakpoints</source>
         <translation>断点</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="58"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="57"/>
         <source>Blacklist</source>
         <translation>黑名单</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="59"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="58"/>
         <source>Map Local</source>
         <translation>映射本地</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="60"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="59"/>
         <source>Bypass Hosts</source>
         <translation>绕过主机</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="61"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="60"/>
         <source>Map Remote</source>
         <translation>映射远程</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="62"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="61"/>
         <source>Throttle</source>
         <translation>限速</translation>
     </message>
@@ -793,16 +908,16 @@ Double-click a rule to view details.</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="157"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="294"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="290"/>
         <source>URL pattern (regex)</source>
         <translation>URL 匹配（正则）</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="159"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="265"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="296"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="342"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="421"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="261"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="292"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="338"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="417"/>
         <source>+ Add</source>
         <translation>+ 新增</translation>
     </message>
@@ -822,201 +937,206 @@ Double-click a rule to view details.</source>
         <translation>▶ 放行</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="214"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="215"/>
         <source>✕ Drop</source>
         <translation>✕ 丢弃</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="224"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="226"/>
         <source>▶ Forward All (%1)</source>
         <translation>▶ 全部放行 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="232"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="231"/>
         <source>✕ Drop All (%1)</source>
         <translation>✕ 全部丢弃 (%1)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="247"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="243"/>
         <source>How to use Breakpoints:</source>
         <translation>断点使用方法：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="248"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="244"/>
         <source>1. Add a URL pattern rule above (regex)</source>
         <translation>1. 在上方添加 URL 匹配规则（正则）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="249"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="245"/>
         <source>2. Interception is auto-enabled when you add a rule</source>
         <translation>2. 添加规则后自动启用拦截</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="250"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="246"/>
         <source>3. When a matching request arrives, it pauses and appears in &quot;Paused Requests&quot;</source>
         <translation>3. 匹配的请求到达后会被暂停，出现在 &quot;暂停的请求&quot; 列表中</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="251"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="247"/>
         <source>4. Click &quot;▶ Forward&quot; to let it through, or &quot;✕ Drop&quot; to block it (returns 502)</source>
         <translation>4. 点击 &quot;▶ 放行&quot; 让其通过，或 &quot;✕ 丢弃&quot; 阻断（返回 502）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="252"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="248"/>
         <source>5. Paused requests auto-forward after 5 minutes timeout</source>
         <translation>5. 暂停的请求在 5 分钟超时后自动放行</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="260"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="256"/>
         <source>Blacklist Rules</source>
         <translation>黑名单规则</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="261"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="257"/>
         <source>Block matching requests entirely. They will receive a 403 response.</source>
         <translation>完全阻断匹配的请求，将返回 403 响应。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="264"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="260"/>
         <source>URL pattern to block (regex)</source>
         <translation>要阻断的 URL 匹配（正则）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="282"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="278"/>
         <source>No blacklist rules.</source>
         <translation>暂无黑名单规则。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="290"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="286"/>
         <source>Map Local Rules</source>
         <translation>映射本地规则</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="291"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="287"/>
         <source>Serve a local file instead of the remote response for matching URLs.</source>
         <translation>对匹配的 URL 用本地文件代替远程响应。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="295"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="291"/>
         <source>Local file path</source>
         <translation>本地文件路径</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="312"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="308"/>
         <source>No map local rules.</source>
         <translation>暂无映射本地规则。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="321"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="317"/>
         <source>Bypass Hosts (Passthrough)</source>
         <translation>绕过主机（直接转发）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="323"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="319"/>
         <source>Requests matching these host regex patterns will bypass MITM decryption. Useful for AI tools (GPT/Codex/豆包) that use certificate pinning.</source>
         <translation>匹配这些主机正则的请求将跳过 MITM 解密。适用于使用证书锁定的 AI 工具（GPT/Codex/豆包）。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="333"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="329"/>
         <source>Note: bypassed hosts will not show request/response details in Capture.</source>
         <translation>注意：被绕过的主机不会在抓包中显示请求/响应详情。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="334"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="330"/>
         <source>They are forwarded directly so the app can connect successfully.</source>
         <translation>这些请求会被直接转发，以便应用能够正常连接。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="340"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="336"/>
         <source>Host regex, e.g. (^|.)openai.com(:d+)?$</source>
         <translation>主机正则，例如 (^|.)openai.com(:d+)?$</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="355"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="351"/>
         <source>Reload</source>
         <translation>重新加载</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="357"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="353"/>
         <source>Reset Default</source>
         <translation>恢复默认</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="405"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="401"/>
         <source>No bypass hosts. Add one above.</source>
         <translation>暂无绕过主机，请在上方添加。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="415"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="411"/>
         <source>Map Remote Rules</source>
         <translation>映射远程规则</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="416"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="412"/>
         <source>Redirect matching requests to a different URL.</source>
         <translation>将匹配的请求重定向到另一个 URL。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="419"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="415"/>
         <source>Source URL pattern (regex)</source>
         <translation>源 URL 匹配（正则）</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="420"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="416"/>
         <source>Destination URL</source>
         <translation>目标 URL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="437"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="433"/>
         <source>No map remote rules.</source>
         <translation>暂无映射远程规则。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="445"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="441"/>
         <source>Bandwidth Throttle</source>
         <translation>带宽限速</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="446"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="442"/>
         <source>Simulate slow network conditions by limiting bandwidth.</source>
         <translation>通过限制带宽模拟慢速网络。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="448"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="444"/>
         <source>Enable Throttle</source>
         <translation>启用限速</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="454"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="450"/>
         <source>Download:</source>
         <translation>下载：</translation>
     </message>
     <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="452"/>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="456"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="460"/>
         <source>%1 KB/s</source>
         <translation>%1 KB/s</translation>
     </message>
     <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="452"/>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="456"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="460"/>
         <source>Unlimited</source>
         <translation>不限制</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="458"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="454"/>
         <source>Upload:</source>
         <translation>上传：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="465"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="461"/>
         <source>Presets:</source>
         <translation>预设：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="479"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="475"/>
         <source>Apply</source>
         <translation>应用</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkRulesTab.qml" line="62"/>
+        <source>Rewrite</source>
+        <translation>改写</translation>
     </message>
 </context>
 <context>
@@ -1213,24 +1333,178 @@ Double-click a rule to view details.</source>
 <context>
     <name>ProxyRulesManager</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="320"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="633"/>
         <source>✗ Empty pattern</source>
         <translation>✗ 匹配模式为空</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="324"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="637"/>
         <source>✗ Invalid regex: %1</source>
         <translation>✗ 无效正则：%1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="328"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="641"/>
         <source>✓ Match! Captured: &quot;%1&quot;</source>
         <translation>✓ 匹配成功！捕获：&quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="330"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="643"/>
         <source>✗ No match</source>
         <translation>✗ 未匹配</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="220"/>
+        <source>Rewrite URL pattern cannot be empty.</source>
+        <translation>改写 URL 匹配模式不能为空。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="223"/>
+        <source>Rewrite URL pattern cannot exceed %1 characters.</source>
+        <translation>改写 URL 匹配模式不能超过 %1 个字符。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="226"/>
+        <source>Invalid rewrite URL regex: %1</source>
+        <translation>改写 URL 正则表达式无效：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="236"/>
+        <source>Invalid rewrite HTTP method.</source>
+        <translation>改写 HTTP 方法无效。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="239"/>
+        <source>Rewrite stage must be request or response.</source>
+        <translation>改写阶段必须为请求或响应。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="241"/>
+        <source>Rewrite enabled must be a boolean.</source>
+        <translation>改写启用状态必须为布尔值。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="244"/>
+        <source>Rewrite body must be an object.</source>
+        <translation>改写正文配置必须为对象。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="251"/>
+        <source>Replacement body must be text.</source>
+        <translation>替换正文必须为文本。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="257"/>
+        <source>Invalid JSON Pointer. Use an empty path or a path starting with /; escape ~ as ~0 and / as ~1.</source>
+        <translation>JSON 路径无效。请使用空路径或以 / 开头的路径；将 ~ 转义为 ~0，将 / 转义为 ~1。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="260"/>
+        <source>JSON Pointer cannot exceed %1 characters.</source>
+        <translation>JSON 路径不能超过 %1 个字符。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="262"/>
+        <source>JSON remove cannot target the root.</source>
+        <translation>不能删除 JSON 根节点。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="266"/>
+        <source>JSON set requires a value.</source>
+        <translation>设置 JSON 字段时必须提供值。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="273"/>
+        <source>Text to find cannot be empty.</source>
+        <translation>要查找的文本不能为空。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="275"/>
+        <source>Text replacement must be text.</source>
+        <translation>替换文本必须为字符串。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="279"/>
+        <source>Invalid rewrite body operation.</source>
+        <translation>改写正文操作无效。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="283"/>
+        <source>Rewrite headers must be an array.</source>
+        <translation>改写头字段配置必须为数组。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="286"/>
+        <source>A rewrite rule can contain at most %1 header operations.</source>
+        <translation>每条改写规则最多包含 %1 项头字段操作。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="292"/>
+        <source>Each rewrite header operation must be an object.</source>
+        <translation>每项改写头字段操作必须为对象。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="297"/>
+        <source>Invalid rewrite header operation.</source>
+        <translation>改写头字段操作无效。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="300"/>
+        <source>Rewrite header name cannot exceed %1 characters.</source>
+        <translation>改写头字段名称不能超过 %1 个字符。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="302"/>
+        <source>Invalid rewrite header name: %1</source>
+        <translation>改写头字段名称无效：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="306"/>
+        <source>Content-Length and Transfer-Encoding are managed automatically.</source>
+        <translation>Content-Length 和 Transfer-Encoding 由代理自动管理。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="309"/>
+        <source>Content-Encoding can only be changed together with a body operation.</source>
+        <translation>只有同时修改正文时，才能修改 Content-Encoding。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="316"/>
+        <source>Rewrite header value must be text.</source>
+        <translation>改写头字段值必须为文本。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="319"/>
+        <source>Rewrite header value cannot exceed 64 KiB.</source>
+        <translation>改写头字段值不能超过 64 KiB。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="322"/>
+        <source>Rewrite header values cannot contain control characters except TAB.</source>
+        <translation>改写头字段值不能包含 TAB 以外的控制字符。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="341"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="382"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="400"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="421"/>
+        <source>Invalid rewrite rule index.</source>
+        <translation>改写规则索引无效。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="345"/>
+        <source>At most %1 rewrite rules can be saved.</source>
+        <translation>最多可保存 %1 条改写规则。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="370"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="411"/>
+        <source>Rewrite rules exceed the 1 MiB configuration limit.</source>
+        <translation>改写规则配置超过 1 MiB 限制。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="352"/>
+        <source>JSON set value cannot contain non-finite numbers.</source>
+        <translation>JSON 设置值不能包含非有限数值。</translation>
     </message>
 </context>
 <context>
@@ -1796,6 +2070,251 @@ Press ESC to cancel</source>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="252"/>
         <source>Select Output Directory</source>
         <translation>选择输出目录</translation>
+    </message>
+</context>
+<context>
+    <name>RewriteRulesTab</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="101"/>
+        <source>JSON value is invalid: %1</source>
+        <translation>JSON 值无效：%1</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="113"/>
+        <source>This rule was removed. Start a new rule.</source>
+        <translation>此规则已删除，请新建规则。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="130"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="414"/>
+        <source>Replace body</source>
+        <translation>替换正文</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="131"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="414"/>
+        <source>Set JSON field</source>
+        <translation>设置 JSON 字段</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="132"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="414"/>
+        <source>Remove JSON field</source>
+        <translation>删除 JSON 字段</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="133"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="414"/>
+        <source>Find and replace text</source>
+        <translation>查找并替换文本</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="134"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="414"/>
+        <source>Keep body</source>
+        <translation>保留正文</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="142"/>
+        <source>%1 header changes</source>
+        <translation>%1 项头字段修改</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="162"/>
+        <source>Rewrite Rules</source>
+        <translation>改写规则</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="168"/>
+        <source>Modify matching requests or responses. Rules run from top to bottom; fields you do not specify stay unchanged.</source>
+        <translation>修改匹配的请求或响应。规则从上到下执行，未指定的字段保持不变。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="178"/>
+        <source>Saved Rules (%1/128)</source>
+        <translation>已保存规则（%1/128）</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="183"/>
+        <source>New Rule</source>
+        <translation>新建规则</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="185"/>
+        <source>Clear All</source>
+        <translation>全部清除</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
+        <source>%1 · %2 · %3</source>
+        <translation>%1 · %2 · %3</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="346"/>
+        <source>Request</source>
+        <translation>请求</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="248"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="346"/>
+        <source>Response</source>
+        <translation>响应</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="262"/>
+        <source>Edit</source>
+        <translation>编辑</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="294"/>
+        <source>No rewrite rules. Configure one below.</source>
+        <translation>暂无改写规则，请在下方配置。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="313"/>
+        <source>Edit Rewrite Rule</source>
+        <translation>编辑改写规则</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="313"/>
+        <source>New Rewrite Rule</source>
+        <translation>新建改写规则</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="323"/>
+        <source>URL Pattern:</source>
+        <translation>URL 匹配模式：</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="331"/>
+        <source>e.g. /api/user.*</source>
+        <translation>例如 /api/user.*</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="334"/>
+        <source>Test</source>
+        <translation>验证</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="339"/>
+        <source>Target:</source>
+        <translation>目标：</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="354"/>
+        <source>Enabled</source>
+        <translation>启用</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="358"/>
+        <source>Header Changes</source>
+        <translation>请求头 / 响应头修改</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="361"/>
+        <source>Set replaces existing values; Add keeps them; Remove deletes the header. Header names are case-insensitive.</source>
+        <translation>设置会替换现有值；追加会保留现有值；删除会移除该头字段。头字段名称不区分大小写。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="378"/>
+        <source>Set</source>
+        <translation>设置</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="378"/>
+        <source>Add</source>
+        <translation>追加</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="378"/>
+        <source>Remove</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="388"/>
+        <source>Header name</source>
+        <translation>头字段名称</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="397"/>
+        <source>Header value</source>
+        <translation>头字段值</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="405"/>
+        <source>+ Header Change</source>
+        <translation>+ 头字段修改</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="410"/>
+        <source>Body Change</source>
+        <translation>正文修改</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="421"/>
+        <source>JSON field path, e.g. /data/enabled</source>
+        <translation>JSON 字段路径，例如 /data/enabled</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="426"/>
+        <source>Use /items/0 for an array item, /items/- to append, ~0 for ~ and ~1 for /. The parent must exist. An empty path replaces the whole JSON document when setting a value.</source>
+        <translation>使用 /items/0 定位数组元素，/items/- 追加元素，~0 表示 ~，~1 表示 /。父节点必须存在。设置值时，空路径会替换整个 JSON 文档。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="433"/>
+        <source>JSON Value:</source>
+        <translation>JSON 值：</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="433"/>
+        <source>Replacement Body:</source>
+        <translation>替换正文：</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="445"/>
+        <source>Enter valid JSON: true, null, 123, &quot;text&quot;, an array or an object</source>
+        <translation>输入有效 JSON：true、null、123、&quot;text&quot;、数组或对象</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="446"/>
+        <source>Enter the new body. Leave empty to send an empty body.</source>
+        <translation>输入新正文，留空则发送空正文。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="451"/>
+        <source>Find Text (literal):</source>
+        <translation>查找文本（字面匹配）：</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="459"/>
+        <source>Text to find</source>
+        <translation>要查找的文本</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="463"/>
+        <source>Replace With:</source>
+        <translation>替换为：</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="471"/>
+        <source>Replacement text; leave empty to remove matches</source>
+        <translation>替换文本，留空则删除匹配内容</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="489"/>
+        <source>Save Changes</source>
+        <translation>保存修改</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="489"/>
+        <source>Add Rule</source>
+        <translation>添加规则</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/RewriteRulesTab.qml" line="493"/>
+        <source>Reset Form</source>
+        <translation>重置表单</translation>
     </message>
 </context>
 <context>

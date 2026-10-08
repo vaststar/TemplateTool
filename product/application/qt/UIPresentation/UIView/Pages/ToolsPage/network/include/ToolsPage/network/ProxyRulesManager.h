@@ -6,10 +6,11 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QStringList>
+#include <QVariantMap>
 #include <QtQml>
 
 /**
- * @brief Manages all proxy rule sets (mock, breakpoint, blacklist, map local/remote, throttle).
+ * @brief Manages all proxy rule sets (mock, breakpoint, rewrite, blacklist, map local/remote, throttle).
  *
  * Stores rules as QJsonArrays and syncs them to the mitmproxy addon via TCP
  * through a sendCommand callback.
@@ -18,6 +19,8 @@ class ProxyRulesManager : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
+    Q_PROPERTY(QVariantList rewriteRules READ getRewriteRules NOTIFY rewriteRulesChanged)
+    Q_PROPERTY(QString rewriteError READ getRewriteError NOTIFY rewriteErrorChanged)
 
 public:
     explicit ProxyRulesManager(QObject* parent = nullptr);
@@ -33,6 +36,15 @@ public:
     Q_INVOKABLE void removeMockRule(int index);
     Q_INVOKABLE void clearMockRules();
     Q_INVOKABLE QVariantList getMockRules() const;
+
+    // ── Rewrite Rules ──
+    Q_INVOKABLE bool saveRewriteRule(int index, const QVariantMap& rule);
+    Q_INVOKABLE void removeRewriteRule(int index);
+    Q_INVOKABLE void clearRewriteRules();
+    Q_INVOKABLE void setRewriteRuleEnabled(int index, bool enabled);
+    Q_INVOKABLE void moveRewriteRule(int from, int to);
+    QVariantList getRewriteRules() const;
+    QString getRewriteError() const { return m_rewriteError; }
 
     // ── Breakpoint Rules ──
     Q_INVOKABLE void addBreakpointRule(const QString& urlPattern, const QString& method);
@@ -73,12 +85,22 @@ public:
     const QJsonArray& breakpointRules() const { return m_breakpointRules; }
     const QJsonArray& blacklistRules() const { return m_blacklistRules; }
 
+signals:
+    void rewriteRulesChanged();
+    void rewriteErrorChanged();
+
 private:
     void sendCommand(const QJsonObject& cmd);
+    bool validateRewriteRule(const QJsonObject& input, QJsonObject& result, QString& error) const;
+    void setRewriteError(const QString& error);
+    void sendRewriteRules();
+    void publishRewriteRules();
 
     SendCommandFn m_sendCommandFn;
 
     QJsonArray m_mockRules;
+    QJsonArray m_rewriteRules;
+    QString m_rewriteError;
     QJsonArray m_breakpointRules;
     QJsonArray m_blacklistRules;
     QJsonArray m_mapLocalRules;

@@ -1,7 +1,10 @@
 #include "ToolsPage/network/ProxyRequestModel.h"
 
 #include <QJsonDocument>
+#include <QSet>
 #include <QUrl>
+
+#include <utility>
 
 // ======================== ProxyRequestModel ========================
 
@@ -69,39 +72,124 @@ QHash<int, QByteArray> ProxyRequestModel::roleNames() const
     };
 }
 
+qsizetype ProxyRequestModel::estimateBytes(const RequestEntry& entry)
+{
+    // The compact JSON size plus duplicate strings is a retention estimate,
+    // not an exact measurement of Qt container or allocator overhead.
+    const auto textBytes = [](const QString& text) -> qsizetype {
+        return text.size() * qsizetype(sizeof(QChar));
+    };
+
+    return QJsonDocument(entry.fullData).toJson(QJsonDocument::Compact).size()
+        + textBytes(entry.flowId)
+        + textBytes(entry.method)
+        + textBytes(entry.url)
+        + textBytes(entry.host)
+        + textBytes(entry.path)
+        + textBytes(entry.contentType)
+        + textBytes(entry.timestamp)
+        + textBytes(entry.processName);
+}
+
+bool ProxyRequestModel::fitEntry(RequestEntry& entry)
+{
+    qsizetype bytes = estimateBytes(entry);
+    if (bytes > kMaxEntryBytes) {
+        entry.fullData.remove(QStringLiteral("request_body"));
+        entry.fullData.remove(QStringLiteral("response_body"));
+        entry.fullData.remove(QStringLiteral("ws_content"));
+        entry.fullData.insert(QStringLiteral("capture_truncated"), true);
+        bytes = estimateBytes(entry);
+    }
+    if (bytes > kMaxEntryBytes) {
+        if (!entry.fullData.value(QStringLiteral("request_headers")).toObject().isEmpty())
+            entry.fullData.insert(QStringLiteral("request_headers_truncated"), true);
+        entry.fullData.remove(QStringLiteral("request_headers"));
+        entry.fullData.remove(QStringLiteral("response_headers"));
+        bytes = estimateBytes(entry);
+    }
+    if (bytes > kMaxEntryBytes)
+        return false;
+
+    entry.retainedBytes = bytes;
+    return true;
+}
+
+void ProxyRequestModel::trimToLimits()
+{
+    qsizetype remainingBytes = m_retainedBytes;
+    int removeCount = 0;
+    const int currentCount = static_cast<int>(m_entries.size());
+    while (removeCount < currentCount
+           && (currentCount - removeCount > kMaxRows
+               || remainingBytes > kMaxRetainedBytes)) {
+        remainingBytes -= m_entries[removeCount].retainedBytes;
+        ++removeCount;
+    }
+    if (removeCount == 0)
+        return;
+
+    beginRemoveRows(QModelIndex(), 0, removeCount - 1);
+    m_entries.erase(m_entries.begin(), m_entries.begin() + removeCount);
+    m_flowIdIndex.clear();
+    for (int row = 0; row < m_entries.size(); ++row)
+        m_flowIdIndex.insert(m_entries[row].flowId, row);
+    m_retainedBytes = remainingBytes;
+    endRemoveRows();
+    emit oldestRowsEvicted(removeCount);
+}
+
 void ProxyRequestModel::addOrUpdateRequest(const QJsonObject& msg)
 {
-    QString flowId = msg["flow_id"].toString();
+    const QString flowId = msg["flow_id"].toString();
     if (flowId.isEmpty())
         return;
 
-    auto it = m_flowIdIndex.find(flowId);
-    if (it != m_flowIdIndex.end()) {
-        // Update existing entry
-        int row = it.value();
-        auto& e = m_entries[row];
+    const auto it = m_flowIdIndex.constFind(flowId);
+    if (it != m_flowIdIndex.cend()) {
+        // Build an update off-model so an oversized response cannot pollute the
+        // retained row or its byte accounting.
+        const int row = it.value();
+        RequestEntry candidate = m_entries[row];
 
         // Merge response data into the entry
         if (msg.contains("status_code"))
-            e.statusCode = msg["status_code"].toInt();
+            candidate.statusCode = msg["status_code"].toInt();
         if (msg.contains("response_content_type"))
-            e.contentType = msg["response_content_type"].toString();
+            candidate.contentType = msg["response_content_type"].toString();
         if (msg.contains("response_content_length"))
-            e.contentLength = msg["response_content_length"].toVariant().toLongLong();
+            candidate.contentLength = msg["response_content_length"].toVariant().toLongLong();
         if (msg.contains("duration"))
-            e.duration = msg["duration"].toDouble();
+            candidate.duration = msg["duration"].toDouble();
         if (msg.contains("is_intercepted"))
-            e.isIntercepted = msg["is_intercepted"].toBool();
+            candidate.isIntercepted = msg["is_intercepted"].toBool();
         if (msg.contains("process_name"))
-            e.processName = msg["process_name"].toString();
+            candidate.processName = msg["process_name"].toString();
 
         // Merge full data
-        for (auto jt = msg.begin(); jt != msg.end(); ++jt)
-            e.fullData[jt.key()] = jt.value();
+        for (auto jt = msg.begin(); jt != msg.end(); ++jt) {
+            // This marker belongs to the retained model state and is monotonic.
+            if (jt.key() != QStringLiteral("request_headers_truncated"))
+                candidate.fullData[jt.key()] = jt.value();
+        }
 
-        QModelIndex idx = index(row, 0);
-        emit dataChanged(idx, idx);
+        if (!fitEntry(candidate))
+            return;
+
+        m_retainedBytes += candidate.retainedBytes - m_entries[row].retainedBytes;
+        m_entries[row] = std::move(candidate);
+        trimToLimits();
+        const auto updated = m_flowIdIndex.constFind(flowId);
+        if (updated != m_flowIdIndex.cend()) {
+            const QModelIndex idx = index(updated.value(), 0);
+            emit dataChanged(idx, idx);
+        }
     } else {
+        // A response or controller patch arriving after eviction/clear must
+        // not create a partial request row.
+        if (msg["type"].toString() != QStringLiteral("request"))
+            return;
+
         // New entry
         RequestEntry e;
         e.flowId       = flowId;
@@ -117,6 +205,7 @@ void ProxyRequestModel::addOrUpdateRequest(const QJsonObject& msg)
         e.contentLength = msg["response_content_length"].toVariant().toLongLong();
         e.duration     = msg["duration"].toDouble();
         e.fullData     = msg;
+        e.fullData.remove(QStringLiteral("request_headers_truncated"));
 
         // Parse host/path from URL
         QUrl parsedUrl(e.url);
@@ -127,11 +216,16 @@ void ProxyRequestModel::addOrUpdateRequest(const QJsonObject& msg)
         e.fullData["host"] = e.host;
         e.fullData["path"] = e.path;
 
+        if (!fitEntry(e))
+            return;
+
         int row = static_cast<int>(m_entries.size());
         beginInsertRows(QModelIndex(), row, row);
         m_entries.append(e);
         m_flowIdIndex[flowId] = row;
+        m_retainedBytes += e.retainedBytes;
         endInsertRows();
+        trimToLimits();
     }
 }
 
@@ -147,6 +241,7 @@ void ProxyRequestModel::clear()
     beginResetModel();
     m_entries.clear();
     m_flowIdIndex.clear();
+    m_retainedBytes = 0;
     endResetModel();
 }
 

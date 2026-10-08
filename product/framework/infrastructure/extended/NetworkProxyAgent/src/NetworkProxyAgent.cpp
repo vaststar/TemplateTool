@@ -331,7 +331,7 @@ AgentState NetworkProxyAgent::state() const
 
 void NetworkProxyAgent::sendCommand(const std::string& jsonCommand)
 {
-    if (!mTcpChannel || !mTcpChannel->isConnected())
+    if (state() != AgentState::Running)
     {
         return;
     }
@@ -341,7 +341,21 @@ void NetworkProxyAgent::sendCommand(const std::string& jsonCommand)
     {
         msg += '\n';
     }
-    mTcpChannel->send(msg);
+    if (mTcpChannel && mTcpChannel->isConnected() && mTcpChannel->send(msg))
+    {
+        return;
+    }
+
+    // A failed write may leave a partial JSON line on the stream. Retire the
+    // session rather than append commands to an uncertain protocol boundary.
+    NPA_LOG_ERROR("Failed to send addon command; closing the control session");
+    if (!beginShutdown(ShutdownReason::TcpDisconnected))
+    {
+        return;
+    }
+    fireNotification(&INetworkProxyAgentCallback::onError,
+                     std::string("Failed to send proxy command; control connection closed"));
+    finalizeShutdown(ShutdownReason::TcpDisconnected);
 }
 
 void NetworkProxyAgent::setInterceptEnabled(bool enabled)
@@ -534,6 +548,15 @@ void NetworkProxyAgent::handleAddonMessage(const std::string& jsonLine)
         return;
     }
 
+    // Cleanup may race with a batch already read from the control channel.
+    // Do not forward flow events once shutdown has started.
+    const bool isFlowEvent = msg.type == "request" || msg.type == "response"
+                          || msg.type == "intercepted" || msg.type == "intercept_finished";
+    if (isFlowEvent && state() != AgentState::Running)
+    {
+        return;
+    }
+
     if (msg.type == "request")
     {
         fireNotification(&INetworkProxyAgentCallback::onRequestCaptured,
@@ -548,6 +571,11 @@ void NetworkProxyAgent::handleAddonMessage(const std::string& jsonLine)
     {
         fireNotification(&INetworkProxyAgentCallback::onRequestIntercepted,
                          msg.flowId, msg.rawJson);
+    }
+    else if (msg.type == "intercept_finished")
+    {
+        fireNotification(&INetworkProxyAgentCallback::onInterceptFinished,
+                         msg.flowId, msg.reason);
     }
     else if (msg.type == "error")
     {

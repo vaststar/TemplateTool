@@ -8,12 +8,35 @@
 #include <ucf/services/ClientInfoService/IClientInfoService.h>
 #include <ucf/utilities/OSUtils/OSUtils.h>
 
+#include <chrono>
+#include <functional>
+#include <type_traits>
+#include <utility>
+
 namespace ucf::service {
+
+namespace {
+
+// The captured gate remains alive after UpgradeManager is destroyed. A callback
+// may use its captured `this` only while it holds a lease.
+template <typename Callback>
+auto withCallbackGate(std::shared_ptr<AsyncCallbackGate> gate, Callback callback)
+{
+    return [gate = std::move(gate), callback = std::move(callback)](auto&&... args) mutable {
+        auto lease = gate->tryEnter();
+        if (!lease) {
+            return;
+        }
+        std::invoke(callback, std::forward<decltype(args)>(args)...);
+    };
+}
+
+} // namespace
 
 UpgradeManager::UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
-    , mCheckManager(std::make_unique<UpgradeCheckManager>(coreFramework))
-    , mDownloadManager(std::make_unique<UpgradeDownloadManager>(coreFramework))
+    , mCheckManager(std::make_unique<UpgradeCheckManager>(coreFramework, mCallbackGate))
+    , mDownloadManager(std::make_unique<UpgradeDownloadManager>(coreFramework, mCallbackGate))
     , mInstallManager(std::make_unique<UpgradeInstallManager>(coreFramework))
 {
     UPGRADE_LOG_DEBUG("UpgradeManager constructing, address: " << this);
@@ -23,8 +46,35 @@ UpgradeManager::UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
 UpgradeManager::~UpgradeManager()
 {
     UPGRADE_LOG_DEBUG("UpgradeManager destroying, address: " << this);
-    stopAutoCheckTimer();
+    shutdown();
     UPGRADE_LOG_DEBUG("UpgradeManager destructor body finished, address: " << this);
+}
+
+void UpgradeManager::shutdown()
+{
+    std::call_once(mShutdownOnce, [this] {
+        // Reject new external calls and callbacks before touching the workers.
+        mCallbackGate->close();
+        mStopRequested.store(true, std::memory_order_release);
+        mDownloadManager->requestStop();
+        stopAutoCheckTimer();
+
+        // cancelRequest synchronously invokes completion callbacks; no FSM,
+        // session, or callback-gate lock may be held here.
+        mCheckManager->cancelOutstandingRequests();
+        mDownloadManager->cancelOutstandingRequests();
+
+        mDownloadManager->joinWorkers();
+        mCallbackGate->waitForDrain();
+
+        // An already admitted send can submit a request after the first sweep.
+        mCheckManager->cancelOutstandingRequests();
+        mDownloadManager->cancelOutstandingRequests();
+        // A callback admitted before close() may enqueue cleanup while the
+        // first join runs. Drain those file jobs after all leases have left.
+        mDownloadManager->joinWorkers();
+        mListener = nullptr;
+    });
 }
 
 void UpgradeManager::initialize(Listener* listener)
@@ -61,33 +111,32 @@ void UpgradeManager::bindFsmCallbacks()
 {
     // ── Notification callbacks → forwarded to Service via Listener ──
 
-    mFsmContext.onStateChanged = [this](model::UpgradeState state) {
+    mFsmContext.onStateChanged = withCallbackGate(mCallbackGate, [this](model::UpgradeState state) {
         notifyStateChanged(state);
-    };
+    });
 
-    mFsmContext.onCheckCompleted = [this](const model::UpgradeCheckResult& result) {
+    mFsmContext.onCheckCompleted = withCallbackGate(mCallbackGate, [this](const model::UpgradeCheckResult& result) {
         notifyCheckCompleted(result);
-    };
+    });
 
-    mFsmContext.onDownloadProgress = [this](int64_t current, int64_t total) {
+    mFsmContext.onDownloadProgress = withCallbackGate(mCallbackGate, [this](int64_t current, int64_t total) {
         notifyDownloadProgress(current, total);
-    };
+    });
 
-    mFsmContext.onError = [this](model::UpgradeErrorCode code, const std::string& msg) {
+    mFsmContext.onError = withCallbackGate(mCallbackGate, [this](model::UpgradeErrorCode code, const std::string& msg) {
         notifyError(code, msg);
-    };
+    });
 
     // ── Async operation triggers → delegate to sub-managers ──
 
-    mFsmContext.triggerCheckForUpgrade = [this](bool userTriggered) {
+    mFsmContext.triggerCheckForUpgrade = withCallbackGate(mCallbackGate, [this](bool userTriggered) {
         auto version  = getCurrentVersionString();
         auto platform = getCurrentPlatform();
         auto arch     = getCurrentArch();
 
         mCheckManager->checkForUpgrade(version, platform, arch, userTriggered,
-            [this, alive = std::weak_ptr<int>(mAlive)](bool success, const model::UpgradeCheckResult& result,
+            withCallbackGate(mCallbackGate, [this](bool success, const model::UpgradeCheckResult& result,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (alive.expired()) { return; }
                 if (!success) {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 } else if (!result.hasUpgrade) {
@@ -95,10 +144,10 @@ void UpgradeManager::bindFsmCallbacks()
                 } else {
                     mFsm->processEvent(upgrade::EvCheckSuccess{result.upgradeInfo});
                 }
-            });
-    };
+            }));
+    });
 
-    mFsmContext.triggerDownload = [this](const std::string& /*url*/) {
+    mFsmContext.triggerDownload = withCallbackGate(mCallbackGate, [this](const std::string& /*url*/) {
         if (!mFsmContext.availableUpgrade) {
             mFsm->processEvent(upgrade::EvError{
                 model::UpgradeErrorCode::DownloadFailed, "No available upgrade to download"});
@@ -107,23 +156,21 @@ void UpgradeManager::bindFsmCallbacks()
         auto& info = *mFsmContext.availableUpgrade;
         mDownloadManager->downloadPackage(info.package,
             // Progress callback
-            [this, alive = std::weak_ptr<int>(mAlive)](int64_t current, int64_t total) {
-                if (alive.expired()) { return; }
+            withCallbackGate(mCallbackGate, [this](int64_t current, int64_t total) {
                 mFsm->processEvent(upgrade::EvProgress{current, total});
-            },
+            }),
             // Completion callback
-            [this, alive = std::weak_ptr<int>(mAlive)](bool success, const std::string& path,
+            withCallbackGate(mCallbackGate, [this](bool success, const std::string& path,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (alive.expired()) { return; }
                 if (success) {
                     mFsm->processEvent(upgrade::EvDownloadDone{path});
                 } else {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 }
-            });
-    };
+            }));
+    });
 
-    mFsmContext.triggerVerify = [this](const std::string& filePath) {
+    mFsmContext.triggerVerify = withCallbackGate(mCallbackGate, [this](const std::string& filePath) {
         if (!mFsmContext.availableUpgrade) {
             mFsm->processEvent(upgrade::EvError{
                 model::UpgradeErrorCode::VerifyFailed, "No available upgrade to verify"});
@@ -131,79 +178,82 @@ void UpgradeManager::bindFsmCallbacks()
         }
         auto& info = *mFsmContext.availableUpgrade;
         mDownloadManager->verifyPackage(filePath, info.package.sha256,
-            [this, alive = std::weak_ptr<int>(mAlive)](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (alive.expired()) { return; }
+            withCallbackGate(mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
                 if (success) {
                     mFsm->processEvent(upgrade::EvVerifyOk{});
                 } else {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 }
-            });
-    };
+            }));
+    });
 
-    mFsmContext.triggerExtract = [this](const std::string& packagePath) {
+    mFsmContext.triggerExtract = withCallbackGate(mCallbackGate, [this](const std::string& packagePath) {
         mInstallManager->extractPackageToStaging(packagePath,
-            [this, alive = std::weak_ptr<int>(mAlive)](bool success, const std::string& stagingDir,
+            withCallbackGate(mCallbackGate, [this](bool success, const std::string& stagingDir,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (alive.expired()) { return; }
                 if (success) {
                     mFsm->processEvent(upgrade::EvExtractOk{stagingDir});
                 } else {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 }
-            });
-    };
+            }));
+    });
 
-    mFsmContext.triggerInstall = [this](const std::string& stagingDir) {
+    mFsmContext.triggerInstall = withCallbackGate(mCallbackGate, [this](const std::string& stagingDir) {
         mInstallManager->launchUpdaterAndExit(stagingDir,
-            [this, alive = std::weak_ptr<int>(mAlive)](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (alive.expired()) { return; }
+            withCallbackGate(mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
                 if (!success) {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
                 }
                 // On success, the app is about to exit — no further events needed
-            });
-    };
-
-    mFsmContext.triggerCancelDownload = [this]() {
-        mDownloadManager->cancelDownload();
-    };
+            }));
+    });
 
     // ── Reset triggers ──
 
-    mFsmContext.triggerHardReset = [this]() {
+    mFsmContext.triggerHardReset = withCallbackGate(mCallbackGate, [this]() {
         hardResetManagers();
-    };
+    });
 
-    mFsmContext.triggerSoftReset = [this]() {
+    mFsmContext.triggerSoftReset = withCallbackGate(mCallbackGate, [this]() {
         softResetManagers();
-    };
+    });
 }
 
 // ── Public operations (FSM event dispatch) ──
 
 void UpgradeManager::checkForUpgrade(bool userTriggered)
 {
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease) { return; }
     mFsm->processEvent(upgrade::EvCheckRequested{userTriggered});
 }
 
 void UpgradeManager::downloadUpgrade()
 {
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease) { return; }
     mFsm->processEvent(upgrade::EvDownloadStart{});
 }
 
 void UpgradeManager::installAndRestart()
 {
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease) { return; }
     mFsm->processEvent(upgrade::EvInstallStart{});
 }
 
 void UpgradeManager::cancelDownload()
 {
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease) { return; }
     mFsm->processEvent(upgrade::EvCancel{});
 }
 
 void UpgradeManager::dismissUpgrade()
 {
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease) { return; }
     mFsm->processEvent(upgrade::EvDismiss{});
 }
 
@@ -230,7 +280,12 @@ model::UpgradeState UpgradeManager::getUpgradeState() const
 
 std::optional<model::UpgradeInfo> UpgradeManager::getAvailableUpgrade() const
 {
-    return mFsmContext.availableUpgrade;
+    if (!mFsm) {
+        return std::nullopt;
+    }
+    return mFsm->withContext([](const upgrade::UpgradeContext& context) {
+        return context.availableUpgrade;
+    });
 }
 
 // ── Notification forwarding ──

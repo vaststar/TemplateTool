@@ -79,6 +79,7 @@ UpgradeService::UpgradeService(ucf::framework::ICoreFrameworkWPtr coreFramework)
 UpgradeService::~UpgradeService()
 {
     UPGRADE_LOG_DEBUG("UpgradeService destroying, address: " << this);
+    mDataPrivate->getUpgradeManager().shutdown();
 }
 
 void UpgradeService::initService()
@@ -94,6 +95,7 @@ void UpgradeService::initService()
 
 void UpgradeService::deinitService()
 {
+    mDataPrivate->getUpgradeManager().shutdown();
     if (auto coreFramework = mDataPrivate->getCoreFramework().lock())
     {
         coreFramework->unRegisterCallback(shared_from_this());
@@ -121,6 +123,7 @@ void UpgradeService::onServiceInitialized()
 void UpgradeService::onCoreFrameworkExit()
 {
     UPGRADE_LOG_DEBUG("CoreFramework exit notification received");
+    mDataPrivate->getUpgradeManager().shutdown();
 }
 
 // ── IUpgradeService — one-line delegation ──

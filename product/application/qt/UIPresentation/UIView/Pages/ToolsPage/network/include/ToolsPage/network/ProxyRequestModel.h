@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QHash>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QSortFilterProxyModel>
@@ -52,7 +53,15 @@ public:
     /// Returns sorted unique process names from captured requests (for QML filter popup)
     Q_INVOKABLE QStringList uniqueProcessNames() const;
 
+signals:
+    /// Emitted after a contiguous block of oldest rows has been removed.
+    void oldestRowsEvicted(int count);
+
 private:
+    static constexpr int kMaxRows = 2000;
+    static constexpr qsizetype kMaxRetainedBytes = qsizetype(64) * 1024 * 1024;
+    static constexpr qsizetype kMaxEntryBytes = qsizetype(1) * 1024 * 1024;
+
     struct RequestEntry {
         QString flowId;
         QString method;
@@ -70,10 +79,16 @@ private:
         bool    isIntercepted = false;
 
         QJsonObject fullData;               // raw JSON from addon
+        qsizetype retainedBytes = 0;         // estimated retained size
     };
+
+    static qsizetype estimateBytes(const RequestEntry& entry);
+    static bool fitEntry(RequestEntry& entry);
+    void trimToLimits();
 
     QVector<RequestEntry> m_entries;
     QHash<QString, int>   m_flowIdIndex;    // flow_id -> row
+    qsizetype m_retainedBytes = 0;
 };
 
 /**

@@ -11,7 +11,7 @@ rs_datas, rs_binaries, rs_hiddenimports = collect_all('mitmproxy_rs')
 
 a = Analysis(
     ['proxy_addon.py'],
-    pathex=[],
+    pathex=[SPECPATH],
     binaries=mitmproxy_binaries + rs_binaries,
     datas=mitmproxy_datas + rs_datas,
     hiddenimports=(

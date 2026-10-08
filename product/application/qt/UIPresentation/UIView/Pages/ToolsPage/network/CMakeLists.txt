@@ -2,15 +2,18 @@ UIViewAppendBuildInputs(
     SOURCES
         include/ToolsPage/network/NetworkProxyController.h
         include/ToolsPage/network/ProxyRequestModel.h
+        include/ToolsPage/network/ProxyInterceptModel.h
         include/ToolsPage/network/ProxyRulesManager.h
         src/NetworkProxyController.cpp
         src/ProxyRequestModel.cpp
+        src/ProxyInterceptModel.cpp
         src/ProxyRulesManager.cpp
     QML_ALIAS_PREFIX PageViews/ToolsPage/network
     QML_FILES
         qml/NetworkProxyPanel.qml
         qml/NetworkCaptureTab.qml
         qml/NetworkRulesTab.qml
+        qml/RewriteRulesTab.qml
         qml/NetworkSettingsTab.qml
         qml/PatternTestDialog.qml
         qml/MockDetailDialog.qml

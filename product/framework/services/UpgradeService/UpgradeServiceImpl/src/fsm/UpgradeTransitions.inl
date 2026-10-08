@@ -125,7 +125,6 @@ inline auto Downloading::onEvent(UpgradeContext& ctx, const EvDownloadDone& e)
 
 inline auto Downloading::onEvent(UpgradeContext& ctx, const EvCancel&)
     -> fsm::TransitionTo<Idle> {
-    ctx.triggerCancelDownload();
     ctx.triggerSoftReset();   // preserve partial download for future resume
     return {};
 }

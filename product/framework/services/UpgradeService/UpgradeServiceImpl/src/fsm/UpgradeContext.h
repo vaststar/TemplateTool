@@ -23,7 +23,6 @@ struct UpgradeContext {
     std::function<void(const std::string& path)> triggerVerify;
     std::function<void(const std::string& packagePath)> triggerExtract;
     std::function<void(const std::string& stagingDir)>  triggerInstall;
-    std::function<void()>                        triggerCancelDownload;
 
     // ── Reset triggers ──
     // hardReset:  clear caches AND remove partial downloads / staging dir

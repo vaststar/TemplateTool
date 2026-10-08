@@ -42,6 +42,13 @@ AddonMessage AddonProtocol::parseMessage(const std::string& jsonLine)
         result.message = messageVal.asString().value_or("");
     }
 
+    // Extract "reason" (used by intercept_finished)
+    auto reasonVal = parsed.get("reason");
+    if (reasonVal.isString())
+    {
+        result.reason = reasonVal.asString().value_or("");
+    }
+
     return result;
 }
 

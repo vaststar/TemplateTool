@@ -1,7 +1,10 @@
 #pragma once
 
+#include <atomic>
+
 #include <QObject>
 #include <QString>
+#include <QtGlobal>
 #include <UIViewModelSignalBridge/UIViewModelSignalBridgeExport.h>
 #include <commonhead/viewmodels/NetworkProxyViewModel/INetworkProxyViewModel.h>
 
@@ -17,10 +20,20 @@ public:
     {
     }
 
+    quint64 interceptGeneration() const
+    {
+        return m_interceptGeneration.load(std::memory_order_acquire);
+    }
+
     // ── INetworkProxyViewModelCallback overrides ──
 
     void onProxyStateChanged(commonHead::viewModels::model::ProxyState state) override
     {
+        using ProxyState = commonHead::viewModels::model::ProxyState;
+        if (state != ProxyState::Running)
+        {
+            m_interceptGeneration.fetch_add(1, std::memory_order_acq_rel);
+        }
         emit signals_onProxyStateChanged(static_cast<int>(state));
     }
 
@@ -46,8 +59,17 @@ public:
     void onRequestIntercepted(const std::string& flowId,
                               const std::string& detailJson) override
     {
+        const quint64 generation = interceptGeneration();
         emit signals_onRequestIntercepted(QString::fromStdString(flowId),
-                                          QString::fromStdString(detailJson));
+                                          QString::fromStdString(detailJson), generation);
+    }
+
+    void onInterceptFinished(const std::string& flowId,
+                             const std::string& reason) override
+    {
+        const quint64 generation = interceptGeneration();
+        emit signals_onInterceptFinished(QString::fromStdString(flowId),
+                                         QString::fromStdString(reason), generation);
     }
 
     void onStatusMessage(const std::string& message) override
@@ -70,10 +92,14 @@ signals:
     void signals_onAddonConnectionChanged(bool connected);
     void signals_onRequestCaptured(const QString& flowId, const QString& rawJson);
     void signals_onResponseCaptured(const QString& flowId, const QString& rawJson);
-    void signals_onRequestIntercepted(const QString& flowId, const QString& detailJson);
+    void signals_onRequestIntercepted(const QString& flowId, const QString& detailJson, quint64 generation);
+    void signals_onInterceptFinished(const QString& flowId, const QString& reason, quint64 generation);
     void signals_onStatusMessage(const QString& message);
     void signals_onCertStatusChanged(int status);
     void signals_onError(const QString& errorMessage);
+
+private:
+    std::atomic<quint64> m_interceptGeneration{0};
 };
 
 } // namespace UIViewModelSignalBridge

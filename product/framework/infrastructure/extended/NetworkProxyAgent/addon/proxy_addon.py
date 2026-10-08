@@ -12,6 +12,7 @@ Features:
   - Blacklist (block matching requests)
   - Map Local (serve local file instead of remote)
   - Map Remote (redirect request to different URL)
+  - Rewrite request/response headers and bodies
   - Throttle (bandwidth limiting)
   - WebSocket message capture
   - Process identification (macOS/Windows/Linux)
@@ -26,6 +27,7 @@ Communication protocol (JSON over TCP, newline-delimited):
     {"type":"request",  "flow_id":"...", "method":"GET", "url":"...", ...}
     {"type":"response", "flow_id":"...", "status_code":200, ...}
     {"type":"intercepted", "flow_id":"...", ...}
+    {"type":"intercept_finished", "flow_id":"...", "reason":"resumed|dropped|timeout|disconnected|shutdown|disabled|capacity|cancelled"}
     {"type":"status", "message":"..."}
     {"type":"error",  "message":"..."}
   Client -> Addon:
@@ -34,6 +36,7 @@ Communication protocol (JSON over TCP, newline-delimited):
     {"type":"update_blacklist",        "rules":[...]}
     {"type":"update_map_local",        "rules":[...]}
     {"type":"update_map_remote",       "rules":[...]}
+    {"type":"update_rewrite_rules",    "rules":[...]}
     {"type":"set_intercept",           "enabled":true}
     {"type":"set_throttle",            "enabled":true, "download_kbps":100, "upload_kbps":50}
     {"type":"resume_flow",             "flow_id":"..."}
@@ -51,6 +54,7 @@ import socket
 import subprocess
 import threading
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -59,7 +63,18 @@ import base64
 from mitmproxy import http, ctx, websocket
 from mitmproxy.flow import Flow
 
+from rewrite_rules import RewriteRule, apply_rules, compile_rules
+
 logger = logging.getLogger("proxy_addon")
+
+MAX_PENDING_INTERCEPTS = 128
+INTERCEPT_TIMEOUT_SECONDS = 300
+
+
+@dataclass
+class PendingIntercept:
+    waiter: asyncio.Future[str]
+    decision: str | None = None
 
 
 DEFAULT_AI_BYPASS_HOSTS = [
@@ -194,12 +209,12 @@ class TcpClient:
         self._port = port
         self._sock: socket.socket | None = None
         self._lock = threading.RLock()
-        self._recv_buffer = b""
         self._connected = False
         self._running = True
         self._recv_thread: threading.Thread | None = None
         self._reconnect_thread: threading.Thread | None = None
         self._on_message = None
+        self._on_disconnect = None
 
     @property
     def connected(self) -> bool:
@@ -209,6 +224,10 @@ class TcpClient:
     def set_message_handler(self, handler):
         """Set callback: handler(dict) for each received JSON message."""
         self._on_message = handler
+
+    def set_disconnect_handler(self, handler):
+        """Set callback: handler() when an established connection is lost."""
+        self._on_disconnect = handler
 
     def start(self):
         """Start connection and reconnect loop."""
@@ -221,28 +240,24 @@ class TcpClient:
     def stop(self):
         """Shut down the client."""
         self._running = False
-        with self._lock:
-            if self._sock:
-                try:
-                    self._sock.close()
-                except OSError:
-                    pass
-                self._sock = None
-            self._connected = False
+        self._mark_disconnected()
 
-    def send(self, data: dict):
+    def send(self, data: dict) -> bool:
         """Send a JSON message (newline-delimited)."""
         with self._lock:
             if not self._connected or not self._sock:
                 logger.warning("[ADDON-DEBUG] TCP send skipped: connected=%s, sock=%s", self._connected, self._sock is not None)
-                return
+                return False
+            sock = self._sock
             try:
                 raw = json.dumps(data, ensure_ascii=False).encode("utf-8") + b"\n"
-                self._sock.sendall(raw)
+                sock.sendall(raw)
                 logger.info("[ADDON-DEBUG] TCP sent %d bytes, type=%s", len(raw), data.get('type', '?'))
+                return True
             except OSError as e:
                 logger.warning("TCP send error: %s", e)
-                self._mark_disconnected()
+                self._mark_disconnected(sock)
+                return False
 
     # ── internal ──
 
@@ -253,43 +268,48 @@ class TcpClient:
             time.sleep(2)
 
     def _try_connect(self):
+        s = None
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(5)
             s.connect((self._host, self._port))
             s.settimeout(None)
             with self._lock:
+                if not self._running:
+                    s.close()
+                    return
                 self._sock = s
                 self._connected = True
-                self._recv_buffer = b""
             logger.info("Connected to control server %s:%d", self._host, self._port)
             self._recv_thread = threading.Thread(
-                target=self._recv_loop, daemon=True
+                target=self._recv_loop, args=(s,), daemon=True
             )
             self._recv_thread.start()
         except OSError as e:
+            if s:
+                s.close()
             logger.debug("Connect attempt failed: %s", e)
 
-    def _recv_loop(self):
-        while self._running and self._connected:
+    def _recv_loop(self, sock: socket.socket):
+        recv_buffer = b""
+        while self._running:
             try:
                 with self._lock:
-                    sock = self._sock
-                if not sock:
-                    break
+                    if sock is not self._sock or not self._connected:
+                        break
                 data = sock.recv(65536)
                 if not data:
-                    self._mark_disconnected()
+                    self._mark_disconnected(sock)
                     break
-                self._recv_buffer += data
-                self._process_buffer()
+                recv_buffer += data
+                recv_buffer = self._process_buffer(recv_buffer)
             except OSError:
-                self._mark_disconnected()
+                self._mark_disconnected(sock)
                 break
 
-    def _process_buffer(self):
-        while b"\n" in self._recv_buffer:
-            line, self._recv_buffer = self._recv_buffer.split(b"\n", 1)
+    def _process_buffer(self, recv_buffer: bytes) -> bytes:
+        while b"\n" in recv_buffer:
+            line, recv_buffer = recv_buffer.split(b"\n", 1)
             if not line.strip():
                 continue
             try:
@@ -298,17 +318,28 @@ class TcpClient:
                     self._on_message(msg)
             except (json.JSONDecodeError, UnicodeDecodeError) as e:
                 logger.warning("Bad JSON from control: %s", e)
+        return recv_buffer
 
-    def _mark_disconnected(self):
+    def _mark_disconnected(self, expected_sock: socket.socket | None = None):
         with self._lock:
+            if expected_sock is not None and expected_sock is not self._sock:
+                return
+            was_connected = self._connected
             if self._sock:
+                try:
+                    self._sock.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
                 try:
                     self._sock.close()
                 except OSError:
                     pass
                 self._sock = None
             self._connected = False
-        logger.info("Disconnected from control server")
+        if was_connected:
+            logger.info("Disconnected from control server")
+            if self._on_disconnect:
+                self._on_disconnect()
 
 
 # ──────────────────────────────────────────────────────────────
@@ -379,8 +410,11 @@ class ProxyAddon:
 
     def __init__(self, control_host: str = "127.0.0.1", control_port: int = 9876):
         self._tcp = TcpClient(control_host, control_port)
-        self._tcp.set_message_handler(self._on_command)
+        self._tcp.set_message_handler(self._queue_command)
+        self._tcp.set_disconnect_handler(self._on_disconnected)
         self._lock = threading.RLock()
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._shutting_down = False
 
         # Rules (protected by _lock)
         self._mock_rules: list[dict] = []
@@ -388,12 +422,13 @@ class ProxyAddon:
         self._blacklist_rules: list[dict] = []
         self._map_local_rules: list[dict] = []
         self._map_remote_rules: list[dict] = []
+        self._rewrite_rules: tuple[RewriteRule, ...] = ()
         self._bypass_hosts: list[str] = list(DEFAULT_AI_BYPASS_HOSTS)
 
         # Intercept state
         self._intercept_enabled = False
-        self._intercepted_flows: dict[str, threading.Event] = {}
-        self._dropped_flows: set[str] = set()
+        # Accessed on the mitmproxy event loop, or by done() after it has stopped.
+        self._pending_intercepts: dict[str, PendingIntercept] = {}
 
         # Throttle
         self._throttle_enabled = False
@@ -403,8 +438,12 @@ class ProxyAddon:
     def load(self, loader):
         """Called by mitmproxy on addon load."""
         self._apply_bypass_hosts()
+
+    def running(self):
+        """Start control I/O only after mitmproxy's event loop is available."""
+        self._loop = asyncio.get_running_loop()
         self._tcp.start()
-        logger.info("ProxyAddon loaded, connecting to control server...")
+        logger.info("ProxyAddon running, connecting to control server...")
 
     def _normalize_bypass_hosts(self, hosts) -> list[str]:
         normalized: list[str] = []
@@ -435,7 +474,110 @@ class ProxyAddon:
 
     def done(self):
         """Called by mitmproxy on shutdown."""
+        self._shutting_down = True
+        self._release_intercepts("shutdown")
+        # done() may run after the event loop stops. Finalize directly because
+        # suspended request hooks may never get another turn to run finally.
+        for flow_id, pending in list(self._pending_intercepts.items()):
+            self._finish_intercept(flow_id, pending)
         self._tcp.stop()
+
+    def _schedule_on_loop(self, callback, *args):
+        loop = self._loop
+        if self._shutting_down or loop is None or loop.is_closed():
+            return
+        try:
+            loop.call_soon_threadsafe(self._run_callback, callback, args)
+        except RuntimeError:
+            # The loop can close between is_closed() and scheduling.
+            logger.debug("Control callback ignored while event loop shuts down")
+
+    def _run_callback(self, callback, args):
+        if not self._shutting_down:
+            callback(*args)
+
+    def _queue_command(self, msg: dict):
+        if isinstance(msg, dict):
+            self._schedule_on_loop(self._on_command, msg)
+        else:
+            logger.warning("Control message must be a JSON object")
+
+    def _on_disconnected(self):
+        self._schedule_on_loop(self._release_intercepts, "disconnected")
+
+    def _resolve_intercept(self, flow_id: str, reason: str):
+        if not isinstance(flow_id, str):
+            return
+        pending = self._pending_intercepts.get(flow_id)
+        if pending is None or pending.decision is not None:
+            return
+        pending.decision = reason
+        if not pending.waiter.done():
+            try:
+                pending.waiter.set_result(reason)
+            except RuntimeError:
+                # done() is also called when the loop has already closed.
+                logger.debug("Intercept resolved after event loop closed: %s", flow_id)
+
+    def _release_intercepts(self, reason: str):
+        for flow_id in list(self._pending_intercepts):
+            self._resolve_intercept(flow_id, reason)
+
+    def _report_intercept_finished(self, flow_id: str, reason: str):
+        self._tcp.send({
+            "type": "intercept_finished",
+            "flow_id": flow_id,
+            "reason": reason,
+        })
+
+    def _finish_intercept(self, flow_id: str, pending: PendingIntercept):
+        if self._pending_intercepts.get(flow_id) is not pending:
+            return
+        self._pending_intercepts.pop(flow_id)
+        self._report_intercept_finished(flow_id, pending.decision or "cancelled")
+
+    async def _wait_for_intercept(self, flow: http.HTTPFlow):
+        if self._shutting_down:
+            self._report_intercept_finished(flow.id, "shutdown")
+            return
+        if not self._tcp.connected:
+            self._report_intercept_finished(flow.id, "disconnected")
+            return
+        if len(self._pending_intercepts) >= MAX_PENDING_INTERCEPTS:
+            self._report_intercept_finished(flow.id, "capacity")
+            self._tcp.send({
+                "type": "status",
+                "message": f"Intercept limit reached ({MAX_PENDING_INTERCEPTS}); request forwarded",
+            })
+            return
+
+        pending = PendingIntercept(asyncio.get_running_loop().create_future())
+        self._pending_intercepts[flow.id] = pending
+        try:
+            if not self._tcp.send({
+                "type": "intercepted",
+                "flow_id": flow.id,
+                "method": flow.request.method,
+                "url": flow.request.pretty_url,
+            }):
+                self._resolve_intercept(flow.id, "disconnected")
+
+            try:
+                # Shield keeps timeout/cancellation from overwriting a command
+                # decision that has already completed the underlying future.
+                await asyncio.wait_for(
+                    asyncio.shield(pending.waiter), timeout=INTERCEPT_TIMEOUT_SECONDS
+                )
+            except asyncio.TimeoutError:
+                self._resolve_intercept(flow.id, "timeout")
+            except asyncio.CancelledError:
+                self._resolve_intercept(flow.id, "cancelled")
+                raise
+
+            if pending.decision == "dropped":
+                flow.kill()
+        finally:
+            self._finish_intercept(flow.id, pending)
 
     def _report_request(self, flow: http.HTTPFlow, tag: str = ""):
         """Send request info to the UI capture list."""
@@ -444,8 +586,9 @@ class ProxyAddon:
 
         request_body = ""
         request_body_base64 = False
-        if flow.request.content:
-            raw = flow.request.content[:102400]
+        content = flow.request.get_content(strict=False)
+        if content:
+            raw = content[:102400]
             req_ct = flow.request.headers.get("content-type", "")
             request_body, request_body_base64 = _encode_body(raw, req_ct)
 
@@ -459,41 +602,71 @@ class ProxyAddon:
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "process_name": process_name,
             "request_headers": dict(flow.request.headers),
-            "request_content_length": len(flow.request.content) if flow.request.content else 0,
+            "request_content_length": len(content) if content else 0,
             "request_body": request_body,
             "request_body_base64": request_body_base64,
+            **self._rewrite_feedback(flow, "request"),
         }
         if tag:
             msg["tag"] = tag
         self._tcp.send(msg)
 
-    def _report_synthetic_response(self, flow: http.HTTPFlow, tag: str = ""):
-        """Send a synthetic response (mock/map-local) to the UI capture list."""
+    def _report_response(self, flow: http.HTTPFlow):
+        """Report the final response after rewrites, including synthetic responses."""
         if not flow.response:
             return
         ct = flow.response.headers.get("content-type", "")
         body = ""
         body_base64 = False
-        if flow.response.content:
-            raw = flow.response.content[:102400]
+        content = flow.response.get_content(strict=False)
+        if content:
+            raw = content[:102400]
             body, body_base64 = _encode_body(raw, ct)
 
-        self._tcp.send({
+        tag = flow.metadata.get("template_tool_source_tag", "")
+        duration = 0
+        if not tag and flow.response.timestamp_end and flow.request.timestamp_start:
+            duration = flow.response.timestamp_end - flow.request.timestamp_start
+        msg = {
             "type": "response",
             "flow_id": flow.id,
             "status_code": flow.response.status_code,
             "response_content_type": ct,
-            "response_content_length": len(flow.response.content) if flow.response.content else 0,
-            "duration": 0,
+            "response_content_length": len(content) if content else 0,
+            "duration": duration,
             "response_headers": dict(flow.response.headers),
             "response_body": body,
             "response_body_base64": body_base64,
-            "tag": tag,
-        })
+            **self._rewrite_feedback(flow, "response"),
+        }
+        if tag:
+            msg["tag"] = tag
+        self._tcp.send(msg)
+
+    @staticmethod
+    def _rewrite_feedback(flow: http.HTTPFlow, stage: str) -> dict:
+        return {
+            f"{stage}_rewrite_rules": flow.metadata.get(f"{stage}_rewrite_rules", []),
+            f"{stage}_rewrite_errors": flow.metadata.get(f"{stage}_rewrite_errors", []),
+        }
+
+    def _rewrite_message(self, flow: http.HTTPFlow, stage: str):
+        # Synthetic and server responses use the same hook. Guard each stage so
+        # an accidentally repeated hook cannot apply a non-idempotent rule twice.
+        key = f"{stage}_rewrite_rules"
+        if key in flow.metadata:
+            return
+        with self._lock:
+            rules = self._rewrite_rules
+        applied, errors = apply_rules(flow, stage, rules)
+        flow.metadata[key] = applied
+        flow.metadata[f"{stage}_rewrite_errors"] = errors
+        for error in errors:
+            logger.warning("Rewrite %s (%s): %s", stage, error["rule_id"], error["error"])
 
     # ── mitmproxy hooks ──
 
-    def request(self, flow: http.HTTPFlow):
+    async def request(self, flow: http.HTTPFlow):
         """Called for each HTTP request."""
         logger.info("[ADDON-DEBUG] request hook called: %s %s", flow.request.method, flow.request.pretty_url)
         # Blacklist check
@@ -514,6 +687,10 @@ class ProxyAddon:
                     new_url = re.sub(src, dest, flow.request.pretty_url)
                     flow.request.url = new_url
                     break
+
+        # Rewrite the full outbound message after any URL redirect. Captured
+        # bodies are only a preview and never serve as the rewrite source.
+        self._rewrite_message(flow, "request")
 
         # Map Local check
         with self._lock:
@@ -536,8 +713,8 @@ class ProxyAddon:
                         }
                         ct = ct_map.get(ext, "application/octet-stream")
                         flow.response = http.Response.make(200, content, {"Content-Type": ct})
+                        flow.metadata["template_tool_source_tag"] = "MAP-LOCAL"
                         self._report_request(flow, tag="MAP-LOCAL")
-                        self._report_synthetic_response(flow, tag="MAP-LOCAL")
                         return
 
         # Mock rule check
@@ -563,37 +740,11 @@ class ProxyAddon:
                         body.encode("utf-8") if isinstance(body, str) else body,
                         resp_headers,
                     )
+                    flow.metadata["template_tool_source_tag"] = "MOCK"
                     self._report_request(flow, tag="MOCK")
-                    self._report_synthetic_response(flow, tag="MOCK")
                     return
 
-        # Identify source process
-        src_port = flow.client_conn.peername[1] if flow.client_conn.peername else 0
-        process_name = identify_process(src_port) if src_port else ""
-
-        # Build request body string (truncate at 100KB)
-        request_body = ""
-        request_body_base64 = False
-        if flow.request.content:
-            raw = flow.request.content[:102400]
-            req_ct = flow.request.headers.get("content-type", "")
-            request_body, request_body_base64 = _encode_body(raw, req_ct)
-
-        # Send request info to client
-        self._tcp.send({
-            "type": "request",
-            "flow_id": flow.id,
-            "method": flow.request.method,
-            "url": flow.request.pretty_url,
-            "is_https": flow.request.scheme == "https",
-            "is_websocket": False,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "process_name": process_name,
-            "request_headers": dict(flow.request.headers),
-            "request_content_length": len(flow.request.content) if flow.request.content else 0,
-            "request_body": request_body,
-            "request_body_base64": request_body_base64,
-        })
+        self._report_request(flow)
 
         # Breakpoint check
         should_intercept = False
@@ -608,28 +759,9 @@ class ProxyAddon:
                             break
 
         if should_intercept:
-            event = threading.Event()
-            with self._lock:
-                self._intercepted_flows[flow.id] = event
+            await self._wait_for_intercept(flow)
 
-            self._tcp.send({
-                "type": "intercepted",
-                "flow_id": flow.id,
-                "method": flow.request.method,
-                "url": flow.request.pretty_url,
-            })
-
-            # Block until resume or drop
-            event.wait(timeout=300)  # 5 min timeout
-
-            with self._lock:
-                self._intercepted_flows.pop(flow.id, None)
-                if flow.id in self._dropped_flows:
-                    self._dropped_flows.discard(flow.id)
-                    flow.kill()
-                    return
-
-    def response(self, flow: http.HTTPFlow):
+    async def response(self, flow: http.HTTPFlow):
         """Called for each HTTP response."""
         logger.info("[ADDON-DEBUG] response hook called: %s %s -> %s",
                     flow.request.method, flow.request.pretty_url,
@@ -637,35 +769,17 @@ class ProxyAddon:
         if not flow.response:
             return
 
+        self._rewrite_message(flow, "response")
+
         # Throttle simulation (simple delay based on content size)
         if self._throttle_enabled and self._throttle_dl_kbps > 0:
-            size_kb = len(flow.response.content) / 1024 if flow.response.content else 0
+            content = flow.response.get_content(strict=False)
+            size_kb = len(content) / 1024 if content else 0
             delay = size_kb / self._throttle_dl_kbps
             if delay > 0:
-                time.sleep(min(delay, 30))  # Cap at 30s
+                await asyncio.sleep(min(delay, 30))  # Cap at 30s
 
-        # Determine content type
-        ct = flow.response.headers.get("content-type", "")
-
-        # Truncate body for display (max 100KB)
-        body = ""
-        body_base64 = False
-        if flow.response.content:
-            raw = flow.response.content[:102400]
-            body, body_base64 = _encode_body(raw, ct)
-
-        self._tcp.send({
-            "type": "response",
-            "flow_id": flow.id,
-            "status_code": flow.response.status_code,
-            "response_content_type": ct,
-            "response_content_length": len(flow.response.content) if flow.response.content else 0,
-            "duration": (flow.response.timestamp_end - flow.request.timestamp_start)
-                        if flow.response.timestamp_end and flow.request.timestamp_start else 0,
-            "response_headers": dict(flow.response.headers),
-            "response_body": body,
-            "response_body_base64": body_base64,
-        })
+        self._report_response(flow)
 
     def websocket_message(self, flow: http.HTTPFlow):
         """Called for each WebSocket message."""
@@ -684,6 +798,8 @@ class ProxyAddon:
             "ws_direction": "client" if msg.from_client else "server",
             "ws_content": msg.text if msg.is_text else f"<binary {len(msg.content)} bytes>",
             "request_content_length": len(msg.content) if msg.content else 0,
+            "request_rewrite_rules": [],
+            "request_rewrite_errors": [],
         })
 
     # ── command handler ──
@@ -713,8 +829,20 @@ class ProxyAddon:
                 self._map_remote_rules = msg.get("rules", [])
                 logger.info("Updated %d map-remote rules", len(self._map_remote_rules))
 
+            elif cmd_type == "update_rewrite_rules":
+                try:
+                    rules = compile_rules(msg.get("rules"))
+                except ValueError as exc:
+                    logger.warning("Rejected rewrite configuration: %s", exc)
+                    self._tcp.send({"type": "error", "message": str(exc)})
+                    return
+                self._rewrite_rules = rules
+                logger.info("Updated %d rewrite rules", len(rules))
+
             elif cmd_type == "set_intercept":
                 self._intercept_enabled = msg.get("enabled", False)
+                if not self._intercept_enabled:
+                    self._release_intercepts("disabled")
                 logger.info("Intercept %s", "enabled" if self._intercept_enabled else "disabled")
 
             elif cmd_type == "set_throttle":
@@ -733,18 +861,11 @@ class ProxyAddon:
 
             elif cmd_type == "resume_flow":
                 flow_id = msg.get("flow_id", "")
-                ev = self._intercepted_flows.get(flow_id)
-                if ev:
-                    ev.set()
-                    logger.info("Resumed flow %s", flow_id)
+                self._resolve_intercept(flow_id, "resumed")
 
             elif cmd_type == "drop_flow":
                 flow_id = msg.get("flow_id", "")
-                self._dropped_flows.add(flow_id)
-                ev = self._intercepted_flows.get(flow_id)
-                if ev:
-                    ev.set()
-                    logger.info("Dropped flow %s", flow_id)
+                self._resolve_intercept(flow_id, "dropped")
 
             else:
                 logger.warning("Unknown command: %s", cmd_type)

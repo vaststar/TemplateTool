@@ -1,4 +1,5 @@
 #include "UpgradeCheckManager.h"
+#include "../AsyncCallbackGate.h"
 #include "../UpgradeServiceLogger.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
@@ -11,11 +12,16 @@
 #include <ucf/utilities/VersionUtils/Version.h>
 
 #include <format>
+#include <utility>
+#include <vector>
 
 namespace ucf::service {
 
-UpgradeCheckManager::UpgradeCheckManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
+UpgradeCheckManager::UpgradeCheckManager(
+    ucf::framework::ICoreFrameworkWPtr coreFramework,
+    std::shared_ptr<AsyncCallbackGate> callbackGate)
     : mCoreFramework(coreFramework)
+    , mCallbackGate(std::move(callbackGate))
 {
     UPGRADE_LOG_DEBUG("UpgradeCheckManager constructed, address: " << this);
 }
@@ -27,30 +33,40 @@ UpgradeCheckManager::~UpgradeCheckManager()
 
 bool UpgradeCheckManager::canCheck() const
 {
+    std::lock_guard lock(mStateMutex);
+    return canCheckLocked(std::chrono::steady_clock::now());
+}
+
+bool UpgradeCheckManager::canCheckLocked(std::chrono::steady_clock::time_point now) const
+{
     if (mLastCheckTime == std::chrono::steady_clock::time_point{}) {
         return true;
     }
-    auto elapsed = std::chrono::steady_clock::now() - mLastCheckTime;
+    auto elapsed = now - mLastCheckTime;
     return elapsed >= mMinCheckInterval;
 }
 
 std::optional<model::UpgradeCheckResult> UpgradeCheckManager::getCachedResult() const
 {
+    std::lock_guard lock(mStateMutex);
     return mCachedResult;
 }
 
 void UpgradeCheckManager::setCheckUrl(const std::string& url)
 {
+    std::lock_guard lock(mStateMutex);
     mCheckUrl = url;
 }
 
 void UpgradeCheckManager::setMinCheckInterval(std::chrono::minutes interval)
 {
+    std::lock_guard lock(mStateMutex);
     mMinCheckInterval = interval;
 }
 
 void UpgradeCheckManager::reset()
 {
+    std::lock_guard lock(mStateMutex);
     mCachedResult.reset();
     // Note: mLastCheckTime is intentionally NOT reset —
     // check interval should survive across upgrade cycles.
@@ -63,11 +79,27 @@ void UpgradeCheckManager::checkForUpgrade(
     bool userTriggered,
     CheckResultCallback callback)
 {
+    auto operation = mCallbackGate->tryEnter();
+    if (!operation) {
+        return;
+    }
+
     // If not user-triggered, respect the minimum check interval
-    if (!userTriggered && !canCheck()) {
+    bool skipCheck = false;
+    std::optional<model::UpgradeCheckResult> cachedResult;
+    std::string checkUrl;
+    {
+        std::lock_guard lock(mStateMutex);
+        skipCheck = !userTriggered && !canCheckLocked(std::chrono::steady_clock::now());
+        if (skipCheck) {
+            cachedResult = mCachedResult;
+        }
+        checkUrl = mCheckUrl;
+    }
+    if (skipCheck) {
         UPGRADE_LOG_DEBUG("Check skipped — minimum interval not elapsed");
-        if (mCachedResult.has_value()) {
-            callback(true, *mCachedResult, model::UpgradeErrorCode::None, "");
+        if (cachedResult.has_value()) {
+            callback(true, *cachedResult, model::UpgradeErrorCode::None, "");
         } else {
             callback(true, model::UpgradeCheckResult{false, {}}, model::UpgradeErrorCode::None, "");
         }
@@ -98,11 +130,11 @@ void UpgradeCheckManager::checkForUpgrade(
     // The manifest URL points directly to upgrade-manifest.json in the
     // latest GitHub Release.  No query params needed — the manifest contains
     // all platforms; the client picks its own after download.
-    UPGRADE_LOG_INFO("Checking for upgrade: " << mCheckUrl);
+    UPGRADE_LOG_INFO("Checking for upgrade: " << checkUrl);
 
     auto request = std::make_unique<network::http::HttpRestRequest>(
         network::http::HTTPMethod::GET,
-        mCheckUrl,
+        checkUrl,
         network::http::NetworkHttpHeaders{},
         "",
         30 // timeout seconds
@@ -110,9 +142,28 @@ void UpgradeCheckManager::checkForUpgrade(
 
     // Capture platform key for manifest lookup (e.g. "windows-x64")
     std::string platformKey = platform + "-" + arch;
+    const std::string requestId = request->getRequestId();
+
+    {
+        std::lock_guard lock(mStateMutex);
+        mOutstandingRequestIds.insert(requestId);
+    }
 
     httpManager->sendHttpRestRequest(*request,
-        [this, callback, currentVersion, platformKey](const network::http::HttpRestResponse& response) {
+        [this, gate = mCallbackGate, requestId, callback, currentVersion, platformKey](
+            const network::http::HttpRestResponse& response) {
+            auto lease = gate->tryEnter();
+            if (!lease) {
+                return;
+            }
+            {
+                std::lock_guard lock(mStateMutex);
+                // A terminal response is handled only once for each request.
+                if (mOutstandingRequestIds.erase(requestId) == 0) {
+                    return;
+                }
+            }
+
             auto errorData = response.getErrorData();
             if (errorData.has_value()) {
                 UPGRADE_LOG_ERROR("Check request failed: " << errorData->errorDescription);
@@ -128,22 +179,64 @@ void UpgradeCheckManager::checkForUpgrade(
                 return;
             }
 
+            model::UpgradeCheckResult result;
             try {
-                auto result = parseCheckResponse(
+                result = parseCheckResponse(
                     response.getResponseBody(), currentVersion, platformKey);
-
-                // Update cached state
-                mLastCheckTime = std::chrono::steady_clock::now();
-                mCachedResult = result;
-
-                UPGRADE_LOG_INFO("Check result: hasUpgrade=" << result.hasUpgrade
-                                 << (result.hasUpgrade ? (", version=" + result.upgradeInfo.version) : ""));
-                callback(true, result, model::UpgradeErrorCode::None, "");
             } catch (const std::exception& ex) {
                 UPGRADE_LOG_ERROR("Failed to parse check response: " << ex.what());
                 callback(false, {}, model::UpgradeErrorCode::ParseError, ex.what());
+                return;
             }
+
+            {
+                std::lock_guard lock(mStateMutex);
+                mLastCheckTime = std::chrono::steady_clock::now();
+                mCachedResult = result;
+            }
+
+            UPGRADE_LOG_INFO("Check result: hasUpgrade=" << result.hasUpgrade
+                             << (result.hasUpgrade ? (", version=" + result.upgradeInfo.version) : ""));
+            callback(true, result, model::UpgradeErrorCode::None, "");
         });
+
+    // close() may have raced with request submission. shutdown() will also
+    // sweep registered IDs after admitted work drains, but cancel promptly here.
+    if (mCallbackGate->isClosed()) {
+        httpManager->cancelRequest(requestId);
+    }
+}
+
+void UpgradeCheckManager::cancelOutstandingRequests()
+{
+    std::vector<std::string> requestIds;
+    {
+        std::lock_guard lock(mStateMutex);
+        requestIds.assign(mOutstandingRequestIds.begin(), mOutstandingRequestIds.end());
+        mOutstandingRequestIds.clear();
+    }
+    if (requestIds.empty()) {
+        return;
+    }
+
+    auto coreFramework = mCoreFramework.lock();
+    if (!coreFramework) {
+        return;
+    }
+    auto networkService = coreFramework->getService<INetworkService>().lock();
+    if (!networkService) {
+        return;
+    }
+    auto httpManager = networkService->getNetworkHttpManager().lock();
+    if (!httpManager) {
+        return;
+    }
+
+    // Cancellation invokes a completion callback synchronously; never hold
+    // mStateMutex while calling it.
+    for (const auto& requestId : requestIds) {
+        httpManager->cancelRequest(requestId);
+    }
 }
 
 model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(

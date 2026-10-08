@@ -265,6 +265,13 @@ void NetworkProxyViewModel::onRequestIntercepted(const std::string& flowId,
                      flowId, detailJson);
 }
 
+void NetworkProxyViewModel::onInterceptFinished(const std::string& flowId,
+                                                 const std::string& reason)
+{
+    fireNotification(&INetworkProxyViewModelCallback::onInterceptFinished,
+                     flowId, reason);
+}
+
 void NetworkProxyViewModel::onStatusMessage(const std::string& message)
 {
     fireNotification(&INetworkProxyViewModelCallback::onStatusMessage, message);

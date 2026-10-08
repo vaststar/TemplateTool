@@ -67,6 +67,8 @@ private:
                             const std::string& rawJson) override;
     void onRequestIntercepted(const std::string& flowId,
                               const std::string& detailJson) override;
+    void onInterceptFinished(const std::string& flowId,
+                             const std::string& reason) override;
     void onStatusMessage(const std::string& message) override;
     void onError(const std::string& errorMessage) override;
 

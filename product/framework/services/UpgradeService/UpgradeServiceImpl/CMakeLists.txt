@@ -14,6 +14,7 @@ set(MODULE_SOURCE_PRIVATE
     src/UpgradeService.h
     src/UpgradeService.cpp
     src/UpgradeServiceLogger.h
+    src/AsyncCallbackGate.h
     # Manager layer
     src/UpgradeManager.h
     src/UpgradeManager.cpp
@@ -79,4 +80,3 @@ BuildModule(
     TARGET_PRIVATE_DEFINITIONS ${MODULE_PRIVATE_DEFINITIONS}
     IDE_FOLDER ${MODULE_IDE_FOLDER}
 )
-

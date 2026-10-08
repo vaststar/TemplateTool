@@ -3,7 +3,13 @@
 
 #include <algorithm>
 #include <cctype>
+#include <charconv>
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
+#include <optional>
+#include <string_view>
+#include <system_error>
 
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
@@ -15,6 +21,43 @@
 #include "NetworkServiceLogger.h"
 
 namespace ucf::service::network::http{
+
+namespace {
+
+std::optional<std::string_view> findHeader(
+    const NetworkHttpHeaders& headers, std::string_view name)
+{
+    for (const auto& [key, value] : headers) {
+        if (key.size() == name.size() &&
+            std::equal(key.begin(), key.end(), name.begin(),
+                [](char a, char b) {
+                    return std::tolower(static_cast<unsigned char>(a)) ==
+                           std::tolower(static_cast<unsigned char>(b));
+                })) {
+            return value;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<std::uintmax_t> parseRangeStart(
+    std::string_view value, std::string_view prefix)
+{
+    if (!value.starts_with(prefix)) {
+        return std::nullopt;
+    }
+    value.remove_prefix(prefix.size());
+    std::uintmax_t start = 0;
+    const auto* first = value.data();
+    const auto* last = first + value.size();
+    const auto [next, error] = std::from_chars(first, last, start);
+    if (error != std::errc{} || next == first || next == last || *next != '-') {
+        return std::nullopt;
+    }
+    return start;
+}
+
+} // namespace
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -67,7 +110,39 @@ bool NetworkHttpDownloadToFileHandler::DataPrivate::openFile()
 {
     if (!mOutFilestream.is_open())
     {
-        mOutFilestream.open(mDownloadFilePath, std::ofstream::binary);
+        const int status = mDownloadResponse.getHttpResponseCode();
+        std::ios::openmode mode = std::ios::binary | std::ios::trunc;
+        if (status == 206) {
+            const auto range = findHeader(mHttpRequest.getRequestHeaders(), "Range");
+            const auto contentRange = findHeader(mDownloadResponse.getResponseHeaders(), "Content-Range");
+            const auto requestedStart = range ? parseRangeStart(*range, "bytes=") : std::nullopt;
+            const auto returnedStart = contentRange ? parseRangeStart(*contentRange, "bytes ") : std::nullopt;
+
+            std::error_code ec;
+            const auto existingSize = std::filesystem::file_size(mDownloadFilePath, ec);
+            if (!requestedStart || !returnedStart ||
+                *requestedStart != *returnedStart || ec || existingSize != *requestedStart) {
+                mDownloadResponse.setErrorData({0, ResponseErrorType::OtherError,
+                    "Invalid Content-Range or partial file size"});
+                return false;
+            }
+            mode = std::ios::binary | std::ios::app;
+        } else if (status >= 300 && status < 400) {
+            // Redirect response bodies are not package bytes. The handler will
+            // follow Location after this response completes.
+            return false;
+        } else if (status != 200) {
+            mDownloadResponse.setErrorData({status, ResponseErrorType::OtherError,
+                "Unexpected download HTTP status"});
+            return false;
+        }
+
+        // A server may ignore Range and return 200; restart from byte zero.
+        mOutFilestream.open(mDownloadFilePath, mode);
+        if (!mOutFilestream.is_open()) {
+            mDownloadResponse.setErrorData({0, ResponseErrorType::OtherError,
+                "Cannot open download file"});
+        }
         return mOutFilestream.is_open();
     }
     return true;
@@ -80,9 +155,15 @@ bool NetworkHttpDownloadToFileHandler::DataPrivate::writeToFile(const ByteBuffer
         mOutFilestream.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
         if (!mOutFilestream.good())
         {
+            mDownloadResponse.setErrorData({0, ResponseErrorType::OtherError,
+                "Cannot write download file"});
             return false;
         }
         mOutFilestream.flush();
+        if (!mOutFilestream.good()) {
+            mDownloadResponse.setErrorData({0, ResponseErrorType::OtherError,
+                "Cannot flush download file"});
+        }
         return mOutFilestream.good();
     }
     return false;
@@ -157,6 +238,12 @@ void NetworkHttpDownloadToFileHandler::setResponseHeader(int statusCode, const u
 
 void NetworkHttpDownloadToFileHandler::appendResponseBody(const ucf::infrastructure::network::http::ByteBuffer& buffer, bool isFinished)
 {
+    const int status = mDataPrivate->getDownloadResponse().getHttpResponseCode();
+    if (status >= 300 && status < 400) {
+        // Redirect bodies do not belong in the destination file or its
+        // progress count; the completed response handles Location.
+        return;
+    }
     if (!buffer.empty())
     {
         if (mDataPrivate->writeToFile(buffer))
@@ -187,6 +274,9 @@ void NetworkHttpDownloadToFileHandler::completeResponse(const ucf::infrastructur
 
 bool NetworkHttpDownloadToFileHandler::shouldRedirectRequest() const
 {
+    if (mDataPrivate->getDownloadResponse().getErrorData().has_value()) {
+        return false;
+    }
     if (301 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
         302 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
         303 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||

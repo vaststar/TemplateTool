@@ -8,7 +8,6 @@ Item {
     id: root
 
     required property NetworkProxyController controller
-    required property var interceptedFlowsModel
 
     signal testPattern(string pattern)
     signal showMockDetail(var ruleData)
@@ -59,7 +58,8 @@ Item {
                         {icon: "📂", label: qsTr("Map Local")},
                         {icon: "🛡", label: qsTr("Bypass Hosts")},
                         {icon: "🔀", label: qsTr("Map Remote")},
-                        {icon: "🐌", label: qsTr("Throttle")}
+                        {icon: "🐌", label: qsTr("Throttle")},
+                        {icon: "✏️", label: qsTr("Rewrite")}
                     ]
                     property int currentIndex: 0
                     delegate: Rectangle {
@@ -182,17 +182,17 @@ Item {
 
                     // ─── Paused Requests Panel ───
                     UTText {
-                        text: qsTr("Paused Requests (%1)").arg(root.interceptedFlowsModel.count)
+                        text: qsTr("Paused Requests (%1)").arg(root.controller.interceptedCount)
                         fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title
-                        visible: root.interceptedFlowsModel.count > 0
+                        visible: root.controller.interceptedCount > 0
                     }
                     Rectangle {
-                        Layout.fillWidth: true; Layout.preferredHeight: Math.min(root.interceptedFlowsModel.count * 36 + 8, 180)
-                        visible: root.interceptedFlowsModel.count > 0
+                        Layout.fillWidth: true; Layout.preferredHeight: Math.min(root.controller.interceptedCount * 36 + 8, 180)
+                        visible: root.controller.interceptedCount > 0
                         color: Qt.alpha("#F44336", 0.05); border.color: Qt.alpha("#F44336", 0.3); border.width: 1; radius: 4
                         ListView {
                             id: pausedListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
-                            model: root.interceptedFlowsModel
+                            model: root.controller.interceptedModel
                             delegate: Rectangle {
                                 width: pausedListView.width; height: 32; radius: 3
                                 color: pausedMa.containsMouse ? Qt.alpha("#F44336", 0.1) : "transparent"
@@ -207,34 +207,30 @@ Item {
                                     }
                                     UTText { Layout.fillWidth: true; text: model.url; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideMiddle }
                                     UTButton {
-                                        text: qsTr("▶ Forward"); implicitHeight: 24
-                                        onClicked: { root.controller.resumeRequest(model.flowId); root.interceptedFlowsModel.remove(index) }
+                                        text: model.actionPending ? qsTr("Waiting...") : qsTr("▶ Forward"); implicitHeight: 24
+                                        enabled: root.controller.proxyRunning && root.controller.addonConnected && !model.actionPending
+                                        onClicked: root.controller.resumeRequest(model.flowId)
                                     }
                                     UTButton {
                                         text: qsTr("✕ Drop"); implicitHeight: 24
-                                        onClicked: { root.controller.dropRequest(model.flowId); root.interceptedFlowsModel.remove(index) }
+                                        enabled: root.controller.proxyRunning && root.controller.addonConnected && !model.actionPending
+                                        onClicked: root.controller.dropRequest(model.flowId)
                                     }
                                 }
                             }
                         }
                     }
                     RowLayout {
-                        visible: root.interceptedFlowsModel.count > 1; spacing: 8
+                        visible: root.controller.interceptedCount > 1; spacing: 8
                         UTButton {
-                            text: qsTr("▶ Forward All (%1)").arg(root.interceptedFlowsModel.count)
-                            onClicked: {
-                                for (var i = root.interceptedFlowsModel.count - 1; i >= 0; i--)
-                                    root.controller.resumeRequest(root.interceptedFlowsModel.get(i).flowId)
-                                root.interceptedFlowsModel.clear()
-                            }
+                            text: qsTr("▶ Forward All (%1)").arg(root.controller.interceptedCount)
+                            enabled: root.controller.proxyRunning && root.controller.addonConnected
+                            onClicked: root.controller.resumeAllRequests()
                         }
                         UTButton {
-                            text: qsTr("✕ Drop All (%1)").arg(root.interceptedFlowsModel.count)
-                            onClicked: {
-                                for (var i = root.interceptedFlowsModel.count - 1; i >= 0; i--)
-                                    root.controller.dropRequest(root.interceptedFlowsModel.get(i).flowId)
-                                root.interceptedFlowsModel.clear()
-                            }
+                            text: qsTr("✕ Drop All (%1)").arg(root.controller.interceptedCount)
+                            enabled: root.controller.proxyRunning && root.controller.addonConnected
+                            onClicked: root.controller.dropAllRequests()
                         }
                     }
 
@@ -481,6 +477,12 @@ Item {
                         }
                     }
                     Item { Layout.fillHeight: true }
+                }
+
+                // Keep this last so existing rule section indexes stay stable.
+                RewriteRulesTab {
+                    controller: root.controller
+                    onTestPattern: function(pattern) { root.testPattern(pattern) }
                 }
             }
         }

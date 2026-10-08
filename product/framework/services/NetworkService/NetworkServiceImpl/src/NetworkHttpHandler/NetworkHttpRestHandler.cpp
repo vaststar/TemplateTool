@@ -143,6 +143,9 @@ void NetworkHttpRestHandler::completeResponse(const ucf::infrastructure::network
 
 bool NetworkHttpRestHandler::shouldRedirectRequest() const
 {
+    if (mDataPrivate->getHttpResponse().getErrorData().has_value()) {
+        return false;
+    }
     if (301 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
         302 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
         303 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||

@@ -9,7 +9,6 @@ Item {
     id: root
 
     required property NetworkProxyController controller
-    required property var interceptedFlowsModel
 
     signal goToBreakpoints()
 
@@ -90,7 +89,7 @@ Item {
     // ── Paused requests notification banner ──
     Rectangle {
         id: pausedBanner
-        visible: root.interceptedFlowsModel.count > 0
+        visible: root.controller.interceptedCount > 0
         z: 10; anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
         height: visible ? 32 : 0; radius: 4
         color: Qt.alpha("#F44336", 0.12); border.color: Qt.alpha("#F44336", 0.4); border.width: 1
@@ -98,7 +97,7 @@ Item {
             anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10; spacing: 6
             Text { text: "🔴"; font.pixelSize: 12 } // emoji glyph, not tokenized
             UTText {
-                text: qsTr("%1 request(s) paused by breakpoint").arg(root.interceptedFlowsModel.count)
+                text: qsTr("%1 request(s) paused by breakpoint").arg(root.controller.interceptedCount)
                 fontEnum: UIFontToken.Caption_Strong; color: "#F44336"; Layout.fillWidth: true
             }
             UTButton {
@@ -107,11 +106,8 @@ Item {
             }
             UTButton {
                 text: qsTr("Forward All"); implicitHeight: 24
-                onClicked: {
-                    for (var i = root.interceptedFlowsModel.count - 1; i >= 0; i--)
-                        root.controller.resumeRequest(root.interceptedFlowsModel.get(i).flowId)
-                    root.interceptedFlowsModel.clear()
-                }
+                enabled: root.controller.proxyRunning && root.controller.addonConnected
+                onClicked: root.controller.resumeAllRequests()
             }
         }
     }
@@ -355,18 +351,18 @@ Item {
                     id: requestListView
                     Layout.fillWidth: true; Layout.fillHeight: true
                     clip: true; model: filterModel
-                    currentIndex: root.controller.selectedIndex
+                    currentIndex: -1
                     ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
                     delegate: Rectangle {
                         width: requestListView.width; height: 26
-                        color: index === requestListView.currentIndex
+                        color: model.flowId === root.controller.selectedFlowId && root.controller.selectedFlowId.length > 0
                             ? Qt.alpha(root._accentColor, 0.2)
                             : (index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03))
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: { requestListView.currentIndex = index; root.controller.selectedIndex = filterModel.mapToSource(filterModel.index(index, 0)).row }
+                            onClicked: root.controller.selectedIndex = filterModel.mapToSource(filterModel.index(index, 0)).row
                         }
 
                         Row {
@@ -456,11 +452,21 @@ Item {
                             UTButton { text: qsTr("cURL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestCurl(); implicitHeight: 24; ToolTip.text: qsTr("Copy as cURL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
                         }
                     }
+                    UTText {
+                        visible: root.controller.selectedCaptureTruncated
+                        Layout.fillWidth: true; Layout.leftMargin: 8; Layout.rightMargin: 8
+                        text: qsTr("Captured data was truncated. Details and exports may be incomplete.")
+                        fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
+                        wrapMode: Text.WordWrap
+                    }
                     UTScrollView {
                         Layout.fillWidth: true; Layout.fillHeight: true
                         ScrollBar.horizontal.policy: ScrollBar.AsNeeded
                         UTTextArea {
-                            text: root.controller.requestDetailText; readOnly: true
+                            text: (root.controller.selectedRewriteSummary.length > 0
+                                   ? root.controller.selectedRewriteSummary + "\n\n" : "")
+                                  + root.controller.requestDetailText
+                            readOnly: true
                             padding: 6; borderRadius: 2
                         }
                     }

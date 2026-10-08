@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <curl/curl.h>
@@ -44,5 +45,6 @@ private:
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;
+    std::atomic_bool mFinished{false};
 };
 }

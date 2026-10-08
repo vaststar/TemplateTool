@@ -542,6 +542,11 @@ void LibCurlEasyHandle::headersCompleted()
 
 void LibCurlEasyHandle::finishHandle(CURLcode code)
 {
+    if (mFinished.exchange(true, std::memory_order_acq_rel))
+    {
+        return;
+    }
+
     LIBCURL_LOG_INFO(
         "Network request finished, requestId: "
         << mDataPrivate->getRequestId()

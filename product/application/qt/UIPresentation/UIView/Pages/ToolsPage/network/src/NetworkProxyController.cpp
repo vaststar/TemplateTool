@@ -20,12 +20,23 @@
 #include <QUrl>
 #include <QUrlQuery>
 
+// Keep in sync with the body slices in proxy_addon.py.
+static constexpr qint64 kMaxCapturedBodyBytes = 102400;
+
 NetworkProxyController::NetworkProxyController(QObject* parent)
     : UIViewController(parent)
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::NetworkProxyViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("NetworkProxyController constructed, address: " << this);
     m_requestModel = new ProxyRequestModel(this);
+    connect(m_requestModel, &ProxyRequestModel::oldestRowsEvicted, this, [this](int count) {
+        if (m_selectedIndex >= 0)
+            setSelectedIndex(m_selectedIndex < count ? -1 : m_selectedIndex - count);
+        emit requestCountChanged();
+    });
+    m_interceptedModel = new ProxyInterceptModel(this);
+    connect(m_interceptedModel, &ProxyInterceptModel::countChanged,
+            this, &NetworkProxyController::interceptedCountChanged);
     m_rulesManager = new ProxyRulesManager(this);
 }
 
@@ -50,6 +61,8 @@ void NetworkProxyController::init()
             this, &NetworkProxyController::onResponseCaptured);
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onRequestIntercepted,
             this, &NetworkProxyController::onRequestIntercepted);
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onInterceptFinished,
+            this, &NetworkProxyController::onInterceptFinished);
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onStatusMessage,
             this, &NetworkProxyController::onStatusMessage);
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onCertStatusChanged,
@@ -86,10 +99,56 @@ QString NetworkProxyController::getFilterMethod()    const { return m_filterMeth
 QString NetworkProxyController::getFilterStatusCode() const { return m_filterStatusCode; }
 QString NetworkProxyController::getFilterContentType() const { return m_filterContentType; }
 int     NetworkProxyController::getSelectedIndex()   const { return m_selectedIndex; }
+QString NetworkProxyController::getSelectedFlowId() const
+{
+    if (!m_requestModel || m_selectedIndex < 0 || m_selectedIndex >= m_requestModel->rowCount())
+        return QString();
+    return m_requestModel->getRequestAt(m_selectedIndex).value(QStringLiteral("flow_id")).toString();
+}
+bool NetworkProxyController::isSelectedCaptureTruncated() const
+{
+    if (!m_requestModel || m_selectedIndex < 0 || m_selectedIndex >= m_requestModel->rowCount())
+        return false;
+    const QJsonObject req = m_requestModel->getRequestAt(m_selectedIndex);
+    return req.value(QStringLiteral("capture_truncated")).toBool()
+        || req.value(QStringLiteral("request_content_length")).toVariant().toLongLong() > kMaxCapturedBodyBytes
+        || req.value(QStringLiteral("response_content_length")).toVariant().toLongLong() > kMaxCapturedBodyBytes;
+}
+QString NetworkProxyController::getSelectedRewriteSummary() const
+{
+    if (!m_requestModel || m_selectedIndex < 0 || m_selectedIndex >= m_requestModel->rowCount())
+        return {};
+
+    const QJsonObject data = m_requestModel->getRequestAt(m_selectedIndex);
+    QStringList summary;
+    const auto appendStage = [&summary, &data, this](const QString& prefix, const QString& label) {
+        const QJsonArray applied = data.value(prefix + QStringLiteral("_rewrite_rules")).toArray();
+        const QJsonArray errors = data.value(prefix + QStringLiteral("_rewrite_errors")).toArray();
+        if (applied.isEmpty() && errors.isEmpty())
+            return;
+        summary.append(tr("%1: %2 rewrite rule(s) applied, %3 failed")
+                           .arg(label).arg(applied.size()).arg(errors.size()));
+        const int shown = qMin(static_cast<int>(errors.size()), 3);
+        for (int i = 0; i < shown; ++i) {
+            const QJsonObject error = errors.at(i).toObject();
+            summary.append(tr("Rule %1: %2")
+                               .arg(error.value(QStringLiteral("rule_id")).toString().left(8),
+                                    error.value(QStringLiteral("error")).toString().left(160)));
+        }
+        if (errors.size() > shown)
+            summary.append(tr("%1 more rewrite error(s); see the exported record for details")
+                               .arg(errors.size() - shown));
+    };
+    appendStage(QStringLiteral("request"), tr("Request"));
+    appendStage(QStringLiteral("response"), tr("Response"));
+    return summary.join(QChar('\n'));
+}
 int     NetworkProxyController::getDetailTab()       const { return m_detailTab; }
 int     NetworkProxyController::getRequestTabIndex() const { return m_requestTabIndex; }
 int     NetworkProxyController::getResponseTabIndex() const { return m_responseTabIndex; }
 ProxyRequestModel* NetworkProxyController::getRequestModel() const { return m_requestModel; }
+ProxyInterceptModel* NetworkProxyController::getInterceptedModel() const { return m_interceptedModel; }
+int NetworkProxyController::getInterceptedCount() const { return m_interceptedModel->count(); }
 ProxyRulesManager* NetworkProxyController::getRulesManager() const { return m_rulesManager; }
 bool    NetworkProxyController::isCACertInstalled() const { return m_caCertInstalled; }
 bool    NetworkProxyController::isCertInstalling()  const { return m_certInstalling; }
@@ -450,6 +509,8 @@ void NetworkProxyController::setFilterContentType(const QString& type)
 
 void NetworkProxyController::setSelectedIndex(int index)
 {
+    if (!m_requestModel || index < 0 || index >= m_requestModel->rowCount())
+        index = -1;
     if (m_selectedIndex != index) {
         m_selectedIndex = index;
         emit selectedIndexChanged();
@@ -491,6 +552,10 @@ void NetworkProxyController::startProxy()
     if (m_proxyRunning || !m_viewModel)
         return;
 
+    m_proxyRequested = true;
+    m_acceptInterceptEvents = false;
+    clearInterceptedRequests();
+
     commonHead::viewModels::model::ProxyConfig config;
     config.proxyPort = m_proxyPort;
     config.autoSystemProxy = m_autoSystemProxy;
@@ -500,6 +565,13 @@ void NetworkProxyController::startProxy()
 
 void NetworkProxyController::stopProxy()
 {
+    m_proxyRequested = false;
+    m_acceptInterceptEvents = false;
+    clearInterceptedRequests();
+    if (m_addonConnected) {
+        m_addonConnected = false;
+        emit addonConnectedChanged();
+    }
     if (!m_viewModel)
         return;
 
@@ -508,12 +580,10 @@ void NetworkProxyController::stopProxy()
 
 void NetworkProxyController::clearRequests()
 {
+    setSelectedIndex(-1);
     if (m_requestModel)
         m_requestModel->clear();
 
-    m_selectedIndex = -1;
-    emit selectedIndexChanged();
-    emit detailTextChanged();
     emit requestCountChanged();
 }
 
@@ -537,7 +607,7 @@ void NetworkProxyController::exportRequests(const QString& filePath)
     if (file.open(QIODevice::WriteOnly)) {
         file.write(QJsonDocument(arr).toJson(QJsonDocument::Indented));
         file.close();
-        setStatusMessage(tr("Exported %1 requests").arg(arr.size()));
+        setStatusMessage(tr("Exported %1 retained requests").arg(arr.size()));
     }
 }
 
@@ -548,24 +618,61 @@ void NetworkProxyController::exportRequests(const QString& filePath)
 
 void NetworkProxyController::resumeRequest(const QString& flowId)
 {
-    if (m_viewModel)
-        m_viewModel->resumeRequest(flowId.toStdString());
-
-    QJsonObject patch;
-    patch["flow_id"] = flowId;
-    patch["is_intercepted"] = false;
-    m_requestModel->addOrUpdateRequest(patch);
+    sendInterceptAction(flowId, false);
 }
 
 void NetworkProxyController::dropRequest(const QString& flowId)
 {
-    if (m_viewModel)
-        m_viewModel->dropRequest(flowId.toStdString());
+    sendInterceptAction(flowId, true);
+}
 
+void NetworkProxyController::resumeAllRequests()
+{
+    const QStringList ids = m_interceptedModel->flowIds();
+    for (const QString& flowId : ids)
+        resumeRequest(flowId);
+}
+
+void NetworkProxyController::dropAllRequests()
+{
+    const QStringList ids = m_interceptedModel->flowIds();
+    for (const QString& flowId : ids)
+        dropRequest(flowId);
+}
+
+void NetworkProxyController::sendInterceptAction(const QString& flowId, bool drop)
+{
+    if (!m_viewModel || !m_addonConnected || !m_acceptInterceptEvents) {
+        setStatusMessage(tr("Cannot operate on paused requests: addon is disconnected"));
+        return;
+    }
+    if (!m_interceptedModel->contains(flowId) || m_interceptedModel->isActionPending(flowId))
+        return;
+
+    // Keep the row until the addon confirms its terminal state.
+    m_interceptedModel->setActionPending(flowId, true);
+    if (drop)
+        m_viewModel->dropRequest(flowId.toStdString());
+    else
+        m_viewModel->resumeRequest(flowId.toStdString());
+}
+
+void NetworkProxyController::updateCapturedInterceptState(const QString& flowId, bool intercepted)
+{
     QJsonObject patch;
-    patch["flow_id"] = flowId;
-    patch["is_intercepted"] = false;
+    patch[QStringLiteral("flow_id")] = flowId;
+    patch[QStringLiteral("is_intercepted")] = intercepted;
     m_requestModel->addOrUpdateRequest(patch);
+}
+
+void NetworkProxyController::clearInterceptedRequests()
+{
+    const QStringList ids = m_interceptedModel->flowIds();
+    m_interceptedModel->clear();
+    for (const QString& flowId : ids)
+        updateCapturedInterceptState(flowId, false);
+    if (!ids.isEmpty() && m_selectedIndex >= 0)
+        emit detailTextChanged();
 }
 
 // ====================== Blacklist/MapLocal/MapRemote/Throttle ======================
@@ -590,10 +697,29 @@ void NetworkProxyController::copyRequestCurl()
         return;
 
     QJsonObject req = m_requestModel->getRequestAt(m_selectedIndex);
+    if (req.value(QStringLiteral("request_headers_truncated")).toBool()) {
+        setStatusMessage(tr("Cannot copy cURL: request headers were not retained"));
+        return;
+    }
+
     QString method = req["method"].toString();
     if (method.isEmpty())
         method = QStringLiteral("GET");
     QString url = req["url"].toString();
+
+    QString requestBody = req["request_body"].toString();
+    qint64 requestContentLength = req["request_content_length"].toVariant().toLongLong();
+    if (requestContentLength > kMaxCapturedBodyBytes || (requestBody.isEmpty() && requestContentLength > 0)) {
+        setStatusMessage(tr("Cannot copy cURL: complete request body was not captured"));
+        return;
+    }
+    if (req.value(QStringLiteral("request_body_base64")).toBool(false)
+        || requestBody.contains(QChar(0))
+        || (!requestBody.isEmpty() && requestContentLength > 0
+            && requestBody.toUtf8().size() != requestContentLength)) {
+        setStatusMessage(tr("Cannot copy cURL: request body cannot be replayed accurately"));
+        return;
+    }
 
     QString curl = QStringLiteral("curl -X %1 %2").arg(method, shellSingleQuote(url));
 
@@ -605,21 +731,14 @@ void NetworkProxyController::copyRequestCurl()
     }
 
     // Add request body for replayable requests.
-    QString requestBody = req["request_body"].toString();
-    bool requestBodyBase64 = req["request_body_base64"].toBool(false);
-    qint64 requestContentLength = req["request_content_length"].toVariant().toLongLong();
-    if (!requestBody.isEmpty() || requestContentLength > 0) {
-        if (requestBodyBase64) {
-            curl += QStringLiteral(" --data-binary %1").arg(shellSingleQuote(requestBody));
-            curl += QStringLiteral(" -H 'X-TemplateTool-Body-Base64: 1'");
-        } else {
-            curl += QStringLiteral(" --data-raw %1").arg(shellSingleQuote(requestBody));
-        }
-    }
+    if (!requestBody.isEmpty())
+        curl += QStringLiteral(" --data-raw %1").arg(shellSingleQuote(requestBody));
 
     QClipboard* clipboard = QGuiApplication::clipboard();
-    if (clipboard)
+    if (clipboard) {
         clipboard->setText(curl);
+        setStatusMessage(tr("Copied request as cURL"));
+    }
 }
 
 void NetworkProxyController::copyResponseBody()
@@ -628,9 +747,25 @@ void NetworkProxyController::copyResponseBody()
         return;
 
     QJsonObject req = m_requestModel->getRequestAt(m_selectedIndex);
+    const QString body = req.value(QStringLiteral("response_body")).toString();
+    const qint64 contentLength = req.value(QStringLiteral("response_content_length")).toVariant().toLongLong();
+    if (body.isEmpty() && contentLength > 0) {
+        setStatusMessage(tr("Cannot copy response body: captured body is unavailable"));
+        return;
+    }
     QClipboard* clipboard = QGuiApplication::clipboard();
-    if (clipboard)
-        clipboard->setText(req["response_body"].toString());
+    if (clipboard) {
+        clipboard->setText(body);
+        const bool base64Encoded = req.value(QStringLiteral("response_body_base64")).toBool(false);
+        if (base64Encoded && contentLength > kMaxCapturedBodyBytes)
+            setStatusMessage(tr("Copied base64-encoded truncated captured response body"));
+        else if (base64Encoded)
+            setStatusMessage(tr("Copied base64-encoded captured response body"));
+        else if (contentLength > kMaxCapturedBodyBytes)
+            setStatusMessage(tr("Copied truncated captured response body"));
+        else
+            setStatusMessage(tr("Copied response body"));
+    }
 }
 
 // ====================== ViewModel emitter slots ======================
@@ -640,7 +775,23 @@ void NetworkProxyController::onProxyStateChanged(int state)
     using PS = commonHead::viewModels::model::ProxyState;
     auto proxyState = static_cast<PS>(state);
 
-    bool running = (proxyState == PS::Starting || proxyState == PS::Running);
+    // Worker notifications may still be queued after stop or after a new start.
+    if (m_viewModel && proxyState != m_viewModel->proxyState())
+        return;
+    const bool active = (proxyState == PS::Starting || proxyState == PS::Running);
+    if (active && !m_proxyRequested)
+        return;
+    if (!active)
+        m_proxyRequested = false;
+    const bool running = active && m_proxyRequested;
+    if (proxyState != PS::Running) {
+        m_acceptInterceptEvents = false;
+        clearInterceptedRequests();
+        if (m_addonConnected) {
+            m_addonConnected = false;
+            emit addonConnectedChanged();
+        }
+    }
     if (m_proxyRunning != running) {
         m_proxyRunning = running;
         emit proxyRunningChanged();
@@ -649,14 +800,28 @@ void NetworkProxyController::onProxyStateChanged(int state)
 
 void NetworkProxyController::onAddonConnectionChanged(bool connected)
 {
+    using PS = commonHead::viewModels::model::ProxyState;
+    const PS state = m_viewModel ? m_viewModel->proxyState() : PS::Idle;
+    if (connected && (!m_proxyRequested || state != PS::Running))
+        return;
+    if (!connected && m_proxyRequested && (state == PS::Starting || state == PS::Running))
+        return;
+
+    m_acceptInterceptEvents = connected && m_proxyRunning;
+    if (!connected)
+        clearInterceptedRequests();
     if (m_addonConnected != connected) {
         m_addonConnected = connected;
         emit addonConnectedChanged();
     }
 
     // Re-sync rules when addon reconnects
-    if (connected && m_rulesManager)
-        m_rulesManager->sendAllRules();
+    if (connected) {
+        if (m_viewModel)
+            m_viewModel->setInterceptEnabled(m_interceptEnabled);
+        if (m_rulesManager)
+            m_rulesManager->sendAllRules();
+    }
 }
 
 void NetworkProxyController::onRequestCaptured(const QString& /*flowId*/, const QString& rawJson)
@@ -685,18 +850,49 @@ void NetworkProxyController::onResponseCaptured(const QString& /*flowId*/, const
         emit detailTextChanged();
 }
 
-void NetworkProxyController::onRequestIntercepted(const QString& flowId, const QString& detailJson)
+void NetworkProxyController::onRequestIntercepted(const QString& flowId, const QString& detailJson, quint64 generation)
 {
-    QJsonObject patch;
-    patch["flow_id"] = flowId;
-    patch["is_intercepted"] = true;
-    m_requestModel->addOrUpdateRequest(patch);
+    if (!m_proxyRequested || !m_acceptInterceptEvents || flowId.isEmpty()
+        || generation != m_viewModelEmitter->interceptGeneration()
+        || !m_viewModel || m_viewModel->proxyState() != commonHead::viewModels::model::ProxyState::Running)
+        return;
 
     QJsonParseError err;
     QJsonDocument doc = QJsonDocument::fromJson(detailJson.toUtf8(), &err);
-    QJsonObject detail = (err.error == QJsonParseError::NoError) ? doc.object() : QJsonObject();
+    const QJsonObject detail = (err.error == QJsonParseError::NoError) ? doc.object() : QJsonObject();
 
-    emit interceptedRequest(flowId, detail);
+    updateCapturedInterceptState(flowId, true);
+    if (!m_interceptedModel->addOrUpdate(flowId, detail)) {
+        // Never leave a live request paused merely because its display cannot be retained.
+        m_viewModel->resumeRequest(flowId.toStdString());
+        setStatusMessage(tr("Paused request limit reached; forwarding request"));
+    }
+    if (m_selectedIndex >= 0)
+        emit detailTextChanged();
+}
+
+void NetworkProxyController::onInterceptFinished(const QString& flowId, const QString& reason, quint64 generation)
+{
+    if (!m_proxyRequested || !m_acceptInterceptEvents || flowId.isEmpty()
+        || generation != m_viewModelEmitter->interceptGeneration()
+        || !m_viewModel || m_viewModel->proxyState() != commonHead::viewModels::model::ProxyState::Running)
+        return;
+
+    m_interceptedModel->remove(flowId);
+    updateCapturedInterceptState(flowId, false);
+    if (m_selectedIndex >= 0)
+        emit detailTextChanged();
+
+    if (reason == QLatin1String("timeout"))
+        setStatusMessage(tr("Paused request timed out and was forwarded"));
+    else if (reason == QLatin1String("capacity"))
+        setStatusMessage(tr("Paused request limit reached; request was forwarded"));
+    else if (reason == QLatin1String("disabled"))
+        setStatusMessage(tr("Request forwarded because interception was disabled"));
+    else if (reason == QLatin1String("resumed"))
+        setStatusMessage(tr("Paused request forwarded"));
+    else if (reason == QLatin1String("dropped"))
+        setStatusMessage(tr("Paused request dropped"));
 }
 
 void NetworkProxyController::onStatusMessage(const QString& message)

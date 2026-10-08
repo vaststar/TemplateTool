@@ -2,6 +2,7 @@
 
 #include <ucf/services/UpgradeService/UpgradeModel.h>
 #include <ucf/services/UpgradeService/IUpgradeServiceCallback.h>
+#include "AsyncCallbackGate.h"
 #include "fsm/UpgradeStates.h"
 
 #include <atomic>
@@ -47,6 +48,9 @@ public:
     /// Called once by Service::initService() — binds everything and creates FSM
     void initialize(Listener* listener);
 
+    /// Stop accepting work and drain callbacks before the Service is destroyed.
+    void shutdown();
+
     // ── Operations (called by Service, one-line delegation) ──
 
     void checkForUpgrade(bool userTriggered);
@@ -86,6 +90,8 @@ private:
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
     Listener* mListener{nullptr};
+    std::shared_ptr<AsyncCallbackGate> mCallbackGate{std::make_shared<AsyncCallbackGate>()};
+    std::once_flag mShutdownOnce;
 
     // FSM
     // Declared before sub-managers so it outlives them during destruction.
@@ -101,8 +107,6 @@ private:
     std::thread mAutoCheckThread;
     std::atomic<bool> mStopRequested{false};
 
-    // Liveness sentinel for async callbacks; declared last so it expires first.
-    std::shared_ptr<int> mAlive{std::make_shared<int>(0)};
 };
 
 } // namespace ucf::service
