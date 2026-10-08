@@ -71,7 +71,11 @@ public:
     [[nodiscard]] virtual std::vector<model::DisplayInfoVM> getDisplayList() const = 0;
 
     // === Region Selection & Save ===
-    virtual void selectRegionAndSave(int x, int y, int w, int h, double scaleFactor) = 0;
+    /// Synchronous export. Annotations are logical coordinates relative to the selected region.
+    /// Export uses a copy and preserves the captured image, annotations and undo/redo history.
+    [[nodiscard]] virtual model::ScreenshotSaveResult selectRegionAndSave(
+        int x, int y, int w, int h, double scaleFactor,
+        const std::vector<model::AnnotationData>& annotations) = 0;
     virtual void discardCapture() = 0;
 
     // === Annotation Editing ===
@@ -86,7 +90,7 @@ public:
     [[nodiscard]] virtual bool canRedo() const = 0;
 
     // === Export ===
-    virtual std::string saveScreenshot() = 0;
+    virtual model::ScreenshotSaveResult saveScreenshot() = 0;
     [[nodiscard]] virtual std::string getBase64Png() const = 0;
 
     // === Settings ===

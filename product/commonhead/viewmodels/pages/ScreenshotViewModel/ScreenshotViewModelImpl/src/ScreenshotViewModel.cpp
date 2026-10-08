@@ -10,12 +10,47 @@
 #include <commonhead/viewmodels/ScreenshotViewModel/ScreenshotViewModelCreator.h>
 #include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
 
+#include <algorithm>
 #include <chrono>
+#include <cstdlib>
+#include <exception>
+#include <limits>
+#include <stdexcept>
+#include <utility>
 #include <cmath>
 #include <filesystem>
 #include <sstream>
 
 namespace commonHead::viewModels {
+
+namespace {
+
+int scaleToPixel(double value, double scaleFactor)
+{
+    const double scaled = std::round(value * scaleFactor);
+    if (!std::isfinite(scaled)
+        || scaled < std::numeric_limits<int>::min()
+        || scaled > std::numeric_limits<int>::max()) {
+        throw std::invalid_argument("Screenshot coordinates are outside the supported range");
+    }
+    return static_cast<int>(scaled);
+}
+
+template <typename Notify>
+void notifySaveCallbacksSafely(Notify&& notify) noexcept
+{
+    try {
+        std::forward<Notify>(notify)();
+    } catch (...) {
+        // Observer failures must not change the actual export result.
+        try {
+            SCREENSHOT_VIEW_MODEL_LOG_WARN("Screenshot callback threw; export result preserved");
+        } catch (...) {
+        }
+    }
+}
+
+} // namespace
 
 // ============================================================================
 // Factory
@@ -194,97 +229,12 @@ void ScreenshotViewModel::captureDisplay(int displayIndex)
 // Region Selection & Save
 // ============================================================================
 
-void ScreenshotViewModel::selectRegionAndSave(int x, int y, int w, int h, double scaleFactor)
+model::ScreenshotSaveResult ScreenshotViewModel::selectRegionAndSave(
+    int x, int y, int w, int h, double scaleFactor,
+    const std::vector<model::AnnotationData>& annotations)
 {
-    setState(model::ScreenshotState::Saving);
-
-    ucf::utilities::imageprocess::ImageData cropped;
-    double effectiveScale;
-    {
-        std::lock_guard lock(m_mutex);
-
-        effectiveScale = scaleFactor;
-
-        // Scale logical coordinates to physical pixels
-        ucf::utilities::imageprocess::Rect region;
-        region.x = static_cast<int>(std::round(x * effectiveScale));
-        region.y = static_cast<int>(std::round(y * effectiveScale));
-        region.width = static_cast<int>(std::round(w * effectiveScale));
-        region.height = static_cast<int>(std::round(h * effectiveScale));
-
-        cropped = ucf::utilities::imageprocess::ImageProcessUtils::cropRegion(m_capturedImage, region);
-    }
-
-    if (!cropped.isValid()) {
-        fireNotification(&IScreenshotViewModelCallback::onError,
-                         std::string("Region crop failed"));
-        setState(model::ScreenshotState::Captured);
-        return;
-    }
-
-    // Scale annotation coordinates from logical to physical pixels
-    {
-        std::lock_guard lock(m_mutex);
-        for (auto& ann : m_annotations) {
-            ann.x = static_cast<int>(std::round(ann.x * effectiveScale));
-            ann.y = static_cast<int>(std::round(ann.y * effectiveScale));
-            ann.w = static_cast<int>(std::round(ann.w * effectiveScale));
-            ann.h = static_cast<int>(std::round(ann.h * effectiveScale));
-            ann.startX = static_cast<int>(std::round(ann.startX * effectiveScale));
-            ann.startY = static_cast<int>(std::round(ann.startY * effectiveScale));
-            ann.endX = static_cast<int>(std::round(ann.endX * effectiveScale));
-            ann.endY = static_cast<int>(std::round(ann.endY * effectiveScale));
-            ann.thickness = std::max(1, static_cast<int>(std::round(ann.thickness * effectiveScale)));
-            ann.fontSize = std::max(8, static_cast<int>(std::round(ann.fontSize * effectiveScale)));
-            for (auto& [px, py] : ann.points) {
-                px *= effectiveScale;
-                py *= effectiveScale;
-            }
-        }
-    }
-
-    // Draw annotations onto cropped image
-    cropped = renderAnnotationsOnImage(cropped);
-
-    // Add timestamp watermark if enabled
-    {
-        std::lock_guard lock(m_mutex);
-        if (m_settings.addTimestamp) {
-            addTimestampWatermark(cropped);
-        }
-    }
-
-    // Save to file
-    std::string filePath;
-    {
-        std::lock_guard lock(m_mutex);
-        std::string dir = m_settings.outputDirectory;
-        if (dir.empty()) {
-            // Default to user's Desktop
-            const char* home = std::getenv("HOME");
-#if defined(_WIN32)
-            if (!home) home = std::getenv("USERPROFILE");
-#endif
-            if (home) {
-                dir = std::string(home) + "/Desktop";
-            } else {
-                dir = ".";
-            }
-        }
-
-        std::filesystem::create_directories(dir);
-        filePath = dir + "/" + generateFilename();
-    }
-
-    bool saved = ucf::utilities::imageprocess::ImageProcessUtils::saveToFile(cropped, filePath);
-    if (saved) {
-        setState(model::ScreenshotState::Idle);
-        fireNotification(&IScreenshotViewModelCallback::onScreenshotSaved, filePath);
-    } else {
-        fireNotification(&IScreenshotViewModelCallback::onError,
-                         std::string("Failed to save screenshot to: ") + filePath);
-        setState(model::ScreenshotState::Captured);
-    }
+    return saveCapturedImage(
+        ucf::utilities::imageprocess::Rect{x, y, w, h}, scaleFactor, &annotations);
 }
 
 void ScreenshotViewModel::discardCapture()
@@ -416,53 +366,176 @@ bool ScreenshotViewModel::canRedo() const
 // Export
 // ============================================================================
 
-std::string ScreenshotViewModel::saveScreenshot()
+model::ScreenshotSaveResult ScreenshotViewModel::saveScreenshot()
 {
-    ucf::utilities::imageprocess::ImageData imageToSave;
-    std::string filePath;
-    {
-        std::lock_guard lock(m_mutex);
-        if (!m_capturedImage.isValid()) return {};
+    return saveCapturedImage(std::nullopt, 1.0, nullptr);
+}
 
-        fprintf(stderr, "[ScreenshotVM] saveScreenshot: image %dx%d pixels=%zu\n",
-                m_capturedImage.width, m_capturedImage.height, m_capturedImage.pixels.size());
+model::ScreenshotSaveResult ScreenshotViewModel::saveCapturedImage(
+    const std::optional<ucf::utilities::imageprocess::Rect>& logicalRegion,
+    double scaleFactor,
+    const std::vector<model::AnnotationData>* overlayAnnotations)
+{
+    using Status = model::ScreenshotSaveStatus;
+    model::ScreenshotSaveResult result;
+    ucf::utilities::imageprocess::ImageData image;
+    model::ScreenshotSettings settings;
+    std::vector<model::AnnotationData> annotations;
+    bool startedSaving = false;
 
-        imageToSave = renderAnnotationsOnImage(m_capturedImage);
-
-        // Add timestamp watermark if enabled
-        if (m_settings.addTimestamp) {
-            addTimestampWatermark(imageToSave);
+    try {
+        {
+            std::lock_guard lock(m_mutex);
+            if (m_state == model::ScreenshotState::Saving) {
+                return {Status::Busy, {}, "A screenshot is already being saved"};
+            }
+            if (!m_capturedImage.isValid()) {
+                result = {Status::NoCapture, {}, "No screenshot is available"};
+            } else {
+                // Copy everything before publishing Saving; copying can itself fail.
+                image = m_capturedImage;
+                settings = m_settings;
+                annotations = overlayAnnotations ? *overlayAnnotations : m_annotations;
+                m_state = model::ScreenshotState::Saving;
+                startedSaving = true;
+            }
         }
 
-        std::string dir = m_settings.outputDirectory;
-        if (dir.empty()) {
-            const char* home = std::getenv("HOME");
+        if (startedSaving) {
+            notifySaveCallbacksSafely([this] {
+                fireNotification(&IScreenshotViewModelCallback::onStateChanged,
+                                 model::ScreenshotState::Saving);
+            });
+
+            result = [&]() -> model::ScreenshotSaveResult {
+                if (logicalRegion) {
+                    result.status = Status::InvalidInput;
+                    if (!std::isfinite(scaleFactor) || scaleFactor <= 0.0
+                        || logicalRegion->x < 0 || logicalRegion->y < 0
+                        || logicalRegion->width <= 0 || logicalRegion->height <= 0) {
+                        return {Status::InvalidInput, {}, "Invalid screenshot region or scale"};
+                    }
+
+                    ucf::utilities::imageprocess::Rect region{
+                        scaleToPixel(logicalRegion->x, scaleFactor),
+                        scaleToPixel(logicalRegion->y, scaleFactor),
+                        scaleToPixel(logicalRegion->width, scaleFactor),
+                        scaleToPixel(logicalRegion->height, scaleFactor)
+                    };
+                    // cropRegion adds coordinates and sizes using int arithmetic.
+                    if (region.width <= 0 || region.height <= 0
+                        || region.x > std::numeric_limits<int>::max() - region.width
+                        || region.y > std::numeric_limits<int>::max() - region.height) {
+                        return {Status::InvalidInput, {}, "Screenshot region is outside the supported range"};
+                    }
+
+                    result.status = Status::CropFailed;
+                    image = ucf::utilities::imageprocess::ImageProcessUtils::cropRegion(image, region);
+                    if (!image.isValid()) {
+                        return {Status::CropFailed, {}, "Region crop failed"};
+                    }
+
+                    result.status = Status::InvalidInput;
+                    for (auto& ann : annotations) {
+                        ann.x = scaleToPixel(ann.x, scaleFactor);
+                        ann.y = scaleToPixel(ann.y, scaleFactor);
+                        ann.w = scaleToPixel(ann.w, scaleFactor);
+                        ann.h = scaleToPixel(ann.h, scaleFactor);
+                        ann.startX = scaleToPixel(ann.startX, scaleFactor);
+                        ann.startY = scaleToPixel(ann.startY, scaleFactor);
+                        ann.endX = scaleToPixel(ann.endX, scaleFactor);
+                        ann.endY = scaleToPixel(ann.endY, scaleFactor);
+                        ann.thickness = std::max(1, scaleToPixel(ann.thickness, scaleFactor));
+                        ann.fontSize = std::max(8, scaleToPixel(ann.fontSize, scaleFactor));
+                        for (auto& [px, py] : ann.points) {
+                            px *= scaleFactor;
+                            py *= scaleFactor;
+                            // The rasterizer converts rounded points to int.
+                            (void)scaleToPixel(px, 1.0);
+                            (void)scaleToPixel(py, 1.0);
+                        }
+                    }
+                }
+
+                result.status = Status::RenderFailed;
+                image = renderAnnotationsOnImage(std::move(image), annotations);
+                if (settings.addTimestamp) {
+                    addTimestampWatermark(image);
+                }
+                if (!image.isValid()) {
+                    return {Status::RenderFailed, {}, "Screenshot rendering failed"};
+                }
+
+                result.status = Status::DirectoryCreationFailed;
+                std::string directory = settings.outputDirectory;
+                if (directory.empty()) {
+                    const char* userHome = std::getenv("HOME");
 #if defined(_WIN32)
-            if (!home) home = std::getenv("USERPROFILE");
+                    if (!userHome) userHome = std::getenv("USERPROFILE");
 #endif
-            dir = home ? std::string(home) + "/Desktop" : ".";
+                    directory = userHome ? std::string(userHome) + "/Desktop" : ".";
+                }
+                const std::filesystem::path outputDirectory(
+                    std::u8string(directory.begin(), directory.end()));
+                const auto outputPath = outputDirectory / generateFilename(settings.imageFormat);
+                const auto utf8Path = outputPath.u8string();
+                result.filePath.assign(utf8Path.begin(), utf8Path.end());
+
+                std::error_code directoryError;
+                std::filesystem::create_directories(outputDirectory, directoryError);
+                if (directoryError) {
+                    result.errorMessage = "Could not create screenshot folder: " + directoryError.message();
+                    return result;
+                }
+
+                result.status = Status::WriteFailed;
+                if (!ucf::utilities::imageprocess::ImageProcessUtils::saveToFile(image, result.filePath)) {
+                    result.errorMessage = "Failed to save screenshot to: " + result.filePath;
+                    return result;
+                }
+
+                result.status = Status::Success;
+                result.errorMessage.clear();
+                return result;
+            }();
         }
-        std::filesystem::create_directories(dir);
-        filePath = dir + "/" + generateFilename();
+    } catch (const std::invalid_argument& error) {
+        result.status = Status::InvalidInput;
+        result.errorMessage = error.what();
+    } catch (const std::exception& error) {
+        result.errorMessage = error.what();
+    } catch (...) {
+        result.errorMessage = "Unknown screenshot export error";
     }
 
-    if (ucf::utilities::imageprocess::ImageProcessUtils::saveToFile(imageToSave, filePath)) {
-        setState(model::ScreenshotState::Idle);
-        fireNotification(&IScreenshotViewModelCallback::onScreenshotSaved, filePath);
-        return filePath;
+    // The export result is final before publishing completion notifications.
+    if (startedSaving) {
+        notifySaveCallbacksSafely([this, &result] {
+            setState(result.succeeded() ? model::ScreenshotState::Idle
+                                       : model::ScreenshotState::Captured);
+        });
     }
-
-    fireNotification(&IScreenshotViewModelCallback::onError,
-                     std::string("Failed to save screenshot"));
-    return {};
+    notifySaveCallbacksSafely([this, &result] {
+        if (result.succeeded()) {
+            fireNotification(&IScreenshotViewModelCallback::onScreenshotSaved, result.filePath);
+        } else {
+            fireNotification(&IScreenshotViewModelCallback::onError, result.errorMessage);
+        }
+    });
+    return result;
 }
 
 std::string ScreenshotViewModel::getBase64Png() const
 {
-    std::lock_guard lock(m_mutex);
-    if (!m_capturedImage.isValid()) return {};
-
-    auto rendered = renderAnnotationsOnImage(m_capturedImage);
+    ucf::utilities::imageprocess::ImageData image;
+    std::vector<model::AnnotationData> annotations;
+    {
+        std::lock_guard lock(m_mutex);
+        if (!m_capturedImage.isValid()) return {};
+        image = m_capturedImage;
+        annotations = m_annotations;
+    }
+    auto rendered = renderAnnotationsOnImage(std::move(image), annotations);
     return ucf::utilities::imageprocess::ImageProcessUtils::toBase64Png(rendered);
 }
 
@@ -506,7 +579,7 @@ void ScreenshotViewModel::updateSettings(const model::ScreenshotSettings& settin
 // Internal Helpers
 // ============================================================================
 
-std::string ScreenshotViewModel::generateFilename() const
+std::string ScreenshotViewModel::generateFilename(const std::string& imageFormat)
 {
     // Format: Screenshot_YYYYMMDD_HHmmss.ext
     const auto timestamp =
@@ -516,26 +589,24 @@ std::string ScreenshotViewModel::generateFilename() const
             .failureText = "unknown"
         });
 
-    return "Screenshot_" + timestamp + "." + m_settings.imageFormat;
+    return "Screenshot_" + timestamp + "." + imageFormat;
 }
 
-ucf::utilities::imageprocess::ImageData ScreenshotViewModel::renderAnnotationsOnImage(const ucf::utilities::imageprocess::ImageData& source) const
+ucf::utilities::imageprocess::ImageData ScreenshotViewModel::renderAnnotationsOnImage(
+    ucf::utilities::imageprocess::ImageData source,
+    const std::vector<model::AnnotationData>& annotations)
 {
-    if (m_annotations.empty()) {
+    if (annotations.empty()) {
         return source;
     }
 
-    // Convert AnnotationData → Utilities Annotation
     std::vector<ucf::utilities::imageprocess::Annotation> utilsAnnotations;
-    utilsAnnotations.reserve(m_annotations.size());
-    for (const auto& ann : m_annotations) {
+    utilsAnnotations.reserve(annotations.size());
+    for (const auto& ann : annotations) {
         utilsAnnotations.push_back(toUtilsAnnotation(ann));
     }
-
-    // Make a copy and draw annotations
-    ucf::utilities::imageprocess::ImageData result = source;
-    ucf::utilities::imageprocess::ImageProcessUtils::drawAnnotations(result, utilsAnnotations);
-    return result;
+    ucf::utilities::imageprocess::ImageProcessUtils::drawAnnotations(source, utilsAnnotations);
+    return source;
 }
 
 ucf::utilities::imageprocess::Annotation ScreenshotViewModel::toUtilsAnnotation(const model::AnnotationData& ann)
@@ -552,6 +623,29 @@ ucf::utilities::imageprocess::Annotation ScreenshotViewModel::toUtilsAnnotation(
     else if (ann.type == "mosaic")     a.type = ucf::utilities::imageprocess::AnnotationType::Mosaic;
     else if (ann.type == "filledrect") a.type = ucf::utilities::imageprocess::AnnotationType::FilledRect;
     else                               a.type = ucf::utilities::imageprocess::AnnotationType::Rectangle;
+
+    // The rasterizer adds rectangle bounds and the text baseline using int.
+    auto validateSum = [](int first, int second) {
+        const auto sum = static_cast<std::int64_t>(first) + second;
+        if (sum < std::numeric_limits<int>::min() || sum > std::numeric_limits<int>::max()) {
+            throw std::invalid_argument("Screenshot annotation is outside the supported range");
+        }
+    };
+    using Type = ucf::utilities::imageprocess::AnnotationType;
+    if (a.type == Type::Rectangle || a.type == Type::Ellipse
+        || a.type == Type::Mosaic || a.type == Type::FilledRect) {
+        if (ann.w < 0 || ann.h < 0) {
+            throw std::invalid_argument("Screenshot annotation dimensions must not be negative");
+        }
+        validateSum(ann.x, ann.w);
+        validateSum(ann.y, ann.h);
+    } else if (a.type == Type::Text) {
+        validateSum(ann.y, ann.fontSize);
+    }
+    for (const auto& [px, py] : ann.points) {
+        (void)scaleToPixel(px, 1.0);
+        (void)scaleToPixel(py, 1.0);
+    }
 
     a.color = {ann.r, ann.g, ann.b, ann.a};
     a.thickness = ann.thickness;

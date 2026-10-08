@@ -40,6 +40,8 @@ Window {
     property int imgHeight: 0
 
     // Selection state
+    property bool saving: false
+    property string saveError: ""
     property bool isSelecting: false
     property bool selectionComplete: false
     property real selStartX: 0
@@ -440,6 +442,7 @@ Window {
                 // Save button
                 ToolButton {
                     text: "✓"
+                    enabled: !saving
                     onClicked: saveScreenshot()
                     ToolTip.visible: hovered
                     ToolTip.text: qsTr("Save")
@@ -449,6 +452,30 @@ Window {
                         color: parent.pressed ? "#44AA44" : (parent.hovered ? "#448844" : "transparent")
                     }
                 }
+            }
+        }
+
+        // Keep export errors visible inside this fullscreen editing window.
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            width: Math.min(520, parent.width - 40)
+            height: saveErrorText.implicitHeight + 24
+            radius: 8
+            color: "#E64A2525"
+            border.color: "#E08080"
+            visible: saveError.length > 0
+            z: 10
+
+            Text {
+                id: saveErrorText
+                anchors.fill: parent
+                anchors.margins: 12
+                text: saveError
+                color: "white"
+                wrapMode: Text.Wrap
+                font: UTComponentUtil.getUIFont(UIFontToken.Body_Large)
             }
         }
 
@@ -519,25 +546,33 @@ Window {
     }
 
     function saveScreenshot() {
-        // Calculate image offset due to PreserveAspectFit centering
-        var offsetX = (overlayWindow.width - screenshotBg.paintedWidth) / 2
-        var offsetY = (overlayWindow.height - screenshotBg.paintedHeight) / 2
+        if (saving)
+            return
 
-        // Convert selection coordinates to image-relative coordinates
-        var imageX = selX - offsetX
-        var imageY = selY - offsetY
+        saving = true
+        saveError = ""
+        try {
+            // Calculate image offset due to PreserveAspectFit centering.
+            var offsetX = (overlayWindow.width - screenshotBg.paintedWidth) / 2
+            var offsetY = (overlayWindow.height - screenshotBg.paintedHeight) / 2
+            var imageX = selX - offsetX
+            var imageY = selY - offsetY
 
-        // Pass image-relative coordinates and painted dimensions
-        var result = controller.saveRegionScreenshot(
-            imageX, imageY, selW, selH,
-            screenshotBg.paintedWidth, screenshotBg.paintedHeight,
-            annotations
-        )
-
-        if (result.success) {
-            overlayWindow.close()
-        } else {
-            console.error("Failed to save screenshot:", result.error)
+            var result = controller.saveRegionScreenshot(
+                imageX, imageY, selW, selH,
+                screenshotBg.paintedWidth, screenshotBg.paintedHeight,
+                annotations
+            )
+            if (result.success) {
+                overlayWindow.close()
+            } else {
+                saveError = result.error || qsTr("Could not save the screenshot. Please try again.")
+            }
+        } catch (error) {
+            saveError = qsTr("Could not save the screenshot. Please try again.")
+            console.error("Failed to save screenshot:", error)
+        } finally {
+            saving = false
         }
     }
 }

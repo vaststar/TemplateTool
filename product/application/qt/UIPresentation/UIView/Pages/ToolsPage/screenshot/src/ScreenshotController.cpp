@@ -9,6 +9,7 @@
 #include <commonhead/viewmodels/ScreenshotViewModel/IScreenshotModel.h>
 #include <UIViewModelSignalBridge/emitters/ScreenshotViewModelEmitter.h>
 
+#include <QCoreApplication>
 #include <QGuiApplication>
 #include <QClipboard>
 #include <QStandardPaths>
@@ -20,6 +21,53 @@
 #include <QUrl>
 #include <QWindow>
 #include <QTimer>
+
+#include <utility>
+
+namespace {
+
+QVariantMap screenshotSaveResultToVariantMap(
+    const commonHead::viewModels::model::ScreenshotSaveResult& result)
+{
+    using Status = commonHead::viewModels::model::ScreenshotSaveStatus;
+    QString message;
+    switch (result.status) {
+    case Status::Success:
+        break;
+    case Status::Busy:
+        message = QCoreApplication::translate("ScreenshotController", "A screenshot is already being saved.");
+        break;
+    case Status::NoCapture:
+        message = QCoreApplication::translate("ScreenshotController", "No screenshot is available. Capture the screen again.");
+        break;
+    case Status::InvalidInput:
+        message = QCoreApplication::translate("ScreenshotController", "The selected region or annotations are invalid.");
+        break;
+    case Status::CropFailed:
+        message = QCoreApplication::translate("ScreenshotController", "The selected region could not be cropped.");
+        break;
+    case Status::RenderFailed:
+        message = QCoreApplication::translate("ScreenshotController", "The screenshot annotations could not be rendered.");
+        break;
+    case Status::DirectoryCreationFailed:
+        message = QCoreApplication::translate("ScreenshotController", "Could not create the screenshot folder.");
+        break;
+    case Status::WriteFailed:
+        message = QCoreApplication::translate("ScreenshotController", "Could not save the screenshot. Check the folder permissions and available disk space.");
+        break;
+    case Status::UnexpectedError:
+        message = QCoreApplication::translate("ScreenshotController", "Could not save the screenshot. Please try again.");
+        break;
+    }
+    return {
+        {"success", result.succeeded()},
+        {"status", static_cast<int>(result.status)},
+        {"filePath", QString::fromStdString(result.filePath)},
+        {"error", message}
+    };
+}
+
+} // namespace
 
 // ============================================================================
 // Helper: parse "#RRGGBB" or "#AARRGGBB" color string → r,g,b,a
@@ -364,23 +412,24 @@ QVariantMap ScreenshotController::saveRegionScreenshot(int x, int y, int w, int 
                                                        int paintedWidth, int paintedHeight,
                                                        const QVariantList& annotations)
 {
-    QVariantMap result;
     UIVIEW_LOG_DEBUG("saveRegionScreenshot -> ViewModel");
+    using Status = commonHead::viewModels::model::ScreenshotSaveStatus;
     if (!m_viewModel) {
-        result["success"] = false;
-        result["error"] = "ViewModel not initialized";
-        return result;
+        return screenshotSaveResultToVariantMap(
+            {Status::UnexpectedError, {}, "Screenshot ViewModel is unavailable"});
+    }
+    if (paintedWidth <= 0 || paintedHeight <= 0
+        || m_screenshotWidth <= 0 || m_screenshotHeight <= 0) {
+        return screenshotSaveResultToVariantMap(
+            {Status::InvalidInput, {}, "Invalid screenshot display dimensions"});
     }
 
-    // Compute scale factor from painted size vs actual captured image size (floating point for precision)
-    double scaleFactor = 1.0;
-    if (paintedWidth > 0) {
-        scaleFactor = static_cast<double>(m_screenshotWidth) / static_cast<double>(paintedWidth);
-        if (scaleFactor < 1.0) scaleFactor = 1.0;
-    }
+    double scaleFactor = static_cast<double>(m_screenshotWidth) / paintedWidth;
+    if (scaleFactor < 1.0) scaleFactor = 1.0;
 
-    // Add annotations from QML overlay first
-    m_viewModel->clearAnnotations();
+    // Overlay annotations are export input, not edits to the ViewModel document.
+    std::vector<commonHead::viewModels::model::AnnotationData> exportAnnotations;
+    exportAnnotations.reserve(annotations.size());
     for (const QVariant& annVar : annotations) {
         QVariantMap map = annVar.toMap();
         commonHead::viewModels::model::AnnotationData ann;
@@ -418,14 +467,12 @@ QVariantMap ScreenshotController::saveRegionScreenshot(int x, int y, int w, int 
             }
         }
 
-        m_viewModel->addAnnotation(ann);
+        exportAnnotations.push_back(std::move(ann));
     }
 
-    // Delegate region crop + save
-    m_viewModel->selectRegionAndSave(x, y, w, h, scaleFactor);
-
-    result["success"] = true;
-    return result;
+    const auto result = m_viewModel->selectRegionAndSave(
+        x, y, w, h, scaleFactor, exportAnnotations);
+    return screenshotSaveResultToVariantMap(result);
 }
 
 // ============================================================================

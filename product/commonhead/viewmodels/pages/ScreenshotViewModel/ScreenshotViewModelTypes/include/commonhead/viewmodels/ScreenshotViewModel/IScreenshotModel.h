@@ -63,6 +63,33 @@ enum class ScreenshotState {
 };
 
 // ============================================================================
+// Screenshot Save Result
+// ============================================================================
+
+enum class ScreenshotSaveStatus {
+    Success,
+    Busy,
+    NoCapture,
+    InvalidInput,
+    CropFailed,
+    RenderFailed,
+    DirectoryCreationFailed,
+    WriteFailed,
+    UnexpectedError
+};
+
+struct SCREENSHOT_VIEW_MODEL_TYPES_API ScreenshotSaveResult {
+    ScreenshotSaveStatus status = ScreenshotSaveStatus::UnexpectedError;
+    std::string filePath;       ///< Saved path on success; attempted path on write failure
+    std::string errorMessage;   ///< Diagnostic details; UI maps status to translated text
+
+    [[nodiscard]] bool succeeded() const noexcept
+    {
+        return status == ScreenshotSaveStatus::Success;
+    }
+};
+
+// ============================================================================
 // Display / Window Info (ViewModel-layer mirror of Utilities types)
 // ============================================================================
 

@@ -370,6 +370,8 @@ bool ImageProcessUtils::saveToFile(const ImageData& image, const std::string& fi
     }
     ofs.write(reinterpret_cast<const char*>(buf.data()),
               static_cast<std::streamsize>(buf.size()));
+    // close() submits buffered bytes and reports failures through the stream state.
+    ofs.close();
     return ofs.good();
 }
 

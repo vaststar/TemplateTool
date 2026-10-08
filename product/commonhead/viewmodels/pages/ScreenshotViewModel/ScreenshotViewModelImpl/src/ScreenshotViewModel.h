@@ -6,6 +6,7 @@
 #include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
 
 #include <mutex>
+#include <optional>
 
 namespace commonHead::viewModels {
 
@@ -31,7 +32,9 @@ public:
     std::vector<model::DisplayInfoVM> getDisplayList() const override;
 
     // === Region Selection & Save ===
-    void selectRegionAndSave(int x, int y, int w, int h, double scaleFactor) override;
+    model::ScreenshotSaveResult selectRegionAndSave(
+        int x, int y, int w, int h, double scaleFactor,
+        const std::vector<model::AnnotationData>& annotations) override;
     void discardCapture() override;
 
     // === Annotation Editing ===
@@ -46,7 +49,7 @@ public:
     bool canRedo() const override;
 
     // === Export ===
-    std::string saveScreenshot() override;
+    model::ScreenshotSaveResult saveScreenshot() override;
     std::string getBase64Png() const override;
 
     // === Settings ===
@@ -63,9 +66,14 @@ private:
     // Internal helpers
     void setState(model::ScreenshotState newState);
     void onCaptureCompleted(ucf::utilities::imageprocess::ImageData image, int scaleFactor);
-    ucf::utilities::imageprocess::ImageData renderAnnotationsOnImage(
-        const ucf::utilities::imageprocess::ImageData& source) const;
-    std::string generateFilename() const;
+    model::ScreenshotSaveResult saveCapturedImage(
+        const std::optional<ucf::utilities::imageprocess::Rect>& logicalRegion,
+        double scaleFactor,
+        const std::vector<model::AnnotationData>* overlayAnnotations);
+    static ucf::utilities::imageprocess::ImageData renderAnnotationsOnImage(
+        ucf::utilities::imageprocess::ImageData source,
+        const std::vector<model::AnnotationData>& annotations);
+    static std::string generateFilename(const std::string& imageFormat);
     int nextAnnotationId();
 
     // Convert between ViewModel AnnotationData and Utilities Annotation
