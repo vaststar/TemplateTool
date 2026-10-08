@@ -52,10 +52,13 @@ public:
     // 语义：
     //   - work() 返回 true  → 本次 atomicWrite 内的所有 insert/update/delete 一起提交。
     //   - work() 返回 false → 一起回滚，数据库保持调用前的状态。
-    //   - work() 抛异常     → 与 false 同样回滚，异常继续向上传播。
+    //   - work() 抛异常     → 记录错误、回滚并返回 false。
     //
     // 使用场景：多张相关表必须"同生共死"的写入（典型：多态实体的主表 + 子表）。
     // 单表写不需要走这个接口，直接调 insertIntoDatabase / updateInDatabase 即可。
+    // work 在当前线程同步执行，只能访问同一 dbId 的 CRUD；不能在其中初始化/
+    // 打开/关闭数据库、访问另一个库，或启动/等待其他线程的任务。
+    // 嵌套调用成功仅表示合入外层事务，最终提交由最外层调用决定。
     //
     // 实现说明：dbId 必须已经 initializeDB 过；返回 false 表示 dbId 未注册、
     // work 为空、或底层 SQL 失败。如果底层 wrapper 不支持原子写（理论上未来

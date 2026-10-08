@@ -7,11 +7,14 @@ namespace ucf::agents::detail {
 /// Parsed addon message from the TCP control channel.
 struct AddonMessage
 {
-    std::string type;       ///< "request", "response", "intercepted", "intercept_finished", "status", "error"
+    std::string type;       ///< Flow events, "proxy_config_result", "status", or "error"
     std::string flowId;     ///< flow_id field (empty for status/error messages)
     std::string rawJson;    ///< The original JSON line (preserved for forwarding)
     std::string message;    ///< Extracted "message" field (for status/error types)
     std::string reason;     ///< Interception completion reason (for intercept_finished)
+    std::string sessionId;  ///< Configuration session identifier (for proxy_config_result)
+    std::string revision;   ///< Canonical decimal uint64 configuration revision
+    bool accepted = false;  ///< Populated only after validating the configuration reply
 };
 
 /// Protocol helpers for communicating with the proxy addon.

@@ -3,7 +3,26 @@
 
 #include <ucf/utilities/JsonUtils/JsonValue.h>
 
+#include <algorithm>
+#include <cstddef>
+
 namespace ucf::agents::detail {
+
+namespace {
+
+bool isConfigRevision(const std::string& value)
+{
+    constexpr std::size_t maxDigits = 20;
+    constexpr const char* maxRevision = "18446744073709551615";
+    return !value.empty() && value.size() <= maxDigits
+        && (value.size() == 1 || value.front() != '0')
+        && std::all_of(value.begin(), value.end(), [](char digit) {
+            return digit >= '0' && digit <= '9';
+        })
+        && (value.size() < maxDigits || value <= maxRevision);
+}
+
+} // namespace
 
 // ═══════════════════════════════════════════════════════════════
 //  Incoming message parsing
@@ -40,6 +59,29 @@ AddonMessage AddonProtocol::parseMessage(const std::string& jsonLine)
     if (messageVal.isString())
     {
         result.message = messageVal.asString().value_or("");
+    }
+
+    if (result.type == "proxy_config_result")
+    {
+        const auto sessionIdVal = parsed.get("session_id");
+        const auto revisionVal = parsed.get("revision");
+        const auto acceptedVal = parsed.get("accepted");
+        if (!sessionIdVal.isString() || !revisionVal.isString()
+            || !acceptedVal.isBool() || !messageVal.isString())
+        {
+            NPA_LOG_WARN("Invalid proxy configuration reply fields");
+            result.type.clear();
+            return result;
+        }
+        result.sessionId = sessionIdVal.asString().value_or("");
+        result.revision = revisionVal.asString().value_or("");
+        if (result.sessionId.empty() || !isConfigRevision(result.revision))
+        {
+            NPA_LOG_WARN("Invalid proxy configuration reply session or revision");
+            result.type.clear();
+            return result;
+        }
+        result.accepted = acceptedVal.asBool().value_or(false);
     }
 
     // Extract "reason" (used by intercept_finished)

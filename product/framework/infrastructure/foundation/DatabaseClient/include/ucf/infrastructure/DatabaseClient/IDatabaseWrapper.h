@@ -76,7 +76,8 @@ public:
 
     /// @name Schema Operations
     /// @{
-    virtual void createTables(const DatabaseSchemas& tableSchemas) = 0;
+    // Create/reconcile all tables atomically; return false on any SQL failure.
+    virtual bool createTables(const DatabaseSchemas& tableSchemas) = 0;
     /// @}
 
     /// @name CRUD Operations
@@ -227,15 +228,18 @@ public:
      * savepoint is released (committed into the enclosing transaction if any,
      * or persisted to disk if at the outermost level). If work returns false,
      * or throws, the savepoint is rolled back and any changes made inside
-     * are undone; exceptions are re-thrown.
+     * are undone; exceptions are logged and converted to false.
      *
      * Safe to nest. Safe to call from inside another atomicWrite. Intended
      * for "multi-table writes that must succeed or fail together" (typical
      * use case: a polymorphic entity with a main row + a typed sub-row).
+     * Work executes synchronously on the calling thread. It may only use
+     * CRUD on this database; do not initialize/open/close a database, access a
+     * second database, or start/wait for work on another thread.
      *
      * @param work Callable returning true to commit, false to roll back.
      * @return true if work returned true and the savepoint was released;
-     *         false if work returned false, or any SQL step failed.
+     *         false if work returned false, threw, or any SQL step failed.
      */
     virtual bool executeInSavepoint(std::function<bool()> work) = 0;
     /// @}

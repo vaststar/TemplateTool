@@ -5,6 +5,10 @@
 #include <memory>
 #include <string>
 #include <cstdint>
+#include <exception>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 
 #include <ucf/utilities/ThreadPoolUtils/ThreadPoolUtilsExport.h>
 
@@ -21,7 +25,9 @@ enum class TaskPriority : uint32_t {
 /// 
 /// 特点：
 /// - 拷贝即共享：拷贝 wrapper 后，多个实例共享同一个底层线程池
-/// - 轻量包装：只做转发，不增加额外开销
+/// - 普通任务异常隔离，可通过错误回调报告
+/// - shutdown 停止所有共享副本的提交，并完成已接收的任务
+/// - 不同副本可并发调用；同一对象的赋值/移动/销毁需由调用方同步
 /// 
 /// 使用示例：
 /// @code
@@ -31,6 +37,8 @@ enum class TaskPriority : uint32_t {
 ///
 class THREAD_POOL_UTILS_API ThreadPoolWrapper final {
 public:
+    using TaskErrorHandler = std::function<void(std::exception_ptr)>;
+
     /// 创建新的线程池
     /// @param threadCount 线程数，0 = 自动检测
     /// @param name 线程池名称
@@ -47,10 +55,16 @@ public:
 
     ~ThreadPoolWrapper();
 
-    /// 提交任务
-    void submit(std::function<void()> task, 
+    /// 返回是否接收任务；空任务或已关闭时返回 false，不调用 onError。
+    /// onError 在 worker 上执行；它自身的异常也会被隔离。
+    bool submit(std::function<void()> task,
                 TaskPriority priority = TaskPriority::Normal,
-                const std::string& tag = "");
+                const std::string& tag = "",
+                TaskErrorHandler onError = {});
+
+    /// 停止提交并 drain。外部线程等待所有 workers 退出后返回 true。
+    /// 本池 worker 仅请求停止并返回 false；随后可从外部调用等待完成。
+    bool shutdown();
 
     /// 提交带返回值的任务
     template<typename Func, typename... Args>
@@ -71,7 +85,13 @@ public:
             std::bind(std::forward<Func>(f), std::forward<Args>(args)...)
         );
         auto future = task->get_future();
-        submit([task]{ (*task)(); }, priority);
+        if (!submit([task]{ (*task)(); }, priority))
+        {
+            std::promise<ReturnType> rejected;
+            rejected.set_exception(std::make_exception_ptr(
+                std::runtime_error("ThreadPool is not accepting tasks")));
+            return rejected.get_future();
+        }
         return future;
     }
 

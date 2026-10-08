@@ -30,7 +30,9 @@ Communication protocol (JSON over TCP, newline-delimited):
     {"type":"intercept_finished", "flow_id":"...", "reason":"resumed|dropped|timeout|disconnected|shutdown|disabled|capacity|cancelled"}
     {"type":"status", "message":"..."}
     {"type":"error",  "message":"..."}
+    {"type":"proxy_config_result", "session_id":"...", "revision":"1", "accepted":true, "message":"..."}
   Client -> Addon:
+    {"type":"apply_proxy_config", "session_id":"...", "revision":"1", "config":{...}}
     {"type":"update_mock_rules",       "rules":[...]}
     {"type":"update_breakpoint_rules", "rules":[...]}
     {"type":"update_blacklist",        "rules":[...]}
@@ -54,6 +56,7 @@ import socket
 import subprocess
 import threading
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -64,6 +67,7 @@ from mitmproxy import http, ctx, websocket
 from mitmproxy.flow import Flow
 
 from rewrite_rules import RewriteRule, apply_rules, compile_rules
+from proxy_config import ProxyConfig, compile_config, config_identity
 
 logger = logging.getLogger("proxy_addon")
 
@@ -210,6 +214,7 @@ class TcpClient:
         self._sock: socket.socket | None = None
         self._lock = threading.RLock()
         self._connected = False
+        self._connection_generation = 0
         self._running = True
         self._recv_thread: threading.Thread | None = None
         self._reconnect_thread: threading.Thread | None = None
@@ -222,8 +227,18 @@ class TcpClient:
             return self._connected
 
     def set_message_handler(self, handler):
-        """Set callback: handler(dict) for each received JSON message."""
+        """Set callback: handler(dict, generation) for each received JSON message."""
         self._on_message = handler
+
+    def run_if_current(self, generation: int, callback, *args):
+        """Keep a queued command and its reply attached to one TCP connection.
+
+        The callback is synchronous. Holding the connection lock prevents the
+        receive/reconnect threads from replacing its socket during a commit.
+        """
+        with self._lock:
+            if self._connected and generation == self._connection_generation:
+                callback(*args)
 
     def set_disconnect_handler(self, handler):
         """Set callback: handler() when an established connection is lost."""
@@ -280,9 +295,11 @@ class TcpClient:
                     return
                 self._sock = s
                 self._connected = True
+                self._connection_generation += 1
+                generation = self._connection_generation
             logger.info("Connected to control server %s:%d", self._host, self._port)
             self._recv_thread = threading.Thread(
-                target=self._recv_loop, args=(s,), daemon=True
+                target=self._recv_loop, args=(s, generation), daemon=True
             )
             self._recv_thread.start()
         except OSError as e:
@@ -290,7 +307,7 @@ class TcpClient:
                 s.close()
             logger.debug("Connect attempt failed: %s", e)
 
-    def _recv_loop(self, sock: socket.socket):
+    def _recv_loop(self, sock: socket.socket, generation: int):
         recv_buffer = b""
         while self._running:
             try:
@@ -302,12 +319,12 @@ class TcpClient:
                     self._mark_disconnected(sock)
                     break
                 recv_buffer += data
-                recv_buffer = self._process_buffer(recv_buffer)
+                recv_buffer = self._process_buffer(recv_buffer, generation)
             except OSError:
                 self._mark_disconnected(sock)
                 break
 
-    def _process_buffer(self, recv_buffer: bytes) -> bytes:
+    def _process_buffer(self, recv_buffer: bytes, generation: int) -> bytes:
         while b"\n" in recv_buffer:
             line, recv_buffer = recv_buffer.split(b"\n", 1)
             if not line.strip():
@@ -315,7 +332,7 @@ class TcpClient:
             try:
                 msg = json.loads(line.decode("utf-8"))
                 if self._on_message:
-                    self._on_message(msg)
+                    self._on_message(msg, generation)
             except (json.JSONDecodeError, UnicodeDecodeError) as e:
                 logger.warning("Bad JSON from control: %s", e)
         return recv_buffer
@@ -415,13 +432,16 @@ class ProxyAddon:
         self._lock = threading.RLock()
         self._loop: asyncio.AbstractEventLoop | None = None
         self._shutting_down = False
+        self._config_connection_generation: int | None = None
+        self._config_session_id: str | None = None
+        self._config_revision = -1
 
         # Rules (protected by _lock)
-        self._mock_rules: list[dict] = []
-        self._breakpoint_rules: list[dict] = []
-        self._blacklist_rules: list[dict] = []
-        self._map_local_rules: list[dict] = []
-        self._map_remote_rules: list[dict] = []
+        self._mock_rules: Sequence[dict] = ()
+        self._breakpoint_rules: Sequence[dict] = ()
+        self._blacklist_rules: Sequence[dict] = ()
+        self._map_local_rules: Sequence[dict] = ()
+        self._map_remote_rules: Sequence[dict] = ()
         self._rewrite_rules: tuple[RewriteRule, ...] = ()
         self._bypass_hosts: list[str] = list(DEFAULT_AI_BYPASS_HOSTS)
 
@@ -496,11 +516,23 @@ class ProxyAddon:
         if not self._shutting_down:
             callback(*args)
 
-    def _queue_command(self, msg: dict):
+    def _queue_command(self, msg: dict, generation: int):
         if isinstance(msg, dict):
-            self._schedule_on_loop(self._on_command, msg)
+            self._schedule_on_loop(self._dispatch_command, msg, generation)
         else:
             logger.warning("Control message must be a JSON object")
+
+    def _dispatch_command(self, msg: dict, generation: int):
+        # A previous receive thread may already have queued commands when a new
+        # socket connects. Never let those commands mutate the new session.
+        self._tcp.run_if_current(generation, self._on_current_command, msg, generation)
+
+    def _on_current_command(self, msg: dict, generation: int):
+        if self._config_connection_generation != generation:
+            self._config_connection_generation = generation
+            self._config_session_id = None
+            self._config_revision = -1
+        self._on_command(msg)
 
     def _on_disconnected(self):
         self._schedule_on_loop(self._release_intercepts, "disconnected")
@@ -804,9 +836,76 @@ class ProxyAddon:
 
     # ── command handler ──
 
+    def _reply_proxy_config(self, msg: dict, accepted: bool, message: str):
+        # The validated path echoes the exact strings sent by the client. For
+        # malformed envelopes, bound echoed values as well as the error text.
+        session_id = msg.get("session_id")
+        revision = msg.get("revision")
+        self._tcp.send({
+            "type": "proxy_config_result",
+            "session_id": session_id if isinstance(session_id, str) and len(session_id) <= 128 else "",
+            "revision": revision if isinstance(revision, str) and len(revision) <= 20 else "",
+            "accepted": accepted,
+            "message": message[:1024],
+        })
+
+    def _apply_proxy_config(self, msg: dict):
+        try:
+            session_id, revision = config_identity(msg)
+        except ValueError as exc:
+            self._reply_proxy_config(msg, False, str(exc))
+            return
+
+        if self._config_session_id is not None and session_id != self._config_session_id:
+            self._reply_proxy_config(msg, False, "session_id changed within the same connection")
+            return
+        if revision <= self._config_revision:
+            self._reply_proxy_config(msg, False, "configuration revision is stale")
+            return
+        # A rejected newer configuration also advances the version gate. An
+        # older snapshot must never subsequently replace the active state.
+        self._config_session_id = session_id
+        self._config_revision = revision
+
+        try:
+            candidate = compile_config(msg.get("config"))
+            # mitmproxy rolls this option update back if a configure hook
+            # rejects it. Do not use _apply_bypass_hosts(), which swallows errors.
+            # The transaction stays on the event loop without yielding, so no
+            # request can observe the new bypass hosts with old Python rules.
+            ctx.options.update(ignore_hosts=list(candidate.bypass_hosts))
+        except Exception as exc:
+            logger.warning("Rejected proxy configuration %s: %s", revision, exc)
+            self._reply_proxy_config(msg, False, str(exc))
+            return
+
+        self._install_proxy_config(candidate)
+        if not candidate.intercept_enabled:
+            self._release_intercepts("disabled")
+        self._reply_proxy_config(msg, True, "Proxy configuration applied")
+        logger.info("Applied proxy configuration %s (session %s)", revision, session_id)
+
+    def _install_proxy_config(self, candidate: ProxyConfig):
+        with self._lock:
+            self._mock_rules = candidate.mock_rules
+            self._breakpoint_rules = candidate.breakpoint_rules
+            self._blacklist_rules = candidate.blacklist_rules
+            self._map_local_rules = candidate.map_local_rules
+            self._map_remote_rules = candidate.map_remote_rules
+            self._rewrite_rules = candidate.rewrite_rules
+            self._bypass_hosts = list(candidate.bypass_hosts)
+            self._throttle_enabled = candidate.throttle_enabled
+            self._throttle_dl_kbps = candidate.download_kbps
+            self._throttle_ul_kbps = candidate.upload_kbps
+            self._intercept_enabled = candidate.intercept_enabled
+
     def _on_command(self, msg: dict):
         """Handle a command from the Qt client."""
         cmd_type = msg.get("type", "")
+
+        if cmd_type == "apply_proxy_config":
+            self._apply_proxy_config(msg)
+            return
 
         with self._lock:
             if cmd_type == "update_mock_rules":

@@ -60,6 +60,35 @@ Item {
             Layout.fillWidth: true
         }
 
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            UTText {
+                text: controller.rulesManager.configSyncState === "applied" ? qsTr("Rules applied")
+                    : controller.rulesManager.configSyncState === "failed" ? qsTr("Rule sync failed")
+                    : controller.addonConnected ? qsTr("Syncing rules...") : qsTr("Rules pending sync")
+                fontEnum: UIFontToken.Caption_Text
+                colorEnum: controller.rulesManager.configSyncState === "failed"
+                    ? UIColorToken.Content_Error_Text : UIColorToken.Content_Text
+            }
+            UTText {
+                Layout.fillWidth: true
+                visible: controller.rulesManager.configSyncError.length > 0
+                text: controller.rulesManager.configSyncError
+                fontEnum: UIFontToken.Caption_Text
+                colorEnum: UIColorToken.Content_Error_Text
+                wrapMode: Text.WordWrap
+            }
+            Item { Layout.fillWidth: true; visible: controller.rulesManager.configSyncError.length === 0 }
+            UTButton {
+                text: qsTr("Retry Sync")
+                visible: controller.rulesManager.configSyncState === "failed"
+                enabled: controller.addonConnected
+                onClicked: controller.rulesManager.retryConfigSync()
+            }
+        }
+
         // ════════════════════════════════════════════
         // TabBar
         // ════════════════════════════════════════════

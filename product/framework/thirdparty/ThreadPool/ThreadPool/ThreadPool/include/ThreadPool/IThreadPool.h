@@ -6,6 +6,10 @@
 #include <functional>
 #include <future>
 #include <cstdint>
+#include <exception>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 #include <ThreadPool/ThreadPoolExport.h>
 
 namespace ThreadPool {
@@ -25,6 +29,15 @@ public:
                         Priority priority = Priority::Normal,
                         const std::string& tag = "") = 0;
 
+    // Returns false for an empty task or after shutdown has been requested.
+    virtual bool trySubmit(std::function<void()> task,
+                           Priority priority = Priority::Normal,
+                           const std::string& tag = "") = 0;
+
+    // Drain accepted tasks. External callers wait for all workers and get true.
+    // A worker of this pool only requests stop and gets false.
+    virtual bool shutdown() = 0;
+
     template<typename Func, typename... Args>
     auto submitWithFuture(Func&& f, Args&&... args)
         -> std::future<std::invoke_result_t<Func, Args...>>
@@ -43,7 +56,13 @@ public:
             std::bind(std::forward<Func>(f), std::forward<Args>(args)...)
         );
         auto future = task->get_future();
-        submit([task]{ (*task)(); }, priority);
+        if (!trySubmit([task]{ (*task)(); }, priority))
+        {
+            std::promise<ReturnType> rejected;
+            rejected.set_exception(std::make_exception_ptr(
+                std::runtime_error("ThreadPool is not accepting tasks")));
+            return rejected.get_future();
+        }
         return future;
     }
 

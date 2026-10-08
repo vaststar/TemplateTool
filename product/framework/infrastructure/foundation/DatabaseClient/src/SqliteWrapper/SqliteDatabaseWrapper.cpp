@@ -1,6 +1,7 @@
 #include <sstream>
 #include <algorithm>
 #include <atomic>
+#include <exception>
 #include <numeric>
 #include <mutex>
 #include <set>
@@ -15,6 +16,17 @@
 #include "DatabaseClientLogger.h"
 
 namespace ucf::infrastructure::database{
+namespace {
+
+using StatementPtr = std::unique_ptr<sqlite3_stmt, decltype(&sqlite3_finalize)>;
+
+std::string nextSavepointName()
+{
+    static std::atomic<uint64_t> counter{0};
+    return "sp_atomic_" + std::to_string(counter.fetch_add(1));
+}
+
+} // namespace
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
@@ -32,6 +44,60 @@ public:
     bool prepareStatement(const std::string& statement, sqlite3_stmt** ppStmt);
     bool bindDBType(sqlite3_stmt* statement, const DatabaseDataValue& value, int index);
     void extractResultsFromStatement(sqlite3_stmt* statement, DatabaseDataRecords& result);
+    void invalidateConnectionNoexcept() noexcept;
+
+    class SavepointGuard final
+    {
+    public:
+        SavepointGuard(DataPrivate& owner, const std::string& name)
+            : mOwner(owner)
+            , mCreateCommand("SAVEPOINT " + name)
+            , mRollbackCommand("ROLLBACK TO SAVEPOINT " + name)
+            , mReleaseCommand("RELEASE SAVEPOINT " + name)
+            , mActive(mOwner.execute(mCreateCommand))
+        {
+        }
+
+        ~SavepointGuard() noexcept
+        {
+            if (!mActive) return;
+            mActive = false;
+            try
+            {
+                // Never RELEASE modifications when ROLLBACK TO failed.
+                if (mOwner.execute(mRollbackCommand)
+                    && mOwner.execute(mReleaseCommand))
+                {
+                    return;
+                }
+                DBCLIENT_LOG_ERROR("Savepoint cleanup failed; closing connection");
+            }
+            catch (...)
+            {
+            }
+            mOwner.invalidateConnectionNoexcept();
+        }
+
+        SavepointGuard(const SavepointGuard&) = delete;
+        SavepointGuard& operator=(const SavepointGuard&) = delete;
+
+        bool isActive() const noexcept { return mActive; }
+
+        bool release()
+        {
+            if (!mActive || !mOwner.execute(mReleaseCommand)) return false;
+            mActive = false;
+            return true;
+        }
+
+    private:
+        DataPrivate& mOwner;
+        std::string mCreateCommand;
+        std::string mRollbackCommand;
+        std::string mReleaseCommand;
+        bool mActive;
+    };
+
 private:
     mutable std::mutex mDatabaseMutex;  // Thread safety for database access
     SqliteDatabaseConfig mDatabaseConfig;
@@ -132,6 +198,18 @@ void SqliteDatabaseWrapper::DataPrivate::closeDatabase()
                 << mDatabaseConfig.fileName);
         }
         mDatabase = nullptr;
+    }
+}
+
+void SqliteDatabaseWrapper::DataPrivate::invalidateConnectionNoexcept() noexcept
+{
+    std::lock_guard<std::mutex> lock(mDatabaseMutex);
+    auto* database = mDatabase;
+    mDatabase = nullptr;
+    if (database)
+    {
+        // Outstanding statements finalize via RAII; pending writes roll back.
+        sqlite3_close_v2(database);
     }
 }
 
@@ -379,151 +457,105 @@ SqliteDatabaseWrapper::~SqliteDatabaseWrapper()
 
 bool SqliteDatabaseWrapper::open()
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     return mDataPrivate->openDatabase();
 }
 
 void SqliteDatabaseWrapper::close()
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     mDataPrivate->closeDatabase();
 }
 
 bool SqliteDatabaseWrapper::isOpen()
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     return mDataPrivate->isOpen();
-}
-
-bool SqliteDatabaseWrapper::beginTransaction()
-{
-    DBCLIENT_LOG_DEBUG("begin transaction");
-    return mDataPrivate->execute("BEGIN IMMEDIATE TRANSACTION");
-}
-
-bool SqliteDatabaseWrapper::commit()
-{
-    DBCLIENT_LOG_DEBUG("commit transaction");
-    return mDataPrivate->execute("COMMIT");
-}
-
-bool SqliteDatabaseWrapper::rollback()
-{
-    DBCLIENT_LOG_WARN("rollback transaction");
-    return mDataPrivate->execute("ROLLBACK");
 }
 
 bool SqliteDatabaseWrapper::executeInSavepoint(std::function<bool()> work)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     if (!work)
     {
         DBCLIENT_LOG_WARN("executeInSavepoint: null work callable");
         return false;
     }
 
-    // Unique name per call so nested invocations don't collide.
-    static std::atomic<uint64_t> sCounter{0};
-    const std::string spName = "sp_atomic_" + std::to_string(sCounter.fetch_add(1));
-
-    if (!mDataPrivate->execute("SAVEPOINT " + spName))
-    {
-        DBCLIENT_LOG_WARN("executeInSavepoint: failed to create savepoint " << spName);
-        return false;
-    }
-
-    bool ok = false;
     try
     {
-        ok = work();
+        DataPrivate::SavepointGuard savepoint(*mDataPrivate, nextSavepointName());
+        if (!savepoint.isActive()) return false;
+        return work() && savepoint.release();
     }
     catch (const std::exception& e)
     {
-        // Swallow: the wider stack is bool+log style and doesn't catch.
-        DBCLIENT_LOG_ERROR("executeInSavepoint: work threw std::exception: " << e.what() << ", savepoint: " << spName);
-        mDataPrivate->execute("ROLLBACK TO SAVEPOINT " + spName);
-        mDataPrivate->execute("RELEASE SAVEPOINT " + spName);
-        return false;
+        DBCLIENT_LOG_ERROR("executeInSavepoint: work failed: " << e.what());
     }
     catch (...)
     {
-        DBCLIENT_LOG_ERROR("executeInSavepoint: work threw unknown exception, savepoint: " << spName);
-        mDataPrivate->execute("ROLLBACK TO SAVEPOINT " + spName);
-        mDataPrivate->execute("RELEASE SAVEPOINT " + spName);
-        return false;
+        DBCLIENT_LOG_ERROR("executeInSavepoint: unknown exception");
     }
-
-    if (ok)
-    {
-        // RELEASE commits at outermost level, or folds into the enclosing SP when nested.
-        if (!mDataPrivate->execute("RELEASE SAVEPOINT " + spName))
-        {
-            DBCLIENT_LOG_WARN("executeInSavepoint: failed to release savepoint " << spName);
-            return false;
-        }
-        return true;
-    }
-
-    // ROLLBACK TO doesn't destroy the SP; must RELEASE to close this level.
-    if (!mDataPrivate->execute("ROLLBACK TO SAVEPOINT " + spName))
-    {
-        DBCLIENT_LOG_WARN("executeInSavepoint: failed to rollback to savepoint " << spName);
-    }
-    mDataPrivate->execute("RELEASE SAVEPOINT " + spName);
     return false;
 }
 
-void SqliteDatabaseWrapper::createTables(const DatabaseSchemas& tableSchemas)
+bool SqliteDatabaseWrapper::createTables(const DatabaseSchemas& tableSchemas)
 {
-    for (const auto& tableInfo : tableSchemas)
-    {
-        std::string createStatement = "CREATE TABLE IF NOT EXISTS " + tableInfo.tableName() + tableInfo.schema();
-        mDataPrivate->execute(createStatement);
-
-        // Reconcile columns: add any new columns that are missing in existing tables.
-        reconcileColumns(tableInfo);
-    }
+    return executeInSavepoint([&]() {
+        for (const auto& tableInfo : tableSchemas)
+        {
+            const auto sql = "CREATE TABLE IF NOT EXISTS "
+                + tableInfo.tableName() + tableInfo.schema();
+            if (!mDataPrivate->execute(sql) || !reconcileColumns(tableInfo))
+            {
+                return false;
+            }
+        }
+        return true;
+    });
 }
 
-void SqliteDatabaseWrapper::reconcileColumns(const DatabaseSchema& tableSchema)
+bool SqliteDatabaseWrapper::reconcileColumns(const DatabaseSchema& tableSchema)
 {
-    // Query existing columns via PRAGMA table_info
-    std::string pragmaStmt = "PRAGMA table_info(" + tableSchema.tableName() + ")";
-    sqlite3_stmt* stmt = nullptr;
-    if (!mDataPrivate->prepareStatement(pragmaStmt, &stmt))
-    {
-        return;
-    }
+    const auto sql = "PRAGMA table_info(" + tableSchema.tableName() + ")";
+    sqlite3_stmt* rawStatement = nullptr;
+    if (!mDataPrivate->prepareStatement(sql, &rawStatement)) return false;
+    StatementPtr statement(rawStatement, &sqlite3_finalize);
 
     std::set<std::string> existingColumns;
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    int stepResult = SQLITE_OK;
+    while ((stepResult = sqlite3_step(statement.get())) == SQLITE_ROW)
     {
-        // PRAGMA table_info column index 1 = column name
-        const char* colName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        if (colName)
-        {
-            existingColumns.insert(colName);
-        }
-    }
-    sqlite3_finalize(stmt);
-
-    if (existingColumns.empty())
-    {
-        return;
+        const auto* name = reinterpret_cast<const char*>(
+            sqlite3_column_text(statement.get(), 1));
+        if (name) existingColumns.insert(name);
     }
 
-    // Add any columns present in the schema but missing from the table
+    const int finalizeResult = sqlite3_finalize(statement.release());
+    if (stepResult != SQLITE_DONE || finalizeResult != SQLITE_OK
+        || existingColumns.empty())
+    {
+        DBCLIENT_LOG_ERROR("Schema inspection failed: " << tableSchema.tableName());
+        return false;
+    }
+
     for (const auto& col : tableSchema.columns())
     {
         if (existingColumns.find(col.mName) == existingColumns.end())
         {
-            std::string alterStmt = "ALTER TABLE " + tableSchema.tableName()
+            const auto alter = "ALTER TABLE " + tableSchema.tableName()
                 + " ADD COLUMN " + col.mName + " " + col.mAttributes;
             DBCLIENT_LOG_INFO("Schema migration: adding column "
                 << col.mName << " to table " << tableSchema.tableName());
-            mDataPrivate->execute(alterStmt);
+            if (!mDataPrivate->execute(alter)) return false;
         }
     }
+    return true;
 }
 
 bool SqliteDatabaseWrapper::insertIntoDatabase(const std::string& tableName, const Columns& columns, const Arguments& arguments, const std::source_location location)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("insert single row into table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
@@ -550,6 +582,7 @@ bool SqliteDatabaseWrapper::insertIntoDatabase(const std::string& tableName, con
         DBCLIENT_LOG_WARN("prepare statement failed, table: " << tableName);
         return false;
     }
+    StatementPtr statementGuard(statement, &sqlite3_finalize);
 
     bool success = true;
     for (size_t i = 0; i < arguments.size(); ++i)
@@ -571,7 +604,7 @@ bool SqliteDatabaseWrapper::insertIntoDatabase(const std::string& tableName, con
         }
     }
 
-    if (auto result = sqlite3_finalize(statement); SQLITE_OK != result && SQLITE_DONE != result)
+    if (auto result = sqlite3_finalize(statementGuard.release()); SQLITE_OK != result && SQLITE_DONE != result)
     {
         DBCLIENT_LOG_WARN("finalize statement failed, table: " << tableName << ", error code: " << result);
         return false;
@@ -582,6 +615,7 @@ bool SqliteDatabaseWrapper::insertIntoDatabase(const std::string& tableName, con
 
 bool SqliteDatabaseWrapper::insertBatch(const std::string& tableName, const Columns& columns, const ListOfArguments& arguments, const std::source_location location)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("batch insert into table: " << tableName
               << ", rows: " << arguments.size()
               << ", from: " << location.file_name() << '(' << location.line() << ')');
@@ -601,77 +635,68 @@ bool SqliteDatabaseWrapper::insertBatch(const std::string& tableName, const Colu
         }
     }
 
-    // Use transaction for atomicity and performance
-    if (!beginTransaction())
-    {
-        DBCLIENT_LOG_ERROR("failed to begin transaction for batch insert, table: " << tableName);
-        return false;
-    }
-
-    std::string insertStatement = generateInsertStatement(tableName, columns);
-    sqlite3_stmt* statement = nullptr;
-    if (!mDataPrivate->prepareStatement(insertStatement, &statement))
-    {
-        DBCLIENT_LOG_ERROR("prepare statement failed for batch insert, table: " << tableName);
-        rollback();
-        return false;
-    }
-
-    bool success = true;
     size_t insertedCount = 0;
-
-    for (const auto& argument : arguments)
-    {
-        for (size_t i = 0; i < argument.size(); ++i)
+    const bool success = executeInSavepoint([&]() {
+        std::string insertStatement = generateInsertStatement(tableName, columns);
+        sqlite3_stmt* statement = nullptr;
+        if (!mDataPrivate->prepareStatement(insertStatement, &statement))
         {
-            if (!mDataPrivate->bindDBType(statement, argument[i], static_cast<int>(i + 1)))
+            DBCLIENT_LOG_ERROR("prepare statement failed for batch insert, table: " << tableName);
+            return false;
+        }
+        StatementPtr statementGuard(statement, &sqlite3_finalize);
+
+        bool rowsSucceeded = true;
+
+        for (const auto& argument : arguments)
+        {
+            for (size_t i = 0; i < argument.size(); ++i)
             {
-                DBCLIENT_LOG_ERROR("bind failed at row " << insertedCount << ", table: " << tableName);
-                success = false;
+                if (!mDataPrivate->bindDBType(statement, argument[i], static_cast<int>(i + 1)))
+                {
+                    DBCLIENT_LOG_ERROR("bind failed at row " << insertedCount << ", table: " << tableName);
+                    rowsSucceeded = false;
+                    break;
+                }
+            }
+
+            if (!rowsSucceeded) break;
+
+            if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
+            {
+                DBCLIENT_LOG_ERROR("step failed at row " << insertedCount << ", table: " << tableName << ", error: " << result);
+                rowsSucceeded = false;
                 break;
             }
+
+            if (auto result = sqlite3_reset(statement); SQLITE_OK != result)
+            {
+                DBCLIENT_LOG_ERROR("reset failed at row " << insertedCount << ", table: " << tableName << ", error: " << result);
+                rowsSucceeded = false;
+                break;
+            }
+
+            ++insertedCount;
         }
 
-        if (!success) break;
-
-        if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
+        if (sqlite3_finalize(statementGuard.release()) != SQLITE_OK)
         {
-            DBCLIENT_LOG_ERROR("step failed at row " << insertedCount << ", table: " << tableName << ", error: " << result);
-            success = false;
-            break;
+            rowsSucceeded = false;
         }
 
-        if (auto result = sqlite3_reset(statement); SQLITE_OK != result)
-        {
-            DBCLIENT_LOG_ERROR("reset failed at row " << insertedCount << ", table: " << tableName << ", error: " << result);
-            success = false;
-            break;
-        }
-
-        ++insertedCount;
-    }
-
-    sqlite3_finalize(statement);
+        return rowsSucceeded;
+    });
 
     if (success)
     {
-        if (commit())
-        {
-            DBCLIENT_LOG_INFO("batch insert completed, table: " << tableName << ", rows: " << insertedCount);
-            return true;
-        }
-        else
-        {
-            DBCLIENT_LOG_ERROR("commit failed for batch insert, table: " << tableName);
-            return false;
-        }
+        DBCLIENT_LOG_INFO("batch insert completed, table: " << tableName
+            << ", rows: " << insertedCount);
     }
     else
     {
-        DBCLIENT_LOG_WARN("batch insert failed, rolling back, table: " << tableName << ", inserted before failure: " << insertedCount);
-        rollback();
-        return false;
+        DBCLIENT_LOG_WARN("batch insert failed, table: " << tableName);
     }
+    return success;
 }
 
 std::string SqliteDatabaseWrapper::generateInsertStatement(const std::string& tableName, const Columns& columns) const
@@ -816,42 +841,34 @@ std::string SqliteDatabaseWrapper::createWhereCondition(const ListsOfWhereCondit
 
 void SqliteDatabaseWrapper::fetchFromDatabase(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit, const std::source_location location)
 {
-    DBCLIENT_LOG_DEBUG("fetch data from table: " << tableName << ", from: "
-              << location.file_name() << '('
-              << location.line() << ':'
-              << location.column() << ") `"
-              << location.function_name());
-    std::string selectStatement = generateSelectStatement(tableName, columns, arguments, limit);
-    sqlite3_stmt* statement = nullptr;
-    if (!mDataPrivate->prepareStatement(selectStatement, &statement))
+    if (!func) return;
+    DatabaseDataRecords result;
     {
-        DBCLIENT_LOG_WARN("prepare statment failed, table: " << tableName);
-        func({});
-        return;
-    }
-
-
-    for(size_t i = 0; i < arguments.size(); ++i)
-    {
-        if (!mDataPrivate->bindDBType(statement, std::get<1>(arguments[i]), i+1))
+        std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
+        const auto read = [&]() -> bool {
+            const auto sql = generateSelectStatement(tableName, columns, arguments, limit);
+            sqlite3_stmt* rawStatement = nullptr;
+            if (!mDataPrivate->prepareStatement(sql, &rawStatement)) return false;
+            StatementPtr statement(rawStatement, &sqlite3_finalize);
+            for (size_t i = 0; i < arguments.size(); ++i)
+            {
+                if (!mDataPrivate->bindDBType(statement.get(),
+                    std::get<1>(arguments[i]), static_cast<int>(i + 1)))
+                {
+                    return false;
+                }
+            }
+            mDataPrivate->extractResultsFromStatement(statement.get(), result);
+            return sqlite3_finalize(statement.release()) == SQLITE_OK;
+        };
+        if (!read())
         {
-            DBCLIENT_LOG_WARN("bind statment failed, table: " << tableName << ", index: " << i);
-            func({});
-            return;
+            DBCLIENT_LOG_WARN("fetch failed, table: " << tableName
+                << ", from: " << location.file_name() << '(' << location.line() << ')');
+            result.clear();
         }
     }
-
-    DatabaseDataRecords result;
-    mDataPrivate->extractResultsFromStatement(statement, result);
-
-    if (auto result = sqlite3_finalize(statement); SQLITE_OK != result && SQLITE_DONE != result)
-    {
-        DBCLIENT_LOG_WARN("finalize statment failed, table: " << tableName << ", error code: " << result);
-        func({});
-        return;
-    }
-
-    DBCLIENT_LOG_DEBUG("fetch data succeed, table: " << tableName);
+    // Release this operation's lock before invoking the caller.
     func(result);
 }
 
@@ -937,6 +954,7 @@ std::string SqliteDatabaseWrapper::generateDeleteStatement(const std::string& ta
 
 int64_t SqliteDatabaseWrapper::updateInDatabase(const std::string& tableName, const Columns& columns, const Arguments& values, const ListsOfWhereCondition& conditions, const std::source_location location)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("update table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
@@ -963,6 +981,7 @@ int64_t SqliteDatabaseWrapper::updateInDatabase(const std::string& tableName, co
         DBCLIENT_LOG_WARN("prepare statement failed, table: " << tableName);
         return -1;
     }
+    StatementPtr statementGuard(statement, &sqlite3_finalize);
 
     // Bind SET values
     for (size_t i = 0; i < values.size(); ++i)
@@ -970,7 +989,7 @@ int64_t SqliteDatabaseWrapper::updateInDatabase(const std::string& tableName, co
         if (!mDataPrivate->bindDBType(statement, values[i], static_cast<int>(i + 1)))
         {
             DBCLIENT_LOG_WARN("bind SET value failed, table: " << tableName << ", index: " << i);
-            sqlite3_finalize(statement);
+            sqlite3_finalize(statementGuard.release());
             return -1;
         }
     }
@@ -984,7 +1003,7 @@ int64_t SqliteDatabaseWrapper::updateInDatabase(const std::string& tableName, co
             if (!mDataPrivate->bindDBType(statement, value, static_cast<int>(values.size() + i + 1)))
             {
                 DBCLIENT_LOG_WARN("bind WHERE value failed, table: " << tableName << ", index: " << i);
-                sqlite3_finalize(statement);
+                sqlite3_finalize(statementGuard.release());
                 return -1;
             }
         }
@@ -993,13 +1012,13 @@ int64_t SqliteDatabaseWrapper::updateInDatabase(const std::string& tableName, co
     if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
     {
         DBCLIENT_LOG_WARN("step statement failed, table: " << tableName << ", error code: " << result);
-        sqlite3_finalize(statement);
+        sqlite3_finalize(statementGuard.release());
         return -1;
     }
 
     int64_t changedRows = sqlite3_changes(sqlite3_db_handle(statement));
 
-    if (auto result = sqlite3_finalize(statement); SQLITE_OK != result && SQLITE_DONE != result)
+    if (auto result = sqlite3_finalize(statementGuard.release()); SQLITE_OK != result && SQLITE_DONE != result)
     {
         DBCLIENT_LOG_WARN("finalize statement failed, table: " << tableName << ", error code: " << result);
         return -1;
@@ -1011,6 +1030,7 @@ int64_t SqliteDatabaseWrapper::updateInDatabase(const std::string& tableName, co
 
 bool SqliteDatabaseWrapper::updateBatch(const std::string& tableName, const Columns& keyColumns, const Columns& valueColumns, const ListOfArguments& items, const std::source_location location)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("batch update table: " << tableName
               << ", rows: " << items.size()
               << ", from: " << location.file_name() << '(' << location.line() << ')');
@@ -1031,108 +1051,100 @@ bool SqliteDatabaseWrapper::updateBatch(const std::string& tableName, const Colu
         }
     }
 
-    // Use transaction for atomicity
-    if (!beginTransaction())
-    {
-        DBCLIENT_LOG_ERROR("failed to begin transaction for batch update, table: " << tableName);
-        return false;
-    }
-
-    // Build WHERE conditions from key columns
-    ListsOfWhereCondition conditions;
-    for (const auto& keyCol : keyColumns)
-    {
-        conditions.emplace_back(keyCol, DatabaseDataValue{}, DBOperatorType::Equal);
-    }
-
-    std::string updateStatement = generateUpdateStatement(tableName, valueColumns, conditions);
-
-    sqlite3_stmt* statement = nullptr;
-    if (!mDataPrivate->prepareStatement(updateStatement, &statement))
-    {
-        DBCLIENT_LOG_ERROR("prepare statement failed for batch update, table: " << tableName);
-        rollback();
-        return false;
-    }
-
-    bool success = true;
     size_t updatedCount = 0;
-
-    for (const auto& item : items)
-    {
-        // item layout: [keyValues..., valueValues...]
-        // Bind order: SET values first (valueColumns), then WHERE values (keyColumns)
-
-        // Bind SET values (from valueColumns portion of item)
-        for (size_t i = 0; i < valueColumns.size(); ++i)
+    const bool success = executeInSavepoint([&]() {
+        // Build WHERE conditions from key columns
+        ListsOfWhereCondition conditions;
+        for (const auto& keyCol : keyColumns)
         {
-            size_t itemIndex = keyColumns.size() + i;  // value columns come after key columns in item
-            if (!mDataPrivate->bindDBType(statement, item[itemIndex], static_cast<int>(i + 1)))
+            conditions.emplace_back(keyCol, DatabaseDataValue{}, DBOperatorType::Equal);
+        }
+
+        std::string updateStatement = generateUpdateStatement(tableName, valueColumns, conditions);
+
+        sqlite3_stmt* statement = nullptr;
+        if (!mDataPrivate->prepareStatement(updateStatement, &statement))
+        {
+            DBCLIENT_LOG_ERROR("prepare statement failed for batch update, table: " << tableName);
+            return false;
+        }
+        StatementPtr statementGuard(statement, &sqlite3_finalize);
+
+        bool rowsSucceeded = true;
+
+        for (const auto& item : items)
+        {
+            // item layout: [keyValues..., valueValues...]
+            // Bind order: SET values first (valueColumns), then WHERE values (keyColumns)
+
+            // Bind SET values (from valueColumns portion of item)
+            for (size_t i = 0; i < valueColumns.size(); ++i)
             {
-                DBCLIENT_LOG_ERROR("bind SET value failed at row " << updatedCount << ", table: " << tableName);
-                success = false;
+                size_t itemIndex = keyColumns.size() + i;  // value columns come after key columns in item
+                if (!mDataPrivate->bindDBType(statement, item[itemIndex], static_cast<int>(i + 1)))
+                {
+                    DBCLIENT_LOG_ERROR("bind SET value failed at row " << updatedCount << ", table: " << tableName);
+                    rowsSucceeded = false;
+                    break;
+                }
+            }
+
+            if (!rowsSucceeded) break;
+
+            // Bind WHERE values (from keyColumns portion of item)
+            for (size_t i = 0; i < keyColumns.size(); ++i)
+            {
+                size_t paramIndex = valueColumns.size() + i + 1;
+                if (!mDataPrivate->bindDBType(statement, item[i], static_cast<int>(paramIndex)))
+                {
+                    DBCLIENT_LOG_ERROR("bind WHERE value failed at row " << updatedCount << ", table: " << tableName);
+                    rowsSucceeded = false;
+                    break;
+                }
+            }
+
+            if (!rowsSucceeded) break;
+
+            if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
+            {
+                DBCLIENT_LOG_ERROR("step failed at row " << updatedCount << ", table: " << tableName << ", error: " << result);
+                rowsSucceeded = false;
                 break;
             }
-        }
 
-        if (!success) break;
-
-        // Bind WHERE values (from keyColumns portion of item)
-        for (size_t i = 0; i < keyColumns.size(); ++i)
-        {
-            size_t paramIndex = valueColumns.size() + i + 1;
-            if (!mDataPrivate->bindDBType(statement, item[i], static_cast<int>(paramIndex)))
+            if (auto result = sqlite3_reset(statement); SQLITE_OK != result)
             {
-                DBCLIENT_LOG_ERROR("bind WHERE value failed at row " << updatedCount << ", table: " << tableName);
-                success = false;
+                DBCLIENT_LOG_ERROR("reset failed at row " << updatedCount << ", table: " << tableName << ", error: " << result);
+                rowsSucceeded = false;
                 break;
             }
+
+            ++updatedCount;
         }
 
-        if (!success) break;
-
-        if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
+        if (sqlite3_finalize(statementGuard.release()) != SQLITE_OK)
         {
-            DBCLIENT_LOG_ERROR("step failed at row " << updatedCount << ", table: " << tableName << ", error: " << result);
-            success = false;
-            break;
+            rowsSucceeded = false;
         }
 
-        if (auto result = sqlite3_reset(statement); SQLITE_OK != result)
-        {
-            DBCLIENT_LOG_ERROR("reset failed at row " << updatedCount << ", table: " << tableName << ", error: " << result);
-            success = false;
-            break;
-        }
-
-        ++updatedCount;
-    }
-
-    sqlite3_finalize(statement);
+        return rowsSucceeded;
+    });
 
     if (success)
     {
-        if (commit())
-        {
-            DBCLIENT_LOG_INFO("batch update completed, table: " << tableName << ", rows: " << updatedCount);
-            return true;
-        }
-        else
-        {
-            DBCLIENT_LOG_ERROR("commit failed for batch update, table: " << tableName);
-            return false;
-        }
+        DBCLIENT_LOG_INFO("batch update completed, table: " << tableName
+            << ", rows: " << updatedCount);
     }
     else
     {
-        DBCLIENT_LOG_WARN("batch update failed, rolling back, table: " << tableName << ", updated before failure: " << updatedCount);
-        rollback();
-        return false;
+        DBCLIENT_LOG_WARN("batch update failed, table: " << tableName);
     }
+    return success;
 }
 
 int64_t SqliteDatabaseWrapper::deleteFromDatabase(const std::string& tableName, const ListsOfWhereCondition& conditions, const std::source_location location)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("delete from table: " << tableName << ", from: "
               << location.file_name() << '('
               << location.line() << ':'
@@ -1147,6 +1159,7 @@ int64_t SqliteDatabaseWrapper::deleteFromDatabase(const std::string& tableName, 
         DBCLIENT_LOG_WARN("prepare statement failed, table: " << tableName);
         return -1;
     }
+    StatementPtr statementGuard(statement, &sqlite3_finalize);
 
     // Bind WHERE values
     for (size_t i = 0; i < conditions.size(); ++i)
@@ -1157,7 +1170,7 @@ int64_t SqliteDatabaseWrapper::deleteFromDatabase(const std::string& tableName, 
             if (!mDataPrivate->bindDBType(statement, value, static_cast<int>(i + 1)))
             {
                 DBCLIENT_LOG_WARN("bind WHERE value failed, table: " << tableName << ", index: " << i);
-                sqlite3_finalize(statement);
+                sqlite3_finalize(statementGuard.release());
                 return -1;
             }
         }
@@ -1166,13 +1179,13 @@ int64_t SqliteDatabaseWrapper::deleteFromDatabase(const std::string& tableName, 
     if (auto result = sqlite3_step(statement); SQLITE_OK != result && SQLITE_DONE != result)
     {
         DBCLIENT_LOG_WARN("step statement failed, table: " << tableName << ", error code: " << result);
-        sqlite3_finalize(statement);
+        sqlite3_finalize(statementGuard.release());
         return -1;
     }
 
     int64_t deletedRows = sqlite3_changes(sqlite3_db_handle(statement));
 
-    if (auto result = sqlite3_finalize(statement); SQLITE_OK != result && SQLITE_DONE != result)
+    if (auto result = sqlite3_finalize(statementGuard.release()); SQLITE_OK != result && SQLITE_DONE != result)
     {
         DBCLIENT_LOG_WARN("finalize statement failed, table: " << tableName << ", error code: " << result);
         return -1;
@@ -1184,6 +1197,7 @@ int64_t SqliteDatabaseWrapper::deleteFromDatabase(const std::string& tableName, 
 
 bool SqliteDatabaseWrapper::exists(const std::string& tableName, const ListsOfWhereCondition& conditions)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("check exists in table: " << tableName);
 
     std::stringstream selectStatement;
@@ -1223,6 +1237,7 @@ bool SqliteDatabaseWrapper::exists(const std::string& tableName, const ListsOfWh
         DBCLIENT_LOG_WARN("prepare statement failed, table: " << tableName);
         return false;
     }
+    StatementPtr statementGuard(statement, &sqlite3_finalize);
 
     // Bind WHERE values
     for (size_t i = 0; i < conditions.size(); ++i)
@@ -1233,14 +1248,14 @@ bool SqliteDatabaseWrapper::exists(const std::string& tableName, const ListsOfWh
             if (!mDataPrivate->bindDBType(statement, value, static_cast<int>(i + 1)))
             {
                 DBCLIENT_LOG_WARN("bind WHERE value failed, table: " << tableName << ", index: " << i);
-                sqlite3_finalize(statement);
+                sqlite3_finalize(statementGuard.release());
                 return false;
             }
         }
     }
 
     bool found = (sqlite3_step(statement) == SQLITE_ROW);
-    sqlite3_finalize(statement);
+    sqlite3_finalize(statementGuard.release());
 
     DBCLIENT_LOG_DEBUG("exists check completed, table: " << tableName << ", found: " << found);
     return found;
@@ -1248,6 +1263,7 @@ bool SqliteDatabaseWrapper::exists(const std::string& tableName, const ListsOfWh
 
 int64_t SqliteDatabaseWrapper::count(const std::string& tableName, const ListsOfWhereCondition& conditions)
 {
+    std::lock_guard<std::recursive_mutex> lock(mOperationMutex);
     DBCLIENT_LOG_DEBUG("count in table: " << tableName);
 
     std::stringstream selectStatement;
@@ -1286,6 +1302,7 @@ int64_t SqliteDatabaseWrapper::count(const std::string& tableName, const ListsOf
         DBCLIENT_LOG_WARN("prepare statement failed, table: " << tableName);
         return -1;
     }
+    StatementPtr statementGuard(statement, &sqlite3_finalize);
 
     // Bind WHERE values
     for (size_t i = 0; i < conditions.size(); ++i)
@@ -1296,7 +1313,7 @@ int64_t SqliteDatabaseWrapper::count(const std::string& tableName, const ListsOf
             if (!mDataPrivate->bindDBType(statement, value, static_cast<int>(i + 1)))
             {
                 DBCLIENT_LOG_WARN("bind WHERE value failed, table: " << tableName << ", index: " << i);
-                sqlite3_finalize(statement);
+                sqlite3_finalize(statementGuard.release());
                 return -1;
             }
         }
@@ -1308,7 +1325,7 @@ int64_t SqliteDatabaseWrapper::count(const std::string& tableName, const ListsOf
         rowCount = sqlite3_column_int64(statement, 0);
     }
 
-    sqlite3_finalize(statement);
+    sqlite3_finalize(statementGuard.release());
 
     DBCLIENT_LOG_DEBUG("count completed, table: " << tableName << ", count: " << rowCount);
     return rowCount;

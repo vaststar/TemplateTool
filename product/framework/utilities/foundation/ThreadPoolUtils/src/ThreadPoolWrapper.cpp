@@ -2,8 +2,61 @@
 #include <ThreadPool/IThreadPool.h>
 #include "ThreadPoolWrapperLogger.h"
 #include <thread>
+#include <algorithm>
+#include <exception>
+#include <mutex>
+#include <utility>
 
 namespace ucf::utilities {
+namespace {
+
+void reportTaskError(const std::string& poolName, const std::string& tag,
+                     std::exception_ptr error,
+                     const ThreadPoolWrapper::TaskErrorHandler& onError) noexcept
+{
+    try
+    {
+        try
+        {
+            std::rethrow_exception(error);
+        }
+        catch (const std::exception& e)
+        {
+            TPWRAPPER_LOG_ERROR("Task exception: pool=" << poolName
+                << ", tag=" << tag << ", error=" << e.what());
+        }
+        catch (...)
+        {
+            TPWRAPPER_LOG_ERROR("Task exception: pool=" << poolName
+                << ", tag=" << tag << ", unknown error");
+        }
+    }
+    catch (...)
+    {
+        // Logging must not let an exception escape the worker.
+    }
+
+    if (onError)
+    {
+        try
+        {
+            onError(error);
+        }
+        catch (...)
+        {
+            try
+            {
+                TPWRAPPER_LOG_ERROR("Task error handler failed: pool="
+                    << poolName << ", tag=" << tag);
+            }
+            catch (...)
+            {
+            }
+        }
+    }
+}
+
+} // namespace
 
 //============================================
 // Impl
@@ -11,89 +64,97 @@ namespace ucf::utilities {
 class ThreadPoolWrapper::Impl {
 public:
     explicit Impl(uint32_t threadCount, const std::string& name)
-        : mPool(ThreadPool::IThreadPool::create(threadCount, name))
-        , mName(name)
+        : mName(name)
+        , mPool(ThreadPool::IThreadPool::create(threadCount, name))
     {
-        uint32_t actualCount = (threadCount == 0) ? getAutoThreadCount() : threadCount;
-        TPWRAPPER_LOG_INFO("ThreadPool created: " << mName << ", threads=" << actualCount);
+        const auto actualCount = threadCount == 0
+            ? getAutoThreadCount() : std::min(5000u, threadCount);
+        TPWRAPPER_LOG_INFO("ThreadPool created: " << mName
+            << ", threads=" << actualCount);
     }
 
     ~Impl()
     {
-        TPWRAPPER_LOG_INFO("ThreadPool destroyed: " << mName);
+        // On a worker, the backend preserves State while draining after detach.
+        shutdown();
     }
 
-    void submit(std::function<void()> task, TaskPriority priority, const std::string& tag)
+    bool submit(std::function<void()> task, TaskPriority priority,
+                const std::string& tag, TaskErrorHandler onError)
     {
-        if (!mPool) {
-            TPWRAPPER_LOG_ERROR("Submit failed: pool is null, tag=" << tag);
-            return;
-        }
+        if (!task) return false;
 
-        TPWRAPPER_LOG_DEBUG("Task submitted: pool=" << mName 
-                            << ", tag=" << tag 
-                            << ", priority=" << priorityToString(priority)
-                            << ", pending=" << mPool->getPendingTaskCount());
-
-        // 包装任务，捕获异常
-        auto wrappedTask = [this, task = std::move(task), tag]() {
-            try {
+        auto wrappedTask = [task = std::move(task), poolName = mName,
+                            tag, onError = std::move(onError)]() noexcept {
+            try
+            {
                 task();
-            } catch (const std::exception& e) {
-                TPWRAPPER_LOG_ERROR("Task exception: pool=" << mName 
-                                    << ", tag=" << tag 
-                                    << ", error=" << e.what());
-                throw;
-            } catch (...) {
-                TPWRAPPER_LOG_ERROR("Task exception: pool=" << mName 
-                                    << ", tag=" << tag 
-                                    << ", unknown error");
-                throw;
+            }
+            catch (...)
+            {
+                reportTaskError(poolName, tag, std::current_exception(), onError);
             }
         };
 
-        auto tpPriority = static_cast<ThreadPool::Priority>(
-            static_cast<uint32_t>(priority)
-        );
-        mPool->submit(std::move(wrappedTask), tpPriority, tag);
+        std::lock_guard<std::mutex> lock(mMutex);
+        if (mStopping || !mPool) return false;
+        const auto tpPriority = static_cast<ThreadPool::Priority>(
+            static_cast<uint32_t>(priority));
+        return mPool->trySubmit(std::move(wrappedTask), tpPriority, tag);
+    }
+
+    bool shutdown()
+    {
+        std::shared_ptr<ThreadPool::IThreadPool> pool;
+        {
+            std::lock_guard<std::mutex> lock(mMutex);
+            mStopping = true;
+            pool = mPool;
+        }
+        if (!pool) return true;
+
+        // Never hold the submission mutex while waiting for tasks.
+        if (!pool->shutdown()) return false;
+
+        {
+            std::lock_guard<std::mutex> lock(mMutex);
+            mPool.reset();
+        }
+        return true;
     }
 
     std::string getName() const
     {
-        return mPool ? mPool->getName() : "";
+        return mName;
     }
 
     size_t getPendingTaskCount() const
     {
-        return mPool ? mPool->getPendingTaskCount() : 0;
+        std::shared_ptr<ThreadPool::IThreadPool> pool;
+        {
+            std::lock_guard<std::mutex> lock(mMutex);
+            pool = mPool;
+        }
+        return pool ? pool->getPendingTaskCount() : 0;
     }
 
     bool isValid() const
     {
-        return mPool != nullptr;
+        std::lock_guard<std::mutex> lock(mMutex);
+        return !mStopping && mPool != nullptr;
     }
 
 private:
-    static std::string priorityToString(TaskPriority priority)
-    {
-        switch (priority) {
-            case TaskPriority::Urgent: return "Urgent";
-            case TaskPriority::High:   return "High";
-            case TaskPriority::Normal: return "Normal";
-            case TaskPriority::Low:    return "Low";
-            default:                   return "Unknown";
-        }
-    }
-
     static uint32_t getAutoThreadCount()
     {
-        uint32_t cores = std::thread::hardware_concurrency();
+        const uint32_t cores = std::thread::hardware_concurrency();
         return std::min(64u, std::max(4u, cores * 2));
     }
 
-private:
+    const std::string mName;
+    mutable std::mutex mMutex;
     std::shared_ptr<ThreadPool::IThreadPool> mPool;
-    std::string mName;
+    bool mStopping{false};
 };
 
 //============================================
@@ -132,28 +193,37 @@ ThreadPoolWrapper& ThreadPoolWrapper::operator=(ThreadPoolWrapper&& other) noexc
 
 ThreadPoolWrapper::~ThreadPoolWrapper() = default;
 
-void ThreadPoolWrapper::submit(std::function<void()> task, 
-                                TaskPriority priority,
-                                const std::string& tag)
+bool ThreadPoolWrapper::submit(std::function<void()> task,
+                               TaskPriority priority,
+                               const std::string& tag,
+                               TaskErrorHandler onError)
 {
-    if (mImpl) {
-        mImpl->submit(std::move(task), priority, tag);
-    }
+    const auto impl = mImpl;
+    return impl && impl->submit(std::move(task), priority, tag, std::move(onError));
+}
+
+bool ThreadPoolWrapper::shutdown()
+{
+    const auto impl = mImpl;
+    return !impl || impl->shutdown();
 }
 
 std::string ThreadPoolWrapper::getName() const
 {
-    return mImpl ? mImpl->getName() : "";
+    const auto impl = mImpl;
+    return impl ? impl->getName() : "";
 }
 
 size_t ThreadPoolWrapper::getPendingTaskCount() const
 {
-    return mImpl ? mImpl->getPendingTaskCount() : 0;
+    const auto impl = mImpl;
+    return impl ? impl->getPendingTaskCount() : 0;
 }
 
 bool ThreadPoolWrapper::isValid() const
 {
-    return mImpl && mImpl->isValid();
+    const auto impl = mImpl;
+    return impl && impl->isValid();
 }
 
 } // namespace ucf::utilities

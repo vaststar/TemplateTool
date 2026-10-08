@@ -11,6 +11,8 @@
 
 #include <chrono>
 #include <filesystem>
+#include <exception>
+#include <utility>
 #include <sstream>
 
 namespace commonHead::viewModels {
@@ -255,7 +257,19 @@ void RecordingViewModel::requestThumbnail(const std::string& inputPath)
 
     std::weak_ptr<RecordingViewModel> weakSelf =
         std::static_pointer_cast<RecordingViewModel>(shared_from_this());
-    m_thumbnailThreadPool.submit([weakSelf, inputPath, ffmpegPath, outputPath]() {
+    auto reportFailure = [weakSelf, inputPath](const std::string& message) {
+        if (auto self = weakSelf.lock())
+        {
+            {
+                std::lock_guard<std::mutex> lock(self->m_mutex);
+                self->m_pendingThumbnailRequests.erase(inputPath);
+            }
+            self->fireNotification(&IRecordingViewModelCallback::onThumbnailFailed,
+                                   inputPath, message);
+        }
+    };
+
+    auto thumbnailTask = [weakSelf, inputPath, ffmpegPath, outputPath]() {
         const bool ok = ucf::utilities::screenrecording::IScreenRecorder::extractThumbnail(
             ffmpegPath,
             inputPath,
@@ -288,7 +302,45 @@ void RecordingViewModel::requestThumbnail(const std::string& inputPath)
                                        std::string("Thumbnail extraction failed"));
             }
         }
-    }, ucf::utilities::TaskPriority::Low, "recording-thumbnail");
+    };
+
+    bool accepted = false;
+    try
+    {
+        accepted = m_thumbnailThreadPool.submit(
+            std::move(thumbnailTask), ucf::utilities::TaskPriority::Low,
+            "recording-thumbnail",
+            [reportFailure](std::exception_ptr error) {
+                try
+                {
+                    std::rethrow_exception(error);
+                }
+                catch (const std::exception& e)
+                {
+                    reportFailure(e.what());
+                }
+                catch (...)
+                {
+                    reportFailure("Thumbnail extraction threw an unknown exception");
+                }
+            });
+
+    }
+    catch (const std::exception& e)
+    {
+        reportFailure(e.what());
+        return;
+    }
+    catch (...)
+    {
+        reportFailure("Thumbnail scheduling failed");
+        return;
+    }
+
+    if (!accepted)
+    {
+        reportFailure("Thumbnail worker is not accepting tasks");
+    }
 }
 
 std::string RecordingViewModel::getThumbnailPath(const std::string& inputPath) const

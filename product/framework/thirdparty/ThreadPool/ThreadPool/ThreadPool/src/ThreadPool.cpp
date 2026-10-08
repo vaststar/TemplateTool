@@ -6,8 +6,13 @@
 #include <mutex>
 #include <condition_variable>
 #include <algorithm>
+#include <cstdio>
+#include <exception>
 
 namespace ThreadPool {
+namespace {
+thread_local const void* currentPoolState = nullptr;
+} // namespace
 
 //============================================
 // IThreadPool::create
@@ -74,6 +79,7 @@ public:
     std::vector<std::thread> mWorkers;
     std::list<ThreadPoolTask> mTasks;
     std::mutex mMutex;
+    std::mutex mJoinMutex;
     std::condition_variable mCondition;
     bool mStop;
     std::string mName;
@@ -83,64 +89,103 @@ public:
 // ThreadPool
 //============================================
 ThreadPool::ThreadPool(uint32_t threadCount, const std::string& poolName)
-    : mData(std::make_unique<DataPrivate>(poolName))
+    : mData(std::make_shared<DataPrivate>(poolName))
 {
     initPool(std::min<uint32_t>(5000, threadCount));
 }
 
 ThreadPool::~ThreadPool()
 {
-    shutdown();
+    if (shutdown()) return;
+
+    // A worker cannot join itself. Workers retain State, never the pool object.
+    const auto state = mData;
+    std::lock_guard<std::mutex> joinLock(state->mJoinMutex);
+    for (auto& worker : state->mWorkers)
+    {
+        if (worker.joinable()) worker.detach();
+    }
 }
 
 void ThreadPool::initPool(uint32_t poolNumber)
 {
-    for (uint32_t i = 0; i < poolNumber; ++i)
+    const auto state = mData;
+    state->mWorkers.reserve(poolNumber);
+    try
     {
-        mData->mWorkers.emplace_back([this]() {
-            while (true)
-            {
-                ThreadPoolTask task;
+        for (uint32_t i = 0; i < poolNumber; ++i)
+        {
+            state->mWorkers.emplace_back([state]() {
+                currentPoolState = state.get();
+                while (true)
                 {
-                    std::unique_lock<std::mutex> lock(mData->mMutex);
-                    mData->mCondition.wait(lock, [this] {
-                        return mData->mStop || !mData->mTasks.empty();
-                    });
-
-                    if (mData->mStop && mData->mTasks.empty())
+                    ThreadPoolTask task;
                     {
-                        return;
+                        std::unique_lock<std::mutex> lock(state->mMutex);
+                        state->mCondition.wait(lock, [&state] {
+                            return state->mStop || !state->mTasks.empty();
+                        });
+
+                        if (state->mStop && state->mTasks.empty())
+                        {
+                            currentPoolState = nullptr;
+                            return;
+                        }
+
+                        task = std::move(state->mTasks.front());
+                        state->mTasks.pop_front();
                     }
 
-                    task = std::move(mData->mTasks.front());
-                    mData->mTasks.pop_front();
+                    try
+                    {
+                        task.execute();
+                    }
+                    catch (const std::exception& e)
+                    {
+                        std::fprintf(stderr, "ThreadPool [%s]: task failed: %s\n",
+                            state->mName.c_str(), e.what());
+                    }
+                    catch (...)
+                    {
+                        std::fprintf(stderr, "ThreadPool [%s]: unknown task exception\n",
+                            state->mName.c_str());
+                    }
                 }
-                task.execute();
-            }
-        });
+            });
+        }
+    }
+    catch (...)
+    {
+        // Construction may have already started some workers.
+        shutdown();
+        throw;
     }
 }
 
 void ThreadPool::submit(std::function<void()> task, Priority priority, const std::string& tag)
 {
-    enqueueFunc(tag, static_cast<uint32_t>(priority), std::move(task));
+    (void)trySubmit(std::move(task), priority, tag);
 }
 
-void ThreadPool::enqueueFunc(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> task)
+bool ThreadPool::trySubmit(std::function<void()> task, Priority priority, const std::string& tag)
 {
+    return enqueueFunc(tag, static_cast<uint32_t>(priority), std::move(task));
+}
+
+bool ThreadPool::enqueueFunc(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> task)
+{
+    if (!task) return false;
+    const auto state = mData;
     {
-        std::unique_lock<std::mutex> lock(mData->mMutex);
-        if (mData->mStop)
-        {
-            return;
-        }
-        auto enqueItor = std::find_if(mData->mTasks.cbegin(), mData->mTasks.cend(),
-            [urgentLevel](const ThreadPoolTask& taskItem) {
-                return taskItem > urgentLevel;
-            });
-        mData->mTasks.insert(enqueItor, ThreadPoolTask(urgentLevel, functionTag, std::move(task)));
+        std::unique_lock<std::mutex> lock(state->mMutex);
+        if (state->mStop) return false;
+        const auto position = std::find_if(state->mTasks.cbegin(), state->mTasks.cend(),
+            [urgentLevel](const ThreadPoolTask& item) { return item > urgentLevel; });
+        state->mTasks.insert(position,
+            ThreadPoolTask(urgentLevel, functionTag, std::move(task)));
     }
-    mData->mCondition.notify_one();
+    state->mCondition.notify_one();
+    return true;
 }
 
 std::string ThreadPool::getName() const
@@ -154,25 +199,24 @@ size_t ThreadPool::getPendingTaskCount() const
     return mData->mTasks.size();
 }
 
-void ThreadPool::shutdown()
+bool ThreadPool::shutdown()
 {
+    const auto state = mData;
     {
-        std::unique_lock<std::mutex> lock(mData->mMutex);
-        if (mData->mStop)
-        {
-            return;
-        }
-        mData->mStop = true;
+        std::unique_lock<std::mutex> lock(state->mMutex);
+        state->mStop = true;
     }
-    mData->mCondition.notify_all();
+    state->mCondition.notify_all();
 
-    for (auto& worker : mData->mWorkers)
+    // Must precede mJoinMutex: an external caller may be joining this worker.
+    if (currentPoolState == state.get()) return false;
+
+    std::lock_guard<std::mutex> joinLock(state->mJoinMutex);
+    for (auto& worker : state->mWorkers)
     {
-        if (worker.joinable())
-        {
-            worker.join();
-        }
+        if (worker.joinable()) worker.join();
     }
+    return true;
 }
 
 bool ThreadPool::isShutdown() const

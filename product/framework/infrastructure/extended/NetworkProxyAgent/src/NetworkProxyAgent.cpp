@@ -549,10 +549,11 @@ void NetworkProxyAgent::handleAddonMessage(const std::string& jsonLine)
     }
 
     // Cleanup may race with a batch already read from the control channel.
-    // Do not forward flow events once shutdown has started.
-    const bool isFlowEvent = msg.type == "request" || msg.type == "response"
-                          || msg.type == "intercepted" || msg.type == "intercept_finished";
-    if (isFlowEvent && state() != AgentState::Running)
+    // Do not forward session events once shutdown has started.
+    const bool isSessionEvent = msg.type == "request" || msg.type == "response"
+                             || msg.type == "intercepted" || msg.type == "intercept_finished"
+                             || msg.type == "proxy_config_result";
+    if (isSessionEvent && state() != AgentState::Running)
     {
         return;
     }
@@ -576,6 +577,11 @@ void NetworkProxyAgent::handleAddonMessage(const std::string& jsonLine)
     {
         fireNotification(&INetworkProxyAgentCallback::onInterceptFinished,
                          msg.flowId, msg.reason);
+    }
+    else if (msg.type == "proxy_config_result")
+    {
+        fireNotification(&INetworkProxyAgentCallback::onProxyConfigResult,
+                         msg.sessionId, msg.revision, msg.accepted, msg.message);
     }
     else if (msg.type == "error")
     {

@@ -272,6 +272,15 @@ void NetworkProxyViewModel::onInterceptFinished(const std::string& flowId,
                      flowId, reason);
 }
 
+void NetworkProxyViewModel::onProxyConfigResult(const std::string& sessionId,
+                                                 const std::string& revision,
+                                                 bool accepted,
+                                                 const std::string& message)
+{
+    fireNotification(&INetworkProxyViewModelCallback::onProxyConfigResult,
+                     sessionId, revision, accepted, message);
+}
+
 void NetworkProxyViewModel::onStatusMessage(const std::string& message)
 {
     fireNotification(&INetworkProxyViewModelCallback::onStatusMessage, message);

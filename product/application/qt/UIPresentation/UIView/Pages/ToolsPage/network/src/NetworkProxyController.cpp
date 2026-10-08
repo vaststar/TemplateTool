@@ -63,6 +63,8 @@ void NetworkProxyController::init()
             this, &NetworkProxyController::onRequestIntercepted);
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onInterceptFinished,
             this, &NetworkProxyController::onInterceptFinished);
+    connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onProxyConfigResult,
+            this, &NetworkProxyController::onProxyConfigResult);
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onStatusMessage,
             this, &NetworkProxyController::onStatusMessage);
     connect(m_viewModelEmitter.get(), &UIViewModelSignalBridge::NetworkProxyViewModelEmitter::signals_onCertStatusChanged,
@@ -470,8 +472,8 @@ void NetworkProxyController::setInterceptEnabled(bool enabled)
         m_interceptEnabled = enabled;
         emit interceptEnabledChanged();
 
-        if (m_viewModel)
-            m_viewModel->setInterceptEnabled(enabled);
+        if (m_rulesManager)
+            m_rulesManager->setInterceptEnabled(enabled);
     }
 }
 
@@ -555,6 +557,12 @@ void NetworkProxyController::startProxy()
     m_proxyRequested = true;
     m_acceptInterceptEvents = false;
     clearInterceptedRequests();
+    if (m_rulesManager)
+        m_rulesManager->setAddonConnected(false);
+    if (m_addonConnected) {
+        m_addonConnected = false;
+        emit addonConnectedChanged();
+    }
 
     commonHead::viewModels::model::ProxyConfig config;
     config.proxyPort = m_proxyPort;
@@ -568,6 +576,8 @@ void NetworkProxyController::stopProxy()
     m_proxyRequested = false;
     m_acceptInterceptEvents = false;
     clearInterceptedRequests();
+    if (m_rulesManager)
+        m_rulesManager->setAddonConnected(false);
     if (m_addonConnected) {
         m_addonConnected = false;
         emit addonConnectedChanged();
@@ -787,6 +797,8 @@ void NetworkProxyController::onProxyStateChanged(int state)
     if (proxyState != PS::Running) {
         m_acceptInterceptEvents = false;
         clearInterceptedRequests();
+        if (m_rulesManager)
+            m_rulesManager->setAddonConnected(false);
         if (m_addonConnected) {
             m_addonConnected = false;
             emit addonConnectedChanged();
@@ -807,6 +819,9 @@ void NetworkProxyController::onAddonConnectionChanged(bool connected)
     if (!connected && m_proxyRequested && (state == PS::Starting || state == PS::Running))
         return;
 
+    if (!connected && m_rulesManager)
+        m_rulesManager->setAddonConnected(false);
+
     m_acceptInterceptEvents = connected && m_proxyRunning;
     if (!connected)
         clearInterceptedRequests();
@@ -815,13 +830,9 @@ void NetworkProxyController::onAddonConnectionChanged(bool connected)
         emit addonConnectedChanged();
     }
 
-    // Re-sync rules when addon reconnects
-    if (connected) {
-        if (m_viewModel)
-            m_viewModel->setInterceptEnabled(m_interceptEnabled);
-        if (m_rulesManager)
-            m_rulesManager->sendAllRules();
-    }
+    // A new control session receives one complete configuration snapshot.
+    if (connected && m_rulesManager)
+        m_rulesManager->setAddonConnected(true);
 }
 
 void NetworkProxyController::onRequestCaptured(const QString& /*flowId*/, const QString& rawJson)
@@ -893,6 +904,15 @@ void NetworkProxyController::onInterceptFinished(const QString& flowId, const QS
         setStatusMessage(tr("Paused request forwarded"));
     else if (reason == QLatin1String("dropped"))
         setStatusMessage(tr("Paused request dropped"));
+}
+
+void NetworkProxyController::onProxyConfigResult(const QString& sessionId,
+                                                const QString& revision,
+                                                bool accepted,
+                                                const QString& message)
+{
+    if (m_rulesManager)
+        m_rulesManager->handleConfigResult(sessionId, revision, accepted, message);
 }
 
 void NetworkProxyController::onStatusMessage(const QString& message)

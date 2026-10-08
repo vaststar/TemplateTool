@@ -24,6 +24,7 @@ set(ADDON_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 set(ADDON_SCRIPT "${ADDON_SOURCE_DIR}/proxy_addon.py")
 set(ADDON_REWRITE_MODULE "${ADDON_SOURCE_DIR}/rewrite_rules.py")
+set(ADDON_CONFIG_MODULE "${ADDON_SOURCE_DIR}/proxy_config.py")
 set(ADDON_SPEC "${ADDON_SOURCE_DIR}/proxy_addon.spec")
 set(ADDON_REQUIREMENTS "${ADDON_SOURCE_DIR}/requirements.txt")
 
@@ -105,6 +106,7 @@ add_custom_command(
         "${ADDON_VENV_STAMP}"
         "${ADDON_SCRIPT}"
         "${ADDON_REWRITE_MODULE}"
+        "${ADDON_CONFIG_MODULE}"
         "${ADDON_SPEC}"
     WORKING_DIRECTORY "${ADDON_SOURCE_DIR}"
     COMMENT "[NetworkProxyAgent] Building proxy addon"

@@ -69,6 +69,10 @@ private:
                               const std::string& detailJson) override;
     void onInterceptFinished(const std::string& flowId,
                              const std::string& reason) override;
+    void onProxyConfigResult(const std::string& sessionId,
+                             const std::string& revision,
+                             bool accepted,
+                             const std::string& message) override;
     void onStatusMessage(const std::string& message) override;
     void onError(const std::string& errorMessage) override;
 

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <functional>
 #include <filesystem>
+#include <exception>
 
 #include <ucf/infrastructure/DatabaseClient/DatabaseDataValue.h>
 #include <ucf/infrastructure/DatabaseClient/DatabaseSchema.h>
@@ -44,7 +45,7 @@ public:
     bool atomicWrite(const std::string& dbId, std::function<bool()> work);
 
     void createFolder(const std::string& dbFilePath) const;
-    std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper> getDBWrapper(const std::string& dbId);
+    std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper> getDBWrapper(const std::string& dbId) const;
 
 private:
     ucf::infrastructure::database::DatabaseSchemas convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const;
@@ -56,6 +57,7 @@ private:
     model::DatabaseDataValue convertFromDatabaseDataValue(const ucf::infrastructure::database::DatabaseDataValue& value) const;
     model::DatabaseDataRecords convertFromDatabaseRecords(const ucf::infrastructure::database::DatabaseDataRecords& records) const;
 private:
+    std::mutex mInitializationMutex;
     mutable std::mutex mDatabaseMutex;
     std::map<std::string, std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper>> mDatabaseWrapper;
 };
@@ -69,7 +71,7 @@ DataWarehouseManager::DataPrivate::~DataPrivate()
     mDatabaseWrapper.clear();
 }
 
-std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper> DataWarehouseManager::DataPrivate::getDBWrapper(const std::string& dbId)
+std::shared_ptr<ucf::infrastructure::database::IDatabaseWrapper> DataWarehouseManager::DataPrivate::getDBWrapper(const std::string& dbId) const
 {
     std::scoped_lock<std::mutex> loc(mDatabaseMutex);
     if (auto it = mDatabaseWrapper.find(dbId); it != mDatabaseWrapper.end())
@@ -98,17 +100,16 @@ void DataWarehouseManager::DataPrivate::createFolder(const std::string& dbFilePa
 
 bool DataWarehouseManager::DataPrivate::isDatabaseReady(const std::string& dbId) const
 {
-    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
-    return mDatabaseWrapper.find(dbId) != mDatabaseWrapper.end();
+    auto wrapper = getDBWrapper(dbId);
+    return wrapper && wrapper->isOpen();
 }
 
 InitializeDBResult DataWarehouseManager::DataPrivate::initializeDB(const model::DBConfig& dbConfig, const std::vector<model::DBTableModel>& tables)
 {
-    std::scoped_lock<std::mutex> loc(mDatabaseMutex);
+    std::scoped_lock<std::mutex> initLock(mInitializationMutex);
     const auto dbId = dbConfig.getDBId();
-    if (mDatabaseWrapper.find(dbId) != mDatabaseWrapper.end())
+    if (auto existing = getDBWrapper(dbId); existing && existing->isOpen())
     {
-        SERVICE_LOG_DEBUG("initializeDB no-op, already have db:" << dbId);
         return InitializeDBResult::AlreadyExists;
     }
 
@@ -119,25 +120,44 @@ InitializeDBResult DataWarehouseManager::DataPrivate::initializeDB(const model::
         return InitializeDBResult::Failed;
     }
 
-    createFolder(sqliteConfig->getDBFilePath());
-    ucf::infrastructure::database::SqliteDatabaseConfig config;
-    config.fileName = sqliteConfig->getDBFilePath();
-    config.password = sqliteConfig->getDBPassword();
-    auto dataBaseWrapper = ucf::infrastructure::database::DatabaseFactory::create(config);
-
-    if (!dataBaseWrapper || !dataBaseWrapper->open())
+    try
     {
-        SERVICE_LOG_ERROR("failed to open database: " << dbId);
-        return InitializeDBResult::Failed;
-    }
+        createFolder(sqliteConfig->getDBFilePath());
+        ucf::infrastructure::database::SqliteDatabaseConfig config;
+        config.fileName = sqliteConfig->getDBFilePath();
+        config.password = sqliteConfig->getDBPassword();
+        auto wrapper = ucf::infrastructure::database::DatabaseFactory::create(config);
+        if (!wrapper || !wrapper->open())
+        {
+            SERVICE_LOG_ERROR("failed to open database: " << dbId);
+            return InitializeDBResult::Failed;
+        }
 
-    mDatabaseWrapper[dbId] = dataBaseWrapper;
-    if (!tables.empty())
-    {
-        dataBaseWrapper->createTables(convertToDatabaseSchemas(tables));
+        if (!wrapper->createTables(convertToDatabaseSchemas(tables)))
+        {
+            SERVICE_LOG_ERROR("failed to initialize database schema: " << dbId);
+            wrapper->close();
+            return InitializeDBResult::Failed;
+        }
+
+        {
+            std::scoped_lock<std::mutex> mapLock(mDatabaseMutex);
+            mDatabaseWrapper.insert_or_assign(dbId, std::move(wrapper));
+        }
+        SERVICE_LOG_INFO("database initialized: " << dbId);
+        return InitializeDBResult::Created;
     }
-    SERVICE_LOG_INFO("database created and opened: " << dbId);
-    return InitializeDBResult::Created;
+    catch (const std::exception& e)
+    {
+        SERVICE_LOG_ERROR("database initialization failed: " << dbId
+            << ", error: " << e.what());
+    }
+    catch (...)
+    {
+        SERVICE_LOG_ERROR("database initialization failed: " << dbId
+            << ", unknown exception");
+    }
+    return InitializeDBResult::Failed;
 }
 
 ucf::infrastructure::database::DatabaseSchemas DataWarehouseManager::DataPrivate::convertToDatabaseSchemas(const std::vector<model::DBTableModel>& tableModels) const

@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QStringList>
+#include <QTimer>
 #include <QVariantMap>
 #include <QtQml>
 
@@ -21,6 +22,12 @@ class ProxyRulesManager : public QObject
     QML_ELEMENT
     Q_PROPERTY(QVariantList rewriteRules READ getRewriteRules NOTIFY rewriteRulesChanged)
     Q_PROPERTY(QString rewriteError READ getRewriteError NOTIFY rewriteErrorChanged)
+    Q_PROPERTY(bool throttleEnabled READ throttleEnabled NOTIFY throttleChanged)
+    Q_PROPERTY(int downloadKbps READ downloadKbps NOTIFY throttleChanged)
+    Q_PROPERTY(int uploadKbps READ uploadKbps NOTIFY throttleChanged)
+    Q_PROPERTY(QString configSyncState READ getConfigSyncState NOTIFY configSyncChanged)
+    Q_PROPERTY(QString configSyncError READ getConfigSyncError NOTIFY configSyncChanged)
+    Q_PROPERTY(QString configRevision READ getConfigRevision NOTIFY configSyncChanged)
 
 public:
     explicit ProxyRulesManager(QObject* parent = nullptr);
@@ -69,6 +76,19 @@ public:
 
     // ── Throttle ──
     Q_INVOKABLE void setThrottle(bool enabled, int downloadKBps, int uploadKBps);
+    bool throttleEnabled() const { return m_throttleEnabled; }
+    int downloadKbps() const { return m_downloadKbps; }
+    int uploadKbps() const { return m_uploadKbps; }
+
+    // ── Configuration Synchronization ──
+    void setInterceptEnabled(bool enabled);
+    void setAddonConnected(bool connected);
+    void handleConfigResult(const QString& sessionId, const QString& revision,
+                            bool accepted, const QString& message);
+    Q_INVOKABLE void retryConfigSync();
+    QString getConfigSyncState() const { return m_configSyncState; }
+    QString getConfigSyncError() const { return m_configSyncError; }
+    QString getConfigRevision() const { return QString::number(m_configRevision); }
 
     // ── Bypass Hosts (passthrough / no MITM) ──
     Q_INVOKABLE void setBypassHosts(const QStringList& hostPatterns);
@@ -77,7 +97,7 @@ public:
     // ── URL Pattern Testing ──
     Q_INVOKABLE QString testUrlPattern(const QString& pattern, const QString& testUrl);
 
-    /// Send all current rules to the addon (after reconnect).
+    /// Retry the complete configuration. Reconnects use setAddonConnected(true).
     void sendAllRules();
 
     // Accessors for internal arrays (used by controller for initial sync)
@@ -88,13 +108,17 @@ public:
 signals:
     void rewriteRulesChanged();
     void rewriteErrorChanged();
+    void throttleChanged();
+    void configSyncChanged();
 
 private:
     void sendCommand(const QJsonObject& cmd);
     bool validateRewriteRule(const QJsonObject& input, QJsonObject& result, QString& error) const;
     void setRewriteError(const QString& error);
-    void sendRewriteRules();
     void publishRewriteRules();
+    QJsonObject configurationSnapshot() const;
+    void synchronizeConfiguration();
+    void setConfigSyncState(const QString& state, const QString& error = QString());
 
     SendCommandFn m_sendCommandFn;
 
@@ -106,4 +130,14 @@ private:
     QJsonArray m_mapLocalRules;
     QJsonArray m_mapRemoteRules;
     QStringList m_bypassHosts;
+    bool m_throttleEnabled = false;
+    int m_downloadKbps = 0;
+    int m_uploadKbps = 0;
+    bool m_interceptEnabled = false;
+    bool m_addonConnected = false;
+    QString m_configSessionId;
+    quint64 m_configRevision = 0;
+    QString m_configSyncState = QStringLiteral("pending");
+    QString m_configSyncError;
+    QTimer m_configAckTimer;
 };

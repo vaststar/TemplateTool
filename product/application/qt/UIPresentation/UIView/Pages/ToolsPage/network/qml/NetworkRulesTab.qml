@@ -441,18 +441,18 @@ Item {
                     UTText { text: qsTr("Bandwidth Throttle"); fontEnum: UIFontToken.Body_Text_Medium; colorEnum: UIColorToken.Content_Section_Title }
                     UTText { text: qsTr("Simulate slow network conditions by limiting bandwidth."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; wrapMode: Text.WordWrap; Layout.fillWidth: true }
 
-                    UTCheckBox { id: throttleEnabled; text: qsTr("Enable Throttle") }
+                    UTCheckBox { id: throttleEnabled; text: qsTr("Enable Throttle"); checked: root.controller.rulesManager.throttleEnabled }
 
                     GridLayout {
                         columns: 3; columnSpacing: 12; rowSpacing: 8; Layout.fillWidth: true
                         enabled: throttleEnabled.checked; opacity: throttleEnabled.checked ? 1.0 : 0.5
 
                         UTText { text: qsTr("Download:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTSlider { id: dlSlider; from: 0; to: 10000; stepSize: 50; value: 0; Layout.fillWidth: true }
+                        UTSlider { id: dlSlider; from: 0; to: 10000; stepSize: 50; value: root.controller.rulesManager.downloadKbps; Layout.fillWidth: true }
                         UTText { text: dlSlider.value > 0 ? qsTr("%1 KB/s").arg(dlSlider.value) : qsTr("Unlimited"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; Layout.preferredWidth: 100 }
 
                         UTText { text: qsTr("Upload:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
-                        UTSlider { id: ulSlider; from: 0; to: 10000; stepSize: 50; value: 0; Layout.fillWidth: true }
+                        UTSlider { id: ulSlider; from: 0; to: 10000; stepSize: 50; value: root.controller.rulesManager.uploadKbps; Layout.fillWidth: true }
                         UTText { text: ulSlider.value > 0 ? qsTr("%1 KB/s").arg(ulSlider.value) : qsTr("Unlimited"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; Layout.preferredWidth: 100 }
                     }
 

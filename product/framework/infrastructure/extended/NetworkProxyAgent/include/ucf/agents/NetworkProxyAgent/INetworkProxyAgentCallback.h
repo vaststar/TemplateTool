@@ -47,6 +47,12 @@ public:
     virtual void onInterceptFinished(const std::string& /*flowId*/,
                                      const std::string& /*reason*/) {}
 
+    /// Result of atomically applying a full configuration snapshot.
+    virtual void onProxyConfigResult(const std::string& /*sessionId*/,
+                                     const std::string& /*revision*/,
+                                     bool /*accepted*/,
+                                     const std::string& /*message*/) {}
+
     /// Human-readable status message (informational).
     virtual void onStatusMessage(const std::string& message) = 0;
 

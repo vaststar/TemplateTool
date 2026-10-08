@@ -587,122 +587,122 @@ Proxy: 127.0.0.1:%1</translation>
 <context>
     <name>NetworkProxyController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="646"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="656"/>
         <source>Cannot operate on paused requests: addon is disconnected</source>
         <translation>Cannot operate on paused requests: addon is disconnected</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="868"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="879"/>
         <source>Paused request limit reached; forwarding request</source>
         <translation>Paused request limit reached; forwarding request</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="887"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="898"/>
         <source>Paused request timed out and was forwarded</source>
         <translation>Paused request timed out and was forwarded</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="889"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="900"/>
         <source>Paused request limit reached; request was forwarded</source>
         <translation>Paused request limit reached; request was forwarded</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="891"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="902"/>
         <source>Request forwarded because interception was disabled</source>
         <translation>Request forwarded because interception was disabled</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="893"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="904"/>
         <source>Paused request forwarded</source>
         <translation>Paused request forwarded</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="895"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="906"/>
         <source>Paused request dropped</source>
         <translation>Paused request dropped</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="610"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="620"/>
         <source>Exported %1 retained requests</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="701"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="711"/>
         <source>Cannot copy cURL: request headers were not retained</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="713"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="723"/>
         <source>Cannot copy cURL: complete request body was not captured</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="720"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="730"/>
         <source>Cannot copy cURL: request body cannot be replayed accurately</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="740"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="750"/>
         <source>Copied request as cURL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="753"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="763"/>
         <source>Cannot copy response body: captured body is unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="761"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="771"/>
         <source>Copied base64-encoded truncated captured response body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="763"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="773"/>
         <source>Copied base64-encoded captured response body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="765"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="775"/>
         <source>Copied truncated captured response body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="767"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="777"/>
         <source>Copied response body</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="964"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="984"/>
         <source>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</source>
         <translation>Certificate folder does not exist yet. Start the proxy first to generate the CA certificate.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="978"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="998"/>
         <source>Certificate folder: %1</source>
         <translation>Certificate folder: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="129"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="131"/>
         <source>%1: %2 rewrite rule(s) applied, %3 failed</source>
         <translation>%1: %2 rewrite rule(s) applied, %3 failed</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="134"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="136"/>
         <source>Rule %1: %2</source>
         <translation>Rule %1: %2</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="139"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="141"/>
         <source>%1 more rewrite error(s); see the exported record for details</source>
         <translation>%1 more rewrite error(s); see the exported record for details</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="142"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="144"/>
         <source>Request</source>
         <translation>Request</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="143"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="145"/>
         <source>Response</source>
         <translation>Response</translation>
     </message>
@@ -740,7 +740,7 @@ Proxy: 127.0.0.1:%1</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="113"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="142"/>
         <source>Export Retained Requests</source>
         <translation type="unfinished"></translation>
     </message>
@@ -755,19 +755,44 @@ Proxy: 127.0.0.1:%1</translation>
         <translation>▶ Start</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="68"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="97"/>
         <source>📡 Capture</source>
         <translation>📡 Capture</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="69"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="98"/>
         <source>📋 Rules</source>
         <translation>📋 Rules</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="70"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="99"/>
         <source>⚙ Settings</source>
         <translation>⚙ Settings</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="68"/>
+        <source>Rules applied</source>
+        <translation>Rules applied</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="69"/>
+        <source>Rule sync failed</source>
+        <translation>Rule sync failed</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="70"/>
+        <source>Syncing rules...</source>
+        <translation>Syncing rules...</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="70"/>
+        <source>Rules pending sync</source>
+        <translation>Rules pending sync</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="85"/>
+        <source>Retry Sync</source>
+        <translation>Retry Sync</translation>
     </message>
 </context>
 <context>
@@ -1333,178 +1358,203 @@ Double-click a rule to view details.</translation>
 <context>
     <name>ProxyRulesManager</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="633"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="596"/>
         <source>✗ Empty pattern</source>
         <translation>✗ Empty pattern</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="637"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="600"/>
         <source>✗ Invalid regex: %1</source>
         <translation>✗ Invalid regex: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="641"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="604"/>
         <source>✓ Match! Captured: &quot;%1&quot;</source>
         <translation>✓ Match! Captured: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="643"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="606"/>
         <source>✗ No match</source>
         <translation>✗ No match</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="220"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="222"/>
         <source>Rewrite URL pattern cannot be empty.</source>
         <translation>Rewrite URL pattern cannot be empty.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="223"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="225"/>
         <source>Rewrite URL pattern cannot exceed %1 characters.</source>
         <translation>Rewrite URL pattern cannot exceed %1 characters.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="226"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="228"/>
         <source>Invalid rewrite URL regex: %1</source>
         <translation>Invalid rewrite URL regex: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="236"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="238"/>
         <source>Invalid rewrite HTTP method.</source>
         <translation>Invalid rewrite HTTP method.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="239"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="241"/>
         <source>Rewrite stage must be request or response.</source>
         <translation>Rewrite stage must be request or response.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="241"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="243"/>
         <source>Rewrite enabled must be a boolean.</source>
         <translation>Rewrite enabled must be a boolean.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="244"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="246"/>
         <source>Rewrite body must be an object.</source>
         <translation>Rewrite body must be an object.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="251"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="253"/>
         <source>Replacement body must be text.</source>
         <translation>Replacement body must be text.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="257"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="259"/>
         <source>Invalid JSON Pointer. Use an empty path or a path starting with /; escape ~ as ~0 and / as ~1.</source>
         <translation>Invalid JSON Pointer. Use an empty path or a path starting with /; escape ~ as ~0 and / as ~1.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="260"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="262"/>
         <source>JSON Pointer cannot exceed %1 characters.</source>
         <translation>JSON Pointer cannot exceed %1 characters.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="262"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="264"/>
         <source>JSON remove cannot target the root.</source>
         <translation>JSON remove cannot target the root.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="266"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="268"/>
         <source>JSON set requires a value.</source>
         <translation>JSON set requires a value.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="273"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="275"/>
         <source>Text to find cannot be empty.</source>
         <translation>Text to find cannot be empty.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="275"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="277"/>
         <source>Text replacement must be text.</source>
         <translation>Text replacement must be text.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="279"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="281"/>
         <source>Invalid rewrite body operation.</source>
         <translation>Invalid rewrite body operation.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="283"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="285"/>
         <source>Rewrite headers must be an array.</source>
         <translation>Rewrite headers must be an array.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="286"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="288"/>
         <source>A rewrite rule can contain at most %1 header operations.</source>
         <translation>A rewrite rule can contain at most %1 header operations.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="292"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="294"/>
         <source>Each rewrite header operation must be an object.</source>
         <translation>Each rewrite header operation must be an object.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="297"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="299"/>
         <source>Invalid rewrite header operation.</source>
         <translation>Invalid rewrite header operation.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="300"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="302"/>
         <source>Rewrite header name cannot exceed %1 characters.</source>
         <translation>Rewrite header name cannot exceed %1 characters.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="302"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="304"/>
         <source>Invalid rewrite header name: %1</source>
         <translation>Invalid rewrite header name: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="306"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="308"/>
         <source>Content-Length and Transfer-Encoding are managed automatically.</source>
         <translation>Content-Length and Transfer-Encoding are managed automatically.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="309"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="311"/>
         <source>Content-Encoding can only be changed together with a body operation.</source>
         <translation>Content-Encoding can only be changed together with a body operation.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="316"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="318"/>
         <source>Rewrite header value must be text.</source>
         <translation>Rewrite header value must be text.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="319"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="321"/>
         <source>Rewrite header value cannot exceed 64 KiB.</source>
         <translation>Rewrite header value cannot exceed 64 KiB.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="322"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="324"/>
         <source>Rewrite header values cannot contain control characters except TAB.</source>
         <translation>Rewrite header values cannot contain control characters except TAB.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="341"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="382"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="400"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="421"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="343"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="384"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="402"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="423"/>
         <source>Invalid rewrite rule index.</source>
         <translation>Invalid rewrite rule index.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="345"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="347"/>
         <source>At most %1 rewrite rules can be saved.</source>
         <translation>At most %1 rewrite rules can be saved.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="370"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="411"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="372"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="413"/>
         <source>Rewrite rules exceed the 1 MiB configuration limit.</source>
         <translation>Rewrite rules exceed the 1 MiB configuration limit.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="352"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="354"/>
         <source>JSON set value cannot contain non-finite numbers.</source>
         <translation>JSON set value cannot contain non-finite numbers.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="77"/>
+        <source>Configuration confirmation timed out. Retry to synchronize.</source>
+        <translation>Configuration confirmation timed out. Retry to synchronize.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="651"/>
+        <source>The proxy rejected the configuration.</source>
+        <translation>The proxy rejected the configuration.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="699"/>
+        <source>Proxy configuration exceeds the 4 MiB limit. Remove or reduce rules before retrying.</source>
+        <translation>Proxy configuration exceeds the 4 MiB limit. Remove or reduce rules before retrying.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="704"/>
+        <source>Proxy command transport is unavailable.</source>
+        <translation>Proxy command transport is unavailable.</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="686"/>
+        <source>Configuration version limit reached. Reconnect the proxy to synchronize.</source>
+        <translation>Configuration version limit reached. Reconnect the proxy to synchronize.</translation>
     </message>
 </context>
 <context>

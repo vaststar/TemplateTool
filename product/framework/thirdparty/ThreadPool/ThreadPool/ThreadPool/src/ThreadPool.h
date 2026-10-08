@@ -24,6 +24,10 @@ public:
     void submit(std::function<void()> task, 
                 Priority priority = Priority::Normal,
                 const std::string& tag = "") override;
+    bool trySubmit(std::function<void()> task,
+                   Priority priority = Priority::Normal,
+                   const std::string& tag = "") override;
+    bool shutdown() override;
     std::string getName() const override;
     size_t getPendingTaskCount() const override;
 
@@ -36,19 +40,24 @@ public:
             std::bind(std::forward<Fun>(f), std::forward<Args>(args)...)
         );
         std::future<return_type> res = task->get_future();
-        enqueueFunc(functionTag, urgentLevel, [task]{ (*task)(); });
+        if (!enqueueFunc(functionTag, urgentLevel, [task]{ (*task)(); }))
+        {
+            std::promise<return_type> rejected;
+            rejected.set_exception(std::make_exception_ptr(
+                std::runtime_error("ThreadPool is not accepting tasks")));
+            return rejected.get_future();
+        }
         return res;
     }
 
 private:
     void initPool(uint32_t poolNumber);
-    void enqueueFunc(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> task);
-    void shutdown();
+    bool enqueueFunc(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> task);
     bool isShutdown() const;
 
 private:
     class DataPrivate;
-    std::unique_ptr<DataPrivate> mData;
+    std::shared_ptr<DataPrivate> mData;
 };
 
 } // namespace ThreadPool

@@ -179,6 +179,8 @@ private:
     void onResponseCaptured(const QString& flowId, const QString& rawJson);
     void onRequestIntercepted(const QString& flowId, const QString& detailJson, quint64 generation);
     void onInterceptFinished(const QString& flowId, const QString& reason, quint64 generation);
+    void onProxyConfigResult(const QString& sessionId, const QString& revision,
+                             bool accepted, const QString& message);
     void onStatusMessage(const QString& message);
     void onCertStatusChanged(int status);
     void onError(const QString& errorMessage);

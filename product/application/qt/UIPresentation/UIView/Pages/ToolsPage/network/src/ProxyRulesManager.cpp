@@ -5,6 +5,7 @@
 #include <QUuid>
 
 #include <cmath>
+#include <limits>
 
 namespace {
 constexpr int kMaxRewriteRules = 128;
@@ -14,6 +15,8 @@ constexpr qsizetype kMaxPatternCharacters = 4096;
 constexpr qsizetype kMaxHeaderNameCharacters = 256;
 constexpr qsizetype kMaxHeaderValueBytes = 64 * 1024;
 constexpr qsizetype kMaxPointerCharacters = 4096;
+constexpr qsizetype kMaxConfigBytes = 4 * 1024 * 1024;
+constexpr int kConfigAckTimeoutMs = 5000;
 
 bool isValidJsonPointer(const QString& pointer)
 {
@@ -66,6 +69,14 @@ bool containsNonFiniteNumber(const QVariant& value)
 ProxyRulesManager::ProxyRulesManager(QObject* parent)
     : QObject(parent)
 {
+    m_configAckTimer.setSingleShot(true);
+    m_configAckTimer.setInterval(kConfigAckTimeoutMs);
+    connect(&m_configAckTimer, &QTimer::timeout, this, [this]() {
+        if (m_addonConnected && m_configSyncState == QStringLiteral("pending"))
+            setConfigSyncState(QStringLiteral("failed"),
+                               tr("Configuration confirmation timed out. Retry to synchronize."));
+    });
+
     // Default passthrough domains for AI tools that commonly use TLS pinning.
     m_bypassHosts = {
         // OpenAI / ChatGPT / Codex
@@ -174,30 +185,21 @@ void ProxyRulesManager::addMockRule(const QString& urlPattern, int statusCode,
         rule["headers"] = headers.trimmed();
     m_mockRules.append(rule);
 
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_mock_rules");
-    cmd["rules"] = m_mockRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 void ProxyRulesManager::removeMockRule(int index)
 {
     if (index >= 0 && index < m_mockRules.size()) {
         m_mockRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_mock_rules");
-        cmd["rules"] = m_mockRules;
-        sendCommand(cmd);
+        synchronizeConfiguration();
     }
 }
 
 void ProxyRulesManager::clearMockRules()
 {
     m_mockRules = QJsonArray();
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_mock_rules");
-    cmd["rules"] = m_mockRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 QVariantList ProxyRulesManager::getMockRules() const
@@ -443,18 +445,10 @@ void ProxyRulesManager::setRewriteError(const QString& error)
     emit rewriteErrorChanged();
 }
 
-void ProxyRulesManager::sendRewriteRules()
-{
-    QJsonObject cmd;
-    cmd[QStringLiteral("type")] = QStringLiteral("update_rewrite_rules");
-    cmd[QStringLiteral("rules")] = m_rewriteRules;
-    sendCommand(cmd);
-}
-
 void ProxyRulesManager::publishRewriteRules()
 {
     emit rewriteRulesChanged();
-    sendRewriteRules();
+    synchronizeConfiguration();
 }
 
 // ====================== Breakpoint Rules ======================
@@ -466,30 +460,21 @@ void ProxyRulesManager::addBreakpointRule(const QString& urlPattern, const QStri
     rule["method"] = method;
     m_breakpointRules.append(rule);
 
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_breakpoint_rules");
-    cmd["rules"] = m_breakpointRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 void ProxyRulesManager::removeBreakpointRule(int index)
 {
     if (index >= 0 && index < m_breakpointRules.size()) {
         m_breakpointRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_breakpoint_rules");
-        cmd["rules"] = m_breakpointRules;
-        sendCommand(cmd);
+        synchronizeConfiguration();
     }
 }
 
 void ProxyRulesManager::clearBreakpointRules()
 {
     m_breakpointRules = QJsonArray();
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_breakpoint_rules");
-    cmd["rules"] = m_breakpointRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 QVariantList ProxyRulesManager::getBreakpointRules() const
@@ -505,20 +490,14 @@ void ProxyRulesManager::addBlacklistRule(const QString& urlPattern)
     rule["url_pattern"] = urlPattern;
     m_blacklistRules.append(rule);
 
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_blacklist");
-    cmd["rules"] = m_blacklistRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 void ProxyRulesManager::removeBlacklistRule(int index)
 {
     if (index >= 0 && index < m_blacklistRules.size()) {
         m_blacklistRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_blacklist");
-        cmd["rules"] = m_blacklistRules;
-        sendCommand(cmd);
+        synchronizeConfiguration();
     }
 }
 
@@ -536,20 +515,14 @@ void ProxyRulesManager::addMapLocalRule(const QString& urlPattern, const QString
     rule["local_path"] = localPath;
     m_mapLocalRules.append(rule);
 
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_map_local");
-    cmd["rules"] = m_mapLocalRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 void ProxyRulesManager::removeMapLocalRule(int index)
 {
     if (index >= 0 && index < m_mapLocalRules.size()) {
         m_mapLocalRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_map_local");
-        cmd["rules"] = m_mapLocalRules;
-        sendCommand(cmd);
+        synchronizeConfiguration();
     }
 }
 
@@ -567,20 +540,14 @@ void ProxyRulesManager::addMapRemoteRule(const QString& srcPattern, const QStrin
     rule["dest_url"] = destUrl;
     m_mapRemoteRules.append(rule);
 
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_map_remote");
-    cmd["rules"] = m_mapRemoteRules;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 void ProxyRulesManager::removeMapRemoteRule(int index)
 {
     if (index >= 0 && index < m_mapRemoteRules.size()) {
         m_mapRemoteRules.removeAt(index);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_map_remote");
-        cmd["rules"] = m_mapRemoteRules;
-        sendCommand(cmd);
+        synchronizeConfiguration();
     }
 }
 
@@ -593,12 +560,15 @@ QVariantList ProxyRulesManager::getMapRemoteRules() const
 
 void ProxyRulesManager::setThrottle(bool enabled, int downloadKBps, int uploadKBps)
 {
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("set_throttle");
-    cmd["enabled"] = enabled;
-    cmd["download_kbps"] = downloadKBps;
-    cmd["upload_kbps"] = uploadKBps;
-    sendCommand(cmd);
+    const int download = qMax(0, downloadKBps);
+    const int upload = qMax(0, uploadKBps);
+    if (m_throttleEnabled == enabled && m_downloadKbps == download && m_uploadKbps == upload)
+        return;
+    m_throttleEnabled = enabled;
+    m_downloadKbps = download;
+    m_uploadKbps = upload;
+    emit throttleChanged();
+    synchronizeConfiguration();
 }
 
 void ProxyRulesManager::setBypassHosts(const QStringList& hostPatterns)
@@ -610,14 +580,7 @@ void ProxyRulesManager::setBypassHosts(const QStringList& hostPatterns)
             m_bypassHosts.append(trimmed);
     }
 
-    QJsonArray hosts;
-    for (const QString& host : m_bypassHosts)
-        hosts.append(host);
-
-    QJsonObject cmd;
-    cmd["type"] = QStringLiteral("update_bypass_hosts");
-    cmd["hosts"] = hosts;
-    sendCommand(cmd);
+    synchronizeConfiguration();
 }
 
 QStringList ProxyRulesManager::getBypassHosts() const
@@ -643,50 +606,131 @@ QString ProxyRulesManager::testUrlPattern(const QString& pattern, const QString&
         return tr("✗ No match");
 }
 
-// ====================== Send All Rules ======================
+// ====================== Configuration Synchronization ======================
+
+void ProxyRulesManager::setInterceptEnabled(bool enabled)
+{
+    if (m_interceptEnabled == enabled)
+        return;
+    m_interceptEnabled = enabled;
+    synchronizeConfiguration();
+}
+
+void ProxyRulesManager::setAddonConnected(bool connected)
+{
+    if (!connected) {
+        m_configAckTimer.stop();
+        m_addonConnected = false;
+        m_configSessionId.clear();
+        setConfigSyncState(QStringLiteral("pending"));
+        return;
+    }
+    if (m_addonConnected)
+        return;
+    m_addonConnected = true;
+    m_configSessionId = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    if (m_configRevision == std::numeric_limits<quint64>::max())
+        m_configRevision = 0;
+    synchronizeConfiguration();
+}
+
+void ProxyRulesManager::handleConfigResult(const QString& sessionId, const QString& revision,
+                                         bool accepted, const QString& message)
+{
+    // Acknowledgements from an older edit, connection or timed-out attempt cannot
+    // make the current desired configuration appear applied.
+    if (!m_addonConnected || m_configSyncState != QStringLiteral("pending")
+        || sessionId != m_configSessionId || revision != getConfigRevision())
+        return;
+    m_configAckTimer.stop();
+    if (accepted) {
+        setConfigSyncState(QStringLiteral("applied"));
+    } else {
+        const QString error = message.trimmed().left(4096);
+        setConfigSyncState(QStringLiteral("failed"), error.isEmpty()
+            ? tr("The proxy rejected the configuration.") : error);
+    }
+}
+
+QJsonObject ProxyRulesManager::configurationSnapshot() const
+{
+    QJsonArray hosts;
+    for (const QString& host : m_bypassHosts)
+        hosts.append(host);
+
+    const QJsonObject throttle{
+        {QStringLiteral("enabled"), m_throttleEnabled},
+        {QStringLiteral("download_kbps"), m_downloadKbps},
+        {QStringLiteral("upload_kbps"), m_uploadKbps}
+    };
+    return {
+        {QStringLiteral("mock_rules"), m_mockRules},
+        {QStringLiteral("breakpoint_rules"), m_breakpointRules},
+        {QStringLiteral("blacklist_rules"), m_blacklistRules},
+        {QStringLiteral("map_local_rules"), m_mapLocalRules},
+        {QStringLiteral("map_remote_rules"), m_mapRemoteRules},
+        {QStringLiteral("rewrite_rules"), m_rewriteRules},
+        {QStringLiteral("bypass_hosts"), hosts},
+        {QStringLiteral("throttle"), throttle},
+        {QStringLiteral("intercept_enabled"), m_interceptEnabled}
+    };
+}
+
+void ProxyRulesManager::synchronizeConfiguration()
+{
+    m_configAckTimer.stop();
+    if (m_configRevision == std::numeric_limits<quint64>::max()) {
+        // The backend binds one session to one TCP connection. A new connection
+        // can reset the version; never wrap or rotate the session while connected.
+        setConfigSyncState(QStringLiteral("failed"),
+                           tr("Configuration version limit reached. Reconnect the proxy to synchronize."));
+        return;
+    }
+    ++m_configRevision;
+    m_configSyncState = QStringLiteral("pending");
+    m_configSyncError.clear();
+    emit configSyncChanged();
+    if (!m_addonConnected)
+        return;
+
+    const QJsonObject config = configurationSnapshot();
+    if (QJsonDocument(config).toJson(QJsonDocument::Compact).size() > kMaxConfigBytes) {
+        setConfigSyncState(QStringLiteral("failed"),
+                           tr("Proxy configuration exceeds the 4 MiB limit. Remove or reduce rules before retrying."));
+        return;
+    }
+    if (!m_sendCommandFn) {
+        setConfigSyncState(QStringLiteral("failed"),
+                           tr("Proxy command transport is unavailable."));
+        return;
+    }
+    const QJsonObject command{
+        {QStringLiteral("type"), QStringLiteral("apply_proxy_config")},
+        {QStringLiteral("session_id"), m_configSessionId},
+        {QStringLiteral("revision"), getConfigRevision()},
+        {QStringLiteral("config"), config}
+    };
+    // Start before sending: a synchronous transport failure can disconnect and
+    // stop this timer from inside the callback.
+    m_configAckTimer.start();
+    sendCommand(command);
+}
+
+void ProxyRulesManager::setConfigSyncState(const QString& state, const QString& error)
+{
+    if (m_configSyncState == state && m_configSyncError == error)
+        return;
+    m_configSyncState = state;
+    m_configSyncError = error;
+    emit configSyncChanged();
+}
+
+void ProxyRulesManager::retryConfigSync()
+{
+    synchronizeConfiguration();
+}
 
 void ProxyRulesManager::sendAllRules()
 {
-    // Sync empty arrays too, so reconnecting never leaves stale rewrite rules.
-    sendRewriteRules();
-    if (!m_mockRules.isEmpty()) {
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_mock_rules");
-        cmd["rules"] = m_mockRules;
-        sendCommand(cmd);
-    }
-    if (!m_breakpointRules.isEmpty()) {
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_breakpoint_rules");
-        cmd["rules"] = m_breakpointRules;
-        sendCommand(cmd);
-    }
-    if (!m_blacklistRules.isEmpty()) {
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_blacklist");
-        cmd["rules"] = m_blacklistRules;
-        sendCommand(cmd);
-    }
-    if (!m_mapLocalRules.isEmpty()) {
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_map_local");
-        cmd["rules"] = m_mapLocalRules;
-        sendCommand(cmd);
-    }
-    if (!m_mapRemoteRules.isEmpty()) {
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_map_remote");
-        cmd["rules"] = m_mapRemoteRules;
-        sendCommand(cmd);
-    }
-
-    if (!m_bypassHosts.isEmpty()) {
-        QJsonArray hosts;
-        for (const QString& host : m_bypassHosts)
-            hosts.append(host);
-        QJsonObject cmd;
-        cmd["type"] = QStringLiteral("update_bypass_hosts");
-        cmd["hosts"] = hosts;
-        sendCommand(cmd);
-    }
+    synchronizeConfiguration();
 }

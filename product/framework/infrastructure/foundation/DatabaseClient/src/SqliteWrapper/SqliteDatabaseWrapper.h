@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <ucf/infrastructure/DatabaseClient/IDatabaseWrapper.h>
 #include <ucf/infrastructure/DatabaseClient/DatabaseConfig.h>
 #include <ucf/infrastructure/DatabaseClient/DatabaseSchema.h>
@@ -21,7 +22,7 @@ public:
     bool open() override;
     void close() override;
     bool isOpen() override;
-    void createTables(const DatabaseSchemas& tableSchemas) override;
+    bool createTables(const DatabaseSchemas& tableSchemas) override;
     bool insertIntoDatabase(const std::string& tableName, const Columns& columns, const Arguments& arguments, const std::source_location location = std::source_location::current()) override;
     bool insertBatch(const std::string& tableName, const Columns& columns, const ListOfArguments& arguments, const std::source_location location = std::source_location::current()) override;
     void fetchFromDatabase(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& arguments, DatabaseDataRecordsCallback func, size_t limit = 0, const std::source_location location = std::source_location::current()) override;
@@ -38,20 +39,18 @@ public:
     bool executeInSavepoint(std::function<bool()> work) override;
 
 private:
-    bool beginTransaction();
-    bool commit();
-    bool rollback();
-
     std::string generateInsertStatement(const std::string& tableName, const Columns& columns) const;
     std::string generateSelectStatement(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& arguments, size_t limit) const;
     std::string generateUpdateStatement(const std::string& tableName, const Columns& columns, const ListsOfWhereCondition& conditions) const;
     std::string generateDeleteStatement(const std::string& tableName, const ListsOfWhereCondition& conditions) const;
     std::string createWhereCondition(const ListsOfWhereCondition& arguments) const;
 
-    void reconcileColumns(const DatabaseSchema& tableSchema);
+    bool reconcileColumns(const DatabaseSchema& tableSchema);
 
 private:
     class DataPrivate;
+    // Hold across complete operations; atomicWrite may re-enter CRUD.
+    mutable std::recursive_mutex mOperationMutex;
     std::unique_ptr<DataPrivate> mDataPrivate;
 };
 }

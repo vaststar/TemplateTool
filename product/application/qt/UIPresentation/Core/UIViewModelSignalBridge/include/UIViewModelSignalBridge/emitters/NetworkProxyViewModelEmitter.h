@@ -72,6 +72,16 @@ public:
                                          QString::fromStdString(reason), generation);
     }
 
+    void onProxyConfigResult(const std::string& sessionId,
+                             const std::string& revision,
+                             bool accepted,
+                             const std::string& message) override
+    {
+        emit signals_onProxyConfigResult(QString::fromStdString(sessionId),
+                                         QString::fromStdString(revision), accepted,
+                                         QString::fromStdString(message));
+    }
+
     void onStatusMessage(const std::string& message) override
     {
         emit signals_onStatusMessage(QString::fromStdString(message));
@@ -94,6 +104,8 @@ signals:
     void signals_onResponseCaptured(const QString& flowId, const QString& rawJson);
     void signals_onRequestIntercepted(const QString& flowId, const QString& detailJson, quint64 generation);
     void signals_onInterceptFinished(const QString& flowId, const QString& reason, quint64 generation);
+    void signals_onProxyConfigResult(const QString& sessionId, const QString& revision,
+                                     bool accepted, const QString& message);
     void signals_onStatusMessage(const QString& message);
     void signals_onCertStatusChanged(int status);
     void signals_onError(const QString& errorMessage);
