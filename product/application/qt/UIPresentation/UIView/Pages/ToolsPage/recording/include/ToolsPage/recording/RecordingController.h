@@ -38,6 +38,7 @@ class RecordingController : public UIViewController
     Q_PROPERTY(bool isPaused READ isPaused NOTIFY recordingStateChanged)
 
     // Settings
+    Q_PROPERTY(QString settingsSaveError READ settingsSaveError NOTIFY settingsSaveErrorChanged)
     Q_PROPERTY(QString outputDirectory READ outputDirectory WRITE setOutputDirectory NOTIFY settingsChanged)
     Q_PROPERTY(QString recordingsFolderUrl READ recordingsFolderUrl NOTIFY settingsChanged)
     Q_PROPERTY(QString videoFormat READ videoFormat WRITE setVideoFormat NOTIFY settingsChanged)
@@ -66,6 +67,7 @@ public:
     int recordingDuration() const;
     bool isPaused() const;
     QString outputDirectory() const;
+    QString settingsSaveError() const;
     QString recordingsFolderUrl() const;
     QString videoFormat() const;
     int fps() const;
@@ -114,11 +116,13 @@ public:
 
 protected:
     void init() override;
+    void onLanguageChanged() override;
 
 signals:
     void recordingStateChanged();
     void recordingDurationChanged();
     void settingsChanged();
+    void settingsSaveErrorChanged();
     void recordingCompleted(const QString& filePath);
     void thumbnailReady(const QString& videoPath, const QString& thumbnailUrl);
     void thumbnailFailed(const QString& videoPath, const QString& errorMessage);
@@ -139,6 +143,7 @@ private:
     void onVMThumbnailReady(const QString& videoPath, const QString& thumbnailPath);
     void onVMThumbnailFailed(const QString& videoPath, const QString& errorMessage);
     void onVMSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
+    void onVMSettingsPersistenceChanged(bool persisted);
     void onVMError(const QString& message);
 
     // ViewModel
@@ -151,6 +156,7 @@ private:
     int m_recordingDuration = 0;
 
     // Settings shadow (for QML bindings)
+    bool m_settingsPersistenceFailed = false;
     QString m_outputDirectory;
     QString m_videoFormat = "mp4";
     int m_fps = 30;

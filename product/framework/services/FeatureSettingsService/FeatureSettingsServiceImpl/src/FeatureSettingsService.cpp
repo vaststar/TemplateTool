@@ -130,10 +130,12 @@ model::ScreenshotFeatureSettings FeatureSettingsService::getScreenshotSettings()
     return mDataPrivate->getFeatureSettingsManager().getScreenshotSettings();
 }
 
-void FeatureSettingsService::updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings)
+bool FeatureSettingsService::updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings)
 {
-    mDataPrivate->getFeatureSettingsManager().updateScreenshotSettings(screenshotSettings);
+    const bool persisted = mDataPrivate->getFeatureSettingsManager().updateScreenshotSettings(screenshotSettings);
+    // Changed describes the runtime settings, even when persistence failed.
     fireNotification(&IFeatureSettingsServiceCallback::onScreenshotSettingsChanged, screenshotSettings);
+    return persisted;
 }
 
 model::RecordingFeatureSettings FeatureSettingsService::getRecordingSettings() const
@@ -141,10 +143,12 @@ model::RecordingFeatureSettings FeatureSettingsService::getRecordingSettings() c
     return mDataPrivate->getFeatureSettingsManager().getRecordingSettings();
 }
 
-void FeatureSettingsService::updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings)
+bool FeatureSettingsService::updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings)
 {
-    mDataPrivate->getFeatureSettingsManager().updateRecordingSettings(recordingSettings);
+    const bool persisted = mDataPrivate->getFeatureSettingsManager().updateRecordingSettings(recordingSettings);
+    // Changed describes the runtime settings, even when persistence failed.
     fireNotification(&IFeatureSettingsServiceCallback::onRecordingSettingsChanged, recordingSettings);
+    return persisted;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

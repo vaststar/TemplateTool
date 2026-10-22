@@ -20,6 +20,15 @@ Item {
             width: parent.width
             spacing: 24
 
+            UTText {
+                Layout.fillWidth: true
+                visible: controller.settingsSaveError.length > 0
+                text: controller.settingsSaveError
+                colorEnum: UIColorToken.Content_Error_Text
+                fontEnum: UIFontToken.Caption_Text
+                wrapMode: Text.WordWrap
+            }
+
             // === Output Settings Section ===
             UTGroupBox {
                 Layout.fillWidth: true

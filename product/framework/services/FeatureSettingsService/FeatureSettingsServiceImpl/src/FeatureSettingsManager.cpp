@@ -9,6 +9,8 @@
 
 #include "FeatureSettingsServiceLogger.h"
 
+#include <exception>
+
 namespace ucf::service {
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -32,13 +34,13 @@ model::ScreenshotFeatureSettings FeatureSettingsManager::getScreenshotSettings()
     return mScreenshotSettings;
 }
 
-void FeatureSettingsManager::updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings)
+bool FeatureSettingsManager::updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings)
 {
     {
         std::lock_guard lock(mMutex);
         mScreenshotSettings = screenshotSettings;
     }
-    saveScreenshotSettingsToDatabase();
+    return saveScreenshotSettingsToDatabase(screenshotSettings);
 }
 
 void FeatureSettingsManager::databaseInitialized(const std::string& databaseId)
@@ -109,55 +111,71 @@ void FeatureSettingsManager::loadScreenshotSettingsFromDatabase()
     );
 }
 
-void FeatureSettingsManager::saveScreenshotSettingsToDatabase()
+bool FeatureSettingsManager::saveScreenshotSettingsToDatabase(const model::ScreenshotFeatureSettings& screenshotSettings)
 {
-    auto coreFramework = mCoreFrameworkWPtr.lock();
-    if (!coreFramework) return;
+    try {
+        auto coreFramework = mCoreFrameworkWPtr.lock();
+        if (!coreFramework) {
+            SERVICE_LOG_ERROR("Cannot persist screenshot settings: framework unavailable");
+            return false;
+        }
 
-    auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
-    if (!dataWarehouseService) return;
+        auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
+        if (!dataWarehouseService) {
+            SERVICE_LOG_ERROR("Cannot persist screenshot settings: database service unavailable");
+            return false;
+        }
 
-    auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
-    if (!clientInfoService) return;
+        auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
+        if (!clientInfoService) {
+            SERVICE_LOG_ERROR("Cannot persist screenshot settings: client info service unavailable");
+            return false;
+        }
 
-    const std::string databaseId = clientInfoService->getSharedDBConfig().getDBId();
+        const std::string databaseId = clientInfoService->getSharedDBConfig().getDBId();
 
-    model::ScreenshotFeatureSettings settingsCopy;
-    {
-        std::lock_guard lock(mMutex);
-        settingsCopy = mScreenshotSettings;
+        ucf::service::model::ListOfDBValues databaseValues;
+        databaseValues.emplace_back(ucf::service::model::DBDataValues{
+            std::string("default"),
+            screenshotSettings.outputDirectory,
+            screenshotSettings.imageFormat,
+            screenshotSettings.jpegQuality,
+            screenshotSettings.captureDelay,
+            screenshotSettings.addTimestamp ? 1 : 0
+        });
+
+        const bool persisted = dataWarehouseService->insertIntoDatabase(
+            databaseId,
+            db::schema::ScreenshotSettingsTable::TableName,
+            {
+                db::schema::ScreenshotSettingsTable::SettingsIdentifierField,
+                db::schema::ScreenshotSettingsTable::OutputDirectoryField,
+                db::schema::ScreenshotSettingsTable::ImageFormatField,
+                db::schema::ScreenshotSettingsTable::JpegQualityField,
+                db::schema::ScreenshotSettingsTable::CaptureDelayField,
+                db::schema::ScreenshotSettingsTable::AddTimestampField
+            },
+            databaseValues
+        );
+
+        if (!persisted) {
+            SERVICE_LOG_ERROR("Failed to persist screenshot settings to database: " << databaseId);
+            return false;
+        }
+
+        SERVICE_LOG_DEBUG("Saved screenshot settings to database:"
+            << " outputDirectory=" << screenshotSettings.outputDirectory
+            << " imageFormat=" << screenshotSettings.imageFormat
+            << " jpegQuality=" << screenshotSettings.jpegQuality
+            << " captureDelay=" << screenshotSettings.captureDelay
+            << " addTimestamp=" << screenshotSettings.addTimestamp);
+        return true;
+    } catch (const std::exception& error) {
+        SERVICE_LOG_ERROR("Failed to persist screenshot settings: " << error.what());
+    } catch (...) {
+        SERVICE_LOG_ERROR("Failed to persist screenshot settings: unknown exception");
     }
-
-    ucf::service::model::ListOfDBValues databaseValues;
-    databaseValues.emplace_back(ucf::service::model::DBDataValues{
-        std::string("default"),
-        settingsCopy.outputDirectory,
-        settingsCopy.imageFormat,
-        settingsCopy.jpegQuality,
-        settingsCopy.captureDelay,
-        settingsCopy.addTimestamp ? 1 : 0
-    });
-
-    dataWarehouseService->insertIntoDatabase(
-        databaseId,
-        db::schema::ScreenshotSettingsTable::TableName,
-        {
-            db::schema::ScreenshotSettingsTable::SettingsIdentifierField,
-            db::schema::ScreenshotSettingsTable::OutputDirectoryField,
-            db::schema::ScreenshotSettingsTable::ImageFormatField,
-            db::schema::ScreenshotSettingsTable::JpegQualityField,
-            db::schema::ScreenshotSettingsTable::CaptureDelayField,
-            db::schema::ScreenshotSettingsTable::AddTimestampField
-        },
-        databaseValues
-    );
-
-    SERVICE_LOG_DEBUG("Saved screenshot settings to database:"
-        << " outputDirectory=" << settingsCopy.outputDirectory
-        << " imageFormat=" << settingsCopy.imageFormat
-        << " jpegQuality=" << settingsCopy.jpegQuality
-        << " captureDelay=" << settingsCopy.captureDelay
-        << " addTimestamp=" << settingsCopy.addTimestamp);
+    return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -170,13 +188,13 @@ model::RecordingFeatureSettings FeatureSettingsManager::getRecordingSettings() c
     return mRecordingSettings;
 }
 
-void FeatureSettingsManager::updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings)
+bool FeatureSettingsManager::updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings)
 {
     {
         std::lock_guard lock(mMutex);
         mRecordingSettings = recordingSettings;
     }
-    saveRecordingSettingsToDatabase();
+    return saveRecordingSettingsToDatabase(recordingSettings);
 }
 
 void FeatureSettingsManager::loadRecordingSettingsFromDatabase()
@@ -246,59 +264,75 @@ void FeatureSettingsManager::loadRecordingSettingsFromDatabase()
     );
 }
 
-void FeatureSettingsManager::saveRecordingSettingsToDatabase()
+bool FeatureSettingsManager::saveRecordingSettingsToDatabase(const model::RecordingFeatureSettings& recordingSettings)
 {
-    auto coreFramework = mCoreFrameworkWPtr.lock();
-    if (!coreFramework) return;
+    try {
+        auto coreFramework = mCoreFrameworkWPtr.lock();
+        if (!coreFramework) {
+            SERVICE_LOG_ERROR("Cannot persist recording settings: framework unavailable");
+            return false;
+        }
 
-    auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
-    if (!dataWarehouseService) return;
+        auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
+        if (!dataWarehouseService) {
+            SERVICE_LOG_ERROR("Cannot persist recording settings: database service unavailable");
+            return false;
+        }
 
-    auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
-    if (!clientInfoService) return;
+        auto clientInfoService = coreFramework->getService<ucf::service::IClientInfoService>().lock();
+        if (!clientInfoService) {
+            SERVICE_LOG_ERROR("Cannot persist recording settings: client info service unavailable");
+            return false;
+        }
 
-    const std::string databaseId = clientInfoService->getSharedDBConfig().getDBId();
+        const std::string databaseId = clientInfoService->getSharedDBConfig().getDBId();
 
-    model::RecordingFeatureSettings settingsCopy;
-    {
-        std::lock_guard lock(mMutex);
-        settingsCopy = mRecordingSettings;
+        ucf::service::model::ListOfDBValues databaseValues;
+        databaseValues.emplace_back(ucf::service::model::DBDataValues{
+            std::string("default"),
+            recordingSettings.outputDirectory,
+            recordingSettings.videoFormat,
+            recordingSettings.framesPerSecond,
+            static_cast<int>(recordingSettings.enableMicrophone),
+            static_cast<int>(recordingSettings.enableSystemAudio),
+            recordingSettings.micDeviceId,
+            recordingSettings.systemAudioDeviceId
+        });
+
+        const bool persisted = dataWarehouseService->insertIntoDatabase(
+            databaseId,
+            db::schema::RecordingSettingsTable::TableName,
+            {
+                db::schema::RecordingSettingsTable::SettingsIdentifierField,
+                db::schema::RecordingSettingsTable::OutputDirectoryField,
+                db::schema::RecordingSettingsTable::VideoFormatField,
+                db::schema::RecordingSettingsTable::FramesPerSecondField,
+                db::schema::RecordingSettingsTable::EnableMicrophoneField,
+                db::schema::RecordingSettingsTable::EnableSystemAudioField,
+                db::schema::RecordingSettingsTable::MicDeviceIdField,
+                db::schema::RecordingSettingsTable::SystemAudioDeviceIdField
+            },
+            databaseValues
+        );
+
+        if (!persisted) {
+            SERVICE_LOG_ERROR("Failed to persist recording settings to database: " << databaseId);
+            return false;
+        }
+
+        SERVICE_LOG_DEBUG("Saved recording settings to database:"
+            << " outputDirectory=" << recordingSettings.outputDirectory
+            << " videoFormat=" << recordingSettings.videoFormat
+            << " framesPerSecond=" << recordingSettings.framesPerSecond
+            << " enableMicrophone=" << recordingSettings.enableMicrophone
+            << " enableSystemAudio=" << recordingSettings.enableSystemAudio);
+        return true;
+    } catch (const std::exception& error) {
+        SERVICE_LOG_ERROR("Failed to persist recording settings: " << error.what());
+    } catch (...) {
+        SERVICE_LOG_ERROR("Failed to persist recording settings: unknown exception");
     }
-
-    ucf::service::model::ListOfDBValues databaseValues;
-    databaseValues.emplace_back(ucf::service::model::DBDataValues{
-        std::string("default"),
-        settingsCopy.outputDirectory,
-        settingsCopy.videoFormat,
-        settingsCopy.framesPerSecond,
-        static_cast<int>(settingsCopy.enableMicrophone),
-        static_cast<int>(settingsCopy.enableSystemAudio),
-        settingsCopy.micDeviceId,
-        settingsCopy.systemAudioDeviceId
-    });
-
-    dataWarehouseService->insertIntoDatabase(
-        databaseId,
-        db::schema::RecordingSettingsTable::TableName,
-        {
-            db::schema::RecordingSettingsTable::SettingsIdentifierField,
-            db::schema::RecordingSettingsTable::OutputDirectoryField,
-            db::schema::RecordingSettingsTable::VideoFormatField,
-            db::schema::RecordingSettingsTable::FramesPerSecondField,
-            db::schema::RecordingSettingsTable::EnableMicrophoneField,
-            db::schema::RecordingSettingsTable::EnableSystemAudioField,
-            db::schema::RecordingSettingsTable::MicDeviceIdField,
-            db::schema::RecordingSettingsTable::SystemAudioDeviceIdField
-        },
-        databaseValues
-    );
-
-    SERVICE_LOG_DEBUG("Saved recording settings to database:"
-        << " outputDirectory=" << settingsCopy.outputDirectory
-        << " videoFormat=" << settingsCopy.videoFormat
-        << " framesPerSecond=" << settingsCopy.framesPerSecond
-        << " enableMicrophone=" << settingsCopy.enableMicrophone
-        << " enableSystemAudio=" << settingsCopy.enableSystemAudio);
+    return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

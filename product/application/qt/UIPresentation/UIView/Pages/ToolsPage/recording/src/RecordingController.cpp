@@ -54,6 +54,8 @@ void RecordingController::init()
             this, &RecordingController::onVMThumbnailFailed);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onSettingsChanged,
             this, &RecordingController::onVMSettingsChanged);
+    connect(m_viewModelEmitter.get(), &Emitter::signals_onSettingsPersistenceChanged,
+            this, &RecordingController::onVMSettingsPersistenceChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onError,
             this, &RecordingController::onVMError);
 
@@ -105,6 +107,21 @@ bool RecordingController::isRecording() const { return m_isRecording; }
 int RecordingController::recordingDuration() const { return m_recordingDuration; }
 bool RecordingController::isPaused() const { return m_isPaused; }
 QString RecordingController::outputDirectory() const { return m_outputDirectory; }
+
+QString RecordingController::settingsSaveError() const
+{
+    return m_settingsPersistenceFailed
+        ? tr("The current settings are active, but could not be saved. They may be lost after restarting.")
+        : QString{};
+}
+
+void RecordingController::onLanguageChanged()
+{
+    UIViewController::onLanguageChanged();
+    if (m_settingsPersistenceFailed) {
+        emit settingsSaveErrorChanged();
+    }
+}
 
 QString RecordingController::recordingsFolderUrl() const
 {
@@ -540,6 +557,15 @@ void RecordingController::onVMSettingsChanged(const commonHead::viewModels::mode
 
     if (changed) {
         emit settingsChanged();
+    }
+}
+
+void RecordingController::onVMSettingsPersistenceChanged(bool persisted)
+{
+    const bool failed = !persisted;
+    if (m_settingsPersistenceFailed != failed) {
+        m_settingsPersistenceFailed = failed;
+        emit settingsSaveErrorChanged();
     }
 }
 

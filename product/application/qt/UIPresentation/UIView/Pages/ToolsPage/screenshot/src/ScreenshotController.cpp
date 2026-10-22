@@ -116,6 +116,8 @@ void ScreenshotController::init()
             this, &ScreenshotController::onVMScreenshotSaved);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onSettingsChanged,
             this, &ScreenshotController::onVMSettingsChanged);
+    connect(m_viewModelEmitter.get(), &Emitter::signals_onSettingsPersistenceChanged,
+            this, &ScreenshotController::onVMSettingsPersistenceChanged);
     connect(m_viewModelEmitter.get(), &Emitter::signals_onError,
             this, &ScreenshotController::onVMError);
 
@@ -162,6 +164,21 @@ int ScreenshotController::screenshotHeight() const { return m_screenshotHeight; 
 int ScreenshotController::screenshotState() const { return m_state; }
 
 QString ScreenshotController::outputDirectory() const { return m_outputDirectory; }
+
+QString ScreenshotController::settingsSaveError() const
+{
+    return m_settingsPersistenceFailed
+        ? tr("The current settings are active, but could not be saved. They may be lost after restarting.")
+        : QString{};
+}
+
+void ScreenshotController::onLanguageChanged()
+{
+    UIViewController::onLanguageChanged();
+    if (m_settingsPersistenceFailed) {
+        emit settingsSaveErrorChanged();
+    }
+}
 
 QString ScreenshotController::screenshotsFolderUrl() const
 {
@@ -644,6 +661,15 @@ void ScreenshotController::onVMSettingsChanged(const commonHead::viewModels::mod
 
     if (changed) {
         emit settingsChanged();
+    }
+}
+
+void ScreenshotController::onVMSettingsPersistenceChanged(bool persisted)
+{
+    const bool failed = !persisted;
+    if (m_settingsPersistenceFailed != failed) {
+        m_settingsPersistenceFailed = failed;
+        emit settingsSaveErrorChanged();
     }
 }
 

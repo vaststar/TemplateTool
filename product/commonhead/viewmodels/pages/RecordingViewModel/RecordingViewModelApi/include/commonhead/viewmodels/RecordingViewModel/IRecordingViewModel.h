@@ -43,6 +43,9 @@ public:
     /// Settings updated (e.g. from another source or DB load)
     virtual void onSettingsChanged(const model::RecordingSettings& settings) = 0;
 
+    /// Result of persisting the current settings; runtime settings remain applied on failure.
+    virtual void onSettingsPersistenceChanged(bool persisted) = 0;
+
     /// Error occurred
     virtual void onError(const std::string& message) = 0;
 };

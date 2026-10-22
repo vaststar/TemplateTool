@@ -392,6 +392,7 @@ void RecordingViewModel::updateSettings(const model::RecordingSettings& settings
         std::lock_guard<std::mutex> lock(m_mutex);
         m_settings = settings;
     }
+    bool persisted = false;
     // Persist to FeatureSettingsService
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
@@ -407,11 +408,12 @@ void RecordingViewModel::updateSettings(const model::RecordingSettings& settings
                 serviceSettings.enableSystemAudio = settings.enableSystemAudio;
                 serviceSettings.micDeviceId = settings.micDeviceId;
                 serviceSettings.systemAudioDeviceId = settings.systemAudioDeviceId;
-                featureSettingsService->updateRecordingSettings(serviceSettings);
+                persisted = featureSettingsService->updateRecordingSettings(serviceSettings);
             }
         }
     }
     fireNotification(&IRecordingViewModelCallback::onSettingsChanged, settings);
+    fireNotification(&IRecordingViewModelCallback::onSettingsPersistenceChanged, persisted);
 }
 
 // ============================================================================

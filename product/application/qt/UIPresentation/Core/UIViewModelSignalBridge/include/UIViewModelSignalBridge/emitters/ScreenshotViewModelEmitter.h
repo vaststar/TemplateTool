@@ -45,6 +45,11 @@ public:
         emit signals_onSettingsChanged(settings);
     }
 
+    void onSettingsPersistenceChanged(bool persisted) override
+    {
+        emit signals_onSettingsPersistenceChanged(persisted);
+    }
+
     void onError(const std::string& message) override
     {
         emit signals_onError(QString::fromStdString(message));
@@ -56,6 +61,7 @@ signals:
     void signals_onAnnotationsChanged();
     void signals_onScreenshotSaved(const QString& filePath);
     void signals_onSettingsChanged(const commonHead::viewModels::model::ScreenshotSettings& settings);
+    void signals_onSettingsPersistenceChanged(bool persisted);
     void signals_onError(const QString& message);
 };
 

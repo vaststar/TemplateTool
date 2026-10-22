@@ -40,6 +40,7 @@ class ScreenshotController : public UIViewController
     Q_PROPERTY(int screenshotState READ screenshotState NOTIFY stateChanged)
 
     // Settings
+    Q_PROPERTY(QString settingsSaveError READ settingsSaveError NOTIFY settingsSaveErrorChanged)
     Q_PROPERTY(QString outputDirectory READ outputDirectory WRITE setOutputDirectory NOTIFY settingsChanged)
     Q_PROPERTY(QString screenshotsFolderUrl READ screenshotsFolderUrl NOTIFY settingsChanged)
     Q_PROPERTY(int delaySeconds READ delaySeconds WRITE setDelaySeconds NOTIFY settingsChanged)
@@ -57,6 +58,7 @@ public:
     int screenshotHeight() const;
     int screenshotState() const;
     QString outputDirectory() const;
+    QString settingsSaveError() const;
     QString screenshotsFolderUrl() const;
     int delaySeconds() const;
     QString imageFormat() const;
@@ -111,12 +113,14 @@ public:
 
 protected:
     void init() override;
+    void onLanguageChanged() override;
 
 signals:
     void screenshotChanged();
     void stateChanged();
     void annotationsChanged();
     void settingsChanged();
+    void settingsSaveErrorChanged();
     void captureCompleted(const QString& filePath);
     void overlayScreenshotReady(const QString& base64, int width, int height);
     void errorOccurred(const QString& message);
@@ -131,6 +135,7 @@ private:
     void onVMAnnotationsChanged();
     void onVMScreenshotSaved(const QString& filePath);
     void onVMSettingsChanged(const commonHead::viewModels::model::ScreenshotSettings& settings);
+    void onVMSettingsPersistenceChanged(bool persisted);
     void onVMError(const QString& message);
 
     // ViewModel
@@ -145,6 +150,7 @@ private:
     int m_state = 0; // ScreenshotState::Idle
 
     // Settings shadow (for QML bindings)
+    bool m_settingsPersistenceFailed = false;
     QString m_outputDirectory;
     int m_delaySeconds = 0;
     QString m_imageFormat = "png";

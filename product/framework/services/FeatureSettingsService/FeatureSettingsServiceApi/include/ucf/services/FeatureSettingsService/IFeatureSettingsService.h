@@ -29,10 +29,14 @@ public:
 
 public:
     [[nodiscard]] virtual model::ScreenshotFeatureSettings getScreenshotSettings() const = 0;
-    virtual void updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings) = 0;
+    /// Runtime settings remain applied when persistence fails.
+    /// Returns true only when this update was written to the database.
+    [[nodiscard]] virtual bool updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings) = 0;
 
     [[nodiscard]] virtual model::RecordingFeatureSettings getRecordingSettings() const = 0;
-    virtual void updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings) = 0;
+    /// Runtime settings remain applied when persistence fails.
+    /// Returns true only when this update was written to the database.
+    [[nodiscard]] virtual bool updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings) = 0;
 };
 
 } // namespace ucf::service

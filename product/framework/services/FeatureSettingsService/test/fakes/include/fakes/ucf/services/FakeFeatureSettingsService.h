@@ -26,9 +26,9 @@ public:
 
     // IFeatureSettingsService
     MAKE_CONST_MOCK0(getScreenshotSettings, model::ScreenshotFeatureSettings(), override);
-    MAKE_MOCK1(updateScreenshotSettings, void(const model::ScreenshotFeatureSettings&), override);
+    MAKE_MOCK1(updateScreenshotSettings, bool(const model::ScreenshotFeatureSettings&), override);
     MAKE_CONST_MOCK0(getRecordingSettings, model::RecordingFeatureSettings(), override);
-    MAKE_MOCK1(updateRecordingSettings, void(const model::RecordingFeatureSettings&), override);
+    MAKE_MOCK1(updateRecordingSettings, bool(const model::RecordingFeatureSettings&), override);
 
 protected:
     void initService() override {}

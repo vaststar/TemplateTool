@@ -555,6 +555,7 @@ void ScreenshotViewModel::updateSettings(const model::ScreenshotSettings& settin
         std::lock_guard lock(m_mutex);
         m_settings = settings;
     }
+    bool persisted = false;
     // Persist to FeatureSettingsService
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
@@ -568,11 +569,12 @@ void ScreenshotViewModel::updateSettings(const model::ScreenshotSettings& settin
                 serviceSettings.jpegQuality = settings.jpegQuality;
                 serviceSettings.captureDelay = settings.captureDelay;
                 serviceSettings.addTimestamp = settings.addTimestamp;
-                featureSettingsService->updateScreenshotSettings(serviceSettings);
+                persisted = featureSettingsService->updateScreenshotSettings(serviceSettings);
             }
         }
     }
     fireNotification(&IScreenshotViewModelCallback::onSettingsChanged, settings);
+    fireNotification(&IScreenshotViewModelCallback::onSettingsPersistenceChanged, persisted);
 }
 
 // ============================================================================

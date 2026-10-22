@@ -24,18 +24,18 @@ public:
 
 public:
     model::ScreenshotFeatureSettings getScreenshotSettings() const;
-    void updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings);
+    bool updateScreenshotSettings(const model::ScreenshotFeatureSettings& screenshotSettings);
 
     model::RecordingFeatureSettings getRecordingSettings() const;
-    void updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings);
+    bool updateRecordingSettings(const model::RecordingFeatureSettings& recordingSettings);
 
     void databaseInitialized(const std::string& databaseId);
 
 private:
     void loadScreenshotSettingsFromDatabase();
-    void saveScreenshotSettingsToDatabase();
+    bool saveScreenshotSettingsToDatabase(const model::ScreenshotFeatureSettings& screenshotSettings);
     void loadRecordingSettingsFromDatabase();
-    void saveRecordingSettingsToDatabase();
+    bool saveRecordingSettingsToDatabase(const model::RecordingFeatureSettings& recordingSettings);
 
 private:
     const ucf::framework::ICoreFrameworkWPtr mCoreFrameworkWPtr;

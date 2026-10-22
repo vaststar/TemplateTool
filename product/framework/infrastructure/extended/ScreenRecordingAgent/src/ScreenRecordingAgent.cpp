@@ -3,6 +3,7 @@
 
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
+#include <exception>
 #include <filesystem>
 
 #include <magic_enum/magic_enum.hpp>
@@ -298,22 +299,70 @@ void ScreenRecordingAgent::stop()
 
         if (isGif && result.success)
         {
-            SRA_LOG_INFO("Converting recording to GIF: " << gifOutputPath);
-            bool gifOk = ucf::utilities::screenrecording::IScreenRecorder::convertToGif(
-                ffmpegPath, result.outputPath, gifOutputPath, gifFps);
-
-            // Delete temporary mp4
-            std::error_code ec;
-            std::filesystem::remove(ucf::utilities::FilePathUtils::pathFromUtf8(result.outputPath), ec);
+            const std::string originalOutputPath = result.outputPath;
+            bool gifOk = false;
+            try
+            {
+                SRA_LOG_INFO("Converting recording to GIF: " << gifOutputPath);
+                if (ucf::utilities::screenrecording::IScreenRecorder::convertToGif(
+                        ffmpegPath, originalOutputPath, gifOutputPath, gifFps))
+                {
+                    const auto gifFile = ucf::utilities::FilePathUtils::pathFromUtf8(gifOutputPath);
+                    std::error_code outputError;
+                    if (std::filesystem::is_regular_file(gifFile, outputError) && !outputError)
+                    {
+                        const auto outputSize = std::filesystem::file_size(gifFile, outputError);
+                        gifOk = !outputError && outputSize > 0;
+                    }
+                    if (!gifOk)
+                    {
+                        SRA_LOG_WARN("GIF output validation failed: " << gifOutputPath);
+                    }
+                }
+            }
+            catch (const std::exception& error)
+            {
+                gifOk = false;
+                SRA_LOG_ERROR("GIF conversion or output inspection failed: " << error.what());
+            }
+            catch (...)
+            {
+                gifOk = false;
+                SRA_LOG_ERROR("GIF conversion or output inspection failed with an unknown exception");
+            }
 
             if (gifOk)
             {
                 result.outputPath = gifOutputPath;
+
+                // A confirmed GIF remains successful even if source cleanup fails.
+                try
+                {
+                    std::error_code cleanupError;
+                    std::filesystem::remove(
+                        ucf::utilities::FilePathUtils::pathFromUtf8(originalOutputPath), cleanupError);
+                    if (cleanupError)
+                    {
+                        SRA_LOG_WARN("GIF saved, but temporary MP4 cleanup failed: "
+                                     << originalOutputPath << ", error: " << cleanupError.message());
+                    }
+                }
+                catch (const std::exception& error)
+                {
+                    SRA_LOG_WARN("GIF saved, but temporary MP4 cleanup failed: "
+                                 << originalOutputPath << ", error: " << error.what());
+                }
+                catch (...)
+                {
+                    SRA_LOG_WARN("GIF saved, but temporary MP4 cleanup failed: " << originalOutputPath);
+                }
             }
             else
             {
+                // Preserve the MP4 path so normal failure retains it and abort can still remove it.
                 result.success = false;
-                result.errorMessage = "GIF conversion failed";
+                result.errorMessage = "GIF conversion failed. Original recording retained at: "
+                                      + originalOutputPath;
             }
         }
 

@@ -54,6 +54,11 @@ public:
         emit signals_onSettingsChanged(settings);
     }
 
+    void onSettingsPersistenceChanged(bool persisted) override
+    {
+        emit signals_onSettingsPersistenceChanged(persisted);
+    }
+
     void onError(const std::string& message) override
     {
         emit signals_onError(QString::fromStdString(message));
@@ -66,6 +71,7 @@ signals:
     void signals_onThumbnailReady(const QString& videoPath, const QString& thumbnailPath);
     void signals_onThumbnailFailed(const QString& videoPath, const QString& errorMessage);
     void signals_onSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
+    void signals_onSettingsPersistenceChanged(bool persisted);
     void signals_onError(const QString& message);
 };
 
