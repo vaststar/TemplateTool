@@ -208,6 +208,7 @@ void ScreenshotController::setOutputDirectory(const QString& path)
             s.outputDirectory = localPath.toStdString();
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
     }
 }
 
@@ -220,6 +221,7 @@ void ScreenshotController::setDelaySeconds(int seconds)
             s.captureDelay = seconds;
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
     }
 }
 
@@ -232,6 +234,7 @@ void ScreenshotController::setImageFormat(const QString& format)
             s.imageFormat = format.toStdString();
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
     }
 }
 
@@ -244,6 +247,7 @@ void ScreenshotController::setIncludeTimestamp(bool include)
             s.addTimestamp = include;
             m_viewModel->updateSettings(s);
         }
+        emit settingsChanged();
     }
 }
 

@@ -52,6 +52,47 @@ constexpr int8_t kUrlSafeDecodeTable[256] = {
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1   // 240-255
 };
 
+bool validateEncodedInput(std::string_view encoded, const int8_t* decodeTable,
+                          size_t& dataLength, std::string* errorMessage = nullptr) {
+    dataLength = encoded.size();
+    while (dataLength > 0 && encoded[dataLength - 1] == '=') {
+        --dataLength;
+    }
+
+    const size_t paddingCount = encoded.size() - dataLength;
+    if (paddingCount > 2) {
+        if (errorMessage) *errorMessage = "Invalid padding";
+        return false;
+    }
+
+    for (size_t i = 0; i < dataLength; ++i) {
+        const auto ch = static_cast<uint8_t>(encoded[i]);
+        const int8_t value = decodeTable[ch];
+        if (value == -1) {
+            if (errorMessage) {
+                *errorMessage = "Invalid character at position " + std::to_string(i);
+            }
+            return false;
+        }
+        if (value == -2) {
+            if (errorMessage) {
+                *errorMessage = "Unexpected padding at position " + std::to_string(i);
+            }
+            return false;
+        }
+    }
+
+    if (paddingCount > 0 && (encoded.size() % 4) != 0) {
+        if (errorMessage) *errorMessage = "Invalid padding";
+        return false;
+    }
+    if ((dataLength % 4) == 1) {
+        if (errorMessage) *errorMessage = "Invalid Base64 length";
+        return false;
+    }
+    return true;
+}
+
 } // anonymous namespace
 
 const char* Base64Utils::getAlphabet(Base64Variant variant) {
@@ -143,16 +184,8 @@ Base64DecodeResult Base64Utils::decode(std::string_view encoded, Base64Variant v
 
     const int8_t* decodeTable = getDecodeTable(variant);
     
-    // Remove trailing padding for size calculation
-    size_t inputLen = encoded.size();
-    while (inputLen > 0 && encoded[inputLen - 1] == '=') {
-        --inputLen;
-    }
-
-    // Validate and count padding
-    size_t paddingCount = encoded.size() - inputLen;
-    if (paddingCount > 2) {
-        result.errorMessage = "Invalid padding";
+    size_t inputLen = 0;
+    if (!validateEncodedInput(encoded, decodeTable, inputLen, &result.errorMessage)) {
         return result;
     }
 
@@ -166,18 +199,6 @@ Base64DecodeResult Base64Utils::decode(std::string_view encoded, Base64Variant v
     for (size_t i = 0; i < inputLen; ++i) {
         uint8_t ch = static_cast<uint8_t>(encoded[i]);
         int8_t value = decodeTable[ch];
-
-        if (value == -1) {
-            result.errorMessage = "Invalid character at position " + std::to_string(i);
-            result.data.clear();
-            return result;
-        }
-        if (value == -2) {
-            // Padding in middle of string
-            result.errorMessage = "Unexpected padding at position " + std::to_string(i);
-            result.data.clear();
-            return result;
-        }
 
         buffer = (buffer << 6) | static_cast<uint32_t>(value);
         bitsCollected += 6;
@@ -220,39 +241,8 @@ Base64Variant Base64Utils::detectVariant(std::string_view encoded) {
 }
 
 bool Base64Utils::isValid(std::string_view encoded, Base64Variant variant) {
-    if (encoded.empty()) {
-        return true;
-    }
-
-    const int8_t* decodeTable = getDecodeTable(variant);
-    bool foundPadding = false;
-    size_t paddingCount = 0;
-
-    for (size_t i = 0; i < encoded.size(); ++i) {
-        uint8_t ch = static_cast<uint8_t>(encoded[i]);
-        int8_t value = decodeTable[ch];
-
-        if (value == -2) {  // Padding
-            foundPadding = true;
-            ++paddingCount;
-            if (paddingCount > 2) {
-                return false;
-            }
-        } else if (value == -1) {
-            return false;  // Invalid character
-        } else if (foundPadding) {
-            return false;  // Non-padding after padding
-        }
-    }
-
-    // Check valid length (must be multiple of 4 with padding, or valid without)
-    size_t dataLen = encoded.size() - paddingCount;
-    if (paddingCount > 0) {
-        return (encoded.size() % 4) == 0;
-    }
-    
-    // Without padding, length mod 4 cannot be 1
-    return (dataLen % 4) != 1;
+    size_t dataLength = 0;
+    return validateEncodedInput(encoded, getDecodeTable(variant), dataLength);
 }
 
 size_t Base64Utils::getEncodedSize(size_t inputSize, bool withPadding) {

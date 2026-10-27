@@ -48,9 +48,14 @@ Base64Result Base64ToolViewModel::encode(
         .errorMessage = encoded.errorMessage};
 }
 
-Base64Result Base64ToolViewModel::decode(const std::string& input) const
+Base64Result Base64ToolViewModel::decode(
+    const std::string& input,
+    bool urlSafe) const
 {
-    const auto decoded = ucf::utilities::Base64Utils::decode(input);
+    const auto variant = urlSafe
+        ? ucf::utilities::Base64Variant::UrlSafe
+        : ucf::utilities::Base64Variant::Standard;
+    const auto decoded = ucf::utilities::Base64Utils::decode(input, variant);
 
     Base64Result result;
     result.success = decoded.success;

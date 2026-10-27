@@ -48,7 +48,7 @@ BaseFolderView {
 
     // ─── Read-only properties ───
     readonly property alias fileCount: folderModel.count
-    readonly property string selectedFilePath: _selectedFilePath
+    readonly property string selectedFilePath: _selectedIndex >= 0 ? _selectedFilePath : ""
     readonly property int selectedIndex: _selectedIndex
     readonly property string viewMode: _viewMode
 
@@ -64,7 +64,9 @@ BaseFolderView {
 
     // ─── Public methods ───
     function refresh() {
-        folderModel.folder = ""
+        _awaitingLoadStart = true
+        _invalidateSelection()
+        _refreshSuspended = true
         _refreshTimer.restart()
     }
 
@@ -81,44 +83,106 @@ BaseFolderView {
     }
 
     function clearSelection() {
-        _selectedIndex = -1
+        _invalidateSelection()
         _selectedFilePath = ""
-        fileDeselected()
     }
 
     // ─── Internal state ───
     property string _viewMode: initialViewMode
     property int _selectedIndex: -1
+    // Retain the path while reloading; expose it only after validation.
     property string _selectedFilePath: ""
     property string _pendingFilePath: ""
     property bool   _pendingLatest: false
+    property bool   _refreshSuspended: false
+    property bool   _awaitingLoadStart: true
+
+    onFolderUrlChanged: {
+        _awaitingLoadStart = true
+        _pendingFilePath = ""
+        _pendingLatest = false
+        clearSelection()
+        if (_refreshTimer) _refreshTimer.stop()
+        _refreshSuspended = false
+    }
 
     Timer {
         id: _refreshTimer
         interval: 100
         repeat: false
-        onTriggered: folderModel.folder = control.folderUrl
+        onTriggered: control._refreshSuspended = false
     }
 
     Connections {
         target: folderModel
+
+        function onModelAboutToBeReset() {
+            control._awaitingLoadStart = true
+            control._invalidateSelection()
+        }
+        function onFolderChanged() {
+            // A full folder result can also release the wait for a fresh load.
+            control._awaitingLoadStart = false
+            control._scheduleSelectionSync()
+        }
         function onStatusChanged() {
-            if ((control._pendingFilePath !== "" || control._pendingLatest)
-                && folderModel.status === FolderListModel.Ready) {
-                Qt.callLater(_doScrollPending)
+            if (folderModel.status === FolderListModel.Loading
+                && !control._refreshSuspended) {
+                control._awaitingLoadStart = false
             }
+            if (folderModel.status !== FolderListModel.Ready)
+                control._invalidateSelection()
+            control._scheduleSelectionSync()
+        }
+        function onRowsAboutToBeInserted() { control._invalidateSelection() }
+        function onRowsAboutToBeRemoved() { control._invalidateSelection() }
+        function onLayoutAboutToBeChanged() { control._invalidateSelection() }
+        function onModelReset() { control._scheduleSelectionSync() }
+        function onRowsInserted() { control._scheduleSelectionSync() }
+        function onRowsRemoved() { control._scheduleSelectionSync() }
+        function onLayoutChanged() { control._scheduleSelectionSync() }
+        function onDataChanged() {
+            control._invalidateSelection()
+            control._scheduleSelectionSync()
         }
     }
 
+    function _invalidateSelection() {
+        var hadSelection = _selectedIndex >= 0
+        _selectedIndex = -1
+        if (_contextMenu) {
+            _contextMenu.currentFilePath = ""
+            _contextMenu.close()
+        }
+        if (hadSelection) fileDeselected()
+    }
+
+    function _isModelReady() {
+        return !_refreshSuspended && !_awaitingLoadStart
+            && folderModel.status === FolderListModel.Ready
+            && String(folderModel.folder) === String(folderUrl)
+    }
+
+    function _scheduleSelectionSync() {
+        // Coalesce model signals and read the final state, not a captured index.
+        Qt.callLater(_reconcileSelection)
+    }
+
     function _selectItem(index) {
+        if (!_isModelReady() || index < 0 || index >= folderModel.count)
+            return false
+        var path = folderModel.get(index, "filePath")
+        if (!path) return false
+        var changed = _selectedIndex !== index || _selectedFilePath !== path
+        _selectedFilePath = path
         _selectedIndex = index
-        _selectedFilePath = folderModel.get(index, "filePath")
-        fileSelected(_selectedFilePath)
+        if (changed) fileSelected(path)
+        return true
     }
 
     function _openContextMenuAtItem(index, view) {
-        _selectItem(index)
-        _contextMenu.currentFilePath = _selectedFilePath
+        if (!_selectItem(index)) return
+        _contextMenu.currentFilePath = selectedFilePath
         var item = view.itemAtIndex(index)
         if (item) {
             var pos = item.mapToItem(control, item.width, 0)
@@ -128,41 +192,41 @@ BaseFolderView {
         }
     }
 
-    function _doScrollPending() {
-        if (folderModel.count <= 0) return
+    function _reconcileSelection() {
+        if (!_isModelReady()) return
 
         var targetIndex = -1
-
         if (_pendingFilePath !== "") {
             targetIndex = _findIndexByFilePath(_pendingFilePath)
-            _pendingFilePath = ""
-        } else if (_pendingLatest) {
+        } else if (_pendingLatest && folderModel.count > 0) {
             targetIndex = _findLatestIndex()
-            _pendingLatest = false
         }
+        var scrollToTarget = targetIndex >= 0
+        // Consume the request even when the completed list is empty.
+        _pendingFilePath = ""
+        _pendingLatest = false
 
-        if (targetIndex < 0) return
-        _selectItem(targetIndex)
-        _scrollViewToIndex(targetIndex)
+        if (targetIndex < 0 && _selectedFilePath !== "")
+            targetIndex = _findIndexByFilePath(_selectedFilePath)
+
+        if (targetIndex < 0) {
+            clearSelection()
+            return
+        }
+        if (_selectItem(targetIndex) && scrollToTarget)
+            _scrollViewToIndex(targetIndex)
     }
 
     function _findIndexByFilePath(path) {
-        var needle = _toLocalPath(path)
+        var needle = String(path)
+        if (Qt.platform.os === "windows") needle = needle.replace(/\\/g, "/")
         for (var i = 0; i < folderModel.count; i++) {
-            if (_toLocalPath(folderModel.get(i, "filePath")) === needle)
-                return i
+            var candidate = String(folderModel.get(i, "filePath"))
+            if (Qt.platform.os === "windows") candidate = candidate.replace(/\\/g, "/")
+            if (candidate === needle) return i
         }
-        return -1
-    }
-
-    // Strip file:// scheme, decode percent-encoding, normalise slashes & case
-    function _toLocalPath(p) {
-        var s = decodeURIComponent(String(p))
-        if (s.startsWith("file:///"))
-            s = s.substring(8)          // file:///C:/foo → C:/foo
-        else if (s.startsWith("file://"))
-            s = s.substring(7)          // file:///foo (Unix) → /foo
-        return s.replace(/\\/g, "/").toLowerCase()
+        // Let Qt parse explicit URLs; native paths must not be percent-decoded.
+        return /^file:/i.test(String(path)) ? folderModel.indexOf(path) : -1
     }
 
     function _findLatestIndex() {
@@ -184,11 +248,11 @@ BaseFolderView {
 
     function _handleItemClick(index, mouseButton) {
         if (mouseButton === Qt.RightButton) {
-            _selectItem(index)
-            _contextMenu.currentFilePath = _selectedFilePath
+            if (!_selectItem(index)) return
+            _contextMenu.currentFilePath = selectedFilePath
             _contextMenu.popup()
         } else {
-            if (_selectedIndex === index) clearSelection()
+            if (selectedIndex === index) clearSelection()
             else _selectItem(index)
         }
     }
@@ -196,7 +260,7 @@ BaseFolderView {
     // ─── FolderListModel ───
     FolderListModel {
         id: folderModel
-        folder: control.folderUrl
+        folder: control._refreshSuspended ? "" : control.folderUrl
         nameFilters: control.nameFilters
         showDirs: false
         sortField: FolderListModel.Time
@@ -263,7 +327,7 @@ BaseFolderView {
                 cellWidth: 180
                 cellHeight: 160
                 model: folderModel
-                selectedIndex: control._selectedIndex
+                selectedIndex: control.selectedIndex
 
                 onItemInvoked: function(index) {
                     control._openContextMenuAtItem(index, _gridView.gridView)
@@ -273,7 +337,7 @@ BaseFolderView {
                     width: _gridView.cellWidth
                     height: _gridView.cellHeight
                     thumbnailComponent: control.gridThumbnail
-                    isSelected: control._selectedIndex === index
+                    isSelected: control.selectedIndex === index
                     isCurrent: _gridView.gridView.currentIndex === index
 
                     onClicked: function(mouseButton) {
@@ -282,7 +346,7 @@ BaseFolderView {
                     }
                     onDoubleClicked: {
                         _gridView.focusOnItem(index)
-                        control.fileOpenRequested(filePath)
+                        if (control._isModelReady()) control.fileOpenRequested(filePath)
                     }
                 }
             }
@@ -295,7 +359,7 @@ BaseFolderView {
                 rightMargin: 0
                 spacing: 1
                 model: folderModel
-                selectedIndex: control._selectedIndex
+                selectedIndex: control.selectedIndex
 
                 onItemInvoked: function(index) {
                     control._openContextMenuAtItem(index, _detailContainer.listView)
@@ -304,7 +368,7 @@ BaseFolderView {
                 delegate: UTFolderDetailDelegate {
                     width: _detailContainer.contentAvailableWidth
                     iconComponent: control.detailIcon
-                    isSelected: control._selectedIndex === index
+                    isSelected: control.selectedIndex === index
                     isCurrent: _detailContainer.listView.currentIndex === index
 
                     onClicked: function(mouseButton) {
@@ -313,7 +377,7 @@ BaseFolderView {
                     }
                     onDoubleClicked: {
                         _detailContainer.focusOnItem(index)
-                        control.fileOpenRequested(filePath)
+                        if (control._isModelReady()) control.fileOpenRequested(filePath)
                     }
                 }
             }
@@ -349,15 +413,24 @@ BaseFolderView {
 
         UTMenuItem {
             text: qsTr("Open")
-            onTriggered: control.fileOpenRequested(_contextMenu.currentFilePath)
+            onTriggered: {
+                if (_contextMenu.currentFilePath !== "")
+                    control.fileOpenRequested(_contextMenu.currentFilePath)
+            }
         }
         UTMenuItem {
             text: qsTr("Copy to Clipboard")
-            onTriggered: control.fileCopyRequested(_contextMenu.currentFilePath)
+            onTriggered: {
+                if (_contextMenu.currentFilePath !== "")
+                    control.fileCopyRequested(_contextMenu.currentFilePath)
+            }
         }
         UTMenuItem {
             text: qsTr("Show in Explorer")
-            onTriggered: control.fileRevealRequested(_contextMenu.currentFilePath)
+            onTriggered: {
+                if (_contextMenu.currentFilePath !== "")
+                    control.fileRevealRequested(_contextMenu.currentFilePath)
+            }
         }
 
         UTMenuSeparator {
@@ -373,7 +446,10 @@ BaseFolderView {
 
         UTMenuItem {
             text: qsTr("Delete")
-            onTriggered: control.fileDeleteRequested(_contextMenu.currentFilePath)
+            onTriggered: {
+                if (_contextMenu.currentFilePath !== "")
+                    control.fileDeleteRequested(_contextMenu.currentFilePath)
+            }
         }
     }
 }

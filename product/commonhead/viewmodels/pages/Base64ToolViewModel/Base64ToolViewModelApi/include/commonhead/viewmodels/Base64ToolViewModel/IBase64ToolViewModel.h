@@ -21,7 +21,9 @@ public:
     [[nodiscard]] virtual Base64Result encode(
         const std::string& input,
         bool urlSafe = false) const = 0;
-    [[nodiscard]] virtual Base64Result decode(const std::string& input) const = 0;
+    [[nodiscard]] virtual Base64Result decode(
+        const std::string& input,
+        bool urlSafe = false) const = 0;
 };
 
 } // namespace commonHead::viewModels

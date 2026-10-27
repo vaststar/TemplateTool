@@ -171,7 +171,6 @@ Item {
         currentFolder: controller.screenshotsFolderUrl
         onAccepted: {
             controller.outputDirectory = selectedFolder
-            outputDirField.text = controller.outputDirectory
         }
     }
 }

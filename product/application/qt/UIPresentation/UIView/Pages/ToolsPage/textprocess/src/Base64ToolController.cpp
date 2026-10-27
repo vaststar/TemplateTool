@@ -84,7 +84,7 @@ void Base64ToolController::decode()
     if (!m_base64ViewModel)
         return;
 
-    auto result = m_base64ViewModel->decode(m_inputText.toStdString());
+    auto result = m_base64ViewModel->decode(m_inputText.toStdString(), m_urlSafe);
 
     if (result.success) {
         m_outputText = QString::fromStdString(result.data);

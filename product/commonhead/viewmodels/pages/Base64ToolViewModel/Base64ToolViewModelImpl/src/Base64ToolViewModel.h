@@ -14,7 +14,9 @@ public:
     [[nodiscard]] Base64Result encode(
         const std::string& input,
         bool urlSafe = false) const override;
-    [[nodiscard]] Base64Result decode(const std::string& input) const override;
+    [[nodiscard]] Base64Result decode(
+        const std::string& input,
+        bool urlSafe = false) const override;
 
 protected:
     void init() override;

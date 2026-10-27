@@ -1,5 +1,7 @@
 #include "RuntimeResourceResolver.h"
 
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
+
 #include <algorithm>
 #include <cctype>
 #include <fstream>
@@ -25,6 +27,36 @@ std::string trimLeadingSlashes(const std::string& input)
         ++pos;
     }
     return input.substr(pos);
+}
+
+int hexDigitValue(char ch)
+{
+    if (ch >= '0' && ch <= '9') return ch - '0';
+    if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
+    if (ch >= 'A' && ch <= 'F') return ch - 'A' + 10;
+    return -1;
+}
+
+bool decodeUrlPath(const std::string& rawPath, std::string& decodedPath)
+{
+    decodedPath.clear();
+    decodedPath.reserve(rawPath.size());
+    for (size_t i = 0; i < rawPath.size(); ++i)
+    {
+        unsigned char ch = static_cast<unsigned char>(rawPath[i]);
+        if (ch == '%')
+        {
+            if (rawPath.size() - i < 3) return false;
+            const int high = hexDigitValue(rawPath[i + 1]);
+            const int low = hexDigitValue(rawPath[i + 2]);
+            if (high < 0 || low < 0) return false;
+            ch = static_cast<unsigned char>((high << 4) | low);
+            i += 2;
+        }
+        if (ch == 0) return false;
+        decodedPath.push_back(static_cast<char>(ch));
+    }
+    return true;
 }
 
 std::string toLower(std::string value)
@@ -53,7 +85,8 @@ std::string mimeTypeForPath(const std::filesystem::path& path)
         {".txt", "text/plain"},
     };
 
-    const std::string ext = toLower(path.extension().string());
+    const std::string ext = toLower(
+        ucf::utilities::FilePathUtils::utf8FromPath(path.extension()));
     const auto it = kMimeMap.find(ext);
     if (it != kMimeMap.end())
     {
@@ -70,16 +103,22 @@ bool parseAppUrl(const std::string& url, const std::string& schemePrefix, std::s
     }
 
     const std::string rest = url.substr(schemePrefix.size());
-    const auto slashPos = rest.find('/');
-    if (slashPos == std::string::npos)
+    const auto authorityEnd = rest.find_first_of("/?#");
+    hostOut = rest.substr(0, authorityEnd);
+    pathOut.clear();
+    if (hostOut.empty())
     {
-        hostOut = rest;
-        pathOut.clear();
+        return false;
+    }
+    if (authorityEnd == std::string::npos || rest[authorityEnd] != '/')
+    {
         return true;
     }
 
-    hostOut = rest.substr(0, slashPos);
-    pathOut = rest.substr(slashPos);
+    // Split URL components before decoding, so %3F and %23 stay in the path.
+    const auto pathEnd = rest.find_first_of("?#", authorityEnd);
+    pathOut = rest.substr(authorityEnd, pathEnd == std::string::npos
+        ? std::string::npos : pathEnd - authorityEnd);
     return true;
 }
 
@@ -90,7 +129,8 @@ RuntimeResourceResolver::RuntimeResourceResolver(std::string appId, std::string 
     , m_schemePrefix((appScheme.empty() ? std::string("app") : std::move(appScheme)) + "://")
 {
     std::error_code ec;
-    m_packageRoot = std::filesystem::weakly_canonical(std::filesystem::path(packageDir), ec);
+    m_packageRoot = std::filesystem::weakly_canonical(
+        ucf::utilities::FilePathUtils::pathFromUtf8(packageDir), ec);
     if (ec)
     {
         m_packageRoot.clear();
@@ -130,25 +170,39 @@ ResolvedResource RuntimeResourceResolver::resolve(const std::string& url) const
         return result;
     }
 
-    const std::string relative = trimLeadingSlashes(rawPath);
+    std::string relative;
+    // Strip URL separators before decoding; never decode the resulting path twice.
+    if (!decodeUrlPath(trimLeadingSlashes(rawPath), relative))
+    {
+        result.statusCode = 400;
+        result.errorMessage = "invalid resource path";
+        return result;
+    }
     if (relative.empty())
     {
         result.statusCode = 404;
         return result;
     }
 
+    const auto relativePath = ucf::utilities::FilePathUtils::pathFromUtf8(relative);
+    if (relativePath.has_root_path())
+    {
+        result.statusCode = 403;
+        result.errorMessage = "path traversal denied";
+        return result;
+    }
+
     std::error_code ec;
-    const auto candidate = std::filesystem::weakly_canonical(m_packageRoot / relative, ec);
+    const auto candidate = std::filesystem::weakly_canonical(m_packageRoot / relativePath, ec);
     if (ec)
     {
         result.statusCode = 404;
         return result;
     }
 
-    const std::string rootText = m_packageRoot.generic_string();
-    const std::string candidateText = candidate.generic_string();
-    const std::string rootPrefix = rootText + "/";
-    if (candidateText != rootText && candidateText.rfind(rootPrefix, 0) != 0)
+    const auto mismatch = std::mismatch(
+        m_packageRoot.begin(), m_packageRoot.end(), candidate.begin(), candidate.end());
+    if (mismatch.first != m_packageRoot.end())
     {
         result.statusCode = 403;
         result.errorMessage = "path traversal denied";
