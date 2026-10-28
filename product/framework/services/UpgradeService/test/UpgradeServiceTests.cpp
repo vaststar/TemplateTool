@@ -53,7 +53,6 @@ ucf::service::upgrade::UpgradeContext makeTestContext()
     ctx.triggerVerify       = [](const std::string&) {};
     ctx.triggerExtract      = [](const std::string&) {};
     ctx.triggerInstall      = [](const std::string&) {};
-    ctx.triggerCancelDownload  = []() {};
     ctx.triggerHardReset = []() {};
     ctx.triggerSoftReset = []() {};
     return ctx;

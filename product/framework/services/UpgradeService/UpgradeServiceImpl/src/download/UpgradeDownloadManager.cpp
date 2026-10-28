@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
@@ -83,11 +84,27 @@ bool UpgradeDownloadManager::isDownloading() const
 
 bool UpgradeDownloadManager::hasSufficientSpace(int64_t requiredBytes) const
 {
+    if (requiredBytes <= 0) {
+        UPGRADE_LOG_ERROR("Invalid package size for disk space check: " << requiredBytes);
+        return false;
+    }
+    const auto bytes = static_cast<std::uintmax_t>(requiredBytes);
+    constexpr std::uintmax_t kSpaceMultiplier = 3;
+    constexpr auto kMaxBytes = (std::numeric_limits<std::uintmax_t>::max)();
+    if (bytes > kMaxBytes / kSpaceMultiplier) {
+        UPGRADE_LOG_ERROR("Package size exceeds the disk space calculation limit");
+        return false;
+    }
+
     try {
         ucf::utilities::FilePathUtils::createDirectoriesUtf8(
             ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
-        auto spaceInfo = std::filesystem::space(mDownloadDir);
-        return spaceInfo.available > static_cast<std::uintmax_t>(requiredBytes * 3);
+        const auto spaceInfo = std::filesystem::space(mDownloadDir);
+        if (spaceInfo.available == kMaxBytes) {
+            UPGRADE_LOG_ERROR("Available disk space could not be determined");
+            return false;
+        }
+        return spaceInfo.available > bytes * kSpaceMultiplier;
     } catch (const std::exception& ex) {
         UPGRADE_LOG_ERROR("Failed to check disk space: " << ex.what());
         return false;
@@ -701,7 +718,10 @@ void UpgradeDownloadManager::verifyPackage(
         model::UpgradeErrorCode errorCode = model::UpgradeErrorCode::VerifyFailed;
         std::string message;
         try {
-            if (!ucf::utilities::FilePathUtils::existsUtf8(filePath)) {
+            if (expectedSha256.empty()) {
+                message = "Expected SHA-256 is missing";
+                UPGRADE_LOG_ERROR(message);
+            } else if (!ucf::utilities::FilePathUtils::existsUtf8(filePath)) {
                 message = "File not found: " + filePath;
             } else {
                 auto actualHash = computeSha256(
@@ -709,11 +729,7 @@ void UpgradeDownloadManager::verifyPackage(
                 if (!actualHash) {
                     return;
                 }
-                if (expectedSha256.empty()) {
-                    UPGRADE_LOG_WARN("No expected SHA-256 provided, skipping verification");
-                    success = true;
-                    errorCode = model::UpgradeErrorCode::None;
-                } else if (*actualHash != expectedSha256) {
+                if (*actualHash != expectedSha256) {
                     UPGRADE_LOG_ERROR("SHA-256 mismatch: expected=" << expectedSha256
                                       << " actual=" << *actualHash);
                     message = "SHA-256 mismatch: expected " + expectedSha256

@@ -2,6 +2,8 @@
 
 #include "ICPUMonitor.h"
 
+#include <ucf/services/PerformanceService/PerformanceServiceImplExport.h>
+
 #include <chrono>
 #include <cstdint>
 #include <optional>
@@ -43,7 +45,7 @@ struct CpuUsageSample
 /// Process CPU follows the one-logical-core-equals-100% convention and may
 /// therefore exceed 100% for a multi-threaded process. System CPU is normalized
 /// to the whole-machine 0%-100% scale.
-class PerformanceCpuCalculator
+class PERFORMANCE_SERVICE_IMPL_API PerformanceCpuCalculator
 {
 public:
     [[nodiscard]] CpuUsageSample update(
@@ -58,7 +60,7 @@ private:
 };
 
 /// Accumulates only valid samples for a report window.
-class CpuUsageWindow
+class PERFORMANCE_SERVICE_IMPL_API CpuUsageWindow
 {
 public:
     void add(std::optional<double> sample);

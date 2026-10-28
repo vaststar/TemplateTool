@@ -11,7 +11,13 @@
 #include <ucf/utilities/JsonUtils/JsonValue.h>
 #include <ucf/utilities/VersionUtils/Version.h>
 
+#include <algorithm>
+#include <charconv>
+#include <cctype>
+#include <cstdint>
 #include <format>
+#include <stdexcept>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -247,8 +253,8 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     UPGRADE_LOG_DEBUG("parseCheckResponse jsonBody: " << jsonBody);
     model::UpgradeCheckResult result;
     auto json = ucf::utilities::JsonValue::parse(jsonBody);
-    if (json.isNull()) {
-        throw std::runtime_error("Failed to parse JSON response");
+    if (!json.isObject()) {
+        throw std::runtime_error("Upgrade manifest must be a JSON object");
     }
 
     auto& info = result.upgradeInfo;
@@ -258,27 +264,73 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     info.mandatory    = json.get("mandatory").asBool().value_or(false);
     info.minVersion   = json.get("minVersion").asString().value_or("");
 
-    // Check if the manifest version is newer than current. Malformed
-    // version strings are treated as "not newer" — VersionUtils returns
-    // false in that case rather than throwing.
-    result.hasUpgrade = ucf::utilities::Version::isNewer(info.version, currentVersion);
-
-    if (result.hasUpgrade) {
-        // Look up platform-specific package (e.g. "windows-x64")
-        auto packages = json.get("packages");
-        auto pkg = packages.get(platformKey);
-
-        if (pkg.isNull()) {
-            UPGRADE_LOG_WARN("No package found for platform: " << platformKey);
-            result.hasUpgrade = false;
-            return result;
-        }
-
-        info.package.downloadUrl = pkg.get("url").asString().value_or("");
-        info.package.sha256      = pkg.get("sha256").asString().value_or("");
-        info.package.sizeBytes   = pkg.get("size").asInt64().value_or(0);
+    const auto candidateVersion = ucf::utilities::Version::parse(info.version);
+    if (!candidateVersion) {
+        throw std::runtime_error("Manifest version must be a non-empty numeric dotted version");
+    }
+    const auto installedVersion = ucf::utilities::Version::parse(currentVersion);
+    if (!installedVersion) {
+        throw std::runtime_error("Invalid current application version: " + currentVersion);
+    }
+    result.hasUpgrade = candidateVersion->compare(*installedVersion) == std::strong_ordering::greater;
+    if (!result.hasUpgrade) {
+        return result;
     }
 
+    const auto packages = json.get("packages");
+    if (!packages.isObject()) {
+        throw std::runtime_error("Manifest packages must be a JSON object");
+    }
+    if (!packages.contains(platformKey)) {
+        UPGRADE_LOG_WARN("No package found for platform: " << platformKey);
+        result.hasUpgrade = false;
+        return result;
+    }
+    const auto pkg = packages.get(platformKey);
+    if (!pkg.isObject()) {
+        throw std::runtime_error("Manifest package must be a JSON object: " + platformKey);
+    }
+
+    const auto downloadUrl = pkg.get("url").asString();
+    if (!downloadUrl || downloadUrl->empty()
+        || std::any_of(downloadUrl->begin(), downloadUrl->end(), [](unsigned char ch) {
+               return ch <= 0x20 || ch == 0x7f;
+           })) {
+        throw std::runtime_error("Package url must be a non-empty string without ASCII whitespace or control characters");
+    }
+
+    const auto sha256 = pkg.get("sha256").asString();
+    if (!sha256 || sha256->size() != 64
+        || !std::all_of(sha256->begin(), sha256->end(), [](unsigned char ch) {
+               return (ch >= '0' && ch <= '9')
+                   || (ch >= 'a' && ch <= 'f')
+                   || (ch >= 'A' && ch <= 'F');
+           })) {
+        throw std::runtime_error("Package sha256 must contain exactly 64 hexadecimal characters");
+    }
+
+    const auto sizeValue = pkg.get("size");
+    if (!sizeValue.isNumber()) {
+        throw std::runtime_error("Package size must be a positive 64-bit integer");
+    }
+    // JsonValue accepts integral floating-point values as integers. Parse the
+    // serialized number strictly so fractions, exponents and overflow fail.
+    const auto sizeText = sizeValue.dump();
+    std::int64_t sizeBytes = 0;
+    const auto [sizeEnd, sizeError] = std::from_chars(
+        sizeText.data(), sizeText.data() + sizeText.size(), sizeBytes);
+    if (sizeError != std::errc{} || sizeEnd != sizeText.data() + sizeText.size()
+        || sizeBytes <= 0) {
+        throw std::runtime_error("Package size must be a positive 64-bit integer");
+    }
+
+    info.package.downloadUrl = *downloadUrl;
+    info.package.sha256 = *sha256;
+    std::transform(info.package.sha256.begin(), info.package.sha256.end(),
+                   info.package.sha256.begin(), [](unsigned char ch) {
+                       return static_cast<char>(std::tolower(ch));
+                   });
+    info.package.sizeBytes = sizeBytes;
     return result;
 }
 

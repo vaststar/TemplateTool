@@ -88,6 +88,8 @@ foreach(TRANSLATION_LOCALE IN LISTS TRANSLATION_LOCALES)
 endforeach()
 
 add_library(${TRANSLATION_TARGET} OBJECT)
+# The generated resource objects are linked into shared UI libraries.
+set_target_properties(${TRANSLATION_TARGET} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 qt_add_translations(
     ${TRANSLATION_TARGET}

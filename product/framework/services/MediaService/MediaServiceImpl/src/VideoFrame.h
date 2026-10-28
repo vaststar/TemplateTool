@@ -1,11 +1,12 @@
 #pragma once
 
 #include <ucf/services/MediaService/MediaTypes.h>
+#include <ucf/services/MediaService/MediaServiceImplExport.h>
 #include <vector>
 
 namespace ucf::service::media {
 
-class VideoFrame : public IVideoFrame
+class MEDIA_SERVICE_IMPL_API VideoFrame : public IVideoFrame
 {
 public:
     VideoFrame() = default;
