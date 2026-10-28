@@ -20,13 +20,22 @@ bool pathsOverlap(const std::filesystem::path& first, const std::filesystem::pat
 {
     // Compare filesystem identity to handle case and other directory aliases.
     const auto contains = [](const std::filesystem::path& ancestor, std::filesystem::path path) {
+        const bool ancestorExists = std::filesystem::exists(ancestor);
         while (!path.empty()) {
-            std::error_code ec;
-            if (std::filesystem::equivalent(ancestor, path, ec)) {
+            // Normalized paths can overlap even before those directories exist.
+            if (ancestor == path) {
                 return true;
             }
-            if (ec && ec != std::errc::no_such_file_or_directory) {
-                throw std::filesystem::filesystem_error("Cannot compare application directories", ancestor, path, ec);
+            // equivalent() requires existing paths. In particular, a first
+            // upgrade has no backup yet, and libc++ may report ENOTSUP for it.
+            if (ancestorExists && std::filesystem::exists(path)) {
+                std::error_code ec;
+                if (std::filesystem::equivalent(ancestor, path, ec)) {
+                    return true;
+                }
+                if (ec && ec != std::errc::no_such_file_or_directory) {
+                    throw std::filesystem::filesystem_error("Cannot compare application directories", ancestor, path, ec);
+                }
             }
             const auto parent = path.parent_path();
             if (parent == path) {

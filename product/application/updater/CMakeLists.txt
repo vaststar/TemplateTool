@@ -44,3 +44,7 @@ else()
     # Windows/Linux: install alongside the main binary
     install(TARGETS updater RUNTIME DESTINATION bin)
 endif()
+
+if(BUILD_TESTING)
+    add_subdirectory(test)
+endif()

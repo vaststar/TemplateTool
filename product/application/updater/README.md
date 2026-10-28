@@ -54,6 +54,8 @@ DEB/RPM 保留系统安装布局：应用内容放在 `/opt/<package>/`，deskto
 
 日志文件是运行中 updater 所在目录下的 `updater.log`，以追加方式写入。正常由主应用启动时，该目录为 `<应用临时目录>/template-factory-upgrade`；应用日志中的 updater 启动路径可用于定位。
 
+macOS Release 的默认日志路径是 `$TMPDIR/TemplateToolApp/template-factory-upgrade/updater.log`，Debug 版本把 `TemplateToolApp` 换成 `TemplateToolAppDebug`。`$TMPDIR` 通常位于隐藏的 `/var/folders/.../T/` 下，不是升级包下载目录。可在终端执行 `open "$TMPDIR/TemplateToolApp/template-factory-upgrade"` 打开日志目录。取消或重置升级时会清理此临时目录，因此排查失败时应先保留日志。
+
 失败时 updater 保留 `upgrade_in_progress`。当前主应用下次启动会记录中断警告并清理 marker/staging，不会自动根据 `.bak` 恢复安装。备份目录位于安装目录旁。
 
 ## 返回值

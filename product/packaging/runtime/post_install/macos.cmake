@@ -60,7 +60,9 @@ if(NOT DYLIB_FILES)
     message(STATUS "  ⊘ No .dylib files found in ${BIN_DIR}")
 else()
     foreach(dylib_path ${DYLIB_FILES})
-        if(NOT EXISTS "${dylib_path}")
+        # Moving a versioned dylib can temporarily leave its relative symlinks
+        # dangling in bin. Move those links too so the full chain is preserved.
+        if(NOT EXISTS "${dylib_path}" AND NOT IS_SYMLINK "${dylib_path}")
             math(EXPR MOVE_SKIPPED_COUNT "${MOVE_SKIPPED_COUNT} + 1")
             continue()
         endif()
@@ -69,14 +71,14 @@ else()
         set(dest_path "${DEPLOY_DIR}/${dylib_name}")
 
         # Remove existing file to avoid RENAME failure
-        if(EXISTS "${dest_path}")
+        if(EXISTS "${dest_path}" OR IS_SYMLINK "${dest_path}")
             file(REMOVE "${dest_path}")
         endif()
 
         # Move dylib to Frameworks directory
         file(RENAME "${dylib_path}" "${dest_path}")
 
-        if(EXISTS "${dest_path}")
+        if(EXISTS "${dest_path}" OR IS_SYMLINK "${dest_path}")
             message(STATUS "  ✓ Moved: ${dylib_name}")
             math(EXPR MOVED_COUNT "${MOVED_COUNT} + 1")
         else()

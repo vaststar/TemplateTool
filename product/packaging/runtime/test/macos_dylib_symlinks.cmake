@@ -1,0 +1,77 @@
+cmake_minimum_required(VERSION 3.25)
+
+if(NOT DEFINED TEST_ROOT OR NOT IS_ABSOLUTE "${TEST_ROOT}")
+    message(FATAL_ERROR "TEST_ROOT must be an absolute fixture parent directory")
+endif()
+
+set(fixture_dir "${TEST_ROOT}/macos-dylib-symlinks")
+set(fixture_bin "${fixture_dir}/bin")
+set(APP_NAME SymlinkFixture)
+set(frameworks_dir "${fixture_bin}/${APP_NAME}.app/Contents/Frameworks")
+set(post_install_script "${CMAKE_CURRENT_LIST_DIR}/../post_install/macos.cmake")
+
+# Keep the real deployment script isolated from local Qt and install settings.
+set(CMAKE_INSTALL_PREFIX "${fixture_dir}")
+set(TEMPLATE_TOOL_BINARY_DIR "${fixture_dir}")
+set(BUILD_CONFIG_NAME Release)
+set(PROGRAM_PAYLOADS "")
+set(ENV{DESTDIR} "")
+set(ENV{Qt6_DIR} "${fixture_dir}/nonexistent-qt/lib/cmake/Qt6")
+
+function(assert_deployed_link file_name expected_target)
+    set(link_path "${frameworks_dir}/${file_name}")
+    if(NOT IS_SYMLINK "${link_path}" OR NOT EXISTS "${link_path}")
+        message(FATAL_ERROR "Missing or dangling deployed symlink: ${link_path}")
+    endif()
+    file(READ_SYMLINK "${link_path}" actual_target)
+    if(NOT actual_target STREQUAL expected_target)
+        message(FATAL_ERROR "Unexpected target for ${file_name}: ${actual_target}")
+    endif()
+    file(REAL_PATH "${link_path}" resolved_path)
+    file(REAL_PATH "${frameworks_dir}/libSableLog.0.1.0.dylib" expected_path)
+    if(NOT resolved_path STREQUAL expected_path)
+        message(FATAL_ERROR "Symlink resolves outside its deployed chain: ${resolved_path}")
+    endif()
+endfunction()
+
+file(REMOVE_RECURSE "${fixture_dir}")
+file(MAKE_DIRECTORY "${fixture_bin}")
+
+foreach(deployment RANGE 1 2)
+    file(WRITE "${fixture_bin}/libSableLog.0.1.0.dylib" "SableLog fixture ${deployment}\n")
+    file(CREATE_LINK libSableLog.0.1.0.dylib "${fixture_bin}/libSableLog.0.dylib" SYMBOLIC)
+    file(CREATE_LINK libSableLog.0.dylib "${fixture_bin}/libSableLog.dylib" SYMBOLIC)
+    file(WRITE "${fixture_bin}/libPlain.dylib" "Plain fixture ${deployment}\n")
+
+    if(deployment EQUAL 2)
+        # Simulate stale destinations from an earlier incomplete deployment.
+        foreach(file_name libSableLog.0.dylib libSableLog.dylib libPlain.dylib)
+            file(REMOVE "${frameworks_dir}/${file_name}")
+            file(CREATE_LINK "missing-${file_name}" "${frameworks_dir}/${file_name}" SYMBOLIC)
+        endforeach()
+    endif()
+
+    include("${post_install_script}")
+
+    assert_deployed_link(libSableLog.0.dylib libSableLog.0.1.0.dylib)
+    assert_deployed_link(libSableLog.dylib libSableLog.0.dylib)
+    foreach(file_name libSableLog.0.1.0.dylib libPlain.dylib)
+        if(NOT EXISTS "${frameworks_dir}/${file_name}" OR IS_SYMLINK "${frameworks_dir}/${file_name}")
+            message(FATAL_ERROR "Missing deployed regular file: ${file_name}")
+        endif()
+    endforeach()
+    file(READ "${frameworks_dir}/libSableLog.0.1.0.dylib" sablelog_contents)
+    file(READ "${frameworks_dir}/libPlain.dylib" plain_contents)
+    if(NOT sablelog_contents STREQUAL "SableLog fixture ${deployment}\n"
+       OR NOT plain_contents STREQUAL "Plain fixture ${deployment}\n")
+        message(FATAL_ERROR "Deployment did not replace the staged dylib contents")
+    endif()
+
+    file(GLOB remaining_dylibs "${fixture_bin}/*.dylib")
+    if(remaining_dylibs)
+        message(FATAL_ERROR "Dylibs or dangling symlinks remain in bin: ${remaining_dylibs}")
+    endif()
+endforeach()
+
+file(REMOVE_RECURSE "${fixture_dir}")
+message(STATUS "macOS versioned dylib relocation passed")

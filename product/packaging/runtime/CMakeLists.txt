@@ -147,3 +147,11 @@ InstallApplicationBundle(
     QT_DEPLOY_TARGETS ${TT_PACKAGING_QT_DEPLOY_TARGETS}
     PROGRAM_PAYLOADS ${TT_PACKAGING_PROGRAM_PAYLOADS}
 )
+
+if(APPLE AND BUILD_TESTING)
+    add_test(NAME Packaging.MacOSDylibSymlinks
+        COMMAND "${CMAKE_COMMAND}"
+            "-DTEST_ROOT=${CMAKE_CURRENT_BINARY_DIR}/test"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/test/macos_dylib_symlinks.cmake"
+    )
+endif()
