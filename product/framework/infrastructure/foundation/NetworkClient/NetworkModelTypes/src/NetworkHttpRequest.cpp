@@ -48,6 +48,7 @@ public:
     void setProgressFunction(UploadProgressFunction progressFunc){ mUploadProgressFunction = progressFunc;}
     UploadProgressFunction getProgressFunction() const{ return mUploadProgressFunction;}
 
+    void clearPayload();
     void clear();
 private:
     std::string mRequestId;
@@ -82,6 +83,11 @@ void NetworkHttpRequest::DataPrivate::clear()
     mUri.clear();
     mHeaders.clear();
     mTimeoutSecs = 0;
+    clearPayload();
+}
+
+void NetworkHttpRequest::DataPrivate::clearPayload()
+{
     mPayloadType = NetworkHttpPayloadType::None;
     mPayloadString.clear();
     mPayloadFilePath.clear();
@@ -240,6 +246,11 @@ void NetworkHttpRequest::setProgressFunction(UploadProgressFunction progressFunc
 UploadProgressFunction NetworkHttpRequest::getProgressFunction() const
 {
     return mDataPrivate->getProgressFunction();
+}
+
+void NetworkHttpRequest::clearPayload()
+{
+    mDataPrivate->clearPayload();
 }
 
 void NetworkHttpRequest::clear()

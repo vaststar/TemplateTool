@@ -8,8 +8,10 @@ set(MODULE_HEADER_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MODULE_HEADER_FILES #for include and install header
     include/ucf/infrastructure/NetworkClient/LibCurlClient/LibCurlClientExport.h
     include/ucf/infrastructure/NetworkClient/LibCurlClient/LibCurlClient.h
+    include/ucf/infrastructure/NetworkClient/LibCurlClient/HttpRedirect.h
 )
 set(MODULE_SOURCE_PRIVATE
+    src/HttpRedirect.cpp
     src/LibCurlClient.cpp
     src/LibCurlClientLogger.h
     src/LibCurlMultiHandleManager.h

@@ -416,173 +416,10 @@ void UpgradeDownloadManager::attemptDownload(
                     return;
                 }
 
-                if (!response.isFinished()) {
-                    ProgressCallback progress;
-                    std::int64_t current = 0;
-                    std::int64_t total = 0;
-                    {
-                        std::lock_guard lock(mSessionMutex);
-                        if (mStopRequested.load(std::memory_order_acquire)
-                            || !isCurrent(*session)
-                            || mActiveSession.get() != session.get()
-                            || session->requestId != requestId) {
-                            return;
-                        }
-                        // Redirect/error response bodies are not package
-                        // progress; the network layer may follow redirects.
-                        const int statusCode = response.getHttpResponseCode();
-                        if (statusCode != 200 && statusCode != 206) {
-                            return;
-                        }
-                        // A server may ignore Range and send the whole file.
-                        // The HTTP handler truncates in that case, so progress
-                        // must start at zero as well.
-                        if (statusCode == 200) {
-                            session->resumedBytes = 0;
-                        }
-                        current = static_cast<std::int64_t>(response.getCurrentSize())
-                                + session->resumedBytes;
-                        total = static_cast<std::int64_t>(response.getTotalSize())
-                              + session->resumedBytes;
-                        const auto now = std::chrono::steady_clock::now();
-                        const bool complete = total > 0 && current >= total;
-                        if (complete || now - session->lastProgressTime >= std::chrono::milliseconds(200)) {
-                            session->lastProgressTime = now;
-                            progress = session->progressCb;
-                        }
-                    }
-                    if (progress) {
-                        progress(current, total);
-                    }
-                    return;
-                }
-
-                DownloadCompleteCallback completion;
-                std::string finalPath;
-                std::string errorMessage;
-                bool success = false;
-                int retryAttempt = 0;
-                std::filesystem::path retryCleanupPath;
-                auto errorData = response.getErrorData();
-                const int statusCode = response.getHttpResponseCode();
-                const bool httpError = statusCode < 200 || statusCode >= 300;
-                const bool transportFailed = errorData.has_value() || httpError;
-                std::string failureDescription = errorData.has_value()
-                    ? errorData->errorDescription
-                    : "HTTP " + std::to_string(statusCode);
-
-                // The file handler has closed its stream before the terminal
-                // callback. Check the saved file, including an empty 206 body
-                // for which the handler never had to open the file.
-                bool invalidFileSize = false;
-                if (!transportFailed) {
-                    if (response.getCurrentSize() == 0) {
-                        invalidFileSize = true;
-                        failureDescription = "Download response has no package bytes";
-                    }
-                    std::filesystem::path downloadedPath;
-                    {
-                        std::lock_guard lock(mSessionMutex);
-                        downloadedPath = session->partialFilePath;
-                    }
-                    std::error_code ec;
-                    const auto actualSize = std::filesystem::file_size(downloadedPath, ec);
-                    if (ec) {
-                        invalidFileSize = true;
-                        failureDescription = "Downloaded file is unavailable: " + ec.message();
-                    } else if (session->packageInfo.sizeBytes > 0
-                               && actualSize != static_cast<std::uintmax_t>(session->packageInfo.sizeBytes)) {
-                        invalidFileSize = true;
-                        failureDescription = "Downloaded size " + std::to_string(actualSize)
-                            + " differs from expected "
-                            + std::to_string(session->packageInfo.sizeBytes);
-                    } else if (session->packageInfo.sizeBytes <= 0 && actualSize == 0) {
-                        invalidFileSize = true;
-                        failureDescription = "Downloaded file is empty";
-                    }
-                }
-                const bool failed = transportFailed || invalidFileSize;
-                {
-                    std::lock_guard lock(mSessionMutex);
-                    // Consume a terminal response once. A duplicate completion
-                    // must not schedule another retry or complete twice.
-                    if (mOutstandingRequestIds.erase(requestId) == 0
-                        || session->requestId != requestId) {
-                        return;
-                    }
-                    session->requestId.clear();
-                    if (mStopRequested.load(std::memory_order_acquire)
-                        || !isCurrent(*session)
-                        || mActiveSession.get() != session.get()) {
-                        return;
-                    }
-
-                    if (failed
-                        && session->currentRetry < mMaxRetryCount.load(std::memory_order_acquire)) {
-                        retryAttempt = ++session->currentRetry;
-                        // An HTTP error body is not part of the package and
-                        // must not become the prefix of the next Range request.
-                        const bool restartFromZero = (httpError && statusCode >= 300)
-                            || invalidFileSize
-                            || session->packageInfo.sha256.empty()
-                            || (errorData.has_value()
-                                && errorData->errorType == network::http::ResponseErrorType::OtherError);
-                        if (restartFromZero) {
-                            retryCleanupPath = session->partialFilePath;
-                            session->resumeAllowed = false;
-                        } else {
-                            session->resumeAllowed = true;
-                        }
-                    } else {
-                        mActiveSession.reset();
-                        completion = session->completeCb;
-                        if (failed) {
-                            errorMessage = "Download failed after "
-                                + std::to_string(mMaxRetryCount.load(std::memory_order_acquire))
-                                + " retries: " + failureDescription;
-                        } else {
-                            success = true;
-                            if (statusCode == 200) {
-                                session->resumedBytes = 0;
-                            }
-                            finalPath = ucf::utilities::FilePathUtils::utf8FromPath(
-                                session->partialFilePath);
-                        }
-                    }
-                }
-
-                if (retryAttempt > 0) {
-                    const auto delay = getRetryDelay(retryAttempt);
-                    UPGRADE_LOG_INFO("Retrying download in " << delay.count()
-                                     << "s (attempt " << retryAttempt << "/"
-                                     << mMaxRetryCount.load(std::memory_order_acquire) << ")");
-                    if (!retryCleanupPath.empty()) {
-                        enqueueIo(IoJobKind::Cleanup,
-                                  std::chrono::steady_clock::now(),
-                                  [retryCleanupPath](std::stop_token) {
-                                      std::error_code ec;
-                                      std::filesystem::remove(retryCleanupPath, ec);
-                                      if (ec) {
-                                          UPGRADE_LOG_WARN("Failed to remove HTTP error body: " << ec.message());
-                                      }
-                                  });
-                    }
-                    enqueueIo(IoJobKind::Attempt,
-                              std::chrono::steady_clock::now() + delay,
-                              [this, session](std::stop_token st) {
-                                  attemptDownload(session, st);
-                              });
-                    return;
-                }
-                if (completion) {
-                    if (success) {
-                        UPGRADE_LOG_INFO("Download complete: " << finalPath);
-                        completion(true, finalPath, model::UpgradeErrorCode::None, "");
-                    } else {
-                        UPGRADE_LOG_ERROR(errorMessage);
-                        completion(false, "", model::UpgradeErrorCode::DownloadFailed,
-                                   errorMessage);
-                    }
+                if (response.isFinished()) {
+                    handleDownloadCompleted(session, requestId, response);
+                } else {
+                    handleDownloadProgress(session, requestId, response);
                 }
             });
     } catch (const std::exception& ex) {
@@ -600,9 +437,187 @@ void UpgradeDownloadManager::attemptDownload(
     if (stopToken.stop_requested()
         || mStopRequested.load(std::memory_order_acquire)
         || !isCurrent(*session)) {
-        // cancelRequest is synchronous, but this is the I/O worker, never an
-        // FSM transition or a thread holding mSessionMutex.
+        // Cancellation may invoke completion inline. This is the I/O worker,
+        // outside an FSM transition and without mSessionMutex held.
         httpManager->cancelRequest(requestId);
+    }
+}
+
+void UpgradeDownloadManager::handleDownloadProgress(
+    const std::shared_ptr<DownloadSession>& session,
+    const std::string& requestId,
+    const network::http::HttpDownloadToFileResponse& response)
+{
+    ProgressCallback progress;
+    std::int64_t current = 0;
+    std::int64_t total = 0;
+    {
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire)
+            || !isCurrent(*session)
+            || mActiveSession.get() != session.get()
+            || session->requestId != requestId) {
+            return;
+        }
+        // Redirect/error response bodies are not package
+        // progress; the network layer may follow redirects.
+        const int statusCode = response.getHttpResponseCode();
+        if (statusCode != 200 && statusCode != 206) {
+            return;
+        }
+        // A server may ignore Range and send the whole file.
+        // The HTTP handler truncates in that case, so progress
+        // must start at zero as well.
+        if (statusCode == 200) {
+            session->resumedBytes = 0;
+        }
+        current = static_cast<std::int64_t>(response.getCurrentSize())
+                + session->resumedBytes;
+        total = static_cast<std::int64_t>(response.getTotalSize())
+              + session->resumedBytes;
+        const auto now = std::chrono::steady_clock::now();
+        const bool complete = total > 0 && current >= total;
+        if (complete || now - session->lastProgressTime >= std::chrono::milliseconds(200)) {
+            session->lastProgressTime = now;
+            progress = session->progressCb;
+        }
+    }
+    if (progress) {
+        progress(current, total);
+    }
+}
+
+void UpgradeDownloadManager::handleDownloadCompleted(
+    const std::shared_ptr<DownloadSession>& session,
+    const std::string& requestId,
+    const network::http::HttpDownloadToFileResponse& response)
+{
+    DownloadCompleteCallback completion;
+    std::string finalPath;
+    std::string errorMessage;
+    bool success = false;
+    int retryAttempt = 0;
+    std::filesystem::path retryCleanupPath;
+    auto errorData = response.getErrorData();
+    const int statusCode = response.getHttpResponseCode();
+    const bool httpError = statusCode < 200 || statusCode >= 300;
+    const bool transportFailed = errorData.has_value() || httpError;
+    std::string failureDescription = errorData.has_value()
+        ? errorData->errorDescription
+        : "HTTP " + std::to_string(statusCode);
+
+    // The file handler has closed its stream before the terminal
+    // callback. Check the saved file, including an empty 206 body
+    // for which the handler never had to open the file.
+    bool invalidFileSize = false;
+    if (!transportFailed) {
+        if (response.getCurrentSize() == 0) {
+            invalidFileSize = true;
+            failureDescription = "Download response has no package bytes";
+        }
+        std::filesystem::path downloadedPath;
+        {
+            std::lock_guard lock(mSessionMutex);
+            downloadedPath = session->partialFilePath;
+        }
+        std::error_code ec;
+        const auto actualSize = std::filesystem::file_size(downloadedPath, ec);
+        if (ec) {
+            invalidFileSize = true;
+            failureDescription = "Downloaded file is unavailable: " + ec.message();
+        } else if (session->packageInfo.sizeBytes > 0
+                   && actualSize != static_cast<std::uintmax_t>(session->packageInfo.sizeBytes)) {
+            invalidFileSize = true;
+            failureDescription = "Downloaded size " + std::to_string(actualSize)
+                + " differs from expected "
+                + std::to_string(session->packageInfo.sizeBytes);
+        } else if (session->packageInfo.sizeBytes <= 0 && actualSize == 0) {
+            invalidFileSize = true;
+            failureDescription = "Downloaded file is empty";
+        }
+    }
+    const bool failed = transportFailed || invalidFileSize;
+    {
+        std::lock_guard lock(mSessionMutex);
+        // Consume a terminal response once. A duplicate completion
+        // must not schedule another retry or complete twice.
+        if (mOutstandingRequestIds.erase(requestId) == 0
+            || session->requestId != requestId) {
+            return;
+        }
+        session->requestId.clear();
+        if (mStopRequested.load(std::memory_order_acquire)
+            || !isCurrent(*session)
+            || mActiveSession.get() != session.get()) {
+            return;
+        }
+
+        if (failed
+            && session->currentRetry < mMaxRetryCount.load(std::memory_order_acquire)) {
+            retryAttempt = ++session->currentRetry;
+            // An HTTP error body is not part of the package and
+            // must not become the prefix of the next Range request.
+            const bool restartFromZero = (httpError && statusCode >= 300)
+                || invalidFileSize
+                || session->packageInfo.sha256.empty()
+                || (errorData.has_value()
+                    && errorData->errorType == network::http::ResponseErrorType::OtherError);
+            if (restartFromZero) {
+                retryCleanupPath = session->partialFilePath;
+                session->resumeAllowed = false;
+            } else {
+                session->resumeAllowed = true;
+            }
+        } else {
+            mActiveSession.reset();
+            completion = session->completeCb;
+            if (failed) {
+                errorMessage = "Download failed after "
+                    + std::to_string(mMaxRetryCount.load(std::memory_order_acquire))
+                    + " retries: " + failureDescription;
+            } else {
+                success = true;
+                if (statusCode == 200) {
+                    session->resumedBytes = 0;
+                }
+                finalPath = ucf::utilities::FilePathUtils::utf8FromPath(
+                    session->partialFilePath);
+            }
+        }
+    }
+
+    if (retryAttempt > 0) {
+        const auto delay = getRetryDelay(retryAttempt);
+        UPGRADE_LOG_INFO("Retrying download in " << delay.count()
+                         << "s (attempt " << retryAttempt << "/"
+                         << mMaxRetryCount.load(std::memory_order_acquire) << ")");
+        if (!retryCleanupPath.empty()) {
+            enqueueIo(IoJobKind::Cleanup,
+                      std::chrono::steady_clock::now(),
+                      [retryCleanupPath](std::stop_token) {
+                          std::error_code ec;
+                          std::filesystem::remove(retryCleanupPath, ec);
+                          if (ec) {
+                              UPGRADE_LOG_WARN("Failed to remove HTTP error body: " << ec.message());
+                          }
+                      });
+        }
+        enqueueIo(IoJobKind::Attempt,
+                  std::chrono::steady_clock::now() + delay,
+                  [this, session](std::stop_token st) {
+                      attemptDownload(session, st);
+                  });
+        return;
+    }
+    if (completion) {
+        if (success) {
+            UPGRADE_LOG_INFO("Download complete: " << finalPath);
+            completion(true, finalPath, model::UpgradeErrorCode::None, "");
+        } else {
+            UPGRADE_LOG_ERROR(errorMessage);
+            completion(false, "", model::UpgradeErrorCode::DownloadFailed,
+                       errorMessage);
+        }
     }
 }
 

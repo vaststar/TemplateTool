@@ -20,7 +20,7 @@ public:
         , mOffset(0)
         , mTotalSize(strData.size())
     {}
-    std::string getData() const { return mData; }
+    const std::string& getData() const { return mData; }
 
     size_t getSizeLeft() const { return mTotalSize - mOffset;}
 

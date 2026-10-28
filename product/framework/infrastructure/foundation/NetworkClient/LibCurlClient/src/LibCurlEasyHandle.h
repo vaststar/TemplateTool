@@ -37,7 +37,9 @@ public:
     void addResponseHeader(const std::string& key, const std::string& val);
     void headersCompleted();
     void appendResponseBody(char *data, size_t size);
-    void finishHandle(CURLcode code);
+    void finishHandle(CURLcode code) noexcept;
+    // Internal C callback bridge; called only from a catch block.
+    void recordCallbackFailure(const char* phase) noexcept;
 public:
     CURL* getHandle() const;
 private:

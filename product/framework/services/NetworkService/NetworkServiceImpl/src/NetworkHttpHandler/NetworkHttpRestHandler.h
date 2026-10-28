@@ -27,8 +27,7 @@ public:
     virtual void setResponseHeader(int statusCode, const ucf::infrastructure::network::http::NetworkHttpHeaders& headers, std::optional<ucf::infrastructure::network::http::ResponseErrorStruct> errorData) override;
     virtual void appendResponseBody(const ucf::infrastructure::network::http::ByteBuffer& buffer, bool isFinished) override;
     virtual void completeResponse(const ucf::infrastructure::network::http::HttpResponseMetrics& metrics) override;
-    virtual bool shouldRedirectRequest() const override;
-    virtual void prepareRedirectRequest() override;
+    virtual bool tryPrepareRedirectRequest() override;
     
     virtual bool shouldRetryRequest() const override;
     virtual int getRetryAfterMillSecs() const override;

@@ -1,9 +1,7 @@
 
 #include "NetworkHttpDownloadToMemoryHandler.h"
 
-#include <algorithm>
-#include <cctype>
-
+#include <ucf/infrastructure/NetworkClient/LibCurlClient/HttpRedirect.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
@@ -27,8 +25,7 @@ public:
     ucf::service::network::http::HttpDownloadToMemoryResponse& getDownloadResponse(){return mDownloadResponse;}
     const ucf::service::network::http::HttpDownloadToMemoryResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
-    int getRedirectCount() const{ return mRedirectCount;}
-    void prepareRedirect();
+    bool tryPrepareRedirectRequest();
 
     void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToMemoryRequest& downloadRequest, ucf::infrastructure::network::http::NetworkHttpRequest& httpRequest) const;
 private:
@@ -54,24 +51,22 @@ void NetworkHttpDownloadToMemoryHandler::DataPrivate::convertDownloadRequestToHt
     httpRequest.setTimeout(downloadRequest.getTimeout());
 }
 
-void NetworkHttpDownloadToMemoryHandler::DataPrivate::prepareRedirect()
+bool NetworkHttpDownloadToMemoryHandler::DataPrivate::tryPrepareRedirectRequest()
 {
-    ++mRedirectCount;
-    // Find Location header (case-insensitive)
-    const auto& headers = mDownloadResponse.getResponseHeaders();
-    auto it = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
-        constexpr std::string_view location = "Location";
-        if (headerKeyVal.first.size() != location.size()) return false;
-        return std::equal(headerKeyVal.first.begin(), headerKeyVal.first.end(),
-                          location.begin(), location.end(),
-                          [](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b)); });
-    });
-    if (it != headers.cend())
+    if (mDownloadResponse.getErrorData().has_value() || mRedirectCount >= kMaxRedirectCount)
     {
-        mHttpRequest.setRequestUri(it->second);
+        return false;
     }
-    
+    if (!ucf::infrastructure::network::libcurl::tryApplyHttpRedirect(
+            mHttpRequest, mDownloadResponse.getHttpResponseCode(),
+            mDownloadResponse.getResponseHeaders()))
+    {
+        return false;
+    }
+
+    ++mRedirectCount;
     mDownloadResponse.clear();
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -135,25 +130,9 @@ void NetworkHttpDownloadToMemoryHandler::completeResponse(const ucf::infrastruct
     }
 }
 
-bool NetworkHttpDownloadToMemoryHandler::shouldRedirectRequest() const
+bool NetworkHttpDownloadToMemoryHandler::tryPrepareRedirectRequest()
 {
-    if (301 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        302 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        303 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        307 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        308 == mDataPrivate->getDownloadResponse().getHttpResponseCode())
-    {
-        return mDataPrivate->getRedirectCount() < kMaxRedirectCount;
-    }
-    return false;
-}
-
-void NetworkHttpDownloadToMemoryHandler::prepareRedirectRequest()
-{
-    if (shouldRedirectRequest())
-    {
-        mDataPrivate->prepareRedirect();
-    }
+    return mDataPrivate->tryPrepareRedirectRequest();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

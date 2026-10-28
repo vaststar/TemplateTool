@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <exception>
 #include <curl/curl.h>
 #include <ucf/utilities/StringUtils/StringUtils.h>
 
@@ -12,67 +13,149 @@
 namespace ucf::infrastructure::network::libcurl{
 inline constexpr auto MAX_REQUEST_REDIRECTS{ 5 };
 
-static size_t header_callback(char *data, size_t size, size_t nmemb, void *userp)
+namespace {
+
+template<typename LogAction>
+void logSafely(const LogAction& action) noexcept
 {
-    if(data == nullptr || userp == nullptr)
+    try
     {
+        action();
+    }
+    catch (...)
+    {
+        // Diagnostic failures must not interrupt request completion.
+    }
+}
+
+void logExceptionSafely(const char* phase, const std::exception_ptr& error) noexcept
+{
+    if (!error)
+    {
+        return;
+    }
+    logSafely([&]() {
+        try
+        {
+            std::rethrow_exception(error);
+        }
+        catch (const std::exception& ex)
+        {
+            LIBCURL_LOG_ERROR("Exception during " << phase << ": " << ex.what());
+        }
+        catch (...)
+        {
+            LIBCURL_LOG_ERROR("Non-standard exception during " << phase);
+        }
+    });
+}
+
+} // namespace
+
+static size_t header_callback(char *data, size_t size, size_t nmemb, void *userp) noexcept
+{
+    const auto easyHandle = static_cast<LibCurlEasyHandle*>(userp);
+    try
+    {
+        if(data == nullptr || easyHandle == nullptr)
+        {
+            return size * nmemb;
+        }
+        const std::string_view headerString(data, size * nmemb);
+        if (const auto seperator = headerString.find(": "); seperator != std::string::npos)
+        {
+            const auto key = std::string(headerString.substr(0, seperator));
+            const auto value = ucf::utilities::StringUtils::trim(std::string(headerString.substr(seperator + 2)));
+            easyHandle->addResponseHeader(key, value);
+        }
+        if (headerString == "\r\n") {
+            easyHandle->headersCompleted();
+        }
         return size * nmemb;
     }
-    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
-    const std::string_view headerString(data, size * nmemb);
-    if (const auto seperator = headerString.find(": "); seperator != std::string::npos)
+    catch (...)
     {
-        const auto key = std::string(headerString.substr(0, seperator));
-        const auto value = ucf::utilities::StringUtils::trim(std::string(headerString.substr(seperator + 2)));
-        easyHandle->addResponseHeader(key, value);
+        if (easyHandle)
+        {
+            easyHandle->recordCallbackFailure("response headers");
+        }
+        return CURL_WRITEFUNC_ERROR;
     }
-    if (headerString == "\r\n") {
-        easyHandle->headersCompleted();
-    }
-    return size * nmemb;
 }
 
-static size_t response_body_callback(char *data, size_t size, size_t nmemb, void *userp)
+static size_t response_body_callback(char *data, size_t size, size_t nmemb, void *userp) noexcept
 {
-    if(data == nullptr || userp == nullptr)
+    const auto easyHandle = static_cast<LibCurlEasyHandle*>(userp);
+    try
     {
+        if(data == nullptr || easyHandle == nullptr)
+        {
+            return size * nmemb;
+        }
+        easyHandle->appendResponseBody(data, size * nmemb);
         return size * nmemb;
     }
-    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
-    easyHandle->appendResponseBody(data, size * nmemb);
-    return size * nmemb;
-}
-
-static size_t request_body_callback(char *data, size_t size, size_t nmemb, void *userp)
-{
-    if (userp == nullptr)
+    catch (...)
     {
-        LIBCURL_LOG_ERROR(
-            "Request-body callback failed: user data is null");
-        return 0;
+        if (easyHandle)
+        {
+            easyHandle->recordCallbackFailure("response body");
+        }
+        return CURL_WRITEFUNC_ERROR;
     }
-    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
-    return easyHandle->readRequestBody(data, size * nmemb);
 }
 
-int seek_body_callback(void *userp, curl_off_t offset, int origin)
+static size_t request_body_callback(char *data, size_t size, size_t nmemb, void *userp) noexcept
 {
-    if (userp == nullptr)
+    const auto easyHandle = static_cast<LibCurlEasyHandle*>(userp);
+    try
     {
-        LIBCURL_LOG_ERROR(
-            "Request-body seek callback failed: user data is null");
-        return CURL_SEEKFUNC_CANTSEEK;
+        if (easyHandle == nullptr)
+        {
+            LIBCURL_LOG_ERROR(
+                "Request-body callback failed: user data is null");
+            return 0;
+        }
+        return easyHandle->readRequestBody(data, size * nmemb);
     }
-    const auto easyHandle = reinterpret_cast<LibCurlEasyHandle*>(userp);
-    return easyHandle->seekRequestBody(offset, origin);
-
+    catch (...)
+    {
+        if (easyHandle)
+        {
+            easyHandle->recordCallbackFailure("request body");
+        }
+        return CURL_READFUNC_ABORT;
+    }
 }
 
-static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t size, void *userp)
+int seek_body_callback(void *userp, curl_off_t offset, int origin) noexcept
 {
-    if (type == CURLINFO_SSL_DATA_IN || type == CURLINFO_SSL_DATA_OUT)
+    const auto easyHandle = static_cast<LibCurlEasyHandle*>(userp);
+    try
     {
-        return 0;
+        if (easyHandle == nullptr)
+        {
+            LIBCURL_LOG_ERROR(
+                "Request-body seek callback failed: user data is null");
+            return CURL_SEEKFUNC_CANTSEEK;
+        }
+        return easyHandle->seekRequestBody(offset, origin);
+    }
+    catch (...)
+    {
+        if (easyHandle)
+        {
+            easyHandle->recordCallbackFailure("request body seek");
+        }
+        return CURL_SEEKFUNC_FAIL;
+    }
+}
+
+static void logCurlDebugData(curl_infotype type, char *data, size_t size)
+{
+    if (data == nullptr || type == CURLINFO_SSL_DATA_IN || type == CURLINFO_SSL_DATA_OUT)
+    {
+        return;
     }
 
     std::string typeStr;
@@ -105,10 +188,9 @@ static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t s
         std::string line;
         while(std::getline(f, line, '\n'))
         {
-            size_t last_pos = line.size()?line.size()-1:0;
-            if(line[last_pos] == '\r')
+            if (!line.empty() && line.back() == '\r')
             {
-                line[last_pos] = 0;
+                line.back() = 0;
                 LIBCURL_LOG_DEBUG("info:["<<typeStr<<"]"<< line);
             }
 
@@ -125,6 +207,11 @@ static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t s
         }
         LIBCURL_LOG_DEBUG("info:["<<typeStr<<"]"<<dataStr);
     }
+}
+
+static int debug_callback(CURL *handle, curl_infotype type, char *data, size_t size, void *userp) noexcept
+{
+    logSafely([&]() { logCurlDebugData(type, data, size); });
     return 0;
 }
 /////////////////////////////////////////////////////////////////////////////////////
@@ -145,6 +232,18 @@ public:
     const ucf::infrastructure::network::http::HttpHeaderCallback& getHeaderCallback() const {return mHeaderCallback;}
     const ucf::infrastructure::network::http::HttpBodyCallback& getBodyCallback() const {return mBodyCallback;}
     const ucf::infrastructure::network::http::HttpCompletionCallback& getCompletionCallback() const {return mCompletionCallback;}
+
+    void recordCallbackFailure(const char* phase) noexcept
+    {
+        if (!mCallbackException)
+        {
+            mCallbackFailurePhase = phase;
+            mCallbackException = std::current_exception();
+        }
+    }
+    bool hasCallbackFailure() const noexcept { return static_cast<bool>(mCallbackException); }
+    const std::exception_ptr& getCallbackException() const noexcept { return mCallbackException; }
+    const char* getCallbackFailurePhase() const noexcept { return mCallbackFailurePhase; }
 
     void setTrackingId(const std::string& trackingId){mTrackingId = trackingId;}
     std::string getTrackingId() const{return mTrackingId;}
@@ -215,6 +314,8 @@ private:
 
     ucf::infrastructure::network::http::NetworkHttpHeaders mResponseHeader;
     std::shared_ptr<PayloadData> mPayloadData;
+    std::exception_ptr mCallbackException;
+    const char* mCallbackFailurePhase{nullptr};
 };
 
 LibCurlEasyHandle::DataPrivate::DataPrivate(ucf::infrastructure::network::http::HttpHeaderCallback headerCallback, ucf::infrastructure::network::http::HttpBodyCallback bodyCallback, ucf::infrastructure::network::http::HttpCompletionCallback completionCallback)
@@ -540,64 +641,133 @@ void LibCurlEasyHandle::headersCompleted()
     }
 }
 
-void LibCurlEasyHandle::finishHandle(CURLcode code)
+void LibCurlEasyHandle::recordCallbackFailure(const char* phase) noexcept
+{
+    mDataPrivate->recordCallbackFailure(phase);
+}
+
+void LibCurlEasyHandle::finishHandle(CURLcode code) noexcept
 {
     if (mFinished.exchange(true, std::memory_order_acq_rel))
     {
         return;
     }
 
-    LIBCURL_LOG_INFO(
-        "Network request finished, requestId: "
-        << mDataPrivate->getRequestId()
-        << ", trackingId: "
-        << mDataPrivate->getTrackingId()
-        << ", curlCode: "
-        << static_cast<int>(code)
-        << ", curlError: "
-        << curl_easy_strerror(code));
-
-    if (code == CURLE_OK)
-    {
-        if (mDataPrivate->getBodyCallback() != nullptr)
+    // Error preparation and business notifications may throw independently.
+    const auto notify = [this](const char* phase, const auto& action) noexcept {
+        try
         {
-            ucf::infrastructure::network::http::ByteBuffer emptyBuf;
-            mDataPrivate->getBodyCallback()(emptyBuf, true);
+            action();
         }
+        catch (...)
+        {
+            recordCallbackFailure(phase);
+            logExceptionSafely(phase, std::current_exception());
+        }
+    };
+
+    logSafely([&]() {
+        LIBCURL_LOG_INFO(
+            "Network request finished, requestId: "
+            << mDataPrivate->getRequestId()
+            << ", trackingId: "
+            << mDataPrivate->getTrackingId()
+            << ", curlCode: "
+            << static_cast<int>(code)
+            << ", curlError: "
+            << curl_easy_strerror(code));
+    });
+    if (mDataPrivate->hasCallbackFailure())
+    {
+        logExceptionSafely(mDataPrivate->getCallbackFailurePhase(),
+                           mDataPrivate->getCallbackException());
     }
-    else
+
+    if (code == CURLE_OK && !mDataPrivate->hasCallbackFailure())
     {
-        if (code != CURLE_ABORTED_BY_CALLBACK)
+        notify("body completion notification", [&]() {
+            if (mDataPrivate->getBodyCallback() != nullptr)
+            {
+                ucf::infrastructure::network::http::ByteBuffer emptyBuf;
+                mDataPrivate->getBodyCallback()(emptyBuf, true);
+            }
+        });
+    }
+
+    if (code != CURLE_OK || mDataPrivate->hasCallbackFailure())
+    {
+        if (code != CURLE_ABORTED_BY_CALLBACK || mDataPrivate->hasCallbackFailure())
         {
-            LIBCURL_LOG_WARN(
-                "Network request failed, requestId: "
-                << mDataPrivate->getRequestId()
-                << ", trackingId: "
-                << mDataPrivate->getTrackingId()
-                << ", curlCode: "
-                << static_cast<int>(code)
-                << ", curlError: "
-                << curl_easy_strerror(code));
+            logSafely([&]() {
+                LIBCURL_LOG_WARN(
+                    "Network request failed, requestId: "
+                    << mDataPrivate->getRequestId()
+                    << ", trackingId: "
+                    << mDataPrivate->getTrackingId()
+                    << ", curlCode: "
+                    << static_cast<int>(code)
+                    << ", curlError: "
+                    << curl_easy_strerror(code)
+                    << ", callbackFailure: " << mDataPrivate->hasCallbackFailure());
+            });
         }
 
-        if (mDataPrivate->getHeaderCallback() != nullptr)
-        {
-            mDataPrivate->getHeaderCallback()(static_cast<int>(mDataPrivate->getResponseCode()), mDataPrivate->getResponseHeader(), makeErrorData(code));
-        }
-
+        notify("error notification", [&]() {
+            if (mDataPrivate->getHeaderCallback() != nullptr)
+            {
+                mDataPrivate->getHeaderCallback()(static_cast<int>(mDataPrivate->getResponseCode()), mDataPrivate->getResponseHeader(), makeErrorData(code));
+            }
+        });
     }
 
     if (mDataPrivate->getCompletionCallback() != nullptr)
     {
-        mDataPrivate->getCompletionCallback()(mDataPrivate->getResponseMetrics());
+        ucf::infrastructure::network::http::HttpResponseMetrics metrics;
+        try
+        {
+            metrics = mDataPrivate->getResponseMetrics();
+        }
+        catch (...)
+        {
+            logExceptionSafely("response metrics", std::current_exception());
+        }
+        try
+        {
+            mDataPrivate->getCompletionCallback()(metrics);
+        }
+        catch (...)
+        {
+            // A partially executed completion must never be delivered twice.
+            logExceptionSafely("completion notification", std::current_exception());
+        }
     }
 }
 
 ucf::infrastructure::network::http::ResponseErrorStruct LibCurlEasyHandle::makeErrorData(CURLcode code)
 {
     ucf::infrastructure::network::http::ResponseErrorStruct errorStruct;
-    errorStruct.errorDescription = curl_easy_strerror(code);
     errorStruct.errorCode = static_cast<int>(code);
+    if (mDataPrivate->hasCallbackFailure())
+    {
+        errorStruct.errorType = ucf::infrastructure::network::http::ResponseErrorType::OtherError;
+        errorStruct.errorDescription = "Local callback failure during ";
+        errorStruct.errorDescription += mDataPrivate->getCallbackFailurePhase();
+        try
+        {
+            std::rethrow_exception(mDataPrivate->getCallbackException());
+        }
+        catch (const std::exception& ex)
+        {
+            errorStruct.errorDescription += ": ";
+            errorStruct.errorDescription += ex.what();
+        }
+        catch (...)
+        {
+            errorStruct.errorDescription += ": non-standard exception";
+        }
+        return errorStruct;
+    }
+    errorStruct.errorDescription = curl_easy_strerror(code);
     switch (code)
     {
     case CURLE_COULDNT_RESOLVE_HOST:

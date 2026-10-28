@@ -1,4 +1,6 @@
 #include <vector>
+#include <deque>
+#include <utility>
 #include <mutex>
 #include <algorithm>
 #include <atomic>
@@ -58,7 +60,8 @@ public:
     void cancelAllPendingRequests();
     bool cancelRequest(const std::string& requestId);
 private:
-    void drainCanceledRequests();
+    int registerEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle);
+    void drainDeferredRequests();
 private:
     std::mutex mCURLAccess;
     CURLM* mHandle;
@@ -66,6 +69,7 @@ private:
     std::mutex mRequestsAccess;
     std::vector<std::shared_ptr<LibCurlEasyHandle>> mRequests;
     std::unordered_set<LibCurlEasyHandle*> mAddingRequests;
+    std::deque<std::shared_ptr<LibCurlEasyHandle>> mPendingAddRequests;
     std::vector<std::shared_ptr<LibCurlEasyHandle>> mCanceledRequests;
 
     std::atomic_bool mStop;
@@ -95,13 +99,31 @@ int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHa
 {
     size_t totalCount = 0;
     bool stopped = false;
+    bool deferred = false;
     {
         std::scoped_lock lo(mRequestsAccess);
         stopped = mStop.load(std::memory_order_acquire);
         if (!stopped)
         {
             mRequests.push_back(easyHandle);
-            mAddingRequests.insert(easyHandle.get());
+            try
+            {
+                mAddingRequests.insert(easyHandle.get());
+                // curl is invoking this thread's callback while mCURLAccess is held.
+                // Publish the request now, but register it after curl has returned.
+                if (gCurlOperationOwner == this)
+                {
+                    mPendingAddRequests.push_back(easyHandle);
+                    deferred = true;
+                }
+            }
+            catch (...)
+            {
+                // A queue allocation failure must not leave an ownerless add.
+                mAddingRequests.erase(easyHandle.get());
+                mRequests.pop_back();
+                throw;
+            }
             totalCount = mRequests.size();
         }
     }
@@ -122,7 +144,19 @@ int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHa
         << running
         << ", queuedCount: "
         << queued);
-    
+
+    if (deferred)
+    {
+        return CURLM_OK;
+    }
+
+    const auto code = registerEasyHandle(easyHandle);
+    drainDeferredRequests();
+    return code;
+}
+
+int LibCurlMultiHandle::DataPrivate::registerEasyHandle(std::shared_ptr<LibCurlEasyHandle> easyHandle)
+{
     CURLMcode code = CURLM_OK;
     bool canceled = false;
     bool addFailed = false;
@@ -177,8 +211,6 @@ int LibCurlMultiHandle::DataPrivate::addEasyHandle(std::shared_ptr<LibCurlEasyHa
         easyHandle->finishHandle(CURLE_FAILED_INIT);
     }
 
-    drainCanceledRequests();
-
     if (CURLM_OK != code)
     {
         LIBCURL_LOG_ERROR(
@@ -222,7 +254,7 @@ int LibCurlMultiHandle::DataPrivate::removeEasyHandle(std::shared_ptr<LibCurlEas
 
     if (adding)
     {
-        // The thread adding this handle owns its eventual curl removal.
+        // The registration owner handles its eventual curl removal.
         return CURLM_OK;
     }
 
@@ -244,7 +276,7 @@ int LibCurlMultiHandle::DataPrivate::removeEasyHandle(std::shared_ptr<LibCurlEas
         CurlOperationScope curlScope(this);
         code = curl_multi_remove_handle(mHandle, easyHandle->getHandle());
     }
-    drainCanceledRequests();
+    drainDeferredRequests();
     if (CURLM_OK != code)
     {
         LIBCURL_LOG_ERROR(
@@ -272,7 +304,7 @@ int LibCurlMultiHandle::DataPrivate::perform(int* count)
         CurlOperationScope curlScope(this);
         code = curl_multi_perform(mHandle, count);
     }
-    drainCanceledRequests();
+    drainDeferredRequests();
     if (CURLM_OK != code)
     {
         LIBCURL_LOG_ERROR(
@@ -293,7 +325,7 @@ int LibCurlMultiHandle::DataPrivate::poll(int timeout_ms)
         CurlOperationScope curlScope(this);
         code = curl_multi_poll(mHandle, nullptr, 0, timeout_ms, nullptr);
     }
-    drainCanceledRequests();
+    drainDeferredRequests();
     if (CURLM_OK != code)
     {
         LIBCURL_LOG_ERROR(
@@ -305,10 +337,10 @@ int LibCurlMultiHandle::DataPrivate::poll(int timeout_ms)
     return code;
 }
 
-void LibCurlMultiHandle::DataPrivate::drainCanceledRequests()
+void LibCurlMultiHandle::DataPrivate::drainDeferredRequests()
 {
-    // A libcurl body/header callback can call cancelRequest while perform owns
-    // mCURLAccess. Defer its curl removal until that operation has returned.
+    // Callbacks may add or cancel requests while perform owns mCURLAccess.
+    // Defer both operations until the active curl operation has returned.
     if (gCurlOperationOwner == this)
     {
         return;
@@ -329,13 +361,30 @@ void LibCurlMultiHandle::DataPrivate::drainCanceledRequests()
                 curl_multi_remove_handle(mHandle, request->getHandle());
             }
         }
-        if (canceled.empty())
-        {
-            return;
-        }
         for (const auto& request : canceled)
         {
             request->finishHandle(CURLE_ABORTED_BY_CALLBACK);
+        }
+
+        std::shared_ptr<LibCurlEasyHandle> pendingAdd;
+        {
+            std::scoped_lock requestsLock(mRequestsAccess);
+            if (!mPendingAddRequests.empty())
+            {
+                pendingAdd = std::move(mPendingAddRequests.front());
+                mPendingAddRequests.pop_front();
+            }
+        }
+        if (pendingAdd)
+        {
+            // cancel/stop may already have removed it from mRequests. The
+            // registration owner then clears mAddingRequests and aborts it.
+            // Keep the remaining queue intact if this request's callback throws.
+            registerEasyHandle(pendingAdd);
+        }
+        else if (canceled.empty())
+        {
+            return;
         }
     }
 }
@@ -404,9 +453,9 @@ void LibCurlMultiHandle::DataPrivate::completeCurrentRequest()
                 "Unexpected curl multi message received, messageCode: "
                 << static_cast<int>(messageType));
         }
-        drainCanceledRequests();
+        drainDeferredRequests();
     }
-    drainCanceledRequests();
+    drainDeferredRequests();
 }
 
 void LibCurlMultiHandle::DataPrivate::stop()
@@ -439,7 +488,7 @@ void LibCurlMultiHandle::DataPrivate::cancelAllPendingRequests()
         }
         mRequests.clear();
     }
-    drainCanceledRequests();
+    drainDeferredRequests();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
@@ -578,12 +627,12 @@ bool LibCurlMultiHandle::DataPrivate::cancelRequest(const std::string& requestId
         << ", queuedCount: "
         << queued);
 
-    // A request still being added is finalized by addEasyHandle. For an active
-    // request, drainCanceledRequests safely defers removal if curl is currently
+    // A request still being added is finalized by registerEasyHandle. For an active
+    // request, drainDeferredRequests safely defers removal if curl is currently
     // invoking this thread's header/body callback.
     if (!adding)
     {
-        drainCanceledRequests();
+        drainDeferredRequests();
     }
     return true;
 }

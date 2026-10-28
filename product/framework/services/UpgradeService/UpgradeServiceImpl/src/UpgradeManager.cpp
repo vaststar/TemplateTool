@@ -59,7 +59,7 @@ void UpgradeManager::shutdown()
         mDownloadManager->requestStop();
         stopAutoCheckTimer();
 
-        // cancelRequest synchronously invokes completion callbacks; no FSM,
+        // Cancellation may invoke completion callbacks before returning; no FSM,
         // session, or callback-gate lock may be held here.
         mCheckManager->cancelOutstandingRequests();
         mDownloadManager->cancelOutstandingRequests();

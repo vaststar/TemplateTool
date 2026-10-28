@@ -11,6 +11,7 @@
 #include <string_view>
 #include <system_error>
 
+#include <ucf/infrastructure/NetworkClient/LibCurlClient/HttpRedirect.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
@@ -71,8 +72,7 @@ public:
     ucf::service::network::http::HttpDownloadToFileResponse& getDownloadResponse(){return mDownloadResponse;}
     const ucf::service::network::http::HttpDownloadToFileResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
-    int getRedirectCount() const{ return mRedirectCount;}
-    void prepareRedirect();
+    bool tryPrepareRedirectRequest();
 
     void convertDownloadRequestToHttpRequest(const ucf::service::network::http::HttpDownloadToFileRequest& downloadRequest, ucf::infrastructure::network::http::NetworkHttpRequest& httpRequest) const;
 
@@ -178,24 +178,22 @@ bool NetworkHttpDownloadToFileHandler::DataPrivate::closeFile()
     return true;
 }
 
-void NetworkHttpDownloadToFileHandler::DataPrivate::prepareRedirect()
+bool NetworkHttpDownloadToFileHandler::DataPrivate::tryPrepareRedirectRequest()
 {
-    ++mRedirectCount;
-    // Find Location header (case-insensitive)
-    const auto& headers = mDownloadResponse.getResponseHeaders();
-    auto it = std::find_if(headers.cbegin(), headers.cend(), [](const auto& headerKeyVal){
-        constexpr std::string_view location = "Location";
-        if (headerKeyVal.first.size() != location.size()) return false;
-        return std::equal(headerKeyVal.first.begin(), headerKeyVal.first.end(),
-                          location.begin(), location.end(),
-                          [](char a, char b) { return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b)); });
-    });
-    if (it != headers.cend())
+    if (mDownloadResponse.getErrorData().has_value() || mRedirectCount >= kMaxRedirectCount)
     {
-        mHttpRequest.setRequestUri(it->second);
+        return false;
     }
-    
+    if (!ucf::infrastructure::network::libcurl::tryApplyHttpRedirect(
+            mHttpRequest, mDownloadResponse.getHttpResponseCode(),
+            mDownloadResponse.getResponseHeaders()))
+    {
+        return false;
+    }
+
+    ++mRedirectCount;
     mDownloadResponse.clear();
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -230,7 +228,7 @@ void NetworkHttpDownloadToFileHandler::setResponseHeader(int statusCode, const u
     mDataPrivate->getDownloadResponse().setHttpResponseCode(statusCode);
     mDataPrivate->getDownloadResponse().setResponseHeaders(headers);
     
-    if (errorData)
+    if (errorData && !mDataPrivate->getDownloadResponse().getErrorData().has_value())
     {
         mDataPrivate->getDownloadResponse().setErrorData(convertToServiceErrorStruct(*errorData));
     }
@@ -272,28 +270,9 @@ void NetworkHttpDownloadToFileHandler::completeResponse(const ucf::infrastructur
     }
 }
 
-bool NetworkHttpDownloadToFileHandler::shouldRedirectRequest() const
+bool NetworkHttpDownloadToFileHandler::tryPrepareRedirectRequest()
 {
-    if (mDataPrivate->getDownloadResponse().getErrorData().has_value()) {
-        return false;
-    }
-    if (301 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        302 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        303 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        307 == mDataPrivate->getDownloadResponse().getHttpResponseCode() ||
-        308 == mDataPrivate->getDownloadResponse().getHttpResponseCode())
-    {
-        return mDataPrivate->getRedirectCount() < kMaxRedirectCount;
-    }
-    return false;
-}
-
-void NetworkHttpDownloadToFileHandler::prepareRedirectRequest()
-{
-    if (shouldRedirectRequest())
-    {
-        mDataPrivate->prepareRedirect();
-    }
+    return mDataPrivate->tryPrepareRedirectRequest();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////

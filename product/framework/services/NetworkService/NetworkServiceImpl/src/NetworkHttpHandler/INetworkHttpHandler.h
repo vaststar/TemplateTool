@@ -23,8 +23,7 @@ public:
     virtual void appendResponseBody(const ucf::infrastructure::network::http::ByteBuffer& buffer, bool isFinished) = 0;
     virtual void completeResponse(const ucf::infrastructure::network::http::HttpResponseMetrics& metrics) = 0;
     
-    virtual bool shouldRedirectRequest() const {return false;}
-    virtual void prepareRedirectRequest() {}
+    virtual bool tryPrepareRedirectRequest() {return false;}
 
     virtual bool shouldRetryRequest() const {return false;}
     virtual int getRetryAfterMillSecs() const {return 1;}

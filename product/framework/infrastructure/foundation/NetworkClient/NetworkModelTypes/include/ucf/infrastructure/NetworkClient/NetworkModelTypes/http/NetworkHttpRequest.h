@@ -62,6 +62,8 @@ public:
     UploadProgressFunction getProgressFunction() const;
 
     std::string toString() const;
+    // Clear all payload forms and upload progress; keep other request fields.
+    void clearPayload();
     void clear();
 private:
     class DataPrivate;

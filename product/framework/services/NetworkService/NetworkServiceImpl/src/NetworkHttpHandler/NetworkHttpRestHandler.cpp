@@ -1,6 +1,7 @@
 
 #include "NetworkHttpRestHandler.h"
 
+#include <ucf/infrastructure/NetworkClient/LibCurlClient/HttpRedirect.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpTypes.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpRequest.h>
 #include <ucf/infrastructure/NetworkClient/NetworkModelTypes/http/NetworkHttpResponse.h>
@@ -23,8 +24,7 @@ public:
     ucf::infrastructure::network::http::NetworkHttpResponse& getHttpResponse(){return mHttpResponse;}
     const ucf::service::network::http::HttpRestResponseCallbackFunc& getResponseCallback() const{return mResponseCallBack;}
 
-    int getRedirectCount() const{ return mRedirectCount;}
-    void prepareRedirect();
+    bool tryPrepareRedirectRequest();
 
     void prepareRetry();
 
@@ -44,15 +44,22 @@ NetworkHttpRestHandler::DataPrivate::DataPrivate(const ucf::service::network::ht
     convertRestRequestToHttpRequest(restRequest, mHttpRequest);
 }
 
-void NetworkHttpRestHandler::DataPrivate::prepareRedirect()
+bool NetworkHttpRestHandler::DataPrivate::tryPrepareRedirectRequest()
 {
-    ++mRedirectCount;
-    if (auto redirectUri = mHttpResponse.getHeaderValue("Location"))
+    if (mHttpResponse.getErrorData().has_value() || mRedirectCount >= kMaxRedirectCount)
     {
-        mHttpRequest.setRequestUri(*redirectUri);
+        return false;
     }
-    
+    if (!ucf::infrastructure::network::libcurl::tryApplyHttpRedirect(
+            mHttpRequest, mHttpResponse.getHttpResponseCode(),
+            mHttpResponse.getResponseHeaders()))
+    {
+        return false;
+    }
+
+    ++mRedirectCount;
     mHttpResponse.clear();
+    return true;
 }
 
 void NetworkHttpRestHandler::DataPrivate::prepareRetry()
@@ -141,28 +148,9 @@ void NetworkHttpRestHandler::completeResponse(const ucf::infrastructure::network
     }
 }
 
-bool NetworkHttpRestHandler::shouldRedirectRequest() const
+bool NetworkHttpRestHandler::tryPrepareRedirectRequest()
 {
-    if (mDataPrivate->getHttpResponse().getErrorData().has_value()) {
-        return false;
-    }
-    if (301 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
-        302 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
-        303 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
-        307 == mDataPrivate->getHttpResponse().getHttpResponseCode() ||
-        308 == mDataPrivate->getHttpResponse().getHttpResponseCode())
-    {
-        return mDataPrivate->getRedirectCount() < kMaxRedirectCount;
-    }
-    return false;
-}
-
-void NetworkHttpRestHandler::prepareRedirectRequest()
-{
-    if (shouldRedirectRequest())
-    {
-        mDataPrivate->prepareRedirect();
-    }
+    return mDataPrivate->tryPrepareRedirectRequest();
 }
 
 bool NetworkHttpRestHandler::shouldRetryRequest() const

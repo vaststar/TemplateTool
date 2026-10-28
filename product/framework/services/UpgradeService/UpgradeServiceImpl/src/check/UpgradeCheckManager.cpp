@@ -238,7 +238,7 @@ void UpgradeCheckManager::cancelOutstandingRequests()
         return;
     }
 
-    // Cancellation invokes a completion callback synchronously; never hold
+    // Cancellation may invoke a completion callback inline; never hold
     // mStateMutex while calling it.
     for (const auto& requestId : requestIds) {
         httpManager->cancelRequest(requestId);

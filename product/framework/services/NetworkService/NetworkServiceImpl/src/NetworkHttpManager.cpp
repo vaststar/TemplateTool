@@ -128,10 +128,9 @@ void NetworkHttpManager::sendHttpRequest(std::shared_ptr<INetworkHttpHandler> ht
     auto curlCompletionCallback = [httpHandler, requestId, trackingId, this, weakThis = weak_from_this()](const ucf::infrastructure::network::http::HttpResponseMetrics& metrics){
         RETURN_FROM_LAMBDA_IF_DEAD(weakThis);
         SERVICE_LOG_DEBUG("receive completion callback"<< ", requestId: "<< requestId<< ", trackingId: "<< trackingId);
-        if (httpHandler->shouldRedirectRequest())
+        if (httpHandler->tryPrepareRedirectRequest())
         {
             SERVICE_LOG_DEBUG("will redirect "<< ", requestId: "<< requestId<< ", trackingId: "<< trackingId);
-            httpHandler->prepareRedirectRequest();
             sendHttpRequest(httpHandler);
         }
         else if (httpHandler->shouldRetryRequest())

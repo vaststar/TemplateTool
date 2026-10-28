@@ -29,8 +29,7 @@ public:
     virtual void appendResponseBody(const ucf::infrastructure::network::http::ByteBuffer& buffer, bool isFinished) override;
     virtual void completeResponse(const ucf::infrastructure::network::http::HttpResponseMetrics& metrics) override;
 
-    virtual bool shouldRedirectRequest() const override;
-    virtual void prepareRedirectRequest() override;
+    virtual bool tryPrepareRedirectRequest() override;
 private:
     class DataPrivate;
     std::unique_ptr<DataPrivate> mDataPrivate;

@@ -23,6 +23,10 @@ namespace ucf::framework {
     using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
+namespace ucf::service::network::http {
+    class HttpDownloadToFileResponse;
+}
+
 namespace ucf::service {
 
 class AsyncCallbackGate;
@@ -111,6 +115,14 @@ private:
         std::uint64_t generation) const;
     void attemptDownload(const std::shared_ptr<DownloadSession>& session,
                          std::stop_token stopToken);
+    void handleDownloadProgress(
+        const std::shared_ptr<DownloadSession>& session,
+        const std::string& requestId,
+        const network::http::HttpDownloadToFileResponse& response);
+    void handleDownloadCompleted(
+        const std::shared_ptr<DownloadSession>& session,
+        const std::string& requestId,
+        const network::http::HttpDownloadToFileResponse& response);
     void finishSession(const std::shared_ptr<DownloadSession>& session,
                        model::UpgradeErrorCode errorCode,
                        const std::string& message);
