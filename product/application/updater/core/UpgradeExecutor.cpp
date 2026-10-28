@@ -1,135 +1,141 @@
 #include "UpgradeExecutor.h"
+#include "UpgradeValidation.h"
 #include "UpdaterLog.h"
 #include "../platform/PlatformUtils.h"
 
 #include <chrono>
+#include <exception>
 #include <filesystem>
 #include <thread>
 
 namespace updater {
+namespace {
 
-int performUpgrade(const UpdaterConfig& config)
+bool renameWithRetry(const std::filesystem::path& source,
+                     const std::filesystem::path& destination)
 {
-    std::error_code ec;
-
-    UPDATER_LOG("Starting upgrade (staging-rename mode)");
-    UPDATER_LOG("  staging: " << config.stagingDir.string());
-    UPDATER_LOG("  target:  " << config.targetDir.string());
-
-    // 1. Validate inputs
-    if (!std::filesystem::exists(config.stagingDir) || std::filesystem::is_empty(config.stagingDir)) {
-        UPDATER_ERR("Staging directory not found or empty: " << config.stagingDir.string());
-        return 1;
-    }
-    if (config.targetDir.empty()) {
-        UPDATER_ERR("Target directory not specified");
-        return 1;
-    }
-
-    // 2. Wait for parent process to exit
-    platform::waitForProcessExit(config.parentPid);
-
-    // 2b. Change CWD to a safe location.  The updater inherits the main app's
-    //     working directory, which may point inside targetDir.  Windows refuses
-    //     to rename a directory that is any process's CWD.
-    std::filesystem::current_path(std::filesystem::temp_directory_path(), ec);
-    if (ec) {
-        UPDATER_WARN("Could not change CWD: " << ec.message());
-    }
-
-    // 3. Backup current installation
-    // On Windows, file handles / indexer / antivirus may linger briefly on
-    // recently-touched directories.  Retry renames with increasing delay.
     constexpr int kMaxRetries = 5;
-
-    std::filesystem::path backupDir = config.targetDir;
-    backupDir += ".bak";
-
-    if (std::filesystem::exists(backupDir)) {
-        std::filesystem::remove_all(backupDir, ec);
-        if (ec) {
-            UPDATER_WARN("Failed to remove old backup: " << ec.message());
-        }
-    }
-
-    if (std::filesystem::exists(config.targetDir)) {
-        UPDATER_LOG("Backing up: " << config.targetDir.string() << " -> " << backupDir.string());
-        for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
-            ec.clear();
-            std::filesystem::rename(config.targetDir, backupDir, ec);
-            if (!ec) {
-                break;
-            }
-            UPDATER_WARN("Backup attempt " << (attempt + 1) << " failed: " << ec.message());
-            if (attempt + 1 < kMaxRetries) {
-                std::this_thread::sleep_for(std::chrono::seconds(attempt + 1));
-            }
-        }
-        if (ec) {
-            UPDATER_ERR("Failed to backup after " << kMaxRetries << " attempts: " << ec.message());
-            return 2;
-        }
-    }
-
-    // 4. Rename staging directory to target (atomic on same partition)
-    //    Antivirus / Windows Search may briefly lock newly-extracted files
-    //    in staging, so retry with increasing delay just like the backup step.
-    UPDATER_LOG("Renaming staging -> target");
     for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
-        ec.clear();
-        std::filesystem::rename(config.stagingDir, config.targetDir, ec);
+        std::error_code ec;
+        std::filesystem::rename(source, destination, ec);
         if (!ec) {
-            break;
+            return true;
         }
-        UPDATER_WARN("Staging rename attempt " << (attempt + 1) << " failed: " << ec.message());
+        UPDATER_WARN("Rename attempt " << (attempt + 1) << " failed: "
+                     << source.string() << " -> " << destination.string()
+                     << ": " << ec.message());
         if (attempt + 1 < kMaxRetries) {
             std::this_thread::sleep_for(std::chrono::seconds(attempt + 1));
         }
     }
-    if (ec) {
-        UPDATER_ERR("Failed to rename staging to target after " << kMaxRetries << " attempts: " << ec.message());
-        // Rollback
-        if (std::filesystem::exists(backupDir)) {
-            UPDATER_LOG("Rolling back...");
-            std::filesystem::rename(backupDir, config.targetDir, ec);
+    return false;
+}
+
+} // namespace
+
+UpgradeExitCode performUpgrade(const UpdaterConfig& config)
+{
+    try {
+        if (config.parentPid <= 0) {
+            UPDATER_ERR("A positive parent PID is required");
+            return UpgradeExitCode::InvalidInput;
         }
-        return 3;
-    }
-
-    // 5. Verify
-    if (!std::filesystem::exists(config.targetDir) || std::filesystem::is_empty(config.targetDir)) {
-        UPDATER_ERR("Target directory empty after rename");
-        if (std::filesystem::exists(backupDir)) {
-            UPDATER_LOG("Rolling back...");
-            std::filesystem::rename(backupDir, config.targetDir, ec);
+        const auto paths = resolveUpgradePaths(config.stagingDir, config.targetDir);
+        if (!paths) {
+            return UpgradeExitCode::InvalidInput;
         }
-        return 4;
-    }
+        const auto& stagingDir = paths->staging;
+        const auto& targetDir = paths->target;
+        const auto& backupDir = paths->backup;
 
-    // 6. Fix permissions (no-op on Windows)
-    platform::fixPermissions(config.targetDir);
+        UPDATER_LOG("Starting upgrade (staging-rename mode)");
+        UPDATER_LOG("  staging: " << stagingDir.string());
+        UPDATER_LOG("  target:  " << targetDir.string());
 
-    // 7. Launch the new version
-    if (config.restart) {
-        UPDATER_LOG("Launching new version...");
-        if (!platform::launchApplication(config.targetDir)) {
-            UPDATER_WARN("Failed to launch application");
+        // Finish staging preparation before moving the installed application.
+        if (!validateApplicationLayout(stagingDir)) {
+            return UpgradeExitCode::InvalidInput;
         }
-    }
+        platform::fixPermissions(stagingDir);
 
-    // 8. Cleanup
-    UPDATER_LOG("Cleaning up...");
-    if (std::filesystem::exists(backupDir)) {
-        std::filesystem::remove_all(backupDir, ec);
-    }
-    // The marker file is in the same directory as the updater binary
-    auto markerPath = detail::getUpdaterDirectory() / "upgrade_in_progress";
-    if (std::filesystem::exists(markerPath)) {
+        if (!platform::waitForProcessExit(config.parentPid)) {
+            UPDATER_ERR("Cannot confirm parent exit; installation was not replaced");
+            return UpgradeExitCode::ParentExitUnconfirmed;
+        }
+
+        // Keep a previous backup when the current installation is incomplete.
+        if (!validateApplicationLayout(targetDir)) {
+            UPDATER_ERR("Current installation is incomplete; preserving backup: " << backupDir.string());
+            return UpgradeExitCode::BackupPreparationFailed;
+        }
+
+        std::error_code ec;
+        std::filesystem::current_path(std::filesystem::temp_directory_path(), ec);
+        if (ec) {
+            UPDATER_ERR("Cannot change working directory: " << ec.message());
+            return UpgradeExitCode::BackupPreparationFailed;
+        }
+
+        if (std::filesystem::exists(backupDir, ec)) {
+            std::filesystem::remove_all(backupDir, ec);
+            if (ec) {
+                UPDATER_ERR("Cannot remove previous backup: " << ec.message());
+                return UpgradeExitCode::BackupPreparationFailed;
+            }
+        } else if (ec) {
+            UPDATER_ERR("Cannot inspect previous backup: " << ec.message());
+            return UpgradeExitCode::BackupPreparationFailed;
+        }
+
+        UPDATER_LOG("Backing up current installation");
+        if (!renameWithRetry(targetDir, backupDir)) {
+            UPDATER_ERR("Failed to create installation backup");
+            return UpgradeExitCode::BackupPreparationFailed;
+        }
+
+        UPDATER_LOG("Renaming staging -> target");
+        if (!renameWithRetry(stagingDir, targetDir)) {
+            UPDATER_ERR("Failed to replace installation; attempting rollback");
+            std::error_code rollbackError;
+            const bool targetExists = std::filesystem::exists(targetDir, rollbackError);
+            if (rollbackError || targetExists) {
+                UPDATER_ERR("Rollback stopped; target is occupied or cannot be inspected. Backup: "
+                            << backupDir.string());
+            } else if (renameWithRetry(backupDir, targetDir)) {
+                UPDATER_LOG("Rollback completed");
+            } else {
+                UPDATER_ERR("Rollback failed; backup retained at " << backupDir.string());
+            }
+            return UpgradeExitCode::ReplacementFailed;
+        }
+
+        if (!validateApplicationLayout(targetDir)) {
+            UPDATER_ERR("Installed application is incomplete; backup retained at " << backupDir.string());
+            return UpgradeExitCode::InstalledLayoutInvalid;
+        }
+
+        if (config.restart) {
+            UPDATER_LOG("Requesting application restart");
+            if (!platform::launchApplication(targetDir)) {
+                UPDATER_ERR("Application launch failed; backup retained at " << backupDir.string());
+                return UpgradeExitCode::ApplicationLaunchFailed;
+            }
+        }
+
+        // Retain one previous version even when the launch request succeeds.
+        // A subsequent upgrade replaces it after all preparation checks pass.
+        UPDATER_LOG("Previous version retained at " << backupDir.string());
+        const auto markerPath = detail::getUpdaterDirectory() / "upgrade_in_progress";
         std::filesystem::remove(markerPath, ec);
+        if (ec) {
+            UPDATER_WARN("Failed to remove upgrade marker: " << ec.message());
+        }
+        UPDATER_LOG("Package replacement complete");
+        return UpgradeExitCode::Success;
+    } catch (const std::exception& ex) {
+        UPDATER_ERR("Upgrade stopped: " << ex.what());
+        return UpgradeExitCode::UnexpectedError;
     }
-
-    UPDATER_LOG("Upgrade complete!");
-    return 0;
 }
 
 } // namespace updater

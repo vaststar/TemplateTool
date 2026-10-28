@@ -20,6 +20,8 @@ add_executable(updater
     core/UpdaterLog.h
     core/UpgradeExecutor.h
     core/UpgradeExecutor.cpp
+    core/UpgradeValidation.h
+    core/UpgradeValidation.cpp
     # platform
     platform/PlatformUtils.h
     ${PLATFORM_SOURCES}

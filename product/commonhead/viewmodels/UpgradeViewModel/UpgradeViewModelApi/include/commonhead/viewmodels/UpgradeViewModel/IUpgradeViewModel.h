@@ -44,6 +44,7 @@ public:
     virtual void onCheckCompleted(bool hasUpgrade, const model::UpgradeViewInfo& info) = 0;
     virtual void onDownloadProgress(int64_t currentBytes, int64_t totalBytes) = 0;
     virtual void onUpgradeError(const std::string& message) = 0;
+    virtual void onUpdaterLaunched() = 0;
 };
 
 class IUpgradeViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IUpgradeViewModelCallback>

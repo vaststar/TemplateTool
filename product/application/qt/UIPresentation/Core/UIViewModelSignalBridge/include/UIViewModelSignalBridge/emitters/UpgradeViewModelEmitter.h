@@ -39,10 +39,16 @@ public:
     {
         emit signals_onUpgradeError(QString::fromStdString(message));
     };
+
+    virtual void onUpdaterLaunched() override
+    {
+        emit signals_onUpdaterLaunched();
+    };
 signals:
     void signals_onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state);
     void signals_onCheckCompleted(bool hasUpgrade, const QString& version, const QString& releaseNotes, bool mandatory);
     void signals_onDownloadProgress(int64_t currentBytes, int64_t totalBytes);
     void signals_onUpgradeError(const QString& message);
+    void signals_onUpdaterLaunched();
 };
 }

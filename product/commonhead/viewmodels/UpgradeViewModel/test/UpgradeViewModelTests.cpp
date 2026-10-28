@@ -20,6 +20,8 @@ public:
     void onDownloadProgress(int64_t, int64_t) override {}
 
     void onUpgradeError(const std::string&) override {}
+
+    void onUpdaterLaunched() override {}
 };
 
 } // namespace

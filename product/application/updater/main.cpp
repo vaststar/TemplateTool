@@ -42,19 +42,19 @@ int main(int argc, char* argv[])
 
     if (argc < 2) {
         UPDATER_ERR("Usage: updater --staging <path> --target <path> --pid <num> [--restart]");
-        return 1;
+        return static_cast<int>(updater::UpgradeExitCode::InvalidInput);
     }
 
     auto config = updater::parseArgs(argc, argv);
 
     if (config.stagingDir.empty()) {
         UPDATER_ERR("--staging is required");
-        return 1;
+        return static_cast<int>(updater::UpgradeExitCode::InvalidInput);
     }
     if (config.targetDir.empty()) {
         UPDATER_ERR("--target is required");
-        return 1;
+        return static_cast<int>(updater::UpgradeExitCode::InvalidInput);
     }
 
-    return updater::performUpgrade(config);
+    return static_cast<int>(updater::performUpgrade(config));
 }

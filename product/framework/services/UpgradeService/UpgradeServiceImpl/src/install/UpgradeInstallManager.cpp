@@ -238,6 +238,20 @@ void UpgradeInstallManager::launchUpdaterAndExit(
 
     try {
         auto stagingPath = ucf::utilities::FilePathUtils::pathFromUtf8(stagingDir);
+        const auto requireFile = [](const std::filesystem::path& path) {
+            if (!std::filesystem::is_regular_file(path) || std::filesystem::file_size(path) == 0) {
+                throw std::runtime_error("Required application file not found or empty: "
+                    + ucf::utilities::FilePathUtils::utf8FromPath(path));
+            }
+        };
+#ifdef __APPLE__
+        requireFile(stagingPath / "Contents" / "MacOS" / "mainEntry");
+        requireFile(stagingPath / "Contents" / "Info.plist");
+#elif defined(_WIN32)
+        requireFile(stagingPath / "bin" / "mainEntry.exe");
+#else
+        requireFile(stagingPath / "bin" / "mainEntry");
+#endif
 
         // 1. Locate updater binary inside staging dir.
         //    Layout matches install root layout per platform:
@@ -307,12 +321,16 @@ void UpgradeInstallManager::launchUpdaterAndExit(
         }
 
         UPGRADE_LOG_INFO("Updater launched successfully, app should exit now");
-        callback(true, model::UpgradeErrorCode::None, "");
 
     } catch (const std::exception& ex) {
         UPGRADE_LOG_ERROR("Failed to launch updater: " << ex.what());
         callback(false, model::UpgradeErrorCode::LaunchUpdaterFailed, ex.what());
+        return;
     }
+
+    // Deliver the result outside the launch try block so notification errors
+    // cannot be reported as a failed launch after the updater has started.
+    callback(true, model::UpgradeErrorCode::None, "");
 }
 
 void UpgradeInstallManager::checkAndRecoverFromFailedUpgrade()

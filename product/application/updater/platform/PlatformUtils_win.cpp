@@ -17,25 +17,42 @@ namespace updater::platform {
 bool waitForProcessExit(int pid, int timeoutSec)
 {
     if (pid <= 0) {
-        return true;
+        UPDATER_ERR("Invalid parent PID: " << pid);
+        return false;
     }
 
     UPDATER_LOG("Waiting for process " << pid << " to exit...");
 
-    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeoutSec);
-
-    while (std::chrono::steady_clock::now() < deadline) {
-        HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(pid));
-        if (!hProcess) {
-            return true; // Process doesn't exist
-        }
-        DWORD result = WaitForSingleObject(hProcess, 500);
-        CloseHandle(hProcess);
-        if (result == WAIT_OBJECT_0) {
+    HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(pid));
+    if (!process) {
+        const DWORD error = GetLastError();
+        if (error == ERROR_INVALID_PARAMETER) {
             return true;
         }
+        UPDATER_ERR("OpenProcess failed: " << error);
+        return false;
     }
 
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(timeoutSec);
+    while (std::chrono::steady_clock::now() < deadline) {
+        const DWORD result = WaitForSingleObject(process, 500);
+        if (result == WAIT_OBJECT_0) {
+            CloseHandle(process);
+            return true;
+        }
+        if (result == WAIT_FAILED) {
+            const DWORD error = GetLastError();
+            CloseHandle(process);
+            UPDATER_ERR("WaitForSingleObject failed: " << error);
+            return false;
+        }
+        if (result != WAIT_TIMEOUT) {
+            CloseHandle(process);
+            UPDATER_ERR("Unexpected process wait result: " << result);
+            return false;
+        }
+    }
+    CloseHandle(process);
     UPDATER_WARN("Timed out waiting for process " << pid);
     return false;
 }
@@ -61,9 +78,14 @@ int extractZipPackage(const std::string& zipPath, const std::string& destDir)
     return ret;
 }
 
+std::filesystem::path getApplicationExecutablePath(const std::filesystem::path& root)
+{
+    return root / "bin" / "mainEntry.exe";
+}
+
 bool launchApplication(const std::filesystem::path& targetDir)
 {
-    auto exePath = targetDir / "bin" / "mainEntry.exe";
+    auto exePath = getApplicationExecutablePath(targetDir);
     STARTUPINFOW si{};
     si.cb = sizeof(si);
     PROCESS_INFORMATION pi{};
@@ -75,6 +97,8 @@ bool launchApplication(const std::filesystem::path& targetDir)
         CloseHandle(pi.hThread);
         return true;
     }
+    const DWORD error = GetLastError();
+    UPDATER_ERR("CreateProcess failed: " << error);
     return false;
 }
 

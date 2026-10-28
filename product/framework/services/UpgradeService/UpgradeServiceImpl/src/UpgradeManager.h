@@ -37,6 +37,7 @@ public:
         virtual void onUpgradeCheckCompleted(const model::UpgradeCheckResult& result) = 0;
         virtual void onDownloadProgressChanged(int64_t currentBytes, int64_t totalBytes) = 0;
         virtual void onUpgradeError(model::UpgradeErrorCode code, const std::string& msg) = 0;
+        virtual void onUpdaterLaunched() = 0;
     };
 
     explicit UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -73,6 +74,7 @@ private:
     void notifyCheckCompleted(const model::UpgradeCheckResult& result);
     void notifyDownloadProgress(int64_t current, int64_t total);
     void notifyError(model::UpgradeErrorCode code, const std::string& msg);
+    void notifyUpdaterLaunched();
 
     // Manager reset
     void hardResetManagers();

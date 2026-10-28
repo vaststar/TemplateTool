@@ -34,6 +34,7 @@ public:
     void onUpgradeCheckCompleted(const ucf::service::model::UpgradeCheckResult& result) override;
     void onDownloadProgressChanged(int64_t currentBytes, int64_t totalBytes) override;
     void onUpgradeError(ucf::service::model::UpgradeErrorCode errorCode, const std::string& message) override;
+    void onUpdaterLaunched() override;
 
 protected:
     void init() override;

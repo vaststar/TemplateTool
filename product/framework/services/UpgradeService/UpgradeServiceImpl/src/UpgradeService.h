@@ -59,6 +59,7 @@ private:
     void onUpgradeCheckCompleted(const model::UpgradeCheckResult& result) override;
     void onDownloadProgressChanged(int64_t currentBytes, int64_t totalBytes) override;
     void onUpgradeError(model::UpgradeErrorCode code, const std::string& msg) override;
+    void onUpdaterLaunched() override;
 
 private:
     class DataPrivate;

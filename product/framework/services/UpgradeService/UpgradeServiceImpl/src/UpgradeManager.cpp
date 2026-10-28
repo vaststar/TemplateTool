@@ -204,8 +204,9 @@ void UpgradeManager::bindFsmCallbacks()
             withCallbackGate(mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
                 if (!success) {
                     mFsm->processEvent(upgrade::EvError{errCode, errMsg});
+                    return;
                 }
-                // On success, the app is about to exit — no further events needed
+                notifyUpdaterLaunched();
             }));
     });
 
@@ -315,6 +316,13 @@ void UpgradeManager::notifyError(model::UpgradeErrorCode code, const std::string
 {
     if (mListener) {
         mListener->onUpgradeError(code, msg);
+    }
+}
+
+void UpgradeManager::notifyUpdaterLaunched()
+{
+    if (mListener) {
+        mListener->onUpdaterLaunched();
     }
 }
 

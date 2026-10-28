@@ -42,6 +42,9 @@ void AppUpgradeController::init()
             this, &AppUpgradeController::onUpgradeStateChanged);
     connect(m_emitter.get(), &Emitter::signals_onUpgradeError,
             this, &AppUpgradeController::onUpgradeError);
+    // Queue the quit request even when launch completion arrives on the GUI thread.
+    connect(m_emitter.get(), &Emitter::signals_onUpdaterLaunched,
+            this, &AppUpgradeController::quitRequested, Qt::QueuedConnection);
 
     // Create ViewModel
     m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
@@ -201,7 +204,8 @@ bool AppUpgradeController::isOperationInProgress() const
         || m_state == S::Downloading
         || m_state == S::Verifying
         || m_state == S::Extracting
-        || m_state == S::ReadyToInstall;
+        || m_state == S::ReadyToInstall
+        || m_state == S::Installing;
 }
 
 // ============================================================================
@@ -242,12 +246,6 @@ void AppUpgradeController::onUpgradeStateChanged(commonHead::viewModels::model::
         m_downloadProgress = 0.0;
 
     emit stateChanged();
-
-    if (state == State::Installing)
-    {
-        UIVIEW_LOG_DEBUG("Updater launched, requesting app close");
-        emit quitRequested();
-    }
 }
 
 void AppUpgradeController::onUpgradeError(const QString& message)

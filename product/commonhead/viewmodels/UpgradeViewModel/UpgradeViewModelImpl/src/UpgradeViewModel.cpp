@@ -171,4 +171,9 @@ void UpgradeViewModel::onUpgradeError(ucf::service::model::UpgradeErrorCode /*er
     fireNotification(&IUpgradeViewModelCallback::onUpgradeError, message);
 }
 
+void UpgradeViewModel::onUpdaterLaunched()
+{
+    fireNotification(&IUpgradeViewModelCallback::onUpdaterLaunched);
+}
+
 } // namespace commonHead::viewModels

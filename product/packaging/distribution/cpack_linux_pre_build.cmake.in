@@ -1,11 +1,17 @@
 # ==========================================
-# CPack Pre-Build Script (Linux only)
+# CPack Pre-Build Script (Linux system packages only)
 # ==========================================
 # Runs inside CPack's staging directory before the final archive.
 # Responsibilities:
 #   1. (Linux) Relocate .desktop / icons to /usr/share/
 #   2. (Linux) Create /usr/bin wrapper script
 # ==========================================
+
+# Portable archives must keep bin/, lib/ and share/ together under the app root.
+# Only system packages relocate desktop integration and create /usr/bin wrappers.
+if(NOT CPACK_GENERATOR STREQUAL "DEB" AND NOT CPACK_GENERATOR STREQUAL "RPM")
+    return()
+endif()
 
 set(STAGING_DIR "${CPACK_TEMPORARY_INSTALL_DIRECTORY}")
 set(_prefix "${CPACK_PACKAGING_INSTALL_PREFIX}")
