@@ -82,11 +82,20 @@ void UpgradeCheckManager::checkForUpgrade(
     const std::string& currentVersion,
     const std::string& platform,
     const std::string& arch,
+    model::PackageFormat packageFormat,
     bool userTriggered,
     CheckResultCallback callback)
 {
     auto operation = mCallbackGate->tryEnter();
     if (!operation) {
+        return;
+    }
+
+    // Without a known installation format, no matching installer can be chosen.
+    // Reject before the cache path instead of reporting "already up to date".
+    if (model::packageFormatName(packageFormat).empty()) {
+        callback(false, {}, model::UpgradeErrorCode::UnsupportedInstallation,
+                 "Automatic upgrade is unavailable for this installation; download an installer manually");
         return;
     }
 
@@ -156,7 +165,7 @@ void UpgradeCheckManager::checkForUpgrade(
     }
 
     httpManager->sendHttpRestRequest(*request,
-        [this, gate = mCallbackGate, requestId, callback, currentVersion, platformKey](
+        [this, gate = mCallbackGate, requestId, callback, currentVersion, platformKey, packageFormat](
             const network::http::HttpRestResponse& response) {
             auto lease = gate->tryEnter();
             if (!lease) {
@@ -188,7 +197,7 @@ void UpgradeCheckManager::checkForUpgrade(
             model::UpgradeCheckResult result;
             try {
                 result = parseCheckResponse(
-                    response.getResponseBody(), currentVersion, platformKey);
+                    response.getResponseBody(), currentVersion, platformKey, packageFormat);
             } catch (const std::exception& ex) {
                 UPGRADE_LOG_ERROR("Failed to parse check response: " << ex.what());
                 callback(false, {}, model::UpgradeErrorCode::ParseError, ex.what());
@@ -248,13 +257,24 @@ void UpgradeCheckManager::cancelOutstandingRequests()
 model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     const std::string& jsonBody,
     const std::string& currentVersion,
-    const std::string& platformKey) const
+    const std::string& platformKey,
+    model::PackageFormat packageFormat) const
 {
+    const std::string formatName{model::packageFormatName(packageFormat)};
+    if (formatName.empty()) {
+        throw std::runtime_error("Unsupported installation package format");
+    }
+
     UPGRADE_LOG_DEBUG("parseCheckResponse jsonBody: " << jsonBody);
     model::UpgradeCheckResult result;
     auto json = ucf::utilities::JsonValue::parse(jsonBody);
     if (!json.isObject()) {
         throw std::runtime_error("Upgrade manifest must be a JSON object");
+    }
+    const auto schemaVersion = json.get("schemaVersion");
+    if (!schemaVersion.isInteger() || schemaVersion.asInt32().value_or(0) != 2) {
+        throw std::runtime_error(
+            "Unsupported upgrade manifest schema; install the latest version manually");
     }
 
     auto& info = result.upgradeInfo;
@@ -281,14 +301,14 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
     if (!packages.isObject()) {
         throw std::runtime_error("Manifest packages must be a JSON object");
     }
-    if (!packages.contains(platformKey)) {
-        UPGRADE_LOG_WARN("No package found for platform: " << platformKey);
-        result.hasUpgrade = false;
-        return result;
+    const auto platformPackages = packages.get(platformKey);
+    if (!platformPackages.isObject()) {
+        throw std::runtime_error("Manifest platform packages must be a JSON object: " + platformKey);
     }
-    const auto pkg = packages.get(platformKey);
+    const auto pkg = platformPackages.get(formatName);
     if (!pkg.isObject()) {
-        throw std::runtime_error("Manifest package must be a JSON object: " + platformKey);
+        throw std::runtime_error("Manifest installer package is missing or invalid: "
+                                 + platformKey + "/" + formatName);
     }
 
     const auto downloadUrl = pkg.get("url").asString();
@@ -324,6 +344,7 @@ model::UpgradeCheckResult UpgradeCheckManager::parseCheckResponse(
         throw std::runtime_error("Package size must be a positive 64-bit integer");
     }
 
+    info.package.format = packageFormat;
     info.package.downloadUrl = *downloadUrl;
     info.package.sha256 = *sha256;
     std::transform(info.package.sha256.begin(), info.package.sha256.end(),

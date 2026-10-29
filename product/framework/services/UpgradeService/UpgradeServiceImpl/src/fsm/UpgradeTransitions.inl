@@ -38,18 +38,17 @@ inline void Verifying::onEnter(UpgradeContext& ctx) {
     ctx.triggerVerify(ctx.downloadedFilePath);
 }
 
-inline void Extracting::onEnter(UpgradeContext& ctx) {
-    ctx.onStateChanged(model::UpgradeState::Extracting);
-    ctx.triggerExtract(ctx.downloadedFilePath);
-}
-
 inline void ReadyToInstall::onEnter(UpgradeContext& ctx) {
     ctx.onStateChanged(model::UpgradeState::ReadyToInstall);
 }
 
-inline void Installing::onEnter(UpgradeContext& ctx) {
-    ctx.onStateChanged(model::UpgradeState::Installing);
-    ctx.triggerInstall(ctx.stagingDir);
+inline void OpeningInstaller::onEnter(UpgradeContext& ctx) {
+    ctx.onStateChanged(model::UpgradeState::OpeningInstaller);
+    ctx.triggerOpenInstaller(ctx.downloadedFilePath);
+}
+
+inline void InstallerOpened::onEnter(UpgradeContext& ctx) {
+    ctx.onStateChanged(model::UpgradeState::InstallerOpened);
 }
 
 inline void Failed::onEnter(UpgradeContext& ctx) {
@@ -138,7 +137,7 @@ inline auto Downloading::onEvent(UpgradeContext& ctx, const EvError& e)
 // ── Verifying ──
 
 inline auto Verifying::onEvent(UpgradeContext&, const EvVerifyOk&)
-    -> fsm::TransitionTo<Extracting> { return {}; }
+    -> fsm::TransitionTo<ReadyToInstall> { return {}; }
 
 inline auto Verifying::onEvent(UpgradeContext& ctx, const EvError& e)
     -> fsm::TransitionTo<Failed> {
@@ -146,39 +145,44 @@ inline auto Verifying::onEvent(UpgradeContext& ctx, const EvError& e)
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
-// ── Extracting ──
-
-inline auto Extracting::onEvent(UpgradeContext& ctx, const EvExtractOk& e)
-    -> fsm::TransitionTo<ReadyToInstall> {
-    ctx.stagingDir = e.stagingDir;
-    return {};
-}
-
-inline auto Extracting::onEvent(UpgradeContext& ctx, const EvError& e)
-    -> fsm::TransitionTo<Failed> {
-    ctx.triggerHardReset();
-    return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
-}
-
 // ── ReadyToInstall ──
 
-inline auto ReadyToInstall::onEvent(UpgradeContext&, const EvInstallStart&)
-    -> fsm::TransitionTo<Installing> { return {}; }
+inline auto ReadyToInstall::onEvent(UpgradeContext&, const EvOpenInstaller&)
+    -> fsm::TransitionTo<OpeningInstaller> { return {}; }
 
 inline auto ReadyToInstall::onEvent(UpgradeContext& ctx, const EvDismiss&)
     -> fsm::TransitionTo<Idle> {
-    // User abandons the extracted package — wipe it so a fresh CheckForUpgrade
-    // can start from a clean slate instead of reusing the staged build.
+    // No open request has been accepted: the manager still owns this file.
     ctx.triggerHardReset();
     return {};
 }
 
-// ── Installing ──
+// ── OpeningInstaller ──
 
-inline auto Installing::onEvent(UpgradeContext& ctx, const EvError& e)
-    -> fsm::TransitionTo<Failed> {
+inline auto OpeningInstaller::onEvent(UpgradeContext& ctx, const EvInstallerOpenResult& e)
+    -> fsm::OneOf<fsm::TransitionTo<InstallerOpened>, fsm::TransitionTo<ReadyToInstall>> {
+    if (e.success && ctx.releaseInstaller(ctx.downloadedFilePath)) {
+        return fsm::TransitionTo<InstallerOpened>{};
+    }
+    // Keep the verified file for retry. No hard reset may run on this path.
+    ctx.onError(model::UpgradeErrorCode::OpenInstallerFailed,
+        "Could not hand off the installer. Try again or open it manually: "
+        + ctx.downloadedFilePath);
+    return fsm::TransitionTo<ReadyToInstall>{};
+}
+
+// ── InstallerOpened ──
+
+inline auto InstallerOpened::onEvent(UpgradeContext& ctx, const EvDismiss&)
+    -> fsm::TransitionTo<Idle> {
+    ctx.triggerHardReset(); // releaseInstaller already removed this file from cleanup.
+    return {};
+}
+
+inline auto InstallerOpened::onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
+    -> fsm::TransitionTo<Checking> {
     ctx.triggerHardReset();
-    return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
+    return fsm::TransitionTo<Checking>{Checking{.userTriggered = e.userTriggered}};
 }
 
 // ── Failed ──

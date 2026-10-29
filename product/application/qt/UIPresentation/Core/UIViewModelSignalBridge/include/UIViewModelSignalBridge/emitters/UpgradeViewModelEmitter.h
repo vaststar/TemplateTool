@@ -40,15 +40,15 @@ public:
         emit signals_onUpgradeError(QString::fromStdString(message));
     };
 
-    virtual void onUpdaterLaunched() override
+    virtual void onInstallerOpenRequested(const std::string& installerPath) override
     {
-        emit signals_onUpdaterLaunched();
+        emit signals_onInstallerOpenRequested(QString::fromStdString(installerPath));
     };
 signals:
     void signals_onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state);
     void signals_onCheckCompleted(bool hasUpgrade, const QString& version, const QString& releaseNotes, bool mandatory);
     void signals_onDownloadProgress(int64_t currentBytes, int64_t totalBytes);
     void signals_onUpgradeError(const QString& message);
-    void signals_onUpdaterLaunched();
+    void signals_onInstallerOpenRequested(const QString& installerPath);
 };
 }

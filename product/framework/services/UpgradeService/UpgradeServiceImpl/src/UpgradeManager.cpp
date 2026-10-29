@@ -2,14 +2,16 @@
 #include "UpgradeServiceLogger.h"
 #include "check/UpgradeCheckManager.h"
 #include "download/UpgradeDownloadManager.h"
-#include "install/UpgradeInstallManager.h"
+#include "UpgradeConstants.h"
 
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/services/ClientInfoService/IClientInfoService.h>
 #include <ucf/utilities/OSUtils/OSUtils.h>
+#include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <chrono>
 #include <functional>
+#include <fstream>
 #include <type_traits>
 #include <utility>
 
@@ -37,7 +39,6 @@ UpgradeManager::UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework)
     : mCoreFramework(coreFramework)
     , mCheckManager(std::make_unique<UpgradeCheckManager>(coreFramework, mCallbackGate))
     , mDownloadManager(std::make_unique<UpgradeDownloadManager>(coreFramework, mCallbackGate))
-    , mInstallManager(std::make_unique<UpgradeInstallManager>(coreFramework))
 {
     UPGRADE_LOG_DEBUG("UpgradeManager constructing, address: " << this);
     UPGRADE_LOG_DEBUG("UpgradeManager constructed, address: " << this);
@@ -81,15 +82,14 @@ void UpgradeManager::initialize(Listener* listener)
 {
     UPGRADE_LOG_INFO("UpgradeManager initialization started, address: " << this);
 
+    // Resolve package metadata before any FSM callback can run under its mutex.
+    mPackageFormat = getCurrentPackageFormat();
     mListener = listener;
 
-    // 1. Check for interrupted upgrade from last session
-    mInstallManager->checkAndRecoverFromFailedUpgrade();
-
-    // 2. Bind FSM context callbacks
+    // 1. Bind FSM context callbacks
     bindFsmCallbacks();
 
-    // 3. Create FSM (starts in Idle)
+    // 2. Create FSM (starts in Idle)
     mFsm = std::make_unique<upgrade::UpgradeFSM>(mFsmContext);
     mFsm->setName("UpgradeFSM");
 
@@ -101,7 +101,7 @@ void UpgradeManager::initialize(Listener* listener)
         UPGRADE_LOG_WARN("Unhandled event '" << eventName << "' in state '" << stateName << "'");
     });
 
-    // 4. Start auto-check timer
+    // 3. Start auto-check timer
     //startAutoCheckTimer();
 
     UPGRADE_LOG_INFO("UpgradeManager initialization finished, address: " << this);
@@ -134,7 +134,7 @@ void UpgradeManager::bindFsmCallbacks()
         auto platform = getCurrentPlatform();
         auto arch     = getCurrentArch();
 
-        mCheckManager->checkForUpgrade(version, platform, arch, userTriggered,
+        mCheckManager->checkForUpgrade(version, platform, arch, mPackageFormat, userTriggered,
             withCallbackGate(mCallbackGate, [this](bool success, const model::UpgradeCheckResult& result,
                    model::UpgradeErrorCode errCode, const std::string& errMsg) {
                 if (!success) {
@@ -187,28 +187,15 @@ void UpgradeManager::bindFsmCallbacks()
             }));
     });
 
-    mFsmContext.triggerExtract = withCallbackGate(mCallbackGate, [this](const std::string& packagePath) {
-        mInstallManager->extractPackageToStaging(packagePath,
-            withCallbackGate(mCallbackGate, [this](bool success, const std::string& stagingDir,
-                   model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (success) {
-                    mFsm->processEvent(upgrade::EvExtractOk{stagingDir});
-                } else {
-                    mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-                }
-            }));
-    });
+    mFsmContext.triggerOpenInstaller = withCallbackGate(mCallbackGate,
+        [this](const std::string& installerPath) {
+            notifyInstallerOpenRequested(installerPath);
+        });
 
-    mFsmContext.triggerInstall = withCallbackGate(mCallbackGate, [this](const std::string& stagingDir) {
-        mInstallManager->launchUpdaterAndExit(stagingDir,
-            withCallbackGate(mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (!success) {
-                    mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-                    return;
-                }
-                notifyUpdaterLaunched();
-            }));
-    });
+    mFsmContext.releaseInstaller = [this](const std::string& installerPath) {
+        auto lease = mCallbackGate->tryEnter();
+        return lease && mDownloadManager->releaseInstaller(installerPath);
+    };
 
     // ── Reset triggers ──
 
@@ -237,11 +224,18 @@ void UpgradeManager::downloadUpgrade()
     mFsm->processEvent(upgrade::EvDownloadStart{});
 }
 
-void UpgradeManager::installAndRestart()
+void UpgradeManager::openInstaller()
 {
     auto lease = mCallbackGate->tryEnter();
     if (!lease) { return; }
-    mFsm->processEvent(upgrade::EvInstallStart{});
+    mFsm->processEvent(upgrade::EvOpenInstaller{});
+}
+
+void UpgradeManager::reportInstallerOpenResult(bool success)
+{
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease) { return; }
+    mFsm->processEvent(upgrade::EvInstallerOpenResult{success});
 }
 
 void UpgradeManager::cancelDownload()
@@ -272,9 +266,9 @@ model::UpgradeState UpgradeManager::getUpgradeState() const
         if constexpr (std::is_same_v<S, upgrade::UpgradeAvailable>) return model::UpgradeState::UpgradeAvailable;
         if constexpr (std::is_same_v<S, upgrade::Downloading>)     return model::UpgradeState::Downloading;
         if constexpr (std::is_same_v<S, upgrade::Verifying>)       return model::UpgradeState::Verifying;
-        if constexpr (std::is_same_v<S, upgrade::Extracting>)      return model::UpgradeState::Extracting;
         if constexpr (std::is_same_v<S, upgrade::ReadyToInstall>)  return model::UpgradeState::ReadyToInstall;
-        if constexpr (std::is_same_v<S, upgrade::Installing>)      return model::UpgradeState::Installing;
+        if constexpr (std::is_same_v<S, upgrade::OpeningInstaller>) return model::UpgradeState::OpeningInstaller;
+        if constexpr (std::is_same_v<S, upgrade::InstallerOpened>) return model::UpgradeState::InstallerOpened;
         if constexpr (std::is_same_v<S, upgrade::Failed>)          return model::UpgradeState::Failed;
     });
 }
@@ -319,10 +313,10 @@ void UpgradeManager::notifyError(model::UpgradeErrorCode code, const std::string
     }
 }
 
-void UpgradeManager::notifyUpdaterLaunched()
+void UpgradeManager::notifyInstallerOpenRequested(const std::string& installerPath)
 {
     if (mListener) {
-        mListener->onUpdaterLaunched();
+        mListener->onInstallerOpenRequested(installerPath);
     }
 }
 
@@ -333,10 +327,8 @@ void UpgradeManager::hardResetManagers()
     UPGRADE_LOG_DEBUG("Hard reset all managers (clear caches and partial downloads)");
     mCheckManager->reset();
     mDownloadManager->hardReset();
-    mInstallManager->reset();
     mFsmContext.availableUpgrade.reset();
     mFsmContext.downloadedFilePath.clear();
-    mFsmContext.stagingDir.clear();
 }
 
 void UpgradeManager::softResetManagers()
@@ -344,9 +336,8 @@ void UpgradeManager::softResetManagers()
     UPGRADE_LOG_DEBUG("Soft reset managers (preserve partial download for resume)");
     mCheckManager->reset();
     mDownloadManager->softReset();
-    mInstallManager->reset();
     // Keep ctx.availableUpgrade so a subsequent EvDownloadStart can resume.
-    // downloadedFilePath / stagingDir remain empty until that download progresses.
+    // downloadedFilePath remains empty until that download progresses.
 }
 
 // ── Helper: app info ──
@@ -378,6 +369,31 @@ std::string UpgradeManager::getCurrentArch() const
     // Manifest uses "x64" instead of "x86_64"
     if (arch == "x86_64") { return "x64"; }
     return arch;
+}
+
+model::PackageFormat UpgradeManager::getCurrentPackageFormat() const
+{
+#if defined(_WIN32)
+    return model::PackageFormat::Exe;
+#elif defined(__APPLE__)
+    return model::PackageFormat::Dmg;
+#elif defined(__linux__)
+    // This per-package marker is written by CPack only for DEB and RPM.
+    // Portable archives deliberately do not inherit the host's package type.
+    if (auto cf = mCoreFramework.lock()) {
+        if (auto clientInfo = cf->getService<IClientInfoService>().lock()) {
+            const auto marker = ucf::utilities::FilePathUtils::pathFromUtf8(
+                clientInfo->getInstallDirectory()) / upgrade::constants::kPackageFormatMarkerFileName;
+            std::ifstream input(marker);
+            std::string format;
+            if (std::getline(input, format)) {
+                if (format == "deb") { return model::PackageFormat::Deb; }
+                if (format == "rpm") { return model::PackageFormat::Rpm; }
+            }
+        }
+    }
+#endif
+    return model::PackageFormat::Unknown;
 }
 
 // ── Auto-check timer ──

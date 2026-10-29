@@ -28,8 +28,6 @@ set(MODULE_SOURCE_PRIVATE
     src/check/UpgradeCheckManager.cpp
     src/download/UpgradeDownloadManager.h
     src/download/UpgradeDownloadManager.cpp
-    src/install/UpgradeInstallManager.h
-    src/install/UpgradeInstallManager.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC
@@ -39,16 +37,14 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CoreFrameworkApi
     NetworkServiceApi
     ClientInfoServiceApi
-    ArchiveUtils
     FilePathUtils
     JsonUtils
     VersionUtils
+    UUIDUtils
     OSUtils
     LoggerUtils
-    CompressionUtils
     StateMachineUtils
     NotificationHelper
-    ProcessBridgeUtils
     openssl
 )
 set(MODULE_BUILD_INTERFACE_DIR ${MODULE_HEADER_BASE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)

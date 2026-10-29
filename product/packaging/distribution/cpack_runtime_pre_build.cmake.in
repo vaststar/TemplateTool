@@ -114,7 +114,15 @@ else()
         file(REMOVE ${_development_libraries})
     endif()
 
+    # Only package-manager installations can choose a matching installer.
+    # Portable TGZ packages deliberately carry no installation-format marker.
+    set(_upgrade_marker "${_app_root}/.upgrade-package-format")
+    if(EXISTS "${_upgrade_marker}" OR IS_SYMLINK "${_upgrade_marker}")
+        message(FATAL_ERROR "[cpack_runtime] Unexpected installation-format marker")
+    endif()
     if(CPACK_GENERATOR MATCHES "^(DEB|RPM)$")
+        string(TOLOWER "${CPACK_GENERATOR}" _upgrade_package_format)
+        file(WRITE "${_upgrade_marker}" "${_upgrade_package_format}\n")
         include("@CPACK_LINUX_PRE_BUILD_SCRIPT@")
     endif()
 endif()

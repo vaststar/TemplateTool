@@ -25,6 +25,8 @@ class AppUpgradeController : public UIViewController
     Q_PROPERTY(bool downloading READ isDownloading NOTIFY stateChanged)
     Q_PROPERTY(bool verifying READ isVerifying NOTIFY stateChanged)
     Q_PROPERTY(bool readyToInstall READ isReadyToInstall NOTIFY stateChanged)
+    Q_PROPERTY(bool openingInstaller READ isOpeningInstaller NOTIFY stateChanged)
+    Q_PROPERTY(bool installerOpened READ isInstallerOpened NOTIFY stateChanged)
     Q_PROPERTY(QString version READ version NOTIFY upgradeInfoChanged)
     Q_PROPERTY(QString releaseNotes READ releaseNotes NOTIFY upgradeInfoChanged)
     Q_PROPERTY(bool mandatory READ isMandatory NOTIFY upgradeInfoChanged)
@@ -40,6 +42,8 @@ public:
     bool isDownloading() const;
     bool isVerifying() const;
     bool isReadyToInstall() const;
+    bool isOpeningInstaller() const;
+    bool isInstallerOpened() const;
     bool isIdle() const;
     QString version() const;
     QString releaseNotes() const;
@@ -48,7 +52,8 @@ public:
     QString errorMessage() const;
 
     Q_INVOKABLE void downloadUpgrade();
-    Q_INVOKABLE void installAndRestart();
+    Q_INVOKABLE void openInstaller();
+    Q_INVOKABLE void revealInstaller();
     Q_INVOKABLE void cancelDownload();
     Q_INVOKABLE void dismiss();
 
@@ -68,6 +73,7 @@ private:
     void onDownloadProgress(int64_t currentBytes, int64_t totalBytes);
     void onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState state);
     void onUpgradeError(const QString& message);
+    void onInstallerOpenRequested(const QString& installerPath);
 
     void showUpgradeDialog();
 
@@ -88,4 +94,5 @@ private:
     bool m_mandatory = false;
     double m_downloadProgress = 0.0;
     QString m_errorMessage;
+    QString m_installerPath;
 };

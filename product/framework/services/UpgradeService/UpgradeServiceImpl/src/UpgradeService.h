@@ -40,7 +40,8 @@ public:
     // IUpgradeService — actions
     virtual void checkForUpgrade(bool userTriggered) override;
     virtual void downloadUpgrade() override;
-    virtual void installAndRestart() override;
+    virtual void openInstaller() override;
+    virtual void reportInstallerOpenResult(bool success) override;
     virtual void cancelDownload() override;
     virtual void dismissUpgrade() override;
 
@@ -59,7 +60,7 @@ private:
     void onUpgradeCheckCompleted(const model::UpgradeCheckResult& result) override;
     void onDownloadProgressChanged(int64_t currentBytes, int64_t totalBytes) override;
     void onUpgradeError(model::UpgradeErrorCode code, const std::string& msg) override;
-    void onUpdaterLaunched() override;
+    void onInstallerOpenRequested(const std::string& installerPath) override;
 
 private:
     class DataPrivate;

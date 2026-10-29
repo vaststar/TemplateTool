@@ -1,5 +1,9 @@
 #include "AppUpgrade/AppUpgradeController.h"
 
+#include <QDesktopServices>
+#include <QFileInfo>
+#include <QUrl>
+
 #include <AppContext/AppContext.h>
 #include <UIFabrication/IUIViewFactory.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
@@ -42,9 +46,18 @@ void AppUpgradeController::init()
             this, &AppUpgradeController::onUpgradeStateChanged);
     connect(m_emitter.get(), &Emitter::signals_onUpgradeError,
             this, &AppUpgradeController::onUpgradeError);
-    // Queue the quit request even when launch completion arrives on the GUI thread.
-    connect(m_emitter.get(), &Emitter::signals_onUpdaterLaunched,
-            this, &AppUpgradeController::quitRequested, Qt::QueuedConnection);
+    // Opening belongs to the GUI thread. Queue even for GUI-originated actions
+    // so the service can finish its OpeningInstaller transition first.
+    connect(m_emitter.get(), &Emitter::signals_onInstallerOpenRequested,
+            this, &AppUpgradeController::onInstallerOpenRequested, Qt::QueuedConnection);
+#ifdef Q_OS_WIN
+    // Release the running executable only after the service has handed off the file.
+    connect(m_emitter.get(), &Emitter::signals_onUpgradeStateChanged,
+            this, [this](commonHead::viewModels::model::UpgradeViewState state) {
+                if (state == commonHead::viewModels::model::UpgradeViewState::InstallerOpened)
+                    emit quitRequested();
+            }, Qt::QueuedConnection);
+#endif
 
     // Create ViewModel
     m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
@@ -73,13 +86,22 @@ bool AppUpgradeController::isDownloading() const
 
 bool AppUpgradeController::isVerifying() const
 {
-    using S = commonHead::viewModels::model::UpgradeViewState;
-    return m_state == S::Verifying || m_state == S::Extracting;
+    return m_state == commonHead::viewModels::model::UpgradeViewState::Verifying;
 }
 
 bool AppUpgradeController::isReadyToInstall() const
 {
     return m_state == commonHead::viewModels::model::UpgradeViewState::ReadyToInstall;
+}
+
+bool AppUpgradeController::isOpeningInstaller() const
+{
+    return m_state == commonHead::viewModels::model::UpgradeViewState::OpeningInstaller;
+}
+
+bool AppUpgradeController::isInstallerOpened() const
+{
+    return m_state == commonHead::viewModels::model::UpgradeViewState::InstallerOpened;
 }
 
 bool AppUpgradeController::isIdle() const
@@ -124,11 +146,26 @@ void AppUpgradeController::downloadUpgrade()
     }
 }
 
-void AppUpgradeController::installAndRestart()
+void AppUpgradeController::openInstaller()
 {
     if (m_viewModel)
     {
-        m_viewModel->installAndRestart();
+        m_errorMessage.clear();
+        emit errorChanged();
+        m_viewModel->openInstaller();
+    }
+}
+
+void AppUpgradeController::revealInstaller()
+{
+    if (m_installerPath.isEmpty())
+        return;
+
+    const auto directory = QFileInfo(m_installerPath).absolutePath();
+    if (!QDesktopServices::openUrl(QUrl::fromLocalFile(directory)))
+    {
+        onUpgradeError(tr("Could not open the installer folder. Installer path: %1")
+                           .arg(m_installerPath));
     }
 }
 
@@ -150,13 +187,12 @@ void AppUpgradeController::dismiss()
     m_errorMessage.clear();
     emit errorChanged();
 
-    // If the user is dismissing while we're parked on a state where the FSM
-    // is holding onto upgrade artifacts (available info / extracted staging
-    // dir / failure data), tell it to drop them and return to Idle. Otherwise
-    // the next CheckForUpgrade would either be ignored or re-show the cached
-    // result instead of querying the server.
+    // Clear the cached result when closing a settled upgrade dialog. The service
+    // keeps an installer already handed to the operating system, so returning
+    // from InstallerOpened to Idle must not remove that file.
     if (m_viewModel && (m_state == S::UpgradeAvailable
                         || m_state == S::ReadyToInstall
+                        || m_state == S::InstallerOpened
                         || m_state == S::Failed))
     {
         m_viewModel->dismissUpgrade();
@@ -178,7 +214,7 @@ bool AppUpgradeController::event(QEvent* e)
             UIVIEW_LOG_DEBUG("UIUpgradeEvent::CheckForUpgrade");
             if (isOperationInProgress())
             {
-                // Download / verify / install in flight — just bring the dialog back
+                // Keep the current download / verification / installer handoff visible
                 showUpgradeDialog();
             }
             else if (m_viewModel)
@@ -203,9 +239,9 @@ bool AppUpgradeController::isOperationInProgress() const
     return m_state == S::Checking
         || m_state == S::Downloading
         || m_state == S::Verifying
-        || m_state == S::Extracting
         || m_state == S::ReadyToInstall
-        || m_state == S::Installing;
+        || m_state == S::OpeningInstaller
+        || m_state == S::InstallerOpened;
 }
 
 // ============================================================================
@@ -254,6 +290,18 @@ void AppUpgradeController::onUpgradeError(const QString& message)
     m_errorMessage = message;
     emit stateChanged();
     emit errorChanged();
+}
+
+void AppUpgradeController::onInstallerOpenRequested(const QString& installerPath)
+{
+    if (!m_viewModel)
+        return;
+
+    m_installerPath = installerPath;
+    const bool opened = QDesktopServices::openUrl(QUrl::fromLocalFile(installerPath));
+    // True means the operating system accepted the request, not that installation
+    // finished. Report it before Windows requests application shutdown.
+    m_viewModel->reportInstallerOpenResult(opened);
 }
 
 // ============================================================================

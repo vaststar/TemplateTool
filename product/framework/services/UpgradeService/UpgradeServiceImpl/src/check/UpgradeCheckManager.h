@@ -41,6 +41,7 @@ public:
     void checkForUpgrade(const std::string& currentVersion,
                          const std::string& platform,
                          const std::string& arch,
+                         model::PackageFormat packageFormat,
                          bool userTriggered,
                          CheckResultCallback callback);
 
@@ -69,7 +70,8 @@ private:
     model::UpgradeCheckResult parseCheckResponse(
         const std::string& jsonBody,
         const std::string& currentVersion,
-        const std::string& platformKey) const;
+        const std::string& platformKey,
+        model::PackageFormat packageFormat) const;
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;

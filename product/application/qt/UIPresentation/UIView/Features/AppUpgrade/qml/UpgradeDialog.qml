@@ -23,6 +23,10 @@ UTDialog {
         // Header
         UTText {
             text: {
+                if (dialog.controller.openingInstaller)
+                    return qsTr("Opening installer...")
+                if (dialog.controller.installerOpened)
+                    return qsTr("Continue installation")
                 if (dialog.controller.readyToInstall)
                     return qsTr("Ready to install")
                 if (dialog.controller.verifying)
@@ -60,9 +64,25 @@ UTDialog {
             }
         }
 
-        // Checking / Verifying spinner
+        // Installer handoff instructions
+        UTText {
+            visible: dialog.controller.installerOpened
+            text: {
+                if (Qt.platform.os === "windows")
+                    return qsTr("The installer open request was accepted. This application will close so you can continue installation.")
+                if (Qt.platform.os === "osx")
+                    return qsTr("The disk image was sent to the system. Quit this application, then drag the new app into Applications to replace it.")
+                return qsTr("The package was sent to your system installer. Quit this application before completing installation. If no installer appears, open its folder to install it manually.")
+            }
+            fontEnum: UIFontToken.Body_Text
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+        }
+
+        // Checking / Verifying / Opening spinner
         UTBusyIndicator {
             visible: dialog.controller.checking || dialog.controller.verifying
+                     || dialog.controller.openingInstaller
             running: visible
             Layout.alignment: Qt.AlignHCenter
         }
@@ -132,16 +152,24 @@ UTDialog {
             }
 
             UTButton {
+                visible: dialog.controller.installerOpened
+                         || (dialog.controller.readyToInstall
+                             && dialog.controller.errorMessage.length > 0)
+                text: qsTr("Show Installer in Folder")
+                onClicked: dialog.controller.revealInstaller()
+            }
+
+            UTButton {
                 visible: dialog.controller.readyToInstall
-                text: qsTr("Install && Restart")
-                onClicked: dialog.controller.installAndRestart()
+                text: qsTr("Open Installer")
+                onClicked: dialog.controller.openInstaller()
                 focus: visible
             }
 
             UTButton {
                 visible: dialog.controller.hasUpgrade && !dialog.controller.downloading
                          && !dialog.controller.verifying && !dialog.controller.readyToInstall
-                text: qsTr("Download && Install")
+                text: qsTr("Download Installer")
                 onClicked: dialog.controller.downloadUpgrade()
                 focus: visible
 
@@ -149,6 +177,7 @@ UTDialog {
 
             UTButton {
                 visible: !dialog.controller.downloading && !dialog.controller.verifying
+                         && !dialog.controller.openingInstaller
                 text: dialog.controller.hasUpgrade ? qsTr("Later") : qsTr("Close")
                 fontColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Text : UIColorToken.Button_Primary_Text
                 backgroundColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Background : UIColorToken.Button_Primary_Background

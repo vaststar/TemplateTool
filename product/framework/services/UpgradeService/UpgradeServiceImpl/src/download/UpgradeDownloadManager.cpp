@@ -10,6 +10,7 @@
 #include <ucf/services/NetworkService/model/HttpDownloadToFileResponse.h>
 #include <ucf/services/ClientInfoService/IClientInfoService.h>
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
+#include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include <algorithm>
 #include <fstream>
@@ -89,12 +90,7 @@ bool UpgradeDownloadManager::hasSufficientSpace(int64_t requiredBytes) const
         return false;
     }
     const auto bytes = static_cast<std::uintmax_t>(requiredBytes);
-    constexpr std::uintmax_t kSpaceMultiplier = 3;
     constexpr auto kMaxBytes = (std::numeric_limits<std::uintmax_t>::max)();
-    if (bytes > kMaxBytes / kSpaceMultiplier) {
-        UPGRADE_LOG_ERROR("Package size exceeds the disk space calculation limit");
-        return false;
-    }
 
     try {
         ucf::utilities::FilePathUtils::createDirectoriesUtf8(
@@ -104,7 +100,8 @@ bool UpgradeDownloadManager::hasSufficientSpace(int64_t requiredBytes) const
             UPGRADE_LOG_ERROR("Available disk space could not be determined");
             return false;
         }
-        return spaceInfo.available > bytes * kSpaceMultiplier;
+        // Installation space is checked by the system installer on its target volume.
+        return spaceInfo.available >= bytes;
     } catch (const std::exception& ex) {
         UPGRADE_LOG_ERROR("Failed to check disk space: " << ex.what());
         return false;
@@ -228,6 +225,11 @@ void UpgradeDownloadManager::downloadPackage(
     if (mStopRequested.load(std::memory_order_acquire)) {
         return;
     }
+    if (model::packageFormatName(packageInfo.format).empty()) {
+        completeCb(false, "", model::UpgradeErrorCode::DownloadFailed,
+                   "Unsupported installer format");
+        return;
+    }
     if (!hasSufficientSpace(packageInfo.sizeBytes)) {
         UPGRADE_LOG_ERROR("Insufficient disk space for download");
         if (!mStopRequested.load(std::memory_order_acquire)) {
@@ -250,6 +252,7 @@ void UpgradeDownloadManager::downloadPackage(
             return;
         }
         session->generation = mGeneration.fetch_add(1, std::memory_order_acq_rel) + 1;
+        mVerifiedInstallerPath.clear();
         if (mActiveSession) {
             previousRequestId = mActiveSession->requestId;
         }
@@ -257,7 +260,8 @@ void UpgradeDownloadManager::downloadPackage(
             && !packageInfo.sha256.empty()
             && mResumePackageInfo->downloadUrl == packageInfo.downloadUrl
             && mResumePackageInfo->sha256 == packageInfo.sha256
-            && mResumePackageInfo->sizeBytes == packageInfo.sizeBytes;
+            && mResumePackageInfo->sizeBytes == packageInfo.sizeBytes
+            && mResumePackageInfo->format == packageInfo.format;
         if (samePackage) {
             session->partialFilePath = std::move(mResumePartialPath);
             session->resumeAllowed = !session->partialFilePath.empty();
@@ -350,11 +354,10 @@ void UpgradeDownloadManager::attemptDownload(
             return;
         }
         if (session->partialFilePath.empty()) {
-            auto fileName = ucf::utilities::FilePathUtils::pathFromUtf8(
-                session->packageInfo.downloadUrl).filename().string();
-            if (fileName.empty()) {
-                fileName = upgrade::constants::kDefaultPackageFileName;
-            }
+            // URL query strings do not belong in local filenames. A fresh name also
+            // prevents a later download from overwriting an installer already opened.
+            const auto fileName = "installer-" + ucf::utilities::UUIDUtils::generateUUID()
+                + "." + std::string(model::packageFormatName(session->packageInfo.format));
             session->partialFilePath = mDownloadDir / fileName;
         }
         if (std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(),
@@ -643,6 +646,7 @@ void UpgradeDownloadManager::retireActiveSession(bool preservePartial, bool dele
     {
         std::lock_guard lock(mSessionMutex);
         mGeneration.fetch_add(1, std::memory_order_acq_rel);
+        mVerifiedInstallerPath.clear();
         if (mActiveSession) {
             requestId = mActiveSession->requestId;
             partialPath = mActiveSession->partialFilePath;
@@ -718,7 +722,15 @@ void UpgradeDownloadManager::verifyPackage(
     if (mStopRequested.load(std::memory_order_acquire)) {
         return;
     }
-    const auto generation = mGeneration.load(std::memory_order_acquire);
+    std::uint64_t generation = 0;
+    {
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire)) {
+            return;
+        }
+        generation = mGeneration.load(std::memory_order_acquire);
+        mVerifiedInstallerPath.clear();
+    }
     UPGRADE_LOG_INFO("Verifying package: " << filePath);
 
     enqueueVerify([this, generation, filePath, expectedSha256,
@@ -760,14 +772,59 @@ void UpgradeDownloadManager::verifyPackage(
             message = ex.what();
         }
 
-        // Keep the callback outside the try block: a callback exception must
-        // never be mistaken for a hash failure and delivered a second time.
+        {
+            std::lock_guard lock(mSessionMutex);
+            if (st.stop_requested()
+                || mStopRequested.load(std::memory_order_acquire)
+                || generation != mGeneration.load(std::memory_order_acquire)) {
+                return;
+            }
+            if (success) {
+                const auto verifiedPath = ucf::utilities::FilePathUtils::pathFromUtf8(filePath);
+                if (mActiveSession
+                    || std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(), verifiedPath)
+                        == mTrackedFilePaths.end()) {
+                    success = false;
+                    errorCode = model::UpgradeErrorCode::VerifyFailed;
+                    message = "Installer is not a completed download owned by this manager";
+                } else {
+                    mVerifiedInstallerPath = verifiedPath;
+                }
+            }
+        }
+
+        // Keep the callback outside the try block and session mutex: the FSM
+        // may reset the manager or release the verified installer from here.
         if (!st.stop_requested()
             && !mStopRequested.load(std::memory_order_acquire)
             && generation == mGeneration.load(std::memory_order_acquire)) {
             callback(success, errorCode, message);
         }
     });
+}
+
+bool UpgradeDownloadManager::releaseInstaller(const std::string& filePath)
+{
+    const auto installerPath = ucf::utilities::FilePathUtils::pathFromUtf8(filePath);
+    std::lock_guard lock(mSessionMutex);
+    if (mStopRequested.load(std::memory_order_acquire)
+        || mVerifiedInstallerPath.empty()
+        || mVerifiedInstallerPath != installerPath) {
+        return false;
+    }
+    const auto tracked = std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(),
+                                   installerPath);
+    if (tracked == mTrackedFilePaths.end()) {
+        return false;
+    }
+
+    mTrackedFilePaths.erase(tracked);
+    if (mResumePartialPath == installerPath) {
+        mResumePartialPath.clear();
+        mResumePackageInfo.reset();
+    }
+    mVerifiedInstallerPath.clear();
+    return true;
 }
 
 std::optional<std::string> UpgradeDownloadManager::computeSha256(
@@ -837,6 +894,7 @@ void UpgradeDownloadManager::requestStop()
     if (!mStopRequested.exchange(true, std::memory_order_acq_rel)) {
         std::lock_guard lock(mSessionMutex);
         mGeneration.fetch_add(1, std::memory_order_acq_rel);
+        mVerifiedInstallerPath.clear();
         mActiveSession.reset();
     }
     mIoWorker.request_stop();

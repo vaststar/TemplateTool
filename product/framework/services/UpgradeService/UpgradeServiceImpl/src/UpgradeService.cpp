@@ -138,9 +138,14 @@ void UpgradeService::downloadUpgrade()
     mDataPrivate->getUpgradeManager().downloadUpgrade();
 }
 
-void UpgradeService::installAndRestart()
+void UpgradeService::openInstaller()
 {
-    mDataPrivate->getUpgradeManager().installAndRestart();
+    mDataPrivate->getUpgradeManager().openInstaller();
+}
+
+void UpgradeService::reportInstallerOpenResult(bool success)
+{
+    mDataPrivate->getUpgradeManager().reportInstallerOpenResult(success);
 }
 
 void UpgradeService::cancelDownload()
@@ -185,9 +190,9 @@ void UpgradeService::onUpgradeError(model::UpgradeErrorCode code, const std::str
     fireNotification(&IUpgradeServiceCallback::onUpgradeError, code, msg);
 }
 
-void UpgradeService::onUpdaterLaunched()
+void UpgradeService::onInstallerOpenRequested(const std::string& installerPath)
 {
-    fireNotification(&IUpgradeServiceCallback::onUpdaterLaunched);
+    fireNotification(&IUpgradeServiceCallback::onInstallerOpenRequested, installerPath);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

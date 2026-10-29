@@ -21,7 +21,7 @@ public:
 
     void onUpgradeError(const std::string&) override {}
 
-    void onUpdaterLaunched() override {}
+    void onInstallerOpenRequested(const std::string&) override {}
 };
 
 } // namespace
@@ -46,7 +46,7 @@ TEST_CASE("UpgradeViewModel public API is safe without a framework", "[UpgradeVi
     REQUIRE_NOTHROW(viewModel->initViewModel());
     REQUIRE_NOTHROW(viewModel->checkForUpgrade());
     REQUIRE_NOTHROW(viewModel->downloadUpgrade());
-    REQUIRE_NOTHROW(viewModel->installAndRestart());
+    REQUIRE_NOTHROW(viewModel->openInstaller());
     REQUIRE_NOTHROW(viewModel->cancelDownload());
     REQUIRE_NOTHROW(viewModel->dismissUpgrade());
     REQUIRE_NOTHROW(viewModel->unRegisterCallback(callback));

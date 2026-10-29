@@ -21,11 +21,11 @@ struct UpgradeContext {
     std::function<void(bool userTriggered)>      triggerCheckForUpgrade;
     std::function<void(const std::string& url)>  triggerDownload;
     std::function<void(const std::string& path)> triggerVerify;
-    std::function<void(const std::string& packagePath)> triggerExtract;
-    std::function<void(const std::string& stagingDir)>  triggerInstall;
+    std::function<void(const std::string& installerPath)> triggerOpenInstaller;
+    std::function<bool(const std::string& installerPath)> releaseInstaller;
 
     // ── Reset triggers ──
-    // hardReset:  clear caches AND remove partial downloads / staging dir
+    // hardReset:  clear caches AND remove owned downloads
     // softReset:  clear caches but PRESERVE partial download (so resume is possible)
     std::function<void()>                        triggerHardReset;
     std::function<void()>                        triggerSoftReset;
@@ -33,7 +33,6 @@ struct UpgradeContext {
     // ── Shared data ──
     std::optional<model::UpgradeInfo> availableUpgrade;
     std::string downloadedFilePath;
-    std::string stagingDir;
 };
 
 } // namespace ucf::service::upgrade

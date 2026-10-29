@@ -80,16 +80,30 @@ void UpgradeViewModel::downloadUpgrade()
     }
 }
 
-void UpgradeViewModel::installAndRestart()
+void UpgradeViewModel::openInstaller()
 {
-    UPGRADE_VIEW_MODEL_LOG_DEBUG("installAndRestart");
+    UPGRADE_VIEW_MODEL_LOG_DEBUG("openInstaller");
     if (auto commonHeadFramework = getCommonHeadFramework().lock())
     {
         if (auto serviceLocator = commonHeadFramework->getServiceLocator())
         {
             if (auto service = serviceLocator->getUpgradeService().lock())
             {
-                service->installAndRestart();
+                service->openInstaller();
+            }
+        }
+    }
+}
+
+void UpgradeViewModel::reportInstallerOpenResult(bool success)
+{
+    if (auto commonHeadFramework = getCommonHeadFramework().lock())
+    {
+        if (auto serviceLocator = commonHeadFramework->getServiceLocator())
+        {
+            if (auto service = serviceLocator->getUpgradeService().lock())
+            {
+                service->reportInstallerOpenResult(success);
             }
         }
     }
@@ -137,9 +151,9 @@ void UpgradeViewModel::onUpgradeStateChanged(ucf::service::model::UpgradeState s
         {S::UpgradeAvailable, V::UpgradeAvailable},
         {S::Downloading,      V::Downloading},
         {S::Verifying,        V::Verifying},
-        {S::Extracting,       V::Extracting},
         {S::ReadyToInstall,   V::ReadyToInstall},
-        {S::Installing,       V::Installing},
+        {S::OpeningInstaller, V::OpeningInstaller},
+        {S::InstallerOpened,  V::InstallerOpened},
         {S::Failed,           V::Failed},
     };
     auto viewState = V::Idle;
@@ -171,9 +185,9 @@ void UpgradeViewModel::onUpgradeError(ucf::service::model::UpgradeErrorCode /*er
     fireNotification(&IUpgradeViewModelCallback::onUpgradeError, message);
 }
 
-void UpgradeViewModel::onUpdaterLaunched()
+void UpgradeViewModel::onInstallerOpenRequested(const std::string& installerPath)
 {
-    fireNotification(&IUpgradeViewModelCallback::onUpdaterLaunched);
+    fireNotification(&IUpgradeViewModelCallback::onInstallerOpenRequested, installerPath);
 }
 
 } // namespace commonHead::viewModels

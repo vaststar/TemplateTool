@@ -64,6 +64,10 @@ public:
                        const std::string& expectedSha256,
                        VerifyCompleteCallback callback);
 
+    /// Stops cleanup ownership only after the current installer has passed
+    /// verification and the UI has successfully opened it with the system.
+    [[nodiscard]] bool releaseInstaller(const std::string& filePath);
+
     [[nodiscard]] std::filesystem::path getDownloadDirectory() const;
     [[nodiscard]] bool isDownloading() const;
     [[nodiscard]] bool hasSufficientSpace(int64_t requiredBytes) const;
@@ -161,6 +165,8 @@ private:
     /// Files created by this manager, including failed downloads whose active
     /// session has already been cleared before the FSM asks for a hard reset.
     std::vector<std::filesystem::path> mTrackedFilePaths;
+    /// Cleared whenever the session generation changes or verification restarts.
+    std::filesystem::path mVerifiedInstallerPath;
     /// Includes requests retired from mActiveSession but not yet acknowledged.
     std::unordered_set<std::string> mOutstandingRequestIds;
 

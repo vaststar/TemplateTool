@@ -36,8 +36,11 @@ public:
     /// Start downloading the available upgrade package
     virtual void downloadUpgrade() = 0;
 
-    /// Launch updater process and quit the application
-    virtual void installAndRestart() = 0;
+    /// Ask the presentation layer to open the verified installer.
+    virtual void openInstaller() = 0;
+
+    /// Report desktop acceptance of the open request, not installation success.
+    virtual void reportInstallerOpenResult(bool success) = 0;
 
     /// Cancel an in-progress download
     virtual void cancelDownload() = 0;

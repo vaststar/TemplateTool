@@ -30,8 +30,8 @@ public:
     /// Called when an error occurs
     virtual void onUpgradeError(model::UpgradeErrorCode errorCode, const std::string& message) = 0;
 
-    /// Called when the process launcher reports success for the updater.
-    virtual void onUpdaterLaunched() = 0;
+    /// The presentation layer must open this local file and report the result.
+    virtual void onInstallerOpenRequested(const std::string& installerPath) = 0;
 };
 
 } // namespace ucf::service

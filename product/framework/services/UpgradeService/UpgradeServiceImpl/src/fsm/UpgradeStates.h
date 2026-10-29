@@ -17,9 +17,9 @@ struct Checking;
 struct UpgradeAvailable;
 struct Downloading;
 struct Verifying;
-struct Extracting;
 struct ReadyToInstall;
-struct Installing;
+struct OpeningInstaller;
+struct InstallerOpened;
 struct Failed;
 
 // ═══════════════════════════════════════════════════
@@ -72,15 +72,6 @@ struct Verifying {
     static constexpr std::string_view name() { return "Verifying"; }
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvVerifyOk&)
-        -> fsm::TransitionTo<Extracting>;
-    auto onEvent(UpgradeContext& ctx, const EvError& e)
-        -> fsm::TransitionTo<Failed>;
-};
-
-struct Extracting {
-    static constexpr std::string_view name() { return "Extracting"; }
-    void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvExtractOk& e)
         -> fsm::TransitionTo<ReadyToInstall>;
     auto onEvent(UpgradeContext& ctx, const EvError& e)
         -> fsm::TransitionTo<Failed>;
@@ -89,17 +80,26 @@ struct Extracting {
 struct ReadyToInstall {
     static constexpr std::string_view name() { return "ReadyToInstall"; }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvInstallStart&)
-        -> fsm::TransitionTo<Installing>;
+    auto onEvent(UpgradeContext& ctx, const EvOpenInstaller&)
+        -> fsm::TransitionTo<OpeningInstaller>;
     auto onEvent(UpgradeContext& ctx, const EvDismiss&)
         -> fsm::TransitionTo<Idle>;
 };
 
-struct Installing {
-    static constexpr std::string_view name() { return "Installing"; }
+struct OpeningInstaller {
+    static constexpr std::string_view name() { return "OpeningInstaller"; }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvError& e)
-        -> fsm::TransitionTo<Failed>;
+    auto onEvent(UpgradeContext& ctx, const EvInstallerOpenResult& e)
+        -> fsm::OneOf<fsm::TransitionTo<InstallerOpened>, fsm::TransitionTo<ReadyToInstall>>;
+};
+
+struct InstallerOpened {
+    static constexpr std::string_view name() { return "InstallerOpened"; }
+    void onEnter(UpgradeContext& ctx);
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
+        -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
+        -> fsm::TransitionTo<Checking>;
 };
 
 struct Failed {
@@ -119,7 +119,7 @@ struct Failed {
 using UpgradeFSM = fsm::StateMachine<
     UpgradeContext,
     Idle, Checking, UpgradeAvailable, Downloading,
-    Verifying, Extracting, ReadyToInstall, Installing, Failed
+    Verifying, ReadyToInstall, OpeningInstaller, InstallerOpened, Failed
 >;
 
 } // namespace ucf::service::upgrade

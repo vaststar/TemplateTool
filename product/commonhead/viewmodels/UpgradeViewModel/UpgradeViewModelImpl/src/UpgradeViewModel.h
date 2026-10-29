@@ -25,7 +25,8 @@ public:
     // IUpgradeViewModel
     void checkForUpgrade() override;
     void downloadUpgrade() override;
-    void installAndRestart() override;
+    void openInstaller() override;
+    void reportInstallerOpenResult(bool success) override;
     void cancelDownload() override;
     void dismissUpgrade() override;
 
@@ -34,7 +35,7 @@ public:
     void onUpgradeCheckCompleted(const ucf::service::model::UpgradeCheckResult& result) override;
     void onDownloadProgressChanged(int64_t currentBytes, int64_t totalBytes) override;
     void onUpgradeError(ucf::service::model::UpgradeErrorCode errorCode, const std::string& message) override;
-    void onUpdaterLaunched() override;
+    void onInstallerOpenRequested(const std::string& installerPath) override;
 
 protected:
     void init() override;

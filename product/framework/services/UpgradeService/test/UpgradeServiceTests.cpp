@@ -51,8 +51,8 @@ ucf::service::upgrade::UpgradeContext makeTestContext()
     ctx.triggerCheckForUpgrade = [](bool) {};
     ctx.triggerDownload     = [](const std::string&) {};
     ctx.triggerVerify       = [](const std::string&) {};
-    ctx.triggerExtract      = [](const std::string&) {};
-    ctx.triggerInstall      = [](const std::string&) {};
+    ctx.triggerOpenInstaller = [](const std::string&) {};
+    ctx.releaseInstaller = [](const std::string&) { return true; };
     ctx.triggerHardReset = []() {};
     ctx.triggerSoftReset = []() {};
     return ctx;
@@ -61,9 +61,10 @@ ucf::service::upgrade::UpgradeContext makeTestContext()
 ucf::service::model::UpgradeInfo makeSampleUpgradeInfo()
 {
     ucf::service::model::PackageInfo pkg;
-    pkg.downloadUrl = "https://example.com/upgrade.zip";
+    pkg.downloadUrl = "https://example.com/upgrade.exe";
     pkg.sha256      = "abc123";
     pkg.sizeBytes   = 50'000'000;
+    pkg.format      = ucf::service::model::PackageFormat::Exe;
 
     ucf::service::model::UpgradeInfo info;
     info.version     = "2.0.0";
@@ -85,9 +86,9 @@ TEST_CASE("UpgradeModel enums have expected values", "[UpgradeService][Model]")
     REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::UpgradeAvailable) == 2);
     REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::Downloading) == 3);
     REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::Verifying) == 4);
-    REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::Extracting) == 5);
-    REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::ReadyToInstall) == 6);
-    REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::Installing) == 7);
+    REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::ReadyToInstall) == 5);
+    REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::OpeningInstaller) == 6);
+    REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::InstallerOpened) == 7);
     REQUIRE(static_cast<int>(ucf::service::model::UpgradeState::Failed) == 8);
 }
 
@@ -187,10 +188,10 @@ TEST_CASE("FSM: Downloading -> Verifying on EvDownloadDone", "[UpgradeService][F
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
     fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
-    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.zip"});
+    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.exe"});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Verifying>());
-    REQUIRE(ctx.downloadedFilePath == "/tmp/test.zip");
+    REQUIRE(ctx.downloadedFilePath == "/tmp/test.exe");
 }
 
 TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService][FSM]")
@@ -212,7 +213,7 @@ TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService]
     REQUIRE(softResetCalled);
 }
 
-TEST_CASE("FSM: Verifying -> Extracting -> ReadyToInstall", "[UpgradeService][FSM]")
+TEST_CASE("FSM: Verifying -> ReadyToInstall", "[UpgradeService][FSM]")
 {
     auto ctx = makeTestContext();
     ctx.availableUpgrade = makeSampleUpgradeInfo();
@@ -221,17 +222,13 @@ TEST_CASE("FSM: Verifying -> Extracting -> ReadyToInstall", "[UpgradeService][FS
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
     fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
-    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.zip"});
+    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.exe"});
     fsm.processEvent(ucf::service::upgrade::EvVerifyOk{});
-
-    REQUIRE(fsm.template isIn<ucf::service::upgrade::Extracting>());
-
-    fsm.processEvent(ucf::service::upgrade::EvExtractOk{.stagingDir = "/tmp/staging"});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::ReadyToInstall>());
 }
 
-TEST_CASE("FSM: ReadyToInstall -> Installing on EvInstallStart", "[UpgradeService][FSM]")
+TEST_CASE("FSM: ReadyToInstall -> OpeningInstaller on EvOpenInstaller", "[UpgradeService][FSM]")
 {
     auto ctx = makeTestContext();
     ctx.availableUpgrade = makeSampleUpgradeInfo();
@@ -240,12 +237,11 @@ TEST_CASE("FSM: ReadyToInstall -> Installing on EvInstallStart", "[UpgradeServic
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
     fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
-    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.zip"});
+    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.exe"});
     fsm.processEvent(ucf::service::upgrade::EvVerifyOk{});
-    fsm.processEvent(ucf::service::upgrade::EvExtractOk{.stagingDir = "/tmp/staging"});
-    fsm.processEvent(ucf::service::upgrade::EvInstallStart{});
+    fsm.processEvent(ucf::service::upgrade::EvOpenInstaller{});
 
-    REQUIRE(fsm.template isIn<ucf::service::upgrade::Installing>());
+    REQUIRE(fsm.template isIn<ucf::service::upgrade::OpeningInstaller>());
 }
 
 TEST_CASE("FSM: Failed -> Idle on EvDismiss", "[UpgradeService][FSM]")

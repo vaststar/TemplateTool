@@ -22,7 +22,6 @@ namespace ucf::service {
 
 class UpgradeCheckManager;
 class UpgradeDownloadManager;
-class UpgradeInstallManager;
 
 /// Coordinates the full upgrade lifecycle:
 ///   - Owns the FSM, sub-managers, and persistence layer.
@@ -37,7 +36,7 @@ public:
         virtual void onUpgradeCheckCompleted(const model::UpgradeCheckResult& result) = 0;
         virtual void onDownloadProgressChanged(int64_t currentBytes, int64_t totalBytes) = 0;
         virtual void onUpgradeError(model::UpgradeErrorCode code, const std::string& msg) = 0;
-        virtual void onUpdaterLaunched() = 0;
+        virtual void onInstallerOpenRequested(const std::string& installerPath) = 0;
     };
 
     explicit UpgradeManager(ucf::framework::ICoreFrameworkWPtr coreFramework);
@@ -56,7 +55,8 @@ public:
 
     void checkForUpgrade(bool userTriggered);
     void downloadUpgrade();
-    void installAndRestart();
+    void openInstaller();
+    void reportInstallerOpenResult(bool success);
     void cancelDownload();
     void dismissUpgrade();
 
@@ -74,7 +74,7 @@ private:
     void notifyCheckCompleted(const model::UpgradeCheckResult& result);
     void notifyDownloadProgress(int64_t current, int64_t total);
     void notifyError(model::UpgradeErrorCode code, const std::string& msg);
-    void notifyUpdaterLaunched();
+    void notifyInstallerOpenRequested(const std::string& installerPath);
 
     // Manager reset
     void hardResetManagers();
@@ -84,6 +84,7 @@ private:
     std::string getCurrentVersionString() const;
     std::string getCurrentPlatform() const;
     std::string getCurrentArch() const;
+    model::PackageFormat getCurrentPackageFormat() const;
 
     // Auto-check timer
     void startAutoCheckTimer();
@@ -91,6 +92,7 @@ private:
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;
+    model::PackageFormat mPackageFormat{model::PackageFormat::Unknown};
     Listener* mListener{nullptr};
     std::shared_ptr<AsyncCallbackGate> mCallbackGate{std::make_shared<AsyncCallbackGate>()};
     std::once_flag mShutdownOnce;
@@ -103,7 +105,6 @@ private:
     // Sub-managers (destroyed before mFsm)
     std::unique_ptr<UpgradeCheckManager>    mCheckManager;
     std::unique_ptr<UpgradeDownloadManager> mDownloadManager;
-    std::unique_ptr<UpgradeInstallManager>  mInstallManager;
 
     // Auto-check timer
     std::thread mAutoCheckThread;
