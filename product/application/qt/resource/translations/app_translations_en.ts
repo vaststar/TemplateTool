@@ -37,7 +37,7 @@
 <context>
     <name>AppUpgradeController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="167"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="165"/>
         <source>Could not open the installer folder. Installer path: %1</source>
         <translation type="unfinished"></translation>
     </message>
