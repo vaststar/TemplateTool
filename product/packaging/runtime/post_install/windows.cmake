@@ -95,6 +95,7 @@ foreach(qt_deploy_file IN LISTS QT_DEPLOY_FILE_NAMES)
         --no-translations
         --no-system-d3d-compiler
         --no-opengl-sw
+        # MSVC Release CRT DLLs are installed by InstallApplicationBundle.
         --no-compiler-runtime
         --dir "${DEPLOY_DIR}"
     )

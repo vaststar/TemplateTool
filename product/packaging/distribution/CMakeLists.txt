@@ -22,17 +22,7 @@ endif()
 
 set(CPACK_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/templates")
 
-if(WIN32)
-    BuildCPackModule(
-        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_windows_config.cmake.in"
-        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
-    )
-elseif(APPLE)
-    BuildCPackModule(
-        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_macos_config.cmake.in"
-        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
-    )
-elseif(UNIX)
+if(UNIX AND NOT APPLE)
     set(CPACK_LINUX_PRE_BUILD_SCRIPT
         "${CMAKE_CURRENT_BINARY_DIR}/cpack_linux_pre_build.cmake")
     configure_file(
@@ -40,9 +30,36 @@ elseif(UNIX)
         "${CPACK_LINUX_PRE_BUILD_SCRIPT}"
         @ONLY
     )
+endif()
+
+# Runtime deployment keeps its bin/lib layout; only CPack's private staging
+# tree is flattened and stripped of developer artifacts.
+set(CPACK_RUNTIME_PRE_BUILD_SCRIPT
+    "${CMAKE_CURRENT_BINARY_DIR}/cpack_runtime_pre_build.cmake")
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cpack_runtime_pre_build.cmake.in"
+    "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
+    @ONLY
+)
+
+if(WIN32)
+    set(CPACK_NSIS_POLICY_FILE
+        "${CMAKE_CURRENT_SOURCE_DIR}/nsis_install_policy.nsh")
+    BuildCPackModule(
+        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_windows_config.cmake.in"
+        PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
+        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
+    )
+elseif(APPLE)
+    BuildCPackModule(
+        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_macos_config.cmake.in"
+        PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
+        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
+    )
+elseif(UNIX)
     BuildCPackModule(
         TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_linux_config.cmake.in"
-        PRE_BUILD_SCRIPT "${CPACK_LINUX_PRE_BUILD_SCRIPT}"
+        PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
         OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
     )
 endif()
@@ -58,6 +75,11 @@ generate_app_info_files(
     ORIGINAL_FILENAME ""
     OUTPUT_TARGET_VAR PACKAGE_INFO_TARGET
 )
+
+# Package one runtime tree. Component installers record their file lists before
+# the pre-build script moves files out of bin/.
+set(CPACK_MONOLITHIC_INSTALL ON)
+set(CPACK_APPLICATION_EXECUTABLE_NAME "${TT_APPLICATION_EXECUTABLE_NAME}")
 
 # Must be last — CPack reads all CPACK_* variables at this point
 include(CPack)

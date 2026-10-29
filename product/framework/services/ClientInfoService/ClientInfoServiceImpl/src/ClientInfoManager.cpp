@@ -282,9 +282,11 @@ std::string ClientInfoManager::getInstallDirectory() const
     // macOS: execPath = /path/to/mainEntry.app/Contents/MacOS/mainEntry
     // Install directory is the .app bundle itself
     return execPath.parent_path().parent_path().parent_path().string();
+#elif defined(_WIN32)
+    // Windows packages place the executable directly in the application root.
+    return execPath.parent_path().string();
 #else
-    // Windows & Linux: execPath = /install-root/bin/mainEntry(.exe)
-    // Install directory is parent of bin/
+    // Linux: execPath = /install-root/bin/mainEntry.
     return execPath.parent_path().parent_path().string();
 #endif
 }

@@ -130,6 +130,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             ninja-build \
+            rpm \
             libwebkit2gtk-4.1-dev \
             libgl1-mesa-dev \
             libxkbcommon-dev \
@@ -216,7 +217,7 @@ jobs:
 
           # Collect all package files used for release distribution.
           PACKAGES=$(find "$BUILD_DIR" -maxdepth 1 \
-            \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.dmg" -o -name "*.exe" \) \
+            \( -name "*.zip" -o -name "*.tar.gz" -o -name "*.deb" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.exe" \) \
             ! -name "*.sha256" | sort)
 
           if [[ -z "$PACKAGES" ]]; then
@@ -274,6 +275,8 @@ jobs:
             build/${{ matrix.preset }}/*.tar.gz.sha256
             build/${{ matrix.preset }}/*.deb
             build/${{ matrix.preset }}/*.deb.sha256
+            build/${{ matrix.preset }}/*.rpm
+            build/${{ matrix.preset }}/*.rpm.sha256
             build/${{ matrix.preset }}/*.dmg
             build/${{ matrix.preset }}/*.dmg.sha256
             build/${{ matrix.preset }}/*.exe

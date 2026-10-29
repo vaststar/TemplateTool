@@ -1,0 +1,123 @@
+# Runs after runtime deployment, inside CPack's private staging tree.
+# It does not change the build tree or a normal cmake --install tree.
+set(_platform "@CMAKE_SYSTEM_NAME@")
+if((_platform STREQUAL "Windows" AND CPACK_GENERATOR MATCHES "^(ZIP|NSIS)$")
+   OR (_platform STREQUAL "Darwin" AND CPACK_GENERATOR MATCHES "^(TGZ|DragNDrop)$")
+   OR (_platform STREQUAL "Linux" AND CPACK_GENERATOR MATCHES "^(TGZ|DEB|RPM)$"))
+    # Supported runtime package layouts.
+else()
+    message(FATAL_ERROR
+        "[cpack_runtime] Unsupported platform/generator: "
+        "${_platform}/${CPACK_GENERATOR}")
+endif()
+
+# Require an existing absolute staging directory and an explicit prefix before
+# deleting anything. System packages have one /opt/<product> application root;
+# all other generators stage the application directly at the package root.
+if(NOT IS_ABSOLUTE "${CPACK_TEMPORARY_INSTALL_DIRECTORY}"
+   OR NOT IS_DIRECTORY "${CPACK_TEMPORARY_INSTALL_DIRECTORY}"
+   OR IS_SYMLINK "${CPACK_TEMPORARY_INSTALL_DIRECTORY}")
+    message(FATAL_ERROR "[cpack_runtime] Invalid CPack staging directory")
+endif()
+file(REAL_PATH "${CPACK_TEMPORARY_INSTALL_DIRECTORY}" _staging_dir)
+cmake_path(GET _staging_dir ROOT_PATH _filesystem_root)
+if(_staging_dir STREQUAL _filesystem_root)
+    message(FATAL_ERROR "[cpack_runtime] Refusing to modify a filesystem root")
+endif()
+
+if(CPACK_GENERATOR MATCHES "^(DEB|RPM)$")
+    if(NOT CPACK_PACKAGE_NAME MATCHES "^[a-z0-9][a-z0-9+.-]*$"
+       OR NOT CPACK_PACKAGING_INSTALL_PREFIX STREQUAL "/opt/${CPACK_PACKAGE_NAME}")
+        message(FATAL_ERROR "[cpack_runtime] Invalid system package prefix")
+    endif()
+elseif(NOT CPACK_PACKAGING_INSTALL_PREFIX STREQUAL "/")
+    message(FATAL_ERROR "[cpack_runtime] Runtime package prefix must be /")
+endif()
+
+if(CPACK_PACKAGING_INSTALL_PREFIX STREQUAL "/")
+    set(_app_root "${_staging_dir}")
+else()
+    set(_app_root "${_staging_dir}${CPACK_PACKAGING_INSTALL_PREFIX}")
+    cmake_path(NORMAL_PATH _app_root)
+endif()
+file(REAL_PATH "${_app_root}" _real_app_root)
+cmake_path(IS_PREFIX _staging_dir "${_real_app_root}" NORMALIZE _inside_staging)
+if(NOT IS_DIRECTORY "${_app_root}" OR NOT _inside_staging
+   OR NOT _app_root STREQUAL _real_app_root)
+    message(FATAL_ERROR "[cpack_runtime] Application root escapes CPack staging")
+endif()
+if(NOT IS_DIRECTORY "${_app_root}/bin" OR IS_SYMLINK "${_app_root}/bin")
+    message(FATAL_ERROR "[cpack_runtime] Missing application bin directory")
+endif()
+
+set(_app_name "@TT_APPLICATION_EXECUTABLE_NAME@")
+if(_platform STREQUAL "Darwin")
+    set(_entry "${_app_root}/bin/${_app_name}.app/Contents/MacOS/${_app_name}")
+else()
+    set(_entry "${_app_root}/bin/${_app_name}@CMAKE_EXECUTABLE_SUFFIX@")
+endif()
+if(NOT EXISTS "${_entry}" OR IS_DIRECTORY "${_entry}")
+    message(FATAL_ERROR "[cpack_runtime] Application entry is missing: ${_entry}")
+endif()
+
+# These directories contain the SDK installed by BuildInstallModule and zlib.
+# Runtime payload directories are deliberately not scanned or pruned.
+file(REMOVE_RECURSE "${_app_root}/include" "${_app_root}/cmake")
+
+if(_platform STREQUAL "Windows")
+    # RUNTIME targets, windeployqt output and private tools all live in bin/.
+    # Move complete child trees so Qt plugins and QML retain their structure.
+    file(GLOB _runtime_entries "${_app_root}/bin/*")
+    foreach(_source IN LISTS _runtime_entries)
+        get_filename_component(_name "${_source}" NAME)
+        set(_destination "${_app_root}/${_name}")
+        if(EXISTS "${_destination}" OR IS_SYMLINK "${_destination}")
+            message(FATAL_ERROR
+                "[cpack_runtime] Cannot flatten conflicting entry: ${_name}")
+        endif()
+        file(RENAME "${_source}" "${_destination}")
+    endforeach()
+    file(REMOVE_RECURSE "${_app_root}/bin" "${_app_root}/lib")
+elseif(_platform STREQUAL "Darwin")
+    set(_bundle "${_app_root}/bin/${_app_name}.app")
+    if(IS_SYMLINK "${_bundle}")
+        message(FATAL_ERROR "[cpack_runtime] Application bundle must be a directory")
+    endif()
+    if(EXISTS "${_app_root}/${_app_name}.app"
+       OR IS_SYMLINK "${_app_root}/${_app_name}.app")
+        message(FATAL_ERROR "[cpack_runtime] Application bundle already exists at root")
+    endif()
+    file(RENAME "${_bundle}" "${_app_root}/${_app_name}.app")
+    file(GLOB _remaining_bin "${_app_root}/bin/*")
+    if(_remaining_bin)
+        message(FATAL_ERROR
+            "[cpack_runtime] Runtime files remain outside the macOS bundle: "
+            "${_remaining_bin}")
+    endif()
+    file(REMOVE_RECURSE "${_app_root}/bin" "${_app_root}/lib")
+else()
+    # Preserve shared libraries, their symlinks and every private tool tree.
+    # Only known top-level development artifacts are excluded.
+    if(IS_SYMLINK "${_app_root}/lib")
+        message(FATAL_ERROR "[cpack_runtime] Runtime lib directory must not be a symlink")
+    endif()
+    file(REMOVE_RECURSE
+        "${_app_root}/lib/cmake"
+        "${_app_root}/lib/pkgconfig"
+    )
+    file(GLOB _development_libraries LIST_DIRECTORIES FALSE
+        "${_app_root}/lib/*.a"
+        "${_app_root}/lib/*.la"
+        "${_app_root}/lib/*.lib"
+    )
+    if(_development_libraries)
+        file(REMOVE ${_development_libraries})
+    endif()
+
+    if(CPACK_GENERATOR MATCHES "^(DEB|RPM)$")
+        include("@CPACK_LINUX_PRE_BUILD_SCRIPT@")
+    endif()
+endif()
+
+message(STATUS
+    "[cpack_runtime] Prepared ${_platform}/${CPACK_GENERATOR}: ${_app_root}")

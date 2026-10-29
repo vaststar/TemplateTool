@@ -107,6 +107,24 @@ function(InstallApplicationBundle)
         set(install_description
             "bin/${application_name}.app + post_install/macos.cmake")
     elseif(WIN32)
+        if(MSVC)
+            # Collect Release CRT DLLs without the module's unfiltered install rule.
+            set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+            set(CMAKE_INSTALL_DEBUG_LIBRARIES FALSE)
+            set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY FALSE)
+            include(InstallRequiredSystemLibraries)
+
+            if(NOT CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS)
+                message(FATAL_ERROR
+                    "[InstallApplicationBundle] MSVC redistributable DLLs "
+                    "were not found in the selected Visual Studio toolchain")
+            endif()
+
+            install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+                DESTINATION bin
+                CONFIGURATIONS Release RelWithDebInfo MinSizeRel
+            )
+        endif()
         install(TARGETS "${application_target}"
             EXPORT "${application_target}Targets"
             RUNTIME DESTINATION bin
