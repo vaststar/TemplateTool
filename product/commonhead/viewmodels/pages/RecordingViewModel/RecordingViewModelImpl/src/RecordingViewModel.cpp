@@ -1,6 +1,8 @@
 #include "RecordingViewModel.h"
 #include "LoggerDefine.h"
 
+#include <appVersion.h>
+
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
 #include <commonhead/ServiceLocator/IServiceLocator.h>
 #include <commonhead/viewmodels/ViewModelUtils/TimeDisplayUtils.h>
@@ -566,7 +568,7 @@ std::string RecordingViewModel::getThumbnailCacheRoot() const
     }
 
     return ucf::utilities::FilePathUtils::utf8FromPath(
-        std::filesystem::temp_directory_path() / "TemplateTool" / kThumbnailCacheDir);
+        std::filesystem::temp_directory_path() / AppInfo::TEMP_DIRECTORY_NAME / kThumbnailCacheDir);
 }
 
 std::string RecordingViewModel::buildThumbnailPath(const std::string& inputPath) const

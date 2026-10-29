@@ -34,6 +34,8 @@ if(CMAKE_SCRIPT_MODE_FILE)
     string(JSON COPYRIGHT GET "${json_content}" "COMPANY" "COPYRIGHT")
     string(JSON PRODUCT_NAME GET "${json_content}" "PRODUCT" "NAME")
     string(JSON PRODUCT_IDENTIFIER GET "${json_content}" "PRODUCT" "IDENTIFIER")
+    string(JSON PRODUCT_RUNTIME_ID GET "${json_content}" "PRODUCT" "RUNTIME_ID")
+    string(JSON PRODUCT_EXECUTABLE_NAME GET "${json_content}" "PRODUCT" "EXECUTABLE_NAME")
     string(JSON PRODUCT_DESCRIPTION GET
         "${json_content}" "PRODUCT" "DESCRIPTION")
 

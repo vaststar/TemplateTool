@@ -26,11 +26,6 @@
 #endif
 
 namespace ucf::service{
-#if defined(_DEBUG) || !defined(NDEBUG)
-static constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
-#else
-static constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
-#endif
 static constexpr const char* APP_DATA_FOLDER_NAME = "app_data";
 static constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
 static constexpr const char* APP_CRASH_FOLDER_NAME = "app_crash";
@@ -200,7 +195,7 @@ std::string ClientInfoManager::getDataStoragePath() const
 {
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME,
+        AppInfo::APP_STORAGE_NAME,
         APP_DATA_FOLDER_NAME
     ).string();
 }
@@ -209,7 +204,7 @@ std::string ClientInfoManager::getLogStoragePath() const
 {
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME,
+        AppInfo::APP_STORAGE_NAME,
         APP_LOG_FOLDER_NAME
     ).string();
 }
@@ -218,7 +213,7 @@ std::string ClientInfoManager::getCrashStoragePath() const
 {
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME,
+        AppInfo::APP_STORAGE_NAME,
         APP_CRASH_FOLDER_NAME
     ).string();
 }
@@ -227,7 +222,7 @@ std::string ClientInfoManager::getHangStoragePath() const
 {
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseStorageDir(),
-        APP_INTERNAL_NAME,
+        AppInfo::APP_STORAGE_NAME,
         APP_HANG_FOLDER_NAME
     ).string();
 }
@@ -236,14 +231,14 @@ std::string ClientInfoManager::getCacheStoragePath() const
 {
     return ucf::utilities::FilePathUtils::joinPaths(
         ucf::utilities::SystemUtils::getBaseCacheDir(),
-        APP_INTERNAL_NAME,
+        AppInfo::APP_STORAGE_NAME,
         APP_CACHE_FOLDER_NAME
     ).string();
 }
 
 std::string ClientInfoManager::getTempStoragePath() const
 {
-    return (std::filesystem::temp_directory_path() / APP_INTERNAL_NAME).string();
+    return (std::filesystem::temp_directory_path() / AppInfo::APP_STORAGE_NAME).string();
 }
 
 std::string ClientInfoManager::getExecutablePath() const

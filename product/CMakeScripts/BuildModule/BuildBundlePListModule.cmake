@@ -83,7 +83,7 @@ function(BuildBundlePListModule)
         INPUT_JSON_TARGET "${app_version_target}"
         INPUT_VERSION_TEMPLATE "${app_plist_template}"
         OUTPUT_FILE "${plist_path}"
-        INTERNAL_NAME "${MODULE_MODULE_NAME}"
+        INTERNAL_NAME "$<TARGET_FILE_BASE_NAME:${MODULE_MODULE_NAME}>"
         FILE_DESCRIPTION "${MODULE_FILE_DESCRIPTION}"
         ORIGINAL_FILENAME "$<TARGET_FILE_NAME:${MODULE_MODULE_NAME}>"
         OUTPUT_TARGET_VAR plist_target

@@ -38,6 +38,7 @@ INSERT OR REPLACE, so the directory tree stays stable across runs.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import platform
 import sqlite3
@@ -80,7 +81,10 @@ GROUP_TYPE_CUSTOM          = 4
 
 def default_db_path(release: bool) -> Path:
     system = platform.system()
-    folder = "TemplateToolApp" if release else "TemplateToolAppDebug"
+    product_info_path = Path(__file__).resolve().parents[1] / "product/framework/version/product_info.json"
+    with product_info_path.open(encoding="utf-8") as product_info_file:
+        runtime_id = json.load(product_info_file)["product"]["runtimeId"]
+    folder = f"{runtime_id}App" + ("" if release else "Debug")
 
     if system == "Windows":
         base = os.environ.get("LOCALAPPDATA") or os.environ.get("USERPROFILE")
@@ -354,7 +358,7 @@ def insert_cameras(cur: sqlite3.Cursor) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--release", action="store_true",
-                        help="Target the release DB (TemplateToolApp); default is debug.")
+                        help="Target the release DB; default is debug.")
     parser.add_argument("--db", type=Path, default=None,
                         help="Explicit path to shared_database.db (overrides --release).")
     parser.add_argument("--wipe", action="store_true",

@@ -3,6 +3,8 @@
 #include "../UpgradeConstants.h"
 #include "../UpgradeServiceLogger.h"
 
+#include <appVersion.h>
+
 #include <ucf/CoreFramework/ICoreFramework.h>
 #include <ucf/services/NetworkService/INetworkService.h>
 #include <ucf/services/NetworkService/http/INetworkHttpManager.h>
@@ -64,7 +66,7 @@ void UpgradeDownloadManager::ensureDownloadDirectory()
     }
     if (mDownloadDir.empty()) {
         mDownloadDir = std::filesystem::temp_directory_path()
-                     / upgrade::constants::kTempFallbackAppName
+                     / AppInfo::TEMP_DIRECTORY_NAME
                      / upgrade::constants::kDownloadSubDir;
     }
     ucf::utilities::FilePathUtils::createDirectoriesUtf8(

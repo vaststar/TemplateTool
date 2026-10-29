@@ -37,8 +37,26 @@ if(CMAKE_SCRIPT_MODE_FILE)
     string(JSON COPYRIGHT GET "${json_content}" "company" "copyright")
     string(JSON PRODUCT_NAME GET "${json_content}" "product" "name")
     string(JSON PRODUCT_IDENTIFIER GET "${json_content}" "product" "identifier")
+    string(JSON PRODUCT_RUNTIME_ID GET "${json_content}" "product" "runtimeId")
+    string(JSON PRODUCT_EXECUTABLE_NAME GET "${json_content}" "product" "executableName")
     string(JSON PRODUCT_DESCRIPTION GET
         "${json_content}" "product" "description")
+
+    if(NOT PRODUCT_EXECUTABLE_NAME OR PRODUCT_EXECUTABLE_NAME MATCHES "-NOTFOUND$")
+        message(FATAL_ERROR
+            "[GenerateAppVersionMeta] PRODUCT_EXECUTABLE_NAME must not be a "
+            "CMake false value or end in -NOTFOUND")
+    endif()
+
+    foreach(product_stem PRODUCT_RUNTIME_ID PRODUCT_EXECUTABLE_NAME)
+        string(TOUPPER "${${product_stem}}" product_stem_upper)
+        if(NOT "${${product_stem}}" MATCHES "^[A-Za-z][A-Za-z0-9_-]*$"
+           OR product_stem_upper MATCHES "^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$")
+            message(FATAL_ERROR
+                "[GenerateAppVersionMeta] ${product_stem} must be a portable "
+                "name starting with a letter, without extensions or reserved device names")
+        endif()
+    endforeach()
 
     get_filename_component(output_directory "${OUTPUT_FILE}" DIRECTORY)
     file(MAKE_DIRECTORY "${output_directory}")

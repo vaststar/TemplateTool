@@ -51,8 +51,13 @@ function(BuildLinuxDesktopModule)
             "${app_desktop_template}")
     endif()
 
+    get_target_property(executable_name "${MODULE_MODULE_NAME}" OUTPUT_NAME)
+    if(NOT executable_name OR executable_name MATCHES "-NOTFOUND$")
+        set(executable_name "${MODULE_MODULE_NAME}")
+    endif()
+
     set(desktop_file_path
-        "${CMAKE_CURRENT_BINARY_DIR}/${MODULE_MODULE_NAME}.desktop")
+        "${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.desktop")
 
     message(STATUS
         "[BuildLinuxDesktopModule] ${MODULE_MODULE_NAME} -> ${desktop_file_path}")
@@ -71,9 +76,9 @@ function(BuildLinuxDesktopModule)
         INPUT_JSON_TARGET "${app_version_target}"
         INPUT_VERSION_TEMPLATE "${app_desktop_template}"
         OUTPUT_FILE "${desktop_file_path}"
-        INTERNAL_NAME "${MODULE_MODULE_NAME}"
+        INTERNAL_NAME "${executable_name}"
         FILE_DESCRIPTION "${MODULE_FILE_DESCRIPTION}"
-        ORIGINAL_FILENAME "${MODULE_MODULE_NAME}"
+        ORIGINAL_FILENAME "$<TARGET_FILE_NAME:${MODULE_MODULE_NAME}>"
         OUTPUT_TARGET_VAR desktop_file_target
     )
     add_dependencies("${MODULE_MODULE_NAME}" "${desktop_file_target}")
@@ -88,7 +93,7 @@ function(BuildLinuxDesktopModule)
         if(EXISTS "${MODULE_ICON_FILE}")
             install(FILES "${MODULE_ICON_FILE}"
                 DESTINATION share/icons/hicolor/256x256/apps
-                RENAME "${MODULE_MODULE_NAME}.png"
+                RENAME "${executable_name}.png"
             )
         else()
             message(WARNING

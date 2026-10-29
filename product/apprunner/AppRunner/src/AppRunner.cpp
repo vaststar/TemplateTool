@@ -4,6 +4,8 @@
 #include <utility>
 #include <vector>
 
+#include <appVersion.h>
+
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 #include <ucf/utilities/SystemUtils/SystemUtils.h>
 
@@ -121,15 +123,10 @@ void ApplicationRunner::DataPrivate::initLogger()
 
     if (logConfig.directory.empty())
     {
-#if defined(_DEBUG) || !defined(NDEBUG)
-        constexpr const char* APP_INTERNAL_NAME = "TemplateToolAppDebug";
-#else
-        constexpr const char* APP_INTERNAL_NAME = "TemplateToolApp";
-#endif
         constexpr const char* APP_LOG_FOLDER_NAME = "app_log";
 
         logConfig.directory = ucf::utilities::FilePathUtils::joinPaths(
-            ucf::utilities::SystemUtils::getBaseStorageDir(), APP_INTERNAL_NAME, APP_LOG_FOLDER_NAME);
+            ucf::utilities::SystemUtils::getBaseStorageDir(), AppInfo::APP_STORAGE_NAME, APP_LOG_FOLDER_NAME);
     }
     ucf::utilities::FilePathUtils::EnsureDirectoryExists(logConfig.directory);
 

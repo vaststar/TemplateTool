@@ -13,6 +13,18 @@ inline constexpr auto GIT_COMMIT_BRANCH = "@GIT_COMMIT_BRANCH@";
 namespace AppInfo{
 inline constexpr auto COMPANY_NAME = "@COMPANY_NAME@";
 inline constexpr auto COPYRIGHT = "@COPYRIGHT@";
+inline constexpr auto PRODUCT_IDENTIFIER = "@PRODUCT_IDENTIFIER@";
 inline constexpr auto PRODUCT_NAME = "@PRODUCT_NAME@";
+inline constexpr auto PRODUCT_RUNTIME_ID = "@PRODUCT_RUNTIME_ID@";
+inline constexpr auto PRODUCT_EXECUTABLE_NAME = "@PRODUCT_EXECUTABLE_NAME@";
 inline constexpr auto PRODUCT_DESCRIPTION = "@PRODUCT_DESCRIPTION@";
+
+#if defined(_DEBUG) || !defined(NDEBUG)
+inline constexpr auto APP_STORAGE_NAME = "@PRODUCT_RUNTIME_ID@AppDebug";
+#else
+inline constexpr auto APP_STORAGE_NAME = "@PRODUCT_RUNTIME_ID@App";
+#endif
+inline constexpr auto SINGLE_INSTANCE_NAME = "@PRODUCT_RUNTIME_ID@_SingleInstance";
+inline constexpr auto IPC_SERVER_NAME = "@PRODUCT_RUNTIME_ID@_IPC_Server";
+inline constexpr auto TEMP_DIRECTORY_NAME = PRODUCT_RUNTIME_ID;
 }

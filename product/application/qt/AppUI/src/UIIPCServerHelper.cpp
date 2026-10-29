@@ -1,5 +1,7 @@
 #include "UIIPCServerHelper.h"
 
+#include <appVersion.h>
+
 #include <commonhead/viewmodels/InvocationViewModel/IInvocationViewModel.h>
 #include <commonhead/viewmodels/ViewModelFactory/IViewModelFactory.h>
 #include <UIIPCChannel/UIIPCServer.h>
@@ -24,8 +26,7 @@ void UIIPCServerHelper::start()
     APPUI_LOG_DEBUG(
         "UIIPCServerHelper startup started, address: " << this);
 
-    constexpr auto IPC_SERVER_NAME = "TemplateTool_IPC_Server";
-    mIPCServer = std::make_shared<UIUtilities::UIIPCServer>(IPC_SERVER_NAME);
+    mIPCServer = std::make_shared<UIUtilities::UIIPCServer>(AppInfo::IPC_SERVER_NAME);
     mIPCViewModel = mAppContext->getViewModelFactory()->createInvocationViewModelInstance();
     mInvocationViewModelEmitter = std::make_shared<UIViewModelSignalBridge::InvocationViewModelEmitter>();
     mIPCViewModel->registerCallback(mInvocationViewModelEmitter);

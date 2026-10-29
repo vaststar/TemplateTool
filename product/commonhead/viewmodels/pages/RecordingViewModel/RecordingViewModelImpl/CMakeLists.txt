@@ -17,6 +17,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     RecordingViewModelApi
 )
 set(MODULE_DEPENDENCIES_PRIVATE
+    AppVersionHeader
     CommonHeadFramework
     ServiceLocatorApi
     FeatureSettingsServiceApi

@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <appVersion.h>
 
 #include "Main/Main.h"
 
@@ -19,9 +20,6 @@
 ////////////////////Start DataPrivate Logic//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
-static constexpr auto SINGLE_INSTANCE_NAME = "TemplateTool_SingleInstance";
-static constexpr auto IPC_SERVER_NAME = "TemplateTool_IPC_Server";
-
 class Main::DataPrivate
 {
 public:
@@ -87,14 +85,14 @@ Main::~Main()
 
 int Main::runMain(int argc, char *argv[])
 {
-    if (UIUtilities::UISingleInstanceChecker singleInstanceChecker(SINGLE_INSTANCE_NAME); singleInstanceChecker.tryToRun())
+    if (UIUtilities::UISingleInstanceChecker singleInstanceChecker(AppInfo::SINGLE_INSTANCE_NAME); singleInstanceChecker.tryToRun())
     {
         int result = mDataPrivate->runApp(argc, argv);
         return result;
     }
     else
     {
-        UIUtilities::UIIPCClient client(IPC_SERVER_NAME);
+        UIUtilities::UIIPCClient client(AppInfo::IPC_SERVER_NAME);
         client.send("ActivateWindow");
     }
     return -1;
