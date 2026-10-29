@@ -50,14 +50,12 @@ void AppUpgradeController::init()
     // so the service can finish its OpeningInstaller transition first.
     connect(m_emitter.get(), &Emitter::signals_onInstallerOpenRequested,
             this, &AppUpgradeController::onInstallerOpenRequested, Qt::QueuedConnection);
-#ifdef Q_OS_WIN
-    // Release the running executable only after the service has handed off the file.
+    // Quit after the service has handed off the installer and released cleanup ownership.
     connect(m_emitter.get(), &Emitter::signals_onUpgradeStateChanged,
             this, [this](commonHead::viewModels::model::UpgradeViewState state) {
                 if (state == commonHead::viewModels::model::UpgradeViewState::InstallerOpened)
                     emit quitRequested();
             }, Qt::QueuedConnection);
-#endif
 
     // Create ViewModel
     m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
@@ -300,7 +298,7 @@ void AppUpgradeController::onInstallerOpenRequested(const QString& installerPath
     m_installerPath = installerPath;
     const bool opened = QDesktopServices::openUrl(QUrl::fromLocalFile(installerPath));
     // True means the operating system accepted the request, not that installation
-    // finished. Report it before Windows requests application shutdown.
+    // finished. Report it before requesting application shutdown.
     m_viewModel->reportInstallerOpenResult(opened);
 }
 

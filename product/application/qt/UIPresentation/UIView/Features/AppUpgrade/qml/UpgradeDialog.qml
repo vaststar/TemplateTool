@@ -71,8 +71,8 @@ UTDialog {
                 if (Qt.platform.os === "windows")
                     return qsTr("The installer open request was accepted. This application will close so you can continue installation.")
                 if (Qt.platform.os === "osx")
-                    return qsTr("The disk image was sent to the system. Quit this application, then drag the new app into Applications to replace it.")
-                return qsTr("The package was sent to your system installer. Quit this application before completing installation. If no installer appears, open its folder to install it manually.")
+                    return qsTr("The disk image open request was accepted. This application will close. Drag the new app into Applications to replace it.")
+                return qsTr("The package open request was accepted. This application will close so you can continue installation.")
             }
             fontEnum: UIFontToken.Body_Text
             wrapMode: Text.Wrap
@@ -161,7 +161,7 @@ UTDialog {
 
             UTButton {
                 visible: dialog.controller.readyToInstall
-                text: qsTr("Open Installer")
+                text: qsTr("Open Installer and Quit")
                 onClicked: dialog.controller.openInstaller()
                 focus: visible
             }

@@ -35,6 +35,14 @@
     </message>
 </context>
 <context>
+    <name>AppUpgradeController</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="167"/>
+        <source>Could not open the installer folder. Installer path: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AppearanceSettingsController</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/SettingsPage/src/AppearanceSettingsController.cpp" line="80"/>
@@ -2809,76 +2817,106 @@ Press ESC to cancel</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="27"/>
+        <source>Opening installer...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="29"/>
+        <source>Continue installation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
         <source>Ready to install</source>
         <translation>准备安装</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="29"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
         <source>Verifying package...</source>
         <translation>正在校验安装包...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
         <source>Downloading update...</source>
         <translation>正在下载更新...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="37"/>
         <source>A new version is available!</source>
         <translation>发现新版本！</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="39"/>
         <source>Checking for updates...</source>
         <translation>正在检查更新...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="36"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="40"/>
         <source>Check for Updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="45"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="49"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="83"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="72"/>
+        <source>The installer open request was accepted. This application will close so you can continue installation.</source>
+        <translation>系统已接受打开安装包的请求。本应用将退出，以便继续安装。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="74"/>
+        <source>The disk image open request was accepted. This application will close. Drag the new app into Applications to replace it.</source>
+        <translation>系统已接受打开磁盘映像的请求。本应用将退出，请将新应用拖入 Applications（应用程序）文件夹，替换旧版本。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="75"/>
+        <source>The package open request was accepted. This application will close so you can continue installation.</source>
+        <translation>系统已接受打开软件包的请求。本应用将退出，以便继续安装。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="103"/>
         <source>%1%</source>
         <translation>%1%</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="103"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="123"/>
         <source>You are using the latest version.</source>
         <translation>当前已是最新版本。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="120"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="140"/>
         <source>Background</source>
         <translation>后台</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="126"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="146"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="136"/>
-        <source>Install &amp;&amp; Restart</source>
-        <translation>安装并重启</translation>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="158"/>
+        <source>Show Installer in Folder</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="144"/>
-        <source>Download &amp;&amp; Install</source>
-        <translation>下载并安装</translation>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="164"/>
+        <source>Open Installer and Quit</source>
+        <translation>打开安装包并退出</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="152"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="172"/>
+        <source>Download Installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="181"/>
         <source>Later</source>
         <translation>稍后</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="152"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="181"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>

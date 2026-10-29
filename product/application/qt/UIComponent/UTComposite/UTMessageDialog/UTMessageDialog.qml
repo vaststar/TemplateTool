@@ -98,7 +98,7 @@ UTDialog {
                     visible: controller.messageText.length > 0
                     text: controller.messageText
                     fontEnum: UIFontToken.Title_Text
-                    wrapMode: Text.WordWrap
+                    wrapMode: Text.Wrap
                     Layout.fillWidth: true
                 }
 
@@ -106,7 +106,7 @@ UTDialog {
                     visible: controller.detailText.length > 0
                     text: controller.detailText
                     fontEnum: UIFontToken.Body_Text
-                    wrapMode: Text.WordWrap
+                    wrapMode: Text.Wrap
                     opacity: 0.75
                     Layout.fillWidth: true
                 }
