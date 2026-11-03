@@ -22,6 +22,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     ServiceLocatorApi
     FeatureSettingsServiceApi
     ClientInfoServiceApi
+    PermissionPlatform
     ScreenRecordingAgent
     ScreenRecordingUtils
     ThreadPoolUtils

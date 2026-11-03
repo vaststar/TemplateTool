@@ -36,6 +36,7 @@ public:
     std::string getViewModelName() const override;
 
     // === Recording Control ===
+    bool canStartRecording() override;
     void startRecording(int displayIndex = 0) override;
     void startRegionRecording(int x, int y, int w, int h) override;
     void stopRecording() override;
@@ -51,7 +52,6 @@ public:
     int getDuration() const override;
     bool isFFmpegAvailable() const override;
     std::string getFFmpegPath() const override;
-    bool hasScreenRecordingPermission() const override;
 
 
     // === Settings ===
@@ -60,8 +60,6 @@ public:
 
     // === Audio ===
     std::vector<model::AudioDeviceInfo> getAudioDevices() const override;
-    bool hasMicrophonePermission() const override;
-    void requestMicrophonePermission(std::function<void(bool)> callback) override;
 
 protected:
     void init() override;

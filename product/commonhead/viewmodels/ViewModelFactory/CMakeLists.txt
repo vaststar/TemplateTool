@@ -19,6 +19,7 @@ set(MODULE_DEPENDENCIES_PUBLIC)
 set(MODULE_DEPENDENCIES_PRIVATE
     InvocationViewModelImpl
     ClientInfoViewModelImpl
+    PermissionViewModelImpl
     AppUIViewModelImpl
     UpgradeViewModelImpl
     MainWindowViewModelImpl

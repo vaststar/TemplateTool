@@ -21,6 +21,10 @@
 
 RecordingController::RecordingController(QObject* parent)
     : UIViewController(parent)
+    , m_screenPermission(new UIView::PermissionController(
+        commonHead::viewModels::model::PermissionKind::ScreenCapture, this))
+    , m_microphonePermission(new UIView::PermissionController(
+        commonHead::viewModels::model::PermissionKind::Microphone, this))
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::RecordingViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("RecordingController constructed, address: " << this);
@@ -38,8 +42,21 @@ RecordingController::~RecordingController()
 // init — called after AppContext injection
 // ============================================================================
 
+UIView::PermissionController* RecordingController::screenPermission() const
+{
+    return m_screenPermission;
+}
+
+UIView::PermissionController* RecordingController::microphonePermission() const
+{
+    return m_microphonePermission;
+}
+
 void RecordingController::init()
 {
+    setupController(m_screenPermission);
+    setupController(m_microphonePermission);
+
     // Phase 1: Connect emitter Qt signals → controller slots
     using Emitter = UIViewModelSignalBridge::RecordingViewModelEmitter;
     connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,
@@ -93,7 +110,6 @@ void RecordingController::init()
 
     // Notify QML that settings properties are now loaded.
     emit settingsChanged();
-    emit screenRecordingPermissionChanged();
 
     // Enumerate audio devices (deferred to avoid blocking init)
     QMetaObject::invokeMethod(this, &RecordingController::refreshAudioDevices, Qt::QueuedConnection);
@@ -142,22 +158,6 @@ QString RecordingController::selectedMicDevice() const { return m_selectedMicDev
 QString RecordingController::selectedSystemAudioDevice() const { return m_selectedSystemAudioDevice; }
 QVariantList RecordingController::micDevices() const { return m_micDevices; }
 QVariantList RecordingController::systemAudioDevices() const { return m_systemAudioDevices; }
-bool RecordingController::micPermissionGranted() const
-{
-    if (m_viewModel) {
-        return m_viewModel->hasMicrophonePermission();
-    }
-    return false;
-}
-
-bool RecordingController::screenRecordingPermissionGranted() const
-{
-    if (m_viewModel) {
-        return m_viewModel->hasScreenRecordingPermission();
-    }
-    return false;
-}
-
 // ============================================================================
 // Property Setters — push to ViewModel
 // ============================================================================
@@ -218,12 +218,6 @@ void RecordingController::setEnableMicrophone(bool enable)
             m_viewModel->updateSettings(s);
         }
         emit settingsChanged();
-        // When enabling, request permission if not yet granted
-        if (enable) {
-            requestMicrophonePermission();
-        } else {
-            emit micPermissionChanged();
-        }
     }
 }
 
@@ -271,6 +265,11 @@ void RecordingController::setSelectedSystemAudioDevice(const QString& deviceId)
 // ============================================================================
 // Recording Methods — delegate to ViewModel
 // ============================================================================
+
+bool RecordingController::canStartRecording()
+{
+    return m_viewModel && m_viewModel->canStartRecording();
+}
 
 void RecordingController::startRecording(const QString& mode)
 {
@@ -399,21 +398,6 @@ void RecordingController::refreshAudioDevices()
     // Re-emit settingsChanged so the currentIndex binding re-evaluates
     // with the (still correct) saved device IDs.
     emit settingsChanged();
-    emit micPermissionChanged();
-}
-
-void RecordingController::requestMicrophonePermission()
-{
-    if (!m_viewModel) return;
-
-    m_viewModel->requestMicrophonePermission([this](bool /*granted*/) {
-        // Callback may come from a background thread — emit signal
-        // to update QML on whatever thread receives it.
-        // Qt queued connections handle cross-thread safety.
-        QMetaObject::invokeMethod(this, [this]() {
-            emit micPermissionChanged();
-        }, Qt::QueuedConnection);
-    });
 }
 
 // ============================================================================

@@ -20,6 +20,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     CommonHeadFramework
     ServiceLocatorApi
     FeatureSettingsServiceApi
+    PermissionPlatform
     ScreenCaptureUtils
     ImageProcessUtils
     ViewModelUtils

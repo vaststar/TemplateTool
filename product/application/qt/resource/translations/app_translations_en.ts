@@ -1364,6 +1364,49 @@ Double-click a rule to view details.</translation>
     </message>
 </context>
 <context>
+    <name>PermissionGuide</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="24"/>
+        <source>This permission operation is not supported on this platform.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="26"/>
+        <source>Unable to check permission.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="30"/>
+        <source>Unable to open System Settings. Open Privacy &amp; Security manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="33"/>
+        <source>Access is restricted by system policy.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="41"/>
+        <source>Please wait...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="43"/>
+        <source>Allow Access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="43"/>
+        <source>Open System Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="28"/>
+        <source>Unable to request permission. Open System Settings to review access.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ProxyRulesManager</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="596"/>
@@ -1876,57 +1919,57 @@ Double-click a rule to view details.</translation>
 <context>
     <name>RecordingContent</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="297"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="298"/>
         <source>🎬 Start Recording</source>
         <translation>🎬 Start Recording</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="319"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="321"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="320"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="322"/>
         <source>Select Region</source>
         <translation>Select Region</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="331"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="333"/>
         <source>⚠ FFmpeg not found</source>
         <translation>⚠ FFmpeg not found</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="339"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="341"/>
         <source>📂 Open Folder</source>
         <translation>📂 Open Folder</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="347"/>
-        <source>⚠ Screen recording permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Screen Recording to enable.</source>
-        <translation>⚠ Screen recording permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Screen Recording to enable.</translation>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="349"/>
+        <source>Screen recording access is required to record your screen.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="377"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="375"/>
         <source>No recordings yet</source>
         <translation>No recordings yet</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="378"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="376"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation>Click &apos;Start Recording&apos; to capture your screen</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="379"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="377"/>
         <source>%1 recordings</source>
         <translation>%1 recordings</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="391"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="389"/>
         <source>▶ Open</source>
         <translation>▶ Open</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="397"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="395"/>
         <source>🗑 Delete</source>
         <translation>🗑 Delete</translation>
     </message>
@@ -1934,39 +1977,39 @@ Double-click a rule to view details.</translation>
 <context>
     <name>RecordingController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="114"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="130"/>
         <source>The current settings are active, but could not be saved. They may be lost after restarting.</source>
         <translation>The current settings are active, but could not be saved. They may be lost after restarting.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="428"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="412"/>
         <source>Recordings folder not set</source>
         <translation>Recordings folder not set</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="446"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="464"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="485"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="430"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="448"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="469"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="477"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="461"/>
         <source>Delete Recording</source>
         <translation type="unfinished">Delete Recording</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="478"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="479"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="463"/>
         <source>Delete</source>
         <translation type="unfinished">Delete</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="489"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="473"/>
         <source>Failed to delete file: %1</source>
         <translation type="unfinished">Failed to delete file: %1</translation>
     </message>
@@ -1997,12 +2040,12 @@ Double-click a rule to view details.</translation>
 <context>
     <name>RecordingPanel</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingPanel.qml" line="27"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingPanel.qml" line="51"/>
         <source>🎬 Gallery</source>
         <translation>🎬 Gallery</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingPanel.qml" line="31"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingPanel.qml" line="55"/>
         <source>⚙️ Settings</source>
         <translation>⚙️ Settings</translation>
     </message>
@@ -2055,82 +2098,82 @@ Press ESC to cancel</translation>
 <context>
     <name>RecordingSettingsTab</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="35"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="36"/>
         <source>Output Settings</source>
         <translation>Output Settings</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="46"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="47"/>
         <source>Save to:</source>
         <translation>Save to:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="59"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="60"/>
         <source>Browse...</source>
         <translation>Browse...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="70"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="71"/>
         <source>Video format:</source>
         <translation>Video format:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="175"/>
-        <source>⚠ Microphone permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Microphone.</source>
-        <translation>⚠ Microphone permission required. Go to System Settings &gt; Privacy &amp; Security &gt; Microphone.</translation>
-    </message>
-    <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="188"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="197"/>
         <source>System Audio:</source>
         <translation>System Audio:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="93"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="94"/>
         <source>Recording Settings</source>
         <translation>Recording Settings</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="104"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="105"/>
         <source>Frame rate:</source>
         <translation>Frame rate:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="112"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="113"/>
         <source>15 fps (small size)</source>
         <translation>15 fps (small size)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="113"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="114"/>
         <source>30 fps (standard)</source>
         <translation>30 fps (standard)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="114"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="115"/>
         <source>60 fps (smooth)</source>
         <translation>60 fps (smooth)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="139"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="140"/>
         <source>Microphone:</source>
         <translation>Microphone:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="224"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="184"/>
+        <source>Microphone access is required to include your voice in recordings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="233"/>
         <source>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</source>
         <translation>⚠ No system audio device found. Install a virtual audio device (e.g. BlackHole on macOS, Stereo Mix on Windows).</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="237"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="246"/>
         <source>FFmpeg:</source>
         <translation>FFmpeg:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="245"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="254"/>
         <source>Not found</source>
         <translation>Not found</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="261"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="270"/>
         <source>Select Output Directory</source>
         <translation>Select Output Directory</translation>
     </message>
@@ -2383,7 +2426,7 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="171"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="180"/>
         <source>The current settings are active, but could not be saved. They may be lost after restarting.</source>
         <translation>The current settings are active, but could not be saved. They may be lost after restarting.</translation>
     </message>
@@ -2428,40 +2471,40 @@ Press ESC to cancel</translation>
         <translation>Could not save the screenshot. Please try again.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="531"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
         <source>Screenshots folder not set</source>
         <translation>Screenshots folder not set</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="546"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="571"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="587"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="608"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="551"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="576"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="592"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="613"/>
         <source>File not found: %1</source>
         <translation>File not found: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="562"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="567"/>
         <source>Failed to load image: %1</source>
         <translation>Failed to load image: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="600"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="605"/>
         <source>Delete Screenshot</source>
         <translation type="unfinished">Delete Screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="601"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="606"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="602"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="607"/>
         <source>Delete</source>
         <translation type="unfinished">Delete</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="612"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="617"/>
         <source>Failed to delete file: %1</source>
         <translation>Failed to delete file: %1</translation>
     </message>
@@ -2469,27 +2512,32 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotGallery</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="71"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="72"/>
         <source>📷 Capture Region</source>
         <translation>📷 Capture Region</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="77"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="78"/>
         <source>🖥 Full Screen</source>
         <translation>🖥 Full Screen</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="94"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="88"/>
+        <source>Screen recording access is required to take screenshots.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="101"/>
         <source>No screenshots yet</source>
         <translation>No screenshots yet</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="95"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="102"/>
         <source>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</source>
         <translation>Click &apos;Capture Region&apos; or &apos;Full Screen&apos; to take a screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="96"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="103"/>
         <source>%1 screenshots</source>
         <translation>%1 screenshots</translation>
     </message>
@@ -2563,12 +2611,12 @@ Press ESC to cancel</translation>
 <context>
     <name>ScreenshotPanel</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="27"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="36"/>
         <source>📷 Screenshot</source>
         <translation>📷 Screenshot</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="31"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotPanel.qml" line="40"/>
         <source>⚙️ Settings</source>
         <translation>⚙️ Settings</translation>
     </message>

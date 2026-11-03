@@ -1,4 +1,5 @@
 #include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtils.h>
+#include <ucf/utilities/PermissionPlatform/PermissionPlatform.h>
 
 #include <ucf/utilities/FFmpegUtils/cli/FFmpegCli.h>
 #include <ucf/utilities/FFmpegUtils/cli/FFmpegLocator.h>
@@ -49,33 +50,12 @@ bool IScreenRecorder::hasScreenRecordingPermission()
 #if defined(_WIN32)
     return true;
 #elif defined(__APPLE__)
-    return ScreenRecorder_Mac::hasScreenRecordingPermission();
+    return permissions::query(permissions::Kind::ScreenCapture).status
+        == permissions::Status::Granted;
 #elif defined(__linux__)
     return true;
 #else
     return true;
-#endif
-}
-
-bool IScreenRecorder::hasMicrophonePermission()
-{
-#if defined(_WIN32)
-    return true;
-#elif defined(__APPLE__)
-    return ScreenRecorder_Mac::hasMicrophonePermission();
-#elif defined(__linux__)
-    return true;
-#else
-    return true;
-#endif
-}
-
-void IScreenRecorder::requestMicrophonePermission(std::function<void(bool granted)> callback)
-{
-#if defined(__APPLE__)
-    ScreenRecorder_Mac::requestMicrophonePermission(std::move(callback));
-#else
-    if (callback) callback(true);
 #endif
 }
 

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
 import UTComposite
+import UIView 1.0
 import UIResourceLoader 1.0
 
 /**
@@ -296,9 +297,10 @@ FocusScope {
                 id: startBtn
                 text: qsTr("🎬 Start Recording")
                 focus: true
-                enabled: controller.ffmpegAvailable && !controller.isRecording && controller.screenRecordingPermissionGranted
+                enabled: controller.ffmpegAvailable && !controller.isRecording && !root.controller.screenPermission.busy
 
                 onClicked: {
+                    if (!controller.canStartRecording()) return
                     if (modeCombo.currentValue === "region") {
                         activeRegionSelector = regionSelectorComponent.createObject(null)
                         if (Qt.platform.os === "osx") {
@@ -341,14 +343,10 @@ FocusScope {
             }
         }
 
-        // === Screen Recording Permission Warning ===
-        UTText {
-            visible: !controller.screenRecordingPermissionGranted
-            text: qsTr("⚠ Screen recording permission required. Go to System Settings > Privacy & Security > Screen Recording to enable.")
-            fontEnum: UIFontToken.Caption_Text
-            color: "#FF6B6B"
-            wrapMode: Text.WordWrap
+        PermissionGuide {
             Layout.fillWidth: true
+            controller: root.controller.screenPermission
+            message: qsTr("Screen recording access is required to record your screen.")
         }
 
         // === Error Banner ===

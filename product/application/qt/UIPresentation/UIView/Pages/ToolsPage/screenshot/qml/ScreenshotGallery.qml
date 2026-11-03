@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
 import UTComposite
+import UIView 1.0
 import UIResourceLoader 1.0
 
 /**
@@ -79,6 +80,12 @@ FocusScope {
             }
 
             Item { Layout.fillWidth: true }
+        }
+
+        PermissionGuide {
+            Layout.fillWidth: true
+            controller: root.controller.screenPermission
+            message: qsTr("Screen recording access is required to take screenshots.")
         }
 
         // === Folder View ===

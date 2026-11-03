@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <string>
 #include <vector>
 
@@ -69,6 +68,8 @@ public:
     virtual std::string getViewModelName() const override = 0;
 
     // === Recording Control ===
+    /// Fresh business preflight; never requests permission or starts recording.
+    [[nodiscard]] virtual bool canStartRecording() = 0;
     virtual void startRecording(int displayIndex = 0) = 0;
     virtual void startRegionRecording(int x, int y, int w, int h) = 0;
     virtual void stopRecording() = 0;
@@ -85,18 +86,12 @@ public:
     [[nodiscard]] virtual bool isFFmpegAvailable() const = 0;
     [[nodiscard]] virtual std::string getFFmpegPath() const = 0;
 
-    /// Check if the application has screen recording permission (macOS).
-    /// Always returns true on Windows and Linux.
-    [[nodiscard]] virtual bool hasScreenRecordingPermission() const = 0;
-
     // === Settings ===
     [[nodiscard]] virtual model::RecordingSettings getSettings() const = 0;
     virtual void updateSettings(const model::RecordingSettings& settings) = 0;
 
     // === Audio ===
     [[nodiscard]] virtual std::vector<model::AudioDeviceInfo> getAudioDevices() const = 0;
-    [[nodiscard]] virtual bool hasMicrophonePermission() const = 0;
-    virtual void requestMicrophonePermission(std::function<void(bool)> callback) = 0;
 
 };
 

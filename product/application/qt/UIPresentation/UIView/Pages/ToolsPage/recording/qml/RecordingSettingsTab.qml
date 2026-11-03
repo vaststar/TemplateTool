@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import UTComponent
+import UIView 1.0
 import UIResourceLoader 1.0
 
 /**
@@ -144,7 +145,15 @@ Item {
                         UTCheckBox {
                             id: micCheckBox
                             checked: controller.enableMicrophone
-                            onToggled: controller.enableMicrophone = checked
+                            onToggled: {
+                                root.controller.enableMicrophone = checked
+                                if (checked) {
+                                    const permission = root.controller.microphonePermission
+                                    permission.refresh()
+                                    if (!permission.busy && permission.action === PermissionController.Request)
+                                        permission.performAction()
+                                }
+                            }
                         }
 
                         UTComboBox {
@@ -169,14 +178,14 @@ Item {
                         }
                     }
 
-                    // Microphone permission warning (macOS)
-                    UTText {
-                        visible: controller.enableMicrophone && !controller.micPermissionGranted
-                        text: qsTr("⚠ Microphone permission required. Go to System Settings > Privacy & Security > Microphone.")
-                        fontEnum: UIFontToken.Caption_Text
-                        colorEnum: UIColorToken.Content_Error_Text
-                        wrapMode: Text.WordWrap
+                    PermissionGuide {
                         Layout.fillWidth: true
+                        controller: root.controller.microphonePermission
+                        message: qsTr("Microphone access is required to include your voice in recordings.")
+                        visible: root.controller.enableMicrophone
+                                 && root.controller.microphonePermission.initialized
+                                 && (root.controller.microphonePermission.needsGuidance
+                                     || root.controller.microphonePermission.operationError !== PermissionController.NoError)
                     }
 
                     // System audio enable + device selection

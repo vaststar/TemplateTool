@@ -5,6 +5,7 @@
 #include <QtQml>
 #include <memory>
 #include <UIViewCore/UIViewController.h>
+#include <PermissionGuide/PermissionController.h>
 
 namespace commonHead::viewModels {
     class IRecordingViewModel;
@@ -32,6 +33,9 @@ class RecordingController : public UIViewController
     Q_OBJECT
     QML_ELEMENT
 
+    Q_PROPERTY(UIView::PermissionController* screenPermission READ screenPermission CONSTANT)
+    Q_PROPERTY(UIView::PermissionController* microphonePermission READ microphonePermission CONSTANT)
+
     // Recording properties
     Q_PROPERTY(bool isRecording READ isRecording NOTIFY recordingStateChanged)
     Q_PROPERTY(int recordingDuration READ recordingDuration NOTIFY recordingDurationChanged)
@@ -51,8 +55,6 @@ class RecordingController : public UIViewController
     Q_PROPERTY(QString selectedSystemAudioDevice READ selectedSystemAudioDevice WRITE setSelectedSystemAudioDevice NOTIFY settingsChanged)
     Q_PROPERTY(QVariantList micDevices READ micDevices NOTIFY audioDevicesChanged)
     Q_PROPERTY(QVariantList systemAudioDevices READ systemAudioDevices NOTIFY audioDevicesChanged)
-    Q_PROPERTY(bool micPermissionGranted READ micPermissionGranted NOTIFY micPermissionChanged)
-    Q_PROPERTY(bool screenRecordingPermissionGranted READ screenRecordingPermissionGranted NOTIFY screenRecordingPermissionChanged)
 
     // FFmpeg status (reactive properties for QML binding)
     Q_PROPERTY(bool ffmpegAvailable READ isFFmpegAvailable NOTIFY ffmpegStatusChanged)
@@ -61,6 +63,9 @@ class RecordingController : public UIViewController
 public:
     explicit RecordingController(QObject* parent = nullptr);
     ~RecordingController() override;
+
+    UIView::PermissionController* screenPermission() const;
+    UIView::PermissionController* microphonePermission() const;
 
     // Property getters
     bool isRecording() const;
@@ -79,8 +84,6 @@ public:
     QString selectedSystemAudioDevice() const;
     QVariantList micDevices() const;
     QVariantList systemAudioDevices() const;
-    bool micPermissionGranted() const;
-    bool screenRecordingPermissionGranted() const;
 
     // Property setters
     void setOutputDirectory(const QString& path);
@@ -92,6 +95,7 @@ public:
     void setSelectedSystemAudioDevice(const QString& deviceId);
 
     // === Recording Methods (delegate to ViewModel) ===
+    Q_INVOKABLE bool canStartRecording();
     Q_INVOKABLE void startRecording(const QString& mode = "fullscreen");
     Q_INVOKABLE void startRegionRecording(int x, int y, int width, int height);
     Q_INVOKABLE void stopRecording();
@@ -112,7 +116,6 @@ public:
     Q_INVOKABLE void deleteFile(const QString& filePath);
     Q_INVOKABLE QString getDefaultSavePath();
     Q_INVOKABLE void refreshAudioDevices();
-    Q_INVOKABLE void requestMicrophonePermission();
 
 protected:
     void init() override;
@@ -132,8 +135,6 @@ signals:
     void fileDeleted(const QString& filePath);
     void ffmpegStatusChanged();
     void audioDevicesChanged();
-    void micPermissionChanged();
-    void screenRecordingPermissionChanged();
 
 private:
     // ── ViewModel emitter slots ──
@@ -145,6 +146,10 @@ private:
     void onVMSettingsChanged(const commonHead::viewModels::model::RecordingSettings& settings);
     void onVMSettingsPersistenceChanged(bool persisted);
     void onVMError(const QString& message);
+
+    // Page-scoped permission presentation, owned through QObject parenting.
+    UIView::PermissionController* m_screenPermission;
+    UIView::PermissionController* m_microphonePermission;
 
     // ViewModel
     std::shared_ptr<commonHead::viewModels::IRecordingViewModel> m_viewModel;

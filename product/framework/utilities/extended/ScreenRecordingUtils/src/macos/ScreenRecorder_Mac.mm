@@ -19,9 +19,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include <CoreGraphics/CGDirectDisplay.h>
 #include <CoreAudio/CoreAudio.h>
-#include <AVFoundation/AVFoundation.h>
 
 namespace ucf::utilities::screenrecording {
 
@@ -32,48 +30,6 @@ namespace ucf::utilities::screenrecording {
 static inline int alignToEven(int v)
 {
     return std::max(2, v & ~1);
-}
-
-// ============================================================================
-// Permissions
-// ============================================================================
-
-bool ScreenRecorder_Mac::hasScreenRecordingPermission()
-{
-    if (__builtin_available(macOS 10.15, *))
-        return CGPreflightScreenCaptureAccess();
-    return true;
-}
-
-bool ScreenRecorder_Mac::hasMicrophonePermission()
-{
-    if (@available(macOS 10.14, *))
-        return [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio]
-               == AVAuthorizationStatusAuthorized;
-    return true;
-}
-
-void ScreenRecorder_Mac::requestMicrophonePermission(std::function<void(bool)> callback)
-{
-    if (@available(macOS 10.14, *))
-    {
-        AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
-        if (status == AVAuthorizationStatusAuthorized)
-        {
-            if (callback) callback(true);
-            return;
-        }
-        if (status == AVAuthorizationStatusNotDetermined)
-        {
-            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
-                if (callback) callback(granted);
-            }];
-            return;
-        }
-        if (callback) callback(false);
-        return;
-    }
-    if (callback) callback(true);
 }
 
 // ============================================================================
@@ -165,7 +121,7 @@ bool ScreenRecorder_Mac::start(const RecordingConfig& config)
     if (config.ffmpegPath.empty() || config.outputPath.empty())
         return false;
 
-    if (!hasScreenRecordingPermission())
+    if (!IScreenRecorder::hasScreenRecordingPermission())
     {
         SRU_LOG_ERROR("start: screen recording permission not granted");
         return false;

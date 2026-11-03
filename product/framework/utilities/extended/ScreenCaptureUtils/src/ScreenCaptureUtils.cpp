@@ -1,4 +1,5 @@
 #include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
+#include <ucf/utilities/PermissionPlatform/PermissionPlatform.h>
 
 #if defined(_WIN32)
 #include "ScreenCaptureUtils_Win.h"
@@ -81,7 +82,8 @@ bool ScreenCaptureUtils::hasScreenCapturePermission()
 #if defined(_WIN32)
     return ScreenCaptureUtils_Win::hasScreenCapturePermission();
 #elif defined(__APPLE__)
-    return ScreenCaptureUtils_Mac::hasScreenCapturePermission();
+    return permissions::query(permissions::Kind::ScreenCapture).status
+        == permissions::Status::Granted;
 #elif defined(__linux__)
     return ScreenCaptureUtils_Linux::hasScreenCapturePermission();
 #else
@@ -89,15 +91,5 @@ bool ScreenCaptureUtils::hasScreenCapturePermission()
 #endif
 }
 
-void ScreenCaptureUtils::requestScreenCapturePermission()
-{
-#if defined(_WIN32)
-    ScreenCaptureUtils_Win::requestScreenCapturePermission();
-#elif defined(__APPLE__)
-    ScreenCaptureUtils_Mac::requestScreenCapturePermission();
-#elif defined(__linux__)
-    ScreenCaptureUtils_Linux::requestScreenCapturePermission();
-#endif
-}
 
 } // namespace ucf::utilities::screencapture

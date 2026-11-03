@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
@@ -11,6 +12,29 @@ FocusScope {
     id: root
 
     property RecordingController controller: RecordingController {}
+
+    Binding {
+        target: root.controller.screenPermission
+        property: "active"
+        value: root.visible
+               && root.Window.window !== null
+               && root.Window.window.active
+    }
+
+    Binding {
+        target: root.controller.microphonePermission
+        property: "active"
+        value: root.visible && root.controller.enableMicrophone
+               && root.Window.window !== null
+               && root.Window.window.active
+    }
+
+    Connections {
+        target: root.controller.microphonePermission
+        function onGrantedChanged() {
+            if (root.controller.initialized) root.controller.refreshAudioDevices()
+        }
+    }
 
     UTTabBar {
         id: tabBar

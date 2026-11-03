@@ -1,0 +1,2 @@
+add_subdirectory(PermissionViewModelApi)
+add_subdirectory(PermissionViewModelImpl)

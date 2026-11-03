@@ -180,11 +180,6 @@ bool ScreenCaptureUtils_Linux::hasScreenCapturePermission()
     return portalHasStoredToken();
 }
 
-void ScreenCaptureUtils_Linux::requestScreenCapturePermission()
-{
-    // No-op — the xdg-desktop-portal ScreenCast dialog is shown automatically
-    // on the first capture, and the restore token silences later prompts.
-}
 
 } // namespace ucf::utilities::screencapture
 

@@ -9,9 +9,12 @@ namespace commonHead{
     using ICommonHeadFrameworkWPtr = std::weak_ptr<ICommonHeadFramework>;
 }
 
+namespace commonHead::viewModels::model { enum class PermissionKind; }
+
 namespace commonHead::viewModels{
     class IAppUIViewModel;
     class IClientInfoViewModel;
+    class IPermissionViewModel;
     class IContactListViewModel;
     class IMainWindowViewModel;
     class IMediaCameraViewModel;
@@ -47,6 +50,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IInvocationViewModel> createInvocationViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IPermissionViewModel> createPermissionViewModelInstance(model::PermissionKind kind) const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const = 0;

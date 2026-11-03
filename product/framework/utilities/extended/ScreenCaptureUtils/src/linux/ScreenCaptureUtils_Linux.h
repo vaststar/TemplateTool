@@ -15,7 +15,6 @@ public:
     static CaptureImage captureAllDisplays();
 
     static bool hasScreenCapturePermission();
-    static void requestScreenCapturePermission();
 };
 
 } // namespace ucf::utilities::screencapture

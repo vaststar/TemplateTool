@@ -88,6 +88,8 @@ static void parseColor(const QString& colorStr, uint8_t& r, uint8_t& g, uint8_t&
 
 ScreenshotController::ScreenshotController(QObject* parent)
     : UIViewController(parent)
+    , m_screenPermission(new UIView::PermissionController(
+        commonHead::viewModels::model::PermissionKind::ScreenCapture, this))
     , m_viewModelEmitter(std::make_shared<UIViewModelSignalBridge::ScreenshotViewModelEmitter>())
 {
     UIVIEW_LOG_DEBUG("ScreenshotController constructed, address: " << this);
@@ -102,8 +104,15 @@ ScreenshotController::~ScreenshotController()
 // init — called after AppContext injection
 // ============================================================================
 
+UIView::PermissionController* ScreenshotController::screenPermission() const
+{
+    return m_screenPermission;
+}
+
 void ScreenshotController::init()
 {
+    setupController(m_screenPermission);
+
     // Phase 1: Connect emitter Qt signals → controller slots
     using Emitter = UIViewModelSignalBridge::ScreenshotViewModelEmitter;
     connect(m_viewModelEmitter.get(), &Emitter::signals_onStateChanged,
@@ -258,7 +267,7 @@ void ScreenshotController::setIncludeTimestamp(bool include)
 
 void ScreenshotController::captureFullScreen()
 {
-    if (!m_viewModel) return;
+    if (!m_viewModel || !m_viewModel->canCaptureScreen()) return;
     UIVIEW_LOG_DEBUG("captureFullScreen -> delaySeconds=" << m_delaySeconds);
 
     // Hide the main window via EventBus so it doesn't appear in the screenshot
@@ -268,7 +277,10 @@ void ScreenshotController::captureFullScreen()
     int totalDelayMs = m_delaySeconds * 1000 + 150;
 
     QTimer::singleShot(totalDelayMs, this, [this]() {
-        if (!m_viewModel) return;
+        if (!m_viewModel || !m_viewModel->canCaptureScreen()) {
+            sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
+            return;
+        }
 
         m_viewModel->captureFullScreen();
         m_viewModel->saveScreenshot();
@@ -394,6 +406,13 @@ void ScreenshotController::grabScreenForOverlay()
         return;
     }
 
+    if (!m_viewModel->canCaptureScreen()) return;
+
+    // A failed new capture must not reuse a previous overlay image.
+    m_screenshotBase64.clear();
+    m_screenshotWidth = 0;
+    m_screenshotHeight = 0;
+
     UIVIEW_LOG_DEBUG("grabScreenForOverlay -> hide window, then capture");
 
     // Hide the main window so it won't appear in the screenshot.
@@ -403,7 +422,7 @@ void ScreenshotController::grabScreenForOverlay()
     // QTimer::singleShot returns to the event loop so the Hide event is
     // delivered naturally — no processEvents() / msleep() needed.
     QTimer::singleShot(150, this, [this]() {
-        if (!m_viewModel) {
+        if (!m_viewModel || !m_viewModel->canCaptureScreen()) {
             sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
             return;
         }
@@ -494,20 +513,6 @@ QVariantMap ScreenshotController::saveRegionScreenshot(int x, int y, int w, int 
     const auto result = m_viewModel->selectRegionAndSave(
         x, y, w, h, scaleFactor, exportAnnotations);
     return screenshotSaveResultToVariantMap(result);
-}
-
-// ============================================================================
-// Permission
-// ============================================================================
-
-bool ScreenshotController::hasPermission()
-{
-    return m_viewModel ? m_viewModel->hasPermission() : false;
-}
-
-void ScreenshotController::requestPermission()
-{
-    if (m_viewModel) m_viewModel->requestPermission();
 }
 
 // ============================================================================

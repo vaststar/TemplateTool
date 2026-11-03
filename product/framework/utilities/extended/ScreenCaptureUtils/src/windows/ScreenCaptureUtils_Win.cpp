@@ -193,10 +193,6 @@ bool ScreenCaptureUtils_Win::hasScreenCapturePermission()
     return true;
 }
 
-void ScreenCaptureUtils_Win::requestScreenCapturePermission()
-{
-    // No-op on Windows
-}
 
 } // namespace ucf::utilities::screencapture
 

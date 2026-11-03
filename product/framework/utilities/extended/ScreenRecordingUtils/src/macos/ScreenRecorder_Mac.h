@@ -32,9 +32,6 @@ public:
     [[nodiscard]] std::string outputPath() const override;
 
     // ── Static utilities (called from ScreenRecordingUtils) ──
-    static bool hasScreenRecordingPermission();
-    static bool hasMicrophonePermission();
-    static void requestMicrophonePermission(std::function<void(bool)> callback);
     static std::vector<AudioDeviceInfo> enumerateAudioDevices();
 
 private:

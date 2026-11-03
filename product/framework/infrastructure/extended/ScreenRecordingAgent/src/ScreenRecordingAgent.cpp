@@ -492,16 +492,6 @@ std::vector<AudioDeviceInfo> ScreenRecordingAgent::getAudioDevices() const
     return ucf::utilities::screenrecording::IScreenRecorder::enumerateAudioDevices();
 }
 
-bool ScreenRecordingAgent::hasMicrophonePermission() const
-{
-    return ucf::utilities::screenrecording::IScreenRecorder::hasMicrophonePermission();
-}
-
-void ScreenRecordingAgent::requestMicrophonePermission(std::function<void(bool)> callback)
-{
-    ucf::utilities::screenrecording::IScreenRecorder::requestMicrophonePermission(std::move(callback));
-}
-
 // ============================================================================
 // Duration Timer
 // ============================================================================

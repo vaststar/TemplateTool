@@ -62,7 +62,6 @@ public:
 
     // === Permission (macOS screen recording permission) ===
     static bool hasScreenCapturePermission();
-    static void requestScreenCapturePermission();
 };
 
 } // namespace ucf::utilities::screencapture

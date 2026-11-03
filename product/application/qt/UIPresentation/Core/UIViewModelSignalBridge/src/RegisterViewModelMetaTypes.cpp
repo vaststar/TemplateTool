@@ -10,6 +10,7 @@
 #include <UIViewModelSignalBridge/metatypes/ContactListMetaTypes.h>
 #include <UIViewModelSignalBridge/metatypes/MediaCameraMetaTypes.h>
 #include <UIViewModelSignalBridge/metatypes/RecordingMetaTypes.h>
+#include <UIViewModelSignalBridge/metatypes/PermissionMetaTypes.h>
 #include <UIViewModelSignalBridge/metatypes/ScreenshotMetaTypes.h>
 #include <UIViewModelSignalBridge/metatypes/SettingsMetaTypes.h>
 #include <UIViewModelSignalBridge/metatypes/SideBarMetaTypes.h>
@@ -52,6 +53,8 @@ void registerAllViewModelMetaTypes()
         qRegisterMetaType<std::vector<commonHead::viewModels::model::ContactRelationData>>();
         qRegisterMetaType<commonHead::viewModels::model::ContactDirectoryLoadError>();
         qRegisterMetaType<commonHead::viewModels::model::ContactSaveFailure>();
+
+        qRegisterMetaType<commonHead::viewModels::model::PermissionState>();
 
         qRegisterMetaType<commonHead::viewModels::model::RecordingSettings>();
         qRegisterMetaType<commonHead::viewModels::model::ScreenshotSettings>();

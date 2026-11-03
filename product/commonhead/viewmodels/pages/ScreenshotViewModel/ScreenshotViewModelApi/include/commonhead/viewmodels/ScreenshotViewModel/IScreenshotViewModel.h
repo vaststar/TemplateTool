@@ -62,9 +62,8 @@ public:
 
     virtual std::string getViewModelName() const override = 0;
 
-    // === Permission ===
-    [[nodiscard]] virtual bool hasPermission() const = 0;
-    virtual void requestPermission() = 0;
+    /// Fresh business preflight; does not request permission or capture a frame.
+    [[nodiscard]] virtual bool canCaptureScreen() = 0;
 
     // === Capture ===
     virtual void captureFullScreen() = 0;

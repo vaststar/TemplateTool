@@ -5,6 +5,7 @@
 #include <QtQml>
 #include <memory>
 #include <UIViewCore/UIViewController.h>
+#include <PermissionGuide/PermissionController.h>
 
 namespace commonHead::viewModels {
     class IScreenshotViewModel;
@@ -32,6 +33,8 @@ class ScreenshotController : public UIViewController
     Q_OBJECT
     QML_ELEMENT
 
+    Q_PROPERTY(UIView::PermissionController* screenPermission READ screenPermission CONSTANT)
+
     // Screenshot properties
     Q_PROPERTY(bool hasScreenshot READ hasScreenshot NOTIFY screenshotChanged)
     Q_PROPERTY(QString screenshotBase64 READ screenshotBase64 NOTIFY screenshotChanged)
@@ -50,6 +53,8 @@ class ScreenshotController : public UIViewController
 public:
     explicit ScreenshotController(QObject* parent = nullptr);
     ~ScreenshotController() override;
+
+    UIView::PermissionController* screenPermission() const;
 
     // Property getters
     bool hasScreenshot() const;
@@ -107,10 +112,6 @@ public:
     Q_INVOKABLE void revealInFinder(const QString& filePath);
     Q_INVOKABLE void deleteFile(const QString& filePath);
 
-    // === Permission ===
-    Q_INVOKABLE bool hasPermission();
-    Q_INVOKABLE void requestPermission();
-
 protected:
     void init() override;
     void onLanguageChanged() override;
@@ -137,6 +138,9 @@ private:
     void onVMSettingsChanged(const commonHead::viewModels::model::ScreenshotSettings& settings);
     void onVMSettingsPersistenceChanged(bool persisted);
     void onVMError(const QString& message);
+
+    // Page-scoped permission presentation, owned through QObject parenting.
+    UIView::PermissionController* m_screenPermission;
 
     // ViewModel
     std::shared_ptr<commonHead::viewModels::IScreenshotViewModel> m_viewModel;

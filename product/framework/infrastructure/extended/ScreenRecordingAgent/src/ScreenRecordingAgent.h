@@ -6,7 +6,6 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <mutex>
@@ -40,8 +39,6 @@ public:
     [[nodiscard]] bool isPaused() const override;
     [[nodiscard]] int duration() const override;
     [[nodiscard]] std::vector<AudioDeviceInfo> getAudioDevices() const override;
-    [[nodiscard]] bool hasMicrophonePermission() const override;
-    void requestMicrophonePermission(std::function<void(bool)> callback) override;
 
 private:
     /// Internal state machine.

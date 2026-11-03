@@ -257,7 +257,7 @@ DisplayInfo ScreenCaptureUtils_Mac::getPrimaryDisplay()
 CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
 {
     @autoreleasepool {
-        if (!CGPreflightScreenCaptureAccess())
+        if (!ScreenCaptureUtils::hasScreenCapturePermission())
         {
             NSLog(@"[ScreenCaptureUtils] Screen capture permission not granted");
             return {};
@@ -329,7 +329,7 @@ CaptureImage ScreenCaptureUtils_Mac::captureDisplay(int displayIndex)
 CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
 {
     @autoreleasepool {
-        if (!CGPreflightScreenCaptureAccess())
+        if (!ScreenCaptureUtils::hasScreenCapturePermission())
         {
             NSLog(@"[ScreenCaptureUtils] Screen capture permission not granted");
             return {};
@@ -461,20 +461,6 @@ CaptureImage ScreenCaptureUtils_Mac::captureAllDisplays()
         result.pixels = std::move(compositePixels);
         return result;
     }
-}
-
-// ============================================================================
-// Permission
-// ============================================================================
-
-bool ScreenCaptureUtils_Mac::hasScreenCapturePermission()
-{
-    return CGPreflightScreenCaptureAccess();
-}
-
-void ScreenCaptureUtils_Mac::requestScreenCapturePermission()
-{
-    CGRequestScreenCaptureAccess();
 }
 
 } // namespace ucf::utilities::screencapture

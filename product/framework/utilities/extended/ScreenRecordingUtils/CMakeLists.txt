@@ -35,6 +35,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
+    PermissionPlatform
     LoggerUtils
     ProcessBridgeUtils
     FFmpegCliUtils
@@ -47,14 +48,10 @@ if (WIN32)
         strmiids
     )
 elseif (APPLE)
-    find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
     find_library(COREAUDIO_FRAMEWORK CoreAudio)
-    find_library(AVFOUNDATION_FRAMEWORK AVFoundation)
     find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
     list(APPEND MODULE_DEPENDENCIES_PRIVATE
-        ${COREGRAPHICS_FRAMEWORK}
         ${COREAUDIO_FRAMEWORK}
-        ${AVFOUNDATION_FRAMEWORK}
         ${COREFOUNDATION_FRAMEWORK}
     )
 endif()

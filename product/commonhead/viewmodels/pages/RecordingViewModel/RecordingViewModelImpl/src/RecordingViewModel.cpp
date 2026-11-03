@@ -9,6 +9,7 @@
 #include <commonhead/viewmodels/RecordingViewModel/RecordingViewModelCreator.h>
 #include <ucf/services/FeatureSettingsService/IFeatureSettingsService.h>
 #include <ucf/services/ClientInfoService/IClientInfoService.h>
+#include <ucf/utilities/PermissionPlatform/PermissionPlatform.h>
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <chrono>
@@ -18,6 +19,24 @@
 #include <sstream>
 
 namespace commonHead::viewModels {
+namespace {
+
+bool permissionAvailableForRecording(ucf::utilities::permissions::Kind kind)
+{
+    const auto status = ucf::utilities::permissions::query(kind).status;
+    if (status == ucf::utilities::permissions::Status::Granted)
+    {
+        return true;
+    }
+#if !defined(__APPLE__)
+    // Let the existing platform recording path resolve permissions it manages itself.
+    return status == ucf::utilities::permissions::Status::Unsupported;
+#else
+    return false;
+#endif
+}
+
+} // namespace
 
 // ============================================================================
 // Factory
@@ -116,9 +135,26 @@ std::string RecordingViewModel::getFFmpegPath() const
     return m_ffmpegPath;
 }
 
-bool RecordingViewModel::hasScreenRecordingPermission() const
+bool RecordingViewModel::canStartRecording()
 {
-    return ucf::utilities::screenrecording::IScreenRecorder::hasScreenRecordingPermission();
+    bool ffmpegAvailable;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        ffmpegAvailable = !m_ffmpegPath.empty();
+    }
+    if (!ffmpegAvailable)
+    {
+        fireNotification(&IRecordingViewModelCallback::onError,
+                         std::string("FFmpeg not found. Please install FFmpeg to use recording features."));
+        return false;
+    }
+    if (!permissionAvailableForRecording(ucf::utilities::permissions::Kind::ScreenCapture))
+    {
+        fireNotification(&IRecordingViewModelCallback::onError,
+                         std::string("Screen recording permission is required."));
+        return false;
+    }
+    return true;
 }
 
 // ============================================================================
@@ -127,21 +163,22 @@ bool RecordingViewModel::hasScreenRecordingPermission() const
 
 void RecordingViewModel::startRecording(int displayIndex)
 {
+    if (!canStartRecording())
+    {
+        return;
+    }
+    const bool microphoneAvailable = permissionAvailableForRecording(
+        ucf::utilities::permissions::Kind::Microphone);
     ucf::agents::RecordingAgentConfig config;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        if (m_ffmpegPath.empty()) {
-            fireNotification(&IRecordingViewModelCallback::onError,
-                             std::string("FFmpeg not found. Please install FFmpeg to use recording features."));
-            return;
-        }
         config.ffmpegPath = m_ffmpegPath;
         config.outputPath = generateOutputPath();
         config.videoFormat = m_settings.videoFormat;
         config.fps = m_settings.framesPerSecond;
         config.displayIndex = displayIndex;
         config.isRegion = false;
-        bool micEffective = m_settings.enableMicrophone && m_agent->hasMicrophonePermission();
+        bool micEffective = m_settings.enableMicrophone && microphoneAvailable;
         config.audioMode = deriveAudioMode(micEffective, m_settings.enableSystemAudio);
         config.micDevice = m_settings.micDeviceId;
         config.systemAudioDevice = m_settings.systemAudioDeviceId;
@@ -152,14 +189,15 @@ void RecordingViewModel::startRecording(int displayIndex)
 
 void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
 {
+    if (!canStartRecording())
+    {
+        return;
+    }
+    const bool microphoneAvailable = permissionAvailableForRecording(
+        ucf::utilities::permissions::Kind::Microphone);
     ucf::agents::RecordingAgentConfig config;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        if (m_ffmpegPath.empty()) {
-            fireNotification(&IRecordingViewModelCallback::onError,
-                             std::string("FFmpeg not found."));
-            return;
-        }
         config.ffmpegPath = m_ffmpegPath;
         config.outputPath = generateOutputPath();
         config.videoFormat = m_settings.videoFormat;
@@ -169,7 +207,7 @@ void RecordingViewModel::startRegionRecording(int x, int y, int w, int h)
         config.regionY = y;
         config.regionW = w;
         config.regionH = h;
-        bool micEffective = m_settings.enableMicrophone && m_agent->hasMicrophonePermission();
+        bool micEffective = m_settings.enableMicrophone && microphoneAvailable;
         config.audioMode = deriveAudioMode(micEffective, m_settings.enableSystemAudio);
         config.micDevice = m_settings.micDeviceId;
         config.systemAudioDevice = m_settings.systemAudioDeviceId;
@@ -533,16 +571,6 @@ std::vector<model::AudioDeviceInfo> RecordingViewModel::getAudioDevices() const
         result.push_back(std::move(info));
     }
     return result;
-}
-
-bool RecordingViewModel::hasMicrophonePermission() const
-{
-    return m_agent->hasMicrophonePermission();
-}
-
-void RecordingViewModel::requestMicrophonePermission(std::function<void(bool)> callback)
-{
-    m_agent->requestMicrophonePermission(std::move(callback));
 }
 
 std::string RecordingViewModel::getThumbnailCacheRoot() const

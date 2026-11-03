@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <functional>
 #include <memory>
 
 #include <ucf/utilities/ScreenRecordingUtils/ScreenRecordingUtilsExport.h>
@@ -134,14 +133,6 @@ public:
     /// Check if the application has screen recording permission (macOS 10.15+).
     /// On Windows and Linux, always returns true.
     static bool hasScreenRecordingPermission();
-
-    /// Check if the application has microphone permission (macOS 10.14+).
-    /// On Windows and Linux, always returns true.
-    static bool hasMicrophonePermission();
-
-    /// Request microphone permission (macOS 10.14+).
-    /// No-op on Windows and Linux (callback receives true immediately).
-    static void requestMicrophonePermission(std::function<void(bool granted)> callback);
 
     /// Enumerate available audio devices (microphones, loopback sources, output devices).
     static std::vector<AudioDeviceInfo> enumerateAudioDevices();

@@ -23,6 +23,7 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IInvocationViewModel> createInvocationViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IAppUIViewModel> createAppUIViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IClientInfoViewModel> createClientInfoViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::IPermissionViewModel> createPermissionViewModelInstance(model::PermissionKind kind) const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IContactListViewModel> createContactListViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMainWindowViewModel> createMainWindowViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IMediaCameraViewModel> createMediaCameraViewModelInstance() const override;

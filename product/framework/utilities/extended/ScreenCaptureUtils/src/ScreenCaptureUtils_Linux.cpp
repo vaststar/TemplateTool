@@ -373,10 +373,6 @@ bool ScreenCaptureUtils_Linux::hasScreenCapturePermission()
     return true; // Wayland portal handles permissions via user interaction
 }
 
-void ScreenCaptureUtils_Linux::requestScreenCapturePermission()
-{
-    // No-op — Wayland portal prompts the user automatically
-}
 
 } // namespace ucf::utilities::screencapture
 

@@ -19,6 +19,7 @@ set(MODULE_HEADER_FILES
     include/UIViewModelSignalBridge/metatypes/ContactListMetaTypes.h
     include/UIViewModelSignalBridge/metatypes/MediaCameraMetaTypes.h
     include/UIViewModelSignalBridge/metatypes/RecordingMetaTypes.h
+    include/UIViewModelSignalBridge/metatypes/PermissionMetaTypes.h
     include/UIViewModelSignalBridge/metatypes/ScreenshotMetaTypes.h
     include/UIViewModelSignalBridge/metatypes/SettingsMetaTypes.h
     include/UIViewModelSignalBridge/metatypes/SideBarMetaTypes.h
@@ -34,6 +35,7 @@ set(MODULE_HEADER_FILES
     include/UIViewModelSignalBridge/emitters/MiniAppRuntimeViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/NetworkProxyViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/RecordingViewModelEmitter.h
+    include/UIViewModelSignalBridge/emitters/PermissionViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/ScreenshotViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/SettingsViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/SideBarViewModelEmitter.h
@@ -57,6 +59,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     MiniAppRuntimeViewModelApi
     NetworkProxyViewModelApi
     RecordingViewModelApi
+    PermissionViewModelApi
     ScreenshotViewModelApi
     SettingsViewModelApi
     SideBarViewModelApi

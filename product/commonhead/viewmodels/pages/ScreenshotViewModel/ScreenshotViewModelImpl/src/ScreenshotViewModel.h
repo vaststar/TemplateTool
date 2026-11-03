@@ -20,9 +20,7 @@ public:
 
     std::string getViewModelName() const override;
 
-    // === Permission ===
-    bool hasPermission() const override;
-    void requestPermission() override;
+    bool canCaptureScreen() override;
 
     // === Capture ===
     void captureFullScreen() override;

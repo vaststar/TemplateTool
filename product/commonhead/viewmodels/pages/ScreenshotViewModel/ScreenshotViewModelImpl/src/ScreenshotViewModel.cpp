@@ -2,6 +2,7 @@
 #include "LoggerDefine.h"
 
 #include <ucf/utilities/ScreenCaptureUtils/ScreenCaptureUtils.h>
+#include <ucf/utilities/PermissionPlatform/PermissionPlatform.h>
 #include <ucf/utilities/ImageProcessUtils/ImageProcessUtils.h>
 
 #include <commonhead/CommonHeadFramework/ICommonHeadFramework.h>
@@ -137,14 +138,20 @@ void ScreenshotViewModel::setState(model::ScreenshotState newState)
 // Permission
 // ============================================================================
 
-bool ScreenshotViewModel::hasPermission() const
+bool ScreenshotViewModel::canCaptureScreen()
 {
-    return ucf::utilities::screencapture::ScreenCaptureUtils::hasScreenCapturePermission();
-}
-
-void ScreenshotViewModel::requestPermission()
-{
-    ucf::utilities::screencapture::ScreenCaptureUtils::requestScreenCapturePermission();
+    const auto status = ucf::utilities::permissions::query(
+        ucf::utilities::permissions::Kind::ScreenCapture).status;
+    if (status == ucf::utilities::permissions::Status::Granted)
+    {
+        return true;
+    }
+#if !defined(__APPLE__)
+    // Other platforms keep their own capture/portal flow; unsupported is not a grant.
+    return status == ucf::utilities::permissions::Status::Unsupported;
+#else
+    return false;
+#endif
 }
 
 // ============================================================================
@@ -205,6 +212,14 @@ void ScreenshotViewModel::onCaptureCompleted(ucf::utilities::imageprocess::Image
 
 void ScreenshotViewModel::captureFullScreen()
 {
+    if (!canCaptureScreen())
+    {
+        // An earlier capture must not be saved or shown as this failed capture.
+        discardCapture();
+        fireNotification(&IScreenshotViewModelCallback::onError,
+                         std::string("Screen capture permission is required."));
+        return;
+    }
     auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureAllDisplays();
     int scale = captured.scaleFactor;
 
@@ -216,6 +231,14 @@ void ScreenshotViewModel::captureFullScreen()
 
 void ScreenshotViewModel::captureDisplay(int displayIndex)
 {
+    if (!canCaptureScreen())
+    {
+        // An earlier capture must not be saved or shown as this failed capture.
+        discardCapture();
+        fireNotification(&IScreenshotViewModelCallback::onError,
+                         std::string("Screen capture permission is required."));
+        return;
+    }
     auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureDisplay(displayIndex);
     int scale = captured.scaleFactor;
 

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent
@@ -11,6 +12,14 @@ FocusScope {
     id: root
 
     property ScreenshotController controller: ScreenshotController {}
+
+    Binding {
+        target: root.controller.screenPermission
+        property: "active"
+        value: root.visible
+               && root.Window.window !== null
+               && root.Window.window.active
+    }
 
     UTTabBar {
         id: tabBar

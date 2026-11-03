@@ -32,6 +32,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
 )
 
 set(MODULE_DEPENDENCIES_PRIVATE
+    PermissionPlatform
 )
 if (APPLE)
     find_library(COREGRAPHICS_FRAMEWORK CoreGraphics)
