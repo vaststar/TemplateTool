@@ -37,6 +37,8 @@ set(CPACK_NSIS_PACKAGE_NAME     "@PRODUCT_NAME@")
 set(CPACK_NSIS_CONTACT          "@COMPANY_NAME@")
 set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
 set(CPACK_NSIS_INSTALLED_ICON_NAME "${CPACK_APPLICATION_EXECUTABLE_NAME}.exe")
+# MUI shows a checked launch option on the finish page; /S has no finish page.
+set(CPACK_NSIS_MUI_FINISHPAGE_RUN "${CPACK_APPLICATION_EXECUTABLE_NAME}.exe")
 
 if(CPACK_GENERATOR STREQUAL "NSIS")
     # NSIS !include requires native Windows separators, even for absolute paths.

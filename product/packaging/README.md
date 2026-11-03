@@ -28,3 +28,50 @@ The release workflow prints each platform report in the job summary and keeps
 it in a separate `runtime-dependency-audit-<platform>` artifact. Release
 creation downloads only `package-*` artifacts, so diagnostic reports are not
 published as release assets.
+
+## Distribution layout
+
+```text
+distribution/
+  CMakeLists.txt
+  common/
+    cpack_runtime_pre_build.cmake.in
+    package-info.json.in
+  windows/
+    packaging.cmake
+    cpack_windows_config.cmake.in
+    nsis/
+      policy.nsh
+      template.cmake
+  macos/
+    packaging.cmake
+    cpack_macos_config.cmake.in
+  linux/
+    packaging.cmake
+    cpack_linux_config.cmake.in
+    cpack_linux_pre_build.cmake.in
+  release-config.json
+  scripts/
+```
+
+Each platform's `packaging.cmake` is its entry point. It selects the platform
+CPack configuration template and prepares platform-specific helpers. Windows
+also connects the NSIS installation policy and CPack template adapter; Linux
+generates its desktop, icon and launcher integration helper.
+
+The distribution root includes the selected platform entry, generates the
+shared runtime pre-build script, calls `BuildCPackModule` once, generates
+`package-info.json`, and finally includes CPack. Platform helpers are prepared
+first so their paths are available when configuring the shared script.
+Platform entries locate source files with `CMAKE_CURRENT_LIST_DIR`; generated
+files remain in the distribution root's binary directory.
+
+The shared pre-build script prepares CPack's private staging tree after runtime
+deployment. It keeps the normal install tree separate from package-specific
+layout changes. Release configuration and manifest generation remain shared
+across platforms.
+
+The generated platform configuration filenames and
+`<distribution-build-dir>/package-info.json` location stay stable for build and
+release consumers. Package formats continue to be selected by the existing
+package presets.

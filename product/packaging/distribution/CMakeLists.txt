@@ -20,55 +20,39 @@ if(NOT TARGET "${APP_VERSION_TARGET}")
         "${APP_VERSION_TARGET}")
 endif()
 
-set(CPACK_TEMPLATES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/templates")
-
-if(UNIX AND NOT APPLE)
-    set(CPACK_LINUX_PRE_BUILD_SCRIPT
-        "${CMAKE_CURRENT_BINARY_DIR}/cpack_linux_pre_build.cmake")
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/cpack_linux_pre_build.cmake.in"
-        "${CPACK_LINUX_PRE_BUILD_SCRIPT}"
-        @ONLY
-    )
-endif()
-
 # Runtime deployment keeps its bin/lib layout; only CPack's private staging
 # tree is flattened and stripped of developer artifacts.
 set(CPACK_RUNTIME_PRE_BUILD_SCRIPT
     "${CMAKE_CURRENT_BINARY_DIR}/cpack_runtime_pre_build.cmake")
+
+# Include platform setup in this directory's scope so generated configuration
+# and release metadata retain their existing build-tree paths.
+if(WIN32)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/windows/packaging.cmake")
+elseif(APPLE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/macos/packaging.cmake")
+elseif(UNIX)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/linux/packaging.cmake")
+endif()
+
+# Platform setup must precede this substitution: the Linux staging script
+# embeds CPACK_LINUX_PRE_BUILD_SCRIPT in the common runtime preparation hook.
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cpack_runtime_pre_build.cmake.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/common/cpack_runtime_pre_build.cmake.in"
     "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
     @ONLY
 )
-
-if(WIN32)
-    set(CPACK_NSIS_POLICY_FILE
-        "${CMAKE_CURRENT_SOURCE_DIR}/nsis_install_policy.nsh")
-    BuildCPackModule(
-        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_windows_config.cmake.in"
-        PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
-        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
-    )
-elseif(APPLE)
-    BuildCPackModule(
-        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_macos_config.cmake.in"
-        PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
-        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
-    )
-elseif(UNIX)
-    BuildCPackModule(
-        TEMPLATE "${CPACK_TEMPLATES_DIR}/cpack_linux_config.cmake.in"
-        PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
-        OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
-    )
-endif()
+BuildCPackModule(
+    TEMPLATE "${TT_PLATFORM_CPACK_TEMPLATE}"
+    PRE_BUILD_SCRIPT "${CPACK_RUNTIME_PRE_BUILD_SCRIPT}"
+    OUTPUT_CONFIG_VAR PLATFORM_CPACK_CONFIG
+)
 
 # ── Generate package-info.json (used by CI to build upgrade-manifest.json) ──
 generate_app_info_files(
     INPUT_JSON_FILE ${APP_VERSION_JSON}
     INPUT_JSON_TARGET ${APP_VERSION_TARGET}
-    INPUT_VERSION_TEMPLATE "${CPACK_TEMPLATES_DIR}/package-info.json.in"
+    INPUT_VERSION_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/common/package-info.json.in"
     OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/package-info.json"
     INTERNAL_NAME ""
     FILE_DESCRIPTION ""
