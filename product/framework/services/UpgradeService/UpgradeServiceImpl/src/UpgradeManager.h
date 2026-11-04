@@ -70,6 +70,9 @@ private:
     // FSM context callback bindings
     void bindFsmCallbacks();
 
+    // Remote check followed by local installer cache lookup
+    void startUpgradeCheck(upgrade::UpgradeOperation operation, bool userTriggered);
+
     // Notification forwarding to listener
     void notifyStateChanged(model::UpgradeState state);
     void notifyCheckCompleted(const model::UpgradeCheckResult& result);

@@ -44,16 +44,24 @@ private:
 };
 
 // Helper: Create a minimal UpgradeContext with no-op callbacks
-ucf::service::upgrade::UpgradeContext makeTestContext()
+ucf::service::upgrade::UpgradeContext makeTestContext(std::uint64_t& operationId)
 {
     ucf::service::upgrade::UpgradeContext ctx;
     ctx.onStateChanged = [](ucf::service::model::UpgradeState) {};
     ctx.onCheckCompleted = [](const ucf::service::model::UpgradeCheckResult&) {};
     ctx.onDownloadProgress = [](int64_t, int64_t) {};
     ctx.onError = [](ucf::service::model::UpgradeErrorCode, const std::string&) {};
-    ctx.triggerCheckForUpgrade = [](bool) {};
-    ctx.triggerDownload = [](const std::string&) {};
-    ctx.triggerVerify = [](const std::string&) {};
+    ctx.triggerCheckForUpgrade = [&operationId](ucf::service::upgrade::UpgradeOperation operation, bool) {
+        operationId = operation.id;
+    };
+    ctx.triggerDownload = [&operationId](
+        ucf::service::upgrade::UpgradeOperation operation, const ucf::service::model::PackageInfo&) {
+        operationId = operation.id;
+    };
+    ctx.triggerVerify = [&operationId](ucf::service::upgrade::UpgradeOperation operation,
+        const std::string&, const ucf::service::model::PackageInfo&) {
+        operationId = operation.id;
+    };
     ctx.triggerOpenInstaller = [](const std::string&) {};
     ctx.releaseInstaller = [](const std::string&) { return true; };
     ctx.triggerHardReset = []() {};
@@ -100,14 +108,16 @@ TEST_CASE("UpgradeModel enums have expected values", "[UpgradeService][Model]")
 // ============================================================================
 TEST_CASE("FSM starts in Idle state", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Idle>());
 }
 
 TEST_CASE("FSM: Idle -> Checking on EvCheckRequested", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{.userTriggered = true});
@@ -116,13 +126,15 @@ TEST_CASE("FSM: Idle -> Checking on EvCheckRequested", "[UpgradeService][FSM]")
 
 TEST_CASE("FSM: Checking -> UpgradeAvailable on EvCheckSuccess", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Checking>());
 
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     REQUIRE(fsm.template isIn<ucf::service::upgrade::UpgradeAvailable>());
     REQUIRE(ctx.availableUpgrade.has_value());
     REQUIRE(ctx.availableUpgrade->version == "2.0.0");
@@ -130,7 +142,8 @@ TEST_CASE("FSM: Checking -> UpgradeAvailable on EvCheckSuccess", "[UpgradeServic
 
 TEST_CASE("FSM: Checking -> Idle on EvCheckNoUpgrade", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
 
     bool checkCompletedFired = false;
     ctx.onCheckCompleted = [&](const ucf::service::model::UpgradeCheckResult& r) {
@@ -140,7 +153,7 @@ TEST_CASE("FSM: Checking -> Idle on EvCheckNoUpgrade", "[UpgradeService][FSM]")
 
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckNoUpgrade{});
+    fsm.processEvent(ucf::service::upgrade::EvCheckNoUpgrade{.operationId = operationId});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Idle>());
     REQUIRE(checkCompletedFired);
@@ -148,24 +161,27 @@ TEST_CASE("FSM: Checking -> Idle on EvCheckNoUpgrade", "[UpgradeService][FSM]")
 
 TEST_CASE("FSM: Checking -> Failed on EvError", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
     fsm.processEvent(ucf::service::upgrade::EvError{
-        .code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "timeout"});
+        .operationId = operationId, .code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "timeout"});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Failed>());
 }
 
 TEST_CASE("FSM: UpgradeAvailable -> Downloading on EvDownloadStart", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ctx.availableUpgrade = makeSampleUpgradeInfo();
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Downloading>());
@@ -173,11 +189,13 @@ TEST_CASE("FSM: UpgradeAvailable -> Downloading on EvDownloadStart", "[UpgradeSe
 
 TEST_CASE("FSM: UpgradeAvailable -> Idle on EvDismiss", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDismiss{});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Idle>());
@@ -185,14 +203,16 @@ TEST_CASE("FSM: UpgradeAvailable -> Idle on EvDismiss", "[UpgradeService][FSM]")
 
 TEST_CASE("FSM: Downloading -> Verifying on EvDownloadDone", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ctx.availableUpgrade = makeSampleUpgradeInfo();
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
-    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.exe"});
+    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.operationId = operationId, .filePath = "/tmp/test.exe"});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Verifying>());
     REQUIRE(ctx.downloadedFilePath == "/tmp/test.exe");
@@ -200,7 +220,8 @@ TEST_CASE("FSM: Downloading -> Verifying on EvDownloadDone", "[UpgradeService][F
 
 TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ctx.availableUpgrade = makeSampleUpgradeInfo();
 
     bool softResetCalled = false;
@@ -209,7 +230,8 @@ TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService]
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
     fsm.processEvent(ucf::service::upgrade::EvCancel{});
 
@@ -219,30 +241,34 @@ TEST_CASE("FSM: Downloading -> Idle on EvCancel (soft reset)", "[UpgradeService]
 
 TEST_CASE("FSM: Verifying -> ReadyToInstall", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ctx.availableUpgrade = makeSampleUpgradeInfo();
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
-    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.exe"});
-    fsm.processEvent(ucf::service::upgrade::EvVerifyOk{});
+    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.operationId = operationId, .filePath = "/tmp/test.exe"});
+    fsm.processEvent(ucf::service::upgrade::EvVerifyOk{.operationId = operationId});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::ReadyToInstall>());
 }
 
 TEST_CASE("FSM: ReadyToInstall -> OpeningInstaller on EvOpenInstaller", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ctx.availableUpgrade = makeSampleUpgradeInfo();
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
-    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.filePath = "/tmp/test.exe"});
-    fsm.processEvent(ucf::service::upgrade::EvVerifyOk{});
+    fsm.processEvent(ucf::service::upgrade::EvDownloadDone{.operationId = operationId, .filePath = "/tmp/test.exe"});
+    fsm.processEvent(ucf::service::upgrade::EvVerifyOk{.operationId = operationId});
     fsm.processEvent(ucf::service::upgrade::EvOpenInstaller{});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::OpeningInstaller>());
@@ -250,12 +276,13 @@ TEST_CASE("FSM: ReadyToInstall -> OpeningInstaller on EvOpenInstaller", "[Upgrad
 
 TEST_CASE("FSM: Failed -> Idle on EvDismiss", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(
-        ucf::service::upgrade::EvError{.code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "err"});
+    fsm.processEvent(ucf::service::upgrade::EvError{
+        .operationId = operationId, .code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "err"});
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Failed>());
 
     fsm.processEvent(ucf::service::upgrade::EvDismiss{});
@@ -264,7 +291,8 @@ TEST_CASE("FSM: Failed -> Idle on EvDismiss", "[UpgradeService][FSM]")
 
 TEST_CASE("FSM: state change notifications fire correctly", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
 
     std::vector<ucf::service::model::UpgradeState> stateLog;
     ctx.onStateChanged = [&](ucf::service::model::UpgradeState s) { stateLog.push_back(s); };
@@ -277,14 +305,15 @@ TEST_CASE("FSM: state change notifications fire correctly", "[UpgradeService][FS
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
     REQUIRE(stateLog.back() == ucf::service::model::UpgradeState::Checking);
 
-    fsm.processEvent(ucf::service::upgrade::EvCheckNoUpgrade{});
+    fsm.processEvent(ucf::service::upgrade::EvCheckNoUpgrade{.operationId = operationId});
     // Goes back to Idle
     REQUIRE(stateLog.back() == ucf::service::model::UpgradeState::Idle);
 }
 
 TEST_CASE("FSM: download progress stays in Downloading", "[UpgradeService][FSM]")
 {
-    auto ctx = makeTestContext();
+    std::uint64_t operationId{0};
+    auto ctx = makeTestContext(operationId);
     ctx.availableUpgrade = makeSampleUpgradeInfo();
 
     std::vector<std::pair<int64_t, int64_t>> progressLog;
@@ -293,12 +322,13 @@ TEST_CASE("FSM: download progress stays in Downloading", "[UpgradeService][FSM]"
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvCheckSuccess{.info = makeSampleUpgradeInfo()});
+    fsm.processEvent(
+        ucf::service::upgrade::EvCheckSuccess{.operationId = operationId, .info = makeSampleUpgradeInfo()});
     fsm.processEvent(ucf::service::upgrade::EvDownloadStart{});
 
-    fsm.processEvent(ucf::service::upgrade::EvProgress{.current = 100, .total = 1000});
-    fsm.processEvent(ucf::service::upgrade::EvProgress{.current = 500, .total = 1000});
-    fsm.processEvent(ucf::service::upgrade::EvProgress{.current = 1000, .total = 1000});
+    fsm.processEvent(ucf::service::upgrade::EvProgress{.operationId = operationId, .current = 100, .total = 1000});
+    fsm.processEvent(ucf::service::upgrade::EvProgress{.operationId = operationId, .current = 500, .total = 1000});
+    fsm.processEvent(ucf::service::upgrade::EvProgress{.operationId = operationId, .current = 1000, .total = 1000});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Downloading>());
     REQUIRE(progressLog.size() == 3);

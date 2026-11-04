@@ -44,10 +44,11 @@ struct Checking
     }
     bool userTriggered{false};
     void onEnter(UpgradeContext& ctx);
+    void onExit(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvCheckSuccess& e)
-        -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<UpgradeAvailable>>;
-    auto onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade&) -> fsm::TransitionTo<Idle>;
-    auto onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::TransitionTo<Failed>;
+        -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<UpgradeAvailable>, fsm::Stay>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade& e) -> fsm::OneOf<fsm::TransitionTo<Idle>, fsm::Stay>;
+    auto onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::OneOf<fsm::TransitionTo<Failed>, fsm::Stay>;
 };
 
 struct UpgradeAvailable
@@ -58,7 +59,8 @@ struct UpgradeAvailable
     }
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e) -> fsm::TransitionTo<Checking>;
-    auto onEvent(UpgradeContext& ctx, const EvDownloadStart&) -> fsm::TransitionTo<Downloading>;
+    auto onEvent(UpgradeContext& ctx, const EvDownloadStart&)
+        -> fsm::OneOf<fsm::TransitionTo<Downloading>, fsm::TransitionTo<Failed>>;
     auto onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>;
 };
 
@@ -69,10 +71,12 @@ struct Downloading
         return "Downloading";
     }
     void onEnter(UpgradeContext& ctx);
+    void onExit(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvProgress& e) -> fsm::Stay;
-    auto onEvent(UpgradeContext& ctx, const EvDownloadDone& e) -> fsm::TransitionTo<Verifying>;
+    auto onEvent(UpgradeContext& ctx, const EvDownloadDone& e)
+        -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<Failed>, fsm::Stay>;
     auto onEvent(UpgradeContext& ctx, const EvCancel&) -> fsm::TransitionTo<Idle>;
-    auto onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::TransitionTo<Failed>;
+    auto onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::OneOf<fsm::TransitionTo<Failed>, fsm::Stay>;
 };
 
 struct Verifying
@@ -83,9 +87,10 @@ struct Verifying
     }
     bool fromCache{false};
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvVerifyOk&) -> fsm::TransitionTo<ReadyToInstall>;
+    void onExit(UpgradeContext& ctx);
+    auto onEvent(UpgradeContext& ctx, const EvVerifyOk& e) -> fsm::OneOf<fsm::TransitionTo<ReadyToInstall>, fsm::Stay>;
     auto onEvent(UpgradeContext& ctx, const EvError& e)
-        -> fsm::OneOf<fsm::TransitionTo<UpgradeAvailable>, fsm::TransitionTo<Failed>>;
+        -> fsm::OneOf<fsm::TransitionTo<UpgradeAvailable>, fsm::TransitionTo<Failed>, fsm::Stay>;
 };
 
 struct ReadyToInstall

@@ -15,6 +15,7 @@ set(MODULE_SOURCE_PRIVATE
     src/UpgradeService.cpp
     src/UpgradeServiceLogger.h
     src/AsyncCallbackGate.h
+    src/UpgradeOperation.h
     # Manager layer
     src/UpgradeManager.h
     src/UpgradeManager.cpp

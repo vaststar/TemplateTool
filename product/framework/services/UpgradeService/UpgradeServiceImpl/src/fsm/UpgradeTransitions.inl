@@ -7,8 +7,9 @@
 namespace ucf::service::upgrade {
 
 // ═══════════════════════════════════════════════════
-// onEnter implementations
+// onEnter / onExit implementations
 //   Pure side-effects: state notification + work kickoff.
+//   Async states own one operation from entry through exit.
 //   Reset logic is owned by transition handlers (onEvent), because each path
 //   into a state may need a different cleanup policy.
 // ═══════════════════════════════════════════════════
@@ -20,9 +21,15 @@ inline void Idle::onEnter(UpgradeContext& ctx)
 
 inline void Checking::onEnter(UpgradeContext& ctx)
 {
+    const auto operation = ctx.beginOperation();
     ctx.onStateChanged(model::UpgradeState::Checking);
     // The check includes the asynchronous local cache lookup after the manifest.
-    ctx.triggerCheckForUpgrade(userTriggered);
+    ctx.triggerCheckForUpgrade(operation, userTriggered);
+}
+
+inline void Checking::onExit(UpgradeContext& ctx)
+{
+    ctx.endOperation();
 }
 
 inline void UpgradeAvailable::onEnter(UpgradeContext& ctx)
@@ -34,14 +41,26 @@ inline void UpgradeAvailable::onEnter(UpgradeContext& ctx)
 
 inline void Downloading::onEnter(UpgradeContext& ctx)
 {
+    const auto operation = ctx.beginOperation();
     ctx.onStateChanged(model::UpgradeState::Downloading);
-    ctx.triggerDownload(ctx.availableUpgrade->package.downloadUrl);
+    ctx.triggerDownload(operation, ctx.availableUpgrade->package);
+}
+
+inline void Downloading::onExit(UpgradeContext& ctx)
+{
+    ctx.endOperation();
 }
 
 inline void Verifying::onEnter(UpgradeContext& ctx)
 {
+    const auto operation = ctx.beginOperation();
     ctx.onStateChanged(model::UpgradeState::Verifying);
-    ctx.triggerVerify(ctx.downloadedFilePath);
+    ctx.triggerVerify(operation, ctx.downloadedFilePath, ctx.availableUpgrade->package);
+}
+
+inline void Verifying::onExit(UpgradeContext& ctx)
+{
+    ctx.endOperation();
 }
 
 inline void ReadyToInstall::onEnter(UpgradeContext& ctx)
@@ -86,8 +105,12 @@ inline auto Idle::onEvent(UpgradeContext&, const EvCheckRequested& e) -> fsm::Tr
 // ── Checking ──
 
 inline auto Checking::onEvent(UpgradeContext& ctx, const EvCheckSuccess& e)
-    -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<UpgradeAvailable>>
+    -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<UpgradeAvailable>, fsm::Stay>
 {
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
     ctx.availableUpgrade = e.info;
     ctx.downloadedFilePath = e.cachedFilePath.value_or("");
     ctx.onCheckCompleted(model::UpgradeCheckResult{true, e.info});
@@ -98,16 +121,25 @@ inline auto Checking::onEvent(UpgradeContext& ctx, const EvCheckSuccess& e)
     return fsm::TransitionTo<UpgradeAvailable>{};
 }
 
-inline auto Checking::onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade&) -> fsm::TransitionTo<Idle>
+inline auto Checking::onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade& e)
+    -> fsm::OneOf<fsm::TransitionTo<Idle>, fsm::Stay>
 {
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
     ctx.onCheckCompleted(model::UpgradeCheckResult{false, {}});
-    ctx.triggerHardReset();
-    return {};
+    ctx.hardReset();
+    return fsm::TransitionTo<Idle>{};
 }
 
-inline auto Checking::onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::TransitionTo<Failed>
+inline auto Checking::onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::OneOf<fsm::TransitionTo<Failed>, fsm::Stay>
 {
-    ctx.triggerHardReset();
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
+    ctx.hardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
@@ -118,14 +150,22 @@ inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvCheckRequested& e
     return fsm::TransitionTo<Checking>{Checking{.userTriggered = e.userTriggered}};
 }
 
-inline auto UpgradeAvailable::onEvent(UpgradeContext&, const EvDownloadStart&) -> fsm::TransitionTo<Downloading>
+inline auto UpgradeAvailable::onEvent(UpgradeContext& ctx, const EvDownloadStart&)
+    -> fsm::OneOf<fsm::TransitionTo<Downloading>, fsm::TransitionTo<Failed>>
 {
-    return {};
+    if (!ctx.availableUpgrade)
+    {
+        ctx.hardReset();
+        return fsm::TransitionTo<Failed>{
+            Failed{.errorCode = model::UpgradeErrorCode::DownloadFailed,
+                .errorMessage = "Upgrade information is unavailable"}};
+    }
+    return fsm::TransitionTo<Downloading>{};
 }
 
 inline auto UpgradeAvailable::onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>
 {
-    ctx.triggerHardReset();
+    ctx.hardReset();
     return {};
 }
 
@@ -133,38 +173,68 @@ inline auto UpgradeAvailable::onEvent(UpgradeContext& ctx, const EvDismiss&) -> 
 
 inline auto Downloading::onEvent(UpgradeContext& ctx, const EvProgress& e) -> fsm::Stay
 {
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
     ctx.onDownloadProgress(e.current, e.total);
-    return {};
+    return fsm::Stay{};
 }
 
-inline auto Downloading::onEvent(UpgradeContext& ctx, const EvDownloadDone& e) -> fsm::TransitionTo<Verifying>
+inline auto Downloading::onEvent(UpgradeContext& ctx, const EvDownloadDone& e)
+    -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<Failed>, fsm::Stay>
 {
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
+    if (!ctx.availableUpgrade || e.filePath.empty())
+    {
+        ctx.hardReset();
+        return fsm::TransitionTo<Failed>{
+            Failed{.errorCode = model::UpgradeErrorCode::VerifyFailed,
+                .errorMessage = "Completed installer information is unavailable"}};
+    }
     ctx.downloadedFilePath = e.filePath;
-    return {};
+    return fsm::TransitionTo<Verifying>{};
 }
 
 inline auto Downloading::onEvent(UpgradeContext& ctx, const EvCancel&) -> fsm::TransitionTo<Idle>
 {
-    ctx.triggerSoftReset(); // preserve partial download for future resume
+    ctx.softReset(); // preserve partial download for future resume
     return {};
 }
 
-inline auto Downloading::onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::TransitionTo<Failed>
+inline auto Downloading::onEvent(UpgradeContext& ctx, const EvError& e)
+    -> fsm::OneOf<fsm::TransitionTo<Failed>, fsm::Stay>
 {
-    ctx.triggerHardReset();
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
+    ctx.hardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
 // ── Verifying ──
 
-inline auto Verifying::onEvent(UpgradeContext&, const EvVerifyOk&) -> fsm::TransitionTo<ReadyToInstall>
+inline auto Verifying::onEvent(UpgradeContext& ctx, const EvVerifyOk& e)
+    -> fsm::OneOf<fsm::TransitionTo<ReadyToInstall>, fsm::Stay>
 {
-    return {};
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
+    return fsm::TransitionTo<ReadyToInstall>{};
 }
 
 inline auto Verifying::onEvent(UpgradeContext& ctx, const EvError& e)
-    -> fsm::OneOf<fsm::TransitionTo<UpgradeAvailable>, fsm::TransitionTo<Failed>>
+    -> fsm::OneOf<fsm::TransitionTo<UpgradeAvailable>, fsm::TransitionTo<Failed>, fsm::Stay>
 {
+    if (!ctx.isCurrent(e.operationId))
+    {
+        return fsm::Stay{};
+    }
     if (fromCache)
     {
         // A stale local candidate is a cache miss, not a failed new download.
@@ -172,7 +242,7 @@ inline auto Verifying::onEvent(UpgradeContext& ctx, const EvError& e)
         ctx.downloadedFilePath.clear();
         return fsm::TransitionTo<UpgradeAvailable>{};
     }
-    ctx.triggerHardReset();
+    ctx.hardReset();
     return fsm::TransitionTo<Failed>{Failed{.errorCode = e.code, .errorMessage = e.message}};
 }
 
@@ -186,7 +256,7 @@ inline auto ReadyToInstall::onEvent(UpgradeContext&, const EvOpenInstaller&) -> 
 inline auto ReadyToInstall::onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>
 {
     // Keep the verified installer cached for a later check, including after restart.
-    ctx.triggerHardReset();
+    ctx.hardReset();
     return {};
 }
 
@@ -209,13 +279,13 @@ inline auto OpeningInstaller::onEvent(UpgradeContext& ctx, const EvInstallerOpen
 
 inline auto InstallerOpened::onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>
 {
-    ctx.triggerHardReset(); // releaseInstaller already removed this file from cleanup.
+    ctx.hardReset(); // releaseInstaller already removed this file from cleanup.
     return {};
 }
 
 inline auto InstallerOpened::onEvent(UpgradeContext& ctx, const EvCheckRequested& e) -> fsm::TransitionTo<Checking>
 {
-    ctx.triggerHardReset();
+    ctx.hardReset();
     return fsm::TransitionTo<Checking>{Checking{.userTriggered = e.userTriggered}};
 }
 
@@ -228,7 +298,7 @@ inline auto Failed::onEvent(UpgradeContext&, const EvCheckRequested& e) -> fsm::
 
 inline auto Failed::onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>
 {
-    ctx.triggerHardReset();
+    ctx.hardReset();
     return {};
 }
 

@@ -73,25 +73,48 @@ void UpgradeCheckManager::setMinCheckInterval(std::chrono::minutes interval)
 void UpgradeCheckManager::reset()
 {
     std::lock_guard lock(mStateMutex);
+    mCurrentOperation.reset();
     mCachedResult.reset();
     // Note: mLastCheckTime is intentionally NOT reset —
     // check interval should survive across upgrade cycles.
 }
 
-void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, const std::string& platform,
-    const std::string& arch, model::PackageFormat packageFormat, bool userTriggered, CheckResultCallback callback)
+void UpgradeCheckManager::checkForUpgrade(upgrade::UpgradeOperation operation, const std::string& currentVersion,
+    const std::string& platform, const std::string& arch, model::PackageFormat packageFormat, bool userTriggered,
+    CheckResultCallback callback)
 {
-    auto operation = mCallbackGate->tryEnter();
-    if (!operation)
+    auto lease = mCallbackGate->tryEnter();
+    if (!lease || operation.stopToken.stop_requested())
     {
         return;
     }
+    {
+        std::lock_guard lock(mStateMutex);
+        if (operation.stopToken.stop_requested())
+        {
+            return;
+        }
+        mCurrentOperation = operation;
+    }
+
+    const auto complete = [this, operation, callback = std::move(callback)](bool success,
+                              const model::UpgradeCheckResult& result, model::UpgradeErrorCode errorCode,
+                              const std::string& errorMessage) {
+        {
+            std::lock_guard lock(mStateMutex);
+            if (!isCurrentOperationLocked(operation))
+            {
+                return;
+            }
+        }
+        callback(success, result, errorCode, errorMessage);
+    };
 
     // Without a known installation format, no matching installer can be chosen.
     // Reject before the cache path instead of reporting "already up to date".
     if (model::packageFormatName(packageFormat).empty())
     {
-        callback(false, {}, model::UpgradeErrorCode::UnsupportedInstallation,
+        complete(false, {}, model::UpgradeErrorCode::UnsupportedInstallation,
             "Automatic upgrade is unavailable for this installation; download an installer manually");
         return;
     }
@@ -102,6 +125,10 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
     std::string checkUrl;
     {
         std::lock_guard lock(mStateMutex);
+        if (!isCurrentOperationLocked(operation))
+        {
+            return;
+        }
         skipCheck = !userTriggered && !canCheckLocked(std::chrono::steady_clock::now());
         if (skipCheck)
         {
@@ -114,11 +141,11 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
         UPGRADE_LOG_DEBUG("Check skipped — minimum interval not elapsed");
         if (cachedResult.has_value())
         {
-            callback(true, *cachedResult, model::UpgradeErrorCode::None, "");
+            complete(true, *cachedResult, model::UpgradeErrorCode::None, "");
         }
         else
         {
-            callback(true, model::UpgradeCheckResult{false, {}}, model::UpgradeErrorCode::None, "");
+            complete(true, model::UpgradeCheckResult{false, {}}, model::UpgradeErrorCode::None, "");
         }
         return;
     }
@@ -127,7 +154,7 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
     if (!coreFramework)
     {
         UPGRADE_LOG_ERROR("CoreFramework is null");
-        callback(false, {}, model::UpgradeErrorCode::NetworkError, "CoreFramework unavailable");
+        complete(false, {}, model::UpgradeErrorCode::NetworkError, "CoreFramework unavailable");
         return;
     }
 
@@ -135,7 +162,7 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
     if (!networkService)
     {
         UPGRADE_LOG_ERROR("NetworkService is null");
-        callback(false, {}, model::UpgradeErrorCode::NetworkError, "NetworkService unavailable");
+        complete(false, {}, model::UpgradeErrorCode::NetworkError, "NetworkService unavailable");
         return;
     }
 
@@ -143,7 +170,7 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
     if (!httpManager)
     {
         UPGRADE_LOG_ERROR("NetworkHttpManager is null");
-        callback(false, {}, model::UpgradeErrorCode::NetworkError, "HttpManager unavailable");
+        complete(false, {}, model::UpgradeErrorCode::NetworkError, "HttpManager unavailable");
         return;
     }
 
@@ -163,12 +190,16 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
 
     {
         std::lock_guard lock(mStateMutex);
+        if (!isCurrentOperationLocked(operation))
+        {
+            return;
+        }
         mOutstandingRequestIds.insert(requestId);
     }
 
-    httpManager->sendHttpRestRequest(
-        *request, [this, gate = mCallbackGate, requestId, callback, currentVersion, platformKey, packageFormat](
-                      const network::http::HttpRestResponse& response) {
+    httpManager->sendHttpRestRequest(*request,
+        [this, gate = mCallbackGate, operation, requestId, complete, currentVersion, platformKey, packageFormat](
+            const network::http::HttpRestResponse& response) {
         auto lease = gate->tryEnter();
         if (!lease)
         {
@@ -181,13 +212,17 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
             {
                 return;
             }
+            if (!isCurrentOperationLocked(operation))
+            {
+                return;
+            }
         }
 
         auto errorData = response.getErrorData();
         if (errorData.has_value())
         {
             UPGRADE_LOG_ERROR("Check request failed: " << errorData->errorDescription);
-            callback(false, {}, model::UpgradeErrorCode::NetworkError, errorData->errorDescription);
+            complete(false, {}, model::UpgradeErrorCode::NetworkError, errorData->errorDescription);
             return;
         }
 
@@ -195,7 +230,7 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
         if (statusCode < 200 || statusCode >= 300)
         {
             UPGRADE_LOG_ERROR("Check request returned HTTP " << statusCode);
-            callback(false, {}, model::UpgradeErrorCode::ServerError, std::format("HTTP {}", statusCode));
+            complete(false, {}, model::UpgradeErrorCode::ServerError, std::format("HTTP {}", statusCode));
             return;
         }
 
@@ -207,12 +242,16 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
         catch (const std::exception& ex)
         {
             UPGRADE_LOG_ERROR("Failed to parse check response: " << ex.what());
-            callback(false, {}, model::UpgradeErrorCode::ParseError, ex.what());
+            complete(false, {}, model::UpgradeErrorCode::ParseError, ex.what());
             return;
         }
 
         {
             std::lock_guard lock(mStateMutex);
+            if (!isCurrentOperationLocked(operation))
+            {
+                return;
+            }
             mLastCheckTime = std::chrono::steady_clock::now();
             mCachedResult = result;
         }
@@ -220,12 +259,12 @@ void UpgradeCheckManager::checkForUpgrade(const std::string& currentVersion, con
         UPGRADE_LOG_INFO(
             "Check result: hasUpgrade=" << result.hasUpgrade
                                         << (result.hasUpgrade ? (", version=" + result.upgradeInfo.version) : ""));
-        callback(true, result, model::UpgradeErrorCode::None, "");
+        complete(true, result, model::UpgradeErrorCode::None, "");
     });
 
     // close() may have raced with request submission. shutdown() will also
     // sweep registered IDs after admitted work drains, but cancel promptly here.
-    if (mCallbackGate->isClosed())
+    if (mCallbackGate->isClosed() || operation.stopToken.stop_requested())
     {
         httpManager->cancelRequest(requestId);
     }

@@ -37,23 +37,28 @@ struct EvDismiss
 /// must still pass verification before it can be opened.
 struct EvCheckSuccess
 {
+    std::uint64_t operationId;
     model::UpgradeInfo info;
     std::optional<std::string> cachedFilePath{};
 };
 struct EvCheckNoUpgrade
 {
+    std::uint64_t operationId;
 };
 struct EvProgress
 {
+    std::uint64_t operationId;
     int64_t current{0};
     int64_t total{0};
 };
 struct EvDownloadDone
 {
+    std::uint64_t operationId;
     std::string filePath;
 };
 struct EvVerifyOk
 {
+    std::uint64_t operationId;
 };
 struct EvInstallerOpenResult
 {
@@ -61,6 +66,7 @@ struct EvInstallerOpenResult
 };
 struct EvError
 {
+    std::uint64_t operationId;
     model::UpgradeErrorCode code;
     std::string message;
 };

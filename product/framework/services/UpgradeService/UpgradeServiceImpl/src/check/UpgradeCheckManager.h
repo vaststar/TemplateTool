@@ -2,6 +2,7 @@
 
 #include <ucf/services/UpgradeService/UpgradeModel.h>
 #include "../UpgradeConstants.h"
+#include "../UpgradeOperation.h"
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -35,8 +36,9 @@ public:
         model::UpgradeErrorCode errorCode, const std::string& errorMessage)>;
 
     /// Issue an upgrade check (async — result delivered via callback)
-    void checkForUpgrade(const std::string& currentVersion, const std::string& platform, const std::string& arch,
-        model::PackageFormat packageFormat, bool userTriggered, CheckResultCallback callback);
+    void checkForUpgrade(upgrade::UpgradeOperation operation, const std::string& currentVersion,
+        const std::string& platform, const std::string& arch, model::PackageFormat packageFormat, bool userTriggered,
+        CheckResultCallback callback);
 
     /// Whether the minimum check interval has elapsed (ignored when userTriggered)
     [[nodiscard]] bool canCheck() const;
@@ -50,7 +52,8 @@ public:
     /// Set minimum interval between automatic checks (default: 5 min)
     void setMinCheckInterval(std::chrono::minutes interval);
 
-    /// Reset cached result (not the last-check timestamp)
+    /// Stop the owning operation before clearing it and the cached result.
+    /// The last-check timestamp is retained.
     void reset();
 
     /// Cancel requests currently known to be in flight. Call after closing the
@@ -60,6 +63,12 @@ public:
 private:
     bool canCheckLocked(std::chrono::steady_clock::time_point now) const;
 
+    /// Requires mStateMutex. Operation IDs are assigned only by the upgrade FSM context.
+    [[nodiscard]] bool isCurrentOperationLocked(const upgrade::UpgradeOperation& operation) const
+    {
+        return mCurrentOperation && mCurrentOperation->id == operation.id && !operation.stopToken.stop_requested();
+    }
+
     model::UpgradeCheckResult parseCheckResponse(const std::string& jsonBody, const std::string& currentVersion,
         const std::string& platformKey, model::PackageFormat packageFormat) const;
 
@@ -68,6 +77,7 @@ private:
     std::shared_ptr<AsyncCallbackGate> mCallbackGate;
 
     mutable std::mutex mStateMutex;
+    std::optional<upgrade::UpgradeOperation> mCurrentOperation;
     std::string mCheckUrl{upgrade::constants::kDefaultManifestUrl};
     std::chrono::minutes mMinCheckInterval{5};
     std::chrono::steady_clock::time_point mLastCheckTime{};

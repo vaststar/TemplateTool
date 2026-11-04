@@ -213,25 +213,28 @@ void UpgradeDownloadManager::verifyWorkerLoop(std::stop_token stopToken)
 }
 
 void UpgradeDownloadManager::findReusableInstaller(
-    const model::PackageInfo& packageInfo, InstallerLookupCallback callback)
+    upgrade::UpgradeOperation operation, const model::PackageInfo& packageInfo, InstallerLookupCallback callback)
 {
-    if (mStopRequested.load(std::memory_order_acquire))
     {
-        return;
-    }
-    const auto generation = mGeneration.load(std::memory_order_acquire);
-    auto gate = mCallbackGate;
-    enqueueIo(IoJobKind::Attempt, std::chrono::steady_clock::now(),
-        [this, gate, generation, packageInfo, callback = std::move(callback)](std::stop_token st) {
-        auto lease = gate->tryEnter();
-        if (!lease || st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
-            generation != mGeneration.load(std::memory_order_acquire))
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire) || operation.stopToken.stop_requested())
         {
             return;
         }
-        const auto installer = findReusableInstallerOnIo(packageInfo, generation);
+        mCurrentOperation = operation;
+    }
+    auto gate = mCallbackGate;
+    enqueueIo(IoJobKind::Attempt, std::chrono::steady_clock::now(),
+        [this, gate, operation, packageInfo, callback = std::move(callback)](std::stop_token st) {
+        auto lease = gate->tryEnter();
+        if (!lease || st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+            operation.stopToken.stop_requested())
+        {
+            return;
+        }
+        const auto installer = findReusableInstallerOnIo(packageInfo, operation);
         if (!st.stop_requested() && !mStopRequested.load(std::memory_order_acquire) &&
-            generation == mGeneration.load(std::memory_order_acquire) && callback)
+            !operation.stopToken.stop_requested() && callback)
         {
             const auto path =
                 installer ? std::optional<std::string>{ucf::utilities::FilePathUtils::utf8FromPath(installer->filePath)}
@@ -250,12 +253,12 @@ void UpgradeDownloadManager::findReusableInstaller(
 }
 
 std::optional<UpgradeDownloadManager::CompletedInstaller> UpgradeDownloadManager::findReusableInstallerOnIo(
-    const model::PackageInfo& packageInfo, std::uint64_t generation)
+    const model::PackageInfo& packageInfo, const upgrade::UpgradeOperation& operation)
 {
     std::optional<CompletedInstaller> installer;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) || generation != mGeneration.load(std::memory_order_acquire))
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(operation))
         {
             return std::nullopt;
         }
@@ -293,8 +296,8 @@ std::optional<UpgradeDownloadManager::CompletedInstaller> UpgradeDownloadManager
 
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) ||
-            generation != mGeneration.load(std::memory_order_acquire) || (fromMemory && !mCompletedInstaller) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(operation) ||
+            (fromMemory && !mCompletedInstaller) ||
             (mCompletedInstaller && (mCompletedInstaller->filePath != installer->filePath ||
                                         !upgrade::sameInstallerContent(mCompletedInstaller->packageInfo, packageInfo))))
         {
@@ -336,10 +339,10 @@ void UpgradeDownloadManager::syncCompletedInstallerRecord()
     });
 }
 
-void UpgradeDownloadManager::downloadPackage(
-    const model::PackageInfo& packageInfo, ProgressCallback progressCb, DownloadCompleteCallback completeCb)
+void UpgradeDownloadManager::downloadPackage(upgrade::UpgradeOperation operation, const model::PackageInfo& packageInfo,
+    ProgressCallback progressCb, DownloadCompleteCallback completeCb)
 {
-    if (mStopRequested.load(std::memory_order_acquire))
+    if (mStopRequested.load(std::memory_order_acquire) || operation.stopToken.stop_requested())
     {
         return;
     }
@@ -349,6 +352,7 @@ void UpgradeDownloadManager::downloadPackage(
         return;
     }
     auto session = std::make_shared<DownloadSession>();
+    session->operation = operation;
     session->packageInfo = packageInfo;
     session->progressCb = std::move(progressCb);
     session->completeCb = std::move(completeCb);
@@ -358,11 +362,11 @@ void UpgradeDownloadManager::downloadPackage(
     std::filesystem::path staleInstallerPath;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire))
+        if (mStopRequested.load(std::memory_order_acquire) || operation.stopToken.stop_requested())
         {
             return;
         }
-        session->generation = mGeneration.fetch_add(1, std::memory_order_acq_rel) + 1;
+        mCurrentOperation = operation;
         mVerifiedInstallerPath.clear();
         if (mCompletedInstaller && !upgrade::sameInstallerContent(mCompletedInstaller->packageInfo, packageInfo))
         {
@@ -421,7 +425,7 @@ void UpgradeDownloadManager::finishSession(
     DownloadCompleteCallback callback;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
             mActiveSession.get() != session.get())
         {
             return;
@@ -429,7 +433,7 @@ void UpgradeDownloadManager::finishSession(
         mActiveSession.reset();
         callback = session->completeCb;
     }
-    if (callback)
+    if (callback && !session->operation.stopToken.stop_requested())
     {
         callback(false, "", errorCode, message);
     }
@@ -437,7 +441,8 @@ void UpgradeDownloadManager::finishSession(
 
 void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSession>& session, std::stop_token stopToken)
 {
-    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session))
+    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+        session->operation.stopToken.stop_requested())
     {
         return;
     }
@@ -445,7 +450,7 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
     bool checkDiskSpace = false;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
             mActiveSession.get() != session.get())
         {
             return;
@@ -455,12 +460,12 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
 
     // Also probe here to defend against the file changing between a manifest
     // lookup and an explicit download request. Never use this as a Range prefix.
-    if (const auto installer = findReusableInstallerOnIo(session->packageInfo, session->generation))
+    if (const auto installer = findReusableInstallerOnIo(session->packageInfo, session->operation))
     {
         DownloadCompleteCallback completion;
         {
             std::lock_guard lock(mSessionMutex);
-            if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
                 mActiveSession.get() != session.get() || !mCompletedInstaller ||
                 mCompletedInstaller->filePath != installer->filePath)
             {
@@ -469,8 +474,8 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
             mActiveSession.reset();
             completion = session->completeCb;
         }
-        if (!stopToken.stop_requested() && !mStopRequested.load(std::memory_order_acquire) && isCurrent(*session) &&
-            completion)
+        if (!stopToken.stop_requested() && !mStopRequested.load(std::memory_order_acquire) &&
+            !session->operation.stopToken.stop_requested() && completion)
         {
             const auto filePath = ucf::utilities::FilePathUtils::utf8FromPath(installer->filePath);
             UPGRADE_LOG_INFO("Reusing downloaded installer: " << filePath);
@@ -478,7 +483,8 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
         }
         return;
     }
-    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session))
+    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+        session->operation.stopToken.stop_requested())
     {
         return;
     }
@@ -512,7 +518,7 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
     bool resumeAllowed = false;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
             mActiveSession.get() != session.get())
         {
             return;
@@ -555,8 +561,9 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
         UPGRADE_LOG_INFO("Resuming download from byte " << resumedBytes);
     }
 
-    UPGRADE_LOG_INFO("Starting download (gen=" << session->generation << "): " << session->packageInfo.downloadUrl
-                                               << " → " << ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
+    UPGRADE_LOG_INFO("Starting download (operation=" << session->operation.id
+                                                     << "): " << session->packageInfo.downloadUrl << " → "
+                                                     << ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
 
     auto request = std::make_unique<network::http::HttpDownloadToFileRequest>(
         session->packageInfo.downloadUrl, headers, 300, ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
@@ -566,7 +573,7 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
     // layer enqueues it, the post-send check below cancels it again.
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
             mActiveSession.get() != session.get())
         {
             return;
@@ -611,7 +618,8 @@ void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSessi
         return;
     }
 
-    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session))
+    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+        session->operation.stopToken.stop_requested())
     {
         // Cancellation may invoke completion inline. This is the I/O worker,
         // outside an FSM transition and without mSessionMutex held.
@@ -627,7 +635,7 @@ void UpgradeDownloadManager::handleDownloadProgress(const std::shared_ptr<Downlo
     std::int64_t total = 0;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
             mActiveSession.get() != session.get() || session->requestId != requestId)
         {
             return;
@@ -656,7 +664,7 @@ void UpgradeDownloadManager::handleDownloadProgress(const std::shared_ptr<Downlo
             progress = session->progressCb;
         }
     }
-    if (progress)
+    if (progress && !session->operation.stopToken.stop_requested())
     {
         progress(current, total);
     }
@@ -710,7 +718,7 @@ void UpgradeDownloadManager::handleDownloadCompleted(const std::shared_ptr<Downl
             return;
         }
         session->requestId.clear();
-        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrentOperationLocked(session->operation) ||
             mActiveSession.get() != session.get())
         {
             return;
@@ -771,7 +779,7 @@ void UpgradeDownloadManager::handleDownloadCompleted(const std::shared_ptr<Downl
             [this, session](std::stop_token st) { attemptDownload(session, st); });
         return;
     }
-    if (completion)
+    if (completion && !session->operation.stopToken.stop_requested())
     {
         if (success)
         {
@@ -811,7 +819,7 @@ void UpgradeDownloadManager::retireActiveSession(PartialFilePolicy policy)
     std::vector<std::filesystem::path> pathsToDelete;
     {
         std::lock_guard lock(mSessionMutex);
-        mGeneration.fetch_add(1, std::memory_order_acq_rel);
+        mCurrentOperation.reset();
         mVerifiedInstallerPath.clear();
         if (mActiveSession)
         {
@@ -885,35 +893,34 @@ void UpgradeDownloadManager::hardReset()
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager hard reset (retain verified installer)");
 }
 
-void UpgradeDownloadManager::verifyPackage(
-    const std::string& filePath, const model::PackageInfo& packageInfo, VerifyCompleteCallback callback)
+void UpgradeDownloadManager::verifyPackage(upgrade::UpgradeOperation operation, const std::string& filePath,
+    const model::PackageInfo& packageInfo, VerifyCompleteCallback callback)
 {
-    if (mStopRequested.load(std::memory_order_acquire))
+    if (mStopRequested.load(std::memory_order_acquire) || operation.stopToken.stop_requested())
     {
         return;
     }
-    std::uint64_t generation = 0;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire))
+        if (mStopRequested.load(std::memory_order_acquire) || operation.stopToken.stop_requested())
         {
             return;
         }
-        generation = mGeneration.load(std::memory_order_acquire);
+        mCurrentOperation = operation;
         mVerifiedInstallerPath.clear();
     }
     UPGRADE_LOG_INFO("Verifying package: " << filePath);
 
-    enqueueVerify([this, generation, filePath, packageInfo, callback = std::move(callback)](std::stop_token st) {
+    enqueueVerify([this, operation, filePath, packageInfo, callback = std::move(callback)](std::stop_token st) {
         if (st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
-            generation != mGeneration.load(std::memory_order_acquire))
+            operation.stopToken.stop_requested())
         {
             return;
         }
 
-        const auto result = upgrade::verifyPackageFile(filePath, packageInfo.sha256, [this, st, generation] {
+        const auto result = upgrade::verifyPackageFile(filePath, packageInfo.sha256, [this, st, operation] {
             return st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
-                   generation != mGeneration.load(std::memory_order_acquire);
+                   operation.stopToken.stop_requested();
         });
         if (result.status == upgrade::VerificationStatus::Cancelled)
         {
@@ -928,7 +935,7 @@ void UpgradeDownloadManager::verifyPackage(
         {
             std::lock_guard lock(mSessionMutex);
             if (st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
-                generation != mGeneration.load(std::memory_order_acquire))
+                !isCurrentOperationLocked(operation))
             {
                 return;
             }
@@ -971,7 +978,7 @@ void UpgradeDownloadManager::verifyPackage(
         // Keep the callback outside the verifier and session mutex: the FSM
         // may reset the manager or release the verified installer from here.
         if (!st.stop_requested() && !mStopRequested.load(std::memory_order_acquire) &&
-            generation == mGeneration.load(std::memory_order_acquire))
+            !operation.stopToken.stop_requested())
         {
             callback(success, errorCode, message);
         }
@@ -1026,7 +1033,7 @@ void UpgradeDownloadManager::requestStop()
     if (!mStopRequested.exchange(true, std::memory_order_acq_rel))
     {
         std::lock_guard lock(mSessionMutex);
-        mGeneration.fetch_add(1, std::memory_order_acq_rel);
+        mCurrentOperation.reset();
         mVerifiedInstallerPath.clear();
         mActiveSession.reset();
     }

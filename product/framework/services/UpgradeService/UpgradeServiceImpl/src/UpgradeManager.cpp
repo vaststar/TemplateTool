@@ -57,6 +57,11 @@ void UpgradeManager::shutdown()
         // Reject new external calls and callbacks before touching the workers.
         mCallbackGate->close();
         mStopRequested.store(true, std::memory_order_release);
+        if (mFsm)
+        {
+            mFsm->withContext([](upgrade::UpgradeContext& ctx) { ctx.endOperation(); });
+        }
+        // Release the FSM lock before stopping workers or waiting for callbacks.
         mDownloadManager->requestStop();
         stopAutoCheckTimer();
 
@@ -111,99 +116,67 @@ void UpgradeManager::bindFsmCallbacks()
 {
     // ── Notification callbacks → forwarded to Service via Listener ──
 
-    mFsmContext.onStateChanged =
-        withCallbackGate(mCallbackGate, [this](model::UpgradeState state) { notifyStateChanged(state); });
+    mFsmContext.onStateChanged = withCallbackGate(mCallbackGate, [this](model::UpgradeState state) {
+        notifyStateChanged(state);
+    });
 
-    mFsmContext.onCheckCompleted = withCallbackGate(
-        mCallbackGate, [this](const model::UpgradeCheckResult& result) { notifyCheckCompleted(result); });
+    mFsmContext.onCheckCompleted = withCallbackGate(mCallbackGate, [this](const model::UpgradeCheckResult& result) {
+        notifyCheckCompleted(result);
+    });
 
-    mFsmContext.onDownloadProgress = withCallbackGate(
-        mCallbackGate, [this](int64_t current, int64_t total) { notifyDownloadProgress(current, total); });
+    mFsmContext.onDownloadProgress = withCallbackGate(mCallbackGate, [this](int64_t current, int64_t total) {
+        notifyDownloadProgress(current, total);
+    });
 
-    mFsmContext.onError = withCallbackGate(
-        mCallbackGate, [this](model::UpgradeErrorCode code, const std::string& msg) { notifyError(code, msg); });
+    mFsmContext.onError = withCallbackGate(mCallbackGate, [this](model::UpgradeErrorCode code, const std::string& msg) {
+        notifyError(code, msg);
+    });
 
     // ── Async operation triggers → delegate to sub-managers ──
 
-    mFsmContext.triggerCheckForUpgrade = withCallbackGate(mCallbackGate, [this](bool userTriggered) {
-        auto version = getCurrentVersionString();
-        auto platform = getCurrentPlatform();
-        auto arch = getCurrentArch();
-
-        mCheckManager->checkForUpgrade(version, platform, arch, mPackageFormat, userTriggered,
-            withCallbackGate(mCallbackGate, [this](bool success, const model::UpgradeCheckResult& result,
-                                                model::UpgradeErrorCode errCode, const std::string& errMsg) {
-            if (!success)
-            {
-                mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-            }
-            else if (!result.hasUpgrade)
-            {
-                mFsm->processEvent(upgrade::EvCheckNoUpgrade{});
-            }
-            else
-            {
-                // Keep Checking until the local installer lookup finishes.
-                // A candidate still passes through the normal SHA verification.
-                const auto info = result.upgradeInfo;
-                mDownloadManager->findReusableInstaller(
-                    info.package, withCallbackGate(mCallbackGate, [this, info](std::optional<std::string> cachedPath) {
-                    mFsm->processEvent(upgrade::EvCheckSuccess{info, std::move(cachedPath)});
-                }));
-            }
-        }));
+    mFsmContext.triggerCheckForUpgrade = withCallbackGate(mCallbackGate, [this](upgrade::UpgradeOperation operation, bool userTriggered) {
+        startUpgradeCheck(operation, userTriggered);
     });
 
-    mFsmContext.triggerDownload = withCallbackGate(mCallbackGate, [this](const std::string& /*url*/) {
-        if (!mFsmContext.availableUpgrade)
-        {
-            mFsm->processEvent(
-                upgrade::EvError{model::UpgradeErrorCode::DownloadFailed, "No available upgrade to download"});
-            return;
-        }
-        auto& info = *mFsmContext.availableUpgrade;
-        mDownloadManager->downloadPackage(info.package,
+    mFsmContext.triggerDownload = withCallbackGate(mCallbackGate, [this](upgrade::UpgradeOperation operation, const model::PackageInfo& package) {
+        mDownloadManager->downloadPackage(operation, package,
             // Progress callback
-            withCallbackGate(mCallbackGate,
-                [this](int64_t current, int64_t total) { mFsm->processEvent(upgrade::EvProgress{current, total}); }),
+            withCallbackGate(mCallbackGate, [this, operationId = operation.id](int64_t current, int64_t total) {
+                mFsm->processEvent(upgrade::EvProgress{operationId, current, total});
+            }),
             // Completion callback
-            withCallbackGate(mCallbackGate, [this](bool success, const std::string& path,
-                                                model::UpgradeErrorCode errCode, const std::string& errMsg) {
-            if (success)
-            {
-                mFsm->processEvent(upgrade::EvDownloadDone{path});
-            }
-            else
-            {
-                mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-            }
-        }));
+            withCallbackGate(mCallbackGate, [this, operationId = operation.id](bool success, const std::string& path,
+                model::UpgradeErrorCode errCode, const std::string& errMsg) {
+                if (success)
+                {
+                    mFsm->processEvent(upgrade::EvDownloadDone{operationId, path});
+                }
+                else
+                {
+                    mFsm->processEvent(upgrade::EvError{operationId, errCode, errMsg});
+                }
+            }));
     });
 
-    mFsmContext.triggerVerify = withCallbackGate(mCallbackGate, [this](const std::string& filePath) {
-        if (!mFsmContext.availableUpgrade)
-        {
-            mFsm->processEvent(
-                upgrade::EvError{model::UpgradeErrorCode::VerifyFailed, "No available upgrade to verify"});
-            return;
-        }
-        auto& info = *mFsmContext.availableUpgrade;
-        mDownloadManager->verifyPackage(filePath, info.package,
-            withCallbackGate(
-                mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
-            if (success)
-            {
-                mFsm->processEvent(upgrade::EvVerifyOk{});
-            }
-            else
-            {
-                mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-            }
-        }));
+    mFsmContext.triggerVerify = withCallbackGate(mCallbackGate, [this](upgrade::UpgradeOperation operation,
+        const std::string& filePath, const model::PackageInfo& package) {
+        mDownloadManager->verifyPackage(operation, filePath, package,
+            withCallbackGate(mCallbackGate, [this, operationId = operation.id](bool success, model::UpgradeErrorCode errCode,
+                const std::string& errMsg) {
+                if (success)
+                {
+                    mFsm->processEvent(upgrade::EvVerifyOk{operationId});
+                }
+                else
+                {
+                    mFsm->processEvent(upgrade::EvError{operationId, errCode, errMsg});
+                }
+            }));
     });
 
-    mFsmContext.triggerOpenInstaller = withCallbackGate(
-        mCallbackGate, [this](const std::string& installerPath) { notifyInstallerOpenRequested(installerPath); });
+    mFsmContext.triggerOpenInstaller = withCallbackGate(mCallbackGate, [this](const std::string& installerPath) {
+        notifyInstallerOpenRequested(installerPath);
+    });
 
     mFsmContext.releaseInstaller = [this](const std::string& installerPath) {
         auto lease = mCallbackGate->tryEnter();
@@ -212,9 +185,43 @@ void UpgradeManager::bindFsmCallbacks()
 
     // ── Reset triggers ──
 
-    mFsmContext.triggerHardReset = withCallbackGate(mCallbackGate, [this]() { hardResetManagers(); });
+    mFsmContext.triggerHardReset = withCallbackGate(mCallbackGate, [this]() {
+        hardResetManagers();
+    });
 
-    mFsmContext.triggerSoftReset = withCallbackGate(mCallbackGate, [this]() { softResetManagers(); });
+    mFsmContext.triggerSoftReset = withCallbackGate(mCallbackGate, [this]() {
+        softResetManagers();
+    });
+}
+
+void UpgradeManager::startUpgradeCheck(upgrade::UpgradeOperation operation, bool userTriggered)
+{
+    auto version = getCurrentVersionString();
+    auto platform = getCurrentPlatform();
+    auto arch = getCurrentArch();
+
+    mCheckManager->checkForUpgrade(operation, version, platform, arch, mPackageFormat, userTriggered,
+        withCallbackGate(mCallbackGate, [this, operation](bool success, const model::UpgradeCheckResult& result,
+            model::UpgradeErrorCode errCode, const std::string& errMsg) {
+            if (!success)
+            {
+                mFsm->processEvent(upgrade::EvError{operation.id, errCode, errMsg});
+            }
+            else if (!result.hasUpgrade)
+            {
+                mFsm->processEvent(upgrade::EvCheckNoUpgrade{operation.id});
+            }
+            else
+            {
+                // Keep Checking until the local installer lookup finishes.
+                // A candidate still passes through the normal SHA verification.
+                const auto info = result.upgradeInfo;
+                mDownloadManager->findReusableInstaller(operation, info.package,
+                    withCallbackGate(mCallbackGate, [this, info, operationId = operation.id](std::optional<std::string> cachedPath) {
+                        mFsm->processEvent(upgrade::EvCheckSuccess{operationId, info, std::move(cachedPath)});
+                    }));
+            }
+        }));
 }
 
 // ── Public operations (FSM event dispatch) ──
@@ -365,21 +372,16 @@ void UpgradeManager::notifyInstallerOpenRequested(const std::string& installerPa
 
 void UpgradeManager::hardResetManagers()
 {
-    UPGRADE_LOG_DEBUG(
-        "Hard reset all managers (clear check result and incomplete downloads; retain verified installer)");
+    UPGRADE_LOG_DEBUG("Reset check results and incomplete downloads; retain verified installer");
     mCheckManager->reset();
     mDownloadManager->hardReset();
-    mFsmContext.availableUpgrade.reset();
-    mFsmContext.downloadedFilePath.clear();
 }
 
 void UpgradeManager::softResetManagers()
 {
-    UPGRADE_LOG_DEBUG("Soft reset managers (preserve partial download for resume)");
+    UPGRADE_LOG_DEBUG("Reset managers and preserve partial download");
     mCheckManager->reset();
     mDownloadManager->softReset();
-    // Keep ctx.availableUpgrade so a subsequent EvDownloadStart can resume.
-    // downloadedFilePath remains empty until that download progresses.
 }
 
 // ── Helper: app info ──

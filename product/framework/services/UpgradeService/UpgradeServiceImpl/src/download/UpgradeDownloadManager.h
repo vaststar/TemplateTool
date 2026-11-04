@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CompletedInstallerRecord.h"
+#include "../UpgradeOperation.h"
 
 #include <ucf/services/UpgradeService/UpgradeModel.h>
 
@@ -53,14 +54,15 @@ public:
     using VerifyCompleteCallback =
         std::function<void(bool success, model::UpgradeErrorCode errorCode, const std::string& errorMessage)>;
 
-    void downloadPackage(
-        const model::PackageInfo& packageInfo, ProgressCallback progressCb, DownloadCompleteCallback completeCb);
+    void downloadPackage(upgrade::UpgradeOperation operation, const model::PackageInfo& packageInfo,
+        ProgressCallback progressCb, DownloadCompleteCallback completeCb);
     /// Probes the complete installer cache on the I/O worker. A hit still needs
     /// verifyPackage() before it may be handed to the system installer.
-    void findReusableInstaller(const model::PackageInfo& packageInfo, InstallerLookupCallback callback);
+    void findReusableInstaller(
+        upgrade::UpgradeOperation operation, const model::PackageInfo& packageInfo, InstallerLookupCallback callback);
     void cancelDownload();
-    void verifyPackage(
-        const std::string& filePath, const model::PackageInfo& packageInfo, VerifyCompleteCallback callback);
+    void verifyPackage(upgrade::UpgradeOperation operation, const std::string& filePath,
+        const model::PackageInfo& packageInfo, VerifyCompleteCallback callback);
 
     /// Stops cleanup ownership only after the current installer has passed
     /// verification and the UI has successfully opened it with the system.
@@ -70,8 +72,8 @@ public:
     [[nodiscard]] bool isDownloading() const;
     [[nodiscard]] bool hasSufficientSpace(int64_t requiredBytes) const;
 
-    /// These only enqueue transport cancellation and file work. They are safe
-    /// to call from an FSM transition while its mutex is held.
+    /// Stop the owning operation before resetting. These only enqueue transport
+    /// cancellation and file work, so an FSM transition may hold its mutex.
     void softReset();
     void hardReset();
 
@@ -94,7 +96,7 @@ private:
 
     struct DownloadSession
     {
-        std::uint64_t generation{0};
+        upgrade::UpgradeOperation operation;
         model::PackageInfo packageInfo{};
         ProgressCallback progressCb;
         DownloadCompleteCallback completeCb;
@@ -125,7 +127,7 @@ private:
 
     void ensureDownloadDirectory();
     std::optional<CompletedInstaller> findReusableInstallerOnIo(
-        const model::PackageInfo& packageInfo, std::uint64_t generation);
+        const model::PackageInfo& packageInfo, const upgrade::UpgradeOperation& operation);
     /// Snapshots the current cache only when its Cleanup job runs, so a delayed
     /// write cannot restore a record that has already been released.
     void syncCompletedInstallerRecord();
@@ -149,9 +151,10 @@ private:
     /// after transport cancellation. Both retain the verified complete installer.
     void retireActiveSession(PartialFilePolicy policy);
 
-    [[nodiscard]] bool isCurrent(const DownloadSession& session) const
+    /// Requires mSessionMutex. Operation IDs are assigned only by the upgrade FSM context.
+    [[nodiscard]] bool isCurrentOperationLocked(const upgrade::UpgradeOperation& operation) const
     {
-        return session.generation == mGeneration.load(std::memory_order_acquire);
+        return mCurrentOperation && mCurrentOperation->id == operation.id && !operation.stopToken.stop_requested();
     }
 
 private:
@@ -159,10 +162,10 @@ private:
     std::shared_ptr<AsyncCallbackGate> mCallbackGate;
     std::filesystem::path mDownloadDir;
     std::atomic<int> mMaxRetryCount{3};
-    std::atomic<std::uint64_t> mGeneration{0};
     std::atomic<bool> mStopRequested{false};
 
     mutable std::mutex mSessionMutex;
+    std::optional<upgrade::UpgradeOperation> mCurrentOperation;
     std::shared_ptr<DownloadSession> mActiveSession;
     std::filesystem::path mResumePartialPath;
     std::optional<model::PackageInfo> mResumePackageInfo;
@@ -171,7 +174,7 @@ private:
     /// Files created by this manager, including failed downloads whose active
     /// session has already been cleared before the FSM asks for a hard reset.
     std::vector<std::filesystem::path> mTrackedFilePaths;
-    /// Cleared whenever the session generation changes or verification restarts.
+    /// Cleared when a download starts, the manager resets, or verification restarts.
     std::filesystem::path mVerifiedInstallerPath;
     /// Includes requests retired from mActiveSession but not yet acknowledged.
     std::unordered_set<std::string> mOutstandingRequestIds;
