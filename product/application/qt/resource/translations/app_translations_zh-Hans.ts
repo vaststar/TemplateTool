@@ -37,7 +37,25 @@
 <context>
     <name>AppUpgradeController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="162"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="79"/>
+        <source>The update package is ready.
+Wait until this application has closed, then press Enter to install.
+You may be asked for your administrator password.
+Close this terminal to cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="83"/>
+        <source>Installation command finished with exit code:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="84"/>
+        <source>Press Enter to close this terminal.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="249"/>
         <source>Could not open the installer folder. Installer path: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2869,6 +2887,11 @@ Press ESC to cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
+        <source>Opening terminal...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
         <source>Continue installation</source>
         <translation type="unfinished"></translation>
@@ -2919,52 +2942,62 @@ Press ESC to cancel</source>
         <translation>系统已接受打开磁盘映像的请求。本应用将退出，请将新应用拖入 Applications（应用程序）文件夹，替换旧版本。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="84"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="85"/>
+        <source>An installation terminal was requested. This application will close. In the terminal, wait until it has closed, then press Enter to install.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="86"/>
         <source>The package open request was accepted. This application will close so you can continue installation.</source>
         <translation>系统已接受打开软件包的请求。本应用将退出，以便继续安装。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="116"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="118"/>
         <source>%1%</source>
         <translation>%1%</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="138"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="140"/>
         <source>You are using the latest version.</source>
         <translation>当前已是最新版本。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="160"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="162"/>
         <source>Background</source>
         <translation>后台</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="167"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="169"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="181"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="183"/>
         <source>Show Installer in Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="188"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="190"/>
         <source>Open Installer and Quit</source>
         <translation>打开安装包并退出</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="197"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="190"/>
+        <source>Open Terminal and Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="199"/>
         <source>Download Installer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="207"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="209"/>
         <source>Later</source>
         <translation>稍后</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="207"/>
+        <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="209"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>

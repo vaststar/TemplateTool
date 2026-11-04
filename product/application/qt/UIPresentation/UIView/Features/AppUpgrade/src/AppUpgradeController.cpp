@@ -2,6 +2,9 @@
 
 #include <QDesktopServices>
 #include <QFileInfo>
+#include <QProcess>
+#include <QStandardPaths>
+#include <QStringList>
 #include <QUrl>
 
 #include <AppContext/AppContext.h>
@@ -17,6 +20,90 @@
 namespace {
 // QML resource paths used by this controller.
 const QString kUpgradeDialogQml = QStringLiteral("UIView/AppUpgrade/qml/UpgradeDialog.qml");
+
+#if defined(Q_OS_LINUX)
+bool openLinuxInstallerTerminal(const QString& installerPath)
+{
+    const QFileInfo installer(installerPath);
+    const auto suffix = installer.suffix().toLower();
+    QStringList command{QStringLiteral("sudo")};
+    if (suffix == QStringLiteral("deb"))
+    {
+        command << QStringLiteral("apt") << QStringLiteral("install");
+    }
+    else if (suffix == QStringLiteral("rpm"))
+    {
+        if (!QStandardPaths::findExecutable(QStringLiteral("dnf")).isEmpty())
+        {
+            command << QStringLiteral("dnf") << QStringLiteral("install");
+        }
+        else
+        {
+            command << QStringLiteral("rpm") << QStringLiteral("-Uvh");
+        }
+    }
+    else
+    {
+        UIVIEW_LOG_ERROR("Unsupported Linux installer format: " << suffix.toStdString());
+        return false;
+    }
+    command << installer.absoluteFilePath();
+
+    const auto bash = QStandardPaths::findExecutable(QStringLiteral("bash"));
+    if (bash.isEmpty() || QStandardPaths::findExecutable(command.at(0)).isEmpty() ||
+        QStandardPaths::findExecutable(command.at(1)).isEmpty())
+    {
+        UIVIEW_LOG_ERROR("Bash, sudo, or the required package manager is unavailable");
+        return false;
+    }
+
+    // Arguments stay separate until Bash formats the editable command line.
+    const auto script = QStringLiteral(R"bash(
+instructions=$1
+resultMessage=$2
+closeMessage=$3
+shift 3
+printf '%s\n\n' "$instructions"
+printf -v commandLine '%q ' "$@"
+if IFS= read -e -r -i "${commandLine% }" -p '$ ' userCommand && [[ -n "${userCommand//[[:space:]]/}" ]]; then
+    "$BASH" --noprofile --norc -c "$userCommand"
+    result=$?
+    printf '\n%s %s\n' "$resultMessage" "$result"
+fi
+printf '\n'
+IFS= read -r -p "$closeMessage"
+)bash");
+
+    QStringList shellArguments{QStringLiteral("--noprofile"), QStringLiteral("--norc"), QStringLiteral("-c"), script,
+        QStringLiteral("upgrade-installer"),
+        AppUpgradeController::tr("The update package is ready.\n"
+                                "Wait until this application has closed, then press Enter to install.\n"
+                                "You may be asked for your administrator password.\n"
+                                "Close this terminal to cancel."),
+        AppUpgradeController::tr("Installation command finished with exit code:"),
+        AppUpgradeController::tr("Press Enter to close this terminal.")};
+    shellArguments.append(command);
+
+    const QStringList terminals{QStringLiteral("x-terminal-emulator"), QStringLiteral("gnome-terminal"),
+        QStringLiteral("konsole"), QStringLiteral("xterm")};
+    for (const auto& terminal : terminals)
+    {
+        const auto executable = QStandardPaths::findExecutable(terminal);
+        if (executable.isEmpty())
+        {
+            continue;
+        }
+        QStringList arguments{terminal == QStringLiteral("gnome-terminal") ? QStringLiteral("--") : QStringLiteral("-e"), bash};
+        arguments.append(shellArguments);
+        if (QProcess::startDetached(executable, arguments, installer.absolutePath()))
+        {
+            return true;
+        }
+    }
+    UIVIEW_LOG_ERROR("Could not start a supported installation terminal");
+    return false;
+}
+#endif
 }
 
 AppUpgradeController::AppUpgradeController(QObject* parent)
@@ -280,12 +367,19 @@ void AppUpgradeController::onUpgradeError(const QString& message)
 void AppUpgradeController::onInstallerOpenRequested(const QString& installerPath)
 {
     if (!m_viewModel)
+    {
         return;
+    }
 
     m_installerPath = installerPath;
+#if defined(Q_OS_LINUX)
+    revealInstaller();
+    const bool opened = openLinuxInstallerTerminal(installerPath);
+#else
     const bool opened = QDesktopServices::openUrl(QUrl::fromLocalFile(installerPath));
-    // True means the operating system accepted the request, not that installation
-    // finished. Report it before requesting application shutdown.
+#endif
+    // Report only whether the launch request was accepted. The service releases
+    // the installer before the existing InstallerOpened handler requests shutdown.
     m_viewModel->reportInstallerOpenResult(opened);
 }
 

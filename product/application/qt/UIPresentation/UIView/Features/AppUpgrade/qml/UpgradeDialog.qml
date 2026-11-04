@@ -28,7 +28,7 @@ UTDialog
             text:
             {
                 if (dialog.controller.openingInstaller)
-                    return qsTr("Opening installer...")
+                    return Qt.platform.os === "linux" ? qsTr("Opening terminal...") : qsTr("Opening installer...")
                 if (dialog.controller.installerOpened)
                     return qsTr("Continue installation")
                 if (dialog.controller.readyToInstall)
@@ -81,6 +81,8 @@ UTDialog
                     return qsTr("The installer open request was accepted. This application will close so you can continue installation.")
                 if (Qt.platform.os === "osx")
                     return qsTr("The disk image open request was accepted. This application will close. Drag the new app into Applications to replace it.")
+                if (Qt.platform.os === "linux")
+                    return qsTr("An installation terminal was requested. This application will close. In the terminal, wait until it has closed, then press Enter to install.")
                 return qsTr("The package open request was accepted. This application will close so you can continue installation.")
             }
             fontEnum: UIFontToken.Body_Text
@@ -185,7 +187,7 @@ UTDialog
             UTButton
             {
                 visible: dialog.controller.readyToInstall
-                text: qsTr("Open Installer and Quit")
+                text: Qt.platform.os === "linux" ? qsTr("Open Terminal and Quit") : qsTr("Open Installer and Quit")
                 onClicked: dialog.controller.openInstaller()
                 focus: visible
             }
