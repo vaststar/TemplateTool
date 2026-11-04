@@ -14,11 +14,11 @@
 namespace ucf::service {
 
 class UPGRADE_SERVICE_IMPL_API UpgradeService final
-    : public virtual IUpgradeService
-    , public virtual ucf::utilities::NotificationHelper<IUpgradeServiceCallback>
-    , public ucf::framework::CoreFrameworkCallbackDefault
-    , public std::enable_shared_from_this<UpgradeService>
-    , private UpgradeManager::Listener  // Receives notifications from Manager
+    : public virtual IUpgradeService,
+      public virtual ucf::utilities::NotificationHelper<IUpgradeServiceCallback>,
+      public ucf::framework::CoreFrameworkCallbackDefault,
+      public std::enable_shared_from_this<UpgradeService>,
+      private UpgradeManager::Listener // Receives notifications from Manager
 {
 public:
     explicit UpgradeService(ucf::framework::ICoreFrameworkWPtr coreFramework);

@@ -8,11 +8,10 @@
 #include <commonhead/viewmodels/UpgradeViewModel/UpgradeViewModelCreator.h>
 #include <ucf/services/UpgradeService/IUpgradeService.h>
 
-namespace commonHead::viewModels{
+namespace commonHead::viewModels {
 
-namespace impl{
-std::shared_ptr<IUpgradeViewModel> createUpgradeViewModel(
-    commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
+namespace impl {
+std::shared_ptr<IUpgradeViewModel> createUpgradeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework)
 {
     return std::make_shared<UpgradeViewModel>(commonHeadFramework);
 }
@@ -146,19 +145,24 @@ void UpgradeViewModel::onUpgradeStateChanged(ucf::service::model::UpgradeState s
     using S = ucf::service::model::UpgradeState;
     using V = model::UpgradeViewState;
     static const std::pair<S, V> mapping[] = {
-        {S::Idle,             V::Idle},
-        {S::Checking,         V::Checking},
+        {S::Idle, V::Idle},
+        {S::Checking, V::Checking},
         {S::UpgradeAvailable, V::UpgradeAvailable},
-        {S::Downloading,      V::Downloading},
-        {S::Verifying,        V::Verifying},
-        {S::ReadyToInstall,   V::ReadyToInstall},
+        {S::Downloading, V::Downloading},
+        {S::Verifying, V::Verifying},
+        {S::ReadyToInstall, V::ReadyToInstall},
         {S::OpeningInstaller, V::OpeningInstaller},
-        {S::InstallerOpened,  V::InstallerOpened},
-        {S::Failed,           V::Failed},
+        {S::InstallerOpened, V::InstallerOpened},
+        {S::Failed, V::Failed},
     };
     auto viewState = V::Idle;
-    for (const auto& [s, v] : mapping) {
-        if (s == state) { viewState = v; break; }
+    for (const auto& [s, v] : mapping)
+    {
+        if (s == state)
+        {
+            viewState = v;
+            break;
+        }
     }
     fireNotification(&IUpgradeViewModelCallback::onUpgradeStateChanged, viewState);
 }
@@ -166,7 +170,8 @@ void UpgradeViewModel::onUpgradeStateChanged(ucf::service::model::UpgradeState s
 void UpgradeViewModel::onUpgradeCheckCompleted(const ucf::service::model::UpgradeCheckResult& result)
 {
     model::UpgradeViewInfo info;
-    if (result.hasUpgrade) {
+    if (result.hasUpgrade)
+    {
         info.version = result.upgradeInfo.version;
         info.releaseDate = result.upgradeInfo.releaseDate;
         info.releaseNotes = result.upgradeInfo.releaseNotes;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CompletedInstallerRecord.h"
+
 #include <ucf/services/UpgradeService/UpgradeModel.h>
 
 #include <atomic>
@@ -19,12 +21,12 @@
 #include <vector>
 
 namespace ucf::framework {
-    class ICoreFramework;
-    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+class ICoreFramework;
+using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
 namespace ucf::service::network::http {
-    class HttpDownloadToFileResponse;
+class HttpDownloadToFileResponse;
 }
 
 namespace ucf::service {
@@ -38,8 +40,7 @@ class UpgradeDownloadManager final
 {
 public:
     explicit UpgradeDownloadManager(
-        ucf::framework::ICoreFrameworkWPtr coreFramework,
-        std::shared_ptr<AsyncCallbackGate> callbackGate);
+        ucf::framework::ICoreFrameworkWPtr coreFramework, std::shared_ptr<AsyncCallbackGate> callbackGate);
     ~UpgradeDownloadManager();
 
     UpgradeDownloadManager(const UpgradeDownloadManager&) = delete;
@@ -47,22 +48,19 @@ public:
 
     using ProgressCallback = std::function<void(int64_t currentBytes, int64_t totalBytes)>;
     using DownloadCompleteCallback = std::function<void(
-        bool success,
-        const std::string& filePath,
-        model::UpgradeErrorCode errorCode,
-        const std::string& errorMessage)>;
-    using VerifyCompleteCallback = std::function<void(
-        bool success,
-        model::UpgradeErrorCode errorCode,
-        const std::string& errorMessage)>;
+        bool success, const std::string& filePath, model::UpgradeErrorCode errorCode, const std::string& errorMessage)>;
+    using InstallerLookupCallback = std::function<void(std::optional<std::string>)>;
+    using VerifyCompleteCallback =
+        std::function<void(bool success, model::UpgradeErrorCode errorCode, const std::string& errorMessage)>;
 
-    void downloadPackage(const model::PackageInfo& packageInfo,
-                         ProgressCallback progressCb,
-                         DownloadCompleteCallback completeCb);
+    void downloadPackage(
+        const model::PackageInfo& packageInfo, ProgressCallback progressCb, DownloadCompleteCallback completeCb);
+    /// Probes the complete installer cache on the I/O worker. A hit still needs
+    /// verifyPackage() before it may be handed to the system installer.
+    void findReusableInstaller(const model::PackageInfo& packageInfo, InstallerLookupCallback callback);
     void cancelDownload();
-    void verifyPackage(const std::string& filePath,
-                       const std::string& expectedSha256,
-                       VerifyCompleteCallback callback);
+    void verifyPackage(
+        const std::string& filePath, const model::PackageInfo& packageInfo, VerifyCompleteCallback callback);
 
     /// Stops cleanup ownership only after the current installer has passed
     /// verification and the UI has successfully opened it with the system.
@@ -86,6 +84,14 @@ public:
     void joinWorkers();
 
 private:
+    using CompletedInstaller = upgrade::CompletedInstaller;
+
+    enum class PartialFilePolicy
+    {
+        KeepForResume,
+        Remove
+    };
+
     struct DownloadSession
     {
         std::uint64_t generation{0};
@@ -103,7 +109,12 @@ private:
     };
 
     using WorkerJob = std::function<void(std::stop_token)>;
-    enum class IoJobKind { Cancel, Cleanup, Attempt };
+    enum class IoJobKind
+    {
+        Cancel,
+        Cleanup,
+        Attempt
+    };
     struct IoJob
     {
         IoJobKind kind;
@@ -113,37 +124,30 @@ private:
     };
 
     void ensureDownloadDirectory();
-    std::optional<std::string> computeSha256(
-        const std::filesystem::path& filePath,
-        std::stop_token stopToken,
-        std::uint64_t generation) const;
-    void attemptDownload(const std::shared_ptr<DownloadSession>& session,
-                         std::stop_token stopToken);
-    void handleDownloadProgress(
-        const std::shared_ptr<DownloadSession>& session,
-        const std::string& requestId,
+    std::optional<CompletedInstaller> findReusableInstallerOnIo(
+        const model::PackageInfo& packageInfo, std::uint64_t generation);
+    /// Snapshots the current cache only when its Cleanup job runs, so a delayed
+    /// write cannot restore a record that has already been released.
+    void syncCompletedInstallerRecord();
+    void attemptDownload(const std::shared_ptr<DownloadSession>& session, std::stop_token stopToken);
+    void handleDownloadProgress(const std::shared_ptr<DownloadSession>& session, const std::string& requestId,
         const network::http::HttpDownloadToFileResponse& response);
-    void handleDownloadCompleted(
-        const std::shared_ptr<DownloadSession>& session,
-        const std::string& requestId,
+    void handleDownloadCompleted(const std::shared_ptr<DownloadSession>& session, const std::string& requestId,
         const network::http::HttpDownloadToFileResponse& response);
-    void finishSession(const std::shared_ptr<DownloadSession>& session,
-                       model::UpgradeErrorCode errorCode,
-                       const std::string& message);
+    void finishSession(
+        const std::shared_ptr<DownloadSession>& session, model::UpgradeErrorCode errorCode, const std::string& message);
     std::chrono::seconds getRetryDelay(int retryAttempt) const;
     void cancelHttpRequest(const std::string& requestId) const;
 
-    bool enqueueIo(IoJobKind kind,
-                   std::chrono::steady_clock::time_point due,
-                   WorkerJob job);
+    bool enqueueIo(IoJobKind kind, std::chrono::steady_clock::time_point due, WorkerJob job);
     bool enqueueVerify(WorkerJob job);
     void ioWorkerLoop(std::stop_token stopToken);
     void verifyWorkerLoop(std::stop_token stopToken);
 
     /// Invalidates the active session and schedules cancellation. A soft reset
-    /// keeps its path as a resume hint; a hard reset removes the file after
-    /// transport cancellation has closed it.
-    void retireActiveSession(bool preservePartial, bool deletePartial);
+    /// keeps its path as a resume hint; a hard reset removes incomplete files
+    /// after transport cancellation. Both retain the verified complete installer.
+    void retireActiveSession(PartialFilePolicy policy);
 
     [[nodiscard]] bool isCurrent(const DownloadSession& session) const
     {
@@ -162,6 +166,8 @@ private:
     std::shared_ptr<DownloadSession> mActiveSession;
     std::filesystem::path mResumePartialPath;
     std::optional<model::PackageInfo> mResumePackageInfo;
+    /// One complete installer, retained across resets and recoverable from disk.
+    std::optional<CompletedInstaller> mCompletedInstaller;
     /// Files created by this manager, including failed downloads whose active
     /// session has already been cleared before the FSM asks for a hard reset.
     std::vector<std::filesystem::path> mTrackedFilePaths;

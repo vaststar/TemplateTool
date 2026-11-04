@@ -38,24 +38,21 @@ void AppUpgradeController::init()
 
     // Connect emitter signals
     using Emitter = UIViewModelSignalBridge::UpgradeViewModelEmitter;
-    connect(m_emitter.get(), &Emitter::signals_onCheckCompleted,
-            this, &AppUpgradeController::onCheckCompleted);
-    connect(m_emitter.get(), &Emitter::signals_onDownloadProgress,
-            this, &AppUpgradeController::onDownloadProgress);
-    connect(m_emitter.get(), &Emitter::signals_onUpgradeStateChanged,
-            this, &AppUpgradeController::onUpgradeStateChanged);
-    connect(m_emitter.get(), &Emitter::signals_onUpgradeError,
-            this, &AppUpgradeController::onUpgradeError);
+    connect(m_emitter.get(), &Emitter::signals_onCheckCompleted, this, &AppUpgradeController::onCheckCompleted);
+    connect(m_emitter.get(), &Emitter::signals_onDownloadProgress, this, &AppUpgradeController::onDownloadProgress);
+    connect(
+        m_emitter.get(), &Emitter::signals_onUpgradeStateChanged, this, &AppUpgradeController::onUpgradeStateChanged);
+    connect(m_emitter.get(), &Emitter::signals_onUpgradeError, this, &AppUpgradeController::onUpgradeError);
     // Opening belongs to the GUI thread. Queue even for GUI-originated actions
     // so the service can finish its OpeningInstaller transition first.
-    connect(m_emitter.get(), &Emitter::signals_onInstallerOpenRequested,
-            this, &AppUpgradeController::onInstallerOpenRequested, Qt::QueuedConnection);
+    connect(m_emitter.get(), &Emitter::signals_onInstallerOpenRequested, this,
+        &AppUpgradeController::onInstallerOpenRequested, Qt::QueuedConnection);
     // Quit after the service has handed off the installer and released cleanup ownership.
-    connect(m_emitter.get(), &Emitter::signals_onUpgradeStateChanged,
-            this, [this](commonHead::viewModels::model::UpgradeViewState state) {
-                if (state == commonHead::viewModels::model::UpgradeViewState::InstallerOpened)
-                    emit quitRequested();
-            }, Qt::QueuedConnection);
+    connect(m_emitter.get(), &Emitter::signals_onUpgradeStateChanged, this,
+        [this](commonHead::viewModels::model::UpgradeViewState state) {
+        if (state == commonHead::viewModels::model::UpgradeViewState::InstallerOpened)
+            emit quitRequested();
+    }, Qt::QueuedConnection);
 
     // Create ViewModel
     m_viewModel = getViewModelFactory()->createUpgradeViewModelInstance();
@@ -162,8 +159,7 @@ void AppUpgradeController::revealInstaller()
     const auto directory = QFileInfo(m_installerPath).absolutePath();
     if (!QDesktopServices::openUrl(QUrl::fromLocalFile(directory)))
     {
-        onUpgradeError(tr("Could not open the installer folder. Installer path: %1")
-                           .arg(m_installerPath));
+        onUpgradeError(tr("Could not open the installer folder. Installer path: %1").arg(m_installerPath));
     }
 }
 
@@ -188,10 +184,8 @@ void AppUpgradeController::dismiss()
     // Clear the cached result when closing a settled upgrade dialog. The service
     // keeps an installer already handed to the operating system, so returning
     // from InstallerOpened to Idle must not remove that file.
-    if (m_viewModel && (m_state == S::UpgradeAvailable
-                        || m_state == S::ReadyToInstall
-                        || m_state == S::InstallerOpened
-                        || m_state == S::Failed))
+    if (m_viewModel && (m_state == S::UpgradeAvailable || m_state == S::ReadyToInstall ||
+                           m_state == S::InstallerOpened || m_state == S::Failed))
     {
         m_viewModel->dismissUpgrade();
     }
@@ -234,23 +228,18 @@ bool AppUpgradeController::event(QEvent* e)
 bool AppUpgradeController::isOperationInProgress() const
 {
     using S = commonHead::viewModels::model::UpgradeViewState;
-    return m_state == S::Checking
-        || m_state == S::Downloading
-        || m_state == S::Verifying
-        || m_state == S::ReadyToInstall
-        || m_state == S::OpeningInstaller
-        || m_state == S::InstallerOpened;
+    return m_state == S::Checking || m_state == S::Downloading || m_state == S::Verifying ||
+           m_state == S::ReadyToInstall || m_state == S::OpeningInstaller || m_state == S::InstallerOpened;
 }
 
 // ============================================================================
 // ViewModel Callback Slots
 // ============================================================================
 
-void AppUpgradeController::onCheckCompleted(bool hasUpgrade, const QString& version,
-                                            const QString& releaseNotes, bool mandatory)
+void AppUpgradeController::onCheckCompleted(
+    bool hasUpgrade, const QString& version, const QString& releaseNotes, bool mandatory)
 {
-    UIVIEW_LOG_DEBUG("onCheckCompleted: hasUpgrade=" << hasUpgrade
-                     << ", version=" << version.toStdString());
+    UIVIEW_LOG_DEBUG("onCheckCompleted: hasUpgrade=" << hasUpgrade << ", version=" << version.toStdString());
     m_version = version;
     m_releaseNotes = releaseNotes;
     m_mandatory = mandatory;
@@ -262,9 +251,7 @@ void AppUpgradeController::onCheckCompleted(bool hasUpgrade, const QString& vers
 
 void AppUpgradeController::onDownloadProgress(int64_t currentBytes, int64_t totalBytes)
 {
-    m_downloadProgress = (totalBytes > 0)
-        ? static_cast<double>(currentBytes) / static_cast<double>(totalBytes)
-        : 0.0;
+    m_downloadProgress = (totalBytes > 0) ? static_cast<double>(currentBytes) / static_cast<double>(totalBytes) : 0.0;
     emit progressChanged();
 }
 
@@ -316,8 +303,7 @@ void AppUpgradeController::showUpgradeDialog()
     UIVIEW_LOG_DEBUG("showUpgradeDialog");
     m_dialogOpen = true;
     auto win = getViewFactory()->createQmlWindow(
-        kUpgradeDialogQml,
-        { { QStringLiteral("controller"), QVariant::fromValue<QObject*>(this) } });
+        kUpgradeDialogQml, {{QStringLiteral("controller"), QVariant::fromValue<QObject*>(this)}});
     if (!win)
     {
         m_dialogOpen = false;

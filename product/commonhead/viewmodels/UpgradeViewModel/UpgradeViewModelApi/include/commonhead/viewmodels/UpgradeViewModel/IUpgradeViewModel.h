@@ -6,11 +6,12 @@
 #include <commonhead/utilities/VMNotificationHelper/IVMNotificationHelper.h>
 #include <commonhead/viewmodels/ViewModelCore/IViewModel.h>
 
-namespace commonHead::viewModels{
+namespace commonHead::viewModels {
 
-namespace model{
+namespace model {
 
-enum class UpgradeViewState : uint8_t {
+enum class UpgradeViewState : uint8_t
+{
     Idle,
     Checking,
     UpgradeAvailable,
@@ -22,7 +23,8 @@ enum class UpgradeViewState : uint8_t {
     Failed
 };
 
-struct UpgradeViewInfo {
+struct UpgradeViewInfo
+{
     std::string version;
     std::string releaseDate;
     std::string releaseNotes;
@@ -39,6 +41,7 @@ public:
     IUpgradeViewModelCallback& operator=(const IUpgradeViewModelCallback&) = delete;
     IUpgradeViewModelCallback& operator=(IUpgradeViewModelCallback&&) = delete;
     virtual ~IUpgradeViewModelCallback() = default;
+
 public:
     virtual void onUpgradeStateChanged(model::UpgradeViewState state) = 0;
     virtual void onCheckCompleted(bool hasUpgrade, const model::UpgradeViewInfo& info) = 0;
@@ -47,7 +50,8 @@ public:
     virtual void onInstallerOpenRequested(const std::string& installerPath) = 0;
 };
 
-class IUpgradeViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IUpgradeViewModelCallback>
+class IUpgradeViewModel : public IViewModel,
+                          public virtual commonHead::utilities::IVMNotificationHelper<IUpgradeViewModelCallback>
 {
 public:
     using IViewModel::IViewModel;
@@ -56,6 +60,7 @@ public:
     IUpgradeViewModel& operator=(const IUpgradeViewModel&) = delete;
     IUpgradeViewModel& operator=(IUpgradeViewModel&&) = delete;
     virtual ~IUpgradeViewModel() = default;
+
 public:
     virtual void checkForUpgrade() = 0;
     virtual void downloadUpgrade() = 0;

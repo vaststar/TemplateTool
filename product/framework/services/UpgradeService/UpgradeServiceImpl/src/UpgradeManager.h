@@ -14,8 +14,8 @@
 #include <vector>
 
 namespace ucf::framework {
-    class ICoreFramework;
-    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+class ICoreFramework;
+using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
 namespace ucf::service {
@@ -30,7 +30,8 @@ class UpgradeManager final
 {
 public:
     /// Internal listener interface — implemented by UpgradeService via private inheritance
-    struct Listener {
+    struct Listener
+    {
         virtual ~Listener() = default;
         virtual void onUpgradeStateChanged(model::UpgradeState state) = 0;
         virtual void onUpgradeCheckCompleted(const model::UpgradeCheckResult& result) = 0;
@@ -103,13 +104,12 @@ private:
     std::unique_ptr<upgrade::UpgradeFSM> mFsm;
 
     // Sub-managers (destroyed before mFsm)
-    std::unique_ptr<UpgradeCheckManager>    mCheckManager;
+    std::unique_ptr<UpgradeCheckManager> mCheckManager;
     std::unique_ptr<UpgradeDownloadManager> mDownloadManager;
 
     // Auto-check timer
     std::thread mAutoCheckThread;
     std::atomic<bool> mStopRequested{false};
-
 };
 
 } // namespace ucf::service

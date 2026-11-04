@@ -21,12 +21,12 @@ namespace {
 
 // The captured gate remains alive after UpgradeManager is destroyed. A callback
 // may use its captured `this` only while it holds a lease.
-template <typename Callback>
-auto withCallbackGate(std::shared_ptr<AsyncCallbackGate> gate, Callback callback)
+template <typename Callback> auto withCallbackGate(std::shared_ptr<AsyncCallbackGate> gate, Callback callback)
 {
     return [gate = std::move(gate), callback = std::move(callback)](auto&&... args) mutable {
         auto lease = gate->tryEnter();
-        if (!lease) {
+        if (!lease)
+        {
             return;
         }
         std::invoke(callback, std::forward<decltype(args)>(args)...);
@@ -111,86 +111,99 @@ void UpgradeManager::bindFsmCallbacks()
 {
     // ── Notification callbacks → forwarded to Service via Listener ──
 
-    mFsmContext.onStateChanged = withCallbackGate(mCallbackGate, [this](model::UpgradeState state) {
-        notifyStateChanged(state);
-    });
+    mFsmContext.onStateChanged =
+        withCallbackGate(mCallbackGate, [this](model::UpgradeState state) { notifyStateChanged(state); });
 
-    mFsmContext.onCheckCompleted = withCallbackGate(mCallbackGate, [this](const model::UpgradeCheckResult& result) {
-        notifyCheckCompleted(result);
-    });
+    mFsmContext.onCheckCompleted = withCallbackGate(
+        mCallbackGate, [this](const model::UpgradeCheckResult& result) { notifyCheckCompleted(result); });
 
-    mFsmContext.onDownloadProgress = withCallbackGate(mCallbackGate, [this](int64_t current, int64_t total) {
-        notifyDownloadProgress(current, total);
-    });
+    mFsmContext.onDownloadProgress = withCallbackGate(
+        mCallbackGate, [this](int64_t current, int64_t total) { notifyDownloadProgress(current, total); });
 
-    mFsmContext.onError = withCallbackGate(mCallbackGate, [this](model::UpgradeErrorCode code, const std::string& msg) {
-        notifyError(code, msg);
-    });
+    mFsmContext.onError = withCallbackGate(
+        mCallbackGate, [this](model::UpgradeErrorCode code, const std::string& msg) { notifyError(code, msg); });
 
     // ── Async operation triggers → delegate to sub-managers ──
 
     mFsmContext.triggerCheckForUpgrade = withCallbackGate(mCallbackGate, [this](bool userTriggered) {
-        auto version  = getCurrentVersionString();
+        auto version = getCurrentVersionString();
         auto platform = getCurrentPlatform();
-        auto arch     = getCurrentArch();
+        auto arch = getCurrentArch();
 
         mCheckManager->checkForUpgrade(version, platform, arch, mPackageFormat, userTriggered,
             withCallbackGate(mCallbackGate, [this](bool success, const model::UpgradeCheckResult& result,
-                   model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (!success) {
-                    mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-                } else if (!result.hasUpgrade) {
-                    mFsm->processEvent(upgrade::EvCheckNoUpgrade{});
-                } else {
-                    mFsm->processEvent(upgrade::EvCheckSuccess{result.upgradeInfo});
-                }
-            }));
+                                                model::UpgradeErrorCode errCode, const std::string& errMsg) {
+            if (!success)
+            {
+                mFsm->processEvent(upgrade::EvError{errCode, errMsg});
+            }
+            else if (!result.hasUpgrade)
+            {
+                mFsm->processEvent(upgrade::EvCheckNoUpgrade{});
+            }
+            else
+            {
+                // Keep Checking until the local installer lookup finishes.
+                // A candidate still passes through the normal SHA verification.
+                const auto info = result.upgradeInfo;
+                mDownloadManager->findReusableInstaller(
+                    info.package, withCallbackGate(mCallbackGate, [this, info](std::optional<std::string> cachedPath) {
+                    mFsm->processEvent(upgrade::EvCheckSuccess{info, std::move(cachedPath)});
+                }));
+            }
+        }));
     });
 
     mFsmContext.triggerDownload = withCallbackGate(mCallbackGate, [this](const std::string& /*url*/) {
-        if (!mFsmContext.availableUpgrade) {
-            mFsm->processEvent(upgrade::EvError{
-                model::UpgradeErrorCode::DownloadFailed, "No available upgrade to download"});
+        if (!mFsmContext.availableUpgrade)
+        {
+            mFsm->processEvent(
+                upgrade::EvError{model::UpgradeErrorCode::DownloadFailed, "No available upgrade to download"});
             return;
         }
         auto& info = *mFsmContext.availableUpgrade;
         mDownloadManager->downloadPackage(info.package,
             // Progress callback
-            withCallbackGate(mCallbackGate, [this](int64_t current, int64_t total) {
-                mFsm->processEvent(upgrade::EvProgress{current, total});
-            }),
+            withCallbackGate(mCallbackGate,
+                [this](int64_t current, int64_t total) { mFsm->processEvent(upgrade::EvProgress{current, total}); }),
             // Completion callback
             withCallbackGate(mCallbackGate, [this](bool success, const std::string& path,
-                   model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (success) {
-                    mFsm->processEvent(upgrade::EvDownloadDone{path});
-                } else {
-                    mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-                }
-            }));
+                                                model::UpgradeErrorCode errCode, const std::string& errMsg) {
+            if (success)
+            {
+                mFsm->processEvent(upgrade::EvDownloadDone{path});
+            }
+            else
+            {
+                mFsm->processEvent(upgrade::EvError{errCode, errMsg});
+            }
+        }));
     });
 
     mFsmContext.triggerVerify = withCallbackGate(mCallbackGate, [this](const std::string& filePath) {
-        if (!mFsmContext.availableUpgrade) {
-            mFsm->processEvent(upgrade::EvError{
-                model::UpgradeErrorCode::VerifyFailed, "No available upgrade to verify"});
+        if (!mFsmContext.availableUpgrade)
+        {
+            mFsm->processEvent(
+                upgrade::EvError{model::UpgradeErrorCode::VerifyFailed, "No available upgrade to verify"});
             return;
         }
         auto& info = *mFsmContext.availableUpgrade;
-        mDownloadManager->verifyPackage(filePath, info.package.sha256,
-            withCallbackGate(mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
-                if (success) {
-                    mFsm->processEvent(upgrade::EvVerifyOk{});
-                } else {
-                    mFsm->processEvent(upgrade::EvError{errCode, errMsg});
-                }
-            }));
+        mDownloadManager->verifyPackage(filePath, info.package,
+            withCallbackGate(
+                mCallbackGate, [this](bool success, model::UpgradeErrorCode errCode, const std::string& errMsg) {
+            if (success)
+            {
+                mFsm->processEvent(upgrade::EvVerifyOk{});
+            }
+            else
+            {
+                mFsm->processEvent(upgrade::EvError{errCode, errMsg});
+            }
+        }));
     });
 
-    mFsmContext.triggerOpenInstaller = withCallbackGate(mCallbackGate,
-        [this](const std::string& installerPath) {
-            notifyInstallerOpenRequested(installerPath);
-        });
+    mFsmContext.triggerOpenInstaller = withCallbackGate(
+        mCallbackGate, [this](const std::string& installerPath) { notifyInstallerOpenRequested(installerPath); });
 
     mFsmContext.releaseInstaller = [this](const std::string& installerPath) {
         auto lease = mCallbackGate->tryEnter();
@@ -199,13 +212,9 @@ void UpgradeManager::bindFsmCallbacks()
 
     // ── Reset triggers ──
 
-    mFsmContext.triggerHardReset = withCallbackGate(mCallbackGate, [this]() {
-        hardResetManagers();
-    });
+    mFsmContext.triggerHardReset = withCallbackGate(mCallbackGate, [this]() { hardResetManagers(); });
 
-    mFsmContext.triggerSoftReset = withCallbackGate(mCallbackGate, [this]() {
-        softResetManagers();
-    });
+    mFsmContext.triggerSoftReset = withCallbackGate(mCallbackGate, [this]() { softResetManagers(); });
 }
 
 // ── Public operations (FSM event dispatch) ──
@@ -213,42 +222,60 @@ void UpgradeManager::bindFsmCallbacks()
 void UpgradeManager::checkForUpgrade(bool userTriggered)
 {
     auto lease = mCallbackGate->tryEnter();
-    if (!lease) { return; }
+    if (!lease)
+    {
+        return;
+    }
     mFsm->processEvent(upgrade::EvCheckRequested{userTriggered});
 }
 
 void UpgradeManager::downloadUpgrade()
 {
     auto lease = mCallbackGate->tryEnter();
-    if (!lease) { return; }
+    if (!lease)
+    {
+        return;
+    }
     mFsm->processEvent(upgrade::EvDownloadStart{});
 }
 
 void UpgradeManager::openInstaller()
 {
     auto lease = mCallbackGate->tryEnter();
-    if (!lease) { return; }
+    if (!lease)
+    {
+        return;
+    }
     mFsm->processEvent(upgrade::EvOpenInstaller{});
 }
 
 void UpgradeManager::reportInstallerOpenResult(bool success)
 {
     auto lease = mCallbackGate->tryEnter();
-    if (!lease) { return; }
+    if (!lease)
+    {
+        return;
+    }
     mFsm->processEvent(upgrade::EvInstallerOpenResult{success});
 }
 
 void UpgradeManager::cancelDownload()
 {
     auto lease = mCallbackGate->tryEnter();
-    if (!lease) { return; }
+    if (!lease)
+    {
+        return;
+    }
     mFsm->processEvent(upgrade::EvCancel{});
 }
 
 void UpgradeManager::dismissUpgrade()
 {
     auto lease = mCallbackGate->tryEnter();
-    if (!lease) { return; }
+    if (!lease)
+    {
+        return;
+    }
     mFsm->processEvent(upgrade::EvDismiss{});
 }
 
@@ -256,66 +283,80 @@ void UpgradeManager::dismissUpgrade()
 
 model::UpgradeState UpgradeManager::getUpgradeState() const
 {
-    if (!mFsm) {
+    if (!mFsm)
+    {
         return model::UpgradeState::Idle;
     }
     return mFsm->visitState([](const auto& state) -> model::UpgradeState {
         using S = std::decay_t<decltype(state)>;
-        if constexpr (std::is_same_v<S, upgrade::Idle>)            return model::UpgradeState::Idle;
-        if constexpr (std::is_same_v<S, upgrade::Checking>)        return model::UpgradeState::Checking;
-        if constexpr (std::is_same_v<S, upgrade::UpgradeAvailable>) return model::UpgradeState::UpgradeAvailable;
-        if constexpr (std::is_same_v<S, upgrade::Downloading>)     return model::UpgradeState::Downloading;
-        if constexpr (std::is_same_v<S, upgrade::Verifying>)       return model::UpgradeState::Verifying;
-        if constexpr (std::is_same_v<S, upgrade::ReadyToInstall>)  return model::UpgradeState::ReadyToInstall;
-        if constexpr (std::is_same_v<S, upgrade::OpeningInstaller>) return model::UpgradeState::OpeningInstaller;
-        if constexpr (std::is_same_v<S, upgrade::InstallerOpened>) return model::UpgradeState::InstallerOpened;
-        if constexpr (std::is_same_v<S, upgrade::Failed>)          return model::UpgradeState::Failed;
+        if constexpr (std::is_same_v<S, upgrade::Idle>)
+            return model::UpgradeState::Idle;
+        if constexpr (std::is_same_v<S, upgrade::Checking>)
+            return model::UpgradeState::Checking;
+        if constexpr (std::is_same_v<S, upgrade::UpgradeAvailable>)
+            return model::UpgradeState::UpgradeAvailable;
+        if constexpr (std::is_same_v<S, upgrade::Downloading>)
+            return model::UpgradeState::Downloading;
+        if constexpr (std::is_same_v<S, upgrade::Verifying>)
+            return model::UpgradeState::Verifying;
+        if constexpr (std::is_same_v<S, upgrade::ReadyToInstall>)
+            return model::UpgradeState::ReadyToInstall;
+        if constexpr (std::is_same_v<S, upgrade::OpeningInstaller>)
+            return model::UpgradeState::OpeningInstaller;
+        if constexpr (std::is_same_v<S, upgrade::InstallerOpened>)
+            return model::UpgradeState::InstallerOpened;
+        if constexpr (std::is_same_v<S, upgrade::Failed>)
+            return model::UpgradeState::Failed;
     });
 }
 
 std::optional<model::UpgradeInfo> UpgradeManager::getAvailableUpgrade() const
 {
-    if (!mFsm) {
+    if (!mFsm)
+    {
         return std::nullopt;
     }
-    return mFsm->withContext([](const upgrade::UpgradeContext& context) {
-        return context.availableUpgrade;
-    });
+    return mFsm->withContext([](const upgrade::UpgradeContext& context) { return context.availableUpgrade; });
 }
 
 // ── Notification forwarding ──
 
 void UpgradeManager::notifyStateChanged(model::UpgradeState state)
 {
-    if (mListener) {
+    if (mListener)
+    {
         mListener->onUpgradeStateChanged(state);
     }
 }
 
 void UpgradeManager::notifyCheckCompleted(const model::UpgradeCheckResult& result)
 {
-    if (mListener) {
+    if (mListener)
+    {
         mListener->onUpgradeCheckCompleted(result);
     }
 }
 
 void UpgradeManager::notifyDownloadProgress(int64_t current, int64_t total)
 {
-    if (mListener) {
+    if (mListener)
+    {
         mListener->onDownloadProgressChanged(current, total);
     }
 }
 
 void UpgradeManager::notifyError(model::UpgradeErrorCode code, const std::string& msg)
 {
-    if (mListener) {
+    if (mListener)
+    {
         mListener->onUpgradeError(code, msg);
     }
 }
 
 void UpgradeManager::notifyInstallerOpenRequested(const std::string& installerPath)
 {
-    if (mListener) {
+    if (mListener)
+    {
         mListener->onInstallerOpenRequested(installerPath);
     }
 }
@@ -324,7 +365,8 @@ void UpgradeManager::notifyInstallerOpenRequested(const std::string& installerPa
 
 void UpgradeManager::hardResetManagers()
 {
-    UPGRADE_LOG_DEBUG("Hard reset all managers (clear caches and partial downloads)");
+    UPGRADE_LOG_DEBUG(
+        "Hard reset all managers (clear check result and incomplete downloads; retain verified installer)");
     mCheckManager->reset();
     mDownloadManager->hardReset();
     mFsmContext.availableUpgrade.reset();
@@ -345,8 +387,10 @@ void UpgradeManager::softResetManagers()
 std::string UpgradeManager::getCurrentVersionString() const
 {
     auto coreFramework = mCoreFramework.lock();
-    if (coreFramework) {
-        if (auto clientInfo = coreFramework->getService<IClientInfoService>().lock()) {
+    if (coreFramework)
+    {
+        if (auto clientInfo = coreFramework->getService<IClientInfoService>().lock())
+        {
             return clientInfo->getApplicationVersion().toString();
         }
     }
@@ -357,9 +401,18 @@ std::string UpgradeManager::getCurrentPlatform() const
 {
     auto name = ucf::utilities::OSUtils::getOSTypeName();
     // Manifest uses lowercase: "windows", "linux", "macos"
-    if (name == "Windows") { return "windows"; }
-    if (name == "Linux")   { return "linux"; }
-    if (name == "macOS")   { return "macos"; }
+    if (name == "Windows")
+    {
+        return "windows";
+    }
+    if (name == "Linux")
+    {
+        return "linux";
+    }
+    if (name == "macOS")
+    {
+        return "macos";
+    }
     return name;
 }
 
@@ -367,7 +420,10 @@ std::string UpgradeManager::getCurrentArch() const
 {
     auto arch = ucf::utilities::OSUtils::getCPUArch();
     // Manifest uses "x64" instead of "x86_64"
-    if (arch == "x86_64") { return "x64"; }
+    if (arch == "x86_64")
+    {
+        return "x64";
+    }
     return arch;
 }
 
@@ -380,15 +436,24 @@ model::PackageFormat UpgradeManager::getCurrentPackageFormat() const
 #elif defined(__linux__)
     // This per-package marker is written by CPack only for DEB and RPM.
     // Portable archives deliberately do not inherit the host's package type.
-    if (auto cf = mCoreFramework.lock()) {
-        if (auto clientInfo = cf->getService<IClientInfoService>().lock()) {
-            const auto marker = ucf::utilities::FilePathUtils::pathFromUtf8(
-                clientInfo->getInstallDirectory()) / upgrade::constants::kPackageFormatMarkerFileName;
+    if (auto cf = mCoreFramework.lock())
+    {
+        if (auto clientInfo = cf->getService<IClientInfoService>().lock())
+        {
+            const auto marker = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getInstallDirectory()) /
+                                upgrade::constants::kPackageFormatMarkerFileName;
             std::ifstream input(marker);
             std::string format;
-            if (std::getline(input, format)) {
-                if (format == "deb") { return model::PackageFormat::Deb; }
-                if (format == "rpm") { return model::PackageFormat::Rpm; }
+            if (std::getline(input, format))
+            {
+                if (format == "deb")
+                {
+                    return model::PackageFormat::Deb;
+                }
+                if (format == "rpm")
+                {
+                    return model::PackageFormat::Rpm;
+                }
             }
         }
     }
@@ -407,16 +472,19 @@ void UpgradeManager::startAutoCheckTimer()
         UPGRADE_LOG_DEBUG("UpgradeManager auto-check thread started, address: " << this);
 
         // Initial delay: 30 seconds after startup
-        for (int i = 0; i < 30 && !mStopRequested.load(); ++i) {
+        for (int i = 0; i < 30 && !mStopRequested.load(); ++i)
+        {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        while (!mStopRequested.load()) {
+        while (!mStopRequested.load())
+        {
             UPGRADE_LOG_DEBUG("Auto-check timer triggered");
             checkForUpgrade(/*userTriggered=*/false);
 
             // Check every 4 hours
-            for (int i = 0; i < 4 * 3600 && !mStopRequested.load(); ++i) {
+            for (int i = 0; i < 4 * 3600 && !mStopRequested.load(); ++i)
+            {
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
@@ -432,7 +500,8 @@ void UpgradeManager::stopAutoCheckTimer()
     UPGRADE_LOG_INFO("UpgradeManager auto-check timer shutdown started, address: " << this);
 
     mStopRequested.store(true);
-    if (mAutoCheckThread.joinable()) {
+    if (mAutoCheckThread.joinable())
+    {
         mAutoCheckThread.join();
     }
 

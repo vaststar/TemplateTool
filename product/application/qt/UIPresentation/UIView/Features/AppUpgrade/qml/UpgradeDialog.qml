@@ -4,7 +4,8 @@ import QtQuick.Layouts
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
-UTDialog {
+UTDialog
+{
     id: dialog
 
     required property var controller
@@ -15,14 +16,17 @@ UTDialog {
     minimumWidth: 400
     minimumHeight: 300
 
-    ColumnLayout {
+    ColumnLayout
+    {
         anchors.fill: parent
         anchors.margins: 24
         spacing: 16
 
         // Header
-        UTText {
-            text: {
+        UTText
+        {
+            text:
+            {
                 if (dialog.controller.openingInstaller)
                     return qsTr("Opening installer...")
                 if (dialog.controller.installerOpened)
@@ -44,7 +48,8 @@ UTDialog {
         }
 
         // Version info
-        UTText {
+        UTText
+        {
             visible: dialog.controller.hasUpgrade
             text: qsTr("Version %1").arg(dialog.controller.version)
             fontEnum: UIFontToken.Body_Text
@@ -52,12 +57,14 @@ UTDialog {
         }
 
         // Release notes
-        UTScrollView {
+        UTScrollView
+        {
             visible: dialog.controller.hasUpgrade && dialog.controller.releaseNotes.length > 0
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            UTTextArea {
+            UTTextArea
+            {
                 readOnly: true
                 text: dialog.controller.releaseNotes
                 wrapMode: TextArea.Wrap
@@ -65,9 +72,11 @@ UTDialog {
         }
 
         // Installer handoff instructions
-        UTText {
+        UTText
+        {
             visible: dialog.controller.installerOpened
-            text: {
+            text:
+            {
                 if (Qt.platform.os === "windows")
                     return qsTr("The installer open request was accepted. This application will close so you can continue installation.")
                 if (Qt.platform.os === "osx")
@@ -80,7 +89,8 @@ UTDialog {
         }
 
         // Checking / Verifying / Opening spinner
-        UTBusyIndicator {
+        UTBusyIndicator
+        {
             visible: dialog.controller.checking || dialog.controller.verifying
                      || dialog.controller.openingInstaller
             running: visible
@@ -88,18 +98,21 @@ UTDialog {
         }
 
         // Download progress
-        ColumnLayout {
+        ColumnLayout
+        {
             visible: dialog.controller.downloading
             Layout.fillWidth: true
             spacing: 4
 
-            UTProgressBar {
+            UTProgressBar
+            {
                 from: 0; to: 1.0
                 value: dialog.controller.downloadProgress
                 Layout.fillWidth: true
             }
 
-            UTText {
+            UTText
+            {
                 text: qsTr("%1%").arg(Math.round(dialog.controller.downloadProgress * 100))
                 fontEnum: UIFontToken.Caption_Text
                 Layout.alignment: Qt.AlignHCenter
@@ -107,7 +120,8 @@ UTDialog {
         }
 
         // Error message
-        UTText {
+        UTText
+        {
             visible: dialog.controller.errorMessage.length > 0
             text: dialog.controller.errorMessage
             fontEnum: UIFontToken.Caption_Text
@@ -117,7 +131,8 @@ UTDialog {
         }
 
         // No update message
-        UTText {
+        UTText
+        {
             visible: dialog.controller.idle
                      && dialog.controller.errorMessage.length === 0
             text: qsTr("You are using the latest version.")
@@ -129,29 +144,37 @@ UTDialog {
         }
 
         // Buttons
-        RowLayout {
+        RowLayout
+        {
             Layout.fillWidth: true
             spacing: 12
 
-            Item { Layout.fillWidth: true }
+            Item
+            {
+                Layout.fillWidth: true
+            }
 
-            UTButton {
+            UTButton
+            {
                 visible: dialog.controller.downloading
                 text: qsTr("Background")
                 onClicked: dialog.close()
             }
 
-            UTButton {
+            UTButton
+            {
                 visible: dialog.controller.downloading
                 text: qsTr("Cancel")
-                onClicked: {
+                onClicked:
+                {
                     dialog.controller.cancelDownload()
                     dialog.close()
                 }
                 focus: visible
             }
 
-            UTButton {
+            UTButton
+            {
                 visible: dialog.controller.installerOpened
                          || (dialog.controller.readyToInstall
                              && dialog.controller.errorMessage.length > 0)
@@ -159,14 +182,16 @@ UTDialog {
                 onClicked: dialog.controller.revealInstaller()
             }
 
-            UTButton {
+            UTButton
+            {
                 visible: dialog.controller.readyToInstall
                 text: qsTr("Open Installer and Quit")
                 onClicked: dialog.controller.openInstaller()
                 focus: visible
             }
 
-            UTButton {
+            UTButton
+            {
                 visible: dialog.controller.hasUpgrade && !dialog.controller.downloading
                          && !dialog.controller.verifying && !dialog.controller.readyToInstall
                 text: qsTr("Download Installer")
@@ -175,7 +200,8 @@ UTDialog {
 
             }
 
-            UTButton {
+            UTButton
+            {
                 visible: !dialog.controller.downloading && !dialog.controller.verifying
                          && !dialog.controller.openingInstaller
                 text: dialog.controller.hasUpgrade ? qsTr("Later") : qsTr("Close")
@@ -188,7 +214,8 @@ UTDialog {
         }
     }
 
-    onClosing: {
+    onClosing:
+    {
         dialog.controller.dismiss()
     }
 }

@@ -9,15 +9,13 @@
 #include <ucf/services/UpgradeService/IUpgradeServiceCallback.h>
 
 namespace ucf::framework {
-    class ICoreFramework;
-    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+class ICoreFramework;
+using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
 namespace ucf::service {
 
-class IUpgradeService
-    : public IService
-    , public virtual ucf::utilities::INotificationHelper<IUpgradeServiceCallback>
+class IUpgradeService : public IService, public virtual ucf::utilities::INotificationHelper<IUpgradeServiceCallback>
 {
 public:
     IUpgradeService() = default;

@@ -63,8 +63,7 @@ const UpgradeManager& UpgradeService::DataPrivate::getUpgradeManager() const
 /////////////////////////////////////////////////////////////////////////////////////
 
 namespace impl {
-std::shared_ptr<IUpgradeService> createUpgradeService(
-    ucf::framework::ICoreFrameworkWPtr coreFramework)
+std::shared_ptr<IUpgradeService> createUpgradeService(ucf::framework::ICoreFrameworkWPtr coreFramework)
 {
     return std::make_shared<UpgradeService>(coreFramework);
 }
@@ -109,10 +108,8 @@ std::string UpgradeService::getServiceName() const
 
 std::vector<ServiceDependency> UpgradeService::dependencies() const
 {
-    return {
-        { std::type_index(typeid(INetworkService)), DependencyKind::Required },
-        { std::type_index(typeid(IClientInfoService)), DependencyKind::Required }
-    };
+    return {{std::type_index(typeid(INetworkService)), DependencyKind::Required},
+        {std::type_index(typeid(IClientInfoService)), DependencyKind::Required}};
 }
 
 void UpgradeService::onServiceInitialized()

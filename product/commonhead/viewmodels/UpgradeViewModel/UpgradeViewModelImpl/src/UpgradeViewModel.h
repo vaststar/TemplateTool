@@ -6,11 +6,11 @@
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 #include <ucf/services/UpgradeService/IUpgradeServiceCallback.h>
 
-namespace commonHead::viewModels{
-class UpgradeViewModel: public virtual IUpgradeViewModel,
-                        public virtual commonHead::utilities::VMNotificationHelper<IUpgradeViewModelCallback>,
-                        public ucf::service::IUpgradeServiceCallback,
-                        public std::enable_shared_from_this<UpgradeViewModel>
+namespace commonHead::viewModels {
+class UpgradeViewModel : public virtual IUpgradeViewModel,
+                         public virtual commonHead::utilities::VMNotificationHelper<IUpgradeViewModelCallback>,
+                         public ucf::service::IUpgradeServiceCallback,
+                         public std::enable_shared_from_this<UpgradeViewModel>
 {
 public:
     explicit UpgradeViewModel(commonHead::ICommonHeadFrameworkWptr commonHeadFramework);
@@ -19,6 +19,7 @@ public:
     UpgradeViewModel& operator=(const UpgradeViewModel&) = delete;
     UpgradeViewModel& operator=(UpgradeViewModel&&) = delete;
     ~UpgradeViewModel() override;
+
 public:
     std::string getViewModelName() const override;
 

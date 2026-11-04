@@ -7,21 +7,28 @@
 
 namespace {
 
-class NoOpUpgradeViewModelCallback final
-    : public commonHead::viewModels::IUpgradeViewModelCallback
+class NoOpUpgradeViewModelCallback final : public commonHead::viewModels::IUpgradeViewModelCallback
 {
 public:
-    void onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState) override {}
+    void onUpgradeStateChanged(commonHead::viewModels::model::UpgradeViewState) override
+    {
+    }
 
-    void onCheckCompleted(
-        bool,
-        const commonHead::viewModels::model::UpgradeViewInfo&) override {}
+    void onCheckCompleted(bool, const commonHead::viewModels::model::UpgradeViewInfo&) override
+    {
+    }
 
-    void onDownloadProgress(int64_t, int64_t) override {}
+    void onDownloadProgress(int64_t, int64_t) override
+    {
+    }
 
-    void onUpgradeError(const std::string&) override {}
+    void onUpgradeError(const std::string&) override
+    {
+    }
 
-    void onInstallerOpenRequested(const std::string&) override {}
+    void onInstallerOpenRequested(const std::string&) override
+    {
+    }
 };
 
 } // namespace
@@ -29,8 +36,7 @@ public:
 TEST_CASE("UpgradeViewModel creator returns its public API", "[UpgradeViewModel][Api]")
 {
     std::shared_ptr<commonHead::viewModels::IUpgradeViewModel> viewModel =
-        commonHead::viewModels::impl::createUpgradeViewModel(
-            commonHead::ICommonHeadFrameworkWptr{});
+        commonHead::viewModels::impl::createUpgradeViewModel(commonHead::ICommonHeadFrameworkWptr{});
 
     REQUIRE(viewModel != nullptr);
     REQUIRE(viewModel->getViewModelName() == "UpgradeViewModel");
@@ -38,8 +44,7 @@ TEST_CASE("UpgradeViewModel creator returns its public API", "[UpgradeViewModel]
 
 TEST_CASE("UpgradeViewModel public API is safe without a framework", "[UpgradeViewModel][Api]")
 {
-    auto viewModel = commonHead::viewModels::impl::createUpgradeViewModel(
-        commonHead::ICommonHeadFrameworkWptr{});
+    auto viewModel = commonHead::viewModels::impl::createUpgradeViewModel(commonHead::ICommonHeadFrameworkWptr{});
     auto callback = std::make_shared<NoOpUpgradeViewModelCallback>();
 
     REQUIRE_NOTHROW(viewModel->registerCallback(callback));

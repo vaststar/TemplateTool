@@ -28,6 +28,12 @@ set(MODULE_SOURCE_PRIVATE
     src/check/UpgradeCheckManager.cpp
     src/download/UpgradeDownloadManager.h
     src/download/UpgradeDownloadManager.cpp
+    src/download/PackageVerifier.h
+    src/download/PackageVerifier.cpp
+    src/download/DownloadFileUtils.h
+    src/download/DownloadFileUtils.cpp
+    src/download/CompletedInstallerRecord.h
+    src/download/CompletedInstallerRecord.cpp
 )
 
 set(MODULE_DEPENDENCIES_PUBLIC

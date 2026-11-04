@@ -9,11 +9,11 @@
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
 namespace commonHead::viewModels {
-    class IUpgradeViewModel;
+class IUpgradeViewModel;
 }
 
 namespace UIViewModelSignalBridge {
-    class UpgradeViewModelEmitter;
+class UpgradeViewModelEmitter;
 }
 
 class AppUpgradeController : public UIViewController
@@ -85,8 +85,7 @@ private:
 
     // Single source of truth — mirrors the FSM state reported via onUpgradeStateChanged.
     // All bool properties (checking, downloading, ...) are derived from this value.
-    commonHead::viewModels::model::UpgradeViewState m_state
-        = commonHead::viewModels::model::UpgradeViewState::Idle;
+    commonHead::viewModels::model::UpgradeViewState m_state = commonHead::viewModels::model::UpgradeViewState::Idle;
 
     bool m_dialogOpen = false;
     QString m_version;

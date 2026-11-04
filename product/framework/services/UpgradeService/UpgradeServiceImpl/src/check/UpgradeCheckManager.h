@@ -11,8 +11,8 @@
 #include <unordered_set>
 
 namespace ucf::framework {
-    class ICoreFramework;
-    using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
+class ICoreFramework;
+using ICoreFrameworkWPtr = std::weak_ptr<ICoreFramework>;
 }
 
 namespace ucf::service {
@@ -23,27 +23,20 @@ class AsyncCallbackGate;
 class UpgradeCheckManager final
 {
 public:
-    UpgradeCheckManager(ucf::framework::ICoreFrameworkWPtr coreFramework,
-                        std::shared_ptr<AsyncCallbackGate> callbackGate);
+    UpgradeCheckManager(
+        ucf::framework::ICoreFrameworkWPtr coreFramework, std::shared_ptr<AsyncCallbackGate> callbackGate);
     ~UpgradeCheckManager();
 
     UpgradeCheckManager(const UpgradeCheckManager&) = delete;
     UpgradeCheckManager& operator=(const UpgradeCheckManager&) = delete;
 
     /// Result callback type
-    using CheckResultCallback = std::function<void(
-        bool success,
-        const model::UpgradeCheckResult& result,
-        model::UpgradeErrorCode errorCode,
-        const std::string& errorMessage)>;
+    using CheckResultCallback = std::function<void(bool success, const model::UpgradeCheckResult& result,
+        model::UpgradeErrorCode errorCode, const std::string& errorMessage)>;
 
     /// Issue an upgrade check (async — result delivered via callback)
-    void checkForUpgrade(const std::string& currentVersion,
-                         const std::string& platform,
-                         const std::string& arch,
-                         model::PackageFormat packageFormat,
-                         bool userTriggered,
-                         CheckResultCallback callback);
+    void checkForUpgrade(const std::string& currentVersion, const std::string& platform, const std::string& arch,
+        model::PackageFormat packageFormat, bool userTriggered, CheckResultCallback callback);
 
     /// Whether the minimum check interval has elapsed (ignored when userTriggered)
     [[nodiscard]] bool canCheck() const;
@@ -67,11 +60,8 @@ public:
 private:
     bool canCheckLocked(std::chrono::steady_clock::time_point now) const;
 
-    model::UpgradeCheckResult parseCheckResponse(
-        const std::string& jsonBody,
-        const std::string& currentVersion,
-        const std::string& platformKey,
-        model::PackageFormat packageFormat) const;
+    model::UpgradeCheckResult parseCheckResponse(const std::string& jsonBody, const std::string& currentVersion,
+        const std::string& platformKey, model::PackageFormat packageFormat) const;
 
 private:
     ucf::framework::ICoreFrameworkWPtr mCoreFramework;

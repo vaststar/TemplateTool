@@ -34,7 +34,10 @@ public:
     TempDirectory(const TempDirectory&) = delete;
     TempDirectory& operator=(const TempDirectory&) = delete;
 
-    [[nodiscard]] const std::filesystem::path& path() const { return mPath; }
+    [[nodiscard]] const std::filesystem::path& path() const
+    {
+        return mPath;
+    }
 
 private:
     std::filesystem::path mPath;
@@ -44,13 +47,13 @@ private:
 ucf::service::upgrade::UpgradeContext makeTestContext()
 {
     ucf::service::upgrade::UpgradeContext ctx;
-    ctx.onStateChanged      = [](ucf::service::model::UpgradeState) {};
-    ctx.onCheckCompleted    = [](const ucf::service::model::UpgradeCheckResult&) {};
-    ctx.onDownloadProgress  = [](int64_t, int64_t) {};
-    ctx.onError             = [](ucf::service::model::UpgradeErrorCode, const std::string&) {};
+    ctx.onStateChanged = [](ucf::service::model::UpgradeState) {};
+    ctx.onCheckCompleted = [](const ucf::service::model::UpgradeCheckResult&) {};
+    ctx.onDownloadProgress = [](int64_t, int64_t) {};
+    ctx.onError = [](ucf::service::model::UpgradeErrorCode, const std::string&) {};
     ctx.triggerCheckForUpgrade = [](bool) {};
-    ctx.triggerDownload     = [](const std::string&) {};
-    ctx.triggerVerify       = [](const std::string&) {};
+    ctx.triggerDownload = [](const std::string&) {};
+    ctx.triggerVerify = [](const std::string&) {};
     ctx.triggerOpenInstaller = [](const std::string&) {};
     ctx.releaseInstaller = [](const std::string&) { return true; };
     ctx.triggerHardReset = []() {};
@@ -62,15 +65,15 @@ ucf::service::model::UpgradeInfo makeSampleUpgradeInfo()
 {
     ucf::service::model::PackageInfo pkg;
     pkg.downloadUrl = "https://example.com/upgrade.exe";
-    pkg.sha256      = "abc123";
-    pkg.sizeBytes   = 50'000'000;
-    pkg.format      = ucf::service::model::PackageFormat::Exe;
+    pkg.sha256 = "abc123";
+    pkg.sizeBytes = 50'000'000;
+    pkg.format = ucf::service::model::PackageFormat::Exe;
 
     ucf::service::model::UpgradeInfo info;
-    info.version     = "2.0.0";
+    info.version = "2.0.0";
     info.releaseNotes = "Bug fixes";
-    info.mandatory   = false;
-    info.package     = pkg;
+    info.mandatory = false;
+    info.package = pkg;
     return info;
 }
 
@@ -149,7 +152,8 @@ TEST_CASE("FSM: Checking -> Failed on EvError", "[UpgradeService][FSM]")
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvError{.code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "timeout"});
+    fsm.processEvent(ucf::service::upgrade::EvError{
+        .code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "timeout"});
 
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Failed>());
 }
@@ -250,7 +254,8 @@ TEST_CASE("FSM: Failed -> Idle on EvDismiss", "[UpgradeService][FSM]")
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
     fsm.processEvent(ucf::service::upgrade::EvCheckRequested{});
-    fsm.processEvent(ucf::service::upgrade::EvError{.code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "err"});
+    fsm.processEvent(
+        ucf::service::upgrade::EvError{.code = ucf::service::model::UpgradeErrorCode::NetworkError, .message = "err"});
     REQUIRE(fsm.template isIn<ucf::service::upgrade::Failed>());
 
     fsm.processEvent(ucf::service::upgrade::EvDismiss{});
@@ -283,9 +288,7 @@ TEST_CASE("FSM: download progress stays in Downloading", "[UpgradeService][FSM]"
     ctx.availableUpgrade = makeSampleUpgradeInfo();
 
     std::vector<std::pair<int64_t, int64_t>> progressLog;
-    ctx.onDownloadProgress = [&](int64_t cur, int64_t tot) {
-        progressLog.emplace_back(cur, tot);
-    };
+    ctx.onDownloadProgress = [&](int64_t cur, int64_t tot) { progressLog.emplace_back(cur, tot); };
 
     ucf::service::upgrade::UpgradeFSM fsm(ctx);
 
@@ -302,5 +305,3 @@ TEST_CASE("FSM: download progress stays in Downloading", "[UpgradeService][FSM]"
     REQUIRE(progressLog[0].first == 100);
     REQUIRE(progressLog[2].first == 1000);
 }
-
-

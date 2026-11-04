@@ -24,17 +24,23 @@ public:
 
         ~Lease()
         {
-            if (auto gate = std::move(mGate)) {
+            if (auto gate = std::move(mGate))
+            {
                 gate->leave();
             }
         }
 
-        explicit operator bool() const noexcept { return static_cast<bool>(mGate); }
+        explicit operator bool() const noexcept
+        {
+            return static_cast<bool>(mGate);
+        }
 
     private:
         friend class AsyncCallbackGate;
         explicit Lease(std::shared_ptr<AsyncCallbackGate> gate)
-            : mGate(std::move(gate)) {}
+            : mGate(std::move(gate))
+        {
+        }
 
         std::shared_ptr<AsyncCallbackGate> mGate;
     };
@@ -45,7 +51,8 @@ public:
     {
         auto self = shared_from_this();
         std::lock_guard lock(mMutex);
-        if (mClosed) {
+        if (mClosed)
+        {
             return {};
         }
         ++mActive;
@@ -76,7 +83,8 @@ private:
     {
         std::lock_guard lock(mMutex);
         --mActive;
-        if (mActive == 0) {
+        if (mActive == 0)
+        {
             mDrainCondition.notify_all();
         }
     }

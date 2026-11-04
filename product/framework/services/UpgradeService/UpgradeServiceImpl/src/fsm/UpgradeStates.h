@@ -26,101 +26,119 @@ struct Failed;
 // State definitions
 // ═══════════════════════════════════════════════════
 
-struct Idle {
-    static constexpr std::string_view name() { return "Idle"; }
+struct Idle
+{
+    static constexpr std::string_view name()
+    {
+        return "Idle";
+    }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
-        -> fsm::TransitionTo<Checking>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e) -> fsm::TransitionTo<Checking>;
 };
 
-struct Checking {
-    static constexpr std::string_view name() { return "Checking"; }
+struct Checking
+{
+    static constexpr std::string_view name()
+    {
+        return "Checking";
+    }
     bool userTriggered{false};
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvCheckSuccess& e)
-        -> fsm::TransitionTo<UpgradeAvailable>;
-    auto onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade&)
-        -> fsm::TransitionTo<Idle>;
-    auto onEvent(UpgradeContext& ctx, const EvError& e)
-        -> fsm::TransitionTo<Failed>;
+        -> fsm::OneOf<fsm::TransitionTo<Verifying>, fsm::TransitionTo<UpgradeAvailable>>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckNoUpgrade&) -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::TransitionTo<Failed>;
 };
 
-struct UpgradeAvailable {
-    static constexpr std::string_view name() { return "UpgradeAvailable"; }
+struct UpgradeAvailable
+{
+    static constexpr std::string_view name()
+    {
+        return "UpgradeAvailable";
+    }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
-        -> fsm::TransitionTo<Checking>;
-    auto onEvent(UpgradeContext& ctx, const EvDownloadStart&)
-        -> fsm::TransitionTo<Downloading>;
-    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
-        -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e) -> fsm::TransitionTo<Checking>;
+    auto onEvent(UpgradeContext& ctx, const EvDownloadStart&) -> fsm::TransitionTo<Downloading>;
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>;
 };
 
-struct Downloading {
-    static constexpr std::string_view name() { return "Downloading"; }
+struct Downloading
+{
+    static constexpr std::string_view name()
+    {
+        return "Downloading";
+    }
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvProgress& e) -> fsm::Stay;
-    auto onEvent(UpgradeContext& ctx, const EvDownloadDone& e)
-        -> fsm::TransitionTo<Verifying>;
-    auto onEvent(UpgradeContext& ctx, const EvCancel&)
-        -> fsm::TransitionTo<Idle>;
-    auto onEvent(UpgradeContext& ctx, const EvError& e)
-        -> fsm::TransitionTo<Failed>;
+    auto onEvent(UpgradeContext& ctx, const EvDownloadDone& e) -> fsm::TransitionTo<Verifying>;
+    auto onEvent(UpgradeContext& ctx, const EvCancel&) -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvError& e) -> fsm::TransitionTo<Failed>;
 };
 
-struct Verifying {
-    static constexpr std::string_view name() { return "Verifying"; }
+struct Verifying
+{
+    static constexpr std::string_view name()
+    {
+        return "Verifying";
+    }
+    bool fromCache{false};
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvVerifyOk&)
-        -> fsm::TransitionTo<ReadyToInstall>;
+    auto onEvent(UpgradeContext& ctx, const EvVerifyOk&) -> fsm::TransitionTo<ReadyToInstall>;
     auto onEvent(UpgradeContext& ctx, const EvError& e)
-        -> fsm::TransitionTo<Failed>;
+        -> fsm::OneOf<fsm::TransitionTo<UpgradeAvailable>, fsm::TransitionTo<Failed>>;
 };
 
-struct ReadyToInstall {
-    static constexpr std::string_view name() { return "ReadyToInstall"; }
+struct ReadyToInstall
+{
+    static constexpr std::string_view name()
+    {
+        return "ReadyToInstall";
+    }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvOpenInstaller&)
-        -> fsm::TransitionTo<OpeningInstaller>;
-    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
-        -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvOpenInstaller&) -> fsm::TransitionTo<OpeningInstaller>;
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>;
 };
 
-struct OpeningInstaller {
-    static constexpr std::string_view name() { return "OpeningInstaller"; }
+struct OpeningInstaller
+{
+    static constexpr std::string_view name()
+    {
+        return "OpeningInstaller";
+    }
     void onEnter(UpgradeContext& ctx);
     auto onEvent(UpgradeContext& ctx, const EvInstallerOpenResult& e)
         -> fsm::OneOf<fsm::TransitionTo<InstallerOpened>, fsm::TransitionTo<ReadyToInstall>>;
 };
 
-struct InstallerOpened {
-    static constexpr std::string_view name() { return "InstallerOpened"; }
+struct InstallerOpened
+{
+    static constexpr std::string_view name()
+    {
+        return "InstallerOpened";
+    }
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
-        -> fsm::TransitionTo<Idle>;
-    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
-        -> fsm::TransitionTo<Checking>;
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e) -> fsm::TransitionTo<Checking>;
 };
 
-struct Failed {
-    static constexpr std::string_view name() { return "Failed"; }
+struct Failed
+{
+    static constexpr std::string_view name()
+    {
+        return "Failed";
+    }
     model::UpgradeErrorCode errorCode{};
     std::string errorMessage;
     void onEnter(UpgradeContext& ctx);
-    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e)
-        -> fsm::TransitionTo<Checking>;
-    auto onEvent(UpgradeContext& ctx, const EvDismiss&)
-        -> fsm::TransitionTo<Idle>;
+    auto onEvent(UpgradeContext& ctx, const EvCheckRequested& e) -> fsm::TransitionTo<Checking>;
+    auto onEvent(UpgradeContext& ctx, const EvDismiss&) -> fsm::TransitionTo<Idle>;
 };
 
 // ═══════════════════════════════════════════════════
 // FSM type alias
 // ═══════════════════════════════════════════════════
-using UpgradeFSM = fsm::StateMachine<
-    UpgradeContext,
-    Idle, Checking, UpgradeAvailable, Downloading,
-    Verifying, ReadyToInstall, OpeningInstaller, InstallerOpened, Failed
->;
+using UpgradeFSM = fsm::StateMachine<UpgradeContext, Idle, Checking, UpgradeAvailable, Downloading, Verifying,
+    ReadyToInstall, OpeningInstaller, InstallerOpened, Failed>;
 
 } // namespace ucf::service::upgrade
 

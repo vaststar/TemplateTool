@@ -6,14 +6,14 @@
 #include <UIViewModelSignalBridge/metatypes/UpgradeMetaTypes.h>
 #include <commonhead/viewmodels/UpgradeViewModel/IUpgradeViewModel.h>
 
-namespace UIViewModelSignalBridge{
-class UIViewModelSignalBridge_EXPORT UpgradeViewModelEmitter: public QObject,
-                                                          public commonHead::viewModels::IUpgradeViewModelCallback
+namespace UIViewModelSignalBridge {
+class UIViewModelSignalBridge_EXPORT UpgradeViewModelEmitter : public QObject,
+                                                               public commonHead::viewModels::IUpgradeViewModelCallback
 {
     Q_OBJECT
 public:
     UpgradeViewModelEmitter(QObject* parent = nullptr)
-        :QObject(parent)
+        : QObject(parent)
     {
     }
 
@@ -24,10 +24,8 @@ public:
 
     virtual void onCheckCompleted(bool hasUpgrade, const commonHead::viewModels::model::UpgradeViewInfo& info) override
     {
-        emit signals_onCheckCompleted(hasUpgrade,
-                                      QString::fromStdString(info.version),
-                                      QString::fromStdString(info.releaseNotes),
-                                      info.mandatory);
+        emit signals_onCheckCompleted(hasUpgrade, QString::fromStdString(info.version),
+            QString::fromStdString(info.releaseNotes), info.mandatory);
     };
 
     virtual void onDownloadProgress(int64_t currentBytes, int64_t totalBytes) override

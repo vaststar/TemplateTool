@@ -1,4 +1,6 @@
 #include "UpgradeDownloadManager.h"
+#include "DownloadFileUtils.h"
+#include "PackageVerifier.h"
 #include "../AsyncCallbackGate.h"
 #include "../UpgradeConstants.h"
 #include "../UpgradeServiceLogger.h"
@@ -15,42 +17,37 @@
 #include <ucf/utilities/UUIDUtils/UUIDUtils.h>
 
 #include <algorithm>
-#include <fstream>
-#include <iomanip>
-#include <limits>
-#include <sstream>
-#include <stdexcept>
+#include <exception>
 #include <utility>
 #include <vector>
-
-#include <openssl/evp.h>
 
 namespace ucf::service {
 
 UpgradeDownloadManager::UpgradeDownloadManager(
-    ucf::framework::ICoreFrameworkWPtr coreFramework,
-    std::shared_ptr<AsyncCallbackGate> callbackGate)
+    ucf::framework::ICoreFrameworkWPtr coreFramework, std::shared_ptr<AsyncCallbackGate> callbackGate)
     : mCoreFramework(std::move(coreFramework))
     , mCallbackGate(std::move(callbackGate))
     , mIoWorker([this](std::stop_token st) { ioWorkerLoop(st); })
     , mVerifyWorker([this](std::stop_token st) { verifyWorkerLoop(st); })
 {
     ensureDownloadDirectory();
-    UPGRADE_LOG_DEBUG("UpgradeDownloadManager constructed, address: " << this
-                      << ", directory: " << ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
+    UPGRADE_LOG_DEBUG("UpgradeDownloadManager constructed, address: "
+                      << this << ", directory: " << ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
 }
 
 UpgradeDownloadManager::~UpgradeDownloadManager()
 {
     // The owning UpgradeManager normally closes and drains the shared gate
     // before destroying us. Keep this fallback for standalone destruction.
-    if (mCallbackGate) {
+    if (mCallbackGate)
+    {
         mCallbackGate->close();
     }
     requestStop();
     cancelOutstandingRequests();
     joinWorkers();
-    if (mCallbackGate) {
+    if (mCallbackGate)
+    {
         mCallbackGate->waitForDrain();
     }
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager destroying, address: " << this);
@@ -58,19 +55,20 @@ UpgradeDownloadManager::~UpgradeDownloadManager()
 
 void UpgradeDownloadManager::ensureDownloadDirectory()
 {
-    if (auto coreFramework = mCoreFramework.lock()) {
-        if (auto clientInfo = coreFramework->getService<IClientInfoService>().lock()) {
-            mDownloadDir = ucf::utilities::FilePathUtils::pathFromUtf8(
-                clientInfo->getAppCacheStoragePath()) / upgrade::constants::kDownloadSubDir;
+    if (auto coreFramework = mCoreFramework.lock())
+    {
+        if (auto clientInfo = coreFramework->getService<IClientInfoService>().lock())
+        {
+            mDownloadDir = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getAppCacheStoragePath()) /
+                           upgrade::constants::kDownloadSubDir;
         }
     }
-    if (mDownloadDir.empty()) {
-        mDownloadDir = std::filesystem::temp_directory_path()
-                     / AppInfo::TEMP_DIRECTORY_NAME
-                     / upgrade::constants::kDownloadSubDir;
+    if (mDownloadDir.empty())
+    {
+        mDownloadDir =
+            std::filesystem::temp_directory_path() / AppInfo::TEMP_DIRECTORY_NAME / upgrade::constants::kDownloadSubDir;
     }
-    ucf::utilities::FilePathUtils::createDirectoriesUtf8(
-        ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
+    ucf::utilities::FilePathUtils::createDirectoriesUtf8(ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
 }
 
 std::filesystem::path UpgradeDownloadManager::getDownloadDirectory() const
@@ -81,47 +79,23 @@ std::filesystem::path UpgradeDownloadManager::getDownloadDirectory() const
 bool UpgradeDownloadManager::isDownloading() const
 {
     std::lock_guard lock(mSessionMutex);
-    return !mStopRequested.load(std::memory_order_acquire)
-        && static_cast<bool>(mActiveSession);
+    return !mStopRequested.load(std::memory_order_acquire) && static_cast<bool>(mActiveSession);
 }
 
 bool UpgradeDownloadManager::hasSufficientSpace(int64_t requiredBytes) const
 {
-    if (requiredBytes <= 0) {
-        UPGRADE_LOG_ERROR("Invalid package size for disk space check: " << requiredBytes);
-        return false;
-    }
-    const auto bytes = static_cast<std::uintmax_t>(requiredBytes);
-    constexpr auto kMaxBytes = (std::numeric_limits<std::uintmax_t>::max)();
-
-    try {
-        ucf::utilities::FilePathUtils::createDirectoriesUtf8(
-            ucf::utilities::FilePathUtils::utf8FromPath(mDownloadDir));
-        const auto spaceInfo = std::filesystem::space(mDownloadDir);
-        if (spaceInfo.available == kMaxBytes) {
-            UPGRADE_LOG_ERROR("Available disk space could not be determined");
-            return false;
-        }
-        // Installation space is checked by the system installer on its target volume.
-        return spaceInfo.available >= bytes;
-    } catch (const std::exception& ex) {
-        UPGRADE_LOG_ERROR("Failed to check disk space: " << ex.what());
-        return false;
-    }
+    return upgrade::hasSufficientDownloadSpace(mDownloadDir, requiredBytes);
 }
 
-bool UpgradeDownloadManager::enqueueIo(
-    IoJobKind kind,
-    std::chrono::steady_clock::time_point due,
-    WorkerJob job)
+bool UpgradeDownloadManager::enqueueIo(IoJobKind kind, std::chrono::steady_clock::time_point due, WorkerJob job)
 {
     {
         std::lock_guard lock(mIoMutex);
         // A callback already admitted by the gate can request a hard reset
         // after shutdown has stopped the worker. Keep its cleanup task for
         // joinWorkers() to run after transport cancellation.
-        if (mStopRequested.load(std::memory_order_acquire)
-            && kind != IoJobKind::Cleanup) {
+        if (mStopRequested.load(std::memory_order_acquire) && kind != IoJobKind::Cleanup)
+        {
             return false;
         }
         mIoJobs.push_back(IoJob{kind, due, mNextIoSequence++, std::move(job)});
@@ -135,7 +109,8 @@ bool UpgradeDownloadManager::enqueueVerify(WorkerJob job)
 {
     {
         std::lock_guard lock(mVerifyMutex);
-        if (mStopRequested.load(std::memory_order_acquire)) {
+        if (mStopRequested.load(std::memory_order_acquire))
+        {
             return false;
         }
         mVerifyJobs.push_back(std::move(job));
@@ -146,15 +121,19 @@ bool UpgradeDownloadManager::enqueueVerify(WorkerJob job)
 
 void UpgradeDownloadManager::ioWorkerLoop(std::stop_token stopToken)
 {
-    while (!stopToken.stop_requested()) {
+    while (!stopToken.stop_requested())
+    {
         IoJob job{};
         {
             std::unique_lock lock(mIoMutex);
-            for (;;) {
-                if (stopToken.stop_requested()) {
+            for (;;)
+            {
+                if (stopToken.stop_requested())
+                {
                     return;
                 }
-                if (mIoJobs.empty()) {
+                if (mIoJobs.empty())
+                {
                     mIoCV.wait(lock, stopToken, [this] { return !mIoJobs.empty(); });
                     continue;
                 }
@@ -162,34 +141,41 @@ void UpgradeDownloadManager::ioWorkerLoop(std::stop_token stopToken)
                 const auto now = std::chrono::steady_clock::now();
                 auto ready = mIoJobs.end();
                 auto earliest = mIoJobs.front().due;
-                for (auto it = mIoJobs.begin(); it != mIoJobs.end(); ++it) {
+                for (auto it = mIoJobs.begin(); it != mIoJobs.end(); ++it)
+                {
                     earliest = std::min(earliest, it->due);
-                    if (it->due > now) {
+                    if (it->due > now)
+                    {
                         continue;
                     }
-                    if (ready == mIoJobs.end()
-                        || it->kind < ready->kind
-                        || (it->kind == ready->kind && it->sequence < ready->sequence)) {
+                    if (ready == mIoJobs.end() || it->kind < ready->kind ||
+                        (it->kind == ready->kind && it->sequence < ready->sequence))
+                    {
                         ready = it;
                     }
                 }
-                if (ready != mIoJobs.end()) {
+                if (ready != mIoJobs.end())
+                {
                     job = std::move(*ready);
                     mIoJobs.erase(ready);
                     break;
                 }
 
                 const auto revision = mIoRevision;
-                mIoCV.wait_until(lock, stopToken, earliest,
-                    [this, revision] { return mIoRevision != revision; });
+                mIoCV.wait_until(lock, stopToken, earliest, [this, revision] { return mIoRevision != revision; });
             }
         }
 
-        try {
+        try
+        {
             job.run(stopToken);
-        } catch (const std::exception& ex) {
+        }
+        catch (const std::exception& ex)
+        {
             UPGRADE_LOG_ERROR("Upgrade I/O job failed: " << ex.what());
-        } catch (...) {
+        }
+        catch (...)
+        {
             UPGRADE_LOG_ERROR("Upgrade I/O job failed with an unknown exception");
         }
     }
@@ -197,50 +183,171 @@ void UpgradeDownloadManager::ioWorkerLoop(std::stop_token stopToken)
 
 void UpgradeDownloadManager::verifyWorkerLoop(std::stop_token stopToken)
 {
-    while (!stopToken.stop_requested()) {
+    while (!stopToken.stop_requested())
+    {
         WorkerJob job;
         {
             std::unique_lock lock(mVerifyMutex);
             mVerifyCV.wait(lock, stopToken, [this] { return !mVerifyJobs.empty(); });
-            if (stopToken.stop_requested()) {
+            if (stopToken.stop_requested())
+            {
                 return;
             }
             job = std::move(mVerifyJobs.front());
             mVerifyJobs.pop_front();
         }
 
-        try {
+        try
+        {
             job(stopToken);
-        } catch (const std::exception& ex) {
+        }
+        catch (const std::exception& ex)
+        {
             UPGRADE_LOG_ERROR("Upgrade verification job failed: " << ex.what());
-        } catch (...) {
+        }
+        catch (...)
+        {
             UPGRADE_LOG_ERROR("Upgrade verification job failed with an unknown exception");
         }
     }
 }
 
-void UpgradeDownloadManager::downloadPackage(
-    const model::PackageInfo& packageInfo,
-    ProgressCallback progressCb,
-    DownloadCompleteCallback completeCb)
+void UpgradeDownloadManager::findReusableInstaller(
+    const model::PackageInfo& packageInfo, InstallerLookupCallback callback)
 {
-    if (mStopRequested.load(std::memory_order_acquire)) {
+    if (mStopRequested.load(std::memory_order_acquire))
+    {
         return;
     }
-    if (model::packageFormatName(packageInfo.format).empty()) {
-        completeCb(false, "", model::UpgradeErrorCode::DownloadFailed,
-                   "Unsupported installer format");
-        return;
-    }
-    if (!hasSufficientSpace(packageInfo.sizeBytes)) {
-        UPGRADE_LOG_ERROR("Insufficient disk space for download");
-        if (!mStopRequested.load(std::memory_order_acquire)) {
-            completeCb(false, "", model::UpgradeErrorCode::DiskSpaceError,
-                       "Insufficient disk space");
+    const auto generation = mGeneration.load(std::memory_order_acquire);
+    auto gate = mCallbackGate;
+    enqueueIo(IoJobKind::Attempt, std::chrono::steady_clock::now(),
+        [this, gate, generation, packageInfo, callback = std::move(callback)](std::stop_token st) {
+        auto lease = gate->tryEnter();
+        if (!lease || st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+            generation != mGeneration.load(std::memory_order_acquire))
+        {
+            return;
         }
-        return;
+        const auto installer = findReusableInstallerOnIo(packageInfo, generation);
+        if (!st.stop_requested() && !mStopRequested.load(std::memory_order_acquire) &&
+            generation == mGeneration.load(std::memory_order_acquire) && callback)
+        {
+            const auto path =
+                installer ? std::optional<std::string>{ucf::utilities::FilePathUtils::utf8FromPath(installer->filePath)}
+                          : std::nullopt;
+            if (path)
+            {
+                UPGRADE_LOG_INFO("Found cached installer during upgrade check: " << *path);
+            }
+            else
+            {
+                UPGRADE_LOG_DEBUG("No matching cached installer for upgrade check");
+            }
+            callback(path);
+        }
+    });
+}
+
+std::optional<UpgradeDownloadManager::CompletedInstaller> UpgradeDownloadManager::findReusableInstallerOnIo(
+    const model::PackageInfo& packageInfo, std::uint64_t generation)
+{
+    std::optional<CompletedInstaller> installer;
+    {
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire) || generation != mGeneration.load(std::memory_order_acquire))
+        {
+            return std::nullopt;
+        }
+        installer = mCompletedInstaller;
+    }
+    const bool fromMemory = installer.has_value();
+    if (installer && !upgrade::sameInstallerContent(installer->packageInfo, packageInfo))
+    {
+        // A manifest probe must not evict another complete installer. Its
+        // replacement is owned by the later, explicit download operation.
+        return std::nullopt;
     }
 
+    bool reusable = false;
+    try
+    {
+        if (!installer)
+        {
+            installer = upgrade::readCompletedInstallerRecord(mDownloadDir, packageInfo);
+        }
+        if (!installer)
+        {
+            return std::nullopt;
+        }
+        reusable = upgrade::isReusableInstallerFile(installer->filePath, packageInfo.sizeBytes);
+    }
+    catch (const std::exception& ex)
+    {
+        UPGRADE_LOG_WARN("Could not probe cached installer: " << ex.what());
+    }
+    if (!installer)
+    {
+        return std::nullopt;
+    }
+
+    {
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire) ||
+            generation != mGeneration.load(std::memory_order_acquire) || (fromMemory && !mCompletedInstaller) ||
+            (mCompletedInstaller && (mCompletedInstaller->filePath != installer->filePath ||
+                                        !upgrade::sameInstallerContent(mCompletedInstaller->packageInfo, packageInfo))))
+        {
+            return std::nullopt;
+        }
+        if (reusable)
+        {
+            mCompletedInstaller = installer;
+            if (std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(), installer->filePath) ==
+                mTrackedFilePaths.end())
+            {
+                mTrackedFilePaths.push_back(installer->filePath);
+            }
+            return installer;
+        }
+        mCompletedInstaller.reset();
+        std::erase(mTrackedFilePaths, installer->filePath);
+    }
+
+    const auto unavailablePath = installer->filePath;
+    enqueueIo(IoJobKind::Cleanup, std::chrono::steady_clock::now(), [unavailablePath](std::stop_token) {
+        upgrade::removeDownloadFile(unavailablePath, "Failed to remove unavailable cached installer");
+    });
+    syncCompletedInstallerRecord();
+    return std::nullopt;
+}
+
+void UpgradeDownloadManager::syncCompletedInstallerRecord()
+{
+    // Cleanup jobs are also drained after stop. Read the slot at execution time
+    // rather than capturing an older value from the caller's thread.
+    enqueueIo(IoJobKind::Cleanup, std::chrono::steady_clock::now(), [this](std::stop_token) {
+        std::optional<CompletedInstaller> installer;
+        {
+            std::lock_guard lock(mSessionMutex);
+            installer = mCompletedInstaller;
+        }
+        upgrade::writeCompletedInstallerRecord(mDownloadDir, installer);
+    });
+}
+
+void UpgradeDownloadManager::downloadPackage(
+    const model::PackageInfo& packageInfo, ProgressCallback progressCb, DownloadCompleteCallback completeCb)
+{
+    if (mStopRequested.load(std::memory_order_acquire))
+    {
+        return;
+    }
+    if (model::packageFormatName(packageInfo.format).empty())
+    {
+        completeCb(false, "", model::UpgradeErrorCode::DownloadFailed, "Unsupported installer format");
+        return;
+    }
     auto session = std::make_shared<DownloadSession>();
     session->packageInfo = packageInfo;
     session->progressCb = std::move(progressCb);
@@ -248,26 +355,37 @@ void UpgradeDownloadManager::downloadPackage(
 
     std::string previousRequestId;
     std::filesystem::path staleResumePath;
+    std::filesystem::path staleInstallerPath;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire)) {
+        if (mStopRequested.load(std::memory_order_acquire))
+        {
             return;
         }
         session->generation = mGeneration.fetch_add(1, std::memory_order_acq_rel) + 1;
         mVerifiedInstallerPath.clear();
-        if (mActiveSession) {
+        if (mCompletedInstaller && !upgrade::sameInstallerContent(mCompletedInstaller->packageInfo, packageInfo))
+        {
+            staleInstallerPath = mCompletedInstaller->filePath;
+            mCompletedInstaller.reset();
+            std::erase(mTrackedFilePaths, staleInstallerPath);
+        }
+        if (mActiveSession)
+        {
             previousRequestId = mActiveSession->requestId;
         }
-        const bool samePackage = mResumePackageInfo.has_value()
-            && !packageInfo.sha256.empty()
-            && mResumePackageInfo->downloadUrl == packageInfo.downloadUrl
-            && mResumePackageInfo->sha256 == packageInfo.sha256
-            && mResumePackageInfo->sizeBytes == packageInfo.sizeBytes
-            && mResumePackageInfo->format == packageInfo.format;
-        if (samePackage) {
+        const bool samePackage = mResumePackageInfo.has_value() && !packageInfo.sha256.empty() &&
+                                 mResumePackageInfo->downloadUrl == packageInfo.downloadUrl &&
+                                 mResumePackageInfo->sha256 == packageInfo.sha256 &&
+                                 mResumePackageInfo->sizeBytes == packageInfo.sizeBytes &&
+                                 mResumePackageInfo->format == packageInfo.format;
+        if (samePackage)
+        {
             session->partialFilePath = std::move(mResumePartialPath);
             session->resumeAllowed = !session->partialFilePath.empty();
-        } else {
+        }
+        else
+        {
             staleResumePath = std::move(mResumePartialPath);
         }
         mResumePartialPath.clear();
@@ -276,73 +394,117 @@ void UpgradeDownloadManager::downloadPackage(
     }
 
     const auto now = std::chrono::steady_clock::now();
-    if (!previousRequestId.empty()) {
+    if (!previousRequestId.empty())
+    {
         enqueueIo(IoJobKind::Cancel, now,
-            [this, previousRequestId](std::stop_token) {
-                cancelHttpRequest(previousRequestId);
-            });
+            [this, previousRequestId](std::stop_token) { cancelHttpRequest(previousRequestId); });
     }
-    if (!staleResumePath.empty()) {
-        enqueueIo(IoJobKind::Cleanup, now,
-            [staleResumePath](std::stop_token) {
-                std::error_code ec;
-                std::filesystem::remove(staleResumePath, ec);
-                if (ec) {
-                    UPGRADE_LOG_WARN("Failed to remove stale partial download: " << ec.message());
-                }
+    for (const auto& stalePath : {staleResumePath, staleInstallerPath})
+    {
+        if (!stalePath.empty())
+        {
+            enqueueIo(IoJobKind::Cleanup, now, [stalePath](std::stop_token) {
+                upgrade::removeDownloadFile(stalePath, "Failed to remove stale download");
             });
+        }
     }
-    enqueueIo(IoJobKind::Attempt, now,
-        [this, session](std::stop_token st) { attemptDownload(session, st); });
+    if (!staleInstallerPath.empty())
+    {
+        syncCompletedInstallerRecord();
+    }
+    enqueueIo(IoJobKind::Attempt, now, [this, session](std::stop_token st) { attemptDownload(session, st); });
 }
 
 void UpgradeDownloadManager::finishSession(
-    const std::shared_ptr<DownloadSession>& session,
-    model::UpgradeErrorCode errorCode,
-    const std::string& message)
+    const std::shared_ptr<DownloadSession>& session, model::UpgradeErrorCode errorCode, const std::string& message)
 {
     DownloadCompleteCallback callback;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire)
-            || !isCurrent(*session)
-            || mActiveSession.get() != session.get()) {
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            mActiveSession.get() != session.get())
+        {
             return;
         }
         mActiveSession.reset();
         callback = session->completeCb;
     }
-    if (callback) {
+    if (callback)
+    {
         callback(false, "", errorCode, message);
     }
 }
 
-void UpgradeDownloadManager::attemptDownload(
-    const std::shared_ptr<DownloadSession>& session,
-    std::stop_token stopToken)
+void UpgradeDownloadManager::attemptDownload(const std::shared_ptr<DownloadSession>& session, std::stop_token stopToken)
 {
-    if (stopToken.stop_requested()
-        || mStopRequested.load(std::memory_order_acquire)
-        || !isCurrent(*session)) {
+    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session))
+    {
+        return;
+    }
+
+    bool checkDiskSpace = false;
+    {
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            mActiveSession.get() != session.get())
+        {
+            return;
+        }
+        checkDiskSpace = session->currentRetry == 0;
+    }
+
+    // Also probe here to defend against the file changing between a manifest
+    // lookup and an explicit download request. Never use this as a Range prefix.
+    if (const auto installer = findReusableInstallerOnIo(session->packageInfo, session->generation))
+    {
+        DownloadCompleteCallback completion;
+        {
+            std::lock_guard lock(mSessionMutex);
+            if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+                mActiveSession.get() != session.get() || !mCompletedInstaller ||
+                mCompletedInstaller->filePath != installer->filePath)
+            {
+                return;
+            }
+            mActiveSession.reset();
+            completion = session->completeCb;
+        }
+        if (!stopToken.stop_requested() && !mStopRequested.load(std::memory_order_acquire) && isCurrent(*session) &&
+            completion)
+        {
+            const auto filePath = ucf::utilities::FilePathUtils::utf8FromPath(installer->filePath);
+            UPGRADE_LOG_INFO("Reusing downloaded installer: " << filePath);
+            completion(true, filePath, model::UpgradeErrorCode::None, "");
+        }
+        return;
+    }
+    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session))
+    {
+        return;
+    }
+
+    if (checkDiskSpace && !hasSufficientSpace(session->packageInfo.sizeBytes))
+    {
+        finishSession(session, model::UpgradeErrorCode::DiskSpaceError, "Insufficient disk space");
         return;
     }
 
     auto coreFramework = mCoreFramework.lock();
-    if (!coreFramework) {
-        finishSession(session, model::UpgradeErrorCode::NetworkError,
-                      "CoreFramework unavailable");
+    if (!coreFramework)
+    {
+        finishSession(session, model::UpgradeErrorCode::NetworkError, "CoreFramework unavailable");
         return;
     }
     auto networkService = coreFramework->getService<INetworkService>().lock();
-    if (!networkService) {
-        finishSession(session, model::UpgradeErrorCode::NetworkError,
-                      "NetworkService unavailable");
+    if (!networkService)
+    {
+        finishSession(session, model::UpgradeErrorCode::NetworkError, "NetworkService unavailable");
         return;
     }
     auto httpManager = networkService->getNetworkHttpManager().lock();
-    if (!httpManager) {
-        finishSession(session, model::UpgradeErrorCode::NetworkError,
-                      "HttpManager unavailable");
+    if (!httpManager)
+    {
+        finishSession(session, model::UpgradeErrorCode::NetworkError, "HttpManager unavailable");
         return;
     }
 
@@ -350,20 +512,22 @@ void UpgradeDownloadManager::attemptDownload(
     bool resumeAllowed = false;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire)
-            || !isCurrent(*session)
-            || mActiveSession.get() != session.get()) {
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            mActiveSession.get() != session.get())
+        {
             return;
         }
-        if (session->partialFilePath.empty()) {
+        if (session->partialFilePath.empty())
+        {
             // URL query strings do not belong in local filenames. A fresh name also
             // prevents a later download from overwriting an installer already opened.
-            const auto fileName = "installer-" + ucf::utilities::UUIDUtils::generateUUID()
-                + "." + std::string(model::packageFormatName(session->packageInfo.format));
+            const auto fileName = "installer-" + ucf::utilities::UUIDUtils::generateUUID() + "." +
+                                  std::string(model::packageFormatName(session->packageInfo.format));
             session->partialFilePath = mDownloadDir / fileName;
         }
-        if (std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(),
-                      session->partialFilePath) == mTrackedFilePaths.end()) {
+        if (std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(), session->partialFilePath) ==
+            mTrackedFilePaths.end())
+        {
             mTrackedFilePaths.push_back(session->partialFilePath);
         }
         partialPath = session->partialFilePath;
@@ -371,40 +535,40 @@ void UpgradeDownloadManager::attemptDownload(
     }
 
     std::int64_t resumedBytes = 0;
-    if (resumeAllowed) {
+    if (resumeAllowed)
+    {
         std::error_code ec;
-        if (std::filesystem::exists(partialPath, ec) && !ec) {
+        if (std::filesystem::exists(partialPath, ec) && !ec)
+        {
             auto size = std::filesystem::file_size(partialPath, ec);
-            if (!ec) {
+            if (!ec)
+            {
                 resumedBytes = static_cast<std::int64_t>(size);
             }
         }
     }
 
     network::http::NetworkHttpHeaders headers;
-    if (resumedBytes > 0) {
+    if (resumedBytes > 0)
+    {
         headers.emplace_back("Range", "bytes=" + std::to_string(resumedBytes) + "-");
         UPGRADE_LOG_INFO("Resuming download from byte " << resumedBytes);
     }
 
-    UPGRADE_LOG_INFO("Starting download (gen=" << session->generation << "): "
-                     << session->packageInfo.downloadUrl << " → "
-                     << ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
+    UPGRADE_LOG_INFO("Starting download (gen=" << session->generation << "): " << session->packageInfo.downloadUrl
+                                               << " → " << ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
 
     auto request = std::make_unique<network::http::HttpDownloadToFileRequest>(
-        session->packageInfo.downloadUrl,
-        headers,
-        300,
-        ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
+        session->packageInfo.downloadUrl, headers, 300, ucf::utilities::FilePathUtils::utf8FromPath(partialPath));
     const std::string requestId = request->getRequestId();
 
     // Publish the ID before sending. If shutdown cancels it before the HTTP
     // layer enqueues it, the post-send check below cancels it again.
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire)
-            || !isCurrent(*session)
-            || mActiveSession.get() != session.get()) {
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            mActiveSession.get() != session.get())
+        {
             return;
         }
         session->resumedBytes = resumedBytes;
@@ -413,25 +577,33 @@ void UpgradeDownloadManager::attemptDownload(
     }
 
     auto gate = mCallbackGate;
-    try {
-        httpManager->downloadContentToFile(*request,
-            [this, gate, session, requestId](const network::http::HttpDownloadToFileResponse& response) {
-                auto lease = gate->tryEnter();
-                if (!lease) {
-                    return;
-                }
+    try
+    {
+        httpManager->downloadContentToFile(
+            *request, [this, gate, session, requestId](const network::http::HttpDownloadToFileResponse& response) {
+            auto lease = gate->tryEnter();
+            if (!lease)
+            {
+                return;
+            }
 
-                if (response.isFinished()) {
-                    handleDownloadCompleted(session, requestId, response);
-                } else {
-                    handleDownloadProgress(session, requestId, response);
-                }
-            });
-    } catch (const std::exception& ex) {
+            if (response.isFinished())
+            {
+                handleDownloadCompleted(session, requestId, response);
+            }
+            else
+            {
+                handleDownloadProgress(session, requestId, response);
+            }
+        });
+    }
+    catch (const std::exception& ex)
+    {
         {
             std::lock_guard lock(mSessionMutex);
             mOutstandingRequestIds.erase(requestId);
-            if (session->requestId == requestId) {
+            if (session->requestId == requestId)
+            {
                 session->requestId.clear();
             }
         }
@@ -439,63 +611,59 @@ void UpgradeDownloadManager::attemptDownload(
         return;
     }
 
-    if (stopToken.stop_requested()
-        || mStopRequested.load(std::memory_order_acquire)
-        || !isCurrent(*session)) {
+    if (stopToken.stop_requested() || mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session))
+    {
         // Cancellation may invoke completion inline. This is the I/O worker,
         // outside an FSM transition and without mSessionMutex held.
         httpManager->cancelRequest(requestId);
     }
 }
 
-void UpgradeDownloadManager::handleDownloadProgress(
-    const std::shared_ptr<DownloadSession>& session,
-    const std::string& requestId,
-    const network::http::HttpDownloadToFileResponse& response)
+void UpgradeDownloadManager::handleDownloadProgress(const std::shared_ptr<DownloadSession>& session,
+    const std::string& requestId, const network::http::HttpDownloadToFileResponse& response)
 {
     ProgressCallback progress;
     std::int64_t current = 0;
     std::int64_t total = 0;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire)
-            || !isCurrent(*session)
-            || mActiveSession.get() != session.get()
-            || session->requestId != requestId) {
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            mActiveSession.get() != session.get() || session->requestId != requestId)
+        {
             return;
         }
         // Redirect/error response bodies are not package
         // progress; the network layer may follow redirects.
         const int statusCode = response.getHttpResponseCode();
-        if (statusCode != 200 && statusCode != 206) {
+        if (statusCode != 200 && statusCode != 206)
+        {
             return;
         }
         // A server may ignore Range and send the whole file.
         // The HTTP handler truncates in that case, so progress
         // must start at zero as well.
-        if (statusCode == 200) {
+        if (statusCode == 200)
+        {
             session->resumedBytes = 0;
         }
-        current = static_cast<std::int64_t>(response.getCurrentSize())
-                + session->resumedBytes;
-        total = static_cast<std::int64_t>(response.getTotalSize())
-              + session->resumedBytes;
+        current = static_cast<std::int64_t>(response.getCurrentSize()) + session->resumedBytes;
+        total = static_cast<std::int64_t>(response.getTotalSize()) + session->resumedBytes;
         const auto now = std::chrono::steady_clock::now();
         const bool complete = total > 0 && current >= total;
-        if (complete || now - session->lastProgressTime >= std::chrono::milliseconds(200)) {
+        if (complete || now - session->lastProgressTime >= std::chrono::milliseconds(200))
+        {
             session->lastProgressTime = now;
             progress = session->progressCb;
         }
     }
-    if (progress) {
+    if (progress)
+    {
         progress(current, total);
     }
 }
 
-void UpgradeDownloadManager::handleDownloadCompleted(
-    const std::shared_ptr<DownloadSession>& session,
-    const std::string& requestId,
-    const network::http::HttpDownloadToFileResponse& response)
+void UpgradeDownloadManager::handleDownloadCompleted(const std::shared_ptr<DownloadSession>& session,
+    const std::string& requestId, const network::http::HttpDownloadToFileResponse& response)
 {
     DownloadCompleteCallback completion;
     std::string finalPath;
@@ -507,16 +675,17 @@ void UpgradeDownloadManager::handleDownloadCompleted(
     const int statusCode = response.getHttpResponseCode();
     const bool httpError = statusCode < 200 || statusCode >= 300;
     const bool transportFailed = errorData.has_value() || httpError;
-    std::string failureDescription = errorData.has_value()
-        ? errorData->errorDescription
-        : "HTTP " + std::to_string(statusCode);
+    std::string failureDescription =
+        errorData.has_value() ? errorData->errorDescription : "HTTP " + std::to_string(statusCode);
 
     // The file handler has closed its stream before the terminal
     // callback. Check the saved file, including an empty 206 body
     // for which the handler never had to open the file.
     bool invalidFileSize = false;
-    if (!transportFailed) {
-        if (response.getCurrentSize() == 0) {
+    if (!transportFailed)
+    {
+        if (response.getCurrentSize() == 0)
+        {
             invalidFileSize = true;
             failureDescription = "Download response has no package bytes";
         }
@@ -525,20 +694,10 @@ void UpgradeDownloadManager::handleDownloadCompleted(
             std::lock_guard lock(mSessionMutex);
             downloadedPath = session->partialFilePath;
         }
-        std::error_code ec;
-        const auto actualSize = std::filesystem::file_size(downloadedPath, ec);
-        if (ec) {
+        if (const auto sizeError = upgrade::validateDownloadedFileSize(downloadedPath, session->packageInfo.sizeBytes))
+        {
             invalidFileSize = true;
-            failureDescription = "Downloaded file is unavailable: " + ec.message();
-        } else if (session->packageInfo.sizeBytes > 0
-                   && actualSize != static_cast<std::uintmax_t>(session->packageInfo.sizeBytes)) {
-            invalidFileSize = true;
-            failureDescription = "Downloaded size " + std::to_string(actualSize)
-                + " differs from expected "
-                + std::to_string(session->packageInfo.sizeBytes);
-        } else if (session->packageInfo.sizeBytes <= 0 && actualSize == 0) {
-            invalidFileSize = true;
-            failureDescription = "Downloaded file is empty";
+            failureDescription = *sizeError;
         }
     }
     const bool failed = transportFailed || invalidFileSize;
@@ -546,101 +705,106 @@ void UpgradeDownloadManager::handleDownloadCompleted(
         std::lock_guard lock(mSessionMutex);
         // Consume a terminal response once. A duplicate completion
         // must not schedule another retry or complete twice.
-        if (mOutstandingRequestIds.erase(requestId) == 0
-            || session->requestId != requestId) {
+        if (mOutstandingRequestIds.erase(requestId) == 0 || session->requestId != requestId)
+        {
             return;
         }
         session->requestId.clear();
-        if (mStopRequested.load(std::memory_order_acquire)
-            || !isCurrent(*session)
-            || mActiveSession.get() != session.get()) {
+        if (mStopRequested.load(std::memory_order_acquire) || !isCurrent(*session) ||
+            mActiveSession.get() != session.get())
+        {
             return;
         }
 
-        if (failed
-            && session->currentRetry < mMaxRetryCount.load(std::memory_order_acquire)) {
+        if (failed && session->currentRetry < mMaxRetryCount.load(std::memory_order_acquire))
+        {
             retryAttempt = ++session->currentRetry;
             // An HTTP error body is not part of the package and
             // must not become the prefix of the next Range request.
-            const bool restartFromZero = (httpError && statusCode >= 300)
-                || invalidFileSize
-                || session->packageInfo.sha256.empty()
-                || (errorData.has_value()
-                    && errorData->errorType == network::http::ResponseErrorType::OtherError);
-            if (restartFromZero) {
+            const bool restartFromZero =
+                (httpError && statusCode >= 300) || invalidFileSize || session->packageInfo.sha256.empty() ||
+                (errorData.has_value() && errorData->errorType == network::http::ResponseErrorType::OtherError);
+            if (restartFromZero)
+            {
                 retryCleanupPath = session->partialFilePath;
                 session->resumeAllowed = false;
-            } else {
+            }
+            else
+            {
                 session->resumeAllowed = true;
             }
-        } else {
+        }
+        else
+        {
             mActiveSession.reset();
             completion = session->completeCb;
-            if (failed) {
-                errorMessage = "Download failed after "
-                    + std::to_string(mMaxRetryCount.load(std::memory_order_acquire))
-                    + " retries: " + failureDescription;
-            } else {
+            if (failed)
+            {
+                errorMessage = "Download failed after " +
+                               std::to_string(mMaxRetryCount.load(std::memory_order_acquire)) +
+                               " retries: " + failureDescription;
+            }
+            else
+            {
                 success = true;
-                if (statusCode == 200) {
+                if (statusCode == 200)
+                {
                     session->resumedBytes = 0;
                 }
-                finalPath = ucf::utilities::FilePathUtils::utf8FromPath(
-                    session->partialFilePath);
+                finalPath = ucf::utilities::FilePathUtils::utf8FromPath(session->partialFilePath);
             }
         }
     }
 
-    if (retryAttempt > 0) {
+    if (retryAttempt > 0)
+    {
         const auto delay = getRetryDelay(retryAttempt);
-        UPGRADE_LOG_INFO("Retrying download in " << delay.count()
-                         << "s (attempt " << retryAttempt << "/"
-                         << mMaxRetryCount.load(std::memory_order_acquire) << ")");
-        if (!retryCleanupPath.empty()) {
-            enqueueIo(IoJobKind::Cleanup,
-                      std::chrono::steady_clock::now(),
-                      [retryCleanupPath](std::stop_token) {
-                          std::error_code ec;
-                          std::filesystem::remove(retryCleanupPath, ec);
-                          if (ec) {
-                              UPGRADE_LOG_WARN("Failed to remove HTTP error body: " << ec.message());
-                          }
-                      });
+        UPGRADE_LOG_INFO("Retrying download in " << delay.count() << "s (attempt " << retryAttempt << "/"
+                                                 << mMaxRetryCount.load(std::memory_order_acquire) << ")");
+        if (!retryCleanupPath.empty())
+        {
+            enqueueIo(IoJobKind::Cleanup, std::chrono::steady_clock::now(), [retryCleanupPath](std::stop_token) {
+                upgrade::removeDownloadFile(retryCleanupPath, "Failed to remove HTTP error body");
+            });
         }
-        enqueueIo(IoJobKind::Attempt,
-                  std::chrono::steady_clock::now() + delay,
-                  [this, session](std::stop_token st) {
-                      attemptDownload(session, st);
-                  });
+        enqueueIo(IoJobKind::Attempt, std::chrono::steady_clock::now() + delay,
+            [this, session](std::stop_token st) { attemptDownload(session, st); });
         return;
     }
-    if (completion) {
-        if (success) {
+    if (completion)
+    {
+        if (success)
+        {
             UPGRADE_LOG_INFO("Download complete: " << finalPath);
             completion(true, finalPath, model::UpgradeErrorCode::None, "");
-        } else {
+        }
+        else
+        {
             UPGRADE_LOG_ERROR(errorMessage);
-            completion(false, "", model::UpgradeErrorCode::DownloadFailed,
-                       errorMessage);
+            completion(false, "", model::UpgradeErrorCode::DownloadFailed, errorMessage);
         }
     }
 }
 
 void UpgradeDownloadManager::cancelHttpRequest(const std::string& requestId) const
 {
-    if (requestId.empty()) {
+    if (requestId.empty())
+    {
         return;
     }
-    if (auto coreFramework = mCoreFramework.lock()) {
-        if (auto networkService = coreFramework->getService<INetworkService>().lock()) {
-            if (auto httpManager = networkService->getNetworkHttpManager().lock()) {
+    if (auto coreFramework = mCoreFramework.lock())
+    {
+        if (auto networkService = coreFramework->getService<INetworkService>().lock())
+        {
+            if (auto httpManager = networkService->getNetworkHttpManager().lock())
+            {
                 httpManager->cancelRequest(requestId);
             }
         }
     }
 }
 
-void UpgradeDownloadManager::retireActiveSession(bool preservePartial, bool deletePartial)
+void UpgradeDownloadManager::retireActiveSession(PartialFilePolicy policy)
 {
     std::string requestId;
     std::filesystem::path partialPath;
@@ -649,85 +813,90 @@ void UpgradeDownloadManager::retireActiveSession(bool preservePartial, bool dele
         std::lock_guard lock(mSessionMutex);
         mGeneration.fetch_add(1, std::memory_order_acq_rel);
         mVerifiedInstallerPath.clear();
-        if (mActiveSession) {
+        if (mActiveSession)
+        {
             requestId = mActiveSession->requestId;
             partialPath = mActiveSession->partialFilePath;
-            if (preservePartial && !partialPath.empty()) {
+            if (policy == PartialFilePolicy::KeepForResume && !partialPath.empty())
+            {
                 mResumePackageInfo = mActiveSession->packageInfo;
             }
             mActiveSession.reset();
         }
-        if (preservePartial && !partialPath.empty()) {
+        if (policy == PartialFilePolicy::KeepForResume && !partialPath.empty())
+        {
             mResumePartialPath = partialPath;
-        } else if (!preservePartial) {
-            for (const auto& path : {partialPath, mResumePartialPath}) {
-                if (!path.empty()
-                    && std::find(pathsToDelete.begin(), pathsToDelete.end(), path)
-                        == pathsToDelete.end()) {
+        }
+        else if (policy == PartialFilePolicy::Remove)
+        {
+            const auto cachedPath = mCompletedInstaller ? mCompletedInstaller->filePath : std::filesystem::path{};
+            for (const auto& path : {partialPath, mResumePartialPath})
+            {
+                if (!path.empty() && path != cachedPath &&
+                    std::find(pathsToDelete.begin(), pathsToDelete.end(), path) == pathsToDelete.end())
+                {
                     pathsToDelete.push_back(path);
                 }
             }
-            for (const auto& path : mTrackedFilePaths) {
-                if (!path.empty()
-                    && std::find(pathsToDelete.begin(), pathsToDelete.end(), path)
-                        == pathsToDelete.end()) {
+            for (const auto& path : mTrackedFilePaths)
+            {
+                if (!path.empty() && path != cachedPath &&
+                    std::find(pathsToDelete.begin(), pathsToDelete.end(), path) == pathsToDelete.end())
+                {
                     pathsToDelete.push_back(path);
                 }
             }
             mResumePartialPath.clear();
             mResumePackageInfo.reset();
-            mTrackedFilePaths.clear();
+            std::erase_if(mTrackedFilePaths,
+                [&cachedPath](const auto& path) { return cachedPath.empty() || path != cachedPath; });
         }
     }
 
     const auto now = std::chrono::steady_clock::now();
-    if (!requestId.empty()) {
-        enqueueIo(IoJobKind::Cancel, now,
-            [this, requestId](std::stop_token) { cancelHttpRequest(requestId); });
+    if (!requestId.empty())
+    {
+        enqueueIo(IoJobKind::Cancel, now, [this, requestId](std::stop_token) { cancelHttpRequest(requestId); });
     }
-    if (deletePartial) {
-        for (const auto& path : pathsToDelete) {
+    if (policy == PartialFilePolicy::Remove)
+    {
+        for (const auto& path : pathsToDelete)
+        {
             enqueueIo(IoJobKind::Cleanup, now,
-            [path](std::stop_token) {
-                std::error_code ec;
-                std::filesystem::remove(path, ec);
-                if (ec) {
-                    UPGRADE_LOG_WARN("Failed to remove partial download: " << ec.message());
-                }
-            });
+                [path](std::stop_token) { upgrade::removeDownloadFile(path, "Failed to remove partial download"); });
         }
     }
 }
 
 void UpgradeDownloadManager::cancelDownload()
 {
-    retireActiveSession(true, false);
+    retireActiveSession(PartialFilePolicy::KeepForResume);
 }
 
 void UpgradeDownloadManager::softReset()
 {
-    retireActiveSession(true, false);
+    retireActiveSession(PartialFilePolicy::KeepForResume);
     UPGRADE_LOG_DEBUG("UpgradeDownloadManager soft reset");
 }
 
 void UpgradeDownloadManager::hardReset()
 {
-    retireActiveSession(false, true);
-    UPGRADE_LOG_DEBUG("UpgradeDownloadManager hard reset");
+    retireActiveSession(PartialFilePolicy::Remove);
+    UPGRADE_LOG_DEBUG("UpgradeDownloadManager hard reset (retain verified installer)");
 }
 
 void UpgradeDownloadManager::verifyPackage(
-    const std::string& filePath,
-    const std::string& expectedSha256,
-    VerifyCompleteCallback callback)
+    const std::string& filePath, const model::PackageInfo& packageInfo, VerifyCompleteCallback callback)
 {
-    if (mStopRequested.load(std::memory_order_acquire)) {
+    if (mStopRequested.load(std::memory_order_acquire))
+    {
         return;
     }
     std::uint64_t generation = 0;
     {
         std::lock_guard lock(mSessionMutex);
-        if (mStopRequested.load(std::memory_order_acquire)) {
+        if (mStopRequested.load(std::memory_order_acquire))
+        {
             return;
         }
         generation = mGeneration.load(std::memory_order_acquire);
@@ -735,71 +904,75 @@ void UpgradeDownloadManager::verifyPackage(
     }
     UPGRADE_LOG_INFO("Verifying package: " << filePath);
 
-    enqueueVerify([this, generation, filePath, expectedSha256,
-                   callback = std::move(callback)](std::stop_token st) {
-        if (st.stop_requested()
-            || mStopRequested.load(std::memory_order_acquire)
-            || generation != mGeneration.load(std::memory_order_acquire)) {
+    enqueueVerify([this, generation, filePath, packageInfo, callback = std::move(callback)](std::stop_token st) {
+        if (st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+            generation != mGeneration.load(std::memory_order_acquire))
+        {
             return;
         }
 
-        bool success = false;
-        model::UpgradeErrorCode errorCode = model::UpgradeErrorCode::VerifyFailed;
-        std::string message;
-        try {
-            if (expectedSha256.empty()) {
-                message = "Expected SHA-256 is missing";
-                UPGRADE_LOG_ERROR(message);
-            } else if (!ucf::utilities::FilePathUtils::existsUtf8(filePath)) {
-                message = "File not found: " + filePath;
-            } else {
-                auto actualHash = computeSha256(
-                    ucf::utilities::FilePathUtils::pathFromUtf8(filePath), st, generation);
-                if (!actualHash) {
-                    return;
-                }
-                if (*actualHash != expectedSha256) {
-                    UPGRADE_LOG_ERROR("SHA-256 mismatch: expected=" << expectedSha256
-                                      << " actual=" << *actualHash);
-                    message = "SHA-256 mismatch: expected " + expectedSha256
-                            + ", got " + *actualHash;
-                } else {
-                    UPGRADE_LOG_INFO("Package verification passed");
-                    success = true;
-                    errorCode = model::UpgradeErrorCode::None;
-                }
-            }
-        } catch (const std::exception& ex) {
-            UPGRADE_LOG_ERROR("Verification exception: " << ex.what());
-            message = ex.what();
+        const auto result = upgrade::verifyPackageFile(filePath, packageInfo.sha256, [this, st, generation] {
+            return st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+                   generation != mGeneration.load(std::memory_order_acquire);
+        });
+        if (result.status == upgrade::VerificationStatus::Cancelled)
+        {
+            return;
         }
+        bool success = result.status == upgrade::VerificationStatus::Passed;
+        auto errorCode = success ? model::UpgradeErrorCode::None : model::UpgradeErrorCode::VerifyFailed;
+        std::string message = result.message;
 
+        bool recordChanged = false;
+        std::filesystem::path invalidCachedPath;
         {
             std::lock_guard lock(mSessionMutex);
-            if (st.stop_requested()
-                || mStopRequested.load(std::memory_order_acquire)
-                || generation != mGeneration.load(std::memory_order_acquire)) {
+            if (st.stop_requested() || mStopRequested.load(std::memory_order_acquire) ||
+                generation != mGeneration.load(std::memory_order_acquire))
+            {
                 return;
             }
-            if (success) {
-                const auto verifiedPath = ucf::utilities::FilePathUtils::pathFromUtf8(filePath);
-                if (mActiveSession
-                    || std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(), verifiedPath)
-                        == mTrackedFilePaths.end()) {
+            const auto verifiedPath = ucf::utilities::FilePathUtils::pathFromUtf8(filePath);
+            if (success)
+            {
+                if (mActiveSession || std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(), verifiedPath) ==
+                                          mTrackedFilePaths.end())
+                {
                     success = false;
                     errorCode = model::UpgradeErrorCode::VerifyFailed;
                     message = "Installer is not a completed download owned by this manager";
-                } else {
+                }
+                else
+                {
                     mVerifiedInstallerPath = verifiedPath;
+                    mCompletedInstaller = CompletedInstaller{packageInfo, verifiedPath};
+                    recordChanged = true;
                 }
             }
+            if (!success && mCompletedInstaller && mCompletedInstaller->filePath == verifiedPath)
+            {
+                invalidCachedPath = mCompletedInstaller->filePath;
+                mCompletedInstaller.reset();
+                std::erase(mTrackedFilePaths, invalidCachedPath);
+                recordChanged = true;
+            }
+        }
+        if (!invalidCachedPath.empty())
+        {
+            enqueueIo(IoJobKind::Cleanup, std::chrono::steady_clock::now(), [invalidCachedPath](std::stop_token) {
+                upgrade::removeDownloadFile(invalidCachedPath, "Failed to remove invalid cached installer");
+            });
+        }
+        if (recordChanged)
+        {
+            syncCompletedInstallerRecord();
         }
 
-        // Keep the callback outside the try block and session mutex: the FSM
+        // Keep the callback outside the verifier and session mutex: the FSM
         // may reset the manager or release the verified installer from here.
-        if (!st.stop_requested()
-            && !mStopRequested.load(std::memory_order_acquire)
-            && generation == mGeneration.load(std::memory_order_acquire)) {
+        if (!st.stop_requested() && !mStopRequested.load(std::memory_order_acquire) &&
+            generation == mGeneration.load(std::memory_order_acquire))
+        {
             callback(success, errorCode, message);
         }
     });
@@ -808,76 +981,33 @@ void UpgradeDownloadManager::verifyPackage(
 bool UpgradeDownloadManager::releaseInstaller(const std::string& filePath)
 {
     const auto installerPath = ucf::utilities::FilePathUtils::pathFromUtf8(filePath);
-    std::lock_guard lock(mSessionMutex);
-    if (mStopRequested.load(std::memory_order_acquire)
-        || mVerifiedInstallerPath.empty()
-        || mVerifiedInstallerPath != installerPath) {
-        return false;
-    }
-    const auto tracked = std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(),
-                                   installerPath);
-    if (tracked == mTrackedFilePaths.end()) {
-        return false;
-    }
+    {
+        std::lock_guard lock(mSessionMutex);
+        if (mStopRequested.load(std::memory_order_acquire) || mVerifiedInstallerPath.empty() ||
+            mVerifiedInstallerPath != installerPath)
+        {
+            return false;
+        }
+        const auto tracked = std::find(mTrackedFilePaths.begin(), mTrackedFilePaths.end(), installerPath);
+        if (tracked == mTrackedFilePaths.end())
+        {
+            return false;
+        }
 
-    mTrackedFilePaths.erase(tracked);
-    if (mResumePartialPath == installerPath) {
-        mResumePartialPath.clear();
-        mResumePackageInfo.reset();
+        mTrackedFilePaths.erase(tracked);
+        if (mCompletedInstaller && mCompletedInstaller->filePath == installerPath)
+        {
+            mCompletedInstaller.reset();
+        }
+        if (mResumePartialPath == installerPath)
+        {
+            mResumePartialPath.clear();
+            mResumePackageInfo.reset();
+        }
+        mVerifiedInstallerPath.clear();
     }
-    mVerifiedInstallerPath.clear();
+    syncCompletedInstallerRecord();
     return true;
-}
-
-std::optional<std::string> UpgradeDownloadManager::computeSha256(
-    const std::filesystem::path& filePath,
-    std::stop_token stopToken,
-    std::uint64_t generation) const
-{
-    std::ifstream file(filePath, std::ios::binary);
-    if (!file.is_open()) {
-        throw std::runtime_error("Cannot open file for SHA-256: " + filePath.string());
-    }
-
-    std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> ctx(
-        EVP_MD_CTX_new(), EVP_MD_CTX_free);
-    if (!ctx || EVP_DigestInit_ex(ctx.get(), EVP_sha256(), nullptr) != 1) {
-        throw std::runtime_error("SHA-256 initialization failed");
-    }
-
-    char buffer[8192];
-    while (file.read(buffer, sizeof(buffer)) || file.gcount() > 0) {
-        if (stopToken.stop_requested()
-            || mStopRequested.load(std::memory_order_acquire)
-            || generation != mGeneration.load(std::memory_order_acquire)) {
-            return std::nullopt;
-        }
-        if (EVP_DigestUpdate(ctx.get(), buffer,
-                             static_cast<std::size_t>(file.gcount())) != 1) {
-            throw std::runtime_error("SHA-256 update failed");
-        }
-    }
-    if (file.bad()) {
-        throw std::runtime_error("Failed to read file for SHA-256: " + filePath.string());
-    }
-    if (stopToken.stop_requested()
-        || mStopRequested.load(std::memory_order_acquire)
-        || generation != mGeneration.load(std::memory_order_acquire)) {
-        return std::nullopt;
-    }
-
-    unsigned char hash[EVP_MAX_MD_SIZE];
-    unsigned int hashLen = 0;
-    if (EVP_DigestFinal_ex(ctx.get(), hash, &hashLen) != 1) {
-        throw std::runtime_error("SHA-256 finalization failed");
-    }
-
-    std::ostringstream oss;
-    for (unsigned int i = 0; i < hashLen; ++i) {
-        oss << std::hex << std::setfill('0') << std::setw(2)
-            << static_cast<int>(hash[i]);
-    }
-    return oss.str();
 }
 
 void UpgradeDownloadManager::setMaxRetryCount(int count)
@@ -893,7 +1023,8 @@ std::chrono::seconds UpgradeDownloadManager::getRetryDelay(int retryAttempt) con
 
 void UpgradeDownloadManager::requestStop()
 {
-    if (!mStopRequested.exchange(true, std::memory_order_acq_rel)) {
+    if (!mStopRequested.exchange(true, std::memory_order_acq_rel))
+    {
         std::lock_guard lock(mSessionMutex);
         mGeneration.fetch_add(1, std::memory_order_acq_rel);
         mVerifiedInstallerPath.clear();
@@ -912,37 +1043,46 @@ void UpgradeDownloadManager::cancelOutstandingRequests()
         std::lock_guard lock(mSessionMutex);
         ids.assign(mOutstandingRequestIds.begin(), mOutstandingRequestIds.end());
     }
-    for (const auto& id : ids) {
+    for (const auto& id : ids)
+    {
         cancelHttpRequest(id);
     }
 }
 
 void UpgradeDownloadManager::joinWorkers()
 {
-    if (mIoWorker.joinable()) {
+    if (mIoWorker.joinable())
+    {
         mIoWorker.join();
     }
-    if (mVerifyWorker.joinable()) {
+    if (mVerifyWorker.joinable())
+    {
         mVerifyWorker.join();
     }
 
     // requestStop() drops queued attempts and retries. Finish already queued
-    // cleanup after transport cancellation and the I/O worker have completed,
-    // so a hard reset immediately followed by shutdown still removes its file.
+    // cleanup and record sync after transport cancellation and both workers
+    // have completed, so shutdown also persists the latest cache slot.
     std::vector<WorkerJob> cleanupJobs;
     {
         std::lock_guard lock(mIoMutex);
-        for (auto& job : mIoJobs) {
-            if (job.kind == IoJobKind::Cleanup) {
+        for (auto& job : mIoJobs)
+        {
+            if (job.kind == IoJobKind::Cleanup)
+            {
                 cleanupJobs.push_back(std::move(job.run));
             }
         }
         mIoJobs.clear();
     }
-    for (auto& cleanup : cleanupJobs) {
-        try {
+    for (auto& cleanup : cleanupJobs)
+    {
+        try
+        {
             cleanup(std::stop_token{});
-        } catch (const std::exception& ex) {
+        }
+        catch (const std::exception& ex)
+        {
             UPGRADE_LOG_WARN("Shutdown cleanup failed: " << ex.what());
         }
     }
