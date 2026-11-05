@@ -23,7 +23,6 @@ ApplicationWindow
 
     readonly property bool isMacOS: Qt.platform.os === "osx"
     readonly property bool isWindows: Qt.platform.os === "windows"
-    readonly property bool integratedTitleBar: isMacOS || isWindows
 
     flags:
     {
@@ -49,7 +48,7 @@ ApplicationWindow
         return Qt.Window
     }
 
-    title: qsTr(root.controller.title)
+    // title: root.isMacOS ? "" : qsTr(root.controller.title)
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
 
     menuBar: MainWindowMenuBar {
@@ -61,38 +60,6 @@ ApplicationWindow
     {
         id: titleBar
         appWindow: root
-
-        systemButtonsEdge: root.isMacOS ? Qt.LeftEdge : Qt.RightEdge
-
-        // Conservative layout reserves in logical pixels, not native bounds.
-        systemButtonsWidth:
-        {
-            if (root.isMacOS)
-            {
-                return 110
-            }
-
-            if (root.isWindows)
-            {
-                return Math.max(160,
-                    Math.ceil(Math.max(32, root.SafeArea.margins.top) * 1.5 * 3) + 8)
-            }
-
-            return 0
-        }
-
-        captionHeight:
-        {
-            if (!root.integratedTitleBar || root.visibility === Window.FullScreen)
-            {
-                return 40
-            }
-
-            return Math.max(root.SafeArea.margins.top, root.isMacOS ? 28 : 32)
-        }
-
-        showTitle: root.isWindows
-        height: implicitHeight
     }
 
     footer: MainWindowFootBar {
