@@ -30,12 +30,12 @@
   - [下载地址](https://cmake.org/download/)
   - 验证：`cmake --version`
 
-- **Qt 6.5+** （必需）
+- **Qt 6.12+** （必需）
   - [官方安装器](https://www.qt.io/download-qt-installer)
   - 或使用 aqtinstall 命令行安装：
     ```bash
     pip install aqtinstall
-    aqt install-qt mac desktop 6.8.3 clang_64 -O ~/Qt
+    aqt install-qt mac desktop 6.12.0 clang_64 -O ~/Qt
     ```
 
 ### Windows
@@ -56,16 +56,20 @@
 
 ### macOS
 
+Qt 6.12 prebuilt packages require macOS 14.4 or later.
+
 ```bash
 # 使用 Homebrew 安装基础工具
 brew install cmake
 
 # Qt 建议使用官方安装器或 aqtinstall
 pip install aqtinstall
-aqt install-qt mac desktop 6.8.3 clang_64 -O ~/Qt
+aqt install-qt mac desktop 6.12.0 clang_64 -O ~/Qt
 ```
 
 ### Linux
+
+Install Qt 6.12 or later separately; distribution Qt packages may be older.
 
 ```bash
 # Ubuntu/Debian
@@ -201,7 +205,7 @@ macOS / Linux 示例：
 cmake -S . -B build/manual-macos-release \
   -G "Unix Makefiles" \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_PREFIX_PATH="$HOME/Qt/6.8.3/macos"
+  -DCMAKE_PREFIX_PATH="$HOME/Qt/6.12.0/macos"
 
 # 编译
 cmake --build build/manual-macos-release -j
@@ -221,7 +225,7 @@ Windows MSVC 示例：
 ```powershell
 cmake -S . -B build/manual-windows-msvc-release \
   -G "Visual Studio 17 2022" -A x64 \
-  -DCMAKE_PREFIX_PATH="C:/Qt/6.8.3/msvc2022_64"
+  -DCMAKE_PREFIX_PATH="C:/Qt/6.12.0/msvc2022_64"
 
 cmake --build build/manual-windows-msvc-release --config Release
 ctest --test-dir build/manual-windows-msvc-release -C Release --output-on-failure
@@ -329,7 +333,7 @@ cp product_build/CMakeUserPresets.json.example CMakeUserPresets.json
       "name": "macos-release",
       "inherits": "macos-release",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.12.0/macos"
       }
     }
   ]
@@ -339,10 +343,10 @@ cp product_build/CMakeUserPresets.json.example CMakeUserPresets.json
 常见 Qt 路径：
 | 平台 | 安装方式 | 路径示例 |
 |------|----------|----------|
-| macOS | 官方安装器/aqtinstall | `~/Qt/6.8.3/macos` |
+| macOS | 官方安装器/aqtinstall | `~/Qt/6.12.0/macos` |
 | macOS | Homebrew | `/opt/homebrew/opt/qt@6`（不推荐） |
-| Windows | 官方安装器 | `C:/Qt/6.8.3/msvc2022_64` |
-| Linux | 官方安装器/aqtinstall | `~/Qt/6.8.3/gcc_64` |
+| Windows | 官方安装器 | `C:/Qt/6.12.0/msvc2022_64` |
+| Linux | 官方安装器/aqtinstall | `~/Qt/6.12.0/gcc_64` |
 
 ---
 
@@ -377,7 +381,7 @@ CMake Error: Qt6 could not be found.
 ```bash
 # 1. 确保已安装 Qt
 pip install aqtinstall
-aqt install-qt mac desktop 6.8.3 clang_64 -O ~/Qt
+aqt install-qt mac desktop 6.12.0 clang_64 -O ~/Qt
 
 # 2. 配置 CMakeUserPresets.json
 cp product_build/CMakeUserPresets.json.example CMakeUserPresets.json
@@ -485,7 +489,7 @@ cp product_build/CMakeUserPresets.json.example CMakeUserPresets.json
       "name": "macos-release",
       "inherits": "macos-release",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.12.0/macos"
       }
     },
     {

@@ -6,7 +6,7 @@
       "displayName": "Local macOS Release",
       "inherits": "macos-release",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.12.0/macos"
       }
     },
     {
@@ -14,7 +14,7 @@
       "displayName": "Local macOS Debug",
       "inherits": "macos-debug",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/macos"
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.12.0/macos"
       }
     },
     {
@@ -22,7 +22,7 @@
       "displayName": "Local Windows MSVC Release",
       "inherits": "windows-msvc-release",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.3/msvc2022_64"
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.12.0/msvc2022_64"
       }
     },
     {
@@ -30,7 +30,7 @@
       "displayName": "Local Windows MSVC Debug",
       "inherits": "windows-msvc-debug",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "C:/Qt/6.8.3/msvc2022_64"
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.12.0/msvc2022_64"
       }
     },
     {
@@ -38,7 +38,7 @@
       "displayName": "Local Linux Release",
       "inherits": "linux-release",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/gcc_64"
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.12.0/gcc_64"
       }
     },
     {
@@ -46,7 +46,7 @@
       "displayName": "Local Linux Debug",
       "inherits": "linux-debug",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.8.3/gcc_64"
+        "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.12.0/gcc_64"
       }
     }
   ],

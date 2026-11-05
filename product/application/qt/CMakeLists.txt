@@ -11,7 +11,7 @@ if(APPLE)
     endif()
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml Gui Widgets LinguistTools Multimedia)
+find_package(Qt6 6.12 REQUIRED COMPONENTS Core Quick Qml Gui Widgets LinguistTools Multimedia)
 
 qt_standard_project_setup(REQUIRES 6.5)
 

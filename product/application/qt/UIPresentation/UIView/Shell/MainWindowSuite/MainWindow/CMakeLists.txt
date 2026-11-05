@@ -8,7 +8,6 @@ UIViewAppendBuildInputs(
     QML_FILES
         qml/MainWindow.qml
         qml/MainWindowContent.qml
-        qml/WindowResizeHandler.qml
     PRIVATE_INCLUDE_DIRS
         include
         include/MainWindow

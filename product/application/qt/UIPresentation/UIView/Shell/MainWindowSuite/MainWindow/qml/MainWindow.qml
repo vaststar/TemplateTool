@@ -20,46 +20,88 @@ ApplicationWindow
     height: 768
     minimumWidth: 800
     minimumHeight: 600
-    flags: Qt.FramelessWindowHint | Qt.Window
+
+    readonly property bool isMacOS: Qt.platform.os === "osx"
+    readonly property bool isWindows: Qt.platform.os === "windows"
+    readonly property bool integratedTitleBar: isMacOS || isWindows
+
+    flags:
+    {
+        if (root.isWindows)
+        {
+            return Qt.Window
+                   | Qt.CustomizeWindowHint
+                   | Qt.WindowSystemMenuHint
+                   | Qt.WindowMinimizeButtonHint
+                   | Qt.WindowMaximizeButtonHint
+                   | Qt.WindowCloseButtonHint
+                   | Qt.ExpandedClientAreaHint
+                   | Qt.NoTitleBarBackgroundHint
+        }
+
+        if (root.isMacOS)
+        {
+            return Qt.Window
+                   | Qt.ExpandedClientAreaHint
+                   | Qt.NoTitleBarBackgroundHint
+        }
+
+        return Qt.Window
+    }
 
     title: qsTr(root.controller.title)
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
-
-    Rectangle {
-        parent: Overlay.overlay
-        anchors.fill: parent
-        z: 9999
-        color: "transparent"
-        border.width: 1
-        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Window_Border, UIColorState.Normal)
-    }
 
     menuBar: MainWindowMenuBar {
         id: menuBar
         visible: false
     }
 
-    header: MainWindowTitleBar {
+    header: MainWindowTitleBar
+    {
         id: titleBar
         appWindow: root
-        height: 40
+
+        systemButtonsEdge: root.isMacOS ? Qt.LeftEdge : Qt.RightEdge
+
+        // Conservative layout reserves in logical pixels, not native bounds.
+        systemButtonsWidth:
+        {
+            if (root.isMacOS)
+            {
+                return 110
+            }
+
+            if (root.isWindows)
+            {
+                return Math.max(160,
+                    Math.ceil(Math.max(32, root.SafeArea.margins.top) * 1.5 * 3) + 8)
+            }
+
+            return 0
+        }
+
+        captionHeight:
+        {
+            if (!root.integratedTitleBar || root.visibility === Window.FullScreen)
+            {
+                return 40
+            }
+
+            return Math.max(root.SafeArea.margins.top, root.isMacOS ? 28 : 32)
+        }
+
+        showTitle: root.isWindows
+        height: implicitHeight
     }
 
     footer: MainWindowFootBar {
         id: footBar
     }
 
-    WindowResizeHandler {
-        parent: Overlay.overlay
-        z: 10000
-        targetWindow: root
-        borderWidth: 5
-    }
-
     Loader{
         id: mainWindowContentLoader
         anchors.fill: parent
-        anchors.margins: 1
         focus: true
     }
 

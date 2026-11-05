@@ -5,120 +5,121 @@ import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
-Rectangle {
+Rectangle
+{
     id: root
-    property MainWindowTitleBarController controller: MainWindowTitleBarController{}
-    
+
+    required property ApplicationWindow appWindow
+
+    property MainWindowTitleBarController controller: MainWindowTitleBarController {}
+
+    property int systemButtonsEdge: Qt.RightEdge
+    property real systemButtonsWidth: 0
+    property real captionHeight: 40
+    property bool showTitle: false
+
+    signal avatarClicked()
+
+    readonly property bool fullScreen: appWindow.visibility === Window.FullScreen
+    readonly property real topInset: fullScreen ? appWindow.SafeArea.margins.top : 0
+
+    readonly property real leftReservedWidth:
+        systemButtonsEdge === Qt.LeftEdge ? systemButtonsWidth : 0
+
+    readonly property real rightReservedWidth:
+        systemButtonsEdge === Qt.RightEdge ? systemButtonsWidth : 0
+
+    readonly property bool windowGesturesEnabled:
+        !fullScreen && (appWindow.flags & Qt.ExpandedClientAreaHint) !== 0
+
+    implicitHeight: topInset + Math.max(40, captionHeight)
+
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Titlebar_Background, UIColorState.Normal)
     visible: controller.visible
-    required property ApplicationWindow appWindow
-        
-    RowLayout {
+
+    RowLayout
+    {
         anchors.fill: parent
-        spacing: 5
-        UTImageButton {
-            Layout.preferredWidth: parent.height - 10
-            Layout.fillHeight: true
-            Layout.margins: 5
-            source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)//"qrc:/images/icon_user"
-            onClicked: {
-                console.log("Image button clicked!")
-            }
+        anchors.topMargin: root.topInset
+        anchors.leftMargin: root.leftReservedWidth + 8
+        anchors.rightMargin: root.rightReservedWidth + 8
+
+        spacing: 8
+        layoutDirection: Qt.LeftToRight
+
+        LayoutMirroring.enabled: false
+        LayoutMirroring.childrenInherit: true
+
+        UTImageButton
+        {
+            Layout.preferredWidth: 24
+            Layout.preferredHeight: 24
+            Layout.alignment: Qt.AlignTop
+            Layout.topMargin: Math.max(0, (root.captionHeight - 24) / 2)
+
+            source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)
+            onClicked: root.avatarClicked()
         }
 
-        Item {
+        Item
+        {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            UTText {
-                anchors.centerIn: parent
-                text: qsTr(controller.title)
+            UTText
+            {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+
+                height: root.captionHeight
+                visible: root.showTitle
+
+                text: root.appWindow.title
+                textFormat: Text.PlainText
+                maximumLineCount: 1
+                elide: Text.ElideRight
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
                 fontEnum: UIFontToken.Body_Text
                 colorEnum: UIColorToken.Titlebar_Button_Text
-                maximumLineCount: 1
             }
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.ArrowCursor
-                onPressed: (mouse) => {
-                    if (mouse.buttons === Qt.LeftButton && appWindow)
+            DragHandler
+            {
+                target: null
+                acceptedButtons: Qt.LeftButton
+                enabled: root.windowGesturesEnabled
+
+                onActiveChanged:
+                {
+                    if (active)
                     {
-                        appWindow.startSystemMove()
-                    }
-                }
-                onDoubleClicked: (mouse) => {
-                    if (mouse.button === Qt.LeftButton && appWindow) {
-                        if (appWindow.visibility === ApplicationWindow.Maximized)
-                            appWindow.showNormal()
-                        else
-                            appWindow.showMaximized()
+                        root.appWindow.startSystemMove()
                     }
                 }
             }
-        }
 
-        RowLayout {
-            spacing: 0
-            Layout.fillHeight: true
+            TapHandler
+            {
+                acceptedButtons: Qt.LeftButton
+                gesturePolicy: TapHandler.DragThreshold
+                enabled: root.windowGesturesEnabled
 
-            UTButton {
-                id: minimizeBtn
-                text: "—"
-                enabled: appWindow !== null
-                onClicked: appWindow && appWindow.showMinimized()
-                Layout.preferredWidth: 40
-                Layout.fillHeight: true
-                padding: 0
-                focusPolicy: Qt.NoFocus
-                backgroundColorEnum: UIColorToken.Titlebar_Button_Background
-                borderWidth: 0
-                radius: 0
-                fontColorEnum: UIColorToken.Titlebar_Button_Text
-            }
-
-            UTButton {
-                id: maximizeBtn
-                text: appWindow && appWindow.visibility === ApplicationWindow.Maximized ? "❐" : "□"
-                enabled: appWindow !== null
-                onClicked: {
-                    if (!appWindow) return
-                    if (appWindow.visibility === ApplicationWindow.Maximized)
-                        appWindow.showNormal()
+                onDoubleTapped:
+                {
+                    if (root.appWindow.visibility === Window.Maximized)
+                    {
+                        root.appWindow.showNormal()
+                    }
                     else
-                        appWindow.showMaximized()
+                    {
+                        root.appWindow.showMaximized()
+                    }
                 }
-                Layout.preferredWidth: 40
-                Layout.fillHeight: true
-                padding: 0
-                focusPolicy: Qt.NoFocus
-                backgroundColorEnum: UIColorToken.Titlebar_Button_Background
-                borderWidth: 0
-                radius: 0
-                fontColorEnum: UIColorToken.Titlebar_Button_Text
-            }
-
-            UTButton {
-                id: closeBtn
-                text: "✕"
-                onClicked: {
-                    controller.logInfo(
-                        "Main window close requested, source: title bar close button")
-                    if (appWindow)
-                        appWindow.close()
-                    else
-                        Qt.quit()
-                }
-                Layout.preferredWidth: 40
-                Layout.fillHeight: true
-                padding: 0
-                focusPolicy: Qt.NoFocus
-                backgroundColorEnum: UIColorToken.Titlebar_Close_Background
-                borderWidth: 0
-                radius: 0
-                fontColorEnum: UIColorToken.Titlebar_Close_Text
             }
         }
     }
-
 }
