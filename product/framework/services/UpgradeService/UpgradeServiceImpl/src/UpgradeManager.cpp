@@ -10,8 +10,12 @@
 #include <ucf/utilities/FilePathUtils/FilePathUtils.h>
 
 #include <chrono>
+#include <cerrno>
 #include <functional>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
+#include <system_error>
 #include <type_traits>
 #include <utility>
 
@@ -89,6 +93,9 @@ void UpgradeManager::initialize(Listener* listener)
 
     // Resolve package metadata before any FSM callback can run under its mutex.
     mPackageFormat = getCurrentPackageFormat();
+    const auto formatName = model::packageFormatName(mPackageFormat);
+    UPGRADE_LOG_INFO("Installation package format cached: " << (formatName.empty() ? "unknown" : formatName)
+                     << ", code=" << static_cast<int>(mPackageFormat));
     mListener = listener;
 
     // 1. Bind FSM context callbacks
@@ -200,6 +207,11 @@ void UpgradeManager::startUpgradeCheck(upgrade::UpgradeOperation operation, bool
     auto platform = getCurrentPlatform();
     auto arch = getCurrentArch();
 
+    const auto formatName = model::packageFormatName(mPackageFormat);
+    UPGRADE_LOG_DEBUG("Starting upgrade check: operationId=" << operation.id << ", version=" << version
+                      << ", platform=" << platform << ", arch=" << arch << ", userTriggered=" << userTriggered
+                      << ", cachedPackageFormat=" << (formatName.empty() ? "unknown" : formatName)
+                      << ", formatCode=" << static_cast<int>(mPackageFormat));
     mCheckManager->checkForUpgrade(operation, version, platform, arch, mPackageFormat, userTriggered,
         withCallbackGate(mCallbackGate, [this, operation](bool success, const model::UpgradeCheckResult& result,
             model::UpgradeErrorCode errCode, const std::string& errMsg) {
@@ -442,23 +454,61 @@ model::PackageFormat UpgradeManager::getCurrentPackageFormat() const
     {
         if (auto clientInfo = cf->getService<IClientInfoService>().lock())
         {
-            const auto marker = ucf::utilities::FilePathUtils::pathFromUtf8(clientInfo->getInstallDirectory()) /
+            const auto installDirectory = clientInfo->getInstallDirectory();
+            const auto marker = ucf::utilities::FilePathUtils::pathFromUtf8(installDirectory) /
                                 upgrade::constants::kPackageFormatMarkerFileName;
+            UPGRADE_LOG_DEBUG("Resolving Linux installation package format: executable=" << clientInfo->getExecutablePath()
+                              << ", installDirectory=" << installDirectory << ", marker=" << marker);
+            errno = 0;
             std::ifstream input(marker);
+            const auto openError = errno;
+            if (!input.is_open())
+            {
+                UPGRADE_LOG_WARN("Cannot open installation-format marker: path=" << marker << ", errno=" << openError
+                                 << ", reason=" << std::error_code(openError, std::generic_category()).message());
+            }
             std::string format;
             if (std::getline(input, format))
             {
+                UPGRADE_LOG_DEBUG("Installation-format marker read: path=" << marker << ", length=" << format.size()
+                                  << ", good=" << input.good() << ", eof=" << input.eof());
                 if (format == "deb")
                 {
+                    UPGRADE_LOG_INFO("Linux installation package format detected: deb, marker=" << marker);
                     return model::PackageFormat::Deb;
                 }
                 if (format == "rpm")
                 {
+                    UPGRADE_LOG_INFO("Linux installation package format detected: rpm, marker=" << marker);
                     return model::PackageFormat::Rpm;
                 }
+                UPGRADE_LOG_WARN("Unrecognized installation-format marker: path=" << marker << ", length=" << format.size());
+                UPGRADE_LOG_DEBUG("Installation-format marker bytes (hex, first 32): " << [&format] {
+                    std::ostringstream bytes;
+                    bytes << std::hex << std::setfill('0');
+                    for (std::size_t i = 0; i < format.size() && i < 32; ++i)
+                    {
+                        bytes << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(format[i])) << ' ';
+                    }
+                    return bytes.str();
+                }());
+            }
+            else
+            {
+                UPGRADE_LOG_WARN("Cannot read installation-format marker: path=" << marker << ", isOpen=" << input.is_open()
+                                 << ", eof=" << input.eof() << ", fail=" << input.fail() << ", bad=" << input.bad());
             }
         }
+        else
+        {
+            UPGRADE_LOG_WARN("Cannot detect Linux installation package format: ClientInfoService unavailable");
+        }
     }
+    else
+    {
+        UPGRADE_LOG_WARN("Cannot detect Linux installation package format: CoreFramework unavailable");
+    }
+    UPGRADE_LOG_WARN("Linux installation package format detection returned unknown");
 #endif
     return model::PackageFormat::Unknown;
 }
