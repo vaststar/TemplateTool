@@ -38,6 +38,7 @@ public:
     Q_INVOKABLE void componentCompleted();
     Q_INVOKABLE void onWindowClosing();
     Q_INVOKABLE bool startSystemResize(QWindow *window, int edges);
+    Q_INVOKABLE bool applyNativeCaption(QWindow* window);
 
     // Returns the geometry fitted into the available screen area; QML applies it.
     Q_INVOKABLE QRect fitToScreen(int x, int y, int width, int height) const;

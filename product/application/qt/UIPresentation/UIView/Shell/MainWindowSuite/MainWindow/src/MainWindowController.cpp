@@ -15,6 +15,10 @@
 
 #include <QCoreApplication>
 
+#ifdef Q_OS_WIN
+#include <QtCore/qt_windows.h>
+#endif
+
 #include "MediaCameraView/MediaCameraViewController.h"
 #include <UIViewModelSignalBridge/emitters/MainWindowViewModelEmitter.h>
 
@@ -166,6 +170,74 @@ bool MainWindowController::startSystemResize(QWindow *window, int edges)
         return window->startSystemResize(Qt::Edges(edges));
     }
     return false;
+}
+
+bool MainWindowController::applyNativeCaption(QWindow* window)
+{
+#ifdef Q_OS_WIN
+    if (!window || !window->isVisible() || !window->handle()
+        || window->windowState() == Qt::WindowFullScreen)
+    {
+        UIVIEW_LOG_WARN("Native caption skipped: window must be visible, created, and outside fullscreen");
+        return false;
+    }
+
+    const auto flags = window->flags();
+    if (!flags.testFlag(Qt::ExpandedClientAreaHint)
+        || !flags.testFlag(Qt::CustomizeWindowHint)
+        || flags.testFlag(Qt::FramelessWindowHint)
+        || flags.testFlag(Qt::WindowTitleHint))
+    {
+        UIVIEW_LOG_WARN("Native caption skipped: unexpected Qt flags=0x"
+            << QString::number(static_cast<quint32>(flags.toInt()), 16).toStdString());
+        return false;
+    }
+
+    const auto hwnd = reinterpret_cast<HWND>(window->winId());
+    SetLastError(ERROR_SUCCESS);
+    const auto styleBefore = GetWindowLongPtrW(hwnd, GWL_STYLE);
+    const auto readError = GetLastError();
+    if ((styleBefore == 0 && readError != ERROR_SUCCESS) || !(styleBefore & WS_THICKFRAME))
+    {
+        UIVIEW_LOG_WARN("Native caption skipped: cannot read a resizable native frame, style=0x"
+            << QString::number(static_cast<quintptr>(styleBefore), 16).toStdString()
+            << ", error=" << readError);
+        return false;
+    }
+
+    const auto desiredStyle = styleBefore | WS_CAPTION;
+    if (styleBefore != desiredStyle)
+    {
+        SetLastError(ERROR_SUCCESS);
+        const auto previousStyle = SetWindowLongPtrW(hwnd, GWL_STYLE, desiredStyle);
+        const auto writeError = GetLastError();
+        if (previousStyle == 0 && writeError != ERROR_SUCCESS)
+        {
+            UIVIEW_LOG_ERROR("Native caption style update failed, error=" << writeError);
+            return false;
+        }
+
+        if (!SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
+                SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE))
+        {
+            const auto refreshError = GetLastError();
+            UIVIEW_LOG_ERROR("Native caption style written but frame refresh failed, error=" << refreshError);
+            return false;
+        }
+    }
+
+    const auto styleAfter = GetWindowLongPtrW(hwnd, GWL_STYLE);
+    const bool applied = (styleAfter & (WS_CAPTION | WS_THICKFRAME)) == (WS_CAPTION | WS_THICKFRAME);
+    UIVIEW_LOG_INFO("Native caption result: applied=" << applied
+        << ", hwnd=0x" << QString::number(reinterpret_cast<quintptr>(hwnd), 16).toStdString()
+        << ", qtFlags=0x" << QString::number(static_cast<quint32>(flags.toInt()), 16).toStdString()
+        << ", styleBefore=0x" << QString::number(static_cast<quintptr>(styleBefore), 16).toStdString()
+        << ", styleAfter=0x" << QString::number(static_cast<quintptr>(styleAfter), 16).toStdString());
+    return applied;
+#else
+    Q_UNUSED(window);
+    return false;
+#endif
 }
 
 QRect MainWindowController::fitToScreen(int x, int y, int width, int height) const

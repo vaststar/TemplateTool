@@ -1634,7 +1634,7 @@ Double-click a rule to view details.</source>
         <translation>我的測試視窗標題列</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="64"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="68"/>
         <source>my test window aa</source>
         <translation>我的測試視窗 aa</translation>
     </message>

@@ -14,6 +14,8 @@
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
 #include <QGuiApplication>
+#include <QMetaEnum>
+#include <QScopedValueRollback>
 #include <QStyleHints>
 #include <QTimer>
 
@@ -89,10 +91,21 @@ void AppUIController::onAppConfigInitialized()
         "AppUIController application configuration processing started, address: "
         << this);
 
-    // 1. Load translation
-    auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
-    clientInfoViewModel->initViewModel();
-    const auto configuredLanguage = clientInfoViewModel->getApplicationLanguage();
+    mClientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
+    mClientInfoViewModel->initViewModel();
+    applyConfiguredLanguage();
+    initializeTheme();
+
+    QTimer::singleShot(0, this, &AppUIController::showMainWindow);
+
+    APPUI_LOG_DEBUG(
+        "AppUIController application configuration processing finished, address: "
+        << this);
+}
+
+void AppUIController::applyConfiguredLanguage()
+{
+    const auto configuredLanguage = mClientInfoViewModel->getApplicationLanguage();
     APPUI_LOG_DEBUG("get language: " << static_cast<int>(configuredLanguage));
 
     if (auto translatorManager = getTranslatorManager())
@@ -110,7 +123,7 @@ void AppUIController::onAppConfigInitialized()
                 UILanguage::LanguageType::LanguageType_ENGLISH);
             if (UIManager::isTranslationLoadSuccessful(fallbackResult))
             {
-                clientInfoViewModel->setApplicationLanguage(
+                mClientInfoViewModel->setApplicationLanguage(
                     commonHead::viewModels::model::LanguageType::ENGLISH);
             }
             else
@@ -124,30 +137,76 @@ void AppUIController::onAppConfigInitialized()
     {
         APPUI_LOG_ERROR("TranslatorManager is unavailable");
     }
+}
 
-    // 2. Load theme
-    APPUI_LOG_DEBUG("get CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
+void AppUIController::initializeTheme()
+{
+    syncQtColorScheme();
+    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
+        this, &AppUIController::onQtColorSchemeChanged, Qt::UniqueConnection);
+}
 
-    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
-        auto clientInfoViewModel = getViewModelFactory()->createClientInfoViewModelInstance();
-        clientInfoViewModel->initViewModel();
-        APPUI_LOG_DEBUG("system color scheme changed, CurrentTheme: " << static_cast<int>(clientInfoViewModel->getCurrentThemeType()));
-        if (clientInfoViewModel->getCurrentThemeType() == commonHead::viewModels::model::ThemeType::SystemDefault)
-        {
-            APPUI_LOG_DEBUG("system color scheme changed, notifying theme refresh");
-            getResourceLoaderManager()->notifyThemeChanged();
-        }
-    });
+void AppUIController::onThemeChanged()
+{
+    syncQtColorScheme();
+}
 
-    // 3. Show main window
-    QTimer::singleShot(0, this, [this]() {
-        APPUI_LOG_DEBUG("will show main window");
-        showMainWindow();
-    });
+void AppUIController::syncQtColorScheme()
+{
+    if (!mClientInfoViewModel)
+        return;
 
-    APPUI_LOG_DEBUG(
-        "AppUIController application configuration processing finished, address: "
-        << this);
+    using ThemeType = commonHead::viewModels::model::ThemeType;
+    const auto theme = mClientInfoViewModel->getCurrentThemeType();
+    auto requested = Qt::ColorScheme::Unknown;
+    switch (theme)
+    {
+    case ThemeType::Light:
+        requested = Qt::ColorScheme::Light;
+        break;
+    case ThemeType::Dark:
+        requested = Qt::ColorScheme::Dark;
+        break;
+    case ThemeType::SystemDefault:
+        break;
+    }
+
+    // Compare requests, not the effective scheme: Unknown restores system tracking.
+    if (mRequestedColorScheme == requested)
+        return;
+    mRequestedColorScheme = requested;
+
+    auto* hints = QGuiApplication::styleHints();
+    const auto before = hints->colorScheme();
+    {
+        // Qt can emit colorSchemeChanged synchronously while applying this request.
+        QScopedValueRollback<bool> applying(mApplyingQtColorScheme, true);
+        hints->setColorScheme(requested);
+    }
+
+    const auto schemes = QMetaEnum::fromType<Qt::ColorScheme>();
+    APPUI_LOG_DEBUG("Qt color scheme sync: appTheme=" << static_cast<int>(theme)
+        << ", requested=" << schemes.valueToKey(static_cast<int>(requested))
+        << ", before=" << schemes.valueToKey(static_cast<int>(before))
+        << ", observed=" << schemes.valueToKey(static_cast<int>(hints->colorScheme())));
+}
+
+void AppUIController::onQtColorSchemeChanged(Qt::ColorScheme scheme)
+{
+    const auto theme = mClientInfoViewModel->getCurrentThemeType();
+    const auto schemes = QMetaEnum::fromType<Qt::ColorScheme>();
+    APPUI_LOG_DEBUG("Qt color scheme changed: scheme=" << schemes.valueToKey(static_cast<int>(scheme))
+        << ", appTheme=" << static_cast<int>(theme)
+        << ", applyingAppTheme=" << mApplyingQtColorScheme);
+
+    if (mApplyingQtColorScheme || theme != commonHead::viewModels::model::ThemeType::SystemDefault)
+        return;
+
+    if (auto resourceLoaderManager = getResourceLoaderManager())
+    {
+        APPUI_LOG_DEBUG("system color scheme changed, notifying theme refresh");
+        resourceLoaderManager->notifyThemeChanged();
+    }
 }
 
 void AppUIController::showMainWindow()

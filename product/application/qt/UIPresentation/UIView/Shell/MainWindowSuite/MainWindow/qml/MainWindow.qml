@@ -131,5 +131,10 @@ ApplicationWindow
 
     Component.onCompleted:{
         root.controller.logInfo("MainWindow QML Component onCompleted")
+        if (root.isWindows) {
+            Qt.callLater(function() {
+                root.controller.applyNativeCaption(root)
+            })
+        }
     }
 }
