@@ -13,7 +13,7 @@ Item {
     property bool expanded: false
     readonly property int collapsedWidth: 50
     readonly property int expandedWidth: 120
-    readonly property int animationDuration: 200
+    readonly property int animationDuration: 300
 
     implicitWidth: expanded ? expandedWidth : collapsedWidth
 
