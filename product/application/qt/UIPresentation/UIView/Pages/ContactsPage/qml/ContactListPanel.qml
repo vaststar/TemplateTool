@@ -33,12 +33,6 @@ Item {
         }
     }
 
-    // Panel background – slightly different from content area
-    Rectangle {
-        anchors.fill: parent
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
-    }
-
     // Header + name search
     Rectangle {
         id: header
@@ -63,7 +57,7 @@ Item {
                 Layout.preferredHeight: 28
                 text: qsTr("联系人列表")
                 fontEnum: UIFontToken.Section_Title
-                colorEnum: UIColorToken.Sidebar_Item_Text
+                colorEnum: UIColorToken.Content_Heading
                 verticalAlignment: Text.AlignVCenter
             }
 
@@ -71,6 +65,7 @@ Item {
                 id: searchField
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
+                borderRadius: 8
                 placeholderText: qsTr("搜索联系人")
                 rightPadding: clearButton.visible ? 30 : 8
                 enabled: root.controller
@@ -141,6 +136,9 @@ Item {
         }
 
         delegate: UTTreeViewDelegate {
+            backgroundColorEnum: UIColorToken.Content_Nav_Item_Background
+            backgroundRadius: 6
+            textColorEnum: UIColorToken.Listview_Item_Text
             text: model.displayName
             highlighted: model.id === controller.currentContactId
             dragMimeData: searchField.text.trim().length === 0

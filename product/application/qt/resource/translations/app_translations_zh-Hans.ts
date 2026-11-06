@@ -181,17 +181,17 @@ Close this terminal to cancel.</source>
 <context>
     <name>ContactListPanel</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="64"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="58"/>
         <source>联系人列表</source>
         <translation>联系人列表</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="74"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="69"/>
         <source>搜索联系人</source>
         <translation>搜索联系人</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="220"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="218"/>
         <source>没有找到匹配的联系人</source>
         <translation>没有找到匹配的联系人</translation>
     </message>

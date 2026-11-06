@@ -37,7 +37,8 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: "#1A000000"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border, UIColorState.Normal)
+            opacity: 0.65
         }
 
         // Body dispatch: Loader keeps the inactive variant unallocated.

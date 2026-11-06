@@ -22,6 +22,11 @@ Item {
             Layout.preferredWidth: 200
         }
 
+        UTContentDivider {
+            Layout.preferredWidth: implicitWidth
+            Layout.fillHeight: true
+        }
+
         // Right content panel (dynamic loader)
         Loader {
             id: contentLoader

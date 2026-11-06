@@ -11,24 +11,11 @@ Item {
 
     width: 200
 
-    Rectangle {
-        anchors.fill: parent
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal)
-    }
-
-    // Right border
-    Rectangle {
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: 1
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Border, UIColorState.Normal)
-    }
-
     // Tree container
     UTTreeView {
         id: treeContainer
         anchors.fill: parent
+        anchors.topMargin: 12
         model: controller ? controller.treeModel : null
         expandAll: true
 
@@ -38,6 +25,9 @@ Item {
         }
 
         delegate: UTTreeViewDelegate {
+            backgroundColorEnum: UIColorToken.Content_Nav_Item_Background
+            backgroundRadius: 6
+            textColorEnum: UIColorToken.Listview_Item_Text
             text: model.title
             highlighted: controller && controller.currentNodeId === model.nodeId
             onClicked: {

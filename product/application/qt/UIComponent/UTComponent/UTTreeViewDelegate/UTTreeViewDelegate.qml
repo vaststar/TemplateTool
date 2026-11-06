@@ -7,6 +7,10 @@ import UIResourceLoader 1.0
 BaseTreeViewDelegate {
     id: control
 
+    property var backgroundColorEnum: UIColorToken.Sidebar_Item_Background
+    property real backgroundRadius: 2
+    property var textColorEnum: UIColorToken.Sidebar_Item_Text
+
     implicitWidth: treeView ? treeView.width : 1
     implicitHeight: Math.max(
         contentItem ? contentItem.implicitHeight : 0,
@@ -23,7 +27,7 @@ BaseTreeViewDelegate {
         anchors.verticalCenter: parent.verticalCenter
         text: "\u25B6"
         fontEnum: UIFontToken.Caption_Text
-        colorEnum: UIColorToken.Sidebar_Item_Text
+        colorEnum: control.textColorEnum
         rotation: control.expanded ? 90 : 0
         visible: control.hasChildren
     }
@@ -31,22 +35,25 @@ BaseTreeViewDelegate {
     contentItem: UTLabel {
         text: control.text
         fontEnum: UIFontToken.Body_Text
-        colorEnum: UIColorToken.Sidebar_Item_Text
+        colorEnum: control.textColorEnum
         colorState: control.highlighted ? UIColorState.Selected : UIColorState.Normal
     }
 
     background: Rectangle {
         color: control.highlighted
-            ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Selected)
-            : control.hovered
-                ? UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Background, UIColorState.Hovered)
-                : "transparent"
+            ? UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Selected)
+            : control.pressed
+                ? UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Pressed)
+                : control.hovered
+                    ? UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Hovered)
+                    : "transparent"
         border.width: control.isDropTarget ? 2 : 0
         border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Focus_Outline, UIColorState.Normal)
-        radius: 2
+        radius: control.backgroundRadius
     }
 
     UTFocusItem {
         delegateFocused: control.current && control.treeView.activeFocus
+        focusRadius: control.backgroundRadius
     }
 }

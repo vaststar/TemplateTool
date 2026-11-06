@@ -152,6 +152,15 @@
       }
     },
     {
+      "token": "content-nav-item-background",
+      "color": {
+        "normal": "neutral-800",
+        "hovered": "neutral-775",
+        "pressed": "neutral-700",
+        "selected": "neutral-750"
+      }
+    },
+    {
       "token": "content-heading",
       "color": {
         "normal": "neutral-50"

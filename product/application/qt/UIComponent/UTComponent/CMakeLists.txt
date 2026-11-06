@@ -51,6 +51,7 @@ set(MODULE_QML_TARGET_FILES
     UTButton/UTImageButton.qml
     UTCheckBox/UTCheckBox.qml
     UTComboBox/UTComboBox.qml
+    UTContentDivider/UTContentDivider.qml
     UTFocusItem/UTFocusItem.qml
     UTComponentUtil/UTComponentUtil.js
     UTQRCode/UTQRCode.qml
