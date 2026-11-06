@@ -38,12 +38,27 @@ Item {
 
         readonly property bool edgeHovered: edgeHoverHandler.hovered || arrowMouseArea.containsMouse || arrowHoverTimer.running
 
-        // Visible 1px border line (synced with arrow visibility)
+        // Fade the 1px border toward both ends while keeping the full hover area.
         Rectangle {
+            id: edgeLine
+
+            readonly property color baseColor: UTComponentUtil.getPlainUIColor(
+                UIColorToken.Sidebar_Border, UIColorState.Normal)
+
             anchors.right: parent.right
             width: 1
             height: parent.height
-            color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Border, UIColorState.Normal)
+
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+
+                GradientStop { position: 0.0;  color: Qt.alpha(edgeLine.baseColor, 0.0) }
+                GradientStop { position: 0.25; color: Qt.alpha(edgeLine.baseColor, 0.6) }
+                GradientStop { position: 0.5;  color: Qt.alpha(edgeLine.baseColor, 0.9) }
+                GradientStop { position: 0.75; color: Qt.alpha(edgeLine.baseColor, 0.6) }
+                GradientStop { position: 1.0;  color: Qt.alpha(edgeLine.baseColor, 0.0) }
+            }
+
             opacity: edgeZone.edgeHovered ? 1.0 : 0.0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }

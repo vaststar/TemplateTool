@@ -22,7 +22,7 @@ Rectangle
     readonly property real topInset: fullScreen ? appWindow.SafeArea.margins.top : 0
 
     readonly property real captionHeight: fullScreen || !expandedClientArea
-        ? 48 : Math.max(48, appWindow.SafeArea.margins.top)
+        ? 40 : Math.max(40, appWindow.SafeArea.margins.top)
 
     readonly property real leftReservedWidth:
         Qt.platform.os === "osx" ? 72 : 0

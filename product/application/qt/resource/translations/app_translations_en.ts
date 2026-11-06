@@ -315,19 +315,6 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
-    <name>MainWindowFootBar</name>
-    <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowFootBar/qml/MainWindowFootBar.qml" line="19"/>
-        <source>‹</source>
-        <translation>‹</translation>
-    </message>
-    <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowFootBar/qml/MainWindowFootBar.qml" line="31"/>
-        <source>⋮</source>
-        <translation>⋮</translation>
-    </message>
-</context>
-<context>
     <name>MainWindowSystemTray</name>
     <message>
         <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/qml/MainWindowSystemTray.qml" line="23"/>
