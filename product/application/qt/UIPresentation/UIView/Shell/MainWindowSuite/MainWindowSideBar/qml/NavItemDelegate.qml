@@ -71,7 +71,12 @@ ItemDelegate {
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
             colorState: navItem.isSelected ? UIColorState.Selected : UIColorState.Normal
-            font.weight: navItem.isSelected ? Font.Medium : Font.Normal
+            // Bind the complete font: a subproperty binding replaces UTText's font binding.
+            font: {
+                const labelFont = UTComponentUtil.getUIFont(fontEnum)
+                labelFont.weight = navItem.isSelected ? Font.Medium : Font.Normal
+                return labelFont
+            }
             visible: opacity > 0
             opacity: navItem.showText ? 1.0 : 0.0
 

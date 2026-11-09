@@ -16,6 +16,8 @@ Item {
     Image {
         id: image
         anchors.fill: parent
+        fillMode: Image.PreserveAspectFit
+        mipmap: true
         source: root.pressed && root.sourcePressed.toString() !== "" ? root.sourcePressed :
                 root.hovered && root.sourceHovered.toString() !== "" ? root.sourceHovered :
                 root.source
