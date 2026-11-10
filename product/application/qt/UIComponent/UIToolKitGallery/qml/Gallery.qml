@@ -262,6 +262,17 @@ ApplicationWindow {
             Page {
                 title: qsTr("Inputs")
                 Demo {
+                    name: "UTSpinBox"
+                    note: qsTr("Editable / Disabled")
+                    UTSpinBox {
+                        from: 0; to: 100; value: 4
+                    }
+                    UTSpinBox {
+                        from: 0; to: 100; value: 4
+                        enabled: false
+                    }
+                }
+                Demo {
                     name: "UTTextField"
                     UTTextField {
                         Layout.preferredWidth: 320
@@ -313,12 +324,6 @@ ApplicationWindow {
                                 flag: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='40'><rect x='0' width='20' height='40' fill='%23008C45'/><rect x='20' width='20' height='40' fill='%23ffffff'/><rect x='40' width='20' height='40' fill='%23CD212A'/></svg>"
                             }
                         }
-                    }
-                }
-                Demo {
-                    name: "UTSpinBox"
-                    UTSpinBox {
-                        from: 0; to: 100; value: 4
                     }
                 }
             }
