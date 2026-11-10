@@ -23,6 +23,15 @@ qt_add_qml_module(${GALLERY_TARGET}
     VERSION 1.0
     QML_FILES
         qml/Gallery.qml
+        qml/GalleryCatalog.qml
+        qml/GalleryNavigation.qml
+        qml/common/GalleryCase.qml
+        qml/common/GalleryCategory.qml
+        qml/common/GalleryDemo.qml
+        qml/cases/UTButtonCase.qml
+        qml/cases/UTToolButtonCase.qml
+        qml/cases/UTCheckBoxCase.qml
+        qml/cases/UTSwitchCase.qml
 )
 
 ApplyProjectTargetOptions(TARGET ${GALLERY_TARGET})

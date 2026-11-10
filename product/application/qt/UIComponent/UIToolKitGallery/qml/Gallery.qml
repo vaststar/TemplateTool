@@ -5,17 +5,18 @@ import QtQuick.Layouts
 import UTComponent 1.0
 import UTComposite 1.0
 import UIResourceLoader 1.0
+import "common"
 
 /**
  * Gallery - showcase window for debugging UIComponent widgets in isolation.
  *
- * Layout: a left sidebar lists functional categories; clicking one shows only
- * that category's components on the right (switch-style). Colors/fonts come
+ * Layout: a left tree groups categories by UT module; each category shows
+ * its components together on the right. Colors/fonts come
  * from the real ResourceLoader via the "UIResourceLoaderManager" context
  * property, and "切换主题" toggles Light/Dark.
  *
- * To add a component: drop it into the matching category page below (or add a
- * new entry to `categoryModel` + a new StackLayout page). No C++ changes.
+ * Buttons and Toggles use standalone cases listed in GalleryCatalog. Other
+ * categories keep their existing inline pages during the staged migration.
  */
 ApplicationWindow {
     id: window
@@ -28,18 +29,9 @@ ApplicationWindow {
     property int _rev: UIResourceLoaderManager ? UIResourceLoaderManager.themeRevision : 0
     color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Background, UIColorState.Normal)
 
-    readonly property int currentCategory: sidebar.currentIndex
+    property int currentCategory: 0
 
-    // ── Category list (index order must match the StackLayout pages below) ──
-    ListModel {
-        id: categoryModel
-        ListElement { name: "Buttons" }
-        ListElement { name: "Toggles" }
-        ListElement { name: "Inputs" }
-        ListElement { name: "Pickers" }
-        ListElement { name: "Display" }
-        ListElement { name: "Containers" }
-    }
+    GalleryCatalog { id: catalog }
 
     header: ToolBar {
         height: 52
@@ -173,43 +165,16 @@ ApplicationWindow {
         // ───────────────────────── Sidebar ─────────────────────────
         Rectangle {
             Layout.fillHeight: true
-            Layout.preferredWidth: 200
+            Layout.preferredWidth: 240
             color: UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Background, UIColorState.Normal)
 
-            ListView {
+            GalleryNavigation {
                 id: sidebar
                 anchors.fill: parent
-                anchors.topMargin: 12
-                model: categoryModel
-                currentIndex: 0
-                boundsBehavior: Flickable.StopAtBounds
-
-                delegate: ItemDelegate {
-                    id: catItem
-                    width: ListView.view.width
-                    height: 44
-                    required property int index
-                    required property string name
-
-                    background: Rectangle {
-                        color: UTComponentUtil.getPlainUIColor(
-                                   UIColorToken.Sidebar_Item_Background,
-                                   catItem.index === sidebar.currentIndex ? UIColorState.Selected
-                                   : catItem.hovered ? UIColorState.Hovered
-                                   : UIColorState.Normal)
-                    }
-
-                    contentItem: UTLabel {
-                        text: catItem.name
-                        leftPadding: 20
-                        verticalAlignment: Text.AlignVCenter
-                        colorEnum: UIColorToken.Sidebar_Item_Text
-                        colorState: catItem.index === sidebar.currentIndex ? UIColorState.Selected : UIColorState.Normal
-                    }
-
-                    onClicked: sidebar.currentIndex = catItem.index
-                }
+                currentPage: window.currentCategory
+                onPageSelected: function(page) { window.currentCategory = page }
             }
+
         }
 
         // Divider
@@ -227,35 +192,15 @@ ApplicationWindow {
             currentIndex: window.currentCategory
 
             // 0 ─ Buttons
-            Page {
-                title: qsTr("Buttons")
-                Demo {
-                    name: "UTButton"
-                    note: qsTr("Primary / Disabled")
-                    UTButton { text: qsTr("Primary") }
-                    UTButton { text: qsTr("Disabled"); enabled: false }
-                }
-                Demo {
-                    name: "UTToolButton"
-                    UTToolButton { text: qsTr("Tool") }
-                }
+            GalleryCategory {
+                entries: catalog.entries.filter(entry => entry.category === "buttons")
+                casesActive: window.currentCategory === 0
             }
 
             // 1 ─ Toggles
-            Page {
-                title: qsTr("Toggles")
-                Demo {
-                    name: "UTCheckBox"
-                    UTCheckBox { text: qsTr("Check me"); checked: true }
-                    UTCheckBox { text: qsTr("Unchecked"); checked: false }
-                }
-                Demo {
-                    name: "UTSwitch"
-                    note: qsTr("On / Off / Disabled")
-                    UTSwitch { checked: true }
-                    UTSwitch { checked: false }
-                    UTSwitch { checked: true; enabled: false }
-                }
+            GalleryCategory {
+                entries: catalog.entries.filter(entry => entry.category === "toggles")
+                casesActive: window.currentCategory === 1
             }
 
             // 2 ─ Inputs
@@ -344,25 +289,6 @@ ApplicationWindow {
                     UTDateWheelPicker {}
                 }
                 Demo {
-                    name: "UTDateTimeRangePicker"
-                    UTDateTimeRangePicker {
-                        mode: UTDateTimeRangePicker.DateTime
-                    }
-                }
-                Demo {
-                    name: "UTDateTimeRangePicker (Date)"
-                    UTDateTimeRangePicker {
-                        mode: UTDateTimeRangePicker.Date
-                    }
-                }
-                Demo {
-                    name: "UTDateTimeRangePicker (Wheel)"
-                    UTDateTimeRangePicker {
-                        mode: UTDateTimeRangePicker.DateTime
-                        datePickerStyle: UTDateTimeRangePicker.Wheel
-                    }
-                }
-                Demo {
                     name: "UTSlider"
                     UTSlider {
                         Layout.preferredWidth: 320
@@ -407,6 +333,30 @@ ApplicationWindow {
                             UTCheckBox { text: qsTr("Enable feature"); checked: true }
                             UTSwitch { checked: false }
                         }
+                    }
+                }
+            }
+
+            // 6 ─ UTComposite / Pickers
+            Page {
+                title: qsTr("UTComposite / Pickers")
+                Demo {
+                    name: "UTDateTimeRangePicker"
+                    UTDateTimeRangePicker {
+                        mode: UTDateTimeRangePicker.DateTime
+                    }
+                }
+                Demo {
+                    name: "UTDateTimeRangePicker (Date)"
+                    UTDateTimeRangePicker {
+                        mode: UTDateTimeRangePicker.Date
+                    }
+                }
+                Demo {
+                    name: "UTDateTimeRangePicker (Wheel)"
+                    UTDateTimeRangePicker {
+                        mode: UTDateTimeRangePicker.DateTime
+                        datePickerStyle: UTDateTimeRangePicker.Wheel
                     }
                 }
             }
