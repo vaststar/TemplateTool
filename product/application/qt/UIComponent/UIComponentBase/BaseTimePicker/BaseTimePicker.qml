@@ -1,16 +1,9 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Window
+import UIComponentBase 1.0
 
-/**
- * BaseTimePicker - Unstyled time picker behavior.
- *
- * Holds the time state (hours/minutes/seconds), normalization with wrap-around,
- * 12/24-hour formatting and an (unstyled) drop-down Popup that the UT layer
- * fills with scrolling wheels (Tumbler columns). No colors / fonts here; the
- * UTComponent layer applies design tokens, matching the Base + UT pattern used
- * by BaseComboBox / UTComboBox.
- */
+// Time state, wheel composition, rendering and interaction without resource tokens.
 Control {
     id: control
 
@@ -25,7 +18,22 @@ Control {
     property int  minuteStep: 1
     property int  borderRadius: 6
 
-    // === Popup state (for subclass styling) ===
+    property color backgroundColor: palette.base
+    property color disabledBackgroundColor: backgroundColor
+    property color textColor: palette.text
+    property color disabledTextColor: textColor
+    property color borderColor: palette.mid
+    property color focusedBorderColor: palette.highlight
+    property color selectedBandColor: palette.highlight
+    property int wheelCenteredPixelSize: 18
+    property int wheelOffCenterPixelSize: 14
+
+    // Read-only structural parts for decoration; retain their value/model bindings.
+    readonly property BaseWheelColumn hourColumn: hourCol
+    readonly property BaseWheelColumn minuteColumn: minCol
+    readonly property BaseWheelColumn secondColumn: secCol
+
+    // === Popup state ===
     property bool popupIsOpen: false
 
     focusPolicy: Qt.StrongFocus
@@ -68,7 +76,7 @@ Control {
             popup.open()
     }
 
-    // === Drop-down container (styling provided by UT layer) ===
+    // === Drop-down container ===
     function updatePopupPosition() {
         const ph = popup.height > 0 ? popup.height : popup.implicitHeight
         const scenePos = control.mapToItem(null, 0, 0)
@@ -95,12 +103,139 @@ Control {
             target: control.Window.window
             function onHeightChanged() { if (dropdown.visible) control.updatePopupPosition() }
         }
+
+        // === Drop-down wheels ===
+        width: Math.max(control.width,
+            control.minimumColumnWidth * control.wheelCount + control.colonWidth * control.colonCount
+                + control.wheelSpacing * (control.wheelCount + control.colonCount - 1)
+                + leftPadding + rightPadding)
+        padding: 8
+        // Let the popup hold keyboard focus so its wheel columns receive keys.
+        focus: true
+        background: Rectangle {
+            radius: control.borderRadius
+            color: control.backgroundColor
+            border.width: 1
+            border.color: control.borderColor
+        }
+
+        contentItem: FocusScope {
+            implicitHeight: control.wheelHeight
+
+            // Focus the first column when the wheels open; hand focus back to the
+            // box when they close.
+            Connections {
+                target: control.popup
+                function onOpened() { hourCol.forceActiveFocus() }
+                function onClosed() { control.forceActiveFocus() }
+            }
+
+            // Move keyboard focus between columns. Bubbled up from the focused
+            // wheel, which leaves Left/Right unhandled on purpose.
+            function moveColumn(delta) {
+                var cols = [hourCol, minCol]
+                if (control.showSeconds) cols.push(secCol)
+                var idx = 0
+                for (var i = 0; i < cols.length; ++i)
+                    if (cols[i].activeFocus) { idx = i; break }
+                cols[((idx + delta) % cols.length + cols.length) % cols.length].forceActiveFocus()
+            }
+            Keys.onLeftPressed:  function(e) { moveColumn(-1); e.accepted = true }
+            Keys.onRightPressed: function(e) { moveColumn(1);  e.accepted = true }
+            Keys.onSpacePressed: function(e) { control.popup.close(); e.accepted = true }
+            Keys.onReturnPressed:function(e) { control.popup.close(); e.accepted = true }
+            Keys.onEnterPressed: function(e) { control.popup.close(); e.accepted = true }
+
+            // Highlight band marking the centered selection row (behind the wheels).
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                height: control.wheelHeight / control.visibleRows
+                radius: control.borderRadius - 2
+                color: control.selectedBandColor
+            }
+
+            Row {
+                id: wheelRow
+                anchors.centerIn: parent
+                spacing: control.wheelSpacing
+
+                BaseWheelColumn {
+                    id: hourCol
+                    width: control.autoColumnWidth
+                    height: control.wheelHeight
+                    visibleRows: control.visibleRows
+                    wrap: true
+                    font: control.font
+                    textColor: control.textColor
+                    disabledTextColor: control.disabledTextColor
+                    centeredPixelSize: control.wheelCenteredPixelSize
+                    offCenterPixelSize: control.wheelOffCenterPixelSize
+                    valueCount: 24
+                    value: control.hours
+                    onValuePicked: function(v) { control.setHours(v) }
+                }
+
+                BaseText {
+                    font: control.font
+                    width: control.colonWidth
+                    text: ":"
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: control.textColor
+                }
+
+                BaseWheelColumn {
+                    id: minCol
+                    width: control.autoColumnWidth
+                    height: control.wheelHeight
+                    visibleRows: control.visibleRows
+                    wrap: true
+                    font: control.font
+                    textColor: control.textColor
+                    disabledTextColor: control.disabledTextColor
+                    centeredPixelSize: control.wheelCenteredPixelSize
+                    offCenterPixelSize: control.wheelOffCenterPixelSize
+                    valueCount: 60
+                    value: control.minutes
+                    onValuePicked: function(v) { control.setMinutes(v) }
+                }
+
+                BaseText {
+                    font: control.font
+                    visible: control.showSeconds
+                    width: control.colonWidth
+                    text: ":"
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: control.textColor
+                }
+
+                BaseWheelColumn {
+                    id: secCol
+                    visible: control.showSeconds
+                    width: control.autoColumnWidth
+                    height: control.wheelHeight
+                    visibleRows: control.visibleRows
+                    wrap: true
+                    font: control.font
+                    textColor: control.textColor
+                    disabledTextColor: control.disabledTextColor
+                    centeredPixelSize: control.wheelCenteredPixelSize
+                    offCenterPixelSize: control.wheelOffCenterPixelSize
+                    valueCount: 60
+                    value: control.seconds
+                    onValuePicked: function(v) { control.setSeconds(v) }
+                }
+            }
+        }
     }
 
     // === Keyboard support ===
     // Closed: Up/Down nudges the minutes, Space/Enter opens the wheels. While
     // open, focus lives in the popup; the wheel columns handle Up/Down and the
-    // UT layer handles Left/Right (column focus) and confirm/close.
+    // popup focus scope handles Left/Right (column focus) and confirm/close.
     Keys.onUpPressed: function(e) {
         if (!popupIsOpen) { e.accepted = true; setMinutes(minutes + minuteStep) }
     }
@@ -113,9 +248,68 @@ Control {
     Keys.onEscapePressed:function(e) {
         if (popup.visible) { e.accepted = true; popup.close() }
     }
-    // Tab/Backtab moves focus out of the picker; close the wheels first but let
-    // the default focus navigation proceed. Named key signals default
-    // e.accepted to true, so we must clear it explicitly or focus won't move.
+    // When this box receives Tab/Backtab, close its popup and allow focus navigation.
+    // An open popup handles wheel focus through its own focus chain.
+    // Named key signals accept by default; clear accepted to continue navigation.
     Keys.onTabPressed:    function(e) { if (popup.visible) popup.close(); e.accepted = false }
     Keys.onBacktabPressed:function(e) { if (popup.visible) popup.close(); e.accepted = false }
+
+    // === Wheel geometry ===
+    property int columnWidth: 56
+    property int wheelHeight: 160
+    property int visibleRows: 5
+    property int wheelSpacing: 1
+    property int colonWidth: 10
+    property int minimumColumnWidth: 36
+
+    // Number of wheel columns / colon separators currently shown.
+    readonly property int wheelCount: showSeconds ? 3 : 2
+    readonly property int colonCount: wheelCount - 1
+    // Column width that makes the wheels fill the popup width evenly.
+    readonly property real autoColumnWidth: {
+        var inner = popup.availableWidth
+        var used = colonCount * colonWidth + wheelSpacing * (wheelCount + colonCount - 1)
+        return Math.max(minimumColumnWidth, (inner - used) / wheelCount)
+    }
+
+    implicitWidth: 180
+    implicitHeight: 32
+    padding: 0
+
+    // === Collapsed box content: current time + indicator ===
+    contentItem: Item {
+        BaseText {
+            font: control.font
+            id: valueText
+            anchors.left: parent.left
+            anchors.leftMargin: 12
+            anchors.verticalCenter: parent.verticalCenter
+            text: control.timeValue
+            color: (control.enabled ? control.textColor : control.disabledTextColor)
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        BaseText {
+            font: control.font
+            anchors.right: parent.right
+            anchors.rightMargin: 12
+            anchors.verticalCenter: parent.verticalCenter
+            text: control.popupIsOpen ? "\u25B4" : "\u25BE"
+            color: valueText.color
+        }
+    }
+
+    background: Rectangle {
+        radius: control.borderRadius
+        color: (control.enabled ? control.backgroundColor : control.disabledBackgroundColor)
+        border.width: 1
+        border.color: (control.activeFocus ? control.focusedBorderColor : control.borderColor)
+    }
+
+    // MouseArea (not TapHandler) so another picker's modal popup overlay blocks
+    // the click - a TapHandler would still fire through the overlay.
+    MouseArea {
+        anchors.fill: parent
+        onClicked: control.togglePopup()
+    }
 }

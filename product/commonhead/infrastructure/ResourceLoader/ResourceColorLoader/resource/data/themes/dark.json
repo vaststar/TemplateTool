@@ -311,7 +311,7 @@
       "token": "timepicker-column-background",
       "color": {
         "normal": "neutral-900",
-        "selected": "neutral-700"
+        "selected": "blue-500"
       }
     },
     {

@@ -73,16 +73,25 @@ Tumbler {
             valuePicked(Math.max(0, Math.min(n - 1, base + delta)))
     }
 
-    TapHandler {
-        onTapped: wheel.forceActiveFocus()
-    }
-
-    // Handle delivered wheel events in single steps; leave press/drag to the Tumbler.
+    // Keep input handling above the Tumbler's internal PathView/ListView.
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.NoButton
+        z: 1
+        acceptedButtons: Qt.LeftButton
+
+        onPressed: function(mouse) {
+            wheel.forceActiveFocus(Qt.MouseFocusReason)
+            // Let the underlying view receive the press and handle dragging.
+            mouse.accepted = false
+        }
+
         onWheel: function(event) {
-            wheel.stepBy(event.angleDelta.y > 0 ? -1 : 1)
+            const delta = event.angleDelta.y || event.pixelDelta.y
+            if (delta === 0) {
+                event.accepted = false
+                return
+            }
+            wheel.stepBy(delta > 0 ? -1 : 1)
             event.accepted = true
         }
     }
