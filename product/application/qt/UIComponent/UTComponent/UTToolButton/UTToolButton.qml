@@ -12,29 +12,14 @@ BaseToolButton {
     property var fontEnum: UIFontToken.Button_Text
     property var backgroundColorEnum: UIColorToken.Button_Primary_Background
     property var borderColorEnum: UIColorToken.Button_Primary_Border
-    property real radius: 4
-    property real borderWidth: 0
+    radius: 4
+    borderWidth: 0
     clip: false
 
-    contentItem: Text {
-        text: control.text
-        font: UTComponentUtil.getUIFont(control.fontEnum)
-        color: UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-    }
-
-    background: Rectangle {
-        anchors.fill: parent
-        radius: control.radius
-        border.width: control.borderWidth
-        color: UTComponentUtil.getItemUIColor(control, control.backgroundColorEnum)
-        border.color: UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
-
-        Behavior on color {
-            ColorAnimation { duration: 150 }
-        }
-    }
+    font: UTComponentUtil.getUIFont(control.fontEnum)
+    textColor: UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
+    backgroundColor: UTComponentUtil.getItemUIColor(control, control.backgroundColorEnum)
+    borderColor: UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
 
     UTToolTip {
         text: control.toolTipText

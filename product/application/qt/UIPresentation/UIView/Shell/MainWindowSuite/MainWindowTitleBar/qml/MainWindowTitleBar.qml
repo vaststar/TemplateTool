@@ -94,6 +94,7 @@ Rectangle
             Layout.alignment: Qt.AlignVCenter
 
             source: UTComponentUtil.getImageResourcePath(UIAssetImageToken.Icon_User)
+            Accessible.name: qsTr("User avatar")
             onClicked: root.avatarClicked()
         }
 

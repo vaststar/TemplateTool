@@ -1,40 +1,15 @@
 import QtQuick
+import UIComponentBase 1.0
+import UTComponent 1.0
 
-Item {
-    id: root
-    width: image.width
-    height: image.height
+BaseImageButton {
+    id: control
 
-    required property url source                 // 默认图片（必填）
-    property url sourcePressed: ""                // 按下时的图片，未设置则回退 source
-    property url sourceHovered: ""                // hover 时图片，未设置则回退 source
-    signal clicked()
+    radius: Math.min(control.width, control.height) / 2
+    clip: false
 
-    property bool pressed: false
-    property bool hovered: false
-
-    Image {
-        id: image
-        anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
-        mipmap: true
-        source: root.pressed && root.sourcePressed.toString() !== "" ? root.sourcePressed :
-                root.hovered && root.sourceHovered.toString() !== "" ? root.sourceHovered :
-                root.source
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onPressed: root.pressed = true
-        onReleased: {
-            root.pressed = false
-            if (containsMouse)
-                root.clicked()
-        }
-        onExited: root.hovered = false
-        onEntered: root.hovered = true
-        onCanceled: root.pressed = false
+    UTFocusItem {
+        target: control
+        focusRadius: control.radius
     }
 }
-// UTImageButton.qml

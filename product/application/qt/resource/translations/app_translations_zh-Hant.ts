@@ -323,6 +323,14 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
+    <name>MainWindowTitleBar</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/qml/MainWindowTitleBar.qml" line="97"/>
+        <source>User avatar</source>
+        <translation>使用者頭像</translation>
+    </message>
+</context>
+<context>
     <name>MediaCameraView</name>
     <message>
         <location filename="../../UIPresentation/UIView/Features/MediaCameraView/qml/MediaCameraView.qml" line="45"/>

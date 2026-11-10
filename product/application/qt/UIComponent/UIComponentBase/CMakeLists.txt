@@ -41,6 +41,7 @@ set(MODULE_QML_TARGET_URI
 )
 set(MODULE_QML_TARGET_FILES
     BaseButton/BaseButton.qml
+    BaseButton/BaseImageButton.qml
     BaseCheckBox/BaseCheckBox.qml
     BaseComboBox/BaseComboBox.qml
     BaseFocusItem/BaseFocusItem.qml

@@ -10,29 +10,14 @@ BaseButton {
     property var fontEnum: UIFontToken.Button_Text;
     property var backgroundColorEnum: UIColorToken.Button_Primary_Background;
     property var borderColorEnum: UIColorToken.Button_Primary_Border;
-    property var radius: Math.min(control.height, control.width)/2
-    property var borderWidth: 1
+    radius: Math.min(control.height, control.width)/2
+    borderWidth: 1
     clip: false
 
-    contentItem: Text{
-        text: control.text
-        font: UTComponentUtil.getUIFont(fontEnum)
-        color: UTComponentUtil.getItemUIColor(control, fontColorEnum)
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-    }
-
-    background: Rectangle{
-        anchors.fill: parent
-        radius: control.radius
-        border.width: control.borderWidth
-        color: UTComponentUtil.getItemUIColor(control, backgroundColorEnum)
-        border.color: UTComponentUtil.getItemUIColor(control, borderColorEnum)
-
-        Behavior on color {
-            ColorAnimation {duration: 150}
-        }
-    }
+    font: UTComponentUtil.getUIFont(control.fontEnum)
+    textColor: UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
+    backgroundColor: UTComponentUtil.getItemUIColor(control, control.backgroundColorEnum)
+    borderColor: UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
 
     UTFocusItem{
         focusRadius: control.radius

@@ -71,7 +71,9 @@ Item {
         }
 
         function drawCircle(ctx, w, h, lw2) {
-            ctx.arc(w/2, h/2, w/2 - lw2, 0, 2*Math.PI)
+            ctx.beginPath()
+            ctx.arc(w/2 + lw2, h/2 + lw2, w/2, 0, 2*Math.PI)
+            ctx.stroke()
         }
 
         function drawRoundedRect(ctx, w, h, lw2, r) {

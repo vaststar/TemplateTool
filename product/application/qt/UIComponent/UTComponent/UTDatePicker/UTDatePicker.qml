@@ -51,10 +51,28 @@ BaseDatePicker {
     // First year shown in the 12-year block of the year view.
     readonly property int yearBlockStart: displayYear - (displayYear % 12)
 
+    // Keyboard browsing is separate from the committed selection.
+    property date focusedDate: selectedDate
+    property int focusedMonth: displayMonth
+    property int focusedYear: displayYear
+    readonly property Item activeGrid: viewMode === daysView ? grid
+        : viewMode === monthsView ? monthGrid : yearGrid
+    readonly property int focusedCell: viewMode === daysView ? focusedDate.getDate()
+        : viewMode === monthsView ? focusedMonth : focusedYear
+    readonly property bool hasFocusedCell: cellAllowed(focusedCell)
+        && (viewMode !== daysView || (focusedDate.getFullYear() === displayYear
+                                     && focusedDate.getMonth() === displayMonth))
+        && (viewMode !== yearsView || (focusedYear >= yearBlockStart
+                                      && focusedYear < yearBlockStart + 12))
+
     // Keep the browsed month in sync when selectedDate is set externally.
     onSelectedDateChanged: {
         displayYear = selectedDate.getFullYear()
         displayMonth = selectedDate.getMonth()
+        focusedDate = new Date(displayYear, displayMonth, selectedDate.getDate())
+        focusedMonth = displayMonth
+        focusedYear = displayYear
+        syncGridCursor()
     }
 
     // Reset the browsed month/view to the selected date when the popup opens.
@@ -87,6 +105,7 @@ BaseDatePicker {
             displayYear--
         else
             displayYear -= 12
+        syncGridCursor()
     }
 
     function navigateNext() {
@@ -96,26 +115,139 @@ BaseDatePicker {
             displayYear++
         else
             displayYear += 12
+        syncGridCursor()
     }
 
     // === View switching ===
-    function showMonths() { viewMode = monthsView }
-    function showYears()  { viewMode = yearsView }
+    function showMonths() {
+        focusedMonth = displayMonth
+        viewMode = monthsView
+        focusCalendar()
+    }
+    function showYears() {
+        focusedYear = displayYear
+        viewMode = yearsView
+        focusCalendar()
+    }
 
     function pickMonth(m) {
         displayMonth = m
         viewMode = daysView
+        focusCalendar()
     }
 
     function pickYear(y) {
         displayYear = y
         viewMode = monthsView
+        focusCalendar()
     }
 
     function resetView() {
         displayYear = selectedDate.getFullYear()
         displayMonth = selectedDate.getMonth()
         viewMode = daysView
+        focusedDate = new Date(displayYear, displayMonth, selectedDate.getDate())
+        focusedMonth = displayMonth
+        focusedYear = displayYear
+        syncGridCursor()
+    }
+
+    function cellAllowed(value) {
+        if (viewMode === daysView)
+            return isInRange(new Date(displayYear, displayMonth, value))
+        const y = viewMode === monthsView ? displayYear : value
+        const m = viewMode === monthsView ? value : 0
+        const lastMonth = viewMode === monthsView ? value : 11
+        return rangeOverlaps(new Date(y, m, 1),
+            new Date(y, lastMonth + 1, 0, 23, 59, 59, 999))
+    }
+
+    // Pick the nearest enabled cell on the displayed page, including partial ranges.
+    function syncGridCursor() {
+        const first = viewMode === daysView ? 1 : viewMode === monthsView ? 0 : yearBlockStart
+        const count = viewMode === daysView ? daysInMonth(displayYear, displayMonth) : 12
+        let nearest = undefined
+        for (let value = first; value < first + count; ++value) {
+            if (cellAllowed(value) && (nearest === undefined
+                    || Math.abs(value - focusedCell) < Math.abs(nearest - focusedCell)))
+                nearest = value
+        }
+        if (nearest === undefined)
+            return false
+        if (viewMode === daysView)
+            focusedDate = new Date(displayYear, displayMonth, nearest)
+        else if (viewMode === monthsView)
+            focusedMonth = nearest
+        else
+            focusedYear = nearest
+        return true
+    }
+
+    function focusCalendar() {
+        if (popup.visible) {
+            const target = syncGridCursor() ? activeGrid : titleButton
+            target.forceActiveFocus(Qt.OtherFocusReason)
+        }
+    }
+
+    function moveGridFocus(delta) {
+        if (!hasFocusedCell)
+            return
+        if (viewMode === daysView) {
+            const next = new Date(displayYear, displayMonth, focusedDate.getDate() + delta)
+            if (!isInRange(next))
+                return
+            if (next.getFullYear() !== displayYear || next.getMonth() !== displayMonth) {
+                if (delta < 0) navigatePrev()
+                else navigateNext()
+            }
+            focusedDate = next
+        } else if (viewMode === monthsView) {
+            const next = new Date(displayYear, focusedMonth + delta, 1)
+            if (!rangeOverlaps(next,
+                    new Date(next.getFullYear(), next.getMonth() + 1, 0, 23, 59, 59, 999)))
+                return
+            if (next.getFullYear() < displayYear) navigatePrev()
+            else if (next.getFullYear() > displayYear) navigateNext()
+            focusedMonth = next.getMonth()
+        } else {
+            const next = focusedYear + delta
+            if (!cellAllowed(next))
+                return
+            if (next < yearBlockStart) navigatePrev()
+            else if (next >= yearBlockStart + 12) navigateNext()
+            focusedYear = next
+        }
+    }
+
+    function confirmGridFocus() {
+        if (!hasFocusedCell)
+            return
+        if (viewMode === daysView) {
+            selectDate(focusedDate)
+            popup.close()
+        } else if (viewMode === monthsView) {
+            pickMonth(focusedMonth)
+        } else {
+            pickYear(focusedYear)
+        }
+    }
+
+    function handleGridKey(event) {
+        const rowStep = viewMode === daysView ? 7 : 3
+        switch (event.key) {
+        case Qt.Key_Left:  moveGridFocus(-1);       break
+        case Qt.Key_Right: moveGridFocus(1);        break
+        case Qt.Key_Up:    moveGridFocus(-rowStep); break
+        case Qt.Key_Down:  moveGridFocus(rowStep);  break
+        case Qt.Key_PageUp:   navigatePrev(); focusCalendar(); break
+        case Qt.Key_PageDown: navigateNext(); focusCalendar(); break
+        case Qt.Key_Return:
+        case Qt.Key_Enter:
+        case Qt.Key_Space: confirmGridFocus(); break
+        default: event.accepted = false; return
+        }
+        event.accepted = true
     }
 
     // === Geometry ===
@@ -171,6 +303,8 @@ BaseDatePicker {
     }
 
     // === Drop-down calendar ===
+    Keys.onEnterPressed: function(event) { event.accepted = true; togglePopup() }
+    popup.focus: true
     popup.width: control.popupWidth
     popup.padding: control.popupPadding
     popup.background: Rectangle {
@@ -183,12 +317,25 @@ BaseDatePicker {
     popup.contentItem: ColumnLayout {
         spacing: 8
 
+        Connections {
+            target: control.popup
+            function onOpened() { control.focusCalendar() }
+            function onClosed() { control.forceActiveFocus(Qt.PopupFocusReason) }
+        }
+
         // ── Header: prev / title / next ──
         RowLayout {
             Layout.fillWidth: true
             spacing: 4
 
             UTToolButton {
+                id: previousButton
+                objectName: "calendarPreviousButton"
+                focusPolicy: Qt.StrongFocus
+                KeyNavigation.tab: titleButton
+                KeyNavigation.backtab: control.hasFocusedCell ? control.activeGrid : nextButton
+                Keys.onReturnPressed: function(event) { event.accepted = true; previousButton.clicked() }
+                Keys.onEnterPressed: function(event) { event.accepted = true; previousButton.clicked() }
                 Layout.preferredWidth: control.cellSize
                 Layout.preferredHeight: control.cellSize
                 text: "\u2039"
@@ -199,6 +346,13 @@ BaseDatePicker {
 
             // Clickable title: days -> months -> years.
             UTToolButton {
+                id: titleButton
+                objectName: "calendarTitleButton"
+                focusPolicy: Qt.StrongFocus
+                KeyNavigation.tab: nextButton
+                KeyNavigation.backtab: previousButton
+                Keys.onReturnPressed: function(event) { event.accepted = true; titleButton.clicked() }
+                Keys.onEnterPressed: function(event) { event.accepted = true; titleButton.clicked() }
                 Layout.fillWidth: true
                 Layout.preferredHeight: control.cellSize
                 backgroundColorEnum: UIColorToken.Datepicker_Background
@@ -223,6 +377,13 @@ BaseDatePicker {
             }
 
             UTToolButton {
+                id: nextButton
+                objectName: "calendarNextButton"
+                focusPolicy: Qt.StrongFocus
+                KeyNavigation.tab: control.hasFocusedCell ? control.activeGrid : previousButton
+                KeyNavigation.backtab: titleButton
+                Keys.onReturnPressed: function(event) { event.accepted = true; nextButton.clicked() }
+                Keys.onEnterPressed: function(event) { event.accepted = true; nextButton.clicked() }
                 Layout.preferredWidth: control.cellSize
                 Layout.preferredHeight: control.cellSize
                 text: "\u203A"
@@ -263,6 +424,11 @@ BaseDatePicker {
 
             MonthGrid {
                 id: grid
+                objectName: "calendarDayGrid"
+                activeFocusOnTab: true
+                KeyNavigation.tab: previousButton
+                KeyNavigation.backtab: nextButton
+                Keys.onPressed: function(event) { control.handleGridKey(event) }
                 Layout.fillWidth: true
                 spacing: 0
                 month: control.displayMonth
@@ -304,6 +470,13 @@ BaseDatePicker {
                             opacity: !parent.parent.allowed ? 0.3
                                    : parent.parent.inThisMonth ? 1.0 : 0.35
                         }
+
+                        UTFocusItem {
+                            focusRadius: height / 2
+                            focusMargin: 0
+                            delegateFocused: grid.activeFocus && parent.parent.allowed
+                                && control.isSameDay(model.date, control.focusedDate)
+                        }
                     }
 
                     TapHandler {
@@ -319,6 +492,12 @@ BaseDatePicker {
 
         // ── Month view ──
         Grid {
+            id: monthGrid
+            objectName: "calendarMonthGrid"
+            activeFocusOnTab: true
+            KeyNavigation.tab: previousButton
+            KeyNavigation.backtab: nextButton
+            Keys.onPressed: function(event) { control.handleGridKey(event) }
             Layout.fillWidth: true
             visible: control.viewMode === control.monthsView
             columns: 3
@@ -359,6 +538,13 @@ BaseDatePicker {
                             color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
                             opacity: parent.parent.allowed ? 1.0 : 0.3
                         }
+
+                        UTFocusItem {
+                            focusRadius: control.borderRadius - 2
+                            focusMargin: 0
+                            delegateFocused: monthGrid.activeFocus && parent.parent.allowed
+                                && index === control.focusedMonth
+                        }
                     }
 
                     TapHandler {
@@ -371,6 +557,12 @@ BaseDatePicker {
 
         // ── Year view ──
         Grid {
+            id: yearGrid
+            objectName: "calendarYearGrid"
+            activeFocusOnTab: true
+            KeyNavigation.tab: previousButton
+            KeyNavigation.backtab: nextButton
+            Keys.onPressed: function(event) { control.handleGridKey(event) }
             Layout.fillWidth: true
             visible: control.viewMode === control.yearsView
             columns: 3
@@ -409,6 +601,13 @@ BaseDatePicker {
                             text: parent.parent.year
                             color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
                             opacity: parent.parent.allowed ? 1.0 : 0.3
+                        }
+
+                        UTFocusItem {
+                            focusRadius: control.borderRadius - 2
+                            focusMargin: 0
+                            delegateFocused: yearGrid.activeFocus && parent.parent.allowed
+                                && parent.parent.year === control.focusedYear
                         }
                     }
 
