@@ -58,6 +58,7 @@ set(MODULE_QML_TARGET_FILES
     BaseTextArea/BaseTextArea.qml
     BaseTimePicker/BaseTimePicker.qml
     BaseDatePicker/BaseDatePicker.qml
+    BaseDatePicker/BaseCalendarDatePicker.qml
     BaseWheelColumn/BaseWheelColumn.qml
     BaseGroupBox/BaseGroupBox.qml
     BaseToolButton/BaseToolButton.qml

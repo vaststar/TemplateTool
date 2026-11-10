@@ -1,12 +1,13 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import UIComponentBase 1.0
 
 /**
- * BaseWheelColumn - Unstyled wheel column logic (Tumbler core).
+ * BaseWheelColumn - Wheel behavior and rendering without resource tokens.
  *
  * Index-driven: `value` / `valuePicked` are indices into [0, valueCount).
- * Visuals + interaction live in the UT layer (UTWheelColumn). Owns Up/Down
- * keys; Left/Right bubble to the parent to move between columns.
+ * Owns the delegate, pointer input and Up/Down keys. Left/Right bubble to
+ * the parent to move between columns; UT supplies colors, font and focus style.
  */
 Tumbler {
     id: wheel
@@ -20,6 +21,13 @@ Tumbler {
     signal valuePicked(int v)
 
     property int visibleRows: 5
+    // Maps a value index to its display string.
+    property var formatValue: function(i) { return (i < 10 ? "0" : "") + i }
+
+    property color textColor: palette.text
+    property color disabledTextColor: textColor
+    property int centeredPixelSize: 18
+    property int offCenterPixelSize: 14
 
     visibleItemCount: visibleRows
     focusPolicy: Qt.StrongFocus
@@ -63,5 +71,43 @@ Tumbler {
             valuePicked(((base + delta) % n + n) % n)
         else
             valuePicked(Math.max(0, Math.min(n - 1, base + delta)))
+    }
+
+    TapHandler {
+        onTapped: wheel.forceActiveFocus()
+    }
+
+    // Handle delivered wheel events in single steps; leave press/drag to the Tumbler.
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        onWheel: function(event) {
+            wheel.stepBy(event.angleDelta.y > 0 ? -1 : 1)
+            event.accepted = true
+        }
+    }
+
+    delegate: Component {
+        BaseText {
+            required property int index
+            readonly property bool disabled: index >= wheel.enabledCount
+            readonly property bool centered: Tumbler.displacement === 0
+            font: {
+                const style = Object.assign({}, wheel.font)
+                // Set one size and one weight representation to avoid conflicting aliases.
+                delete style.pointSize
+                delete style.weight
+                style.pixelSize = centered ? wheel.centeredPixelSize : wheel.offCenterPixelSize
+                style.bold = !disabled && centered
+                return Qt.font(style)
+            }
+            text: wheel.formatValue(index)
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: disabled ? wheel.disabledTextColor : wheel.textColor
+            opacity: disabled
+                     ? 0.35
+                     : 1.0 - Math.min(0.6, Math.abs(Tumbler.displacement) * 0.28)
+        }
     }
 }

@@ -7,11 +7,11 @@ import QtQuick.Window
  *
  * Holds only the selected date, optional [minDate, maxDate] range and the
  * (unstyled) drop-down Popup container. No presentation (formatting), no
- * calendar-browsing notions (browsed month, page navigation, view modes) and
- * no colors / fonts - those belong to the UT layer that renders a concrete
- * style (calendar grid in UTDatePicker, scrolling wheels in UTDateWheelPicker).
+ * calendar-browsing notions (browsed month, page navigation, view modes).
+ * Concrete picker subclasses provide presentation and browsing behavior;
+ * UT wrappers provide theme-specific colors and fonts.
  *
- * Shared by every date-picker style; each UT subclass fills popup.contentItem
+ * Shared by every date-picker style; concrete subclasses fill popup.contentItem
  * with its own editor and reads back through selectDate().
  */
 Control {
