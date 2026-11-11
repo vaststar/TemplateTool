@@ -8,18 +8,25 @@ TextArea {
     wrapMode: TextArea.Wrap
     selectByMouse: true
 
-    // Keep Tab available for editing; Ctrl+Tab leaves the editor.
-    Keys.onPressed: function(event) {
-        if (!(event.modifiers & Qt.ControlModifier)
-                || (event.modifiers & (Qt.AltModifier | Qt.MetaModifier))
-                || (event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backtab))
-            return
-
-        const forward = event.key !== Qt.Key_Backtab && !(event.modifiers & Qt.ShiftModifier)
+    function moveFocus(forward: bool): void {
         const target = control.nextItemInFocusChain(forward)
-        if (target) {
+        if (target && target !== control)
             target.forceActiveFocus(forward ? Qt.TabFocusReason : Qt.BacktabFocusReason)
-            event.accepted = true
-        }
+    }
+
+    // Cocoa routes Control+Tab through shortcuts instead of ordinary key presses.
+    // Qt's Meta modifier represents the physical Control key on macOS.
+    Shortcut {
+        sequence: Qt.platform.os === "osx" ? "Meta+Tab" : "Ctrl+Tab"
+        context: Qt.WindowShortcut
+        enabled: control.activeFocus
+        onActivated: control.moveFocus(true)
+    }
+
+    Shortcut {
+        sequence: Qt.platform.os === "osx" ? "Meta+Shift+Tab" : "Ctrl+Shift+Tab"
+        context: Qt.WindowShortcut
+        enabled: control.activeFocus
+        onActivated: control.moveFocus(false)
     }
 }

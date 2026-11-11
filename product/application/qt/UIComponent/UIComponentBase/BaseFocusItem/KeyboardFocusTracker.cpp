@@ -28,6 +28,8 @@ void KeyboardFocusTracker::setKeyboardNavigating(bool value)
 bool KeyboardFocusTracker::eventFilter(QObject* watched, QEvent* event)
 {
     switch (event->type()) {
+    // macOS delivers Control+Tab via shortcut dispatch without a KeyPress.
+    case QEvent::ShortcutOverride:
     case QEvent::KeyPress: {
         auto* ke = static_cast<QKeyEvent*>(event);
         switch (ke->key()) {
