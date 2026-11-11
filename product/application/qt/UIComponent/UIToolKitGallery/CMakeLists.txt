@@ -18,6 +18,14 @@ set_target_properties(${GALLERY_TARGET} PROPERTIES
     AUTOMOC ON
 )
 
+# Register new showcase cases without maintaining a second case list.
+file(GLOB GALLERY_CASE_QML_FILES
+    CONFIGURE_DEPENDS
+    LIST_DIRECTORIES false
+    RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/qml/cases/*Case.qml"
+)
+
 qt_add_qml_module(${GALLERY_TARGET}
     URI UIToolKitGallery
     VERSION 1.0
@@ -28,10 +36,7 @@ qt_add_qml_module(${GALLERY_TARGET}
         qml/common/GalleryCase.qml
         qml/common/GalleryCategory.qml
         qml/common/GalleryDemo.qml
-        qml/cases/UTButtonCase.qml
-        qml/cases/UTToolButtonCase.qml
-        qml/cases/UTCheckBoxCase.qml
-        qml/cases/UTSwitchCase.qml
+        ${GALLERY_CASE_QML_FILES}
 )
 
 ApplyProjectTargetOptions(TARGET ${GALLERY_TARGET})

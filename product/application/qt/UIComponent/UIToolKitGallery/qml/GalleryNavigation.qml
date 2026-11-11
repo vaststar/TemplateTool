@@ -6,6 +6,7 @@ import UIResourceLoader 1.0
 Item {
     id: root
 
+    property var rows: []
     property int currentPage: 0
     signal pageSelected(int page)
 
@@ -13,25 +14,7 @@ Item {
         id: navigationModel
         TableModelColumn { display: "title" }
 
-        rows: [
-            {
-                title: "UTComponent", page: -1,
-                rows: [
-                    { title: "Buttons", page: 0 },
-                    { title: "Toggles", page: 1 },
-                    { title: "Inputs", page: 2 },
-                    { title: "Pickers", page: 3 },
-                    { title: "Display", page: 4 },
-                    { title: "Containers", page: 5 }
-                ]
-            },
-            {
-                title: "UTComposite", page: -1,
-                rows: [
-                    { title: "Pickers", page: 6 }
-                ]
-            }
-        ]
+        rows: root.rows
     }
 
     UTTreeView {
