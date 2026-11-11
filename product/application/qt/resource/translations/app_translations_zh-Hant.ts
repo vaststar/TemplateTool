@@ -2816,22 +2816,22 @@ Press ESC to cancel</source>
         <translation>%1 個檔案</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="417"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="419"/>
         <source>Open</source>
         <translation>開啟</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="424"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="426"/>
         <source>Copy to Clipboard</source>
         <translation>複製到剪貼簿</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="431"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="433"/>
         <source>Show in Explorer</source>
         <translation>在檔案總管中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="450"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="452"/>
         <source>Delete</source>
         <translation>刪除</translation>
     </message>
@@ -2839,34 +2839,32 @@ Press ESC to cancel</source>
 <context>
     <name>UTFolderViewHeader</name>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="38"/>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="84"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="37"/>
         <source>Grid View</source>
         <translation>格狀檢視</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="46"/>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="92"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="48"/>
         <source>Detail View</source>
         <translation>詳細資料檢視</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="72"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="74"/>
         <source>Name</source>
         <translation>名稱</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="105"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="85"/>
         <source>Date Modified</source>
         <translation>修改日期</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="116"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="96"/>
         <source>Size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="129"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="109"/>
         <source>Type</source>
         <translation>類型</translation>
     </message>

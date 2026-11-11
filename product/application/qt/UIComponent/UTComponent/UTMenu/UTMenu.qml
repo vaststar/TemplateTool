@@ -7,14 +7,11 @@ import UIResourceLoader 1.0
 BaseMenu {
     id: control
 
-    delegate: UTMenuItem {}
+    property var backgroundColorEnum: UIColorToken.Menu_Background
+    property var borderColorEnum: UIColorToken.Menu_Border
 
-    background: Rectangle {
-        implicitWidth: 200
-        radius: control.borderRadius
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Background, UIColorState.Normal)
-        border.width: 1
-        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Border, UIColorState.Normal)
-        layer.enabled: true
-    }
+    backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    borderColor: UTComponentUtil.getPlainUIColor(control.borderColorEnum, UIColorState.Normal)
+
+    delegate: UTMenuItem {}
 }

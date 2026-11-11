@@ -18,12 +18,7 @@ BasePopup {
 
     property var backgroundColorEnum: UIColorToken.Popup_Background
     property var borderColorEnum: UIColorToken.Popup_Border
-    property int borderRadius: 4
 
-    background: Rectangle {
-        color: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
-        border.color: UTComponentUtil.getPlainUIColor(control.borderColorEnum, UIColorState.Normal)
-        border.width: 1
-        radius: control.borderRadius
-    }
+    backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    borderColor: UTComponentUtil.getPlainUIColor(control.borderColorEnum, UIColorState.Normal)
 }

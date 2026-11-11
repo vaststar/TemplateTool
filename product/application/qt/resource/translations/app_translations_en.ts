@@ -2816,22 +2816,22 @@ Press ESC to cancel</translation>
         <translation>%1 files</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="417"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="419"/>
         <source>Open</source>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="424"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="426"/>
         <source>Copy to Clipboard</source>
         <translation>Copy to Clipboard</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="431"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="433"/>
         <source>Show in Explorer</source>
         <translation>Show in Explorer</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="450"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="452"/>
         <source>Delete</source>
         <translation>Delete</translation>
     </message>
@@ -2839,34 +2839,32 @@ Press ESC to cancel</translation>
 <context>
     <name>UTFolderViewHeader</name>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="72"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="74"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="116"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="96"/>
         <source>Size</source>
         <translation>Size</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="129"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="109"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="38"/>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="84"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="37"/>
         <source>Grid View</source>
         <translation>Grid View</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="46"/>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="92"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="48"/>
         <source>Detail View</source>
         <translation>Detail View</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="105"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="85"/>
         <source>Date Modified</source>
         <translation>Date Modified</translation>
     </message>

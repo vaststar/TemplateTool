@@ -20,36 +20,11 @@ import UIResourceLoader 1.0
 BaseProgressBar {
     id: control
 
-    property int barHeight: 8
-
     property var trackColorEnum: UIColorToken.Slider_Track
     property var progressColorEnum: UIColorToken.Slider_Progress
 
-    implicitWidth: 200
-    implicitHeight: barHeight
-
-    from: 0
-    to: 1.0
-
-    background: Rectangle {
-        implicitHeight: control.barHeight
-        color: UTComponentUtil.getPlainUIColor(control.trackColorEnum, UIColorState.Normal)
-        radius: height / 2
-    }
-
-    contentItem: Item {
-        implicitWidth: 200
-        implicitHeight: control.barHeight
-
-        Rectangle {
-            width: control.visualPosition * parent.width
-            height: parent.height
-            radius: height / 2
-            color: UTComponentUtil.getPlainUIColor(
+    trackColor: UTComponentUtil.getPlainUIColor(control.trackColorEnum, UIColorState.Normal)
+    progressColor: UTComponentUtil.getPlainUIColor(
                        control.progressColorEnum,
                        control.enabled ? UIColorState.Normal : UIColorState.Disabled)
-
-            Behavior on color { ColorAnimation { duration: 100 } }
-        }
-    }
 }

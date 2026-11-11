@@ -18,53 +18,13 @@ import UIResourceLoader 1.0
 BaseBusyIndicator {
     id: control
 
-    property int indicatorSize: 36
-    property int ringThickness: 3
-    property int dotSize: 8
-    property int cycleDuration: 900
-
     property var trackColorEnum: UIColorToken.Busy_Indicator_Track
     property var progressColorEnum: UIColorToken.Busy_Indicator_Progress
 
-    implicitWidth: indicatorSize
-    implicitHeight: indicatorSize
-
-    contentItem: Item {
-        implicitWidth: control.indicatorSize
-        implicitHeight: control.indicatorSize
-
-        Rectangle {
-            anchors.fill: parent
-            color: "transparent"
-            border.width: control.ringThickness
-            border.color: UTComponentUtil.getPlainUIColor(
-                              control.trackColorEnum,
-                              control.enabled ? UIColorState.Normal : UIColorState.Disabled)
-            radius: width / 2
-        }
-
-        Item {
-            anchors.fill: parent
-
-            Rectangle {
-                width: control.dotSize
-                height: control.dotSize
-                radius: width / 2
-                anchors.horizontalCenter: parent.horizontalCenter
-                y: -height / 2 + control.ringThickness / 2
-                color: UTComponentUtil.getPlainUIColor(
-                           control.progressColorEnum,
-                           control.enabled ? UIColorState.Normal : UIColorState.Disabled)
-
-                Behavior on color { ColorAnimation { duration: 100 } }
-            }
-
-            RotationAnimator on rotation {
-                from: 0; to: 360
-                duration: control.cycleDuration
-                loops: Animation.Infinite
-                running: control.running
-            }
-        }
-    }
+    trackColor: UTComponentUtil.getPlainUIColor(
+                    control.trackColorEnum,
+                    control.enabled ? UIColorState.Normal : UIColorState.Disabled)
+    progressColor: UTComponentUtil.getPlainUIColor(
+                       control.progressColorEnum,
+                       control.enabled ? UIColorState.Normal : UIColorState.Disabled)
 }
