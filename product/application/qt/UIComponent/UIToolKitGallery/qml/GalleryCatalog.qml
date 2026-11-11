@@ -229,6 +229,46 @@ QtObject {
                             coveredTypes: ["UTTreeView", "UTTreeViewDelegate"]
                         }
                     ]
+                },
+                {
+                    title: "Specialized controls",
+                    entries: [
+                        {
+                            id: "focusItem",
+                            title: "UTFocusItem",
+                            source: Qt.resolvedUrl("cases/UTFocusItemCase.qml"),
+                            coveredTypes: ["UTFocusItem"]
+                        },
+                        {
+                            id: "wheelColumn",
+                            title: "UTWheelColumn",
+                            source: Qt.resolvedUrl("cases/UTWheelColumnCase.qml"),
+                            coveredTypes: ["UTWheelColumn"]
+                        },
+                        {
+                            id: "qrCode",
+                            title: "UTQRCode",
+                            source: Qt.resolvedUrl("cases/UTQRCodeCase.qml"),
+                            coveredTypes: ["UTQRCode"]
+                        }
+                    ]
+                },
+                {
+                    title: "Windows and dialogs",
+                    entries: [
+                        {
+                            id: "window",
+                            title: "UTWindow",
+                            source: Qt.resolvedUrl("cases/UTWindowCase.qml"),
+                            coveredTypes: ["UTWindow"]
+                        },
+                        {
+                            id: "dialog",
+                            title: "UTDialog",
+                            source: Qt.resolvedUrl("cases/UTDialogCase.qml"),
+                            coveredTypes: ["UTDialog"]
+                        }
+                    ]
                 }
             ]
         },
@@ -243,6 +283,23 @@ QtObject {
                             title: "UTDateTimeRangePicker",
                             source: Qt.resolvedUrl("cases/UTDateTimeRangePickerCase.qml"),
                             coveredTypes: ["UTDateTimeRangePicker"]
+                        }
+                    ]
+                },
+                {
+                    title: "Views and dialogs",
+                    entries: [
+                        {
+                            id: "folderView",
+                            title: "UTFolderView",
+                            source: Qt.resolvedUrl("cases/UTFolderViewCase.qml"),
+                            coveredTypes: ["UTFolderView", "UTFolderViewHeader", "UTFolderGridDelegate", "UTFolderDetailDelegate"]
+                        },
+                        {
+                            id: "messageDialog",
+                            title: "UTMessageDialog",
+                            source: Qt.resolvedUrl("cases/UTMessageDialogCase.qml"),
+                            coveredTypes: ["UTMessageDialog"]
                         }
                     ]
                 }

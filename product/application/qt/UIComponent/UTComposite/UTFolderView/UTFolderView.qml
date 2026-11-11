@@ -338,7 +338,8 @@ BaseFolderView {
                     height: _gridView.cellHeight
                     thumbnailComponent: control.gridThumbnail
                     isSelected: control.selectedIndex === index
-                    isCurrent: _gridView.gridView.currentIndex === index
+                    isCurrent: _gridView.gridView.activeFocus
+                               && _gridView.gridView.currentIndex === index
 
                     onClicked: function(mouseButton) {
                         _gridView.focusOnItem(index)
@@ -366,10 +367,13 @@ BaseFolderView {
                 }
 
                 delegate: UTFolderDetailDelegate {
-                    width: _detailContainer.contentAvailableWidth
+                    width: _detailContainer.listView.width
+                    scrollBarWidth: _header.scrollBarWidth
+                    compact: _header.compact
                     iconComponent: control.detailIcon
                     isSelected: control.selectedIndex === index
-                    isCurrent: _detailContainer.listView.currentIndex === index
+                    isCurrent: _detailContainer.listView.activeFocus
+                               && _detailContainer.listView.currentIndex === index
 
                     onClicked: function(mouseButton) {
                         _detailContainer.focusOnItem(index)

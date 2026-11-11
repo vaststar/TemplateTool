@@ -1,4 +1,5 @@
 import UIComponentBase 1.0
+import UTComponent 1.0
 
 BaseQRCode {
     id: control

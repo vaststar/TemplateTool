@@ -59,10 +59,11 @@ Item {
 
             UTText {
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
                 text: model.fileName
                 fontEnum: UIFontToken.Caption_Text
                 color: root.isSelected ? root._textSelected : root._textNormal
-                elide: Text.ElideMiddle
+                elide: Text.ElideLeft
                 horizontalAlignment: Text.AlignHCenter
             }
 

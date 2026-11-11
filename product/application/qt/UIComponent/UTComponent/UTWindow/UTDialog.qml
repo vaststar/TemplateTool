@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import UIComponentBase 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
@@ -16,30 +16,11 @@ import UIResourceLoader 1.0
  *       ColumnLayout { anchors.fill: parent; anchors.margins: 24; ... }
  *   }
  */
-Window {
+BaseDialog {
     id: dialog
 
     property var backgroundColorEnum: UIColorToken.Main_Window_Background
     property var borderColorEnum: UIColorToken.Window_Border
-
-    visible: true
-    modality: Qt.ApplicationModal
-    flags: Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.Tool
-
     color: UTComponentUtil.getPlainUIColor(dialog.backgroundColorEnum, UIColorState.Normal)
-
-    onVisibleChanged: {
-        if (visible) {
-            requestActivate()
-        }
-    }
-
-    Rectangle {
-        parent: Overlay.overlay ? Overlay.overlay : dialog.contentItem
-        anchors.fill: parent
-        z: 9999
-        color: "transparent"
-        border.width: 1
-        border.color: UTComponentUtil.getPlainUIColor(dialog.borderColorEnum, UIColorState.Normal)
-    }
+    borderColor: UTComponentUtil.getPlainUIColor(dialog.borderColorEnum, UIColorState.Normal)
 }

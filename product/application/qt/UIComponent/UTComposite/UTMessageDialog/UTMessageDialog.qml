@@ -29,6 +29,7 @@ UTDialog {
     minimumWidth: 360
     minimumHeight: 180
     visible: false
+    closeOnEscape: false
 
     onClosing: function(close) {
         controller.accept(controller.cancelIndex)
@@ -41,6 +42,7 @@ UTDialog {
 
     Shortcut {
         sequence: "Escape"
+        enabled: dialog.visible
         onActivated: controller.accept(controller.cancelIndex)
     }
 
@@ -130,8 +132,8 @@ UTDialog {
                     ToolTip.text: modelData.tooltip
                     ToolTip.visible: hovered && modelData.tooltip.length > 0
 
-                    Keys.onReturnPressed: if (modelData.isDefault) controller.accept(index)
-                    Keys.onEnterPressed: if (modelData.isDefault) controller.accept(index)
+                    Keys.onReturnPressed: if (enabled) controller.accept(index)
+                    Keys.onEnterPressed: if (enabled) controller.accept(index)
 
                     onClicked: controller.accept(index)
 

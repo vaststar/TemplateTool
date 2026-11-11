@@ -82,9 +82,13 @@ FocusScope {
         ScrollBar.vertical: root.verticalScrollBar
 
         onActiveFocusChanged: {
-            if (activeFocus && count > 0 && currentIndex < 0)
-                currentIndex = root.selectedIndex >= 0 ? root.selectedIndex : 0
-            else if (!activeFocus)
+            if (activeFocus && count > 0) {
+                // A newly shown view can still have the native default index 0.
+                if (root.selectedIndex >= 0 && root.selectedIndex < count)
+                    currentIndex = root.selectedIndex
+                else if (currentIndex < 0)
+                    currentIndex = 0
+            } else if (!activeFocus)
                 currentIndex = -1
         }
 

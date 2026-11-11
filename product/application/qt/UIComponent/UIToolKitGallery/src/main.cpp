@@ -11,6 +11,7 @@
 
 #include "MockCommonHeadFramework.h"
 #include "GalleryThemeController.h"
+#include "GalleryFixtures.h"
 
 /**
  * componentGallery
@@ -43,6 +44,7 @@ int main(int argc, char** argv)
     // Theme switch bridge exposed to QML.
     GalleryThemeController themeController(framework->mockLoader(), manager.get());
     engine.rootContext()->setContextProperty("GalleryTheme", &themeController);
+    engine.rootContext()->setContextProperty("GalleryFixtures", new GalleryFixtures(&engine));
 
     // Register the component QML modules (mirrors AppUIManager).
     UTComponent::registerUTComponent();   // also registers UIComponentBase

@@ -12,6 +12,8 @@ qt_add_executable(${GALLERY_TARGET}
     src/MockResourceLoader.h
     src/MockCommonHeadFramework.h
     src/GalleryThemeController.h
+    src/GalleryFixtures.cpp
+    src/GalleryFixtures.h
 )
 
 set_target_properties(${GALLERY_TARGET} PROPERTIES
@@ -49,6 +51,7 @@ target_link_libraries(${GALLERY_TARGET} PRIVATE
     # UI foundation
     UICore
     UIResourceLoaderManager
+    UIResourceAssetRCCInterface
     # commonHead: real color/font/asset loaders + framework interface
     ResourceLoaderApi
     ResourceColorLoaderImpl

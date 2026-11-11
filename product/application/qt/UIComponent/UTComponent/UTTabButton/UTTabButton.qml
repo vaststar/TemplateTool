@@ -56,9 +56,8 @@ BaseTabButton {
                       ? UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
                       : "transparent"
         color: {
-            if (control.checked)
-                return UTComponentUtil.getPlainUIColor(control.checkedBackgroundColorEnum, UIColorState.Normal)
-            return "transparent"
+            const checkedColor = UTComponentUtil.getPlainUIColor(control.checkedBackgroundColorEnum, UIColorState.Normal)
+            return control.checked ? checkedColor : Qt.rgba(checkedColor.r, checkedColor.g, checkedColor.b, 0)
         }
 
         Behavior on color {

@@ -19,6 +19,8 @@ Item {
     property Component iconComponent: null
     property bool isSelected: false
     property bool isCurrent: false
+    property real scrollBarWidth: 0
+    property bool compact: width - scrollBarWidth < 520
 
     // ── Theme colors ──
     readonly property color _bgNormal:   UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Normal)
@@ -35,7 +37,8 @@ Item {
         id: bg
         anchors.fill: parent
         anchors.leftMargin: 4
-        anchors.rightMargin: 4
+        // Mirrored margins reserve the scrollbar on the correct side in RTL.
+        anchors.rightMargin: 4 + root.scrollBarWidth
         radius: 3
         color: root.isSelected ? root._bgSelected : (_mouseArea.containsMouse ? root._bgHovered : "transparent")
         border.width: 0
@@ -54,12 +57,15 @@ Item {
         // Icon + Name column (flex: fills remaining)
         RowLayout {
             Layout.fillWidth: true
+            Layout.minimumWidth: 0
             Layout.preferredWidth: 300
             spacing: 6
 
             Loader {
-                width: 18
-                height: 18
+                Layout.minimumWidth: 18
+                Layout.preferredWidth: 18
+                Layout.maximumWidth: 18
+                Layout.preferredHeight: 18
                 sourceComponent: root.iconComponent ?? _defaultIcon
 
                 property url fileUrl: model.fileUrl
@@ -68,25 +74,32 @@ Item {
 
             UTText {
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
                 text: model.fileName
                 fontEnum: UIFontToken.Body_Text
                 color: root.isSelected ? root._textSelected : root._textNormal
-                elide: Text.ElideRight
+                elide: Text.ElideLeft
             }
         }
 
         // Date column
         UTText {
+            visible: !root.compact
+            Layout.minimumWidth: 160
             Layout.preferredWidth: 160
+            Layout.maximumWidth: 160
             text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm:ss")
             fontEnum: UIFontToken.Caption_Text
             color: root.isSelected ? root._textNormal : root._secondaryText
             leftPadding: 8
+            elide: Text.ElideRight
         }
 
         // Size column
         UTText {
+            Layout.minimumWidth: 80
             Layout.preferredWidth: 80
+            Layout.maximumWidth: 80
             text: {
                 var s = model.fileSize
                 if (s === undefined || s === 0) return ""
@@ -98,11 +111,15 @@ Item {
             color: root._secondaryText
             horizontalAlignment: Text.AlignRight
             leftPadding: 8
+            elide: Text.ElideRight
         }
 
         // Type column
         UTText {
+            visible: !root.compact
+            Layout.minimumWidth: 70
             Layout.preferredWidth: 70
+            Layout.maximumWidth: 70
             text: {
                 var ext = model.fileName.split('.').pop()
                 return ext ? ext.toUpperCase() : ""
@@ -110,6 +127,7 @@ Item {
             fontEnum: UIFontToken.Caption_Text
             color: root._secondaryText
             leftPadding: 8
+            elide: Text.ElideRight
         }
     }
 

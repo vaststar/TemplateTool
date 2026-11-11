@@ -77,6 +77,8 @@ set(MODULE_QML_TARGET_FILES
     BaseSlider/BaseSlider.qml
     BaseProgressBar/BaseProgressBar.qml
     BaseBusyIndicator/BaseBusyIndicator.qml
+    BaseWindow/BaseWindow.qml
+    BaseWindow/BaseDialog.qml
 )
 BuildQtModule(
 MODULE_NAME ${MODULE_MODULE_NAME}
