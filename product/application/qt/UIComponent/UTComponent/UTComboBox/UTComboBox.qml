@@ -8,24 +8,7 @@ import UTComponent 1.0
 BaseComboBox {
     id: control
 
-    // Model role holding the icon source (URL / qrc path / data: base64).
-    // Empty => text-only (unchanged legacy behaviour).
-    property string iconRole: ""
-    property int iconSize: 20
     property var fontEnum: UIFontToken.Combobox_Text
-
-    // Icon source for the currently selected item (collapsed display).
-    // contentItem is not in a delegate context, so resolve it from the model.
-    readonly property string currentIconSource: {
-        if (iconRole === "" || currentIndex < 0)
-            return ""
-        const m = control.model
-        if (m && typeof m.get === "function")        // ListModel
-            return m.get(currentIndex)[iconRole] ?? ""
-        if (Array.isArray(m))                         // JS array of objects
-            return (m[currentIndex] && m[currentIndex][iconRole]) ?? ""
-        return ""
-    }
 
     // === Theme colors (new tokens) ===
     readonly property color bgColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Background, UIColorState.Normal)
@@ -37,15 +20,12 @@ BaseComboBox {
     readonly property color itemHoveredColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Item_Background, UIColorState.Hovered)
     readonly property color itemSelectedColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Item_Background, UIColorState.Selected)
 
-    // === ComboBox background ===
-    background: Rectangle {
-        radius: control.borderRadius
-        color: control.pressed ? control.pressedColor
-             : control.hovered ? control.hoveredColor
-             : control.bgColor
-        border.width: 1
-        border.color: control.borderColor
-    }
+    backgroundColor: control.pressed ? control.pressedColor
+                   : control.hovered ? control.hoveredColor
+                   : control.bgColor
+    backgroundBorderColor: control.borderColor
+    indicatorColor: control.textColor
+    indicatorFont: UTComponentUtil.getUIFont(control.fontEnum)
 
     // === ComboBox text (using font token) ===
     contentItem: RowLayout {
@@ -83,15 +63,6 @@ BaseComboBox {
                 cursorY: contentHoverHandler.point.position.y
             }
         }
-    }
-
-    // === Dropdown indicator ===
-    indicator: UTText {
-        x: control.width - width - 12
-        y: (control.height - height) / 2
-        text: control.popup.visible ? "\u25B4" : "\u25BE"
-        fontEnum: control.fontEnum
-        color: control.textColor
     }
 
     // === Focus ring for ComboBox ===
