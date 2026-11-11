@@ -22,14 +22,21 @@ BaseTreeViewDelegate {
     topPadding: 4
     bottomPadding: 4
 
-    indicator: UTLabel {
+    indicator: Item {
         x: control.leftMargin + control.depth * control.indentation
         anchors.verticalCenter: parent.verticalCenter
-        text: "\u25B6"
-        fontEnum: UIFontToken.Caption_Text
-        colorEnum: control.textColorEnum
-        rotation: control.expanded ? 90 : 0
+        implicitWidth: 20
+        implicitHeight: 20
         visible: control.hasChildren
+
+        UTLabel {
+            anchors.centerIn: parent
+            enabled: false
+            text: "\u25B6"
+            fontEnum: UIFontToken.Caption_Text
+            colorEnum: control.textColorEnum
+            rotation: control.expanded ? 90 : 0
+        }
     }
 
     contentItem: UTLabel {

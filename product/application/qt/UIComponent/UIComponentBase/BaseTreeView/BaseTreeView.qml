@@ -8,6 +8,7 @@ FocusScope {
     property alias delegate: treeView.delegate
     property alias treeView: treeView
     property bool expandAll: false
+    property bool focusOnShow: true
     signal itemInvoked(var modelIndex)
 
     property var acceptedMimeTypes: []
@@ -22,10 +23,10 @@ FocusScope {
     activeFocusOnTab: true
 
     Component.onCompleted: {
-        if (visible) Qt.callLater(forceActiveFocus)
+        if (focusOnShow && visible) Qt.callLater(forceActiveFocus)
     }
     onVisibleChanged: {
-        if (visible) forceActiveFocus()
+        if (focusOnShow && visible) forceActiveFocus()
     }
 
     TapHandler {

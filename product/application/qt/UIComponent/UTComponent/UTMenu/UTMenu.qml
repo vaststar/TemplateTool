@@ -7,6 +7,8 @@ import UIResourceLoader 1.0
 BaseMenu {
     id: control
 
+    delegate: UTMenuItem {}
+
     background: Rectangle {
         implicitWidth: 200
         radius: control.borderRadius

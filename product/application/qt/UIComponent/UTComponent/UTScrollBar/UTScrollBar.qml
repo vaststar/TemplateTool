@@ -33,7 +33,8 @@ BaseScrollBar {
 
     implicitWidth: control.horizontal ? 200 : control.scrollBarWidth
     implicitHeight: control.horizontal ? control.scrollBarWidth : 200
-    visible: control.size < 1.0
+    visible: control.policy !== ScrollBar.AlwaysOff
+             && (control.policy === ScrollBar.AlwaysOn || control.size < 1.0)
 
     // No padding — arrows are drawn inside the background, not via ScrollBar padding.
     // ScrollBar.padding shifts the contentItem (thumb) area, which causes misalignment.
@@ -43,19 +44,21 @@ BaseScrollBar {
     leftPadding: control.horizontal && control.showArrows ? control.arrowSize : 0
     rightPadding: control.horizontal && control.showArrows ? control.arrowSize : 0
 
-    contentItem: Rectangle {
-        implicitWidth: control.horizontal ? 0 : control.thumbWidth
-        implicitHeight: control.horizontal ? control.thumbWidth : 0
+    contentItem: Item {
+        implicitWidth: control.thumbWidth
+        implicitHeight: control.thumbWidth
 
-        // Center the narrow thumb within the scrollbar width
-        x: control.horizontal ? 0 : (control.scrollBarWidth - control.thumbWidth) / 2
-        width: control.horizontal ? parent.width : control.thumbWidth
+        // ScrollBar owns the thumb's length and position; only inset its paint.
+        Rectangle {
+            anchors.centerIn: parent
+            width: control.horizontal ? parent.width : control.thumbWidth
+            height: control.horizontal ? control.thumbWidth : parent.height
+            radius: control.thumbWidth / 2
+            color: UTComponentUtil.getItemUIColor(control, control.thumbColorEnum)
 
-        radius: control.thumbWidth / 2
-        color: UTComponentUtil.getItemUIColor(control, control.thumbColorEnum)
-
-        Behavior on color {
-            ColorAnimation { duration: 120 }
+            Behavior on color {
+                ColorAnimation { duration: 120 }
+            }
         }
     }
 

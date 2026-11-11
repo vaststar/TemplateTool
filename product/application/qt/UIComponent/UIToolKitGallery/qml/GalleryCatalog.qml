@@ -19,6 +19,12 @@ QtObject {
                             title: "UTToolButton",
                             source: Qt.resolvedUrl("cases/UTToolButtonCase.qml"),
                             coveredTypes: ["UTToolButton"]
+                        },
+                        {
+                            id: "imageButton",
+                            title: "UTImageButton",
+                            source: Qt.resolvedUrl("cases/UTImageButtonCase.qml"),
+                            coveredTypes: ["UTImageButton"]
                         }
                     ]
                 },
@@ -119,6 +125,12 @@ QtObject {
                             coveredTypes: ["UTContentDivider"]
                         },
                         {
+                            id: "iconImage",
+                            title: "UTIconImage",
+                            source: Qt.resolvedUrl("cases/UTIconImageCase.qml"),
+                            coveredTypes: ["UTIconImage"]
+                        },
+                        {
                             id: "progressBar",
                             title: "UTProgressBar",
                             source: Qt.resolvedUrl("cases/UTProgressBarCase.qml"),
@@ -140,6 +152,81 @@ QtObject {
                             title: "UTGroupBox",
                             source: Qt.resolvedUrl("cases/UTGroupBoxCase.qml"),
                             coveredTypes: ["UTGroupBox"]
+                        }
+                    ]
+                },
+                {
+                    title: "Menus and popups",
+                    entries: [
+                        {
+                            id: "menu",
+                            title: "UTMenu",
+                            source: Qt.resolvedUrl("cases/UTMenuCase.qml"),
+                            coveredTypes: ["UTMenu", "UTMenuItem", "UTMenuSeparator"]
+                        },
+                        {
+                            id: "dynamicMenu",
+                            title: "UTDynamicMenu",
+                            source: Qt.resolvedUrl("cases/UTDynamicMenuCase.qml"),
+                            coveredTypes: ["UTDynamicMenu"]
+                        },
+                        {
+                            id: "popup",
+                            title: "UTPopup",
+                            source: Qt.resolvedUrl("cases/UTPopupCase.qml"),
+                            coveredTypes: ["UTPopup"]
+                        },
+                        {
+                            id: "toolTip",
+                            title: "UTToolTip",
+                            source: Qt.resolvedUrl("cases/UTToolTipCase.qml"),
+                            coveredTypes: ["UTToolTip"]
+                        }
+                    ]
+                },
+                {
+                    title: "Tabs and scrolling",
+                    entries: [
+                        {
+                            id: "tabBar",
+                            title: "UTTabBar",
+                            source: Qt.resolvedUrl("cases/UTTabBarCase.qml"),
+                            coveredTypes: ["UTTabBar", "UTTabButton"]
+                        },
+                        {
+                            id: "scrollView",
+                            title: "UTScrollView",
+                            source: Qt.resolvedUrl("cases/UTScrollViewCase.qml"),
+                            coveredTypes: ["UTScrollView"]
+                        },
+                        {
+                            id: "scrollBar",
+                            title: "UTScrollBar",
+                            source: Qt.resolvedUrl("cases/UTScrollBarCase.qml"),
+                            coveredTypes: ["UTScrollBar"]
+                        }
+                    ]
+                },
+                {
+                    title: "Collections",
+                    entries: [
+                        {
+                            id: "listView",
+                            title: "UTListView",
+                            source: Qt.resolvedUrl("cases/UTListViewCase.qml"),
+                            coveredTypes: ["UTListView"]
+                        },
+                        {
+                            id: "gridView",
+                            title: "UTGridView",
+                            source: Qt.resolvedUrl("cases/UTGridViewCase.qml"),
+                            coveredTypes: ["UTGridView"]
+                        },
+                        {
+                            id: "treeView",
+                            title: "UTTreeView",
+                            source: Qt.resolvedUrl("cases/UTTreeViewCase.qml"),
+                            coveredTypes: ["UTTreeView", "UTTreeViewDelegate"]
                         }
                     ]
                 }

@@ -8,8 +8,17 @@ import UIResourceLoader 1.0
 BaseMenuItem {
     id: control
 
+    palette.windowText: UTComponentUtil.getItemUIColor(control, UIColorToken.Menu_Text)
+
     contentItem: RowLayout {
         spacing: control.iconSpacing
+        LayoutMirroring.enabled: false
+        layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
+
+        Item {
+            visible: control.checkable && control.indicator
+            implicitWidth: control.indicator ? control.indicator.width : 0
+        }
 
         UTText {
             Layout.fillWidth: true
@@ -23,6 +32,11 @@ BaseMenuItem {
             text: control.action ? control.action.shortcut : ""
             fontEnum: UIFontToken.Caption_Text
             color: UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Shortcut_Text, UIColorState.Normal)
+        }
+
+        Item {
+            visible: control.subMenu && control.arrow
+            implicitWidth: control.arrow ? control.arrow.width : 0
         }
     }
 
