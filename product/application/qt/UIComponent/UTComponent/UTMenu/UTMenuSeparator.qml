@@ -7,8 +7,7 @@ import UIResourceLoader 1.0
 BaseMenuSeparator {
     id: control
 
-    contentItem: Rectangle {
-        implicitHeight: 1
-        color: UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Separator, UIColorState.Normal)
-    }
+    property var colorEnum: UIColorToken.Menu_Separator
+
+    separatorColor: UTComponentUtil.getPlainUIColor(control.colorEnum, UIColorState.Normal)
 }

@@ -17,7 +17,6 @@ import UIResourceLoader 1.0
 BaseTextArea {
     id: control
 
-    property int borderRadius: 4
     property var fontEnum: UIFontToken.Monospace_Text
     property var textColorEnum: UIColorToken.Content_Input_Text
     property var placeholderColorEnum: UIColorToken.Content_Input_Placeholder
@@ -28,14 +27,10 @@ BaseTextArea {
     color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
     placeholderTextColor: UTComponentUtil.getPlainUIColor(control.placeholderColorEnum, UIColorState.Normal)
 
-    background: Rectangle {
-        radius: control.borderRadius
-        color: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
-        border.width: 1
-        border.color: UTComponentUtil.getPlainUIColor(
-                          control.borderColorEnum,
-                          control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
-    }
+    backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    borderColor: UTComponentUtil.getPlainUIColor(
+                     control.borderColorEnum,
+                     control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
 
     UTFocusItem {
         focusRadius: control.borderRadius

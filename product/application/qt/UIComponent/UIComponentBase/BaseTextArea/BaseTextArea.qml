@@ -5,8 +5,20 @@ import QtQuick.Controls.Basic
 TextArea {
     id: control
 
+    property int borderRadius: 4
+    property color backgroundColor: palette.base
+    property color borderColor: palette.mid
+    property real borderWidth: 1
+
     wrapMode: TextArea.Wrap
     selectByMouse: true
+
+    background: Rectangle {
+        radius: control.borderRadius
+        color: control.backgroundColor
+        border.width: control.borderWidth
+        border.color: control.borderColor
+    }
 
     function moveFocus(forward: bool): void {
         const target = control.nextItemInFocusChain(forward)

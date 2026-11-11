@@ -28,12 +28,8 @@ BaseTextField {
     selectionColor: control.borderFocused
     selectedTextColor: control.textColor
 
-    background: Rectangle {
-        radius: control.borderRadius
-        color: control.bgColor
-        border.width: 1
-        border.color: control.activeFocus ? control.borderFocused : control.borderNormal
-    }
+    backgroundColor: control.bgColor
+    borderColor: control.activeFocus ? control.borderFocused : control.borderNormal
 
     UTFocusItem {
         target: control

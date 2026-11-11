@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import UIComponentBase 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
@@ -8,52 +7,26 @@ import UIResourceLoader 1.0
 BaseMenuItem {
     id: control
 
-    palette.windowText: UTComponentUtil.getItemUIColor(control, UIColorToken.Menu_Text)
+    property var fontEnum: UIFontToken.Body_Text
+    property var shortcutFontEnum: UIFontToken.Caption_Text
+    property var textColorEnum: UIColorToken.Menu_Text
+    property var shortcutColorEnum: UIColorToken.Menu_Shortcut_Text
+    property var backgroundColorEnum: UIColorToken.Menu_Item_Background
 
-    contentItem: RowLayout {
-        spacing: control.iconSpacing
-        LayoutMirroring.enabled: false
-        layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
+    font: UTComponentUtil.getUIFont(control.fontEnum)
+    shortcutFont: UTComponentUtil.getUIFont(control.shortcutFontEnum)
+    textColor: UTComponentUtil.getItemUIColor(control, control.textColorEnum)
+    shortcutColor: UTComponentUtil.getPlainUIColor(control.shortcutColorEnum, UIColorState.Normal)
+    backgroundColor: control.highlighted || control.hovered
+                     ? UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Hovered)
+                     : UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    palette.windowText: control.textColor
 
-        Item {
-            visible: control.checkable && control.indicator
-            implicitWidth: control.indicator ? control.indicator.width : 0
-        }
-
-        UTText {
-            Layout.fillWidth: true
-            text: control.text
-            fontEnum: UIFontToken.Body_Text
-            color: UTComponentUtil.getItemUIColor(control, UIColorToken.Menu_Text)
-        }
-
-        UTText {
-            visible: control.action && control.action.shortcut
-            text: control.action ? control.action.shortcut : ""
-            fontEnum: UIFontToken.Caption_Text
-            color: UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Shortcut_Text, UIColorState.Normal)
-        }
-
-        Item {
-            visible: control.subMenu && control.arrow
-            implicitWidth: control.arrow ? control.arrow.width : 0
-        }
-    }
-
-    background: Rectangle {
-        id: _bg
-        radius: 4
-        color: control.highlighted || control.hovered
-              ? UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Item_Background, UIColorState.Hovered)
-              : UTComponentUtil.getPlainUIColor(UIColorToken.Menu_Item_Background, UIColorState.Normal)
-
-        Behavior on color { ColorAnimation { duration: 100 } }
-
-        UTFocusItem {
-            target: _bg
-            delegateFocused: control.highlighted
-            focusRadius: _bg.radius
-            focusMargin: -1
-        }
+    UTFocusItem {
+        parent: control.background
+        target: control.background
+        delegateFocused: control.highlighted
+        focusRadius: control.backgroundRadius
+        focusMargin: -1
     }
 }

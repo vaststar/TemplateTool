@@ -25,44 +25,17 @@ BaseTabButton {
     property var backgroundColorEnum: UIColorToken.Tab_Button_Background
     property var checkedBackgroundColorEnum: UIColorToken.Tab_Button_Checked_Background
     property var borderColorEnum: UIColorToken.Button_Primary_Border
-    property real radius: 4
-    property real borderWidth: 0
 
-    clip: false
-    width: implicitWidth
-    padding: 8
-    leftPadding: 16
-    rightPadding: 16
-
-    contentItem: Text {
-        text: control.text
-        font: UTComponentUtil.getUIFont(control.fontEnum)
-        color: control.checked
+    font: UTComponentUtil.getUIFont(control.fontEnum)
+    textColor: control.checked
                ? UTComponentUtil.getPlainUIColor(control.checkedFontColorEnum, UIColorState.Normal)
                : UTComponentUtil.getItemUIColor(control, control.fontColorEnum)
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-
-        Behavior on color {
-            ColorAnimation { duration: 150 }
-        }
-    }
-
-    background: Rectangle {
-        radius: control.radius
-        border.width: control.borderWidth
-        border.color: control.borderWidth > 0
-                      ? UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
-                      : "transparent"
-        color: {
-            const checkedColor = UTComponentUtil.getPlainUIColor(control.checkedBackgroundColorEnum, UIColorState.Normal)
-            return control.checked ? checkedColor : Qt.rgba(checkedColor.r, checkedColor.g, checkedColor.b, 0)
-        }
-
-        Behavior on color {
-            ColorAnimation { duration: 150 }
-        }
+    borderColor: control.borderWidth > 0
+                 ? UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
+                 : "transparent"
+    backgroundColor: {
+        const checkedColor = UTComponentUtil.getPlainUIColor(control.checkedBackgroundColorEnum, UIColorState.Normal)
+        return control.checked ? checkedColor : Qt.rgba(checkedColor.r, checkedColor.g, checkedColor.b, 0)
     }
 
     UTFocusItem {
