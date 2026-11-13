@@ -27,6 +27,11 @@ BaseTreeViewDelegate {
                 : "transparent"
     borderColor: UTComponentUtil.getPlainUIColor(UIColorToken.Focus_Outline, UIColorState.Normal)
 
+    dragPreviewBackgroundColor: UTComponentUtil.getPlainUIColor(UIColorToken.Tooltip_Background, UIColorState.Normal)
+    dragPreviewTextColor: UTComponentUtil.getPlainUIColor(UIColorToken.Tooltip_Text, UIColorState.Normal)
+    dragPreviewOpacity: 0.85
+    dragPreviewRadius: 4
+
     UTFocusItem {
         delegateFocused: control.current && control.treeView.activeFocus
         focusRadius: control.backgroundRadius

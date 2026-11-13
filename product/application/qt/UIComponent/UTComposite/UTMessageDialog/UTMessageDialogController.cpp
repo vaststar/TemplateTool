@@ -2,8 +2,6 @@
 
 #include <QtCore/QVariantMap>
 
-#include <UIAssetToken.h>
-
 #include "LoggerDefine.h"
 
 UTMessageDialogController::UTMessageDialogController(QObject* parent)
@@ -85,29 +83,15 @@ void UTMessageDialogController::setOptions(const UTMessageOptions& options)
     emit optionsChanged();
 }
 
-int UTMessageDialogController::iconAssetToken() const
+QString UTMessageDialogController::iconName() const
 {
     switch (mOptions.icon)
     {
-    case UTMessageIcon::Info:     return static_cast<int>(UIAssetImageToken::AssetImageToken::Msg_Info);
-    case UTMessageIcon::Warning:  return static_cast<int>(UIAssetImageToken::AssetImageToken::Msg_Warning);
-    case UTMessageIcon::Error:    return static_cast<int>(UIAssetImageToken::AssetImageToken::Msg_Error);
-    case UTMessageIcon::Question: return static_cast<int>(UIAssetImageToken::AssetImageToken::Msg_Question);
-    case UTMessageIcon::Success:  return static_cast<int>(UIAssetImageToken::AssetImageToken::Msg_Success);
-    case UTMessageIcon::None:     break;
-    }
-    return 0;
-}
-
-QString UTMessageDialogController::iconColor() const
-{
-    switch (mOptions.icon)
-    {
-    case UTMessageIcon::Info:     return QStringLiteral("#2196F3");
-    case UTMessageIcon::Warning:  return QStringLiteral("#FB8C00");
-    case UTMessageIcon::Error:    return QStringLiteral("#E53935");
-    case UTMessageIcon::Question: return QStringLiteral("#7E57C2");
-    case UTMessageIcon::Success:  return QStringLiteral("#43A047");
+    case UTMessageIcon::Info:     return QStringLiteral("info");
+    case UTMessageIcon::Warning:  return QStringLiteral("warning");
+    case UTMessageIcon::Error:    return QStringLiteral("error");
+    case UTMessageIcon::Question: return QStringLiteral("question");
+    case UTMessageIcon::Success:  return QStringLiteral("success");
     case UTMessageIcon::None:     break;
     }
     return {};

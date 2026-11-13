@@ -33,6 +33,14 @@ BaseFolderView {
     property var nameFilters: []
 
     // ─── Configuration ───
+    // Host capabilities; defaults preserve existing callers.
+    property bool canOpen: true
+    property bool canCopy: true
+    property bool canReveal: true
+    property bool canDelete: true
+    readonly property bool _hasContextActions: canOpen || canCopy || canReveal
+                                               || canDelete || extraMenuItems !== null
+
     property string initialViewMode: "grid"          // "grid" | "detail"
 
     property string emptyIcon: "📁"
@@ -181,7 +189,7 @@ BaseFolderView {
     }
 
     function _openContextMenuAtItem(index, view) {
-        if (!_selectItem(index)) return
+        if (!_selectItem(index) || !_hasContextActions) return
         _contextMenu.currentFilePath = selectedFilePath
         var item = view.itemAtIndex(index)
         if (item) {
@@ -248,7 +256,7 @@ BaseFolderView {
 
     function _handleItemClick(index, mouseButton) {
         if (mouseButton === Qt.RightButton) {
-            if (!_selectItem(index)) return
+            if (!_selectItem(index) || !_hasContextActions) return
             _contextMenu.currentFilePath = selectedFilePath
             _contextMenu.popup()
         } else {
@@ -347,7 +355,7 @@ BaseFolderView {
                     }
                     onDoubleClicked: {
                         _gridView.focusOnItem(index)
-                        if (control._isModelReady()) control.fileOpenRequested(filePath)
+                        if (control.canOpen && control._isModelReady()) control.fileOpenRequested(filePath)
                     }
                 }
             }
@@ -381,7 +389,7 @@ BaseFolderView {
                     }
                     onDoubleClicked: {
                         _detailContainer.focusOnItem(index)
-                        if (control._isModelReady()) control.fileOpenRequested(filePath)
+                        if (control.canOpen && control._isModelReady()) control.fileOpenRequested(filePath)
                     }
                 }
             }
@@ -417,28 +425,36 @@ BaseFolderView {
 
         UTMenuItem {
             text: qsTr("Open")
+            visible: control.canOpen
+            height: visible ? implicitHeight : 0
             onTriggered: {
-                if (_contextMenu.currentFilePath !== "")
+                if (control.canOpen && _contextMenu.currentFilePath !== "")
                     control.fileOpenRequested(_contextMenu.currentFilePath)
             }
         }
         UTMenuItem {
             text: qsTr("Copy to Clipboard")
+            visible: control.canCopy
+            height: visible ? implicitHeight : 0
             onTriggered: {
-                if (_contextMenu.currentFilePath !== "")
+                if (control.canCopy && _contextMenu.currentFilePath !== "")
                     control.fileCopyRequested(_contextMenu.currentFilePath)
             }
         }
         UTMenuItem {
             text: qsTr("Show in Explorer")
+            visible: control.canReveal
+            height: visible ? implicitHeight : 0
             onTriggered: {
-                if (_contextMenu.currentFilePath !== "")
+                if (control.canReveal && _contextMenu.currentFilePath !== "")
                     control.fileRevealRequested(_contextMenu.currentFilePath)
             }
         }
 
         UTMenuSeparator {
             visible: _extraMenuLoader.item !== null
+                     && (control.canOpen || control.canCopy || control.canReveal)
+            height: visible ? implicitHeight : 0
         }
         Loader {
             id: _extraMenuLoader
@@ -446,12 +462,18 @@ BaseFolderView {
             sourceComponent: control.extraMenuItems
         }
 
-        UTMenuSeparator {}
+        UTMenuSeparator {
+            visible: control.canDelete && (control.canOpen || control.canCopy
+                                          || control.canReveal || _extraMenuLoader.item !== null)
+            height: visible ? implicitHeight : 0
+        }
 
         UTMenuItem {
             text: qsTr("Delete")
+            visible: control.canDelete
+            height: visible ? implicitHeight : 0
             onTriggered: {
-                if (_contextMenu.currentFilePath !== "")
+                if (control.canDelete && _contextMenu.currentFilePath !== "")
                     control.fileDeleteRequested(_contextMenu.currentFilePath)
             }
         }

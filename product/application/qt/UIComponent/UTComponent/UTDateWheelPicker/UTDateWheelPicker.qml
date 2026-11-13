@@ -20,6 +20,21 @@ BaseWheelDatePicker {
     borderColor: UTComponentUtil.getPlainUIColor(borderColorEnum, UIColorState.Normal)
     focusedBorderColor: UTComponentUtil.getPlainUIColor(borderColorEnum, UIColorState.Focused)
     selectedBandColor: UTComponentUtil.getPlainUIColor(selectedColorEnum, UIColorState.Selected)
+    wheelCenteredFont: {
+        const style = Object.assign({}, control.font)
+        delete style.weight
+        style.bold = true
+        return Qt.font(style)
+    }
+    wheelOffCenterFont: {
+        const style = Object.assign({}, control.font)
+        delete style.weight
+        style.bold = false
+        return Qt.font(style)
+    }
+    wheelDisabledOpacity: 0.35
+    wheelMinimumOpacity: 0.4
+    wheelDisplacementOpacity: 0.28
     wheelCenteredPixelSize: 18
     wheelOffCenterPixelSize: 14
 

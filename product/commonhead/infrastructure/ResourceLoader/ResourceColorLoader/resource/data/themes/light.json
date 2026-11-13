@@ -182,26 +182,30 @@
       "token": "content-input-background",
       "color": {
         "normal": "gray-50",
-        "focused": "gray-50"
+        "focused": "gray-50",
+        "disabled": "gray-100"
       }
     },
     {
       "token": "content-input-text",
       "color": {
-        "normal": "gray-900"
+        "normal": "gray-900",
+        "disabled": "gray-400"
       }
     },
     {
       "token": "content-input-border",
       "color": {
         "normal": "gray-300",
-        "focused": "blue-500"
+        "focused": "blue-500",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "content-input-placeholder",
       "color": {
-        "normal": "gray-400"
+        "normal": "gray-400",
+        "disabled": "gray-400"
       }
     },
     {
@@ -264,19 +268,22 @@
       "color": {
         "normal": "gray-100",
         "hovered": "gray-200",
-        "pressed": "gray-300"
+        "pressed": "gray-300",
+        "disabled": "gray-100"
       }
     },
     {
       "token": "combobox-text",
       "color": {
-        "normal": "gray-700"
+        "normal": "gray-700",
+        "disabled": "gray-400"
       }
     },
     {
       "token": "combobox-border",
       "color": {
-        "normal": "gray-300"
+        "normal": "gray-300",
+        "disabled": "gray-200"
       }
     },
     {
@@ -572,6 +579,36 @@
       "token": "popup-border",
       "color": {
         "normal": "gray-200"
+      }
+    },
+    {
+      "token": "message-info-icon",
+      "color": {
+        "normal": "material-blue-500"
+      }
+    },
+    {
+      "token": "message-warning-icon",
+      "color": {
+        "normal": "material-orange-600"
+      }
+    },
+    {
+      "token": "message-error-icon",
+      "color": {
+        "normal": "material-red-600"
+      }
+    },
+    {
+      "token": "message-question-icon",
+      "color": {
+        "normal": "material-deep-purple-400"
+      }
+    },
+    {
+      "token": "message-success-icon",
+      "color": {
+        "normal": "material-green-600"
       }
     }
   ]

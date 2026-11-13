@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Effects
 import UTComponent 1.0
 import UTComposite 1.0
 import UIResourceLoader 1.0
@@ -60,34 +59,15 @@ UTDialog {
 
             // Icon: visual anchor for the whole text block. Top-aligned so
             // long detail text doesn't drag it to the middle.
-            Item {
-                visible: controller.iconAssetToken !== 0
-                         && iconImage.source.toString().length > 0
+            UTIconImage {
+                visible: controller.iconName.length > 0
+                         && source.toString().length > 0
+                iconSize: 40
                 Layout.preferredWidth: 40
                 Layout.preferredHeight: 40
                 Layout.alignment: Qt.AlignVCenter
-
-                Image {
-                    id: iconImage
-                    anchors.fill: parent
-                    source: controller.iconAssetToken !== 0
-                            ? UTComponentUtil.getImageResourcePath(controller.iconAssetToken)
-                            : ""
-                    sourceSize.width: 40
-                    sourceSize.height: 40
-                    fillMode: Image.PreserveAspectFit
-                    visible: false
-                    layer.enabled: true
-                }
-
-                MultiEffect {
-                    anchors.fill: parent
-                    source: iconImage
-                    brightness: 1.0
-                    colorization: 1.0
-                    colorizationColor: controller.iconColor.length > 0
-                                       ? controller.iconColor : "#000000"
-                }
+                imageSourceEnum: UTComponentUtil.getMessageIconAssetToken(controller.iconName)
+                colorEnum: UTComponentUtil.getMessageIconColorToken(controller.iconName)
             }
 
             // Text column: message (main instruction) on top, detail below.

@@ -13,8 +13,14 @@ BaseDatePicker {
     property color borderColor: palette.mid
     property color focusedBorderColor: palette.highlight
     property color selectedBandColor: palette.highlight
-    property int wheelCenteredPixelSize: 18
-    property int wheelOffCenterPixelSize: 14
+    property font wheelCenteredFont: font
+    property font wheelOffCenterFont: font
+    property real wheelDisabledOpacity: 1.0
+    property real wheelMinimumOpacity: 1.0
+    property real wheelDisplacementOpacity: 0.0
+    // Compatibility size overrides; UT supplies the design defaults.
+    property int wheelCenteredPixelSize: 0
+    property int wheelOffCenterPixelSize: 0
 
     property BaseWheelColumn _yearColumn: null
     property BaseWheelColumn _monthColumn: null
@@ -198,6 +204,11 @@ BaseDatePicker {
                     disabledTextColor: control.disabledTextColor
                     centeredPixelSize: control.wheelCenteredPixelSize
                     offCenterPixelSize: control.wheelOffCenterPixelSize
+                    centeredFont: control.wheelCenteredFont
+                    offCenterFont: control.wheelOffCenterFont
+                    disabledOpacity: control.wheelDisabledOpacity
+                    minimumOpacity: control.wheelMinimumOpacity
+                    displacementOpacity: control.wheelDisplacementOpacity
 
                     // Year is bounded (no wrap); month/day wrap around.
                     wrap: field !== "year"

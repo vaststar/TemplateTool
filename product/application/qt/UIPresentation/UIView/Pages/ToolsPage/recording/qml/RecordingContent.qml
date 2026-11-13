@@ -366,6 +366,7 @@ FocusScope {
             Layout.fillHeight: true
 
             folderUrl: controller.recordingsFolderUrl
+            canCopy: false // RecordingController has no clipboard action.
             nameFilters: ["*.mp4", "*.webm", "*.mov", "*.mkv", "*.avi", "*.gif"]
 
             gridThumbnail: videoGridThumbnail

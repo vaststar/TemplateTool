@@ -26,8 +26,15 @@ Tumbler {
 
     property color textColor: palette.text
     property color disabledTextColor: textColor
-    property int centeredPixelSize: 18
-    property int offCenterPixelSize: 14
+    // Resolved presentation values; themed wrappers choose visual emphasis.
+    property font centeredFont: font
+    property font offCenterFont: font
+    property real disabledOpacity: 1.0
+    property real minimumOpacity: 1.0
+    property real displacementOpacity: 0.0
+    // Compatibility overrides. Zero inherits the corresponding font's size.
+    property int centeredPixelSize: 0
+    property int offCenterPixelSize: 0
 
     visibleItemCount: visibleRows
     focusPolicy: Qt.StrongFocus
@@ -52,9 +59,11 @@ Tumbler {
             return
         // Snap a landing on a disabled tail item back to the last enabled one.
         var v = Math.max(0, Math.min(currentIndex, enabledCount - 1))
-        if (v !== value)
+        if (v !== value) {
             valuePicked(v)
-        else if (currentIndex !== value)
+            // A rejected proposal leaves value unchanged; restore its display.
+            Qt.callLater(wheel._apply)
+        } else if (currentIndex !== value)
             _apply()
     }
 
@@ -102,12 +111,13 @@ Tumbler {
             readonly property bool disabled: index >= wheel.enabledCount
             readonly property bool centered: Tumbler.displacement === 0
             font: {
-                const style = Object.assign({}, wheel.font)
-                // Set one size and one weight representation to avoid conflicting aliases.
-                delete style.pointSize
-                delete style.weight
-                style.pixelSize = centered ? wheel.centeredPixelSize : wheel.offCenterPixelSize
-                style.bold = !disabled && centered
+                const style = Object.assign({}, centered && !disabled
+                    ? wheel.centeredFont : wheel.offCenterFont)
+                const pixelSize = centered ? wheel.centeredPixelSize : wheel.offCenterPixelSize
+                if (pixelSize > 0) {
+                    delete style.pointSize
+                    style.pixelSize = pixelSize
+                }
                 return Qt.font(style)
             }
             text: wheel.formatValue(index)
@@ -115,8 +125,9 @@ Tumbler {
             verticalAlignment: Text.AlignVCenter
             color: disabled ? wheel.disabledTextColor : wheel.textColor
             opacity: disabled
-                     ? 0.35
-                     : 1.0 - Math.min(0.6, Math.abs(Tumbler.displacement) * 0.28)
+                     ? wheel.disabledOpacity
+                     : Math.max(wheel.minimumOpacity,
+                         1.0 - Math.abs(Tumbler.displacement) * wheel.displacementOpacity)
         }
     }
 }

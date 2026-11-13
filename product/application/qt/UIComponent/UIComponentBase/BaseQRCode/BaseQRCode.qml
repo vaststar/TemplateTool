@@ -12,6 +12,8 @@ Item {
     property alias valid: generator.valid
 
     property int displaySize: 200
+    // The base owns invalid-state visibility; wrappers supply presentation.
+    property Component invalidIndicator: null
 
     implicitWidth: displaySize
     implicitHeight: displaySize
@@ -39,12 +41,9 @@ Item {
         }
     }
 
-    Text {
+    Loader {
         anchors.centerIn: parent
-        text: "Invalid QR Code"
-        color: "#999999"
-        // base-layer fallback: UIComponentBase has no access to font tokens (UTComponent/UIResourceLoader sit above it)
-        font.pixelSize: 14
-        visible: !generator.valid && root.text !== ""
+        active: !generator.valid && root.text !== ""
+        sourceComponent: root.invalidIndicator
     }
 }

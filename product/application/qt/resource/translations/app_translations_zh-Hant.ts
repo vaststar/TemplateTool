@@ -1962,27 +1962,27 @@ Double-click a rule to view details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="375"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="376"/>
         <source>No recordings yet</source>
         <translation>尚無錄製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="376"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="377"/>
         <source>Click &apos;Start Recording&apos; to capture your screen</source>
         <translation>點擊「開始錄製」來錄製螢幕</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="377"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="378"/>
         <source>%1 recordings</source>
         <translation>%1 個錄製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="389"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="390"/>
         <source>▶ Open</source>
         <translation>▶ 開啟</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="395"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="396"/>
         <source>🗑 Delete</source>
         <translation>🗑 刪除</translation>
     </message>
@@ -2806,32 +2806,32 @@ Press ESC to cancel</source>
 <context>
     <name>UTFolderView</name>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="39"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="47"/>
         <source>No files</source>
         <translation>尚無檔案</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="41"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="49"/>
         <source>%1 files</source>
         <translation>%1 個檔案</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="419"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="427"/>
         <source>Open</source>
         <translation>開啟</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="426"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="436"/>
         <source>Copy to Clipboard</source>
         <translation>複製到剪貼簿</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="433"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="445"/>
         <source>Show in Explorer</source>
         <translation>在檔案總管中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="452"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="472"/>
         <source>Delete</source>
         <translation>刪除</translation>
     </message>
@@ -2867,6 +2867,38 @@ Press ESC to cancel</source>
         <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderViewHeader.qml" line="109"/>
         <source>Type</source>
         <translation>類型</translation>
+    </message>
+</context>
+<context>
+    <name>UTMessageButtonPresets</name>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTMessageDialog/UTMessageButtonPresets.h" line="13"/>
+        <location filename="../../UIComponent/UTComposite/UTMessageDialog/UTMessageButtonPresets.h" line="20"/>
+        <source>OK</source>
+        <translation>確定</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTMessageDialog/UTMessageButtonPresets.h" line="25"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTMessageDialog/UTMessageButtonPresets.h" line="30"/>
+        <source>Yes</source>
+        <translation>是</translation>
+    </message>
+    <message>
+        <location filename="../../UIComponent/UTComposite/UTMessageDialog/UTMessageButtonPresets.h" line="35"/>
+        <source>No</source>
+        <translation>否</translation>
+    </message>
+</context>
+<context>
+    <name>UTQRCode</name>
+    <message>
+        <location filename="../../UIComponent/UTComponent/UTQRCode/UTQRCode.qml" line="7"/>
+        <source>Invalid QR Code</source>
+        <translation>二維碼無效</translation>
     </message>
 </context>
 <context>

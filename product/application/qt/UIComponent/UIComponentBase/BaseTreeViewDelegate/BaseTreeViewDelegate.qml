@@ -17,6 +17,10 @@ TreeViewDelegate {
 
     property var dragMimeData: null
     property Item dragPreviewSource: _defaultPreview
+    property color dragPreviewBackgroundColor: palette.toolTipBase
+    property color dragPreviewTextColor: palette.toolTipText
+    property real dragPreviewOpacity: 1.0
+    property real dragPreviewRadius: 0
     property real dragHotSpotX: 18
     property real dragHotSpotY: 12
 
@@ -87,19 +91,20 @@ TreeViewDelegate {
         id: _defaultPreview
         visible: false
         layer.enabled: true
-        opacity: 0.85
+        opacity: control.dragPreviewOpacity
         width:  _previewText.implicitWidth + 16
         height: _previewText.implicitHeight + 8
         Rectangle {
             anchors.fill: parent
-            radius: 4
-            color: "#80000000"
+            radius: control.dragPreviewRadius
+            color: control.dragPreviewBackgroundColor
         }
         Text {
             id: _previewText
             anchors.centerIn: parent
             text: control.text
-            color: "white"
+            font: control.textFont
+            color: control.dragPreviewTextColor
         }
     }
 

@@ -12,6 +12,13 @@ ComboBox {
     // === Configurable ===
     property int borderRadius: 6
     property int itemHeight: 32
+    // Height includes popup padding. Subclasses supply themed scrollbars.
+    property real popupMaximumHeight: Infinity
+    property real popupItemSpacing: 0
+    property var popupVerticalScrollBar: ScrollBar {}
+    readonly property real popupContentWidth: Math.max(0, popupList.width
+        - (popupVerticalScrollBar && popupVerticalScrollBar.visible
+            ? popupVerticalScrollBar.width : 0))
     // Model role holding the icon source (URL / qrc path / data: base64).
     // Empty => text-only (unchanged legacy behaviour).
     property string iconRole: ""
@@ -35,6 +42,32 @@ ComboBox {
     }
 
     focusPolicy: Qt.StrongFocus
+
+    // Keep the behavior skeleton in Base; UT supplies the delegate and colors.
+    popup.height: Math.max(0, Math.min(
+        popup.contentItem.implicitHeight + popup.topPadding + popup.bottomPadding,
+        control.popupMaximumHeight,
+        control.Window.height - popup.topMargin - popup.bottomMargin))
+    popup.contentItem: ListView {
+        id: popupList
+        clip: true
+        implicitHeight: contentHeight
+        model: control.delegateModel
+        currentIndex: control.focusedItemIndex
+        spacing: control.popupItemSpacing
+        highlightMoveDuration: 0
+        boundsBehavior: Flickable.StopAtBounds
+        ScrollBar.vertical: control.popupVerticalScrollBar
+    }
+
+    function ensureFocusedItemVisible() {
+        if (popup.visible && focusedItemIndex >= 0 && focusedItemIndex < count) {
+            popupList.forceLayout()
+            popupList.positionViewAtIndex(focusedItemIndex, ListView.Contain)
+        }
+    }
+
+    onFocusedItemIndexChanged: Qt.callLater(control.ensureFocusedItemVisible)
 
     background: Rectangle {
         radius: control.borderRadius
@@ -71,6 +104,8 @@ ComboBox {
     }
     Keys.onUpPressed: function(event) {
         event.accepted = true
+        if (count === 0)
+            return
         if (popupIsOpen) {
             // Wrap to bottom when at top
             focusedItemIndex = focusedItemIndex <= 0 ? count - 1 : focusedItemIndex - 1
@@ -82,6 +117,8 @@ ComboBox {
     }
     Keys.onDownPressed: function(event) {
         event.accepted = true
+        if (count === 0)
+            return
         if (popupIsOpen) {
             // Wrap to top when at bottom
             focusedItemIndex = focusedItemIndex >= count - 1 ? 0 : focusedItemIndex + 1
@@ -99,7 +136,7 @@ ComboBox {
     }
 
     function selectAndClose() {
-        if (focusedItemIndex >= 0) {
+        if (focusedItemIndex >= 0 && focusedItemIndex < count) {
             currentIndex = focusedItemIndex
             activated(focusedItemIndex)
         }
@@ -126,7 +163,8 @@ ComboBox {
     // === Popup state sync ===
     popup.onOpened: {
         popupIsOpen = true
-        focusedItemIndex = currentIndex
+        focusedItemIndex = currentIndex >= 0 ? currentIndex : (count > 0 ? 0 : -1)
+        Qt.callLater(control.ensureFocusedItemVisible)
     }
     popup.onClosed: {
         popupIsOpen = false

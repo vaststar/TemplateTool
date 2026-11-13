@@ -25,8 +25,7 @@ class UTCOMPOSITE_EXPORT UTMessageDialogController : public QObject
     Q_PROPERTY(QString      titleText      READ titleText      NOTIFY optionsChanged)
     Q_PROPERTY(QString      messageText    READ messageText    NOTIFY optionsChanged)
     Q_PROPERTY(QString      detailText     READ detailText     NOTIFY optionsChanged)
-    Q_PROPERTY(int          iconAssetToken READ iconAssetToken NOTIFY optionsChanged)
-    Q_PROPERTY(QString      iconColor      READ iconColor      NOTIFY optionsChanged)
+    Q_PROPERTY(QString      iconName       READ iconName       NOTIFY optionsChanged)
     Q_PROPERTY(QVariantList buttonsModel   READ buttonsModel   NOTIFY optionsChanged)
     Q_PROPERTY(int          cancelIndex    READ cancelIndex    NOTIFY optionsChanged)
 public:
@@ -38,8 +37,7 @@ public:
     QString      titleText()      const { return mOptions.title; }
     QString      messageText()    const { return mOptions.message; }
     QString      detailText()     const { return mOptions.detail; }
-    int          iconAssetToken() const;
-    QString      iconColor()      const;
+    QString      iconName()       const;
     QVariantList buttonsModel()   const { return mButtonsModel; }
     int          cancelIndex()    const { return mCancelIndex; }
 

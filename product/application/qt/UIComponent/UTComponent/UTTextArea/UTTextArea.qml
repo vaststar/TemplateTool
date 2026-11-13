@@ -23,14 +23,17 @@ BaseTextArea {
     property var backgroundColorEnum: UIColorToken.Content_Input_Background
     property var borderColorEnum: UIColorToken.Content_Input_Border
 
-    font: UTComponentUtil.getUIFont(control.fontEnum)
-    color: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
-    placeholderTextColor: UTComponentUtil.getPlainUIColor(control.placeholderColorEnum, UIColorState.Normal)
+    readonly property int _colorState: control.enabled ? UIColorState.Normal : UIColorState.Disabled
 
-    backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    font: UTComponentUtil.getUIFont(control.fontEnum)
+    color: UTComponentUtil.getPlainUIColor(control.textColorEnum, control._colorState)
+    placeholderTextColor: UTComponentUtil.getPlainUIColor(control.placeholderColorEnum, control._colorState)
+
+    backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, control._colorState)
     borderColor: UTComponentUtil.getPlainUIColor(
                      control.borderColorEnum,
-                     control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
+                     !control.enabled ? UIColorState.Disabled
+                     : control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
 
     UTFocusItem {
         focusRadius: control.borderRadius

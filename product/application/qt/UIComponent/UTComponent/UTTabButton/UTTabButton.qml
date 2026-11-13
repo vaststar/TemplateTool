@@ -33,10 +33,9 @@ BaseTabButton {
     borderColor: control.borderWidth > 0
                  ? UTComponentUtil.getItemUIColor(control, control.borderColorEnum)
                  : "transparent"
-    backgroundColor: {
-        const checkedColor = UTComponentUtil.getPlainUIColor(control.checkedBackgroundColorEnum, UIColorState.Normal)
-        return control.checked ? checkedColor : Qt.rgba(checkedColor.r, checkedColor.g, checkedColor.b, 0)
-    }
+    backgroundColor: control.checked
+                     ? UTComponentUtil.getPlainUIColor(control.checkedBackgroundColorEnum, UIColorState.Normal)
+                     : UTComponentUtil.getItemUIColor(control, control.backgroundColorEnum)
 
     UTFocusItem {
         focusRadius: control.radius

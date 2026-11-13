@@ -39,7 +39,7 @@ BaseCheckBox {
     boxColor: {
         if (!control.enabled)
             return UTComponentUtil.getPlainUIColor(control.boxColorEnum, UIColorState.Disabled)
-        if (control.checked)
+        if (control.checkState !== Qt.Unchecked)
             return UTComponentUtil.getPlainUIColor(control.boxColorEnum, UIColorState.Checked)
         if (control.pressed)
             return UTComponentUtil.getPlainUIColor(control.boxColorEnum, UIColorState.Pressed)

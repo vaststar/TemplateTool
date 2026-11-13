@@ -12,7 +12,7 @@ Item {
     property real focusMargin: NaN
 
     readonly property real effectiveMargin: isNaN(focusMargin) ? (borderWidth / 2 + 2) : focusMargin
-    readonly property int animationDuration: 50
+    property int animationDuration: 0
     readonly property bool targetOk: !!target && target.visible && target.enabled
     readonly property bool targetFocused: !!target && target.activeFocus
     readonly property bool effectiveVisible: targetOk && KeyboardFocusTracker.keyboardNavigating
@@ -35,6 +35,7 @@ Item {
     }
 
     Canvas {
+        id: focusCanvas
         anchors.fill: parent
         antialiasing: true
         renderTarget: Canvas.FramebufferObject
@@ -53,6 +54,14 @@ Item {
         onWidthChanged: requestPaint()
         onHeightChanged: requestPaint()
         onVisibleChanged: requestPaint()
+
+        Connections {
+            target: root
+            function onFocusColorChanged() { focusCanvas.requestPaint() }
+            function onBorderWidthChanged() { focusCanvas.requestPaint() }
+            function onFocusRadiusChanged() { focusCanvas.requestPaint() }
+            function onEffectiveMarginChanged() { focusCanvas.requestPaint() }
+        }
 
         function getCTXParam(ctx) {
             var lw2 = ctx.lineWidth / 2

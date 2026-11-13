@@ -2212,5 +2212,50 @@
       "g": 5,
       "b": 25
     }
+  },
+  {
+    "name": "material-blue-500",
+    "hex": "#2196f3",
+    "rgb": {
+      "r": 33,
+      "g": 150,
+      "b": 243
+    }
+  },
+  {
+    "name": "material-orange-600",
+    "hex": "#fb8c00",
+    "rgb": {
+      "r": 251,
+      "g": 140,
+      "b": 0
+    }
+  },
+  {
+    "name": "material-red-600",
+    "hex": "#e53935",
+    "rgb": {
+      "r": 229,
+      "g": 57,
+      "b": 53
+    }
+  },
+  {
+    "name": "material-deep-purple-400",
+    "hex": "#7e57c2",
+    "rgb": {
+      "r": 126,
+      "g": 87,
+      "b": 194
+    }
+  },
+  {
+    "name": "material-green-600",
+    "hex": "#43a047",
+    "rgb": {
+      "r": 67,
+      "g": 160,
+      "b": 71
+    }
   }
 ]

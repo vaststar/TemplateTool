@@ -9,18 +9,23 @@ BaseComboBox {
     id: control
 
     property var fontEnum: UIFontToken.Combobox_Text
+    popupMaximumHeight: 320
+    font: UTComponentUtil.getUIFont(control.fontEnum)
+    readonly property int _colorState: control.enabled ? UIColorState.Normal : UIColorState.Disabled
 
     // === Theme colors (new tokens) ===
     readonly property color bgColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Background, UIColorState.Normal)
     readonly property color hoveredColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Background, UIColorState.Hovered)
     readonly property color pressedColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Background, UIColorState.Pressed)
-    readonly property color textColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Text, UIColorState.Normal)
-    readonly property color borderColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Border, UIColorState.Normal)
+    readonly property color textColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Text, control._colorState)
+    readonly property color borderColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Border, control._colorState)
     readonly property color focusColor: UTComponentUtil.getPlainUIColor(UIColorToken.Focus_Outline, UIColorState.Normal)
     readonly property color itemHoveredColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Item_Background, UIColorState.Hovered)
     readonly property color itemSelectedColor: UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Item_Background, UIColorState.Selected)
 
-    backgroundColor: control.pressed ? control.pressedColor
+    backgroundColor: !control.enabled
+                   ? UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Background, UIColorState.Disabled)
+                   : control.pressed ? control.pressedColor
                    : control.hovered ? control.hoveredColor
                    : control.bgColor
     backgroundBorderColor: control.borderColor
@@ -81,13 +86,8 @@ BaseComboBox {
         layer.enabled: true
     }
 
-    popup.contentItem: Column {
-        spacing: 2
-        Repeater {
-            model: control.popup.visible ? control.delegateModel : null
-        }
-        Item { width: 1; height: 3 }
-    }
+    popupItemSpacing: 2
+    popupVerticalScrollBar: UTScrollBar { showArrows: false }
 
     // === Delegate with focus ring ===
     delegate: ItemDelegate {
@@ -95,7 +95,7 @@ BaseComboBox {
         required property int index
         required property var model
 
-        width: control.width - 8
+        width: control.popupContentWidth
         height: control.itemHeight
         padding: 0
 
@@ -118,7 +118,7 @@ BaseComboBox {
                 Layout.alignment: Qt.AlignVCenter
                 leftPadding: control.iconRole !== "" ? 0 : 12
                 text: control.textAt(delegateItem.index)
-                fontEnum: UIFontToken.Combobox_Text
+                fontEnum: control.fontEnum
                 color: control.textColor
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight

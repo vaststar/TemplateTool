@@ -182,26 +182,30 @@
       "token": "content-input-background",
       "color": {
         "normal": "neutral-900",
-        "focused": "neutral-950"
+        "focused": "neutral-950",
+        "disabled": "neutral-800"
       }
     },
     {
       "token": "content-input-text",
       "color": {
-        "normal": "neutral-100"
+        "normal": "neutral-100",
+        "disabled": "neutral-500"
       }
     },
     {
       "token": "content-input-border",
       "color": {
         "normal": "neutral-600",
-        "focused": "blue-500"
+        "focused": "blue-500",
+        "disabled": "neutral-700"
       }
     },
     {
       "token": "content-input-placeholder",
       "color": {
-        "normal": "neutral-500"
+        "normal": "neutral-500",
+        "disabled": "neutral-600"
       }
     },
     {
@@ -264,19 +268,22 @@
       "color": {
         "normal": "neutral-800",
         "hovered": "neutral-700",
-        "pressed": "neutral-600"
+        "pressed": "neutral-600",
+        "disabled": "neutral-800"
       }
     },
     {
       "token": "combobox-text",
       "color": {
-        "normal": "neutral-200"
+        "normal": "neutral-200",
+        "disabled": "neutral-500"
       }
     },
     {
       "token": "combobox-border",
       "color": {
-        "normal": "neutral-600"
+        "normal": "neutral-600",
+        "disabled": "neutral-700"
       }
     },
     {
@@ -572,6 +579,36 @@
       "token": "popup-border",
       "color": {
         "normal": "neutral-700"
+      }
+    },
+    {
+      "token": "message-info-icon",
+      "color": {
+        "normal": "material-blue-500"
+      }
+    },
+    {
+      "token": "message-warning-icon",
+      "color": {
+        "normal": "material-orange-600"
+      }
+    },
+    {
+      "token": "message-error-icon",
+      "color": {
+        "normal": "material-red-600"
+      }
+    },
+    {
+      "token": "message-question-icon",
+      "color": {
+        "normal": "material-deep-purple-400"
+      }
+    },
+    {
+      "token": "message-success-icon",
+      "color": {
+        "normal": "material-green-600"
       }
     }
   ]

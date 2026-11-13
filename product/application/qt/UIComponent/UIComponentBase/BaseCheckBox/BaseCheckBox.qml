@@ -25,19 +25,19 @@ CheckBox {
         y: parent.height / 2 - height / 2
         radius: control.boxRadius
         color: control.boxColor
-        border.width: control.checked ? 0 : 1
+        border.width: control.checkState === Qt.Unchecked ? 1 : 0
         border.color: control.borderColor
 
         Behavior on color { ColorAnimation { duration: 150 } }
 
         Text {
             anchors.centerIn: parent
-            text: "\u2713"
+            text: control.checkState === Qt.PartiallyChecked ? "\u2212" : "\u2713"
             // glyph size, intentionally not tokenized
             font.pixelSize: control.checkmarkSize
             font.bold: true
             color: control.checkColor
-            visible: control.checked
+            visible: control.checkState !== Qt.Unchecked
         }
     }
 

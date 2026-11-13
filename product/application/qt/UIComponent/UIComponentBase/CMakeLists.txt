@@ -70,6 +70,7 @@ set(MODULE_QML_TARGET_FILES
     BaseGridView/BaseGridView.qml
     BaseTextField/BaseTextField.qml
     BaseMenu/BaseMenu.qml
+    BaseMenu/BaseDynamicMenuBehavior.qml
     BaseMenu/BaseMenuItem.qml
     BaseMenu/BaseMenuSeparator.qml
     BasePopup/BasePopup.qml
