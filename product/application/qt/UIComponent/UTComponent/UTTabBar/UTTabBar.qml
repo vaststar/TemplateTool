@@ -17,5 +17,11 @@ BaseTabBar {
 
     property var backgroundColorEnum: UIColorToken.Tab_Bar_Background
 
-    backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    property color backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+
+    clip: false
+
+    background: Rectangle {
+        color: control.backgroundColor
+    }
 }

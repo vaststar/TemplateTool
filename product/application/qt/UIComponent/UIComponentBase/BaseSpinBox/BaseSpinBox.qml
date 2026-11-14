@@ -17,6 +17,7 @@ SpinBox {
     property color selectedTextColor: palette.highlightedText
 
     editable: true
+    live: true
     implicitWidth: 120
     implicitHeight: fieldHeight
 
@@ -34,13 +35,7 @@ SpinBox {
         verticalAlignment: Qt.AlignVCenter
         readOnly: !control.editable
         validator: control.validator
-        inputMethodHints: Qt.ImhDigitsOnly
-
-        onTextEdited: {
-            var newVal = control.valueFromText(text, control.locale)
-            if (newVal >= control.from && newVal <= control.to)
-                control.value = newVal
-        }
+        inputMethodHints: control.inputMethodHints
     }
 
     up.indicator: Rectangle {

@@ -30,12 +30,11 @@ Switch {
             height: control.thumbSize
             radius: control.thumbSize / 2
             y: (parent.height - height) / 2
-            x: control.checked
-               ? parent.width - width - control.thumbMargin
-               : control.thumbMargin
+            x: control.thumbMargin
+               + control.visualPosition * (parent.width - width - 2 * control.thumbMargin)
             color: control.thumbColor
 
-            Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
+            Behavior on x { enabled: !control.down; NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
             Behavior on color { ColorAnimation { duration: 150 } }
         }
     }

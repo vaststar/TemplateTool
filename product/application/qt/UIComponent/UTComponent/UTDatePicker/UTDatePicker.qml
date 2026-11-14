@@ -14,6 +14,9 @@ BaseCalendarDatePicker {
 
     font: UTComponentUtil.getUIFont(UIFontToken.Body_Text)
     navigationFont: UTComponentUtil.getUIFont(UIFontToken.Button_Text)
+    weekdayTextOpacity: 0.7
+    disabledCellTextOpacity: 0.3
+    outsideMonthTextOpacity: 0.35
 
     backgroundColor: UTComponentUtil.getPlainUIColor(backgroundColorEnum, UIColorState.Normal)
     disabledBackgroundColor: UTComponentUtil.getPlainUIColor(backgroundColorEnum, UIColorState.Disabled)

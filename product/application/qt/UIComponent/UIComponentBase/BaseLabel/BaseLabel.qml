@@ -22,7 +22,8 @@ Label {
             (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
             const match = text.match(/href=["']([^"']*)["']/)
             if (match) {
-                control.linkActivated(match[1])
+                if (!event.isAutoRepeat)
+                    control.linkActivated(match[1])
                 event.accepted = true
             }
         }

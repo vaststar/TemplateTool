@@ -19,6 +19,9 @@ BaseDatePicker {
     property color todayBackgroundColor: palette.alternateBase
     property color hoveredDayBackgroundColor: todayBackgroundColor
     property color selectedBackgroundColor: palette.highlight
+    property real weekdayTextOpacity: 0.7
+    property real disabledCellTextOpacity: 0.3
+    property real outsideMonthTextOpacity: 0.35
     property var navigationBackgroundColorFor: function(button) { return control.backgroundColor }
     property var navigationTextColorFor: function(button) { return control.textColor }
     property var navigationBorderColorFor: function(button) { return control.borderColor }
@@ -467,7 +470,7 @@ BaseDatePicker {
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideNone
                         color: control.textColor
-                        opacity: 0.7
+                        opacity: control.weekdayTextOpacity
                     }
                 }
             }
@@ -519,8 +522,8 @@ BaseDatePicker {
                             anchors.centerIn: parent
                             text: model.day
                             color: control.textColor
-                            opacity: !parent.parent.allowed ? 0.3
-                                   : parent.parent.inThisMonth ? 1.0 : 0.35
+                            opacity: !parent.parent.allowed ? control.disabledCellTextOpacity
+                                   : parent.parent.inThisMonth ? 1.0 : control.outsideMonthTextOpacity
                         }
 
                         FocusIndicatorHost {
@@ -590,7 +593,7 @@ BaseDatePicker {
                             anchors.centerIn: parent
                             text: control.calendarLocale.standaloneMonthName(index, Locale.ShortFormat)
                             color: control.textColor
-                            opacity: parent.parent.allowed ? 1.0 : 0.3
+                            opacity: parent.parent.allowed ? 1.0 : control.disabledCellTextOpacity
                         }
 
                         FocusIndicatorHost {
@@ -656,7 +659,7 @@ BaseDatePicker {
                             anchors.centerIn: parent
                             text: parent.parent.year
                             color: control.textColor
-                            opacity: parent.parent.allowed ? 1.0 : 0.3
+                            opacity: parent.parent.allowed ? 1.0 : control.disabledCellTextOpacity
                         }
 
                         FocusIndicatorHost {

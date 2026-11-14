@@ -10,6 +10,7 @@ TabButton {
     property color borderColor: palette.mid
     property real radius: 4
     property real borderWidth: 0
+    property int colorAnimationDuration: 150
 
     clip: false
     width: implicitWidth
@@ -26,7 +27,7 @@ TabButton {
         elide: Text.ElideRight
 
         Behavior on color {
-            ColorAnimation { duration: 150 }
+            ColorAnimation { duration: control.colorAnimationDuration }
         }
     }
 
@@ -37,7 +38,7 @@ TabButton {
         color: control.backgroundColor
 
         Behavior on color {
-            ColorAnimation { duration: 150 }
+            ColorAnimation { duration: control.colorAnimationDuration }
         }
     }
 }

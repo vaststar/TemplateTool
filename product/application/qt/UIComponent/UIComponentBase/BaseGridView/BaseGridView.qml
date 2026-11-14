@@ -46,7 +46,10 @@ FocusScope {
     signal itemInvoked(int index)
 
     onModelChanged: {
-        if (selectionModel) selectionModel.model = model
+        if (selectionModel) {
+            selectionModel.model = Qt.isQtObject(model)
+                && typeof model.index === "function" ? model : null
+        }
     }
 
     function focusOnItem(index) {

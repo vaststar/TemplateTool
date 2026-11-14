@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import UTComponent 1.0
 import UIResourceLoader 1.0
@@ -100,7 +99,7 @@ Item {
                 smooth: true
                 mipmap: true
 
-                BusyIndicator {
+                UTBusyIndicator {
                     anchors.centerIn: parent
                     running: parent.status === Image.Loading
                     visible: running

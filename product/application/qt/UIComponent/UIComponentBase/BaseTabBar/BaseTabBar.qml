@@ -5,14 +5,6 @@ import QtQuick.Controls.Basic
 TabBar {
     id: control
 
-    property color backgroundColor: palette.window
-
-    clip: false
-
-    background: Rectangle {
-        color: control.backgroundColor
-    }
-
     Binding {
         target: control.contentItem instanceof ListView ? control.contentItem : null
         property: "keyNavigationEnabled"
