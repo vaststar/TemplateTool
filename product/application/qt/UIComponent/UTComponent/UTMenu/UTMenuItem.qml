@@ -17,9 +17,11 @@ BaseMenuItem {
     shortcutFont: UTComponentUtil.getUIFont(control.shortcutFontEnum)
     textColor: UTComponentUtil.getItemUIColor(control, control.textColorEnum)
     shortcutColor: UTComponentUtil.getPlainUIColor(control.shortcutColorEnum, UIColorState.Normal)
-    backgroundColor: control.highlighted || control.hovered
-                     ? UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Hovered)
-                     : UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Normal)
+    backgroundColor: UTComponentUtil.getPlainUIColor(
+                         control.backgroundColorEnum,
+                         control.enabled && control.pressed ? UIColorState.Pressed
+                         : control.highlighted || control.hovered ? UIColorState.Hovered
+                                                                 : UIColorState.Normal)
     palette.windowText: control.textColor
 
     UTFocusItem {

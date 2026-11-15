@@ -171,6 +171,14 @@ Item {
                     treeView.onModelChanged: {
                         _initialExpanded = false
                     }
+
+                    Connections {
+                        target: jsonTreeView.model
+
+                        function onModelAboutToBeReset() {
+                            jsonTreeView._initialExpanded = false
+                        }
+                    }
                 }
             }
         }

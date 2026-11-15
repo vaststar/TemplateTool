@@ -47,8 +47,9 @@ Item {
             colorEnum: UIColorToken.Content_Secondary_Text
         }
 
-        GridView {
+        UTGridView {
             id: appGrid
+            viewMargin: 0
             Layout.fillWidth: true
             Layout.fillHeight: true
             visible: count > 0
@@ -56,10 +57,17 @@ Item {
             cellHeight: 140
             model: miniAppsPage.controller.miniApps
 
+            onItemInvoked: function(index) {
+                const app = miniAppsPage.controller.miniApps[index]
+                if (app)
+                    miniAppsPage.controller.launchMiniApp(app.id)
+            }
+
             delegate: Item {
                 id: appCell
                 width: appGrid.cellWidth
                 height: appGrid.cellHeight
+                required property int index
                 required property var modelData
 
                 Column {
@@ -101,11 +109,19 @@ Item {
                     }
                 }
 
+                UTFocusItem {
+                    delegateFocused: appGrid.gridView.activeFocus
+                                     && appGrid.currentIndex === appCell.index
+                    focusMargin: 0
+                    focusRadius: 16
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     cursorShape: Qt.PointingHandCursor
                     onClicked: function(mouse) {
+                        appGrid.focusOnItem(appCell.index)
                         if (mouse.button === Qt.RightButton) {
                             miniAppsPage.contextAppId = appCell.modelData.id
                             contextMenu.popup()

@@ -182,17 +182,17 @@ Close this terminal to cancel.</source>
     <name>ContactListPanel</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="58"/>
-        <source>联系人列表</source>
+        <source>Contacts</source>
         <translation>Contacts</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="69"/>
-        <source>搜索联系人</source>
+        <source>Search contacts</source>
         <translation>Search contacts</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="218"/>
-        <source>没有找到匹配的联系人</source>
+        <source>No matching contacts found</source>
         <translation>No matching contacts found</translation>
     </message>
 </context>
@@ -200,17 +200,17 @@ Close this terminal to cancel.</source>
     <name>ContactsPageController</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="405"/>
-        <source>保存失败</source>
+        <source>Save failed</source>
         <translation>Save failed</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="406"/>
-        <source>修改已应用到当前页面，但未能写入本地数据库。</source>
+        <source>Changes were applied to the current page, but could not be written to the local database.</source>
         <translation>Changes were applied to the current page, but could not be written to the local database.</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="407"/>
-        <source>关闭应用后这些修改可能丢失，请稍后重新操作。</source>
+        <source>These changes may be lost after the app closes. Please try again later.</source>
         <translation>These changes may be lost after the app closes. Please try again later.</translation>
     </message>
 </context>
@@ -233,13 +233,13 @@ Close this terminal to cancel.</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="78"/>
-        <source>已选时间: </source>
-        <translation type="unfinished"></translation>
+        <source>Selected time: </source>
+        <translation>Selected time: </translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="93"/>
-        <source>已选日期: </source>
-        <translation type="unfinished"></translation>
+        <source>Selected date: </source>
+        <translation>Selected date: </translation>
     </message>
 </context>
 <context>
@@ -361,17 +361,17 @@ Close this terminal to cancel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="126"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="142"/>
         <source>Launch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="131"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="147"/>
         <source>Uninstall</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="139"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="155"/>
         <source>Select Mini App Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1253,72 +1253,72 @@ Double-click a rule to view details.</translation>
         <translation>Click the button below to install and trust the mitmproxy CA certificate. A system password dialog will appear — this is required to add the certificate to the trusted root store.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="134"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="131"/>
         <source>Installing...</source>
         <translation>Installing...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="134"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="131"/>
         <source>One-Click Install CA Certificate</source>
         <translation>One-Click Install CA Certificate</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="148"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="152"/>
         <source>Steps: Enter macOS password → Import to System Keychain → Auto-trust for SSL</source>
         <translation>Steps: Enter macOS password → Import to System Keychain → Auto-trust for SSL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="159"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="163"/>
         <source>Path:</source>
         <translation>Path:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="165"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="169"/>
         <source>Show in Finder</source>
         <translation>Show in Finder</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="166"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="170"/>
         <source>Refresh Status</source>
         <translation>Refresh Status</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="171"/>
         <source>Re-install</source>
         <translation>Re-install</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="175"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="179"/>
         <source>About</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="179"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="183"/>
         <source>Engine:</source>
         <translation>Engine:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="180"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="184"/>
         <source>mitmproxy (PyInstaller bundle)</source>
         <translation>mitmproxy (PyInstaller bundle)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="181"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="185"/>
         <source>Communication:</source>
         <translation>Communication:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="182"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="186"/>
         <source>TCP socket, newline-delimited JSON</source>
         <translation>TCP socket, newline-delimited JSON</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="183"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="187"/>
         <source>Proxy Address:</source>
         <translation>Proxy Address:</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="184"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="188"/>
         <source>127.0.0.1:%1</source>
         <translation>127.0.0.1:%1</translation>
     </message>
@@ -1629,7 +1629,7 @@ Double-click a rule to view details.</translation>
         <translation>my test window title bar</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="68"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="69"/>
         <source>my test window aa</source>
         <translation>my test window aa</translation>
     </message>
@@ -2066,44 +2066,44 @@ Double-click a rule to view details.</translation>
 <context>
     <name>RecordingRegionSelector</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="262"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="261"/>
         <source>Start recording this region</source>
         <translation>Start recording this region</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="278"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="276"/>
         <source>Draw a new selection</source>
         <translation>Draw a new selection</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="291"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="288"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="312"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="310"/>
         <source>Click and drag to select recording region
 Press ESC to cancel</source>
         <translation>Click and drag to select recording region
 Press ESC to cancel</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="417"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="415"/>
         <source>Resume</source>
         <translation>Resume</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="417"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="415"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="429"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="427"/>
         <source>Stop recording</source>
         <translation>Stop recording</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="436"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="434"/>
         <source>Abort recording</source>
         <translation>Abort recording</translation>
     </message>
@@ -2564,27 +2564,27 @@ Press ESC to cancel</translation>
         <translation>Could not save the screenshot. Please try again.</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="332"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="331"/>
         <source>Rectangle</source>
         <translation>Rectangle</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="344"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="343"/>
         <source>Ellipse</source>
         <translation>Ellipse</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="356"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="355"/>
         <source>Arrow</source>
         <translation>Arrow</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="368"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="367"/>
         <source>Freehand</source>
         <translation>Freehand</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="380"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="379"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>
@@ -2594,7 +2594,7 @@ Press ESC to cancel</translation>
         <translation>Undo</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="434"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="433"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>

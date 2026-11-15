@@ -7,7 +7,7 @@ ComboBox {
 
     // === State for subclass ===
     property bool popupIsOpen: false
-    property int focusedItemIndex: -1
+    readonly property int focusedItemIndex: control.highlightedIndex
 
     // === Configurable ===
     property int borderRadius: 6
@@ -86,7 +86,7 @@ ComboBox {
         verticalAlignment: Text.AlignVCenter
     }
 
-    // === Keyboard navigation with wrap-around ===
+    // === Keyboard confirmation; Qt owns candidate navigation ===
     Keys.onSpacePressed: function(event) {
         event.accepted = true
         if (!popupIsOpen) {
@@ -102,31 +102,10 @@ ComboBox {
             selectAndClose()
         }
     }
-    Keys.onUpPressed: function(event) {
-        event.accepted = true
-        if (count === 0)
-            return
-        if (popupIsOpen) {
-            // Wrap to bottom when at top
-            focusedItemIndex = focusedItemIndex <= 0 ? count - 1 : focusedItemIndex - 1
-        } else {
-            var newIndex = currentIndex <= 0 ? count - 1 : currentIndex - 1
-            currentIndex = newIndex
-            activated(newIndex)
-        }
-    }
-    Keys.onDownPressed: function(event) {
-        event.accepted = true
-        if (count === 0)
-            return
-        if (popupIsOpen) {
-            // Wrap to top when at bottom
-            focusedItemIndex = focusedItemIndex >= count - 1 ? 0 : focusedItemIndex + 1
-        } else {
-            var newIndex = currentIndex >= count - 1 ? 0 : currentIndex + 1
-            currentIndex = newIndex
-            activated(newIndex)
-        }
+    Keys.onEnterPressed: function(event) {
+        event.accepted = popupIsOpen
+        if (popupIsOpen)
+            selectAndClose()
     }
     Keys.onEscapePressed: function(event) {
         if (popupIsOpen) {
@@ -136,9 +115,10 @@ ComboBox {
     }
 
     function selectAndClose() {
-        if (focusedItemIndex >= 0 && focusedItemIndex < count) {
-            currentIndex = focusedItemIndex
-            activated(focusedItemIndex)
+        const index = focusedItemIndex
+        if (index >= 0 && index < count) {
+            currentIndex = index
+            activated(index)
         }
         popup.close()
     }
@@ -163,11 +143,9 @@ ComboBox {
     // === Popup state sync ===
     popup.onOpened: {
         popupIsOpen = true
-        focusedItemIndex = currentIndex >= 0 ? currentIndex : (count > 0 ? 0 : -1)
         Qt.callLater(control.ensureFocusedItemVisible)
     }
     popup.onClosed: {
         popupIsOpen = false
-        focusedItemIndex = -1
     }
 }

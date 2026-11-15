@@ -20,4 +20,21 @@ import UIResourceLoader 1.0
  */
 BaseScrollView {
     id: control
+
+    ScrollBar.vertical: UTScrollBar {
+        parent: control
+        x: control.mirrored ? 0 : control.width - width
+        y: control.topPadding
+        height: control.availableHeight
+        active: control.ScrollBar.horizontal.active
+    }
+
+    ScrollBar.horizontal: UTScrollBar {
+        policy: ScrollBar.AlwaysOff
+        parent: control
+        x: control.leftPadding
+        y: control.height - height
+        width: control.availableWidth
+        active: control.ScrollBar.vertical.active
+    }
 }

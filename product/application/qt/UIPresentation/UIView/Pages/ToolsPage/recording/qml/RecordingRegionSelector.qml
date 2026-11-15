@@ -255,18 +255,17 @@ Window {
 
             Rectangle { width: 1; height: 24; color: "#555555" }
 
-            ToolButton {
+            UTToolButton {
                 text: "🎬 Record"
                 onClicked: startRegionRecording()
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Start recording this region")
+                toolTipText: qsTr("Start recording this region")
                 background: Rectangle {
                     radius: 4
                     color: parent.pressed ? "#44AA44" : (parent.hovered ? "#448844" : "transparent")
                 }
             }
 
-            ToolButton {
+            UTToolButton {
                 text: "↩ Reselect"
                 onClicked: {
                     selectionDone = false
@@ -274,8 +273,7 @@ Window {
                     selEndX = 0; selEndY = 0
                     overlayCanvas.requestPaint()
                 }
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Draw a new selection")
+                toolTipText: qsTr("Draw a new selection")
                 background: Rectangle {
                     radius: 4
                     color: parent.pressed ? "#555555" : (parent.hovered ? "#444444" : "transparent")
@@ -284,11 +282,11 @@ Window {
 
             Rectangle { width: 1; height: 24; color: "#555555" }
 
-            ToolButton {
+            UTToolButton {
                 text: "✕"
                 onClicked: cleanup()
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Cancel")
+                toolTipText: qsTr("Cancel")
+                Accessible.name: toolTipText
                 background: Rectangle {
                     radius: 4
                     color: parent.pressed ? "#AA4444" : (parent.hovered ? "#884444" : "transparent")

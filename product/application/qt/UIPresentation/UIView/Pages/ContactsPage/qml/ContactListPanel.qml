@@ -55,7 +55,7 @@ Item {
             UTText {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 28
-                text: qsTr("联系人列表")
+                text: qsTr("Contacts")
                 fontEnum: UIFontToken.Section_Title
                 colorEnum: UIColorToken.Content_Heading
                 verticalAlignment: Text.AlignVCenter
@@ -66,7 +66,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 30
                 borderRadius: 8
-                placeholderText: qsTr("搜索联系人")
+                placeholderText: qsTr("Search contacts")
                 rightPadding: clearButton.visible ? 30 : 8
                 enabled: root.controller
                          && root.controller.loadState === ContactsPageController.Ready
@@ -215,7 +215,7 @@ Item {
 
         UTText {
             anchors.centerIn: parent
-            text: qsTr("没有找到匹配的联系人")
+            text: qsTr("No matching contacts found")
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
         }

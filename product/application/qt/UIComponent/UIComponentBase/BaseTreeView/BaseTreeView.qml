@@ -7,6 +7,7 @@ FocusScope {
     property alias model: treeView.model
     property alias delegate: treeView.delegate
     property alias treeView: treeView
+    // Expand on model assignment and full resets; allow manual collapse between resets.
     property bool expandAll: false
     property bool focusOnShow: true
     signal itemInvoked(var modelIndex)
@@ -48,9 +49,21 @@ FocusScope {
         onWidthChanged: forceLayout()
 
         Timer {
+            id: expandAllTimer
             interval: 0
             running: root.expandAll && treeView.model !== null
-            onTriggered: treeView.expandRecursively()
+            onTriggered: {
+                if (root.expandAll && treeView.model)
+                    treeView.expandRecursively()
+            }
+        }
+
+        Connections {
+            target: treeView.model
+            function onModelReset() {
+                if (root.expandAll)
+                    expandAllTimer.restart()
+            }
         }
 
         onRowsChanged: _ensureCurrentIndex()
@@ -75,12 +88,11 @@ FocusScope {
             acceptedButtons: Qt.RightButton
             onTapped: function(eventPoint) {
                 const p = eventPoint.position
-                const cell = treeView.cellAtPosition(p.x + treeView.contentX,
-                                                      p.y + treeView.contentY)
+                const cell = treeView.cellAtPosition(p.x, p.y)
                 const idx = (cell.x < 0 || cell.y < 0)
                           ? treeView.index(-1, -1)
                           : treeView.modelIndex(cell)
-                const mapped = treeView.mapToItem(root, p.x, p.y)
+                const mapped = treeView.contentItem.mapToItem(root, p.x, p.y)
                 root.contextRequested(idx, Qt.point(mapped.x, mapped.y))
             }
         }

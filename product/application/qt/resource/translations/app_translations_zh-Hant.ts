@@ -42,22 +42,25 @@
 Wait until this application has closed, then press Enter to install.
 You may be asked for your administrator password.
 Close this terminal to cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>更新套件已準備就緒。
+請等待此應用程式結束後，再按 Enter 鍵安裝。
+安裝時可能需要輸入管理員密碼。
+關閉此終端機可取消安裝。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="83"/>
         <source>Installation command finished with exit code:</source>
-        <translation type="unfinished"></translation>
+        <translation>安裝命令已結束，結束代碼：</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="84"/>
         <source>Press Enter to close this terminal.</source>
-        <translation type="unfinished"></translation>
+        <translation>按 Enter 鍵關閉此終端機。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/src/AppUpgradeController.cpp" line="249"/>
         <source>Could not open the installer folder. Installer path: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>無法開啟安裝程式所在的資料夾。安裝程式路徑：%1</translation>
     </message>
 </context>
 <context>
@@ -182,17 +185,17 @@ Close this terminal to cancel.</source>
     <name>ContactListPanel</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="58"/>
-        <source>联系人列表</source>
+        <source>Contacts</source>
         <translation>聯絡人列表</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="69"/>
-        <source>搜索联系人</source>
+        <source>Search contacts</source>
         <translation>搜尋聯絡人</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="218"/>
-        <source>没有找到匹配的联系人</source>
+        <source>No matching contacts found</source>
         <translation>沒有找到符合的聯絡人</translation>
     </message>
 </context>
@@ -200,17 +203,17 @@ Close this terminal to cancel.</source>
     <name>ContactsPageController</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="405"/>
-        <source>保存失败</source>
+        <source>Save failed</source>
         <translation>儲存失敗</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="406"/>
-        <source>修改已应用到当前页面，但未能写入本地数据库。</source>
+        <source>Changes were applied to the current page, but could not be written to the local database.</source>
         <translation>變更已套用至目前頁面，但無法寫入本機資料庫。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="407"/>
-        <source>关闭应用后这些修改可能丢失，请稍后重新操作。</source>
+        <source>These changes may be lost after the app closes. Please try again later.</source>
         <translation>關閉應用程式後，這些變更可能會遺失，請稍後再試。</translation>
     </message>
 </context>
@@ -233,13 +236,13 @@ Close this terminal to cancel.</source>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="78"/>
-        <source>已选时间: </source>
-        <translation type="unfinished"></translation>
+        <source>Selected time: </source>
+        <translation>已選時間: </translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="93"/>
-        <source>已选日期: </source>
-        <translation type="unfinished"></translation>
+        <source>Selected date: </source>
+        <translation>已選日期: </translation>
     </message>
 </context>
 <context>
@@ -348,32 +351,32 @@ Close this terminal to cancel.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="27"/>
         <source>Mini Apps</source>
-        <translation type="unfinished"></translation>
+        <translation>迷你應用程式</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="35"/>
         <source>Add Mini App</source>
-        <translation type="unfinished"></translation>
+        <translation>新增迷你應用程式</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="45"/>
         <source>No mini apps installed. Click &quot;Add Mini App&quot; to install one.</source>
-        <translation type="unfinished"></translation>
+        <translation>尚未安裝迷你應用程式。點擊「新增迷你應用程式」進行安裝。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="126"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="142"/>
         <source>Launch</source>
-        <translation type="unfinished"></translation>
+        <translation>啟動</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="131"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="147"/>
         <source>Uninstall</source>
-        <translation type="unfinished"></translation>
+        <translation>解除安裝</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="139"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="155"/>
         <source>Select Mini App Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>選擇迷你應用程式資料夾</translation>
     </message>
 </context>
 <context>
@@ -381,17 +384,17 @@ Close this terminal to cancel.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/src/MiniAppListPageController.cpp" line="176"/>
         <source>Uninstall Mini App</source>
-        <translation type="unfinished"></translation>
+        <translation>解除安裝迷你應用程式</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/src/MiniAppListPageController.cpp" line="177"/>
         <source>Uninstall &quot;%1&quot;? This removes its package and data.</source>
-        <translation type="unfinished"></translation>
+        <translation>要解除安裝「%1」嗎？這將刪除其應用程式套件和資料。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/src/MiniAppListPageController.cpp" line="178"/>
         <source>Uninstall</source>
-        <translation type="unfinished"></translation>
+        <translation>解除安裝</translation>
     </message>
 </context>
 <context>
@@ -399,17 +402,17 @@ Close this terminal to cancel.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/src/MiniAppHostWindow.cpp" line="55"/>
         <source>Loading %1…</source>
-        <translation type="unfinished"></translation>
+        <translation>正在載入 %1…</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/src/MiniAppHostWindow.cpp" line="91"/>
         <source>Failed to load (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>載入失敗（%1）</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/src/MiniAppHostWindow.cpp" line="110"/>
         <source>No web-view backend is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>沒有可用的網頁檢視後端。</translation>
     </message>
 </context>
 <context>
@@ -582,7 +585,7 @@ Proxy: 127.0.0.1:%1</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="458"/>
         <source>Captured data was truncated. Details and exports may be incomplete.</source>
-        <translation type="unfinished"></translation>
+        <translation>擷取的資料已遭截斷，詳細資訊和匯出內容可能不完整。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkCaptureTab.qml" line="487"/>
@@ -645,52 +648,52 @@ Proxy: 127.0.0.1:%1</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="620"/>
         <source>Exported %1 retained requests</source>
-        <translation type="unfinished"></translation>
+        <translation>已匯出 %1 筆保留的請求</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="711"/>
         <source>Cannot copy cURL: request headers were not retained</source>
-        <translation type="unfinished"></translation>
+        <translation>無法複製 cURL：未保留請求標頭</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="723"/>
         <source>Cannot copy cURL: complete request body was not captured</source>
-        <translation type="unfinished"></translation>
+        <translation>無法複製 cURL：未擷取完整的請求內容</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="730"/>
         <source>Cannot copy cURL: request body cannot be replayed accurately</source>
-        <translation type="unfinished"></translation>
+        <translation>無法複製 cURL：無法準確重播請求內容</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="750"/>
         <source>Copied request as cURL</source>
-        <translation type="unfinished"></translation>
+        <translation>已將請求複製為 cURL</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="763"/>
         <source>Cannot copy response body: captured body is unavailable</source>
-        <translation type="unfinished"></translation>
+        <translation>無法複製回應內容：擷取的內容無法使用</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="771"/>
         <source>Copied base64-encoded truncated captured response body</source>
-        <translation type="unfinished"></translation>
+        <translation>已複製擷取的截斷回應內容（Base64 編碼）</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="773"/>
         <source>Copied base64-encoded captured response body</source>
-        <translation type="unfinished"></translation>
+        <translation>已複製擷取的回應內容（Base64 編碼）</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="775"/>
         <source>Copied truncated captured response body</source>
-        <translation type="unfinished"></translation>
+        <translation>已複製擷取的截斷回應內容</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="777"/>
         <source>Copied response body</source>
-        <translation type="unfinished"></translation>
+        <translation>已複製回應內容</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/NetworkProxyController.cpp" line="984"/>
@@ -748,7 +751,7 @@ Proxy: 127.0.0.1:%1</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="48"/>
         <source>%1 retained requests</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 筆保留的請求</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="51"/>
@@ -758,12 +761,12 @@ Proxy: 127.0.0.1:%1</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="52"/>
         <source>Export Retained</source>
-        <translation type="unfinished"></translation>
+        <translation>匯出保留請求</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="142"/>
         <source>Export Retained Requests</source>
-        <translation type="unfinished"></translation>
+        <translation>匯出保留的請求</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkProxyPanel.qml" line="25"/>
@@ -1253,72 +1256,72 @@ Double-click a rule to view details.</source>
         <translation>點擊下方按鈕安裝並信任 mitmproxy CA 憑證。系統會彈出密碼對話框——這是將憑證加入受信任根存放區所必需的。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="134"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="131"/>
         <source>Installing...</source>
         <translation>安裝中...</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="134"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="131"/>
         <source>One-Click Install CA Certificate</source>
         <translation>一鍵安裝 CA 憑證</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="148"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="152"/>
         <source>Steps: Enter macOS password → Import to System Keychain → Auto-trust for SSL</source>
         <translation>步驟：輸入 macOS 密碼 → 匯入系統鑰匙圈 → 自動信任 SSL</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="159"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="163"/>
         <source>Path:</source>
         <translation>路徑：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="165"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="169"/>
         <source>Show in Finder</source>
         <translation>在 Finder 中顯示</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="166"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="170"/>
         <source>Refresh Status</source>
         <translation>重新整理狀態</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="167"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="171"/>
         <source>Re-install</source>
         <translation>重新安裝</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="175"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="179"/>
         <source>About</source>
         <translation>關於</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="179"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="183"/>
         <source>Engine:</source>
         <translation>引擎：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="180"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="184"/>
         <source>mitmproxy (PyInstaller bundle)</source>
         <translation>mitmproxy (PyInstaller 封裝)</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="181"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="185"/>
         <source>Communication:</source>
         <translation>通訊：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="182"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="186"/>
         <source>TCP socket, newline-delimited JSON</source>
         <translation>TCP socket，以換行分隔的 JSON</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="183"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="187"/>
         <source>Proxy Address:</source>
         <translation>代理位址：</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="184"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/qml/NetworkSettingsTab.qml" line="188"/>
         <source>127.0.0.1:%1</source>
         <translation>127.0.0.1:%1</translation>
     </message>
@@ -1381,42 +1384,42 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="24"/>
         <source>This permission operation is not supported on this platform.</source>
-        <translation type="unfinished"></translation>
+        <translation>此平台不支援這項權限操作。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="26"/>
         <source>Unable to check permission.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法檢查權限。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="30"/>
         <source>Unable to open System Settings. Open Privacy &amp; Security manually.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法開啟「系統設定」。請手動開啟「隱私權與安全性」。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="33"/>
         <source>Access is restricted by system policy.</source>
-        <translation type="unfinished"></translation>
+        <translation>存取受到系統政策限制。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="41"/>
         <source>Please wait...</source>
-        <translation type="unfinished"></translation>
+        <translation>請稍候...</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="43"/>
         <source>Allow Access</source>
-        <translation type="unfinished"></translation>
+        <translation>允許存取</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="43"/>
         <source>Open System Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>開啟系統設定</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/PermissionGuide/qml/PermissionGuide.qml" line="28"/>
         <source>Unable to request permission. Open System Settings to review access.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法要求權限。請開啟「系統設定」檢查存取權限。</translation>
     </message>
 </context>
 <context>
@@ -1629,7 +1632,7 @@ Double-click a rule to view details.</source>
         <translation>我的測試視窗標題列</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="68"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="69"/>
         <source>my test window aa</source>
         <translation>我的測試視窗 aa</translation>
     </message>
@@ -1711,7 +1714,7 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="26"/>
         <source>Mini Apps</source>
-        <translation type="unfinished"></translation>
+        <translation>迷你應用程式</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="27"/>
@@ -1836,57 +1839,57 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="51"/>
         <source>Install failed</source>
-        <translation type="unfinished"></translation>
+        <translation>安裝失敗</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="52"/>
         <source>The selected folder no longer exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>所選的資料夾已不存在。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="53"/>
         <source>The folder does not contain a valid mini app. It must include a manifest.json with matching id, name and version.</source>
-        <translation type="unfinished"></translation>
+        <translation>此資料夾不包含有效的迷你應用程式。其中必須包含 manifest.json，且 id、name 和 version 欄位必須符合要求。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="54"/>
         <source>This mini app is already installed.</source>
-        <translation type="unfinished"></translation>
+        <translation>此迷你應用程式已安裝。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="55"/>
         <source>Storage is not available right now. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translation>儲存空間目前無法使用，請稍後再試。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="56"/>
         <source>Could not copy the mini app files. Check available disk space and permissions.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法複製迷你應用程式檔案。請檢查可用磁碟空間與權限。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="57"/>
         <source>Could not install the mini app.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法安裝迷你應用程式。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="58"/>
         <source>Uninstall failed</source>
-        <translation type="unfinished"></translation>
+        <translation>解除安裝失敗</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="59"/>
         <source>This mini app is no longer installed.</source>
-        <translation type="unfinished"></translation>
+        <translation>此迷你應用程式已不在已安裝清單中。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="60"/>
         <source>Could not remove the mini app files. Check permissions and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法刪除迷你應用程式檔案。請檢查權限後再試。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="61"/>
         <source>Could not uninstall the mini app.</source>
-        <translation type="unfinished"></translation>
+        <translation>無法解除安裝迷你應用程式。</translation>
     </message>
     <message>
         <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="73"/>
@@ -1959,7 +1962,7 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="349"/>
         <source>Screen recording access is required to record your screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>錄製螢幕需要螢幕錄製權限。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingContent.qml" line="376"/>
@@ -2009,22 +2012,22 @@ Double-click a rule to view details.</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="461"/>
         <source>Delete Recording</source>
-        <translation type="unfinished">刪除錄製</translation>
+        <translation>刪除錄製</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="462"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
-        <translation type="unfinished"></translation>
+        <translation>確定要刪除「%1」嗎？</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="463"/>
         <source>Delete</source>
-        <translation type="unfinished">刪除</translation>
+        <translation>刪除</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/src/RecordingController.cpp" line="473"/>
         <source>Failed to delete file: %1</source>
-        <translation type="unfinished">刪除檔案失敗: %1</translation>
+        <translation>刪除檔案失敗: %1</translation>
     </message>
 </context>
 <context>
@@ -2066,44 +2069,44 @@ Double-click a rule to view details.</source>
 <context>
     <name>RecordingRegionSelector</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="262"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="261"/>
         <source>Start recording this region</source>
         <translation>開始錄製此區域</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="278"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="276"/>
         <source>Draw a new selection</source>
         <translation>重新選擇區域</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="291"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="288"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="312"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="310"/>
         <source>Click and drag to select recording region
 Press ESC to cancel</source>
         <translation>點擊並拖曳以選擇錄製區域
 按 ESC 取消</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="417"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="415"/>
         <source>Resume</source>
         <translation>繼續</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="417"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="415"/>
         <source>Pause</source>
         <translation>暫停</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="429"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="427"/>
         <source>Stop recording</source>
         <translation>停止錄製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="436"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingRegionSelector.qml" line="434"/>
         <source>Abort recording</source>
         <translation>取消錄製</translation>
     </message>
@@ -2168,7 +2171,7 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="184"/>
         <source>Microphone access is required to include your voice in recordings.</source>
-        <translation type="unfinished"></translation>
+        <translation>在錄製內容中加入您的聲音需要麥克風權限。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/recording/qml/RecordingSettingsTab.qml" line="233"/>
@@ -2504,17 +2507,17 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="605"/>
         <source>Delete Screenshot</source>
-        <translation type="unfinished">刪除截圖</translation>
+        <translation>刪除截圖</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="606"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
-        <translation type="unfinished"></translation>
+        <translation>確定要刪除「%1」嗎？</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="607"/>
         <source>Delete</source>
-        <translation type="unfinished">刪除</translation>
+        <translation>刪除</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="617"/>
@@ -2537,7 +2540,7 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="88"/>
         <source>Screen recording access is required to take screenshots.</source>
-        <translation type="unfinished"></translation>
+        <translation>擷取螢幕畫面需要螢幕錄製權限。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotGallery.qml" line="101"/>
@@ -2564,27 +2567,27 @@ Press ESC to cancel</source>
         <translation>無法儲存螢幕擷取畫面，請重試。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="332"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="331"/>
         <source>Rectangle</source>
         <translation>矩形</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="344"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="343"/>
         <source>Ellipse</source>
         <translation>橢圓</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="356"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="355"/>
         <source>Arrow</source>
         <translation>箭頭</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="368"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="367"/>
         <source>Freehand</source>
         <translation>自由繪製</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="380"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="379"/>
         <source>Text</source>
         <translation>文字</translation>
     </message>
@@ -2594,7 +2597,7 @@ Press ESC to cancel</source>
         <translation>復原</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="434"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotOverlay.qml" line="433"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -2911,17 +2914,17 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
         <source>Opening installer...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在開啟安裝程式...</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="31"/>
         <source>Opening terminal...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在開啟終端機...</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="33"/>
         <source>Continue installation</source>
-        <translation type="unfinished"></translation>
+        <translation>繼續安裝</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="35"/>
@@ -2971,7 +2974,7 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="85"/>
         <source>An installation terminal was requested. This application will close. In the terminal, wait until it has closed, then press Enter to install.</source>
-        <translation type="unfinished"></translation>
+        <translation>已要求開啟安裝終端機。此應用程式即將結束。請在終端機中等待應用程式結束後，再按 Enter 鍵安裝。</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="86"/>
@@ -3001,7 +3004,7 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="183"/>
         <source>Show Installer in Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>在資料夾中顯示安裝程式</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="190"/>
@@ -3011,12 +3014,12 @@ Press ESC to cancel</source>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="190"/>
         <source>Open Terminal and Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>開啟終端機並結束</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="199"/>
         <source>Download Installer</source>
-        <translation type="unfinished"></translation>
+        <translation>下載安裝程式</translation>
     </message>
     <message>
         <location filename="../../UIPresentation/UIView/Features/AppUpgrade/qml/UpgradeDialog.qml" line="209"/>

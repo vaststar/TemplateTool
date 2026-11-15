@@ -28,6 +28,10 @@ UTDialog {
     required property string initialName
 
     readonly property bool isAddCamera: mode === "add_camera"
+    readonly property bool formValid: nameField.text.trim() !== ""
+                                      && (!isAddCamera
+                                          || sourceKindBox.currentIndex === 0
+                                          || urlField.text.trim() !== "")
 
     title: {
         if (mode === "add_group") return "新增分组";
@@ -41,7 +45,7 @@ UTDialog {
 
     function _confirm() {
         const name = nameField.text.trim();
-        if (name === "") return;
+        if (!formValid) return;
         if (mode === "add_group") {
             controller.addGroup(parentId, { displayName: name });
         } else if (mode === "add_camera") {
@@ -130,10 +134,7 @@ UTDialog {
                 text: "确定"
                 implicitWidth: 72
                 implicitHeight: 30
-                enabled: nameField.text.trim() !== ""
-                         && (!dialog.isAddCamera
-                             || sourceKindBox.currentIndex === 0
-                             || urlField.text.trim() !== "")
+                enabled: dialog.formValid
                 onClicked: dialog._confirm()
             }
         }

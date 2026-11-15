@@ -330,7 +330,6 @@ BaseDatePicker {
     }
 
     // === Drop-down calendar ===
-    Keys.onEnterPressed: function(event) { event.accepted = true; togglePopup() }
     popup.focus: true
     popup.width: control.popupWidth
     popup.padding: control.popupPadding

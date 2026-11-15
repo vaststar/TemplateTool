@@ -72,7 +72,7 @@ model::Color ResourceColorLoader::getColor(
             RESOURCE_COLOR_LOADER_LOG_WARN("unrecognized token: " << static_cast<int>(token));
         }
     }
-    return model::Color{ 255, 255, 255, 255 };
+    return model::Color{ 255, 255, 255, 1.0f };
 }
 
 void ResourceColorLoader::buildThemeColorSets()

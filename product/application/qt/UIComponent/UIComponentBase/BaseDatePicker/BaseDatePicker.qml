@@ -122,6 +122,7 @@ Control {
     // === Keyboard support (popup open/close only; styles add navigation) ===
     Keys.onSpacePressed:  function(e) { e.accepted = true; togglePopup() }
     Keys.onReturnPressed: function(e) { e.accepted = true; togglePopup() }
+    Keys.onEnterPressed:  function(e) { e.accepted = true; togglePopup() }
     Keys.onEscapePressed: function(e) {
         if (popup.visible) { e.accepted = true; popup.close() }
     }

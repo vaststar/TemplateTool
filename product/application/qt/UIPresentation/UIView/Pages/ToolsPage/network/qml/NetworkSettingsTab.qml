@@ -118,28 +118,32 @@ Item {
                                 RowLayout {
                                     spacing: 12; Layout.alignment: Qt.AlignHCenter
 
-                                    Rectangle {
-                                        width: installBtnRow.implicitWidth + 32; height: 40; radius: 8
-                                        color: root.controller.certInstalling ? "#9E9E9E" : "#2196F3"
-                                        opacity: installBtnMa.containsMouse && !root.controller.certInstalling ? 0.85 : 1.0
+                                    UTButton {
+                                        id: installButton
+                                        implicitWidth: installBtnRow.implicitWidth + 32
+                                        implicitHeight: 40
+                                        radius: 8
+                                        borderWidth: 0
+                                        padding: 0
+                                        leftPadding: 16
+                                        rightPadding: 16
+                                        fontEnum: UIFontToken.Body_Text_Medium
+                                        text: root.controller.certInstalling ? qsTr("Installing...") : qsTr("One-Click Install CA Certificate")
+                                        enabled: !root.controller.certInstalling
+                                        onClicked: root.controller.installCACert()
 
-                                        RowLayout {
-                                            id: installBtnRow; anchors.centerIn: parent; spacing: 8
+                                        contentItem: RowLayout {
+                                            id: installBtnRow; spacing: 8
                                             Text {
                                                 visible: root.controller.certInstalling; text: "⏳"; font.pixelSize: 16 // emoji glyph, not tokenized
                                                 RotationAnimation on rotation { running: root.controller.certInstalling; from: 0; to: 360; duration: 1200; loops: Animation.Infinite }
                                             }
                                             Text { visible: !root.controller.certInstalling; text: "🔐"; font.pixelSize: 16 } // emoji glyph, not tokenized
                                             Text {
-                                                text: root.controller.certInstalling ? qsTr("Installing...") : qsTr("One-Click Install CA Certificate")
-                                                color: "white"; font: UTComponentUtil.getUIFont(UIFontToken.Body_Text_Medium)
+                                                text: installButton.text
+                                                color: installButton.textColor
+                                                font: installButton.font
                                             }
-                                        }
-
-                                        MouseArea {
-                                            id: installBtnMa; anchors.fill: parent; hoverEnabled: true
-                                            cursorShape: root.controller.certInstalling ? Qt.WaitCursor : Qt.PointingHandCursor
-                                            onClicked: if (!root.controller.certInstalling) root.controller.installCACert()
                                         }
                                     }
                                 }

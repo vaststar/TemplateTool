@@ -48,10 +48,13 @@ BaseCheckBox {
         return UTComponentUtil.getPlainUIColor(control.boxColorEnum, UIColorState.Normal)
     }
     checkColor: UTComponentUtil.getPlainUIColor(checkColorEnum, UIColorState.Normal)
-    textColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Normal)
+    textColor: UTComponentUtil.getPlainUIColor(
+                   textColorEnum,
+                   control.enabled ? UIColorState.Normal : UIColorState.Disabled)
     borderColor: UTComponentUtil.getPlainUIColor(
                      borderColorEnum,
-                     control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
+                     !control.enabled ? UIColorState.Disabled
+                                      : control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
 
     UTFocusItem {
         focusRadius: control.boxRadius

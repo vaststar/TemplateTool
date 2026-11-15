@@ -35,7 +35,7 @@ BaseSpinBox {
                    textColorEnum,
                    control.enabled ? UIColorState.Normal : UIColorState.Disabled)
     upButtonColor: {
-        if (!control.enabled)
+        if (!control.enabled || (control.up.indicator && !control.up.indicator.enabled))
             return UTComponentUtil.getPlainUIColor(control.buttonColorEnum, UIColorState.Disabled)
         if (control.up.pressed)
             return UTComponentUtil.getPlainUIColor(control.buttonColorEnum, UIColorState.Pressed)
@@ -44,7 +44,7 @@ BaseSpinBox {
         return UTComponentUtil.getPlainUIColor(control.buttonColorEnum, UIColorState.Normal)
     }
     downButtonColor: {
-        if (!control.enabled)
+        if (!control.enabled || (control.down.indicator && !control.down.indicator.enabled))
             return UTComponentUtil.getPlainUIColor(control.buttonColorEnum, UIColorState.Disabled)
         if (control.down.pressed)
             return UTComponentUtil.getPlainUIColor(control.buttonColorEnum, UIColorState.Pressed)
@@ -54,7 +54,8 @@ BaseSpinBox {
     }
     borderColor: UTComponentUtil.getPlainUIColor(
                      borderColorEnum,
-                     control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
+                     !control.enabled ? UIColorState.Disabled
+                                      : control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
     selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
     selectedTextColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Normal)
 

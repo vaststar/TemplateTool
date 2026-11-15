@@ -402,9 +402,9 @@ void ContactsPageController::showSaveFailureDialog()
         return;
     }
     UIView::UIViewMessageBoxHelper::showError(*ctx,
-                                              tr("保存失败"),
-                                              tr("修改已应用到当前页面，但未能写入本地数据库。"),
-                                              tr("关闭应用后这些修改可能丢失，请稍后重新操作。"));
+                                              tr("Save failed"),
+                                              tr("Changes were applied to the current page, but could not be written to the local database."),
+                                              tr("These changes may be lost after the app closes. Please try again later."));
 }
 
 void ContactsPageController::onPersonContactsAdded(const std::vector<commonHead::viewModels::model::ContactNodeData>& v)

@@ -13,11 +13,14 @@
 #include <TranslatorManager/ITranslatorManager.h>
 #include <UIResourceLoaderManager/IUIResourceLoaderManager.h>
 
+#include <QCoreApplication>
 #include <QGuiApplication>
 #include <QMetaEnum>
 #include <QScopedValueRollback>
 #include <QStyleHints>
 #include <QTimer>
+
+#include <cstdlib>
 
 #include "LoggerDefine.h"
 #include "UIWindowUtilities/WindowGeometry.h"
@@ -218,10 +221,11 @@ void AppUIController::showMainWindow()
         kMainWindowQml);
     if (!win)
     {
-        APPUI_LOG_WARN(
+        APPUI_LOG_ERROR(
             "AppUIController main window loading failed: unable to create QML window"
-            ", address: "
-            << this);
+            ", resource: " << kMainWindowQml.toStdString()
+            << ", address: " << this);
+        QCoreApplication::exit(EXIT_FAILURE);
         return;
     }
 
@@ -239,6 +243,9 @@ void AppUIController::showMainWindow()
         APPUI_LOG_ERROR(
             "Main window root controller is unavailable, mainWindow address: "
             << win.data());
+        delete win.data();
+        QCoreApplication::exit(EXIT_FAILURE);
+        return;
     }
 
     // First placement: fit into the screen's available area, then center.

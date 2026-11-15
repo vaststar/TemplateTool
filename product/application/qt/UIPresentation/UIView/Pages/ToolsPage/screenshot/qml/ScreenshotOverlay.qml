@@ -324,60 +324,60 @@ Window {
                 spacing: 4
 
                 // Tool buttons with explicit checked styling
-                ToolButton {
+                UTToolButton {
                     text: "🔲"
                     checked: currentTool === "rectangle"
                     onClicked: currentTool = (currentTool === "rectangle" ? "none" : "rectangle")
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Rectangle")
+                    toolTipText: qsTr("Rectangle")
+                    Accessible.name: toolTipText
                     background: Rectangle {
                         color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
                         radius: 4
                     }
                 }
 
-                ToolButton {
+                UTToolButton {
                     text: "⭕"
                     checked: currentTool === "ellipse"
                     onClicked: currentTool = (currentTool === "ellipse" ? "none" : "ellipse")
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Ellipse")
+                    toolTipText: qsTr("Ellipse")
+                    Accessible.name: toolTipText
                     background: Rectangle {
                         color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
                         radius: 4
                     }
                 }
 
-                ToolButton {
+                UTToolButton {
                     text: "➡️"
                     checked: currentTool === "arrow"
                     onClicked: currentTool = (currentTool === "arrow" ? "none" : "arrow")
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Arrow")
+                    toolTipText: qsTr("Arrow")
+                    Accessible.name: toolTipText
                     background: Rectangle {
                         color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
                         radius: 4
                     }
                 }
 
-                ToolButton {
+                UTToolButton {
                     text: "✏️"
                     checked: currentTool === "freehand"
                     onClicked: currentTool = (currentTool === "freehand" ? "none" : "freehand")
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Freehand")
+                    toolTipText: qsTr("Freehand")
+                    Accessible.name: toolTipText
                     background: Rectangle {
                         color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
                         radius: 4
                     }
                 }
 
-                ToolButton {
+                UTToolButton {
                     text: "T"
                     checked: currentTool === "text"
                     onClicked: currentTool = (currentTool === "text" ? "none" : "text")
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Text")
+                    toolTipText: qsTr("Text")
+                    Accessible.name: toolTipText
                     background: Rectangle {
                         color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
                         radius: 4
@@ -427,11 +427,11 @@ Window {
                 Rectangle { width: 1; height: 24; color: "#555555" }
 
                 // Cancel button
-                ToolButton {
+                UTToolButton {
                     text: "✕"
                     onClicked: overlayWindow.close()
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Cancel")
+                    toolTipText: qsTr("Cancel")
+                    Accessible.name: toolTipText
 
                     background: Rectangle {
                         radius: 4

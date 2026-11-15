@@ -14,6 +14,7 @@
 #include "UIWindowUtilities/WindowGeometry.h"
 
 #include <QCoreApplication>
+#include <QMetaObject>
 
 #ifdef Q_OS_WIN
 #include <QtCore/qt_windows.h>
@@ -156,6 +157,12 @@ void MainWindowController::onWindowClosing()
         "Main window close event received; UI teardown starts after this point"
         ", controller address: "
         << this);
+
+    // Leave the closing stack before quitting; the application outlives this controller.
+    if (auto* application = QCoreApplication::instance())
+    {
+        QMetaObject::invokeMethod(application, &QCoreApplication::quit, Qt::QueuedConnection);
+    }
 }
 
 MainWindowContentPageRegistry* MainWindowController::pageRegistry() const

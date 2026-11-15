@@ -75,7 +75,7 @@ Item {
 
         UTText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("已选时间: ") + timePicker.timeValue
+            text: qsTr("Selected time: ") + timePicker.timeValue
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
         }
@@ -90,7 +90,7 @@ Item {
 
         UTText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: qsTr("已选日期: ") + datePicker.dateValue
+            text: qsTr("Selected date: ") + datePicker.dateValue
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text
         }
