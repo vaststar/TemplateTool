@@ -72,6 +72,7 @@ Item {
 
                 Column {
                     anchors.centerIn: parent
+                    width: parent.width - 24
                     spacing: 10
 
                     Rectangle {
@@ -102,7 +103,8 @@ Item {
                     }
 
                     UTText {
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: parent.width
+                        horizontalAlignment: Text.AlignHCenter
                         text: appCell.modelData.name
                         fontEnum: UIFontToken.Subtitle_Text
                         colorEnum: UIColorToken.Sidebar_Item_Text
