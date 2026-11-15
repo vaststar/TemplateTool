@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <QPointer>
+#include <QString>
 #include <QtCore/qnamespace.h>
 
 #include <UIViewCore/UIViewController.h>
@@ -37,6 +38,7 @@ protected:
 
 private slots:
     void onAppConfigInitialized();
+    void onAppConfigInitializationFailed(const QString& reason);
 
 private:
     void applyConfiguredLanguage();

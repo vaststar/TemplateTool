@@ -19,7 +19,7 @@ public:
     // Fired exactly once after language/theme have been populated from the DB.
     virtual void onClientInfoReady() {}
 
-    // Fired exactly once if the initial DB-driven load could not complete.
+    // Reports a failed initialization request or DB-driven load; explicit retries may report again.
     virtual void onClientInfoLoadFailed(ClientInfoLoadError /*error*/) {}
 
     // Fired on every language change (initial load + setLanguage calls).

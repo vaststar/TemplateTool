@@ -121,12 +121,14 @@ void ClientInfoManager::initializeAppClient()
     auto coreFramework = mCoreFrameworkWPtr.lock();
     if (!coreFramework)
     {
+        mClientInfoModel->reportInitializationFailure(ClientInfoLoadError::DbServiceUnavailable);
         return;
     }
     auto dataWarehouseService = coreFramework->getService<ucf::service::IDataWarehouseService>().lock();
     if (!dataWarehouseService)
     {
         SERVICE_LOG_ERROR("initializeAppClient: DataWarehouseService unavailable");
+        mClientInfoModel->reportInitializationFailure(ClientInfoLoadError::DbServiceUnavailable);
         return;
     }
 
@@ -151,7 +153,16 @@ void ClientInfoManager::initializeAppClient()
         db::schema::CameraTable{},
         db::schema::CameraDirectoryRelationTable{}
     };
-    dataWarehouseService->initializeDB(dbConfig, tables);
+    const auto result = dataWarehouseService->initializeDB(dbConfig, tables);
+    if (result == InitializeDBResult::AlreadyExists)
+    {
+        // No ready event is repeated for an already open database.
+        databaseInitialized(dbConfig.getDBId());
+    }
+    else if (result == InitializeDBResult::Failed)
+    {
+        mClientInfoModel->reportInitializationFailure(ClientInfoLoadError::DbInitializationFailed);
+    }
 }
 
 void ClientInfoManager::databaseInitialized(const std::string& dbId)

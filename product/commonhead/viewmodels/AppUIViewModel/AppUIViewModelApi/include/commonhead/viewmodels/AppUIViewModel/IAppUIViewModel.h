@@ -16,6 +16,7 @@ public:
     virtual ~IAppUIViewModelCallback() = default;
 public:
     virtual void onAppConfigInitialized() = 0;
+    virtual void onAppConfigInitializationFailed(const std::string& reason) = 0;
 };
 
 class IAppUIViewModel: public IViewModel, public virtual commonHead::utilities::IVMNotificationHelper<IAppUIViewModelCallback>

@@ -14,6 +14,7 @@ enum class LanguageType;
 enum class ClientInfoLoadError : std::uint8_t {
     DbServiceUnavailable,   // DataWarehouseService could not be resolved at load time.
     DbQueryFailed,          // Reserved: per-row fetch reported an error (not wired today).
+    DbInitializationFailed, // Shared database could not be opened or initialized.
 };
 
 class IClientInfoServiceCallback
@@ -26,7 +27,8 @@ public:
     // this event will not be re-fired.
     virtual void onClientInfoReady() = 0;
 
-    // Fired exactly once if the initial DB-driven load could not complete.
+    // Reports a failed initialization request or DB-driven load. Explicit retries
+    // may report another failure; consumers needing one startup result must dedupe.
     // Default empty so existing subscribers do not need to override.
     virtual void onClientInfoLoadFailed(ClientInfoLoadError /*error*/) {}
 

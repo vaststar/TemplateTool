@@ -39,24 +39,21 @@ void AppUIViewModel::init()
     auto commonHeadFramework = getCommonHeadFramework().lock();
     if (!commonHeadFramework)
     {
-        APP_UI_VIEW_MODEL_LOG_ERROR(
-            "AppUIViewModel::init: CommonHeadFramework is not available");
+        publishInitializationFailure("CommonHeadFramework is not available");
         return;
     }
 
     auto serviceLocator = commonHeadFramework->getServiceLocator();
     if (!serviceLocator)
     {
-        APP_UI_VIEW_MODEL_LOG_ERROR(
-            "AppUIViewModel::init: ServiceLocator is not available");
+        publishInitializationFailure("ServiceLocator is not available");
         return;
     }
 
     auto clientInfoService = serviceLocator->getClientInfoService().lock();
     if (!clientInfoService)
     {
-        APP_UI_VIEW_MODEL_LOG_ERROR(
-            "AppUIViewModel::init: ClientInfoService is not available");
+        publishInitializationFailure("ClientInfoService is not available");
         return;
     }
 
@@ -78,8 +75,39 @@ void AppUIViewModel::init()
 
 void AppUIViewModel::onClientInfoReady()
 {
+    if (mInitializationResultDelivered.exchange(true))
+    {
+        return;
+    }
     APP_UI_VIEW_MODEL_LOG_DEBUG("AppUIViewModel::onClientInfoReady, fire onAppConfigInitialized");
     fireNotification(&IAppUIViewModelCallback::onAppConfigInitialized);
+}
+
+void AppUIViewModel::onClientInfoLoadFailed(ucf::service::ClientInfoLoadError error)
+{
+    using ucf::service::ClientInfoLoadError;
+    switch (error)
+    {
+    case ClientInfoLoadError::DbServiceUnavailable:
+        publishInitializationFailure("Client settings database service is not available");
+        break;
+    case ClientInfoLoadError::DbQueryFailed:
+        publishInitializationFailure("Client settings database query failed");
+        break;
+    case ClientInfoLoadError::DbInitializationFailed:
+        publishInitializationFailure("Client settings database initialization failed");
+        break;
+    }
+}
+
+void AppUIViewModel::publishInitializationFailure(const std::string& reason)
+{
+    if (mInitializationResultDelivered.exchange(true))
+    {
+        return;
+    }
+    APP_UI_VIEW_MODEL_LOG_ERROR("Application configuration initialization failed: " << reason);
+    fireNotification(&IAppUIViewModelCallback::onAppConfigInitializationFailed, reason);
 }
 
 void AppUIViewModel::onClientThemeChanged(ucf::service::model::ThemeType /*themeType*/)

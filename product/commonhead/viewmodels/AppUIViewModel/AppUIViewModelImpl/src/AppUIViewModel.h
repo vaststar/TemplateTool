@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 
 #include <commonhead/utilities/VMNotificationHelper/VMNotificationHelper.h>
@@ -24,8 +25,14 @@ public:
 
     // IClientInfoServiceCallback
     virtual void onClientInfoReady() override;
+    void onClientInfoLoadFailed(ucf::service::ClientInfoLoadError error) override;
     virtual void onClientThemeChanged(ucf::service::model::ThemeType themeType) override;
 protected:
     void init() override;
+private:
+    void publishInitializationFailure(const std::string& reason);
+
+    // Service retries may notify again; this VM delivers one startup result.
+    std::atomic<bool> mInitializationResultDelivered{false};
 };
 }

@@ -54,6 +54,17 @@ void ClientInfoModel::setTheme(model::ThemeType themeType)
     notifySink(&IClientInfoNotificationSink::onClientThemeChanged, themeType);
 }
 
+void ClientInfoModel::reportInitializationFailure(ClientInfoLoadError error)
+{
+    const auto stage = mLoadStage.load();
+    if (stage == LoadStage::Loading || stage == LoadStage::Ready)
+    {
+        return;
+    }
+    SERVICE_LOG_ERROR("ClientInfo initialization failed, error:" << static_cast<int>(error));
+    notifySink(&IClientInfoNotificationSink::onClientInfoLoadFailed, error);
+}
+
 void ClientInfoModel::bindDatabase(const std::string& dbId)
 {
     if (auto expected = LoadStage::Uninit; !mLoadStage.compare_exchange_strong(expected, LoadStage::DbBound))

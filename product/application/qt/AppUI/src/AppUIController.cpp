@@ -68,6 +68,8 @@ void AppUIController::init()
 
     QObject::connect(mAppUIViewModelEmitter.get(), &UIViewModelSignalBridge::AppUIViewModelEmitter::signals_onAppConfigInitialized,
                      this, &AppUIController::onAppConfigInitialized);
+    QObject::connect(mAppUIViewModelEmitter.get(), &UIViewModelSignalBridge::AppUIViewModelEmitter::signals_onAppConfigInitializationFailed,
+                     this, &AppUIController::onAppConfigInitializationFailed, Qt::QueuedConnection);
 
     // Start IPC server and stability monitor
     mIPCServerHelper = std::make_unique<UIIPCServerHelper>(appContext, this);
@@ -104,6 +106,12 @@ void AppUIController::onAppConfigInitialized()
     APPUI_LOG_DEBUG(
         "AppUIController application configuration processing finished, address: "
         << this);
+}
+
+void AppUIController::onAppConfigInitializationFailed(const QString& reason)
+{
+    APPUI_LOG_ERROR("Application configuration initialization failed: " << reason.toStdString());
+    QCoreApplication::exit(EXIT_FAILURE);
 }
 
 void AppUIController::applyConfiguredLanguage()

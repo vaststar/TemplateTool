@@ -22,7 +22,7 @@ class ClientInfoDBAccess;
 // In-memory client settings (language, theme) coordinated with database
 // persistence. Owns ClientInfoDBAccess for all DB I/O so the rest of the service
 // never sees IDataWarehouseService directly. Drives a small state machine that
-// fires onClientInfoReady / onClientInfoLoadFailed exactly once via the sink.
+// reports initialization/load results via the sink. Failed loads remain retryable.
 class ClientInfoModel : public ucf::utilities::SinkNotifier<IClientInfoNotificationSink>
 {
 public:
@@ -44,6 +44,10 @@ public:
     void setTheme   (model::ThemeType    themeType);
 
     // ===== Lifecycle =====
+    // Reports a failed DB initialization request before settings loading starts.
+    // Does not change load/binding state; explicit requests may report again.
+    void reportInitializationFailure(ClientInfoLoadError error);
+
     // Called when DataWarehouseService reports the shared DB ready. Only binds the
     // DB id (Uninit → DbBound) and does NOT trigger any load. Callers must invoke
     // loadSettings() explicitly. If loadSettings() was called before bindDatabase(),
