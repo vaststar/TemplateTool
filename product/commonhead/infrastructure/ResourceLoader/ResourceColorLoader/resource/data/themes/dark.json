@@ -10,38 +10,38 @@
     {
       "token": "focus-outline",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
       "token": "button-primary-text",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "button-primary-background",
       "color": {
-        "normal": "action-primary-dark",
-        "hovered": "action-primary-dark-hovered",
-        "pressed": "action-primary-dark-pressed",
-        "disabled": "action-disabled-dark-background",
-        "checked": "action-primary-dark",
-        "focused": "action-primary-dark",
-        "selected": "action-primary-dark"
+        "normal": "jade-625",
+        "hovered": "jade-600",
+        "pressed": "jade-650",
+        "disabled": "green-gray-750",
+        "checked": "jade-625",
+        "focused": "jade-625",
+        "selected": "jade-625"
       }
     },
     {
       "token": "button-primary-border",
       "color": {
-        "normal": "action-primary-dark",
-        "hovered": "action-primary-dark-hovered",
-        "pressed": "action-primary-dark-pressed",
-        "disabled": "action-disabled-dark-background",
-        "checked": "action-primary-dark",
-        "focused": "action-primary-dark",
-        "selected": "action-primary-dark"
+        "normal": "jade-625",
+        "hovered": "jade-600",
+        "pressed": "jade-650",
+        "disabled": "green-gray-750",
+        "checked": "jade-625",
+        "focused": "jade-625",
+        "selected": "jade-625"
       }
     },
     {
@@ -54,48 +54,48 @@
       "token": "sidebar-item-background",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-secondary-dark",
-        "pressed": "ui-selection-subtle-dark-pressed",
-        "selected": "ui-selection-subtle-dark",
-        "focused": "ui-selection-subtle-dark",
-        "checked": "ui-selection-subtle-dark"
+        "hovered": "green-gray-800",
+        "pressed": "jade-850",
+        "selected": "jade-900",
+        "focused": "jade-900",
+        "checked": "jade-900"
       }
     },
     {
       "token": "sidebar-item-text",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "hovered": "action-secondary-dark-text",
-        "pressed": "action-secondary-dark-text",
-        "selected": "ui-accent-dark",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "hovered": "green-gray-50",
+        "pressed": "green-gray-50",
+        "selected": "jade-300",
+        "focused": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "sidebar-border",
       "color": {
-        "normal": "action-secondary-dark-hovered"
+        "normal": "green-gray-700"
       }
     },
     {
       "token": "sidebar-arrow-border",
       "color": {
-        "normal": "action-secondary-dark-border"
+        "normal": "green-gray-500"
       }
     },
     {
       "token": "sidebar-arrow-icon",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "hovered": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "hovered": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "sidebar-badge-background",
       "color": {
-        "normal": "action-destructive-dark"
+        "normal": "vermilion-625"
       }
     },
     {
@@ -114,34 +114,34 @@
       "token": "titlebar-button-background",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-secondary-dark",
-        "pressed": "action-secondary-dark-hovered"
+        "hovered": "green-gray-800",
+        "pressed": "green-gray-700"
       }
     },
     {
       "token": "titlebar-button-text",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "hovered": "action-secondary-dark-text",
-        "pressed": "action-secondary-dark-text",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "hovered": "green-gray-50",
+        "pressed": "green-gray-50",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "titlebar-close-background",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-destructive-dark",
-        "pressed": "action-destructive-dark-pressed"
+        "hovered": "vermilion-625",
+        "pressed": "vermilion-700"
       }
     },
     {
       "token": "titlebar-close-text",
       "color": {
-        "normal": "ui-text-secondary-dark",
+        "normal": "green-gray-300",
         "hovered": "white",
         "pressed": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
@@ -153,42 +153,42 @@
     {
       "token": "footbar-text",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
       "token": "content-background",
       "color": {
-        "normal": "action-secondary-light-text"
+        "normal": "green-gray-900"
       }
     },
     {
       "token": "content-nav-item-background",
       "color": {
-        "normal": "action-secondary-light-text",
-        "hovered": "action-secondary-dark",
-        "pressed": "ui-selection-subtle-dark-pressed",
-        "selected": "ui-selection-subtle-dark",
-        "focused": "ui-selection-subtle-dark",
-        "checked": "ui-selection-subtle-dark"
+        "normal": "green-gray-900",
+        "hovered": "green-gray-800",
+        "pressed": "jade-850",
+        "selected": "jade-900",
+        "focused": "jade-900",
+        "checked": "jade-900"
       }
     },
     {
       "token": "content-heading",
       "color": {
-        "normal": "action-secondary-dark-text"
+        "normal": "green-gray-50"
       }
     },
     {
       "token": "content-text",
       "color": {
-        "normal": "action-secondary-dark-text"
+        "normal": "green-gray-50"
       }
     },
     {
       "token": "content-secondary-text",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
@@ -196,29 +196,29 @@
       "color": {
         "normal": "neutral-900",
         "focused": "neutral-900",
-        "disabled": "action-disabled-dark-background"
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "content-input-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "content-input-border",
       "color": {
-        "normal": "action-secondary-dark-border",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-500",
+        "focused": "jade-300",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "content-input-placeholder",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "disabled": "green-gray-400"
       }
     },
     {
@@ -230,35 +230,35 @@
     {
       "token": "content-section-border",
       "color": {
-        "normal": "action-secondary-dark-hovered"
+        "normal": "green-gray-700"
       }
     },
     {
       "token": "content-section-title",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
       "token": "content-error-text",
       "color": {
-        "normal": "semantic-error-bright"
+        "normal": "vermilion-300"
       }
     },
     {
       "token": "window-border",
       "color": {
-        "normal": "action-secondary-dark-border"
+        "normal": "green-gray-500"
       }
     },
     {
       "token": "link-text",
       "color": {
-        "normal": "ui-accent-dark",
-        "hovered": "ui-accent-dark-hovered",
-        "pressed": "ui-accent-dark-hovered",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "jade-300",
+        "hovered": "jade-200",
+        "pressed": "jade-200",
+        "focused": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
@@ -283,118 +283,118 @@
       "token": "combobox-background",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-secondary-dark",
-        "pressed": "action-secondary-dark-hovered",
+        "hovered": "green-gray-800",
+        "pressed": "green-gray-700",
         "focused": "neutral-900",
-        "disabled": "action-disabled-dark-background"
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "combobox-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "hovered": "action-secondary-dark-text",
-        "pressed": "action-secondary-dark-text",
-        "selected": "ui-accent-dark",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "hovered": "green-gray-50",
+        "pressed": "green-gray-50",
+        "selected": "jade-300",
+        "focused": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "combobox-border",
       "color": {
-        "normal": "action-secondary-dark-border",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-500",
+        "focused": "jade-300",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "combobox-item-background",
       "color": {
         "normal": "neutral-800",
-        "hovered": "action-secondary-dark",
-        "pressed": "ui-selection-subtle-dark-pressed",
-        "selected": "ui-selection-subtle-dark",
-        "focused": "ui-selection-subtle-dark",
-        "checked": "ui-selection-subtle-dark"
+        "hovered": "green-gray-800",
+        "pressed": "jade-850",
+        "selected": "jade-900",
+        "focused": "jade-900",
+        "checked": "jade-900"
       }
     },
     {
       "token": "timepicker-background",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-secondary-dark",
-        "pressed": "action-secondary-dark-hovered",
+        "hovered": "green-gray-800",
+        "pressed": "green-gray-700",
         "focused": "neutral-900",
-        "disabled": "action-disabled-dark-background"
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "timepicker-text",
       "color": {
-        "normal": "action-secondary-dark-text",
+        "normal": "green-gray-50",
         "selected": "white",
         "checked": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "timepicker-border",
       "color": {
-        "normal": "action-secondary-dark-border",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-500",
+        "focused": "jade-300",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "timepicker-column-background",
       "color": {
         "normal": "neutral-900",
-        "selected": "action-primary-dark",
-        "checked": "action-primary-dark"
+        "selected": "jade-625",
+        "checked": "jade-625"
       }
     },
     {
       "token": "datepicker-background",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-secondary-dark",
-        "pressed": "action-secondary-dark-hovered",
+        "hovered": "green-gray-800",
+        "pressed": "green-gray-700",
         "focused": "neutral-900",
-        "disabled": "action-disabled-dark-background"
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "datepicker-text",
       "color": {
-        "normal": "action-secondary-dark-text",
+        "normal": "green-gray-50",
         "selected": "white",
         "checked": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "datepicker-border",
       "color": {
-        "normal": "action-secondary-dark-border",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-500",
+        "focused": "jade-300",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "datepicker-today-background",
       "color": {
-        "normal": "ui-selection-subtle-dark",
-        "hovered": "ui-selection-subtle-dark-pressed",
-        "pressed": "ui-selection-subtle-dark-pressed"
+        "normal": "jade-900",
+        "hovered": "jade-850",
+        "pressed": "jade-850"
       }
     },
     {
       "token": "datepicker-selected-background",
       "color": {
-        "normal": "action-primary-dark",
-        "selected": "action-primary-dark",
-        "checked": "action-primary-dark"
+        "normal": "jade-625",
+        "selected": "jade-625",
+        "checked": "jade-625"
       }
     },
     {
@@ -406,85 +406,85 @@
     {
       "token": "tab-bar-indicator",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
       "token": "tab-button-background",
       "color": {
         "normal": "neutral-800",
-        "hovered": "action-secondary-dark",
-        "pressed": "action-secondary-dark-hovered",
-        "focused": "ui-selection-subtle-dark"
+        "hovered": "green-gray-800",
+        "pressed": "green-gray-700",
+        "focused": "jade-900"
       }
     },
     {
       "token": "tab-button-checked-background",
       "color": {
-        "normal": "action-primary-dark"
+        "normal": "jade-625"
       }
     },
     {
       "token": "tab-button-text",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "hovered": "ui-accent-dark",
-        "pressed": "action-secondary-dark-text",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "hovered": "jade-300",
+        "pressed": "green-gray-50",
+        "focused": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "tab-button-checked-text",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "scrollbar-track",
       "color": {
-        "normal": "action-secondary-dark"
+        "normal": "green-gray-800"
       }
     },
     {
       "token": "scrollbar-thumb",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "hovered": "ui-accent-dark",
-        "pressed": "ui-accent-dark-hovered",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-300",
+        "hovered": "jade-300",
+        "pressed": "jade-200",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "scrollbar-arrow",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "hovered": "ui-accent-dark",
-        "pressed": "ui-accent-dark-hovered",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "hovered": "jade-300",
+        "pressed": "jade-200",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "listview-item-background",
       "color": {
         "normal": "neutral-800",
-        "hovered": "action-secondary-dark",
-        "pressed": "ui-selection-subtle-dark-pressed",
-        "selected": "ui-selection-subtle-dark",
-        "focused": "ui-selection-subtle-dark",
-        "checked": "ui-selection-subtle-dark"
+        "hovered": "green-gray-800",
+        "pressed": "jade-850",
+        "selected": "jade-900",
+        "focused": "jade-900",
+        "checked": "jade-900"
       }
     },
     {
       "token": "listview-item-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "hovered": "action-secondary-dark-text",
-        "pressed": "action-secondary-dark-text",
-        "selected": "ui-accent-dark",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "hovered": "green-gray-50",
+        "pressed": "green-gray-50",
+        "selected": "jade-300",
+        "focused": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
@@ -496,143 +496,143 @@
     {
       "token": "menu-border",
       "color": {
-        "normal": "action-secondary-dark-hovered"
+        "normal": "green-gray-700"
       }
     },
     {
       "token": "menu-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "hovered": "action-secondary-dark-text",
-        "pressed": "action-secondary-dark-text",
-        "selected": "ui-accent-dark",
-        "focused": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "hovered": "green-gray-50",
+        "pressed": "green-gray-50",
+        "selected": "jade-300",
+        "focused": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "menu-item-background",
       "color": {
         "normal": "neutral-800",
-        "hovered": "action-secondary-dark",
-        "pressed": "ui-selection-subtle-dark-pressed",
-        "selected": "ui-selection-subtle-dark",
-        "focused": "ui-selection-subtle-dark",
-        "checked": "ui-selection-subtle-dark"
+        "hovered": "green-gray-800",
+        "pressed": "jade-850",
+        "selected": "jade-900",
+        "focused": "jade-900",
+        "checked": "jade-900"
       }
     },
     {
       "token": "menu-separator",
       "color": {
-        "normal": "action-secondary-dark-hovered"
+        "normal": "green-gray-700"
       }
     },
     {
       "token": "menu-shortcut-text",
       "color": {
-        "normal": "ui-text-secondary-dark",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "switch-track",
       "color": {
-        "normal": "action-secondary-dark-border",
-        "hovered": "ui-text-secondary-dark",
-        "pressed": "ui-accent-dark",
-        "checked": "action-primary-dark",
-        "selected": "action-primary-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-500",
+        "hovered": "green-gray-300",
+        "pressed": "jade-300",
+        "checked": "jade-625",
+        "selected": "jade-625",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "switch-thumb",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "checkbox-box",
       "color": {
         "normal": "neutral-900",
-        "hovered": "action-secondary-dark",
-        "pressed": "action-secondary-dark-hovered",
-        "checked": "action-primary-dark",
-        "selected": "action-primary-dark",
-        "disabled": "action-disabled-dark-background"
+        "hovered": "green-gray-800",
+        "pressed": "green-gray-700",
+        "checked": "jade-625",
+        "selected": "jade-625",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "checkbox-check",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "checkbox-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "spinbox-background",
       "color": {
         "normal": "neutral-900",
-        "disabled": "action-disabled-dark-background"
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "spinbox-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "spinbox-button",
       "color": {
-        "normal": "action-secondary-dark",
-        "hovered": "action-secondary-dark-hovered",
-        "pressed": "ui-selection-subtle-dark-pressed",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-800",
+        "hovered": "green-gray-700",
+        "pressed": "jade-850",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "slider-track",
       "color": {
-        "normal": "action-secondary-dark-hovered"
+        "normal": "green-gray-700"
       }
     },
     {
       "token": "slider-progress",
       "color": {
-        "normal": "ui-accent-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "jade-300",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "slider-handle",
       "color": {
         "normal": "white",
-        "hovered": "ui-selection-subtle-dark",
-        "pressed": "ui-accent-dark",
-        "disabled": "action-disabled-dark-text"
+        "hovered": "jade-900",
+        "pressed": "jade-300",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "busy-indicator-track",
       "color": {
-        "normal": "action-secondary-dark-hovered"
+        "normal": "green-gray-700"
       }
     },
     {
       "token": "busy-indicator-progress",
       "color": {
-        "normal": "ui-accent-dark",
-        "disabled": "action-disabled-dark-background"
+        "normal": "jade-300",
+        "disabled": "green-gray-750"
       }
     },
     {
@@ -644,7 +644,7 @@
     {
       "token": "popup-border",
       "color": {
-        "normal": "action-secondary-dark-border"
+        "normal": "green-gray-500"
       }
     },
     {
@@ -662,7 +662,7 @@
     {
       "token": "message-error-icon",
       "color": {
-        "normal": "semantic-error-bright"
+        "normal": "vermilion-300"
       }
     },
     {
@@ -674,83 +674,83 @@
     {
       "token": "message-success-icon",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
       "token": "button-secondary-background",
       "color": {
-        "normal": "action-secondary-dark",
-        "hovered": "action-secondary-dark-hovered",
-        "pressed": "action-secondary-dark-pressed",
-        "disabled": "action-disabled-dark-background",
-        "checked": "action-secondary-dark",
-        "focused": "action-secondary-dark",
-        "selected": "action-secondary-dark"
+        "normal": "green-gray-800",
+        "hovered": "green-gray-700",
+        "pressed": "green-gray-650",
+        "disabled": "green-gray-750",
+        "checked": "green-gray-800",
+        "focused": "green-gray-800",
+        "selected": "green-gray-800"
       }
     },
     {
       "token": "button-secondary-border",
       "color": {
-        "normal": "action-secondary-dark-border",
-        "disabled": "action-disabled-dark-background"
+        "normal": "green-gray-500",
+        "disabled": "green-gray-750"
       }
     },
     {
       "token": "button-secondary-text",
       "color": {
-        "normal": "action-secondary-dark-text",
-        "disabled": "action-disabled-dark-text"
+        "normal": "green-gray-50",
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "button-destructive-background",
       "color": {
-        "normal": "action-destructive-dark",
-        "hovered": "action-destructive-dark-hovered",
-        "pressed": "action-destructive-dark-pressed",
-        "disabled": "action-disabled-dark-background",
-        "checked": "action-destructive-dark",
-        "focused": "action-destructive-dark",
-        "selected": "action-destructive-dark"
+        "normal": "vermilion-625",
+        "hovered": "vermilion-600",
+        "pressed": "vermilion-700",
+        "disabled": "green-gray-750",
+        "checked": "vermilion-625",
+        "focused": "vermilion-625",
+        "selected": "vermilion-625"
       }
     },
     {
       "token": "button-destructive-border",
       "color": {
-        "normal": "action-destructive-dark",
-        "hovered": "action-destructive-dark-hovered",
-        "pressed": "action-destructive-dark-pressed",
-        "disabled": "action-disabled-dark-background",
-        "checked": "action-destructive-dark",
-        "focused": "action-destructive-dark",
-        "selected": "action-destructive-dark"
+        "normal": "vermilion-625",
+        "hovered": "vermilion-600",
+        "pressed": "vermilion-700",
+        "disabled": "green-gray-750",
+        "checked": "vermilion-625",
+        "focused": "vermilion-625",
+        "selected": "vermilion-625"
       }
     },
     {
       "token": "button-destructive-text",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
       "token": "button-ghost-background",
       "color": {
-        "normal": "action-secondary-dark",
-        "hovered": "action-secondary-dark-hovered",
-        "pressed": "action-secondary-dark-pressed",
-        "disabled": "action-disabled-dark-background",
-        "checked": "action-secondary-dark-pressed",
-        "focused": "action-secondary-dark",
-        "selected": "action-secondary-dark-pressed"
+        "normal": "green-gray-800",
+        "hovered": "green-gray-700",
+        "pressed": "green-gray-650",
+        "disabled": "green-gray-750",
+        "checked": "green-gray-650",
+        "focused": "green-gray-800",
+        "selected": "green-gray-650"
       }
     },
     {
       "token": "button-overlay-text",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
@@ -774,7 +774,7 @@
     {
       "token": "text-selection-background",
       "color": {
-        "normal": "action-primary-dark"
+        "normal": "jade-625"
       }
     },
     {
@@ -786,13 +786,13 @@
     {
       "token": "status-success-text",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
       "token": "status-success-background",
       "color": {
-        "normal": "action-primary-dark"
+        "normal": "jade-625"
       }
     },
     {
@@ -810,13 +810,13 @@
     {
       "token": "status-error-text",
       "color": {
-        "normal": "semantic-error-bright"
+        "normal": "vermilion-300"
       }
     },
     {
       "token": "status-error-background",
       "color": {
-        "normal": "action-destructive-dark"
+        "normal": "vermilion-625"
       }
     },
     {
@@ -834,7 +834,7 @@
     {
       "token": "status-neutral-text",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
@@ -852,7 +852,7 @@
     {
       "token": "badge-accent-background",
       "color": {
-        "normal": "action-primary-dark"
+        "normal": "jade-625"
       }
     },
     {
@@ -870,7 +870,7 @@
     {
       "token": "syntax-string",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
@@ -888,13 +888,13 @@
     {
       "token": "syntax-comment",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
       "token": "avatar-person-background",
       "color": {
-        "normal": "action-primary-dark"
+        "normal": "jade-625"
       }
     },
     {
@@ -936,7 +936,7 @@
     {
       "token": "media-secondary-text",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
@@ -948,25 +948,25 @@
     {
       "token": "media-selection",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
       "token": "media-recording",
       "color": {
-        "normal": "action-destructive-dark"
+        "normal": "vermilion-625"
       }
     },
     {
       "token": "media-recording-pulse",
       "color": {
-        "normal": "semantic-error-bright"
+        "normal": "vermilion-300"
       }
     },
     {
       "token": "media-error-background",
       "color": {
-        "normal": "media-error-surface"
+        "normal": "vermilion-950"
       }
     }
   ]

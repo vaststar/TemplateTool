@@ -14,12 +14,27 @@ set(RESOURCE_OUTPUT_DIR
 set(RESOURCE_OUTPUT_PATH ${RESOURCE_OUTPUT_DIR}/${RESOURCE_OUTPUT_FILE})
 set(RESOURCE_TEMPLATE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/templates/ResourceString.h.j2)
 
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+set(STRING_VALIDATION_SCRIPT
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/validate_string_tokens.py)
+set(STRING_VALIDATION_TARGET validate_resource_string_tokens)
+add_custom_target(${STRING_VALIDATION_TARGET}
+    COMMAND "${Python3_EXECUTABLE}" "${STRING_VALIDATION_SCRIPT}"
+            --input "${RESOURCE_STRING_JSON_PATH}"
+    DEPENDS "${STRING_VALIDATION_SCRIPT}" "${RESOURCE_STRING_JSON_PATH}"
+    COMMENT "Validating resource string definitions"
+    VERBATIM
+)
+set_target_properties(${STRING_VALIDATION_TARGET} PROPERTIES FOLDER codegen)
+
 generate_from_template(
     TEMPLATE_FILE ${RESOURCE_TEMPLATE_FILE}
     INPUT_FILE ${RESOURCE_STRING_JSON_PATH}
     OUTPUT_FILE ${RESOURCE_OUTPUT_PATH}
     OUTPUT_TARGET_VAR GFT_TARGET
+    DEPENDS ${STRING_VALIDATION_TARGET}
 )
+add_dependencies("${GFT_TARGET}" "${STRING_VALIDATION_TARGET}")
 
 include(BuildInterface)
 BuildInterface(

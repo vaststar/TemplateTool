@@ -42,9 +42,17 @@ Base 可以保留 Text、Rectangle、TextInput、ListView、delegate 和可覆�
 
 具体色值统一放在 `palette.json`，用途放在 `token.json`，浅深主题及交互状态由 `themes/light.json`、`themes/dark.json` 映射。交互强调使用青绿，页面、卡片、输入和弹层使用中性色层级；成功、警告、错误、信息及语法高亮保留各自语义。实填选中背景必须配套选中文字色，温和选中背景可以保留正文或强调文字色。
 
+`palette.json` 的名称只描述颜色本身，使用色系与色阶（例如 `jade-750`、`green-gray-200`），不包含控件用途、主题模式或交互状态。同一色系中编号越大颜色越暗；为保留精确色值可以使用 `625`、`675` 等中间色阶，不覆盖已有色阶的固定值。颜色条目保持原有顺序，避免生成的调色板枚举值因重排而变化。
+
+UI 语义名称注册在 `token.json`，例如 `button-primary-background`；主题和状态分别由主题文件与 `normal`、`hovered`、`pressed` 等字段表达，不再重复放入基础色名称。主题直接引用调色板色名，不增加 `base.json` 继承或 Token 别名层。构建前的静态校验应检查 Token 与调色板名称重复、主题 Token 完整性、颜色引用和状态字段是否合法。
+
 截图、录屏和视频区域使用跨主题一致的 `Media_*`、`Button_Overlay_*`，透明遮罩由对应 Token 配合 `Qt.alpha()` 合成。二维码黑白、用户标注调色板与 alpha 蒙版属于功能或内容颜色，不随界面强调色替换。主题预览通过只读指定主题取色接口读取同一份 JSON，不切换当前主题、不维护独立预览色表。
 
 Base 的 `selectedTextColor` 等属性是中性渲染槽，默认跟随原 `textColor`；UT 决定配套的选中背景、文字和其他视觉状态。Base 不引用主题 Token。
+
+## 字体约定
+
+字体 `palette.json` 提供平台字体栈、字号和字重，`token.json` 注册文字用途，`themes/normal.json` 映射具体组合。字号单位为 point（pt），与 `QFont::setPointSize()` 一致；JSON 中的斜体字段统一使用 `italic`，省略时为 `false`。字体主题独立于浅深色主题，不因颜色模式复制字体配置。
 
 ## 按钮视觉语义
 

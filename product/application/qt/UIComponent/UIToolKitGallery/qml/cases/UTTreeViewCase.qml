@@ -87,7 +87,6 @@ GalleryCase {
             Layout.preferredHeight: 200
             model: documentModel
             expandAll: true
-            focusOnShow: false
 
             function activate(index, toggleFolder = false) {
                 if (!index.valid)

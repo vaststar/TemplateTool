@@ -4,7 +4,7 @@
     "images": [
       {
         "token": "logo",
-        "path": "assets/images/112.png",
+        "path": "assets/images/app_logo.png",
         "format": "png",
         "animated": false
       },

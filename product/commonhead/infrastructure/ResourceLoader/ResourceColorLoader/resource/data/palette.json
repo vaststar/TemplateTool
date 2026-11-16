@@ -2268,7 +2268,7 @@
     }
   },
   {
-    "name": "action-disabled-dark-background",
+    "name": "green-gray-750",
     "hex": "#3a403d",
     "rgb": {
       "r": 58,
@@ -2277,7 +2277,7 @@
     }
   },
   {
-    "name": "action-disabled-dark-text",
+    "name": "green-gray-400",
     "hex": "#909892",
     "rgb": {
       "r": 144,
@@ -2286,7 +2286,7 @@
     }
   },
   {
-    "name": "action-primary-light",
+    "name": "jade-675",
     "hex": "#147d64",
     "rgb": {
       "r": 20,
@@ -2295,7 +2295,7 @@
     }
   },
   {
-    "name": "action-primary-light-hovered",
+    "name": "jade-700",
     "hex": "#116f59",
     "rgb": {
       "r": 17,
@@ -2304,7 +2304,7 @@
     }
   },
   {
-    "name": "action-primary-light-pressed",
+    "name": "jade-750",
     "hex": "#0e604d",
     "rgb": {
       "r": 14,
@@ -2313,7 +2313,7 @@
     }
   },
   {
-    "name": "action-secondary-light",
+    "name": "green-gray-75",
     "hex": "#f4f6f4",
     "rgb": {
       "r": 244,
@@ -2322,7 +2322,7 @@
     }
   },
   {
-    "name": "action-secondary-light-hovered",
+    "name": "green-gray-100",
     "hex": "#e8ede9",
     "rgb": {
       "r": 232,
@@ -2331,7 +2331,7 @@
     }
   },
   {
-    "name": "action-secondary-light-pressed",
+    "name": "green-gray-200",
     "hex": "#dae2dc",
     "rgb": {
       "r": 218,
@@ -2340,7 +2340,7 @@
     }
   },
   {
-    "name": "action-secondary-light-border",
+    "name": "green-gray-425",
     "hex": "#8a958d",
     "rgb": {
       "r": 138,
@@ -2349,7 +2349,7 @@
     }
   },
   {
-    "name": "action-secondary-light-text",
+    "name": "green-gray-900",
     "hex": "#202421",
     "rgb": {
       "r": 32,
@@ -2358,7 +2358,7 @@
     }
   },
   {
-    "name": "action-destructive-light",
+    "name": "vermilion-750",
     "hex": "#b42318",
     "rgb": {
       "r": 180,
@@ -2367,7 +2367,7 @@
     }
   },
   {
-    "name": "action-primary-dark",
+    "name": "jade-625",
     "hex": "#178267",
     "rgb": {
       "r": 23,
@@ -2376,7 +2376,7 @@
     }
   },
   {
-    "name": "action-primary-dark-hovered",
+    "name": "jade-600",
     "hex": "#1c8468",
     "rgb": {
       "r": 28,
@@ -2385,7 +2385,7 @@
     }
   },
   {
-    "name": "action-primary-dark-pressed",
+    "name": "jade-650",
     "hex": "#157e64",
     "rgb": {
       "r": 21,
@@ -2394,7 +2394,7 @@
     }
   },
   {
-    "name": "action-secondary-dark",
+    "name": "green-gray-800",
     "hex": "#343a36",
     "rgb": {
       "r": 52,
@@ -2403,7 +2403,7 @@
     }
   },
   {
-    "name": "action-secondary-dark-hovered",
+    "name": "green-gray-700",
     "hex": "#414a44",
     "rgb": {
       "r": 65,
@@ -2412,7 +2412,7 @@
     }
   },
   {
-    "name": "action-secondary-dark-pressed",
+    "name": "green-gray-650",
     "hex": "#4a574e",
     "rgb": {
       "r": 74,
@@ -2421,7 +2421,7 @@
     }
   },
   {
-    "name": "action-secondary-dark-border",
+    "name": "green-gray-500",
     "hex": "#7b8a80",
     "rgb": {
       "r": 123,
@@ -2430,7 +2430,7 @@
     }
   },
   {
-    "name": "action-secondary-dark-text",
+    "name": "green-gray-50",
     "hex": "#f5f7f5",
     "rgb": {
       "r": 245,
@@ -2439,7 +2439,7 @@
     }
   },
   {
-    "name": "action-destructive-dark",
+    "name": "vermilion-625",
     "hex": "#d83232",
     "rgb": {
       "r": 216,
@@ -2448,7 +2448,7 @@
     }
   },
   {
-    "name": "action-destructive-dark-hovered",
+    "name": "vermilion-600",
     "hex": "#dc3030",
     "rgb": {
       "r": 220,
@@ -2457,7 +2457,7 @@
     }
   },
   {
-    "name": "action-destructive-dark-pressed",
+    "name": "vermilion-700",
     "hex": "#c52929",
     "rgb": {
       "r": 197,
@@ -2466,7 +2466,7 @@
     }
   },
   {
-    "name": "action-focus-dark",
+    "name": "azure-300",
     "hex": "#8ab4f8",
     "rgb": {
       "r": 138,
@@ -2475,7 +2475,7 @@
     }
   },
   {
-    "name": "ui-text-secondary-light",
+    "name": "green-gray-600",
     "hex": "#57665d",
     "rgb": {
       "r": 87,
@@ -2484,7 +2484,7 @@
     }
   },
   {
-    "name": "ui-text-secondary-dark",
+    "name": "green-gray-300",
     "hex": "#b1b8b3",
     "rgb": {
       "r": 177,
@@ -2493,7 +2493,7 @@
     }
   },
   {
-    "name": "ui-accent-dark",
+    "name": "jade-300",
     "hex": "#69d6b1",
     "rgb": {
       "r": 105,
@@ -2502,7 +2502,7 @@
     }
   },
   {
-    "name": "ui-accent-dark-hovered",
+    "name": "jade-200",
     "hex": "#9be8cc",
     "rgb": {
       "r": 155,
@@ -2511,7 +2511,7 @@
     }
   },
   {
-    "name": "ui-selection-subtle-light",
+    "name": "jade-50",
     "hex": "#e0f2ea",
     "rgb": {
       "r": 224,
@@ -2520,7 +2520,7 @@
     }
   },
   {
-    "name": "ui-selection-subtle-light-pressed",
+    "name": "jade-100",
     "hex": "#cfe8dd",
     "rgb": {
       "r": 207,
@@ -2529,7 +2529,7 @@
     }
   },
   {
-    "name": "ui-selection-subtle-dark",
+    "name": "jade-900",
     "hex": "#1d3c32",
     "rgb": {
       "r": 29,
@@ -2538,7 +2538,7 @@
     }
   },
   {
-    "name": "ui-selection-subtle-dark-pressed",
+    "name": "jade-850",
     "hex": "#244a3d",
     "rgb": {
       "r": 36,
@@ -2547,7 +2547,7 @@
     }
   },
   {
-    "name": "semantic-error-bright",
+    "name": "vermilion-300",
     "hex": "#ff8a80",
     "rgb": {
       "r": 255,
@@ -2556,7 +2556,7 @@
     }
   },
   {
-    "name": "media-error-surface",
+    "name": "vermilion-950",
     "hex": "#4a2525",
     "rgb": {
       "r": 74,

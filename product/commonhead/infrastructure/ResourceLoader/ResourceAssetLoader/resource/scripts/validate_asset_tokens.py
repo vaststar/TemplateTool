@@ -5,9 +5,14 @@ and verify every referenced asset file actually exists on disk.
 Checks performed (per theme, per category e.g. images / videos):
   1. token.json and the theme define the same set of tokens
      (compared after enum normalization, so 'icon-user' == 'icon_user').
-  2. No duplicate tokens inside a category (after normalization).
+  2. No duplicate, empty, invalid or reserved enum names in either input.
   3. Every theme entry's `path` points to a file that exists under the asset root.
-  4. The declared `format` matches the file's actual extension.
+  4. Image files are nonempty; the declared `format` matches the extension.
+
+Only configuration, paths and file metadata are checked; image/video contents
+are not parsed or decoded.
+The video nonempty check below remains commented out until the existing empty
+welcome.mp4 / tutorial.mp4 placeholders are replaced. No video structure is parsed.
 
 Token name normalization mirrors renderer.py's str_to_enum so that the check
 matches what the C++ codegen actually produces.
@@ -31,6 +36,23 @@ def normalize_token(token_name):
         return ""
     collapsed = re.sub(r"[\s-]+", "_", token_name.strip())
     return "_".join(part[:1].upper() + part[1:] for part in collapsed.split("_") if part)
+
+
+def validate_token_names(token_names, context, category, errors):
+    """Check the enum names emitted by the existing generator."""
+    reserved_names = {"None", {"images": "LastImage", "videos": "LastVideo"}.get(category)}
+    seen_tokens = set()
+    for token_name in token_names:
+        if not isinstance(token_name, str) or not token_name.strip():
+            errors.append(f"[{context}/{category}] empty or non-string token: {token_name!r}")
+            continue
+        normalized = normalize_token(token_name)
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", normalized) or normalized in reserved_names:
+            errors.append(f"[{context}/{category}] invalid or reserved enum name: {token_name!r}")
+        if normalized in seen_tokens:
+            errors.append(f"[{context}/{category}] duplicate normalized token: {token_name!r}")
+        seen_tokens.add(normalized)
+    return seen_tokens
 
 
 def load_token_categories(token_file_path):
@@ -60,6 +82,11 @@ def main():
 
     token_categories = load_token_categories(args.token)
     validation_errors = []
+    defined_categories = {
+        category: validate_token_names(tokens, "token.json", category, validation_errors)
+        for category, tokens in token_categories.items()
+    }
+    asset_root = os.path.realpath(args.asset_root)
 
     for theme_file_path in args.themes:
         theme_name, theme_categories = load_theme(theme_file_path)
@@ -73,19 +100,13 @@ def main():
             validation_errors.append(f"[{theme_name}] category '{category}' in theme but missing from token.json")
 
         for category, theme_entries in theme_categories.items():
-            defined_tokens = {normalize_token(t) for t in token_categories.get(category, [])}
+            defined_tokens = defined_categories.get(category, set())
 
-            # 2. duplicate detection (normalized)
-            seen_tokens = set()
-            theme_tokens = set()
-            for entry in theme_entries:
-                normalized = normalize_token(entry.get("token", ""))
-                if normalized in seen_tokens:
-                    validation_errors.append(
-                        f"[{theme_name}/{category}] duplicate token: '{entry.get('token')}'"
-                    )
-                seen_tokens.add(normalized)
-                theme_tokens.add(normalized)
+            # 2. Validate theme-side enum names using the same normalization.
+            theme_tokens = validate_token_names(
+                (entry.get("token", "") for entry in theme_entries),
+                theme_name, category, validation_errors,
+            )
 
             # 1. token set consistency
             missing_tokens = defined_tokens - theme_tokens
@@ -103,12 +124,30 @@ def main():
                     validation_errors.append(f"[{theme_name}/{category}] token '{token_name}': empty path")
                     continue
 
-                absolute_path = os.path.normpath(os.path.join(args.asset_root, relative_path))
+                absolute_path = os.path.realpath(os.path.join(asset_root, relative_path))
+                try:
+                    inside_root = os.path.commonpath([asset_root, absolute_path]) == asset_root
+                except ValueError:  # Different drives on Windows.
+                    inside_root = False
+                if os.path.isabs(relative_path) or not inside_root:
+                    validation_errors.append(
+                        f"[{theme_name}/{category}] token '{token_name}': path must stay relative to asset root: {relative_path}"
+                    )
+                    continue
                 if not os.path.isfile(absolute_path):
                     validation_errors.append(
                         f"[{theme_name}/{category}] token '{token_name}': asset file not found: {relative_path}"
                     )
                     continue
+                if category == "images" and os.path.getsize(absolute_path) == 0:
+                    validation_errors.append(f"[{theme_name}/{category}] token '{token_name}': empty asset file: {relative_path}")
+                    continue
+
+                # TODO: Enable the video size check below after replacing the
+                # zero-byte welcome.mp4 / tutorial.mp4 placeholders with real files.
+                # if category == "videos" and os.path.getsize(absolute_path) == 0:
+                #     validation_errors.append(f"[{theme_name}/{category}] token '{token_name}': empty asset file: {relative_path}")
+                #     continue
 
                 declared_format = (entry.get("format") or "").lower()
                 actual_extension = os.path.splitext(relative_path)[1].lstrip(".").lower()

@@ -17,7 +17,7 @@ inline ThemeFontSet build{{data.name|capitalize}}ThemeFontSet()
     fontSet{{ idx }}.fontType = FontType::{{ fontItem.font.fontType }};
     fontSet{{ idx }}.fontSize = FontSize::{{ fontItem.font.fontSize }};
     fontSet{{ idx }}.fontWeight = FontWeight::{{ fontItem.font.fontWeight }};
-    fontSet{{ idx }}.isItalic = {{ "true" if fontItem.font.isItalic else "false" }};
+    fontSet{{ idx }}.isItalic = {{ "true" if (fontItem.font.italic | default(false)) else "false" }};
 
     themeFontSet.fontSets[FontToken::{{ fontItem.token | str_to_enum }}] = fontSet{{ idx }};
     {% endfor %}

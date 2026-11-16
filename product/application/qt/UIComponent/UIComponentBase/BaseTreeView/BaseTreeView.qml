@@ -9,7 +9,6 @@ FocusScope {
     property alias treeView: treeView
     // Expand on model assignment and full resets; allow manual collapse between resets.
     property bool expandAll: false
-    property bool focusOnShow: true
     signal itemInvoked(var modelIndex)
 
     property var acceptedMimeTypes: []
@@ -23,13 +22,6 @@ FocusScope {
     clip: true
     activeFocusOnTab: true
 
-    Component.onCompleted: {
-        if (focusOnShow && visible) Qt.callLater(forceActiveFocus)
-    }
-    onVisibleChanged: {
-        if (focusOnShow && visible) forceActiveFocus()
-    }
-
     TapHandler {
         onTapped: treeView.forceActiveFocus()
     }
@@ -40,6 +32,7 @@ FocusScope {
         anchors.margins: 4
         clip: false
         activeFocusOnTab: false
+        // Receive focus when the outer scope is entered; this does not activate the scope.
         focus: true
         animate: false
         selectionModel: ItemSelectionModel {}
@@ -71,6 +64,7 @@ FocusScope {
 
         function _ensureCurrentIndex() {
             if (currentRow < 0 && rows > 0) {
+                // Provide a keyboard starting point without selecting or invoking a row.
                 selectionModel.setCurrentIndex(
                     index(0, 0), ItemSelectionModel.NoUpdate);
             }

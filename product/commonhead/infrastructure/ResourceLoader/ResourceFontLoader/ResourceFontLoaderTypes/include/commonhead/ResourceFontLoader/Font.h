@@ -10,7 +10,7 @@ namespace commonHead::model {
 struct RESOURCE_FONT_LOADER_TYPES_API Font
 {
     std::vector<std::string> fontFamilies;
-    int fontSize{ 12 };
+    int fontSize{ 12 }; // Size in points (pt), matching QFont::setPointSize.
     int fontWeight{ 400 };
     bool isItalic{ false };
 };

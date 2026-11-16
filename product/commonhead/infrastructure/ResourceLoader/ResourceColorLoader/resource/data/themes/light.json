@@ -4,13 +4,13 @@
     {
       "token": "main-window-background",
       "color": {
-        "normal": "action-secondary-light"
+        "normal": "green-gray-75"
       }
     },
     {
       "token": "focus-outline",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
@@ -23,79 +23,79 @@
     {
       "token": "button-primary-background",
       "color": {
-        "normal": "action-primary-light",
-        "hovered": "action-primary-light-hovered",
-        "pressed": "action-primary-light-pressed",
+        "normal": "jade-675",
+        "hovered": "jade-700",
+        "pressed": "jade-750",
         "disabled": "gray-200",
-        "checked": "action-primary-light",
-        "focused": "action-primary-light",
-        "selected": "action-primary-light"
+        "checked": "jade-675",
+        "focused": "jade-675",
+        "selected": "jade-675"
       }
     },
     {
       "token": "button-primary-border",
       "color": {
-        "normal": "action-primary-light",
-        "hovered": "action-primary-light-hovered",
-        "pressed": "action-primary-light-pressed",
+        "normal": "jade-675",
+        "hovered": "jade-700",
+        "pressed": "jade-750",
         "disabled": "gray-200",
-        "checked": "action-primary-light",
-        "focused": "action-primary-light",
-        "selected": "action-primary-light"
+        "checked": "jade-675",
+        "focused": "jade-675",
+        "selected": "jade-675"
       }
     },
     {
       "token": "sidebar-background",
       "color": {
-        "normal": "action-secondary-light"
+        "normal": "green-gray-75"
       }
     },
     {
       "token": "sidebar-item-background",
       "color": {
-        "normal": "action-secondary-light",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "ui-selection-subtle-light-pressed",
-        "selected": "ui-selection-subtle-light",
-        "focused": "ui-selection-subtle-light",
-        "checked": "ui-selection-subtle-light"
+        "normal": "green-gray-75",
+        "hovered": "green-gray-100",
+        "pressed": "jade-100",
+        "selected": "jade-50",
+        "focused": "jade-50",
+        "checked": "jade-50"
       }
     },
     {
       "token": "sidebar-item-text",
       "color": {
-        "normal": "ui-text-secondary-light",
-        "hovered": "action-secondary-light-text",
-        "pressed": "action-secondary-light-text",
-        "selected": "action-primary-light-hovered",
-        "focused": "action-primary-light-hovered",
+        "normal": "green-gray-600",
+        "hovered": "green-gray-900",
+        "pressed": "green-gray-900",
+        "selected": "jade-700",
+        "focused": "jade-700",
         "disabled": "gray-500"
       }
     },
     {
       "token": "sidebar-border",
       "color": {
-        "normal": "action-secondary-light-pressed"
+        "normal": "green-gray-200"
       }
     },
     {
       "token": "sidebar-arrow-border",
       "color": {
-        "normal": "action-secondary-light-border"
+        "normal": "green-gray-425"
       }
     },
     {
       "token": "sidebar-arrow-icon",
       "color": {
-        "normal": "ui-text-secondary-light",
-        "hovered": "action-primary-light-hovered",
+        "normal": "green-gray-600",
+        "hovered": "jade-700",
         "disabled": "gray-500"
       }
     },
     {
       "token": "sidebar-badge-background",
       "color": {
-        "normal": "action-destructive-light"
+        "normal": "vermilion-750"
       }
     },
     {
@@ -107,38 +107,38 @@
     {
       "token": "titlebar-background",
       "color": {
-        "normal": "action-secondary-light"
+        "normal": "green-gray-75"
       }
     },
     {
       "token": "titlebar-button-background",
       "color": {
-        "normal": "action-secondary-light",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed"
+        "normal": "green-gray-75",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200"
       }
     },
     {
       "token": "titlebar-button-text",
       "color": {
-        "normal": "ui-text-secondary-light",
-        "hovered": "action-secondary-light-text",
-        "pressed": "action-secondary-light-text",
+        "normal": "green-gray-600",
+        "hovered": "green-gray-900",
+        "pressed": "green-gray-900",
         "disabled": "gray-500"
       }
     },
     {
       "token": "titlebar-close-background",
       "color": {
-        "normal": "action-secondary-light",
-        "hovered": "action-destructive-light",
+        "normal": "green-gray-75",
+        "hovered": "vermilion-750",
         "pressed": "red-800"
       }
     },
     {
       "token": "titlebar-close-text",
       "color": {
-        "normal": "ui-text-secondary-light",
+        "normal": "green-gray-600",
         "hovered": "white",
         "pressed": "white",
         "disabled": "gray-500"
@@ -147,13 +147,13 @@
     {
       "token": "footbar-background",
       "color": {
-        "normal": "action-secondary-light"
+        "normal": "green-gray-75"
       }
     },
     {
       "token": "footbar-text",
       "color": {
-        "normal": "ui-text-secondary-light"
+        "normal": "green-gray-600"
       }
     },
     {
@@ -166,29 +166,29 @@
       "token": "content-nav-item-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "ui-selection-subtle-light-pressed",
-        "selected": "ui-selection-subtle-light",
-        "focused": "ui-selection-subtle-light",
-        "checked": "ui-selection-subtle-light"
+        "hovered": "green-gray-100",
+        "pressed": "jade-100",
+        "selected": "jade-50",
+        "focused": "jade-50",
+        "checked": "jade-50"
       }
     },
     {
       "token": "content-heading",
       "color": {
-        "normal": "action-secondary-light-text"
+        "normal": "green-gray-900"
       }
     },
     {
       "token": "content-text",
       "color": {
-        "normal": "action-secondary-light-text"
+        "normal": "green-gray-900"
       }
     },
     {
       "token": "content-secondary-text",
       "color": {
-        "normal": "ui-text-secondary-light"
+        "normal": "green-gray-600"
       }
     },
     {
@@ -202,62 +202,62 @@
     {
       "token": "content-input-text",
       "color": {
-        "normal": "action-secondary-light-text",
+        "normal": "green-gray-900",
         "disabled": "gray-500"
       }
     },
     {
       "token": "content-input-border",
       "color": {
-        "normal": "action-secondary-light-border",
-        "focused": "action-primary-light",
+        "normal": "green-gray-425",
+        "focused": "jade-675",
         "disabled": "gray-200"
       }
     },
     {
       "token": "content-input-placeholder",
       "color": {
-        "normal": "ui-text-secondary-light",
+        "normal": "green-gray-600",
         "disabled": "gray-500"
       }
     },
     {
       "token": "content-section-background",
       "color": {
-        "normal": "action-secondary-light"
+        "normal": "green-gray-75"
       }
     },
     {
       "token": "content-section-border",
       "color": {
-        "normal": "action-secondary-light-pressed"
+        "normal": "green-gray-200"
       }
     },
     {
       "token": "content-section-title",
       "color": {
-        "normal": "ui-text-secondary-light"
+        "normal": "green-gray-600"
       }
     },
     {
       "token": "content-error-text",
       "color": {
-        "normal": "action-destructive-light"
+        "normal": "vermilion-750"
       }
     },
     {
       "token": "window-border",
       "color": {
-        "normal": "action-secondary-light-border"
+        "normal": "green-gray-425"
       }
     },
     {
       "token": "link-text",
       "color": {
-        "normal": "action-primary-light-hovered",
-        "hovered": "action-primary-light-pressed",
-        "pressed": "action-primary-light-pressed",
-        "focused": "action-primary-light-hovered",
+        "normal": "jade-700",
+        "hovered": "jade-750",
+        "pressed": "jade-750",
+        "focused": "jade-700",
         "disabled": "gray-500"
       }
     },
@@ -283,8 +283,8 @@
       "token": "combobox-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
         "focused": "white",
         "disabled": "gray-200"
       }
@@ -292,19 +292,19 @@
     {
       "token": "combobox-text",
       "color": {
-        "normal": "action-secondary-light-text",
-        "hovered": "action-secondary-light-text",
-        "pressed": "action-secondary-light-text",
-        "selected": "action-primary-light-hovered",
-        "focused": "action-primary-light-hovered",
+        "normal": "green-gray-900",
+        "hovered": "green-gray-900",
+        "pressed": "green-gray-900",
+        "selected": "jade-700",
+        "focused": "jade-700",
         "disabled": "gray-500"
       }
     },
     {
       "token": "combobox-border",
       "color": {
-        "normal": "action-secondary-light-border",
-        "focused": "action-primary-light",
+        "normal": "green-gray-425",
+        "focused": "jade-675",
         "disabled": "gray-200"
       }
     },
@@ -312,19 +312,19 @@
       "token": "combobox-item-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "ui-selection-subtle-light-pressed",
-        "selected": "ui-selection-subtle-light",
-        "focused": "ui-selection-subtle-light",
-        "checked": "ui-selection-subtle-light"
+        "hovered": "green-gray-100",
+        "pressed": "jade-100",
+        "selected": "jade-50",
+        "focused": "jade-50",
+        "checked": "jade-50"
       }
     },
     {
       "token": "timepicker-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
         "focused": "white",
         "disabled": "gray-200"
       }
@@ -332,7 +332,7 @@
     {
       "token": "timepicker-text",
       "color": {
-        "normal": "action-secondary-light-text",
+        "normal": "green-gray-900",
         "selected": "white",
         "checked": "white",
         "disabled": "gray-500"
@@ -341,8 +341,8 @@
     {
       "token": "timepicker-border",
       "color": {
-        "normal": "action-secondary-light-border",
-        "focused": "action-primary-light",
+        "normal": "green-gray-425",
+        "focused": "jade-675",
         "disabled": "gray-200"
       }
     },
@@ -350,16 +350,16 @@
       "token": "timepicker-column-background",
       "color": {
         "normal": "white",
-        "selected": "action-primary-light",
-        "checked": "action-primary-light"
+        "selected": "jade-675",
+        "checked": "jade-675"
       }
     },
     {
       "token": "datepicker-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
         "focused": "white",
         "disabled": "gray-200"
       }
@@ -367,7 +367,7 @@
     {
       "token": "datepicker-text",
       "color": {
-        "normal": "action-secondary-light-text",
+        "normal": "green-gray-900",
         "selected": "white",
         "checked": "white",
         "disabled": "gray-500"
@@ -376,61 +376,61 @@
     {
       "token": "datepicker-border",
       "color": {
-        "normal": "action-secondary-light-border",
-        "focused": "action-primary-light",
+        "normal": "green-gray-425",
+        "focused": "jade-675",
         "disabled": "gray-200"
       }
     },
     {
       "token": "datepicker-today-background",
       "color": {
-        "normal": "ui-selection-subtle-light",
-        "hovered": "ui-selection-subtle-light-pressed",
-        "pressed": "ui-selection-subtle-light-pressed"
+        "normal": "jade-50",
+        "hovered": "jade-100",
+        "pressed": "jade-100"
       }
     },
     {
       "token": "datepicker-selected-background",
       "color": {
-        "normal": "action-primary-light",
-        "selected": "action-primary-light",
-        "checked": "action-primary-light"
+        "normal": "jade-675",
+        "selected": "jade-675",
+        "checked": "jade-675"
       }
     },
     {
       "token": "tab-bar-background",
       "color": {
-        "normal": "action-secondary-light"
+        "normal": "green-gray-75"
       }
     },
     {
       "token": "tab-bar-indicator",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
       "token": "tab-button-background",
       "color": {
-        "normal": "action-secondary-light",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
-        "focused": "ui-selection-subtle-light"
+        "normal": "green-gray-75",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
+        "focused": "jade-50"
       }
     },
     {
       "token": "tab-button-checked-background",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
       "token": "tab-button-text",
       "color": {
-        "normal": "ui-text-secondary-light",
-        "hovered": "action-primary-light-hovered",
-        "pressed": "action-secondary-light-text",
-        "focused": "action-primary-light-hovered",
+        "normal": "green-gray-600",
+        "hovered": "jade-700",
+        "pressed": "green-gray-900",
+        "focused": "jade-700",
         "disabled": "gray-500"
       }
     },
@@ -444,24 +444,24 @@
     {
       "token": "scrollbar-track",
       "color": {
-        "normal": "action-secondary-light-hovered"
+        "normal": "green-gray-100"
       }
     },
     {
       "token": "scrollbar-thumb",
       "color": {
-        "normal": "ui-text-secondary-light",
-        "hovered": "action-primary-light",
-        "pressed": "action-primary-light-pressed",
+        "normal": "green-gray-600",
+        "hovered": "jade-675",
+        "pressed": "jade-750",
         "disabled": "gray-200"
       }
     },
     {
       "token": "scrollbar-arrow",
       "color": {
-        "normal": "ui-text-secondary-light",
-        "hovered": "action-primary-light",
-        "pressed": "action-primary-light-pressed",
+        "normal": "green-gray-600",
+        "hovered": "jade-675",
+        "pressed": "jade-750",
         "disabled": "gray-500"
       }
     },
@@ -469,21 +469,21 @@
       "token": "listview-item-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "ui-selection-subtle-light-pressed",
-        "selected": "ui-selection-subtle-light",
-        "focused": "ui-selection-subtle-light",
-        "checked": "ui-selection-subtle-light"
+        "hovered": "green-gray-100",
+        "pressed": "jade-100",
+        "selected": "jade-50",
+        "focused": "jade-50",
+        "checked": "jade-50"
       }
     },
     {
       "token": "listview-item-text",
       "color": {
-        "normal": "action-secondary-light-text",
-        "hovered": "action-secondary-light-text",
-        "pressed": "action-secondary-light-text",
-        "selected": "action-primary-light-hovered",
-        "focused": "action-primary-light-hovered",
+        "normal": "green-gray-900",
+        "hovered": "green-gray-900",
+        "pressed": "green-gray-900",
+        "selected": "jade-700",
+        "focused": "jade-700",
         "disabled": "gray-500"
       }
     },
@@ -496,17 +496,17 @@
     {
       "token": "menu-border",
       "color": {
-        "normal": "action-secondary-light-pressed"
+        "normal": "green-gray-200"
       }
     },
     {
       "token": "menu-text",
       "color": {
-        "normal": "action-secondary-light-text",
-        "hovered": "action-secondary-light-text",
-        "pressed": "action-secondary-light-text",
-        "selected": "action-primary-light-hovered",
-        "focused": "action-primary-light-hovered",
+        "normal": "green-gray-900",
+        "hovered": "green-gray-900",
+        "pressed": "green-gray-900",
+        "selected": "jade-700",
+        "focused": "jade-700",
         "disabled": "gray-500"
       }
     },
@@ -514,34 +514,34 @@
       "token": "menu-item-background",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "ui-selection-subtle-light-pressed",
-        "selected": "ui-selection-subtle-light",
-        "focused": "ui-selection-subtle-light",
-        "checked": "ui-selection-subtle-light"
+        "hovered": "green-gray-100",
+        "pressed": "jade-100",
+        "selected": "jade-50",
+        "focused": "jade-50",
+        "checked": "jade-50"
       }
     },
     {
       "token": "menu-separator",
       "color": {
-        "normal": "action-secondary-light-pressed"
+        "normal": "green-gray-200"
       }
     },
     {
       "token": "menu-shortcut-text",
       "color": {
-        "normal": "ui-text-secondary-light",
+        "normal": "green-gray-600",
         "disabled": "gray-500"
       }
     },
     {
       "token": "switch-track",
       "color": {
-        "normal": "action-secondary-light-border",
-        "hovered": "ui-text-secondary-light",
-        "pressed": "action-primary-light-hovered",
-        "checked": "action-primary-light",
-        "selected": "action-primary-light",
+        "normal": "green-gray-425",
+        "hovered": "green-gray-600",
+        "pressed": "jade-700",
+        "checked": "jade-675",
+        "selected": "jade-675",
         "disabled": "gray-200"
       }
     },
@@ -556,10 +556,10 @@
       "token": "checkbox-box",
       "color": {
         "normal": "white",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
-        "checked": "action-primary-light",
-        "selected": "action-primary-light",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
+        "checked": "jade-675",
+        "selected": "jade-675",
         "disabled": "gray-200"
       }
     },
@@ -573,7 +573,7 @@
     {
       "token": "checkbox-text",
       "color": {
-        "normal": "action-secondary-light-text",
+        "normal": "green-gray-900",
         "disabled": "gray-500"
       }
     },
@@ -587,29 +587,29 @@
     {
       "token": "spinbox-text",
       "color": {
-        "normal": "action-secondary-light-text",
+        "normal": "green-gray-900",
         "disabled": "gray-500"
       }
     },
     {
       "token": "spinbox-button",
       "color": {
-        "normal": "action-secondary-light-hovered",
-        "hovered": "action-secondary-light-pressed",
-        "pressed": "ui-selection-subtle-light-pressed",
+        "normal": "green-gray-100",
+        "hovered": "green-gray-200",
+        "pressed": "jade-100",
         "disabled": "gray-200"
       }
     },
     {
       "token": "slider-track",
       "color": {
-        "normal": "action-secondary-light-pressed"
+        "normal": "green-gray-200"
       }
     },
     {
       "token": "slider-progress",
       "color": {
-        "normal": "action-primary-light",
+        "normal": "jade-675",
         "disabled": "gray-200"
       }
     },
@@ -617,21 +617,21 @@
       "token": "slider-handle",
       "color": {
         "normal": "white",
-        "hovered": "ui-selection-subtle-light",
-        "pressed": "action-primary-light",
+        "hovered": "jade-50",
+        "pressed": "jade-675",
         "disabled": "gray-500"
       }
     },
     {
       "token": "busy-indicator-track",
       "color": {
-        "normal": "action-secondary-light-pressed"
+        "normal": "green-gray-200"
       }
     },
     {
       "token": "busy-indicator-progress",
       "color": {
-        "normal": "action-primary-light",
+        "normal": "jade-675",
         "disabled": "gray-200"
       }
     },
@@ -644,7 +644,7 @@
     {
       "token": "popup-border",
       "color": {
-        "normal": "action-secondary-light-border"
+        "normal": "green-gray-425"
       }
     },
     {
@@ -662,7 +662,7 @@
     {
       "token": "message-error-icon",
       "color": {
-        "normal": "action-destructive-light"
+        "normal": "vermilion-750"
       }
     },
     {
@@ -674,57 +674,57 @@
     {
       "token": "message-success-icon",
       "color": {
-        "normal": "action-primary-light-hovered"
+        "normal": "jade-700"
       }
     },
     {
       "token": "button-secondary-background",
       "color": {
-        "normal": "action-secondary-light",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
+        "normal": "green-gray-75",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
         "disabled": "gray-200",
-        "checked": "action-secondary-light",
-        "focused": "action-secondary-light",
-        "selected": "action-secondary-light"
+        "checked": "green-gray-75",
+        "focused": "green-gray-75",
+        "selected": "green-gray-75"
       }
     },
     {
       "token": "button-secondary-border",
       "color": {
-        "normal": "action-secondary-light-border",
+        "normal": "green-gray-425",
         "disabled": "gray-200"
       }
     },
     {
       "token": "button-secondary-text",
       "color": {
-        "normal": "action-secondary-light-text",
+        "normal": "green-gray-900",
         "disabled": "gray-500"
       }
     },
     {
       "token": "button-destructive-background",
       "color": {
-        "normal": "action-destructive-light",
+        "normal": "vermilion-750",
         "hovered": "red-800",
         "pressed": "red-900",
         "disabled": "gray-200",
-        "checked": "action-destructive-light",
-        "focused": "action-destructive-light",
-        "selected": "action-destructive-light"
+        "checked": "vermilion-750",
+        "focused": "vermilion-750",
+        "selected": "vermilion-750"
       }
     },
     {
       "token": "button-destructive-border",
       "color": {
-        "normal": "action-destructive-light",
+        "normal": "vermilion-750",
         "hovered": "red-800",
         "pressed": "red-900",
         "disabled": "gray-200",
-        "checked": "action-destructive-light",
-        "focused": "action-destructive-light",
-        "selected": "action-destructive-light"
+        "checked": "vermilion-750",
+        "focused": "vermilion-750",
+        "selected": "vermilion-750"
       }
     },
     {
@@ -737,20 +737,20 @@
     {
       "token": "button-ghost-background",
       "color": {
-        "normal": "action-secondary-light",
-        "hovered": "action-secondary-light-hovered",
-        "pressed": "action-secondary-light-pressed",
+        "normal": "green-gray-75",
+        "hovered": "green-gray-100",
+        "pressed": "green-gray-200",
         "disabled": "gray-200",
-        "checked": "action-secondary-light-pressed",
-        "focused": "action-secondary-light",
-        "selected": "action-secondary-light-pressed"
+        "checked": "green-gray-200",
+        "focused": "green-gray-75",
+        "selected": "green-gray-200"
       }
     },
     {
       "token": "button-overlay-text",
       "color": {
         "normal": "white",
-        "disabled": "action-disabled-dark-text"
+        "disabled": "green-gray-400"
       }
     },
     {
@@ -774,7 +774,7 @@
     {
       "token": "text-selection-background",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
@@ -786,13 +786,13 @@
     {
       "token": "status-success-text",
       "color": {
-        "normal": "action-primary-light-hovered"
+        "normal": "jade-700"
       }
     },
     {
       "token": "status-success-background",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
@@ -810,13 +810,13 @@
     {
       "token": "status-error-text",
       "color": {
-        "normal": "action-destructive-light"
+        "normal": "vermilion-750"
       }
     },
     {
       "token": "status-error-background",
       "color": {
-        "normal": "action-destructive-light"
+        "normal": "vermilion-750"
       }
     },
     {
@@ -834,13 +834,13 @@
     {
       "token": "status-neutral-text",
       "color": {
-        "normal": "ui-text-secondary-light"
+        "normal": "green-gray-600"
       }
     },
     {
       "token": "status-neutral-background",
       "color": {
-        "normal": "ui-text-secondary-light"
+        "normal": "green-gray-600"
       }
     },
     {
@@ -852,7 +852,7 @@
     {
       "token": "badge-accent-background",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
@@ -870,7 +870,7 @@
     {
       "token": "syntax-string",
       "color": {
-        "normal": "action-primary-light-hovered"
+        "normal": "jade-700"
       }
     },
     {
@@ -888,13 +888,13 @@
     {
       "token": "syntax-comment",
       "color": {
-        "normal": "ui-text-secondary-light"
+        "normal": "green-gray-600"
       }
     },
     {
       "token": "avatar-person-background",
       "color": {
-        "normal": "action-primary-light"
+        "normal": "jade-675"
       }
     },
     {
@@ -936,7 +936,7 @@
     {
       "token": "media-secondary-text",
       "color": {
-        "normal": "ui-text-secondary-dark"
+        "normal": "green-gray-300"
       }
     },
     {
@@ -948,25 +948,25 @@
     {
       "token": "media-selection",
       "color": {
-        "normal": "ui-accent-dark"
+        "normal": "jade-300"
       }
     },
     {
       "token": "media-recording",
       "color": {
-        "normal": "action-destructive-dark"
+        "normal": "vermilion-625"
       }
     },
     {
       "token": "media-recording-pulse",
       "color": {
-        "normal": "semantic-error-bright"
+        "normal": "vermilion-300"
       }
     },
     {
       "token": "media-error-background",
       "color": {
-        "normal": "media-error-surface"
+        "normal": "vermilion-950"
       }
     }
   ]

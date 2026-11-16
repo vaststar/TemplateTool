@@ -9,11 +9,18 @@
 
 {% macro generate_qt_string(enum_name, val) -%}
 {% if enum_name == "NonLocalizedString" -%}
-"{{ val }}"
+{{ val | cpp_string_literal }}
 {%- else -%}
-QT_TRANSLATE_NOOP("QObject" , "{{ val }}")
+QT_TRANSLATE_NOOP("QObject" , {{ val | cpp_string_literal }})
 {%- endif -%}
 {%- endmacro %}
+{% set platform_macros = [
+    ('android', 'Q_OS_ANDROID'),
+    ('ios', 'Q_OS_IOS'),
+    ('windows', 'Q_OS_WIN'),
+    ('macos', 'Q_OS_MACOS'),
+    ('linux', 'Q_OS_LINUX')
+] %}
 namespace ResourceStringMap{
 {% for enum_name, entries in data.items() %}
 static {{enum_name}}Map build{{enum_name}}Map()
@@ -23,7 +30,19 @@ static {{enum_name}}Map build{{enum_name}}Map()
     {
         std::make_pair( commonHead::model::{{enum_name}}::None, "" ),
         {% for entry in entries %}
-        std::make_pair( commonHead::model::{{enum_name}}::{{ entry.token | str_to_enum }}, {{ generate_qt_string(enum_name, entry| get_platform_string) }} ),
+        {% if entry.conditions | default([]) %}
+        std::make_pair( commonHead::model::{{enum_name}}::{{ entry.token | str_to_enum }},
+        {% for platform, platform_macro in platform_macros %}
+{{ '#if' if loop.first else '#elif' }} defined({{ platform_macro }})
+            {{ generate_qt_string(enum_name, entry | get_platform_string(platform)) }}
+        {% endfor %}
+#else
+            {{ generate_qt_string(enum_name, entry | get_platform_string('common')) }}
+#endif
+        ),
+        {% else %}
+        std::make_pair( commonHead::model::{{enum_name}}::{{ entry.token | str_to_enum }}, {{ generate_qt_string(enum_name, entry.value) }} ),
+        {% endif %}
         {% endfor %}
         std::make_pair( commonHead::model::{{enum_name}}::Last{{enum_name}}, "" )
     };
