@@ -277,9 +277,10 @@ void RecordingViewModel::requestThumbnail(const std::string& inputPath)
     std::string ffmpegPath;
     std::string outputPath;
     {
-        std::lock_guard lock(m_mutex);
+        std::unique_lock lock(m_mutex);
         if (m_ffmpegPath.empty())
         {
+            lock.unlock();
             fireNotification(&IRecordingViewModelCallback::onThumbnailFailed,
                              inputPath,
                              std::string("FFmpeg not found."));
