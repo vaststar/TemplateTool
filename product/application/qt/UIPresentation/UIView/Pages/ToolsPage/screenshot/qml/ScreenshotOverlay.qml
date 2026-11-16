@@ -51,7 +51,7 @@ Window {
 
     // Current tool - default to freehand for immediate drawing
     property string currentTool: "freehand"  // none, rectangle, ellipse, arrow, freehand, text
-    property string currentColor: "#FF0000"
+    property string currentColor: "#FF0000" // User annotation content; independent of UI theme.
     property int currentThickness: 3
 
     // Annotations
@@ -95,24 +95,28 @@ Window {
             id: overlayCanvas
             anchors.fill: parent
             visible: hasScreenshot
+            readonly property color selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Selection, UIColorState.Normal)
+            readonly property color scrimColor: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Scrim, UIColorState.Normal)
+            onSelectionColorChanged: requestPaint()
+            onScrimColorChanged: requestPaint()
 
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
 
                 // Draw semi-transparent dark overlay
-                ctx.fillStyle = "rgba(0, 0, 0, 0.5)"
+                ctx.fillStyle = Qt.alpha(overlayCanvas.scrimColor, 0.5)
                 ctx.fillRect(0, 0, width, height)
 
                 // Cut out the selection area (make it bright)
                 if (isSelecting || selectionComplete) {
                     ctx.globalCompositeOperation = "destination-out"
-                    ctx.fillStyle = "rgba(0, 0, 0, 1)"
+                    ctx.fillStyle = overlayCanvas.scrimColor
                     ctx.fillRect(selX, selY, selW, selH)
                     ctx.globalCompositeOperation = "source-over"
 
                     // Draw selection border
-                    ctx.strokeStyle = "#00AAFF"
+                    ctx.strokeStyle = overlayCanvas.selectionColor
                     ctx.lineWidth = 2
                     ctx.setLineDash([5, 5])
                     ctx.strokeRect(selX, selY, selW, selH)
@@ -122,7 +126,7 @@ Window {
                     if (selW > 50 && selH > 20) {
                         var sizeText = Math.round(selW) + " × " + Math.round(selH)
                         ctx.font = "12px Arial"
-                        ctx.fillStyle = "#00AAFF"
+                        ctx.fillStyle = overlayCanvas.selectionColor
                         ctx.fillText(sizeText, selX + 5, selY + 15)
                     }
                 }
@@ -314,8 +318,8 @@ Window {
             width: toolbarRow.width + 20
             height: 44
             radius: 8
-            color: "#2D2D2D"
-            border.color: "#555555"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Surface, UIColorState.Normal)
+            border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal)
             border.width: 1
 
             RowLayout {
@@ -325,67 +329,77 @@ Window {
 
                 // Tool buttons with explicit checked styling
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
                     text: "🔲"
                     checked: currentTool === "rectangle"
                     onClicked: currentTool = (currentTool === "rectangle" ? "none" : "rectangle")
                     toolTipText: qsTr("Rectangle")
                     Accessible.name: toolTipText
                     background: Rectangle {
-                        color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
+                        color: parent.checked ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : (parent.hovered ? UTComponentUtil.getPlainUIColor(UIColorToken.Button_Overlay_Background, UIColorState.Hovered) : "transparent")
                         radius: 4
                     }
                 }
 
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
                     text: "⭕"
                     checked: currentTool === "ellipse"
                     onClicked: currentTool = (currentTool === "ellipse" ? "none" : "ellipse")
                     toolTipText: qsTr("Ellipse")
                     Accessible.name: toolTipText
                     background: Rectangle {
-                        color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
+                        color: parent.checked ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : (parent.hovered ? UTComponentUtil.getPlainUIColor(UIColorToken.Button_Overlay_Background, UIColorState.Hovered) : "transparent")
                         radius: 4
                     }
                 }
 
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
                     text: "➡️"
                     checked: currentTool === "arrow"
                     onClicked: currentTool = (currentTool === "arrow" ? "none" : "arrow")
                     toolTipText: qsTr("Arrow")
                     Accessible.name: toolTipText
                     background: Rectangle {
-                        color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
+                        color: parent.checked ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : (parent.hovered ? UTComponentUtil.getPlainUIColor(UIColorToken.Button_Overlay_Background, UIColorState.Hovered) : "transparent")
                         radius: 4
                     }
                 }
 
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
                     text: "✏️"
                     checked: currentTool === "freehand"
                     onClicked: currentTool = (currentTool === "freehand" ? "none" : "freehand")
                     toolTipText: qsTr("Freehand")
                     Accessible.name: toolTipText
                     background: Rectangle {
-                        color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
+                        color: parent.checked ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : (parent.hovered ? UTComponentUtil.getPlainUIColor(UIColorToken.Button_Overlay_Background, UIColorState.Hovered) : "transparent")
                         radius: 4
                     }
                 }
 
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
                     text: "T"
                     checked: currentTool === "text"
                     onClicked: currentTool = (currentTool === "text" ? "none" : "text")
                     toolTipText: qsTr("Text")
                     Accessible.name: toolTipText
                     background: Rectangle {
-                        color: parent.checked ? "#4488FF" : (parent.hovered ? "#444444" : "transparent")
+                        color: parent.checked ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : (parent.hovered ? UTComponentUtil.getPlainUIColor(UIColorToken.Button_Overlay_Background, UIColorState.Hovered) : "transparent")
                         radius: 4
                     }
                 }
 
                 // Separator
-                Rectangle { width: 1; height: 24; color: "#555555" }
+                Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
                 // Color buttons
                 Repeater {
@@ -396,7 +410,7 @@ Window {
                         radius: 10
                         color: modelData
                         border.width: currentColor === modelData ? 2 : 1
-                        border.color: currentColor === modelData ? "#00AAFF" : "#888888"
+                        border.color: currentColor === modelData ? UTComponentUtil.getPlainUIColor(UIColorToken.Media_Selection, UIColorState.Normal) : UTComponentUtil.getPlainUIColor(UIColorToken.Media_Secondary_Text, UIColorState.Normal)
 
                         MouseArea {
                             anchors.fill: parent
@@ -406,12 +420,17 @@ Window {
                 }
 
                 // Separator
-                Rectangle { width: 1; height: 24; color: "#555555" }
+                Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
                 // Undo
                 ToolButton {
+                    id: undoToolButton
                     text: "↩️"
                     enabled: annotations.length > 0
+                    palette.button: toolbar.color
+                    palette.mid: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal)
+                    palette.buttonText: UTComponentUtil.getItemUIColor(undoToolButton, UIColorToken.Button_Overlay_Text)
+                    palette.highlight: palette.buttonText
                     onClicked: {
                         if (annotations.length > 0) {
                             annotations.pop()
@@ -424,10 +443,12 @@ Window {
                 }
 
                 // Separator
-                Rectangle { width: 1; height: 24; color: "#555555" }
+                Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
                 // Cancel button
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
                     text: "✕"
                     onClicked: overlayWindow.close()
                     toolTipText: qsTr("Cancel")
@@ -435,21 +456,28 @@ Window {
 
                     background: Rectangle {
                         radius: 4
-                        color: parent.pressed ? "#AA4444" : (parent.hovered ? "#884444" : "transparent")
+                        color: (parent.pressed || parent.hovered) ? UTComponentUtil.getItemUIColor(parent, UIColorToken.Button_Destructive_Background) : "transparent"
                     }
                 }
 
                 // Save button
                 ToolButton {
+                    id: saveToolButton
                     text: "✓"
                     enabled: !saving
+                    palette.buttonText: UTComponentUtil.getItemUIColor(saveToolButton,
+                        saveToolButton.enabled && (saveToolButton.pressed || saveToolButton.hovered)
+                        ? UIColorToken.Button_Primary_Text : UIColorToken.Button_Overlay_Text)
+                    palette.highlight: palette.buttonText
                     onClicked: saveScreenshot()
                     ToolTip.visible: hovered
                     ToolTip.text: qsTr("Save")
 
                     background: Rectangle {
                         radius: 4
-                        color: parent.pressed ? "#44AA44" : (parent.hovered ? "#448844" : "transparent")
+                        color: saveToolButton.enabled && (saveToolButton.pressed || saveToolButton.hovered)
+                               ? UTComponentUtil.getItemUIColor(saveToolButton, UIColorToken.Button_Primary_Background)
+                               : "transparent"
                     }
                 }
             }
@@ -463,8 +491,8 @@ Window {
             width: Math.min(520, parent.width - 40)
             height: saveErrorText.implicitHeight + 24
             radius: 8
-            color: "#E64A2525"
-            border.color: "#E08080"
+            color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Media_Error_Background, UIColorState.Normal), 0.9)
+            border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording_Pulse, UIColorState.Normal)
             visible: saveError.length > 0
             z: 10
 
@@ -473,7 +501,7 @@ Window {
                 anchors.fill: parent
                 anchors.margins: 12
                 text: saveError
-                color: "white"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Text, UIColorState.Normal)
                 wrapMode: Text.Wrap
                 font: UTComponentUtil.getUIFont(UIFontToken.Body_Large)
             }
@@ -531,14 +559,14 @@ Window {
             width: instructionText.width + 40
             height: instructionText.height + 20
             radius: 8
-            color: "#CC000000"
+            color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Media_Scrim, UIColorState.Normal), 0.8)
             visible: !hasScreenshot
 
             Text {
                 id: instructionText
                 anchors.centerIn: parent
                 text: qsTr("Click and drag to select region\nPress ESC to cancel")
-                color: "white"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Text, UIColorState.Normal)
                 font: UTComponentUtil.getUIFont(UIFontToken.Body_Large)
                 horizontalAlignment: Text.AlignHCenter
             }

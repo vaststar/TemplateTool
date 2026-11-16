@@ -20,7 +20,6 @@ Item {
     readonly property string bodyOperation: bodyOperations[bodyType.currentIndex] || "none"
     readonly property color _inputBg: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background, UIColorState.Normal)
     readonly property color _inputBorder: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Normal)
-    readonly property color _accentColor: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
     readonly property string errorText: localError.length > 0 ? localError
         : showManagerError ? controller.rulesManager.rewriteError : ""
 
@@ -180,8 +179,9 @@ Item {
                 colorEnum: UIColorToken.Content_Section_Title
             }
             Item { Layout.fillWidth: true }
-            UTButton { text: qsTr("New Rule"); onClicked: root.resetForm() }
+            UTButton { appearance: UTButton.Secondary; text: qsTr("New Rule"); onClicked: root.resetForm() }
             UTButton {
+                appearance: UTButton.Destructive
                 text: qsTr("Clear All")
                 enabled: ruleList.count > 0
                 onClicked: {
@@ -216,7 +216,7 @@ Item {
                     width: ruleList.width
                     height: 68
                     radius: 3
-                    color: root.editingId === modelData.id ? Qt.alpha(root._accentColor, 0.12) : "transparent"
+                    color: root.editingId === modelData.id ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected) : "transparent"
 
                     RowLayout {
                         anchors.fill: parent
@@ -259,8 +259,9 @@ Item {
                                 elide: Text.ElideRight
                             }
                         }
-                        UTButton { text: qsTr("Edit"); implicitHeight: 26; onClicked: root.editRule(ruleRow.modelData) }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("Edit"); implicitHeight: 26; onClicked: root.editRule(ruleRow.modelData) }
                         UTButton {
+                            appearance: UTButton.Ghost
                             text: "↑"; implicitWidth: 28; implicitHeight: 26
                             enabled: ruleRow.index > 0
                             onClicked: {
@@ -270,6 +271,7 @@ Item {
                             }
                         }
                         UTButton {
+                            appearance: UTButton.Ghost
                             text: "↓"; implicitWidth: 28; implicitHeight: 26
                             enabled: ruleRow.index < ruleList.count - 1
                             onClicked: {
@@ -279,6 +281,7 @@ Item {
                             }
                         }
                         UTButton {
+                            appearance: UTButton.Destructive
                             text: "✕"; implicitWidth: 28; implicitHeight: 26
                             onClicked: {
                                 root.localError = ""
@@ -295,7 +298,7 @@ Item {
                     fontEnum: UIFontToken.Caption_Text
                     colorEnum: UIColorToken.Content_Secondary_Text
                 }
-                ScrollBar.vertical: ScrollBar { }
+                ScrollBar.vertical: UTScrollBar { showArrows: false }
             }
         }
 
@@ -331,6 +334,7 @@ Item {
                             placeholderText: qsTr("e.g. /api/user.*")
                         }
                         UTButton {
+                            appearance: UTButton.Secondary
                             text: qsTr("Test")
                             enabled: ruleUrl.text.length > 0
                             onClicked: root.testPattern(ruleUrl.text)
@@ -398,10 +402,11 @@ Item {
                             text: headerRow.headerValue
                             onTextEdited: headerFormModel.setProperty(headerRow.index, "headerValue", text)
                         }
-                        UTButton { text: "✕"; implicitWidth: 28; onClicked: headerFormModel.remove(headerRow.index) }
+                        UTButton { appearance: UTButton.Ghost; text: "✕"; implicitWidth: 28; onClicked: headerFormModel.remove(headerRow.index) }
                     }
                 }
                 UTButton {
+                    appearance: UTButton.Secondary
                     text: qsTr("+ Header Change")
                     Layout.alignment: Qt.AlignLeft
                     onClicked: headerFormModel.append({ operation: "set", headerName: "", headerValue: "" })
@@ -479,18 +484,19 @@ Item {
             visible: root.errorText.length > 0
             text: root.errorText
             fontEnum: UIFontToken.Caption_Text
-            colorEnum: UIColorToken.Content_Error_Text
+            colorEnum: UIColorToken.Status_Error_Text
             wrapMode: Text.WordWrap
         }
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
             UTButton {
+                appearance: UTButton.Primary
                 text: root.editingId.length > 0 ? qsTr("Save Changes") : qsTr("Add Rule")
                 enabled: root.editingId.length > 0 || ruleList.count < 128
                 onClicked: root.saveForm()
             }
-            UTButton { text: qsTr("Reset Form"); onClicked: root.resetForm() }
+            UTButton { appearance: UTButton.Secondary; text: qsTr("Reset Form"); onClicked: root.resetForm() }
             Item { Layout.fillWidth: true }
         }
     }

@@ -29,7 +29,7 @@ Item {
                 text: qsTr("Choose the display language for the application.")
                 fontEnum: UIFontToken.Caption_Text
                 colorEnum: UIColorToken.Sidebar_Item_Text
-                color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Sidebar_Item_Text, UIColorState.Normal), 0.6)
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal)
             }
 
             UTComboBox {

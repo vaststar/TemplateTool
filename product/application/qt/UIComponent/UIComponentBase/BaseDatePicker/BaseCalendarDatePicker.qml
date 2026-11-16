@@ -13,6 +13,7 @@ BaseDatePicker {
     property color backgroundColor: palette.base
     property color disabledBackgroundColor: backgroundColor
     property color textColor: palette.text
+    property color selectedTextColor: textColor
     property color disabledTextColor: textColor
     property color borderColor: palette.mid
     property color focusedBorderColor: palette.highlight
@@ -520,7 +521,7 @@ BaseDatePicker {
                             font: control.font
                             anchors.centerIn: parent
                             text: model.day
-                            color: control.textColor
+                            color: parent.parent.isSelected ? control.selectedTextColor : control.textColor
                             opacity: !parent.parent.allowed ? control.disabledCellTextOpacity
                                    : parent.parent.inThisMonth ? 1.0 : control.outsideMonthTextOpacity
                         }
@@ -591,7 +592,7 @@ BaseDatePicker {
                             font: control.font
                             anchors.centerIn: parent
                             text: control.calendarLocale.standaloneMonthName(index, Locale.ShortFormat)
-                            color: control.textColor
+                            color: parent.parent.isSelected ? control.selectedTextColor : control.textColor
                             opacity: parent.parent.allowed ? 1.0 : control.disabledCellTextOpacity
                         }
 
@@ -657,7 +658,7 @@ BaseDatePicker {
                             font: control.font
                             anchors.centerIn: parent
                             text: parent.parent.year
-                            color: control.textColor
+                            color: parent.parent.isSelected ? control.selectedTextColor : control.textColor
                             opacity: parent.parent.allowed ? 1.0 : control.disabledCellTextOpacity
                         }
 

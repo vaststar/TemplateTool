@@ -36,6 +36,7 @@ public:
     UIResourceLoaderManager& operator=(UIResourceLoaderManager&&) = delete;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) override;
+    virtual Q_INVOKABLE QColor getUIColorForTheme(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state, bool darkTheme) override;
     virtual Q_INVOKABLE QFont getUIFont(UIFontToken::FontToken fontToken) override;
 
     virtual Q_INVOKABLE QString getNonLocalizedString(UINonLocalizedStringToken::NonLocalizedString stringId) override;

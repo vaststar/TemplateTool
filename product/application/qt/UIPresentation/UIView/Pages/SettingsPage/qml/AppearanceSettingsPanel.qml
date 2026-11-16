@@ -28,8 +28,7 @@ Item {
             UTText {
                 text: qsTr("Choose how you want the app to look.")
                 fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Sidebar_Item_Text
-                opacity: 0.6
+                colorEnum: UIColorToken.Content_Secondary_Text
             }
 
             // Theme cards grid
@@ -69,11 +68,11 @@ Item {
             readonly property bool isLightPreview: index === 2
             readonly property bool isSplitPreview: index === 0
 
-            readonly property color previewBg:        isLightPreview ? "#f9fafb" : "#1c1c1e"
-            readonly property color previewSidebar:    isLightPreview ? "#f3f4f6" : "#27272a"
-            readonly property color previewContent:    isLightPreview ? "#e5e7eb" : "#3f3f46"
-            readonly property color previewAccent:     isLightPreview ? "#2563eb" : "#60a5fa"
-            readonly property color previewTextLine:   isLightPreview ? "#d1d5db" : "#52525b"
+            readonly property color previewBg:        UTComponentUtil.getThemeUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal, !isLightPreview)
+            readonly property color previewSidebar:   UTComponentUtil.getThemeUIColor(UIColorToken.Sidebar_Background, UIColorState.Normal, !isLightPreview)
+            readonly property color previewContent:   UTComponentUtil.getThemeUIColor(UIColorToken.Content_Background, UIColorState.Normal, !isLightPreview)
+            readonly property color previewAccent:    UTComponentUtil.getThemeUIColor(UIColorToken.Button_Primary_Background, UIColorState.Normal, !isLightPreview)
+            readonly property color previewTextLine:  UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, !isLightPreview)
 
             readonly property bool isSelected: controller && controller.currentThemeIndex === index
 
@@ -86,7 +85,7 @@ Item {
                     width: 160
                     height: 100
                     radius: 8
-                    color: isSplitPreview ? "#1c1c1e" : previewBg
+                    color: previewBg
                     border.width: isSelected ? 2 : 1
                     border.color: isSelected
                         ? UTComponentUtil.getPlainUIColor(UIColorToken.Focus_Outline, UIColorState.Normal)
@@ -104,7 +103,7 @@ Item {
                             width: parent.width / 2
                             height: parent.height
                             radius: 6
-                            color: "#1c1c1e"
+                            color: UTComponentUtil.getThemeUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal, true)
                             clip: true
 
                             Row {
@@ -113,7 +112,7 @@ Item {
                                 Rectangle {
                                     width: 16
                                     height: parent.height
-                                    color: "#27272a"
+                                    color: UTComponentUtil.getThemeUIColor(UIColorToken.Sidebar_Background, UIColorState.Normal, true)
                                     Column {
                                         anchors.centerIn: parent
                                         spacing: 5
@@ -121,7 +120,7 @@ Item {
                                             model: 3
                                             Rectangle {
                                                 required property int index
-                                                width: 8; height: 8; radius: 2; color: "#60a5fa"; opacity: index === 0 ? 1.0 : 0.3
+                                                width: 8; height: 8; radius: 2; color: UTComponentUtil.getThemeUIColor(UIColorToken.Button_Primary_Background, UIColorState.Normal, true); opacity: index === 0 ? 1.0 : 0.3
                                             }
                                         }
                                     }
@@ -130,15 +129,15 @@ Item {
                                 Rectangle {
                                     width: parent.width - 18
                                     height: parent.height
-                                    color: "#3f3f46"
+                                    color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Background, UIColorState.Normal, true)
                                     Column {
                                         anchors.left: parent.left; anchors.leftMargin: 6
                                         anchors.top: parent.top; anchors.topMargin: 8
                                         spacing: 5
-                                        Rectangle { width: 30; height: 3; radius: 1.5; color: "#52525b" }
-                                        Rectangle { width: 40; height: 2; radius: 1; color: "#52525b"; opacity: 0.5 }
-                                        Rectangle { width: 25; height: 2; radius: 1; color: "#52525b"; opacity: 0.5 }
-                                        Rectangle { width: 20; height: 6; radius: 3; color: "#60a5fa" }
+                                        Rectangle { width: 30; height: 3; radius: 1.5; color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, true) }
+                                        Rectangle { width: 40; height: 2; radius: 1; color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, true); opacity: 0.5 }
+                                        Rectangle { width: 25; height: 2; radius: 1; color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, true); opacity: 0.5 }
+                                        Rectangle { width: 20; height: 6; radius: 3; color: UTComponentUtil.getThemeUIColor(UIColorToken.Button_Primary_Background, UIColorState.Normal, true) }
                                     }
                                 }
                             }
@@ -149,7 +148,7 @@ Item {
                             width: parent.width / 2
                             height: parent.height
                             radius: 6
-                            color: "#f9fafb"
+                            color: UTComponentUtil.getThemeUIColor(UIColorToken.Main_Window_Background, UIColorState.Normal, false)
                             clip: true
 
                             Row {
@@ -158,7 +157,7 @@ Item {
                                 Rectangle {
                                     width: 16
                                     height: parent.height
-                                    color: "#f3f4f6"
+                                    color: UTComponentUtil.getThemeUIColor(UIColorToken.Sidebar_Background, UIColorState.Normal, false)
                                     Column {
                                         anchors.centerIn: parent
                                         spacing: 5
@@ -166,7 +165,7 @@ Item {
                                             model: 3
                                             Rectangle {
                                                 required property int index
-                                                width: 8; height: 8; radius: 2; color: "#2563eb"; opacity: index === 0 ? 1.0 : 0.3
+                                                width: 8; height: 8; radius: 2; color: UTComponentUtil.getThemeUIColor(UIColorToken.Button_Primary_Background, UIColorState.Normal, false); opacity: index === 0 ? 1.0 : 0.3
                                             }
                                         }
                                     }
@@ -175,15 +174,15 @@ Item {
                                 Rectangle {
                                     width: parent.width - 18
                                     height: parent.height
-                                    color: "#e5e7eb"
+                                    color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Background, UIColorState.Normal, false)
                                     Column {
                                         anchors.left: parent.left; anchors.leftMargin: 6
                                         anchors.top: parent.top; anchors.topMargin: 8
                                         spacing: 5
-                                        Rectangle { width: 30; height: 3; radius: 1.5; color: "#d1d5db" }
-                                        Rectangle { width: 40; height: 2; radius: 1; color: "#d1d5db"; opacity: 0.5 }
-                                        Rectangle { width: 25; height: 2; radius: 1; color: "#d1d5db"; opacity: 0.5 }
-                                        Rectangle { width: 20; height: 6; radius: 3; color: "#2563eb" }
+                                        Rectangle { width: 30; height: 3; radius: 1.5; color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, false) }
+                                        Rectangle { width: 40; height: 2; radius: 1; color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, false); opacity: 0.5 }
+                                        Rectangle { width: 25; height: 2; radius: 1; color: UTComponentUtil.getThemeUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal, false); opacity: 0.5 }
+                                        Rectangle { width: 20; height: 6; radius: 3; color: UTComponentUtil.getThemeUIColor(UIColorToken.Button_Primary_Background, UIColorState.Normal, false) }
                                     }
                                 }
                             }

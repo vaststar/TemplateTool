@@ -56,6 +56,7 @@ Item {
                         }
 
                         UTButton {
+                            appearance: UTButton.Secondary
                             text: qsTr("Browse...")
                             onClicked: folderDialog.open()
                         }

@@ -29,6 +29,7 @@ Item {
             wrapMode: Text.Wrap
         }
         UTButton {
+            appearance: UTButton.Ghost
             text: qsTr("Copy")
             visible: parent.value.length > 0
             onClicked: controller.copyText(parent.value)
@@ -75,6 +76,7 @@ Item {
                             colorEnum: UIColorToken.Content_Heading
                         }
                         UTButton {
+                            appearance: UTButton.Ghost
                             text: qsTr("Copy")
                             onClicked: controller.copyLiveTimestamp()
                         }
@@ -115,6 +117,7 @@ Item {
                         }
 
                         UTButton {
+                            appearance: UTButton.Primary
                             text: qsTr("Convert")
                             onClicked: controller.timestampToDateTime()
                         }
@@ -157,6 +160,7 @@ Item {
                         }
 
                         UTButton {
+                            appearance: UTButton.Primary
                             text: qsTr("Convert")
                             onClicked: controller.dateTimeToTimestamp()
                         }

@@ -9,9 +9,9 @@ Dialog {
     id: root
 
     // ── Theme ──
-    readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
-    readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
-    readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
+    readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Dialog_Background, UIColorState.Normal)
+    readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Window_Border, UIColorState.Normal)
+    readonly property color _headerBg:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
     readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
     readonly property color _inputText:       UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Text,         UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
@@ -39,6 +39,7 @@ Dialog {
     footer: Item {
         implicitHeight: 48
         UTButton {
+            appearance: UTButton.Secondary
             text: qsTr("Close")
             anchors.centerIn: parent
             onClicked: root.close()
@@ -75,10 +76,12 @@ Dialog {
         RowLayout {
             spacing: 8
             UTButton {
+                appearance: UTButton.Primary
                 text: qsTr("Edit (load into form)")
                 onClicked: { root.editRule(root.ruleData); root.close() }
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("🧪 Test Pattern")
                 onClicked: { root.testRulePattern(root.ruleData.url_pattern || ""); root.close() }
             }

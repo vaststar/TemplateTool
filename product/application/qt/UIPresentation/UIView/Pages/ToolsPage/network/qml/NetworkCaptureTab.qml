@@ -20,9 +20,9 @@ Item {
     readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
     readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
     readonly property font  _monoFont:        UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
-    readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
-    readonly property color _headerHover:     Qt.darker(_sectionBg, 1.15)
-    readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
+    readonly property color _headerBg:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
+    readonly property color _headerHover:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Nav_Item_Background, UIColorState.Hovered)
+    readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Link_Text, UIColorState.Normal)
 
     // ── Draggable column widths ──
     property real colMethodW: 64
@@ -92,19 +92,21 @@ Item {
         visible: root.controller.interceptedCount > 0
         z: 10; anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right
         height: visible ? 32 : 0; radius: 4
-        color: Qt.alpha("#F44336", 0.12); border.color: Qt.alpha("#F44336", 0.4); border.width: 1
+        color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.12); border.color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.4); border.width: 1
         RowLayout {
             anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10; spacing: 6
             Text { text: "🔴"; font.pixelSize: 12 } // emoji glyph, not tokenized
             UTText {
                 text: qsTr("%1 request(s) paused by breakpoint").arg(root.controller.interceptedCount)
-                fontEnum: UIFontToken.Caption_Strong; color: "#F44336"; Layout.fillWidth: true
+                fontEnum: UIFontToken.Caption_Strong; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); Layout.fillWidth: true
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Go to Breakpoints"); implicitHeight: 24
                 onClicked: root.goToBreakpoints()
             }
             UTButton {
+                appearance: UTButton.Primary
                 text: qsTr("Forward All"); implicitHeight: 24
                 enabled: root.controller.proxyRunning && root.controller.addonConnected
                 onClicked: root.controller.resumeAllRequests()
@@ -169,13 +171,13 @@ Item {
                                                 anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
                                                 Rectangle {
                                                     width: 14; height: 14; radius: 2; anchors.verticalCenter: parent.verticalCenter
-                                                    color: root.selectedMethods.indexOf(modelData) >= 0 ? root._accentColor : "transparent"
-                                                    border.color: root.selectedMethods.indexOf(modelData) >= 0 ? root._accentColor : root._inputBorder; border.width: 1
-                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedMethods.indexOf(modelData) >= 0 } // glyph, not tokenized
+                                                    color: root.selectedMethods.indexOf(modelData) >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : "transparent"
+                                                    border.color: root.selectedMethods.indexOf(modelData) >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : root._inputBorder; border.width: 1
+                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal); visible: root.selectedMethods.indexOf(modelData) >= 0 } // glyph, not tokenized
                                                 }
                                                 Rectangle {
                                                     width: 6; height: 6; radius: 3; anchors.verticalCenter: parent.verticalCenter
-                                                    color: { switch(modelData) { case "GET": return "#4CAF50"; case "POST": return "#2196F3"; case "PUT": return "#FF9800"; case "DELETE": return "#F44336"; case "PATCH": return "#9C27B0"; default: return "#757575" } }
+                                                    color: { switch(modelData) { case "GET": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal); case "POST": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Info_Text, UIColorState.Normal); case "PUT": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal); case "DELETE": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); case "PATCH": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal); default: return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Neutral_Text, UIColorState.Normal) } }
                                                 }
                                                 UTText { text: modelData; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter }
                                             }
@@ -225,13 +227,13 @@ Item {
                                                 anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
                                                 Rectangle {
                                                     width: 14; height: 14; radius: 2; anchors.verticalCenter: parent.verticalCenter
-                                                    color: root.selectedStatuses.indexOf(modelData) >= 0 ? root._accentColor : "transparent"
-                                                    border.color: root.selectedStatuses.indexOf(modelData) >= 0 ? root._accentColor : root._inputBorder; border.width: 1
-                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedStatuses.indexOf(modelData) >= 0 } // glyph, not tokenized
+                                                    color: root.selectedStatuses.indexOf(modelData) >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : "transparent"
+                                                    border.color: root.selectedStatuses.indexOf(modelData) >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : root._inputBorder; border.width: 1
+                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal); visible: root.selectedStatuses.indexOf(modelData) >= 0 } // glyph, not tokenized
                                                 }
                                                 Rectangle {
                                                     width: 6; height: 6; radius: 3; anchors.verticalCenter: parent.verticalCenter
-                                                    color: { switch(modelData) { case "2xx": return "#4CAF50"; case "3xx": return "#FF9800"; case "4xx": return "#F44336"; case "5xx": return "#D32F2F"; default: return "#757575" } }
+                                                    color: { switch(modelData) { case "2xx": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal); case "3xx": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal); case "4xx": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); case "5xx": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); default: return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Neutral_Text, UIColorState.Normal) } }
                                                 }
                                                 UTText { text: modelData; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter }
                                             }
@@ -317,7 +319,7 @@ Item {
                                     ListView {
                                         width: parent.width; height: Math.min(processListModel.count * 26, 200)
                                         clip: true; model: processListModel
-                                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+                                        ScrollBar.vertical: UTScrollBar { showArrows: false; policy: ScrollBar.AsNeeded }
                                         delegate: Rectangle {
                                             width: parent ? parent.width : 0; height: 26
                                             color: phMa.containsMouse ? root._headerHover : "transparent"; radius: 3
@@ -325,9 +327,9 @@ Item {
                                                 anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
                                                 Rectangle {
                                                     width: 14; height: 14; radius: 2; anchors.verticalCenter: parent.verticalCenter
-                                                    color: root.selectedProcesses.indexOf(model.name) >= 0 ? root._accentColor : "transparent"
-                                                    border.color: root.selectedProcesses.indexOf(model.name) >= 0 ? root._accentColor : root._inputBorder; border.width: 1
-                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: "white"; visible: root.selectedProcesses.indexOf(model.name) >= 0 } // glyph, not tokenized
+                                                    color: root.selectedProcesses.indexOf(model.name) >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : "transparent"
+                                                    border.color: root.selectedProcesses.indexOf(model.name) >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal) : root._inputBorder; border.width: 1
+                                                    Text { anchors.centerIn: parent; text: "✓"; font.pixelSize: 10; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal); visible: root.selectedProcesses.indexOf(model.name) >= 0 } // glyph, not tokenized
                                                 }
                                                 UTText { text: model.name; fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; anchors.verticalCenter: parent.verticalCenter; elide: Text.ElideRight; width: parent.width - 32 }
                                             }
@@ -337,8 +339,8 @@ Item {
                                     UTText {
                                         visible: processListModel.count === 0
                                         width: parent.width; height: 26
-                                        text: qsTr("No processes captured"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
-                                        opacity: 0.5; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                                        text: qsTr("No processes captured"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text
+                                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                                     }
                                 }
                             }
@@ -352,13 +354,13 @@ Item {
                     Layout.fillWidth: true; Layout.fillHeight: true
                     clip: true; model: filterModel
                     currentIndex: -1
-                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+                    ScrollBar.vertical: UTScrollBar { showArrows: false; policy: ScrollBar.AsNeeded }
 
                     delegate: Rectangle {
                         width: requestListView.width; height: 26
                         color: model.flowId === root.controller.selectedFlowId && root.controller.selectedFlowId.length > 0
-                            ? Qt.alpha(root._accentColor, 0.2)
-                            : (index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03))
+                            ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected)
+                            : (index % 2 === 0 ? "transparent" : root._sectionBg)
 
                         MouseArea {
                             anchors.fill: parent
@@ -370,19 +372,19 @@ Item {
 
                             Rectangle {
                                 visible: model.isIntercepted === true
-                                width: 18; height: 18; radius: 9; anchors.verticalCenter: parent.verticalCenter; color: "#F44336"
-                                Text { anchors.centerIn: parent; text: "⏸"; font.pixelSize: 10; color: "white" } // glyph, not tokenized
+                                width: 18; height: 18; radius: 9; anchors.verticalCenter: parent.verticalCenter; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal)
+                                Text { anchors.centerIn: parent; text: "⏸"; font.pixelSize: 10; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal) } // glyph, not tokenized
                             }
                             Rectangle {
                                 width: root.colMethodW - 5; height: 18; radius: 3; anchors.verticalCenter: parent.verticalCenter
-                                color: { switch(model.method) { case "GET": return "#4CAF50"; case "POST": return "#2196F3"; case "PUT": return "#FF9800"; case "DELETE": return "#F44336"; case "PATCH": return "#9C27B0"; default: return "#757575" } }
-                                UTText { anchors.centerIn: parent; text: model.method || ""; fontEnum: UIFontToken.Caption_Strong; color: "white" }
+                                color: { switch(model.method) { case "GET": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal); case "POST": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Info_Background, UIColorState.Normal); case "PUT": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal); case "DELETE": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal); case "PATCH": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal); default: return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Neutral_Background, UIColorState.Normal) } }
+                                UTText { anchors.centerIn: parent; text: model.method || ""; fontEnum: UIFontToken.Caption_Strong; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal) }
                             }
                             UTText {
                                 width: root.colStatusW; anchors.verticalCenter: parent.verticalCenter
                                 text: model.statusCode > 0 ? model.statusCode.toString() : "⋯"
                                 fontEnum: UIFontToken.Monospace_Text
-                                color: { var c = model.statusCode||0; if(c>=200&&c<300) return "#4CAF50"; if(c>=300&&c<400) return "#FF9800"; if(c>=400) return "#F44336"; return root._inputText }
+                                color: { var c = model.statusCode||0; if(c>=200&&c<300) return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal); if(c>=300&&c<400) return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal); if(c>=400) return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); return root._inputText }
                             }
                             UTText {
                                 width: parent.width - root.colMethodW - root.colStatusW - root.colTimeW - root.colSizeW - root.colProcessW - 5*5
@@ -414,7 +416,7 @@ Item {
                     UTText {
                         anchors.centerIn: parent; visible: requestListView.count === 0
                         text: root.controller.proxyRunning ? qsTr("Waiting for requests...\nProxy: 127.0.0.1:%1").arg(root.controller.proxyPort) : qsTr("Click ▶ Start to begin capturing")
-                        fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5; horizontalAlignment: Text.AlignHCenter
+                        fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Secondary_Text; horizontalAlignment: Text.AlignHCenter
                     }
                 }
             }
@@ -442,14 +444,14 @@ Item {
                                 model: [qsTr("Headers"), qsTr("Body"), qsTr("Params")]
                                 delegate: Rectangle {
                                     width: reqTL.implicitWidth + 16; height: 26; radius: 3
-                                    color: root.controller.requestTabIndex === index ? root._accentColor : reqTM.containsMouse ? root._headerHover : "transparent"
-                                    UTText { id: reqTL; anchors.centerIn: parent; text: modelData; fontEnum: root.controller.requestTabIndex === index ? UIFontToken.Caption_Strong : UIFontToken.Caption_Text; color: root.controller.requestTabIndex === index ? "white" : root._sectionTitle }
+                                    color: root.controller.requestTabIndex === index ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected) : reqTM.containsMouse ? root._headerHover : "transparent"
+                                    UTText { id: reqTL; anchors.centerIn: parent; text: modelData; fontEnum: root.controller.requestTabIndex === index ? UIFontToken.Caption_Strong : UIFontToken.Caption_Text; color: root.controller.requestTabIndex === index ? root._accentColor : root._sectionTitle }
                                     MouseArea { id: reqTM; anchors.fill: parent; hoverEnabled: true; onClicked: root.controller.requestTabIndex = index }
                                 }
                             }
                             Item { Layout.fillWidth: true }
-                            UTButton { text: qsTr("URL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestUrl(); implicitHeight: 24; ToolTip.text: qsTr("Copy URL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
-                            UTButton { text: qsTr("cURL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestCurl(); implicitHeight: 24; ToolTip.text: qsTr("Copy as cURL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
+                            UTButton { appearance: UTButton.Ghost; text: qsTr("URL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestUrl(); implicitHeight: 24; ToolTip.text: qsTr("Copy URL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
+                            UTButton { appearance: UTButton.Ghost; text: qsTr("cURL"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyRequestCurl(); implicitHeight: 24; ToolTip.text: qsTr("Copy as cURL"); ToolTip.visible: hovered; ToolTip.delay: 500 }
                         }
                     }
                     UTText {
@@ -490,13 +492,13 @@ Item {
                                 model: [qsTr("Headers"), qsTr("Body"), qsTr("Summary")]
                                 delegate: Rectangle {
                                     width: resTL.implicitWidth + 16; height: 26; radius: 3
-                                    color: root.controller.responseTabIndex === index ? root._accentColor : resTM.containsMouse ? root._headerHover : "transparent"
-                                    UTText { id: resTL; anchors.centerIn: parent; text: modelData; fontEnum: root.controller.responseTabIndex === index ? UIFontToken.Caption_Strong : UIFontToken.Caption_Text; color: root.controller.responseTabIndex === index ? "white" : root._sectionTitle }
+                                    color: root.controller.responseTabIndex === index ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected) : resTM.containsMouse ? root._headerHover : "transparent"
+                                    UTText { id: resTL; anchors.centerIn: parent; text: modelData; fontEnum: root.controller.responseTabIndex === index ? UIFontToken.Caption_Strong : UIFontToken.Caption_Text; color: root.controller.responseTabIndex === index ? root._accentColor : root._sectionTitle }
                                     MouseArea { id: resTM; anchors.fill: parent; hoverEnabled: true; onClicked: root.controller.responseTabIndex = index }
                                 }
                             }
                             Item { Layout.fillWidth: true }
-                            UTButton { text: qsTr("Copy"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyResponseBody(); implicitHeight: 24; ToolTip.text: qsTr("Copy response body"); ToolTip.visible: hovered; ToolTip.delay: 500 }
+                            UTButton { appearance: UTButton.Ghost; text: qsTr("Copy"); enabled: root.controller.selectedIndex >= 0; onClicked: root.controller.copyResponseBody(); implicitHeight: 24; ToolTip.text: qsTr("Copy response body"); ToolTip.visible: hovered; ToolTip.delay: 500 }
                         }
                     }
                     UTScrollView {

@@ -36,6 +36,7 @@ RowLayout {
     }
 
     UTButton {
+        appearance: UTButton.Primary
         visible: root.controller.action !== PermissionController.NoAction
         enabled: !root.controller.busy
         text: root.controller.busy ? qsTr("Please wait...")

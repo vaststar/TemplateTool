@@ -21,6 +21,7 @@ Control {
     property color backgroundColor: palette.base
     property color disabledBackgroundColor: backgroundColor
     property color textColor: palette.text
+    property color selectedTextColor: textColor
     property color disabledTextColor: textColor
     property color borderColor: palette.mid
     property color focusedBorderColor: palette.highlight
@@ -175,6 +176,7 @@ Control {
                     wrap: true
                     font: control.font
                     textColor: control.textColor
+                    selectedTextColor: control.selectedTextColor
                     disabledTextColor: control.disabledTextColor
                     centeredPixelSize: control.wheelCenteredPixelSize
                     offCenterPixelSize: control.wheelOffCenterPixelSize
@@ -194,7 +196,7 @@ Control {
                     text: ":"
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    color: control.textColor
+                    color: control.selectedTextColor
                 }
 
                 BaseWheelColumn {
@@ -205,6 +207,7 @@ Control {
                     wrap: true
                     font: control.font
                     textColor: control.textColor
+                    selectedTextColor: control.selectedTextColor
                     disabledTextColor: control.disabledTextColor
                     centeredPixelSize: control.wheelCenteredPixelSize
                     offCenterPixelSize: control.wheelOffCenterPixelSize
@@ -225,7 +228,7 @@ Control {
                     text: ":"
                     horizontalAlignment: Text.AlignHCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    color: control.textColor
+                    color: control.selectedTextColor
                 }
 
                 BaseWheelColumn {
@@ -237,6 +240,7 @@ Control {
                     wrap: true
                     font: control.font
                     textColor: control.textColor
+                    selectedTextColor: control.selectedTextColor
                     disabledTextColor: control.disabledTextColor
                     centeredPixelSize: control.wheelCenteredPixelSize
                     offCenterPixelSize: control.wheelOffCenterPixelSize

@@ -25,6 +25,14 @@ MockResourceLoader::getColor(commonHead::model::ColorToken token,
     return mColorLoader->getColor(token, state, mTheme);
 }
 
+commonHead::model::Color
+MockResourceLoader::getColor(commonHead::model::ColorToken token,
+                             commonHead::model::ColorState state,
+                             commonHead::model::ColorThemeType theme) const
+{
+    return mColorLoader->getColor(token, state, theme);
+}
+
 commonHead::model::Font
 MockResourceLoader::getFont(commonHead::model::FontToken token) const
 {

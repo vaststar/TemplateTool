@@ -46,6 +46,7 @@ Item {
             width: 200
             height: 36
             text: qsTr("Show Test Message")
+            appearance: UTButton.Secondary
             onClicked: homePage.controller.showTestMessage()
         }
 
@@ -54,6 +55,7 @@ Item {
             width: 200
             height: 36
             text: qsTr("Open Camera")
+            appearance: UTButton.Secondary
             onClicked: homePage.controller.openCamera()
         }
 
@@ -62,6 +64,7 @@ Item {
             width: 200
             height: 36
             text: qsTr("Open Camera Monitor")
+            appearance: UTButton.Secondary
             onClicked: homePage.controller.openCameraMonitor()
         }
 

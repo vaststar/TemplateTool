@@ -25,6 +25,7 @@ Tumbler {
     property var formatValue: function(i) { return (i < 10 ? "0" : "") + i }
 
     property color textColor: palette.text
+    property color selectedTextColor: textColor
     property color disabledTextColor: textColor
     // Resolved presentation values; themed wrappers choose visual emphasis.
     property font centeredFont: font
@@ -123,7 +124,8 @@ Tumbler {
             text: wheel.formatValue(index)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            color: disabled ? wheel.disabledTextColor : wheel.textColor
+            color: disabled ? wheel.disabledTextColor
+                            : centered ? wheel.selectedTextColor : wheel.textColor
             opacity: disabled
                      ? wheel.disabledOpacity
                      : Math.max(wheel.minimumOpacity,

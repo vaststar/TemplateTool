@@ -16,6 +16,7 @@ BaseQRCode {
     displaySize: 200
     errorLevel: UTQRCodeLevel.Medium
     border: 4
+    // Encoding contrast is independent of the surrounding UI theme.
     darkColor: "#000000"
     lightColor: "#FFFFFF"
 }

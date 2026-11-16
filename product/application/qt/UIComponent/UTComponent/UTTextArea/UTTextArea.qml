@@ -28,6 +28,8 @@ BaseTextArea {
     font: UTComponentUtil.getUIFont(control.fontEnum)
     color: UTComponentUtil.getPlainUIColor(control.textColorEnum, control._colorState)
     placeholderTextColor: UTComponentUtil.getPlainUIColor(control.placeholderColorEnum, control._colorState)
+    selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Background, UIColorState.Normal)
+    selectedTextColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Text, UIColorState.Normal)
 
     backgroundColor: UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, control._colorState)
     borderColor: UTComponentUtil.getPlainUIColor(

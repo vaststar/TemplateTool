@@ -34,11 +34,10 @@ Item {
     readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
     readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
     readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
-    readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
-    readonly property color _headerHover:     Qt.darker(_sectionBg, 1.15)
+    readonly property color _headerBg:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
+    readonly property color _headerHover:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Nav_Item_Background, UIColorState.Hovered)
     readonly property color _inputBg:         UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background,   UIColorState.Normal)
     readonly property color _inputBorder:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Normal)
-    readonly property color _accentColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border,       UIColorState.Focused)
 
     RowLayout {
         anchors.fill: parent; spacing: 0
@@ -64,7 +63,7 @@ Item {
                     property int currentIndex: 0
                     delegate: Rectangle {
                         width: parent.width; height: 36; radius: 4
-                        color: rulesNavRepeater.currentIndex === index ? Qt.alpha(root._accentColor, 0.2) : rnMa.containsMouse ? root._headerHover : "transparent"
+                        color: rulesNavRepeater.currentIndex === index ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected) : rnMa.containsMouse ? root._headerHover : "transparent"
                         Row {
                             anchors.fill: parent; anchors.leftMargin: 8; spacing: 6; anchors.verticalCenter: parent.verticalCenter
                             Text { text: modelData.icon; font.pixelSize: 14; anchors.verticalCenter: parent.verticalCenter } // emoji glyph, not tokenized
@@ -94,7 +93,7 @@ Item {
                         columns: 4; columnSpacing: 8; rowSpacing: 6; Layout.fillWidth: true
                         UTText { text: qsTr("URL Pattern:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                         UTTextField { id: mockUrl; Layout.fillWidth: true; Layout.columnSpan: 2; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("e.g. /api/user.*") }
-                        UTButton { text: qsTr("🧪 Test"); onClicked: root.testPattern(mockUrl.text) }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("🧪 Test"); onClicked: root.testPattern(mockUrl.text) }
                         UTText { text: qsTr("Status:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
                         UTTextField { id: mockStatus; implicitWidth: 70; fontEnum: UIFontToken.Monospace_Text; placeholderText: "200"; validator: IntValidator { bottom: 100; top: 599 } }
                         UTText { text: qsTr("Content-Type:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
@@ -106,9 +105,9 @@ Item {
                     }
                     RowLayout {
                         spacing: 8
-                        UTButton { text: qsTr("+ Add Rule"); onClicked: { root.controller.rulesManager.addMockRule(mockUrl.text, parseInt(mockStatus.text)||200, mockCt.text||"application/json", mockBody.text, mockHeaders.text); mockUrl.text=""; mockStatus.text=""; mockBody.text=""; mockHeaders.text=""; mockListView.model = root.controller.rulesManager.getMockRules() } }
+                        UTButton { appearance: UTButton.Primary; text: qsTr("+ Add Rule"); onClicked: { root.controller.rulesManager.addMockRule(mockUrl.text, parseInt(mockStatus.text)||200, mockCt.text||"application/json", mockBody.text, mockHeaders.text); mockUrl.text=""; mockStatus.text=""; mockBody.text=""; mockHeaders.text=""; mockListView.model = root.controller.rulesManager.getMockRules() } }
                         Item { Layout.fillWidth: true }
-                        UTButton { text: qsTr("Clear All"); onClicked: { root.controller.rulesManager.clearMockRules(); mockListView.model = root.controller.rulesManager.getMockRules() } }
+                        UTButton { appearance: UTButton.Destructive; text: qsTr("Clear All"); onClicked: { root.controller.rulesManager.clearMockRules(); mockListView.model = root.controller.rulesManager.getMockRules() } }
                     }
                     Rectangle {
                         Layout.fillWidth: true; Layout.fillHeight: true
@@ -118,20 +117,20 @@ Item {
                             model: root.controller.rulesManager.getMockRules()
                             delegate: Rectangle {
                                 width: mockListView.width; height: 32; radius: 3
-                                color: mockDelegateMa.containsMouse ? Qt.alpha(root._accentColor, 0.12) : (index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03))
+                                color: mockDelegateMa.containsMouse ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Hovered) : (index % 2 === 0 ? "transparent" : root._sectionBg)
                                 MouseArea {
                                     id: mockDelegateMa; anchors.fill: parent; hoverEnabled: true
                                     onDoubleClicked: root.showMockDetail(modelData)
                                 }
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    Rectangle { width: 40; height: 18; radius: 3; color: root._accentColor; UTText { anchors.centerIn: parent; text: modelData.status_code || "200"; fontEnum: UIFontToken.Caption_Text; color: "white" } }
+                                    Rectangle { width: 40; height: 18; radius: 3; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Accent_Background, UIColorState.Normal); UTText { anchors.centerIn: parent; text: modelData.status_code || "200"; fontEnum: UIFontToken.Caption_Text; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal) } }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTText { visible: (modelData.headers || "").length > 0; text: "📋"; font.pixelSize: 12 } // emoji glyph, not tokenized
-                                    UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() } }
+                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMockRule(index); mockListView.model = root.controller.rulesManager.getMockRules() } }
                                 }
                             }
-                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No mock rules. Add one above.\nDouble-click a rule to view details."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5; horizontalAlignment: Text.AlignHCenter }
+                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No mock rules. Add one above.\nDouble-click a rule to view details."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text; horizontalAlignment: Text.AlignHCenter }
                         }
                     }
                 }
@@ -144,11 +143,11 @@ Item {
 
                     Rectangle {
                         Layout.fillWidth: true; height: 32; radius: 4; visible: !root.controller.interceptEnabled
-                        color: Qt.alpha("#FF9800", 0.1); border.color: Qt.alpha("#FF9800", 0.3); border.width: 1
+                        color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal), 0.1); border.color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal), 0.3); border.width: 1
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10; spacing: 6
-                            UTText { text: qsTr("⚠️ Interception is OFF — breakpoints won't take effect."); fontEnum: UIFontToken.Caption_Text; color: "#FF9800"; Layout.fillWidth: true }
-                            UTButton { text: qsTr("Enable"); implicitHeight: 24; onClicked: root.controller.interceptEnabled = true }
+                            UTText { text: qsTr("⚠️ Interception is OFF — breakpoints won't take effect."); fontEnum: UIFontToken.Caption_Text; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal); Layout.fillWidth: true }
+                            UTButton { appearance: UTButton.Primary; text: qsTr("Enable"); implicitHeight: 24; onClicked: root.controller.interceptEnabled = true }
                         }
                     }
 
@@ -156,10 +155,10 @@ Item {
                         spacing: 8; Layout.fillWidth: true
                         UTTextField { id: bpUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
                         UTComboBox { id: bpMethod; model: ["ANY","GET","POST","PUT","DELETE"]; implicitWidth: 100 }
-                        UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBreakpointRule(bpUrl.text, bpMethod.currentText); bpUrl.text=""; bpListView.model = root.controller.rulesManager.getBreakpointRules(); if (!root.controller.interceptEnabled) root.controller.interceptEnabled = true } }
-                        UTButton { text: qsTr("🧪 Test"); onClicked: root.testPattern(bpUrl.text) }
+                        UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBreakpointRule(bpUrl.text, bpMethod.currentText); bpUrl.text=""; bpListView.model = root.controller.rulesManager.getBreakpointRules(); if (!root.controller.interceptEnabled) root.controller.interceptEnabled = true } }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("🧪 Test"); onClicked: root.testPattern(bpUrl.text) }
                         Item { Layout.fillWidth: true }
-                        UTButton { text: qsTr("Clear All"); onClicked: { root.controller.rulesManager.clearBreakpointRules(); bpListView.model = root.controller.rulesManager.getBreakpointRules() } }
+                        UTButton { appearance: UTButton.Destructive; text: qsTr("Clear All"); onClicked: { root.controller.rulesManager.clearBreakpointRules(); bpListView.model = root.controller.rulesManager.getBreakpointRules() } }
                     }
                     Rectangle {
                         Layout.fillWidth: true; Layout.fillHeight: true; Layout.minimumHeight: 60
@@ -168,15 +167,27 @@ Item {
                             id: bpListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
                             model: root.controller.rulesManager.getBreakpointRules()
                             delegate: Rectangle {
-                                width: bpListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
+                                width: bpListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : root._sectionBg
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    Rectangle { width: 44; height: 18; radius: 3; color: "#9C27B0"; UTText { anchors.centerIn: parent; text: modelData.method || "ANY"; fontEnum: UIFontToken.Caption_Text; color: "white" } }
+                                    Rectangle {
+                                        width: 44; height: 18; radius: 3
+                                        color: {
+                                            switch (modelData.method) {
+                                            case "GET": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal)
+                                            case "POST": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Info_Background, UIColorState.Normal)
+                                            case "PUT": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal)
+                                            case "DELETE": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal)
+                                            default: return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Neutral_Background, UIColorState.Normal)
+                                            }
+                                        }
+                                        UTText { anchors.centerIn: parent; text: modelData.method || "ANY"; fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Badge_Text }
+                                    }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || ""; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBreakpointRule(index); bpListView.model = root.controller.rulesManager.getBreakpointRules() } }
+                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBreakpointRule(index); bpListView.model = root.controller.rulesManager.getBreakpointRules() } }
                                 }
                             }
-                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No breakpoint rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5 }
+                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No breakpoint rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
                         }
                     }
 
@@ -189,29 +200,31 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true; Layout.preferredHeight: Math.min(root.controller.interceptedCount * 36 + 8, 180)
                         visible: root.controller.interceptedCount > 0
-                        color: Qt.alpha("#F44336", 0.05); border.color: Qt.alpha("#F44336", 0.3); border.width: 1; radius: 4
+                        color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.05); border.color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.3); border.width: 1; radius: 4
                         ListView {
                             id: pausedListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
                             model: root.controller.interceptedModel
                             delegate: Rectangle {
                                 width: pausedListView.width; height: 32; radius: 3
-                                color: pausedMa.containsMouse ? Qt.alpha("#F44336", 0.1) : "transparent"
+                                color: pausedMa.containsMouse ? Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.1) : "transparent"
                                 MouseArea { id: pausedMa; anchors.fill: parent; hoverEnabled: true }
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 6
-                                    Rectangle { width: 8; height: 8; radius: 4; color: "#F44336"; anchors.verticalCenter: parent.verticalCenter }
+                                    Rectangle { width: 8; height: 8; radius: 4; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); anchors.verticalCenter: parent.verticalCenter }
                                     Rectangle {
                                         width: 44; height: 18; radius: 3; anchors.verticalCenter: parent.verticalCenter
-                                        color: { switch(model.method) { case "GET": return "#4CAF50"; case "POST": return "#2196F3"; case "PUT": return "#FF9800"; case "DELETE": return "#F44336"; default: return "#757575" } }
-                                        UTText { anchors.centerIn: parent; text: model.method; fontEnum: UIFontToken.Caption_Strong; color: "white" }
+                                        color: { switch(model.method) { case "GET": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal); case "POST": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Info_Background, UIColorState.Normal); case "PUT": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal); case "DELETE": return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal); default: return UTComponentUtil.getPlainUIColor(UIColorToken.Status_Neutral_Background, UIColorState.Normal) } }
+                                        UTText { anchors.centerIn: parent; text: model.method; fontEnum: UIFontToken.Caption_Strong; color: UTComponentUtil.getPlainUIColor(UIColorToken.Badge_Text, UIColorState.Normal) }
                                     }
                                     UTText { Layout.fillWidth: true; text: model.url; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideMiddle }
                                     UTButton {
+                                        appearance: UTButton.Primary
                                         text: model.actionPending ? qsTr("Waiting...") : qsTr("▶ Forward"); implicitHeight: 24
                                         enabled: root.controller.proxyRunning && root.controller.addonConnected && !model.actionPending
                                         onClicked: root.controller.resumeRequest(model.flowId)
                                     }
                                     UTButton {
+                                        appearance: UTButton.Destructive
                                         text: qsTr("✕ Drop"); implicitHeight: 24
                                         enabled: root.controller.proxyRunning && root.controller.addonConnected && !model.actionPending
                                         onClicked: root.controller.dropRequest(model.flowId)
@@ -223,11 +236,13 @@ Item {
                     RowLayout {
                         visible: root.controller.interceptedCount > 1; spacing: 8
                         UTButton {
+                            appearance: UTButton.Primary
                             text: qsTr("▶ Forward All (%1)").arg(root.controller.interceptedCount)
                             enabled: root.controller.proxyRunning && root.controller.addonConnected
                             onClicked: root.controller.resumeAllRequests()
                         }
                         UTButton {
+                            appearance: UTButton.Destructive
                             text: qsTr("✕ Drop All (%1)").arg(root.controller.interceptedCount)
                             enabled: root.controller.proxyRunning && root.controller.addonConnected
                             onClicked: root.controller.dropAllRequests()
@@ -236,7 +251,7 @@ Item {
 
                     Rectangle {
                         Layout.fillWidth: true; implicitHeight: bpHelpCol.implicitHeight + 16; radius: 4
-                        color: Qt.alpha(root._accentColor, 0.05); border.color: Qt.alpha(root._accentColor, 0.2); border.width: 1
+                        color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Info_Background, UIColorState.Normal), 0.05); border.color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Info_Background, UIColorState.Normal), 0.2); border.width: 1
                         ColumnLayout {
                             id: bpHelpCol
                             anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: 8; spacing: 4
@@ -258,7 +273,7 @@ Item {
                     RowLayout {
                         spacing: 8; Layout.fillWidth: true
                         UTTextField { id: blUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern to block (regex)") }
-                        UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBlacklistRule(blUrl.text); blUrl.text=""; blListView.model = root.controller.rulesManager.getBlacklistRules() } }
+                        UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addBlacklistRule(blUrl.text); blUrl.text=""; blListView.model = root.controller.rulesManager.getBlacklistRules() } }
                     }
                     Rectangle {
                         Layout.fillWidth: true; Layout.fillHeight: true
@@ -267,15 +282,15 @@ Item {
                             id: blListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
                             model: root.controller.rulesManager.getBlacklistRules()
                             delegate: Rectangle {
-                                width: blListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
+                                width: blListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : root._sectionBg
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    Rectangle { width: 14; height: 14; radius: 7; color: "#F44336"; anchors.verticalCenter: parent.verticalCenter }
+                                    Rectangle { width: 14; height: 14; radius: 7; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal); anchors.verticalCenter: parent.verticalCenter }
                                     UTText { Layout.fillWidth: true; text: modelData.url_pattern || modelData; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBlacklistRule(index); blListView.model = root.controller.rulesManager.getBlacklistRules() } }
+                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeBlacklistRule(index); blListView.model = root.controller.rulesManager.getBlacklistRules() } }
                                 }
                             }
-                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No blacklist rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5 }
+                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No blacklist rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
                         }
                     }
                 }
@@ -289,7 +304,7 @@ Item {
                         spacing: 8; Layout.fillWidth: true
                         UTTextField { id: mlUrl; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("URL pattern (regex)") }
                         UTTextField { id: mlPath; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Local file path") }
-                        UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapLocalRule(mlUrl.text, mlPath.text); mlUrl.text=""; mlPath.text=""; mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
+                        UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapLocalRule(mlUrl.text, mlPath.text); mlUrl.text=""; mlPath.text=""; mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
                     }
                     Rectangle {
                         Layout.fillWidth: true; Layout.fillHeight: true
@@ -298,14 +313,14 @@ Item {
                             id: mlListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
                             model: root.controller.rulesManager.getMapLocalRules()
                             delegate: Rectangle {
-                                width: mlListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
+                                width: mlListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : root._sectionBg
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     UTText { Layout.fillWidth: true; text: (modelData.url_pattern||"") + " → " + (modelData.local_path||""); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapLocalRule(index); mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
+                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapLocalRule(index); mlListView.model = root.controller.rulesManager.getMapLocalRules() } }
                                 }
                             }
-                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map local rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5 }
+                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map local rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
                         }
                     }
                 }
@@ -323,11 +338,11 @@ Item {
 
                     Rectangle {
                         Layout.fillWidth: true; implicitHeight: 66; radius: 4
-                        color: Qt.alpha("#FF9800", 0.08); border.color: Qt.alpha("#FF9800", 0.25); border.width: 1
+                        color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal), 0.08); border.color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal), 0.25); border.width: 1
                         ColumnLayout {
                             anchors.fill: parent; anchors.margins: 8; spacing: 4
-                            UTText { text: qsTr("Note: bypassed hosts will not show request/response details in Capture."); fontEnum: UIFontToken.Caption_Text; color: "#FF9800"; Layout.fillWidth: true; wrapMode: Text.WordWrap }
-                            UTText { text: qsTr("They are forwarded directly so the app can connect successfully."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.8; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                            UTText { text: qsTr("Note: bypassed hosts will not show request/response details in Capture."); fontEnum: UIFontToken.Caption_Text; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal); Layout.fillWidth: true; wrapMode: Text.WordWrap }
+                            UTText { text: qsTr("They are forwarded directly so the app can connect successfully."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text; Layout.fillWidth: true; wrapMode: Text.WordWrap }
                         }
                     }
 
@@ -335,6 +350,7 @@ Item {
                         spacing: 8; Layout.fillWidth: true
                         UTTextField { id: bypassHostInput; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Host regex, e.g. (^|\\.)openai\\.com(:\\d+)?$") }
                         UTButton {
+                            appearance: UTButton.Primary
                             text: qsTr("+ Add")
                             onClicked: {
                                 var p = bypassHostInput.text.trim()
@@ -348,8 +364,9 @@ Item {
                                 root.refreshBypassHosts()
                             }
                         }
-                        UTButton { text: qsTr("Reload"); onClicked: root.refreshBypassHosts() }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("Reload"); onClicked: root.refreshBypassHosts() }
                         UTButton {
+                            appearance: UTButton.Destructive
                             text: qsTr("Reset Default")
                             onClicked: {
                                 root.controller.rulesManager.setBypassHosts([
@@ -377,13 +394,14 @@ Item {
 
                             delegate: Rectangle {
                                 width: bypassListView.width; height: 28; radius: 3
-                                color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
+                                color: index % 2 === 0 ? "transparent" : root._sectionBg
 
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
-                                    Rectangle { Layout.alignment: Qt.AlignVCenter; Layout.preferredWidth: 14; Layout.preferredHeight: 14; radius: 7; color: "#4CAF50" }
+                                    Rectangle { Layout.alignment: Qt.AlignVCenter; Layout.preferredWidth: 14; Layout.preferredHeight: 14; radius: 7; color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal) }
                                     UTText { Layout.fillWidth: true; text: modelData; fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
                                     UTButton {
+                                        appearance: UTButton.Destructive
                                         text: "✕"; implicitWidth: 28; implicitHeight: 24
                                         onClicked: {
                                             var next = root.controller.rulesManager.getBypassHosts()
@@ -399,7 +417,7 @@ Item {
                                 anchors.centerIn: parent
                                 visible: parent.count === 0
                                 text: qsTr("No bypass hosts. Add one above.")
-                                fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5
+                                fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text
                             }
                         }
                     }
@@ -414,7 +432,7 @@ Item {
                         spacing: 8; Layout.fillWidth: true
                         UTTextField { id: mrSrc; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Source URL pattern (regex)") }
                         UTTextField { id: mrDest; Layout.fillWidth: true; fontEnum: UIFontToken.Monospace_Text; placeholderText: qsTr("Destination URL") }
-                        UTButton { text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapRemoteRule(mrSrc.text, mrDest.text); mrSrc.text=""; mrDest.text=""; mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
+                        UTButton { appearance: UTButton.Primary; text: qsTr("+ Add"); onClicked: { root.controller.rulesManager.addMapRemoteRule(mrSrc.text, mrDest.text); mrSrc.text=""; mrDest.text=""; mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
                     }
                     Rectangle {
                         Layout.fillWidth: true; Layout.fillHeight: true
@@ -423,14 +441,14 @@ Item {
                             id: mrListView; anchors.fill: parent; anchors.margins: 4; clip: true; spacing: 2
                             model: root.controller.rulesManager.getMapRemoteRules()
                             delegate: Rectangle {
-                                width: mrListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : Qt.darker(root._sectionBg, 1.03)
+                                width: mrListView.width; height: 28; radius: 3; color: index % 2 === 0 ? "transparent" : root._sectionBg
                                 RowLayout {
                                     anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 8; spacing: 8
                                     UTText { Layout.fillWidth: true; text: (modelData.src_pattern||"") + " → " + (modelData.dest_url||""); fontEnum: UIFontToken.Monospace_Text; colorEnum: UIColorToken.Content_Text; elide: Text.ElideRight }
-                                    UTButton { text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapRemoteRule(index); mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
+                                    UTButton { appearance: UTButton.Destructive; text: "✕"; implicitWidth: 28; implicitHeight: 24; onClicked: { root.controller.rulesManager.removeMapRemoteRule(index); mrListView.model = root.controller.rulesManager.getMapRemoteRules() } }
                                 }
                             }
-                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map remote rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5 }
+                            UTText { anchors.centerIn: parent; visible: parent.count === 0; text: qsTr("No map remote rules."); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
                         }
                     }
                 }
@@ -466,12 +484,14 @@ Item {
                                 {label: "WiFi", dl: 0, ul: 0}
                             ]
                             delegate: UTButton {
+                                appearance: UTButton.Secondary
                                 text: modelData.label
                                 onClicked: { throttleEnabled.checked = modelData.dl > 0; dlSlider.value = modelData.dl; ulSlider.value = modelData.ul }
                             }
                         }
                         Item { Layout.fillWidth: true }
                         UTButton {
+                            appearance: UTButton.Primary
                             text: qsTr("Apply")
                             onClicked: root.controller.rulesManager.setThrottle(throttleEnabled.checked, dlSlider.value, ulSlider.value)
                         }

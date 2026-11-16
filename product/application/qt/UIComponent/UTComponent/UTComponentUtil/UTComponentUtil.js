@@ -19,6 +19,11 @@ function getPlainUIColor(colorEnum, colorState) {
     return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColor(colorEnum, colorState) : "red";
 }
 
+function getThemeUIColor(colorEnum, colorState, darkTheme) {
+    void(UIResourceLoaderManager ? UIResourceLoaderManager.themeRevision : 0);
+    return UIResourceLoaderManager ? UIResourceLoaderManager.getUIColorForTheme(colorEnum, colorState, darkTheme) : "red";
+}
+
 function getUIFont(fontToken) {
     return UIResourceLoaderManager ? UIResourceLoaderManager.getUIFont(fontToken) : Qt.font({ pixelSize: 12 });
 }

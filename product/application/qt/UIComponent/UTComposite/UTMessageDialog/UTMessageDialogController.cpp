@@ -4,6 +4,20 @@
 
 #include "LoggerDefine.h"
 
+namespace {
+QString buttonRoleName(UTButtonRole role)
+{
+    switch (role)
+    {
+    case UTButtonRole::Accept:      return QStringLiteral("accept");
+    case UTButtonRole::Reject:      return QStringLiteral("reject");
+    case UTButtonRole::Destructive: return QStringLiteral("destructive");
+    case UTButtonRole::Neutral:     break;
+    }
+    return QStringLiteral("neutral");
+}
+}
+
 UTMessageDialogController::UTMessageDialogController(QObject* parent)
     : QObject(parent)
 {
@@ -54,6 +68,7 @@ QVariantList UTMessageDialogController::toButtonsModel(const QList<UTMessageButt
         m.insert(QStringLiteral("text"),      b.text);
         m.insert(QStringLiteral("tooltip"),   b.tooltip);
         m.insert(QStringLiteral("role"),      static_cast<int>(b.role));
+        m.insert(QStringLiteral("roleName"),  buttonRoleName(b.role));
         m.insert(QStringLiteral("isDefault"), b.isDefault);
         m.insert(QStringLiteral("isCancel"),  b.isCancel);
         m.insert(QStringLiteral("enabled"),   b.enabled);

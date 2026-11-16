@@ -109,7 +109,7 @@ FocusScope {
         id: videoGridThumbnail
         Rectangle {
             id: thumbnailRoot
-            color: "#222222"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Background, UIColorState.Normal)
             radius: 4
 
             property string currentFilePath: (typeof filePath !== "undefined" && filePath) ? filePath : ""
@@ -187,7 +187,7 @@ FocusScope {
                 width: _fmtLabel.width + 8
                 height: _fmtLabel.height + 4
                 radius: 3
-                color: "#44000000"
+                color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Media_Scrim, UIColorState.Normal), 0.267)
 
                 Text {
                     id: _fmtLabel
@@ -197,7 +197,7 @@ FocusScope {
                         return ext ? ext.toUpperCase() : ""
                     }
                     font: UTComponentUtil.getUIFont(UIFontToken.Badge_Text)
-                    color: "#CCCCCC"
+                    color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Text, UIColorState.Normal)
                 }
             }
         }
@@ -211,7 +211,7 @@ FocusScope {
             width: 18
             height: 18
             radius: 3
-            color: "#222222"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Background, UIColorState.Normal)
 
             property string currentFilePath: (typeof filePath !== "undefined" && filePath) ? filePath : ""
             property string thumbnailUrl: ""
@@ -294,6 +294,7 @@ FocusScope {
             spacing: 8
 
             UTButton {
+                appearance: UTButton.Primary
                 id: startBtn
                 text: qsTr("🎬 Start Recording")
                 focus: true
@@ -332,12 +333,13 @@ FocusScope {
                 visible: !controller.ffmpegAvailable
                 text: qsTr("⚠ FFmpeg not found")
                 fontEnum: UIFontToken.Caption_Text
-                color: "#FF6B6B"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal)
             }
 
             Item { Layout.fillWidth: true }
 
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("📂 Open Folder")
                 onClicked: controller.openRecordingsFolder()
             }
@@ -354,7 +356,7 @@ FocusScope {
             id: errorText
             visible: false
             Layout.fillWidth: true
-            color: "#FF6B6B"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal)
             fontEnum: UIFontToken.Caption_Text
             wrapMode: Text.WordWrap
         }
@@ -386,12 +388,14 @@ FocusScope {
                     spacing: 8
 
                     UTButton {
+                        appearance: UTButton.Secondary
                         visible: folderView.selectedFilePath.length > 0
                         text: qsTr("▶ Open")
                         onClicked: controller.openFile(folderView.selectedFilePath)
                     }
 
                     UTButton {
+                        appearance: UTButton.Destructive
                         visible: folderView.selectedFilePath.length > 0
                         text: qsTr("🗑 Delete")
                         onClicked: controller.deleteFile(folderView.selectedFilePath)

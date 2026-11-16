@@ -69,12 +69,14 @@ FocusScope {
             spacing: 8
 
             UTButton {
+                appearance: UTButton.Primary
                 text: qsTr("\ud83d\udcf7 Capture Region")
                 focus: true
                 onClicked: controller.grabScreenForOverlay()
             }
 
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("\ud83d\udda5 Full Screen")
                 onClicked: controller.captureFullScreen()
             }

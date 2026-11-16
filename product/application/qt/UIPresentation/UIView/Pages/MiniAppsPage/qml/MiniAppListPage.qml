@@ -33,6 +33,7 @@ Item {
 
             UTButton {
                 text: qsTr("Add Mini App")
+                appearance: UTButton.Primary
                 onClicked: installDialog.open()
             }
         }

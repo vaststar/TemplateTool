@@ -157,24 +157,28 @@ Window {
         id: overlayCanvas
         anchors.fill: parent
         visible: !isRecording
+        readonly property color selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Selection, UIColorState.Normal)
+        readonly property color scrimColor: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Scrim, UIColorState.Normal)
+        onSelectionColorChanged: requestPaint()
+        onScrimColorChanged: requestPaint()
 
         onPaint: {
             var ctx = getContext("2d")
             ctx.clearRect(0, 0, width, height)
 
             // Semi-transparent dark overlay
-            ctx.fillStyle = "rgba(0, 0, 0, 0.4)"
+            ctx.fillStyle = Qt.alpha(overlayCanvas.scrimColor, 0.4)
             ctx.fillRect(0, 0, width, height)
 
             // Cut out the selection area
             if (isSelecting || selectionDone) {
                 ctx.globalCompositeOperation = "destination-out"
-                ctx.fillStyle = "rgba(0, 0, 0, 1)"
+                ctx.fillStyle = overlayCanvas.scrimColor
                 ctx.fillRect(selX, selY, selW, selH)
                 ctx.globalCompositeOperation = "source-over"
 
                 // Draw selection border
-                ctx.strokeStyle = "#00AAFF"
+                ctx.strokeStyle = overlayCanvas.selectionColor
                 ctx.lineWidth = 2
                 ctx.setLineDash([5, 5])
                 ctx.strokeRect(selX, selY, selW, selH)
@@ -184,7 +188,7 @@ Window {
                 if (selW > 60 && selH > 20) {
                     var sizeText = Math.round(selW) + " × " + Math.round(selH)
                     ctx.font = "12px Arial"
-                    ctx.fillStyle = "#00AAFF"
+                    ctx.fillStyle = overlayCanvas.selectionColor
                     ctx.fillText(sizeText, selX + 5, selY + 15)
                 }
             }
@@ -238,8 +242,8 @@ Window {
         width: confirmRow.width + 20
         height: 44
         radius: 8
-        color: "#2D2D2D"
-        border.color: "#555555"
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Surface, UIColorState.Normal)
+        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal)
         border.width: 1
 
         RowLayout {
@@ -249,23 +253,31 @@ Window {
 
             Text {
                 text: Math.round(selW) + " × " + Math.round(selH)
-                color: "#AAAAAA"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Secondary_Text, UIColorState.Normal)
                 font: UTComponentUtil.getUIFont(UIFontToken.Monospace_Small)
             }
 
-            Rectangle { width: 1; height: 24; color: "#555555" }
+            Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
             UTToolButton {
+                id: recordRegionButton
+                appearance: UTButton.Ghost
+                fontColorEnum: enabled && (pressed || hovered)
+                               ? UIColorToken.Button_Primary_Text : UIColorToken.Button_Overlay_Text
                 text: "🎬 Record"
                 onClicked: startRegionRecording()
                 toolTipText: qsTr("Start recording this region")
                 background: Rectangle {
                     radius: 4
-                    color: parent.pressed ? "#44AA44" : (parent.hovered ? "#448844" : "transparent")
+                    color: recordRegionButton.enabled && (recordRegionButton.pressed || recordRegionButton.hovered)
+                           ? UTComponentUtil.getItemUIColor(recordRegionButton, UIColorToken.Button_Primary_Background)
+                           : "transparent"
                 }
             }
 
             UTToolButton {
+                appearance: UTButton.Ghost
+                fontColorEnum: UIColorToken.Button_Overlay_Text
                 text: "↩ Reselect"
                 onClicked: {
                     selectionDone = false
@@ -276,20 +288,22 @@ Window {
                 toolTipText: qsTr("Draw a new selection")
                 background: Rectangle {
                     radius: 4
-                    color: parent.pressed ? "#555555" : (parent.hovered ? "#444444" : "transparent")
+                    color: (parent.pressed || parent.hovered) ? UTComponentUtil.getItemUIColor(parent, UIColorToken.Button_Overlay_Background) : "transparent"
                 }
             }
 
-            Rectangle { width: 1; height: 24; color: "#555555" }
+            Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
             UTToolButton {
+                appearance: UTButton.Ghost
+                fontColorEnum: UIColorToken.Button_Overlay_Text
                 text: "✕"
                 onClicked: cleanup()
                 toolTipText: qsTr("Cancel")
                 Accessible.name: toolTipText
                 background: Rectangle {
                     radius: 4
-                    color: parent.pressed ? "#AA4444" : (parent.hovered ? "#884444" : "transparent")
+                    color: (parent.pressed || parent.hovered) ? UTComponentUtil.getItemUIColor(parent, UIColorToken.Button_Destructive_Background) : "transparent"
                 }
             }
         }
@@ -301,14 +315,14 @@ Window {
         width: instructionText.width + 40
         height: instructionText.height + 20
         radius: 8
-        color: "#CC000000"
+        color: Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Media_Scrim, UIColorState.Normal), 0.8)
         visible: !selectionDone && !isSelecting && !isRecording
 
         Text {
             id: instructionText
             anchors.centerIn: parent
             text: qsTr("Click and drag to select recording region\nPress ESC to cancel")
-            color: "white"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Text, UIColorState.Normal)
             font: UTComponentUtil.getUIFont(UIFontToken.Body_Large)
             horizontalAlignment: Text.AlignHCenter
         }
@@ -331,15 +345,15 @@ Window {
         height: selH + (bw + extraGap) * 2
         visible: isRecording
         color: "transparent"
-        border.color: "red"
+        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording, UIColorState.Normal)
         border.width: bw
         antialiasing: false
 
         SequentialAnimation on border.color {
             running: isRecording && !controller.isPaused
             loops: Animation.Infinite
-            ColorAnimation { to: "#FF0000"; duration: 800 }
-            ColorAnimation { to: "#FF6666"; duration: 800 }
+            ColorAnimation { to: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording, UIColorState.Normal); duration: 800 }
+            ColorAnimation { to: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording_Pulse, UIColorState.Normal); duration: 800 }
         }
     }
 
@@ -349,7 +363,7 @@ Window {
         Rectangle {
             width: 12
             height: 12
-            color: "red"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording, UIColorState.Normal)
             radius: 2
             x: selX + ((index % 2 === 0) ? -(width + recordingBorder.extraGap) : (selW + recordingBorder.extraGap))
             y: selY + ((index < 2) ? -(height + recordingBorder.extraGap) : (selH + recordingBorder.extraGap))
@@ -376,8 +390,8 @@ Window {
         Rectangle {
             anchors.fill: parent
             radius: 8
-            color: "#2D2D2D"
-            border.color: "#555555"
+            color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Surface, UIColorState.Normal)
+            border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal)
             border.width: 1
 
             RowLayout {
@@ -390,7 +404,7 @@ Window {
                     width: 12
                     height: 12
                     radius: 6
-                    color: controller.isPaused ? "gray" : "red"
+                    color: controller.isPaused ? UTComponentUtil.getPlainUIColor(UIColorToken.Media_Secondary_Text, UIColorState.Normal) : UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording, UIColorState.Normal)
 
                     SequentialAnimation on opacity {
                         running: selectorWindow.isRecording && !controller.isPaused
@@ -403,14 +417,17 @@ Window {
                 // Duration
                 Text {
                     text: formatDuration(controller.recordingDuration)
-                    color: "#FFFFFF"
+                    color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Text, UIColorState.Normal)
                     font: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
                 }
 
-                Rectangle { width: 1; height: 24; color: "#555555" }
+                Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
                 // Pause / Resume
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
+                    backgroundColorEnum: UIColorToken.Button_Overlay_Background
                     text: controller.isPaused ? "▶" : "⏸"
                     toolTipText: controller.isPaused ? qsTr("Resume") : qsTr("Pause")
                     onClicked: {
@@ -423,6 +440,9 @@ Window {
 
                 // Stop
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
+                    backgroundColorEnum: UIColorToken.Button_Overlay_Background
                     text: "⏹"
                     toolTipText: qsTr("Stop recording")
                     onClicked: stopRecording()
@@ -430,6 +450,9 @@ Window {
 
                 // Abort
                 UTToolButton {
+                    appearance: UTButton.Ghost
+                    fontColorEnum: UIColorToken.Button_Overlay_Text
+                    backgroundColorEnum: UIColorToken.Button_Overlay_Background
                     text: "✕"
                     toolTipText: qsTr("Abort recording")
                     onClicked: abortRecording()

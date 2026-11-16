@@ -32,6 +32,10 @@ public:
     [[nodiscard]] model::Color getColor(
         model::ColorToken colorToken,
         model::ColorState state) const override;
+    [[nodiscard]] model::Color getColor(
+        model::ColorToken colorToken,
+        model::ColorState state,
+        model::ColorThemeType theme) const override;
 
     void setLocalizedStringLoader(std::unique_ptr<IResourceStringLoader>&& resourceStringLoader) override;
     [[nodiscard]] std::string getNonLocalizedString(model::NonLocalizedString stringId) const override;

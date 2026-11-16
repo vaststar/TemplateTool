@@ -88,8 +88,8 @@ UTDialog {
                     visible: controller.detailText.length > 0
                     text: controller.detailText
                     fontEnum: UIFontToken.Body_Text
+                    colorEnum: UIColorToken.Content_Secondary_Text
                     wrapMode: Text.Wrap
-                    opacity: 0.75
                     Layout.fillWidth: true
                 }
             }
@@ -108,6 +108,13 @@ UTDialog {
                     required property int index
 
                     text: modelData.text
+                    appearance: {
+                        switch (modelData.roleName) {
+                        case "accept": return UTButton.Primary
+                        case "destructive": return UTButton.Destructive
+                        default: return UTButton.Secondary
+                        }
+                    }
                     enabled: modelData.enabled
                     ToolTip.text: modelData.tooltip
                     ToolTip.visible: hovered && modelData.tooltip.length > 0

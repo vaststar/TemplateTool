@@ -113,6 +113,7 @@ UTDialog {
 
             UTButton {
                 text: qsTr("OK")
+                appearance: UTButton.Primary
                 onClicked: dialog.close()
                 focus: true
             }

@@ -56,8 +56,8 @@ BaseSpinBox {
                      borderColorEnum,
                      !control.enabled ? UIColorState.Disabled
                                       : control.activeFocus ? UIColorState.Focused : UIColorState.Normal)
-    selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Border, UIColorState.Focused)
-    selectedTextColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Normal)
+    selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Background, UIColorState.Normal)
+    selectedTextColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Text, UIColorState.Normal)
 
     UTFocusItem {
         focusRadius: control.borderRadius

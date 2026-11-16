@@ -2257,5 +2257,320 @@
       "g": 160,
       "b": 71
     }
+  },
+  {
+    "name": "white",
+    "hex": "#ffffff",
+    "rgb": {
+      "r": 255,
+      "g": 255,
+      "b": 255
+    }
+  },
+  {
+    "name": "action-disabled-dark-background",
+    "hex": "#3a403d",
+    "rgb": {
+      "r": 58,
+      "g": 64,
+      "b": 61
+    }
+  },
+  {
+    "name": "action-disabled-dark-text",
+    "hex": "#909892",
+    "rgb": {
+      "r": 144,
+      "g": 152,
+      "b": 146
+    }
+  },
+  {
+    "name": "action-primary-light",
+    "hex": "#147d64",
+    "rgb": {
+      "r": 20,
+      "g": 125,
+      "b": 100
+    }
+  },
+  {
+    "name": "action-primary-light-hovered",
+    "hex": "#116f59",
+    "rgb": {
+      "r": 17,
+      "g": 111,
+      "b": 89
+    }
+  },
+  {
+    "name": "action-primary-light-pressed",
+    "hex": "#0e604d",
+    "rgb": {
+      "r": 14,
+      "g": 96,
+      "b": 77
+    }
+  },
+  {
+    "name": "action-secondary-light",
+    "hex": "#f4f6f4",
+    "rgb": {
+      "r": 244,
+      "g": 246,
+      "b": 244
+    }
+  },
+  {
+    "name": "action-secondary-light-hovered",
+    "hex": "#e8ede9",
+    "rgb": {
+      "r": 232,
+      "g": 237,
+      "b": 233
+    }
+  },
+  {
+    "name": "action-secondary-light-pressed",
+    "hex": "#dae2dc",
+    "rgb": {
+      "r": 218,
+      "g": 226,
+      "b": 220
+    }
+  },
+  {
+    "name": "action-secondary-light-border",
+    "hex": "#8a958d",
+    "rgb": {
+      "r": 138,
+      "g": 149,
+      "b": 141
+    }
+  },
+  {
+    "name": "action-secondary-light-text",
+    "hex": "#202421",
+    "rgb": {
+      "r": 32,
+      "g": 36,
+      "b": 33
+    }
+  },
+  {
+    "name": "action-destructive-light",
+    "hex": "#b42318",
+    "rgb": {
+      "r": 180,
+      "g": 35,
+      "b": 24
+    }
+  },
+  {
+    "name": "action-primary-dark",
+    "hex": "#178267",
+    "rgb": {
+      "r": 23,
+      "g": 130,
+      "b": 103
+    }
+  },
+  {
+    "name": "action-primary-dark-hovered",
+    "hex": "#1c8468",
+    "rgb": {
+      "r": 28,
+      "g": 132,
+      "b": 104
+    }
+  },
+  {
+    "name": "action-primary-dark-pressed",
+    "hex": "#157e64",
+    "rgb": {
+      "r": 21,
+      "g": 126,
+      "b": 100
+    }
+  },
+  {
+    "name": "action-secondary-dark",
+    "hex": "#343a36",
+    "rgb": {
+      "r": 52,
+      "g": 58,
+      "b": 54
+    }
+  },
+  {
+    "name": "action-secondary-dark-hovered",
+    "hex": "#414a44",
+    "rgb": {
+      "r": 65,
+      "g": 74,
+      "b": 68
+    }
+  },
+  {
+    "name": "action-secondary-dark-pressed",
+    "hex": "#4a574e",
+    "rgb": {
+      "r": 74,
+      "g": 87,
+      "b": 78
+    }
+  },
+  {
+    "name": "action-secondary-dark-border",
+    "hex": "#7b8a80",
+    "rgb": {
+      "r": 123,
+      "g": 138,
+      "b": 128
+    }
+  },
+  {
+    "name": "action-secondary-dark-text",
+    "hex": "#f5f7f5",
+    "rgb": {
+      "r": 245,
+      "g": 247,
+      "b": 245
+    }
+  },
+  {
+    "name": "action-destructive-dark",
+    "hex": "#d83232",
+    "rgb": {
+      "r": 216,
+      "g": 50,
+      "b": 50
+    }
+  },
+  {
+    "name": "action-destructive-dark-hovered",
+    "hex": "#dc3030",
+    "rgb": {
+      "r": 220,
+      "g": 48,
+      "b": 48
+    }
+  },
+  {
+    "name": "action-destructive-dark-pressed",
+    "hex": "#c52929",
+    "rgb": {
+      "r": 197,
+      "g": 41,
+      "b": 41
+    }
+  },
+  {
+    "name": "action-focus-dark",
+    "hex": "#8ab4f8",
+    "rgb": {
+      "r": 138,
+      "g": 180,
+      "b": 248
+    }
+  },
+  {
+    "name": "ui-text-secondary-light",
+    "hex": "#57665d",
+    "rgb": {
+      "r": 87,
+      "g": 102,
+      "b": 93
+    }
+  },
+  {
+    "name": "ui-text-secondary-dark",
+    "hex": "#b1b8b3",
+    "rgb": {
+      "r": 177,
+      "g": 184,
+      "b": 179
+    }
+  },
+  {
+    "name": "ui-accent-dark",
+    "hex": "#69d6b1",
+    "rgb": {
+      "r": 105,
+      "g": 214,
+      "b": 177
+    }
+  },
+  {
+    "name": "ui-accent-dark-hovered",
+    "hex": "#9be8cc",
+    "rgb": {
+      "r": 155,
+      "g": 232,
+      "b": 204
+    }
+  },
+  {
+    "name": "ui-selection-subtle-light",
+    "hex": "#e0f2ea",
+    "rgb": {
+      "r": 224,
+      "g": 242,
+      "b": 234
+    }
+  },
+  {
+    "name": "ui-selection-subtle-light-pressed",
+    "hex": "#cfe8dd",
+    "rgb": {
+      "r": 207,
+      "g": 232,
+      "b": 221
+    }
+  },
+  {
+    "name": "ui-selection-subtle-dark",
+    "hex": "#1d3c32",
+    "rgb": {
+      "r": 29,
+      "g": 60,
+      "b": 50
+    }
+  },
+  {
+    "name": "ui-selection-subtle-dark-pressed",
+    "hex": "#244a3d",
+    "rgb": {
+      "r": 36,
+      "g": 74,
+      "b": 61
+    }
+  },
+  {
+    "name": "semantic-error-bright",
+    "hex": "#ff8a80",
+    "rgb": {
+      "r": 255,
+      "g": 138,
+      "b": 128
+    }
+  },
+  {
+    "name": "media-error-surface",
+    "hex": "#4a2525",
+    "rgb": {
+      "r": 74,
+      "g": 37,
+      "b": 37
+    }
+  },
+  {
+    "name": "black",
+    "hex": "#000000",
+    "rgb": {
+      "r": 0,
+      "g": 0,
+      "b": 0
+    }
   }
 ]

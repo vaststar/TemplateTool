@@ -49,15 +49,14 @@ UTDialog {
 
             UTButton {
                 text: "取消"
-                backgroundColorEnum: UIColorToken.Content_Background
-                borderColorEnum: UIColorToken.Content_Input_Border
-                fontColorEnum: UIColorToken.Content_Text
+                appearance: UTButton.Secondary
                 implicitWidth: 72
                 implicitHeight: 30
                 onClicked: dialog.close()
             }
             UTButton {
                 text: "删除"
+                appearance: UTButton.Destructive
                 implicitWidth: 72
                 implicitHeight: 30
                 onClicked: {

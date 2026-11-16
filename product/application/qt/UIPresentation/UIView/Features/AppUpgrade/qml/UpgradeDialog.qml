@@ -160,6 +160,7 @@ UTDialog
             {
                 visible: dialog.controller.downloading
                 text: qsTr("Background")
+                appearance: UTButton.Secondary
                 onClicked: dialog.close()
             }
 
@@ -167,6 +168,7 @@ UTDialog
             {
                 visible: dialog.controller.downloading
                 text: qsTr("Cancel")
+                appearance: UTButton.Secondary
                 onClicked:
                 {
                     dialog.controller.cancelDownload()
@@ -181,6 +183,7 @@ UTDialog
                          || (dialog.controller.readyToInstall
                              && dialog.controller.errorMessage.length > 0)
                 text: qsTr("Show Installer in Folder")
+                appearance: UTButton.Secondary
                 onClicked: dialog.controller.revealInstaller()
             }
 
@@ -188,6 +191,7 @@ UTDialog
             {
                 visible: dialog.controller.readyToInstall
                 text: Qt.platform.os === "linux" ? qsTr("Open Terminal and Quit") : qsTr("Open Installer and Quit")
+                appearance: UTButton.Primary
                 onClicked: dialog.controller.openInstaller()
                 focus: visible
             }
@@ -197,6 +201,7 @@ UTDialog
                 visible: dialog.controller.hasUpgrade && !dialog.controller.downloading
                          && !dialog.controller.verifying && !dialog.controller.readyToInstall
                 text: qsTr("Download Installer")
+                appearance: UTButton.Primary
                 onClicked: dialog.controller.downloadUpgrade()
                 focus: visible
 
@@ -207,9 +212,7 @@ UTDialog
                 visible: !dialog.controller.downloading && !dialog.controller.verifying
                          && !dialog.controller.openingInstaller
                 text: dialog.controller.hasUpgrade ? qsTr("Later") : qsTr("Close")
-                fontColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Text : UIColorToken.Button_Primary_Text
-                backgroundColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Background : UIColorToken.Button_Primary_Background
-                borderColorEnum: dialog.controller.hasUpgrade ? UIColorToken.Content_Input_Border : UIColorToken.Button_Primary_Border
+                appearance: dialog.controller.hasUpgrade ? UTButton.Secondary : UTButton.Primary
                 onClicked: dialog.close()
                 focus: visible
             }

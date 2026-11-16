@@ -17,7 +17,7 @@ BaseTreeViewDelegate {
     textColor: UTComponentUtil.getPlainUIColor(
                    control.textColorEnum,
                    control.highlighted ? UIColorState.Selected : UIColorState.Normal)
-    indicatorColor: UTComponentUtil.getPlainUIColor(control.textColorEnum, UIColorState.Normal)
+    indicatorColor: control.textColor
     backgroundColor: control.highlighted
         ? UTComponentUtil.getPlainUIColor(control.backgroundColorEnum, UIColorState.Selected)
         : control.pressed

@@ -100,6 +100,7 @@ BaseComboBox {
         padding: 0
 
         readonly property bool isHighlighted: control.focusedItemIndex === index
+        readonly property bool isSelected: control.currentIndex === index
         highlighted: isHighlighted
 
         contentItem: RowLayout {
@@ -119,7 +120,9 @@ BaseComboBox {
                 leftPadding: control.iconRole !== "" ? 0 : 12
                 text: control.textAt(delegateItem.index)
                 fontEnum: control.fontEnum
-                color: control.textColor
+                color: delegateItem.isSelected
+                       ? UTComponentUtil.getPlainUIColor(UIColorToken.Combobox_Text, UIColorState.Selected)
+                       : control.textColor
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
 
@@ -142,10 +145,10 @@ BaseComboBox {
             anchors.fill: parent
             anchors.margins: 4
             radius: control.borderRadius - 2
-            color: delegateItem.isHighlighted || delegateItem.hovered
-                ? control.itemHoveredColor
-                : control.currentIndex === delegateItem.index
-                    ? control.itemSelectedColor
+            color: delegateItem.isSelected
+                ? control.itemSelectedColor
+                : delegateItem.isHighlighted || delegateItem.hovered
+                    ? control.itemHoveredColor
                     : "transparent"
         }
 

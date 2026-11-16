@@ -11,10 +11,10 @@ Dialog {
     required property NetworkProxyController controller
 
     // ── Theme ──
-    readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
-    readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Border,     UIColorState.Normal)
+    readonly property color _sectionBg:      UTComponentUtil.getPlainUIColor(UIColorToken.Dialog_Background, UIColorState.Normal)
+    readonly property color _sectionBorder:   UTComponentUtil.getPlainUIColor(UIColorToken.Window_Border, UIColorState.Normal)
     readonly property color _sectionTitle:    UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Title,      UIColorState.Normal)
-    readonly property color _headerBg:        Qt.darker(_sectionBg, 1.08)
+    readonly property color _headerBg:        UTComponentUtil.getPlainUIColor(UIColorToken.Content_Section_Background, UIColorState.Normal)
 
     function openWithPattern(pattern) {
         ptPattern.text = pattern
@@ -33,6 +33,7 @@ Dialog {
     footer: Item {
         implicitHeight: 48
         UTButton {
+            appearance: UTButton.Secondary
             text: qsTr("Close")
             anchors.centerIn: parent
             onClicked: root.close()
@@ -52,11 +53,13 @@ Dialog {
         RowLayout {
             spacing: 8; Layout.alignment: Qt.AlignHCenter
             UTButton {
+                appearance: UTButton.Primary
                 text: qsTr("▶ Run Test")
                 enabled: ptPattern.text.length > 0 && ptTestUrl.text.length > 0
                 onClicked: ptResult.text = root.controller.rulesManager.testUrlPattern(ptPattern.text, ptTestUrl.text)
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Clear")
                 onClicked: { ptResult.text = ""; ptTestUrl.text = "" }
             }
@@ -64,20 +67,20 @@ Dialog {
         Rectangle {
             Layout.fillWidth: true; implicitHeight: ptResult.implicitHeight + 16; radius: 4
             visible: ptResult.text.length > 0
-            color: ptResult.text.indexOf("✓") >= 0 ? Qt.alpha("#4CAF50", 0.1) : Qt.alpha("#F44336", 0.1)
-            border.color: ptResult.text.indexOf("✓") >= 0 ? Qt.alpha("#4CAF50", 0.3) : Qt.alpha("#F44336", 0.3)
+            color: ptResult.text.indexOf("✓") >= 0 ? Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal), 0.1) : Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.1)
+            border.color: ptResult.text.indexOf("✓") >= 0 ? Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal), 0.3) : Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Background, UIColorState.Normal), 0.3)
             border.width: 1
             UTText {
                 id: ptResult; anchors.centerIn: parent
                 fontEnum: UIFontToken.Monospace_Text
-                color: text.indexOf("✓") >= 0 ? "#4CAF50" : "#F44336"
+                color: text.indexOf("✓") >= 0 ? UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal) : UTComponentUtil.getPlainUIColor(UIColorToken.Status_Error_Text, UIColorState.Normal)
                 wrapMode: Text.WordWrap; width: parent.width - 16
                 horizontalAlignment: Text.AlignHCenter
             }
         }
         UTText {
             text: qsTr("Tip: Pattern uses Python-style regex (re.search). It matches anywhere in the URL, not just from the start.")
-            fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.5
+            fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text
             wrapMode: Text.WordWrap; Layout.fillWidth: true
         }
     }

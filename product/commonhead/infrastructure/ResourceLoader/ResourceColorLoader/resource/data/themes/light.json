@@ -4,611 +4,969 @@
     {
       "token": "main-window-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "action-secondary-light"
       }
     },
     {
       "token": "focus-outline",
       "color": {
-        "normal": "blue-500"
+        "normal": "action-primary-light"
       }
     },
     {
       "token": "button-primary-text",
       "color": {
-        "normal": "gray-50"
+        "normal": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "button-primary-background",
       "color": {
-        "normal": "blue-600",
-        "hovered": "blue-700",
-        "pressed": "blue-800",
-        "disabled": "gray-300",
-        "checked": "blue-600",
-        "focused": "blue-600",
-        "selected": "blue-600"
+        "normal": "action-primary-light",
+        "hovered": "action-primary-light-hovered",
+        "pressed": "action-primary-light-pressed",
+        "disabled": "gray-200",
+        "checked": "action-primary-light",
+        "focused": "action-primary-light",
+        "selected": "action-primary-light"
       }
     },
     {
       "token": "button-primary-border",
       "color": {
-        "normal": "blue-600",
-        "hovered": "blue-700",
-        "pressed": "blue-800",
-        "disabled": "gray-300",
-        "checked": "blue-600",
-        "focused": "blue-600",
-        "selected": "blue-600"
+        "normal": "action-primary-light",
+        "hovered": "action-primary-light-hovered",
+        "pressed": "action-primary-light-pressed",
+        "disabled": "gray-200",
+        "checked": "action-primary-light",
+        "focused": "action-primary-light",
+        "selected": "action-primary-light"
       }
     },
     {
       "token": "sidebar-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "action-secondary-light"
       }
     },
     {
       "token": "sidebar-item-background",
       "color": {
-        "normal": "gray-50",
-        "hovered": "gray-100",
-        "pressed": "gray-200",
-        "selected": "blue-50"
+        "normal": "action-secondary-light",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "ui-selection-subtle-light-pressed",
+        "selected": "ui-selection-subtle-light",
+        "focused": "ui-selection-subtle-light",
+        "checked": "ui-selection-subtle-light"
       }
     },
     {
       "token": "sidebar-item-text",
       "color": {
-        "normal": "gray-500",
-        "selected": "gray-900"
+        "normal": "ui-text-secondary-light",
+        "hovered": "action-secondary-light-text",
+        "pressed": "action-secondary-light-text",
+        "selected": "action-primary-light-hovered",
+        "focused": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "sidebar-border",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-pressed"
       }
     },
     {
       "token": "sidebar-arrow-border",
       "color": {
-        "normal": "gray-300"
+        "normal": "action-secondary-light-border"
       }
     },
     {
       "token": "sidebar-arrow-icon",
       "color": {
-        "normal": "gray-400"
+        "normal": "ui-text-secondary-light",
+        "hovered": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "sidebar-badge-background",
       "color": {
-        "normal": "red-500"
+        "normal": "action-destructive-light"
       }
     },
     {
       "token": "sidebar-badge-text",
       "color": {
-        "normal": "gray-50"
+        "normal": "white"
       }
     },
     {
       "token": "titlebar-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "action-secondary-light"
       }
     },
     {
       "token": "titlebar-button-background",
       "color": {
-        "normal": "gray-50",
-        "hovered": "gray-200",
-        "pressed": "gray-300"
+        "normal": "action-secondary-light",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed"
       }
     },
     {
       "token": "titlebar-button-text",
       "color": {
-        "normal": "gray-500",
-        "hovered": "gray-700",
-        "pressed": "gray-800"
+        "normal": "ui-text-secondary-light",
+        "hovered": "action-secondary-light-text",
+        "pressed": "action-secondary-light-text",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "titlebar-close-background",
       "color": {
-        "normal": "gray-50",
-        "hovered": "red-500",
-        "pressed": "red-600"
+        "normal": "action-secondary-light",
+        "hovered": "action-destructive-light",
+        "pressed": "red-800"
       }
     },
     {
       "token": "titlebar-close-text",
       "color": {
-        "normal": "gray-500",
-        "hovered": "gray-50",
-        "pressed": "gray-50"
+        "normal": "ui-text-secondary-light",
+        "hovered": "white",
+        "pressed": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "footbar-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "action-secondary-light"
       }
     },
     {
       "token": "footbar-text",
       "color": {
-        "normal": "gray-600"
+        "normal": "ui-text-secondary-light"
       }
     },
     {
       "token": "content-background",
       "color": {
-        "normal": "gray-100"
+        "normal": "white"
       }
     },
     {
       "token": "content-nav-item-background",
       "color": {
-        "normal": "gray-100",
-        "hovered": "neutral-150",
-        "pressed": "gray-300",
-        "selected": "neutral-225"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "ui-selection-subtle-light-pressed",
+        "selected": "ui-selection-subtle-light",
+        "focused": "ui-selection-subtle-light",
+        "checked": "ui-selection-subtle-light"
       }
     },
     {
       "token": "content-heading",
       "color": {
-        "normal": "gray-900"
+        "normal": "action-secondary-light-text"
       }
     },
     {
       "token": "content-text",
       "color": {
-        "normal": "gray-700"
+        "normal": "action-secondary-light-text"
       }
     },
     {
       "token": "content-secondary-text",
       "color": {
-        "normal": "gray-500"
+        "normal": "ui-text-secondary-light"
       }
     },
     {
       "token": "content-input-background",
       "color": {
-        "normal": "gray-50",
-        "focused": "gray-50",
-        "disabled": "gray-100"
+        "normal": "white",
+        "focused": "white",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "content-input-text",
       "color": {
-        "normal": "gray-900",
-        "disabled": "gray-400"
+        "normal": "action-secondary-light-text",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "content-input-border",
       "color": {
-        "normal": "gray-300",
-        "focused": "blue-500",
+        "normal": "action-secondary-light-border",
+        "focused": "action-primary-light",
         "disabled": "gray-200"
       }
     },
     {
       "token": "content-input-placeholder",
       "color": {
-        "normal": "gray-400",
-        "disabled": "gray-400"
+        "normal": "ui-text-secondary-light",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "content-section-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "action-secondary-light"
       }
     },
     {
       "token": "content-section-border",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-pressed"
       }
     },
     {
       "token": "content-section-title",
       "color": {
-        "normal": "gray-600"
+        "normal": "ui-text-secondary-light"
       }
     },
     {
       "token": "content-error-text",
       "color": {
-        "normal": "red-600"
+        "normal": "action-destructive-light"
       }
     },
     {
       "token": "window-border",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-border"
       }
     },
     {
       "token": "link-text",
       "color": {
-        "normal": "blue-600",
-        "hovered": "blue-700"
+        "normal": "action-primary-light-hovered",
+        "hovered": "action-primary-light-pressed",
+        "pressed": "action-primary-light-pressed",
+        "focused": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "tooltip-background",
       "color": {
-        "normal": "gray-800"
+        "normal": "neutral-800"
       }
     },
     {
       "token": "tooltip-text",
       "color": {
-        "normal": "gray-50"
+        "normal": "white"
       }
     },
     {
       "token": "tooltip-border",
       "color": {
-        "normal": "gray-700"
+        "normal": "neutral-600"
       }
     },
     {
       "token": "combobox-background",
       "color": {
-        "normal": "gray-100",
-        "hovered": "gray-200",
-        "pressed": "gray-300",
-        "disabled": "gray-100"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "focused": "white",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "combobox-text",
       "color": {
-        "normal": "gray-700",
-        "disabled": "gray-400"
+        "normal": "action-secondary-light-text",
+        "hovered": "action-secondary-light-text",
+        "pressed": "action-secondary-light-text",
+        "selected": "action-primary-light-hovered",
+        "focused": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "combobox-border",
       "color": {
-        "normal": "gray-300",
+        "normal": "action-secondary-light-border",
+        "focused": "action-primary-light",
         "disabled": "gray-200"
       }
     },
     {
       "token": "combobox-item-background",
       "color": {
-        "normal": "gray-100",
-        "hovered": "gray-200",
-        "selected": "blue-50"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "ui-selection-subtle-light-pressed",
+        "selected": "ui-selection-subtle-light",
+        "focused": "ui-selection-subtle-light",
+        "checked": "ui-selection-subtle-light"
       }
     },
     {
       "token": "timepicker-background",
       "color": {
-        "normal": "gray-100",
-        "hovered": "gray-200",
-        "pressed": "gray-300"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "focused": "white",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "timepicker-text",
       "color": {
-        "normal": "gray-700"
+        "normal": "action-secondary-light-text",
+        "selected": "white",
+        "checked": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "timepicker-border",
       "color": {
-        "normal": "gray-300"
+        "normal": "action-secondary-light-border",
+        "focused": "action-primary-light",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "timepicker-column-background",
       "color": {
-        "normal": "gray-50",
-        "selected": "blue-600"
+        "normal": "white",
+        "selected": "action-primary-light",
+        "checked": "action-primary-light"
       }
     },
     {
       "token": "datepicker-background",
       "color": {
-        "normal": "gray-100",
-        "hovered": "gray-200",
-        "pressed": "gray-300"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "focused": "white",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "datepicker-text",
       "color": {
-        "normal": "gray-700",
-        "disabled": "gray-400"
+        "normal": "action-secondary-light-text",
+        "selected": "white",
+        "checked": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "datepicker-border",
       "color": {
-        "normal": "gray-300"
+        "normal": "action-secondary-light-border",
+        "focused": "action-primary-light",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "datepicker-today-background",
       "color": {
-        "normal": "gray-200"
+        "normal": "ui-selection-subtle-light",
+        "hovered": "ui-selection-subtle-light-pressed",
+        "pressed": "ui-selection-subtle-light-pressed"
       }
     },
     {
       "token": "datepicker-selected-background",
       "color": {
-        "normal": "blue-600",
-        "selected": "blue-600"
+        "normal": "action-primary-light",
+        "selected": "action-primary-light",
+        "checked": "action-primary-light"
       }
     },
     {
       "token": "tab-bar-background",
       "color": {
-        "normal": "gray-100"
+        "normal": "action-secondary-light"
       }
     },
     {
       "token": "tab-bar-indicator",
       "color": {
-        "normal": "blue-600"
+        "normal": "action-primary-light"
       }
     },
     {
       "token": "tab-button-background",
       "color": {
-        "normal": "gray-100",
-        "hovered": "gray-200",
-        "pressed": "gray-300"
+        "normal": "action-secondary-light",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "focused": "ui-selection-subtle-light"
       }
     },
     {
       "token": "tab-button-checked-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "action-primary-light"
       }
     },
     {
       "token": "tab-button-text",
       "color": {
-        "normal": "gray-500",
-        "hovered": "gray-700"
+        "normal": "ui-text-secondary-light",
+        "hovered": "action-primary-light-hovered",
+        "pressed": "action-secondary-light-text",
+        "focused": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "tab-button-checked-text",
       "color": {
-        "normal": "gray-900"
+        "normal": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "scrollbar-track",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-hovered"
       }
     },
     {
       "token": "scrollbar-thumb",
       "color": {
-        "normal": "gray-400",
-        "hovered": "gray-500",
-        "pressed": "gray-600"
+        "normal": "ui-text-secondary-light",
+        "hovered": "action-primary-light",
+        "pressed": "action-primary-light-pressed",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "scrollbar-arrow",
       "color": {
-        "normal": "gray-500",
-        "hovered": "gray-800"
+        "normal": "ui-text-secondary-light",
+        "hovered": "action-primary-light",
+        "pressed": "action-primary-light-pressed",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "listview-item-background",
       "color": {
-        "normal": "gray-50",
-        "hovered": "gray-100",
-        "pressed": "gray-200",
-        "selected": "blue-50"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "ui-selection-subtle-light-pressed",
+        "selected": "ui-selection-subtle-light",
+        "focused": "ui-selection-subtle-light",
+        "checked": "ui-selection-subtle-light"
       }
     },
     {
       "token": "listview-item-text",
       "color": {
-        "normal": "gray-700",
-        "selected": "gray-900"
+        "normal": "action-secondary-light-text",
+        "hovered": "action-secondary-light-text",
+        "pressed": "action-secondary-light-text",
+        "selected": "action-primary-light-hovered",
+        "focused": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "menu-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "white"
       }
     },
     {
       "token": "menu-border",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-pressed"
       }
     },
     {
       "token": "menu-text",
       "color": {
-        "normal": "gray-700",
-        "hovered": "gray-900",
-        "disabled": "gray-400"
+        "normal": "action-secondary-light-text",
+        "hovered": "action-secondary-light-text",
+        "pressed": "action-secondary-light-text",
+        "selected": "action-primary-light-hovered",
+        "focused": "action-primary-light-hovered",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "menu-item-background",
       "color": {
-        "normal": "gray-50",
-        "hovered": "gray-100",
-        "pressed": "gray-200"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "ui-selection-subtle-light-pressed",
+        "selected": "ui-selection-subtle-light",
+        "focused": "ui-selection-subtle-light",
+        "checked": "ui-selection-subtle-light"
       }
     },
     {
       "token": "menu-separator",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-pressed"
       }
     },
     {
       "token": "menu-shortcut-text",
       "color": {
-        "normal": "gray-400"
+        "normal": "ui-text-secondary-light",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "switch-track",
       "color": {
-        "normal": "gray-300",
-        "hovered": "gray-400",
-        "pressed": "gray-500",
-        "disabled": "gray-200",
-        "checked": "blue-600"
+        "normal": "action-secondary-light-border",
+        "hovered": "ui-text-secondary-light",
+        "pressed": "action-primary-light-hovered",
+        "checked": "action-primary-light",
+        "selected": "action-primary-light",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "switch-thumb",
       "color": {
-        "normal": "gray-50",
-        "disabled": "gray-100"
+        "normal": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "checkbox-box",
       "color": {
-        "normal": "gray-50",
-        "hovered": "gray-100",
-        "pressed": "gray-200",
-        "disabled": "gray-200",
-        "checked": "blue-600"
+        "normal": "white",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "checked": "action-primary-light",
+        "selected": "action-primary-light",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "checkbox-check",
       "color": {
-        "normal": "gray-50"
+        "normal": "white",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "checkbox-text",
       "color": {
-        "normal": "gray-700",
-        "disabled": "gray-400"
+        "normal": "action-secondary-light-text",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "spinbox-background",
       "color": {
-        "normal": "gray-50",
+        "normal": "white",
         "disabled": "gray-200"
       }
     },
     {
       "token": "spinbox-text",
       "color": {
-        "normal": "gray-900",
-        "disabled": "gray-400"
+        "normal": "action-secondary-light-text",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "spinbox-button",
       "color": {
-        "normal": "gray-200",
-        "hovered": "gray-300",
-        "pressed": "gray-400",
-        "disabled": "gray-100"
+        "normal": "action-secondary-light-hovered",
+        "hovered": "action-secondary-light-pressed",
+        "pressed": "ui-selection-subtle-light-pressed",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "slider-track",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-pressed"
       }
     },
     {
       "token": "slider-progress",
       "color": {
-        "normal": "blue-600",
-        "disabled": "gray-300"
+        "normal": "action-primary-light",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "slider-handle",
       "color": {
-        "normal": "gray-50",
-        "hovered": "gray-100",
-        "pressed": "gray-200",
-        "disabled": "gray-300"
+        "normal": "white",
+        "hovered": "ui-selection-subtle-light",
+        "pressed": "action-primary-light",
+        "disabled": "gray-500"
       }
     },
     {
       "token": "busy-indicator-track",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-pressed"
       }
     },
     {
       "token": "busy-indicator-progress",
       "color": {
-        "normal": "blue-600",
-        "disabled": "gray-300"
+        "normal": "action-primary-light",
+        "disabled": "gray-200"
       }
     },
     {
       "token": "popup-background",
       "color": {
-        "normal": "gray-50"
+        "normal": "white"
       }
     },
     {
       "token": "popup-border",
       "color": {
-        "normal": "gray-200"
+        "normal": "action-secondary-light-border"
       }
     },
     {
       "token": "message-info-icon",
       "color": {
-        "normal": "material-blue-500"
+        "normal": "blue-700"
       }
     },
     {
       "token": "message-warning-icon",
       "color": {
-        "normal": "material-orange-600"
+        "normal": "amber-800"
       }
     },
     {
       "token": "message-error-icon",
       "color": {
-        "normal": "material-red-600"
+        "normal": "action-destructive-light"
       }
     },
     {
       "token": "message-question-icon",
       "color": {
-        "normal": "material-deep-purple-400"
+        "normal": "violet-700"
       }
     },
     {
       "token": "message-success-icon",
       "color": {
-        "normal": "material-green-600"
+        "normal": "action-primary-light-hovered"
+      }
+    },
+    {
+      "token": "button-secondary-background",
+      "color": {
+        "normal": "action-secondary-light",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "disabled": "gray-200",
+        "checked": "action-secondary-light",
+        "focused": "action-secondary-light",
+        "selected": "action-secondary-light"
+      }
+    },
+    {
+      "token": "button-secondary-border",
+      "color": {
+        "normal": "action-secondary-light-border",
+        "disabled": "gray-200"
+      }
+    },
+    {
+      "token": "button-secondary-text",
+      "color": {
+        "normal": "action-secondary-light-text",
+        "disabled": "gray-500"
+      }
+    },
+    {
+      "token": "button-destructive-background",
+      "color": {
+        "normal": "action-destructive-light",
+        "hovered": "red-800",
+        "pressed": "red-900",
+        "disabled": "gray-200",
+        "checked": "action-destructive-light",
+        "focused": "action-destructive-light",
+        "selected": "action-destructive-light"
+      }
+    },
+    {
+      "token": "button-destructive-border",
+      "color": {
+        "normal": "action-destructive-light",
+        "hovered": "red-800",
+        "pressed": "red-900",
+        "disabled": "gray-200",
+        "checked": "action-destructive-light",
+        "focused": "action-destructive-light",
+        "selected": "action-destructive-light"
+      }
+    },
+    {
+      "token": "button-destructive-text",
+      "color": {
+        "normal": "white",
+        "disabled": "gray-500"
+      }
+    },
+    {
+      "token": "button-ghost-background",
+      "color": {
+        "normal": "action-secondary-light",
+        "hovered": "action-secondary-light-hovered",
+        "pressed": "action-secondary-light-pressed",
+        "disabled": "gray-200",
+        "checked": "action-secondary-light-pressed",
+        "focused": "action-secondary-light",
+        "selected": "action-secondary-light-pressed"
+      }
+    },
+    {
+      "token": "button-overlay-text",
+      "color": {
+        "normal": "white",
+        "disabled": "action-disabled-dark-text"
+      }
+    },
+    {
+      "token": "dialog-background",
+      "color": {
+        "normal": "white"
+      }
+    },
+    {
+      "token": "button-overlay-background",
+      "color": {
+        "normal": "neutral-800",
+        "hovered": "neutral-700",
+        "pressed": "neutral-600",
+        "disabled": "neutral-800",
+        "checked": "neutral-600",
+        "focused": "neutral-800",
+        "selected": "neutral-600"
+      }
+    },
+    {
+      "token": "text-selection-background",
+      "color": {
+        "normal": "action-primary-light"
+      }
+    },
+    {
+      "token": "text-selection-text",
+      "color": {
+        "normal": "white"
+      }
+    },
+    {
+      "token": "status-success-text",
+      "color": {
+        "normal": "action-primary-light-hovered"
+      }
+    },
+    {
+      "token": "status-success-background",
+      "color": {
+        "normal": "action-primary-light"
+      }
+    },
+    {
+      "token": "status-warning-text",
+      "color": {
+        "normal": "amber-800"
+      }
+    },
+    {
+      "token": "status-warning-background",
+      "color": {
+        "normal": "amber-800"
+      }
+    },
+    {
+      "token": "status-error-text",
+      "color": {
+        "normal": "action-destructive-light"
+      }
+    },
+    {
+      "token": "status-error-background",
+      "color": {
+        "normal": "action-destructive-light"
+      }
+    },
+    {
+      "token": "status-info-text",
+      "color": {
+        "normal": "blue-700"
+      }
+    },
+    {
+      "token": "status-info-background",
+      "color": {
+        "normal": "blue-700"
+      }
+    },
+    {
+      "token": "status-neutral-text",
+      "color": {
+        "normal": "ui-text-secondary-light"
+      }
+    },
+    {
+      "token": "status-neutral-background",
+      "color": {
+        "normal": "ui-text-secondary-light"
+      }
+    },
+    {
+      "token": "badge-text",
+      "color": {
+        "normal": "white"
+      }
+    },
+    {
+      "token": "badge-accent-background",
+      "color": {
+        "normal": "action-primary-light"
+      }
+    },
+    {
+      "token": "badge-category-background",
+      "color": {
+        "normal": "violet-700"
+      }
+    },
+    {
+      "token": "syntax-key",
+      "color": {
+        "normal": "blue-700"
+      }
+    },
+    {
+      "token": "syntax-string",
+      "color": {
+        "normal": "action-primary-light-hovered"
+      }
+    },
+    {
+      "token": "syntax-number",
+      "color": {
+        "normal": "orange-800"
+      }
+    },
+    {
+      "token": "syntax-literal",
+      "color": {
+        "normal": "violet-700"
+      }
+    },
+    {
+      "token": "syntax-comment",
+      "color": {
+        "normal": "ui-text-secondary-light"
+      }
+    },
+    {
+      "token": "avatar-person-background",
+      "color": {
+        "normal": "action-primary-light"
+      }
+    },
+    {
+      "token": "avatar-group-background",
+      "color": {
+        "normal": "violet-700"
+      }
+    },
+    {
+      "token": "avatar-text",
+      "color": {
+        "normal": "white"
+      }
+    },
+    {
+      "token": "media-background",
+      "color": {
+        "normal": "neutral-900"
+      }
+    },
+    {
+      "token": "media-surface",
+      "color": {
+        "normal": "neutral-800"
+      }
+    },
+    {
+      "token": "media-border",
+      "color": {
+        "normal": "neutral-600"
+      }
+    },
+    {
+      "token": "media-text",
+      "color": {
+        "normal": "white"
+      }
+    },
+    {
+      "token": "media-secondary-text",
+      "color": {
+        "normal": "ui-text-secondary-dark"
+      }
+    },
+    {
+      "token": "media-scrim",
+      "color": {
+        "normal": "black"
+      }
+    },
+    {
+      "token": "media-selection",
+      "color": {
+        "normal": "ui-accent-dark"
+      }
+    },
+    {
+      "token": "media-recording",
+      "color": {
+        "normal": "action-destructive-dark"
+      }
+    },
+    {
+      "token": "media-recording-pulse",
+      "color": {
+        "normal": "semantic-error-bright"
+      }
+    },
+    {
+      "token": "media-error-background",
+      "color": {
+        "normal": "media-error-surface"
       }
     }
   ]

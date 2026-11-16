@@ -78,22 +78,27 @@ Item {
             spacing: 8
 
             UTButton {
+                appearance: UTButton.Primary
                 text: qsTr("Format")
                 onClicked: controller.format()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Minify")
                 onClicked: controller.minify()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Validate")
                 onClicked: controller.validate()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Tree View")
                 onClicked: controller.parseTree()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Clear")
                 onClicked: controller.clearAll()
             }
@@ -121,6 +126,7 @@ Item {
                 }
                 Item { Layout.fillWidth: true }
                 UTButton {
+                    appearance: UTButton.Secondary
                     visible: !controller.treeViewMode
                     text: qsTr("Copy")
                     onClicked: controller.copyOutput()

@@ -31,6 +31,9 @@ public:
     commonHead::model::Font  getFont(commonHead::model::FontToken fontToken) const override;
     commonHead::model::Color getColor(commonHead::model::ColorToken colorToken,
                                       commonHead::model::ColorState state) const override;
+    commonHead::model::Color getColor(commonHead::model::ColorToken colorToken,
+                                      commonHead::model::ColorState state,
+                                      commonHead::model::ColorThemeType theme) const override;
 
     std::string getAssetImageTokenName(commonHead::model::AssetImageToken assetImageToken) const override;
     std::string getAssetVideoTokenName(commonHead::model::AssetVideoToken assetVideoToken) const override;

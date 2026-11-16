@@ -69,18 +69,22 @@ Item {
             spacing: 8
 
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Encode")
                 onClicked: controller.encode()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Decode")
                 onClicked: controller.decode()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Swap")
                 onClicked: controller.swapInputOutput()
             }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Clear")
                 onClicked: controller.clearAll()
             }
@@ -108,6 +112,7 @@ Item {
                 }
                 Item { Layout.fillWidth: true }
                 UTButton {
+                    appearance: UTButton.Secondary
                     text: qsTr("Copy")
                     onClicked: controller.copyOutput()
                 }

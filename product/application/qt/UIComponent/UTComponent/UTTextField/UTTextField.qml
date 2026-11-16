@@ -26,8 +26,8 @@ BaseTextField {
     placeholderTextColor: control.placeholderColor
     font: UTComponentUtil.getUIFont(control.fontEnum)
 
-    selectionColor: control.borderFocused
-    selectedTextColor: control.textColor
+    selectionColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Background, UIColorState.Normal)
+    selectedTextColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Text, UIColorState.Normal)
 
     backgroundColor: control.bgColor
     borderColor: control.enabled && control.activeFocus ? control.borderFocused : control.borderNormal

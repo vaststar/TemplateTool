@@ -31,6 +31,11 @@ public:
     [[nodiscard]] virtual model::Color getColor(
         model::ColorToken colorToken,
         model::ColorState state) const = 0;
+    // Read a specific theme for previews without changing the active theme.
+    [[nodiscard]] virtual model::Color getColor(
+        model::ColorToken colorToken,
+        model::ColorState state,
+        model::ColorThemeType theme) const = 0;
 
     [[nodiscard]] virtual std::string getAssetImageTokenName(model::AssetImageToken assetImageToken) const = 0;
     [[nodiscard]] virtual std::string getAssetVideoTokenName(model::AssetVideoToken assetVideoToken) const = 0;

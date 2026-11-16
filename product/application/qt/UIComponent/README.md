@@ -38,6 +38,22 @@ Base 可以保留 Text、Rectangle、TextInput、ListView、delegate 和可覆�
 - [UTFolderView](UTComposite/UTFolderView/UTFolderView.qml) 拥有目录加载、刷新与选择恢复；打开、复制、删除等请求交给宿主处理。
 - [UTMessageDialogController](UTComposite/UTMessageDialog/UTMessageDialogController.h) 拥有按钮模型、默认与取消语义，以及结果只发送一次的控制。
 
+## 色彩约定
+
+具体色值统一放在 `palette.json`，用途放在 `token.json`，浅深主题及交互状态由 `themes/light.json`、`themes/dark.json` 映射。交互强调使用青绿，页面、卡片、输入和弹层使用中性色层级；成功、警告、错误、信息及语法高亮保留各自语义。实填选中背景必须配套选中文字色，温和选中背景可以保留正文或强调文字色。
+
+截图、录屏和视频区域使用跨主题一致的 `Media_*`、`Button_Overlay_*`，透明遮罩由对应 Token 配合 `Qt.alpha()` 合成。二维码黑白、用户标注调色板与 alpha 蒙版属于功能或内容颜色，不随界面强调色替换。主题预览通过只读指定主题取色接口读取同一份 JSON，不切换当前主题、不维护独立预览色表。
+
+Base 的 `selectedTextColor` 等属性是中性渲染槽，默认跟随原 `textColor`；UT 决定配套的选中背景、文字和其他视觉状态。Base 不引用主题 Token。
+
+## 按钮视觉语义
+
+`UTButton.appearance` 使用 `UTButton.Primary / Secondary / Ghost / Destructive`：主操作为青绿色实填，次操作为中性填充与边框，轻操作默认透明，危险操作为红色实填。`UTButton` 保留 Primary 默认值；页面应按操作组显式选择，通常只突出一个主操作。`UTToolButton` 默认 Ghost，沿用相同枚举。
+
+按钮外观与当前焦点、Enter 默认动作、Esc 取消动作分别设置。确认删除使用 Destructive；错误提示中的关闭按钮不因消息图标是 Error 就变为危险操作。消息框的 Controller 提供业务角色，QML 选择对应的 UT 外观，Controller 不指定颜色。
+
+背景、边框、文字及各交互状态均通过主题 Token 配套定义；保留原有 Token 属性以支持明确的局部覆盖。截图、录屏等固定深底工具条使用 `Button_Overlay_Text / Background`，保持浅深主题下的白字和深色交互背景。对话框使用独立 `Dialog_Background`，不改变主窗口背景。焦点圈继续使用独立 `Focus_Outline`。
+
 ## 修改与验证
 
 每次调整先说明具体问题、状态归属、公开 API 和默认行为的影响；优先按一个完整职责目标组织小批次改动。

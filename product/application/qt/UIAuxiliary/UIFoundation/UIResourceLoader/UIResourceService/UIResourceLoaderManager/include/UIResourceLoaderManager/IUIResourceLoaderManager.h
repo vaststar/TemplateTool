@@ -40,6 +40,7 @@ public:
     virtual ~IUIResourceLoaderManager() = default;
 public:
     virtual Q_INVOKABLE QColor getUIColor(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state) = 0;
+    virtual Q_INVOKABLE QColor getUIColorForTheme(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state, bool darkTheme) = 0;
     virtual Q_INVOKABLE QFont getUIFont(UIFontToken::FontToken fontToken) = 0;
 
     virtual Q_INVOKABLE QString getNonLocalizedString(UINonLocalizedStringToken::NonLocalizedString stringId) = 0;

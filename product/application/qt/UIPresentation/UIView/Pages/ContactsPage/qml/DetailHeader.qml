@@ -13,9 +13,9 @@ RowLayout {
 
     Rectangle {
         width: 44; height: 44; radius: 22
-        // Person uses blue, all groups use purple. Add more kind->color cases here when
-        // you want per-group-type accents.
-        color: root.info && root.info.kind === "person" ? "#3F8AE0" : "#7E5BEF"
+        color: UTComponentUtil.getPlainUIColor(root.info && root.info.kind === "person"
+                   ? UIColorToken.Avatar_Person_Background : UIColorToken.Avatar_Group_Background,
+                   UIColorState.Normal)
 
         UTText {
             anchors.centerIn: parent
@@ -24,7 +24,7 @@ RowLayout {
                 return n.length > 0 ? n.substring(0, 1).toUpperCase() : "?";
             }
             fontEnum: UIFontToken.Heading_Text
-            color: "white"
+            colorEnum: UIColorToken.Avatar_Text
         }
     }
 
@@ -45,13 +45,13 @@ RowLayout {
                 Layout.preferredHeight: kindBadge.implicitHeight + 4
                 Layout.preferredWidth:  kindBadge.implicitWidth  + 12
                 radius: 4
-                color: "#E8EEF7"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected)
                 UTText {
                     id: kindBadge
                     anchors.centerIn: parent
                     text: root.info ? (root.info.kindLabel || "") : ""
                     fontEnum: UIFontToken.Caption_Text
-                    color: "#3F5772"
+                    colorEnum: UIColorToken.Link_Text
                 }
             }
             UTText {

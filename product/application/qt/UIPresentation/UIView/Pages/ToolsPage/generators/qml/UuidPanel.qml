@@ -33,11 +33,13 @@ Item {
                     spacing: 8
 
                     UTButton {
+                        appearance: UTButton.Primary
                         text: qsTr("Generate")
                         onClicked: controller.generate()
                     }
 
                     UTButton {
+                        appearance: UTButton.Secondary
                         text: qsTr("Batch Generate (5)")
                         onClicked: controller.generateMultiple(5)
                     }
@@ -55,6 +57,7 @@ Item {
                     }
 
                     UTButton {
+                        appearance: UTButton.Secondary
                         text: qsTr("Copy")
                         onClicked: controller.copyUuid()
                         enabled: controller.generatedUuid.length > 0
@@ -84,6 +87,7 @@ Item {
                     }
 
                     UTButton {
+                        appearance: UTButton.Primary
                         text: qsTr("Validate")
                         onClicked: controller.validate()
                     }
@@ -109,11 +113,13 @@ Item {
 
                 RowLayout {
                     UTButton {
+                        appearance: UTButton.Secondary
                         text: qsTr("Copy All")
                         onClicked: controller.copyHistory()
                         enabled: controller.uuidHistory.length > 0
                     }
                     UTButton {
+                        appearance: UTButton.Secondary
                         text: qsTr("Clear History")
                         onClicked: controller.clearHistory()
                         enabled: controller.uuidHistory.length > 0

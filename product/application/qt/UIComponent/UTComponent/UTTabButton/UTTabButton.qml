@@ -24,7 +24,7 @@ BaseTabButton {
     property var checkedFontColorEnum: UIColorToken.Tab_Button_Checked_Text
     property var backgroundColorEnum: UIColorToken.Tab_Button_Background
     property var checkedBackgroundColorEnum: UIColorToken.Tab_Button_Checked_Background
-    property var borderColorEnum: UIColorToken.Button_Primary_Border
+    property var borderColorEnum: UIColorToken.Button_Secondary_Border
 
     colorAnimationDuration: 150
     font: UTComponentUtil.getUIFont(control.fontEnum)

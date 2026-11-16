@@ -21,6 +21,7 @@ BaseCalendarDatePicker {
     backgroundColor: UTComponentUtil.getPlainUIColor(backgroundColorEnum, UIColorState.Normal)
     disabledBackgroundColor: UTComponentUtil.getPlainUIColor(backgroundColorEnum, UIColorState.Disabled)
     textColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Normal)
+    selectedTextColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Text, UIColorState.Normal)
     disabledTextColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Disabled)
     borderColor: UTComponentUtil.getPlainUIColor(borderColorEnum, UIColorState.Normal)
     focusedBorderColor: UTComponentUtil.getPlainUIColor(borderColorEnum, UIColorState.Focused)
@@ -28,7 +29,7 @@ BaseCalendarDatePicker {
     hoveredDayBackgroundColor: UTComponentUtil.getPlainUIColor(todayColorEnum, UIColorState.Hovered)
     selectedBackgroundColor: UTComponentUtil.getPlainUIColor(selectedColorEnum, UIColorState.Selected)
 
-    // Preserve the existing navigation button tokens independently of popup colors.
+    // Calendar navigation keeps a neutral border independently of action buttons.
     navigationBackgroundColorFor: function(button) {
         return UTComponentUtil.getItemUIColor(button, UIColorToken.Datepicker_Background)
     }
@@ -36,7 +37,7 @@ BaseCalendarDatePicker {
         return UTComponentUtil.getItemUIColor(button, control.textColorEnum)
     }
     navigationBorderColorFor: function(button) {
-        return UTComponentUtil.getItemUIColor(button, UIColorToken.Button_Primary_Border)
+        return UTComponentUtil.getItemUIColor(button, UIColorToken.Button_Secondary_Border)
     }
 
     focusIndicator: UTFocusItem {}

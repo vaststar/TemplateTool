@@ -48,8 +48,8 @@ Window {
     Rectangle {
         anchors.fill: parent
         radius: 8
-        color: "#2D2D2D"
-        border.color: "#555555"
+        color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Surface, UIColorState.Normal)
+        border.color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal)
         border.width: 1
 
         // Drag area (declared before RowLayout → lower z-order, buttons get clicks first)
@@ -77,7 +77,7 @@ Window {
                 width: 12
                 height: 12
                 radius: 6
-                color: controller.isPaused ? "gray" : "red"
+                color: controller.isPaused ? UTComponentUtil.getPlainUIColor(UIColorToken.Media_Secondary_Text, UIColorState.Normal) : UTComponentUtil.getPlainUIColor(UIColorToken.Media_Recording, UIColorState.Normal)
 
                 SequentialAnimation on opacity {
                     running: controller.isRecording && !controller.isPaused
@@ -90,14 +90,17 @@ Window {
             // Duration
             Text {
                 text: formatDuration(controller.recordingDuration)
-                color: "#FFFFFF"
+                color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Text, UIColorState.Normal)
                 font: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
             }
 
-            Rectangle { width: 1; height: 24; color: "#555555" }
+            Rectangle { width: 1; height: 24; color: UTComponentUtil.getPlainUIColor(UIColorToken.Media_Border, UIColorState.Normal) }
 
             // Pause / Resume
             UTToolButton {
+                appearance: UTButton.Ghost
+                fontColorEnum: UIColorToken.Button_Overlay_Text
+                backgroundColorEnum: UIColorToken.Button_Overlay_Background
                 text: controller.isPaused ? "▶" : "⏸"
                 toolTipText: controller.isPaused ? qsTr("Resume") : qsTr("Pause")
                 onClicked: {
@@ -110,6 +113,9 @@ Window {
 
             // Stop
             UTToolButton {
+                appearance: UTButton.Ghost
+                fontColorEnum: UIColorToken.Button_Overlay_Text
+                backgroundColorEnum: UIColorToken.Button_Overlay_Background
                 text: "⏹"
                 toolTipText: qsTr("Stop recording")
                 onClicked: controller.stopRecording()
@@ -117,6 +123,9 @@ Window {
 
             // Abort
             UTToolButton {
+                appearance: UTButton.Ghost
+                fontColorEnum: UIColorToken.Button_Overlay_Text
+                backgroundColorEnum: UIColorToken.Button_Overlay_Background
                 text: "✕"
                 toolTipText: qsTr("Abort recording")
                 onClicked: controller.abortRecording()

@@ -201,15 +201,14 @@ UTDialog {
 
             UTButton {
                 text: "取消"
-                backgroundColorEnum: UIColorToken.Content_Background
-                borderColorEnum: UIColorToken.Content_Input_Border
-                fontColorEnum: UIColorToken.Content_Text
+                appearance: UTButton.Secondary
                 implicitWidth: 72
                 implicitHeight: 30
                 onClicked: dialog.close()
             }
             UTButton {
                 text: "确定"
+                appearance: UTButton.Primary
                 implicitWidth: 72
                 implicitHeight: 30
                 enabled: dialog.formValid

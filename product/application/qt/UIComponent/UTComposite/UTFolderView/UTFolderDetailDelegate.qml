@@ -90,7 +90,7 @@ Item {
             Layout.maximumWidth: 160
             text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm:ss")
             fontEnum: UIFontToken.Caption_Text
-            color: root.isSelected ? root._textNormal : root._secondaryText
+            color: root.isSelected ? root._textSelected : root._secondaryText
             leftPadding: 8
             elide: Text.ElideRight
         }
@@ -108,7 +108,7 @@ Item {
                 return s + " B"
             }
             fontEnum: UIFontToken.Caption_Text
-            color: root._secondaryText
+            color: root.isSelected ? root._textSelected : root._secondaryText
             horizontalAlignment: Text.AlignRight
             leftPadding: 8
             elide: Text.ElideRight
@@ -125,7 +125,7 @@ Item {
                 return ext ? ext.toUpperCase() : ""
             }
             fontEnum: UIFontToken.Caption_Text
-            color: root._secondaryText
+            color: root.isSelected ? root._textSelected : root._secondaryText
             leftPadding: 8
             elide: Text.ElideRight
         }

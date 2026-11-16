@@ -16,7 +16,9 @@ BaseMenuItem {
     font: UTComponentUtil.getUIFont(control.fontEnum)
     shortcutFont: UTComponentUtil.getUIFont(control.shortcutFontEnum)
     textColor: UTComponentUtil.getItemUIColor(control, control.textColorEnum)
-    shortcutColor: UTComponentUtil.getPlainUIColor(control.shortcutColorEnum, UIColorState.Normal)
+    shortcutColor: UTComponentUtil.getPlainUIColor(
+                       control.shortcutColorEnum,
+                       control.enabled ? UIColorState.Normal : UIColorState.Disabled)
     backgroundColor: UTComponentUtil.getPlainUIColor(
                          control.backgroundColorEnum,
                          control.enabled && control.pressed ? UIColorState.Pressed

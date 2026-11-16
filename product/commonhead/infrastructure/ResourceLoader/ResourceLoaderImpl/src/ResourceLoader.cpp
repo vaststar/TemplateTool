@@ -82,9 +82,17 @@ model::Color ResourceLoader::getColor(
     model::ColorToken colorToken,
     model::ColorState state) const
 {
+    return getColor(colorToken, state, getCurrentColorThemeType());
+}
+
+model::Color ResourceLoader::getColor(
+    model::ColorToken colorToken,
+    model::ColorState state,
+    model::ColorThemeType theme) const
+{
     if (mResourceColorLoader)
     {
-        return mResourceColorLoader->getColor(colorToken, state, getCurrentColorThemeType());
+        return mResourceColorLoader->getColor(colorToken, state, theme);
     }
     RESOURCE_LOADER_LOG_WARN("no mResourceColorLoader");
     return {};

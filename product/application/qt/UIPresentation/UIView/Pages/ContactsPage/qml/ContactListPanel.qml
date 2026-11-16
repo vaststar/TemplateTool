@@ -80,6 +80,7 @@ Item {
 
                 UTButton {
                     id: clearButton
+                    appearance: UTButton.Ghost
                     anchors.right: parent.right
                     anchors.rightMargin: 4
                     anchors.verticalCenter: parent.verticalCenter
@@ -89,8 +90,6 @@ Item {
                     borderWidth: 0
                     visible: searchField.text.length > 0
                     text: "×"
-                    backgroundColorEnum: UIColorToken.Content_Input_Background
-                    fontColorEnum: UIColorToken.Content_Input_Text
                     onClicked: root.clearSearch(true)
                 }
             }

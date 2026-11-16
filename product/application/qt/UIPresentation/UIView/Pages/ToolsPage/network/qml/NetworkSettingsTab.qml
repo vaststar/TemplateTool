@@ -38,7 +38,7 @@ Item {
                             validator: IntValidator { bottom: 1024; top: 65535 }
                             onEditingFinished: root.controller.proxyPort = parseInt(text)
                         }
-                        UTText { text: qsTr("(1024–65535)"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.6 }
+                        UTText { text: qsTr("(1024–65535)"); fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text }
                     }
 
                     UTText { text: qsTr("System Proxy:"); fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text }
@@ -68,8 +68,8 @@ Item {
                     // Status banner
                     Rectangle {
                         Layout.fillWidth: true; height: 52; radius: 6
-                        color: root.controller.caCertInstalled ? Qt.alpha("#4CAF50", 0.1) : Qt.alpha("#FF9800", 0.1)
-                        border.color: root.controller.caCertInstalled ? Qt.alpha("#4CAF50", 0.3) : Qt.alpha("#FF9800", 0.3)
+                        color: root.controller.caCertInstalled ? Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal), 0.1) : Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal), 0.1)
+                        border.color: root.controller.caCertInstalled ? Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Background, UIColorState.Normal), 0.3) : Qt.alpha(UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Background, UIColorState.Normal), 0.3)
                         border.width: 1
 
                         RowLayout {
@@ -82,13 +82,13 @@ Item {
                                         ? qsTr("Certificate installed and trusted")
                                         : qsTr("Certificate not trusted")
                                     fontEnum: UIFontToken.Body_Text_Medium
-                                    color: root.controller.caCertInstalled ? "#4CAF50" : "#FF9800"
+                                    color: root.controller.caCertInstalled ? UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal) : UTComponentUtil.getPlainUIColor(UIColorToken.Status_Warning_Text, UIColorState.Normal)
                                 }
                                 UTText {
                                     text: root.controller.caCertInstalled
                                         ? qsTr("HTTPS traffic capture is ready to use.")
                                         : qsTr("HTTPS capture will show certificate errors. Install the CA cert below.")
-                                    fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text; opacity: 0.7
+                                    fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text
                                 }
                             }
                         }
@@ -119,6 +119,7 @@ Item {
                                     spacing: 12; Layout.alignment: Qt.AlignHCenter
 
                                     UTButton {
+                                        appearance: UTButton.Primary
                                         id: installButton
                                         implicitWidth: installBtnRow.implicitWidth + 32
                                         implicitHeight: 40
@@ -150,8 +151,8 @@ Item {
 
                                 UTText {
                                     text: qsTr("Steps: Enter macOS password → Import to System Keychain → Auto-trust for SSL")
-                                    fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
-                                    wrapMode: Text.WordWrap; Layout.fillWidth: true; opacity: 0.5
+                                    fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Secondary_Text
+                                    wrapMode: Text.WordWrap; Layout.fillWidth: true
                                 }
                             }
                         }
@@ -166,9 +167,9 @@ Item {
 
                     RowLayout {
                         spacing: 8
-                        UTButton { text: qsTr("Show in Finder"); onClicked: root.controller.revealCACertInFolder() }
-                        UTButton { text: qsTr("Refresh Status"); onClicked: root.controller.checkCertStatus() }
-                        UTButton { text: qsTr("Re-install"); visible: root.controller.caCertInstalled; onClicked: root.controller.installCACert(); enabled: !root.controller.certInstalling }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("Show in Finder"); onClicked: root.controller.revealCACertInFolder() }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("Refresh Status"); onClicked: root.controller.checkCertStatus() }
+                        UTButton { appearance: UTButton.Secondary; text: qsTr("Re-install"); visible: root.controller.caCertInstalled; onClicked: root.controller.installCACert(); enabled: !root.controller.certInstalling }
                     }
                 }
             }

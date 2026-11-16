@@ -16,6 +16,7 @@ BaseTimePicker {
     backgroundColor: UTComponentUtil.getPlainUIColor(backgroundColorEnum, UIColorState.Normal)
     disabledBackgroundColor: UTComponentUtil.getPlainUIColor(backgroundColorEnum, UIColorState.Disabled)
     textColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Normal)
+    selectedTextColor: UTComponentUtil.getPlainUIColor(UIColorToken.Text_Selection_Text, UIColorState.Normal)
     disabledTextColor: UTComponentUtil.getPlainUIColor(textColorEnum, UIColorState.Disabled)
     borderColor: UTComponentUtil.getPlainUIColor(borderColorEnum, UIColorState.Normal)
     focusedBorderColor: UTComponentUtil.getPlainUIColor(borderColorEnum, UIColorState.Focused)

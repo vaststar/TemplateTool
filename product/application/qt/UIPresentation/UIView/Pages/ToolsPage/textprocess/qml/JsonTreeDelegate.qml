@@ -30,27 +30,23 @@ Item {
     readonly property int leftPadding: 8 + depth * 20
     readonly property bool _isClosingBracket: delegateRoot.nodeType === 6
 
-    // Detect dark theme by checking if the background is dark
-    readonly property color _bgColor: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Input_Background, UIColorState.Normal)
-    readonly property bool _isDark: (_bgColor.r * 0.299 + _bgColor.g * 0.587 + _bgColor.b * 0.114) < 0.5
-
-    // Theme-adaptive syntax colors (inspired by VS Code light/dark themes)
-    readonly property color _keyColor:     _isDark ? "#9CDCFE" : "#0451A5"
-    readonly property color _stringColor:  _isDark ? "#CE9178" : "#A31515"
-    readonly property color _numberColor:  _isDark ? "#B5CEA8" : "#098658"
-    readonly property color _boolColor:    _isDark ? "#569CD6" : "#0000FF"
-    readonly property color _nullColor:    _isDark ? "#569CD6" : "#0000FF"
-    readonly property color _bracketColor: _isDark ? "#D4D4D4" : "#333333"
+    // Syntax roles are resolved by the active theme.
+    readonly property color _keyColor:     UTComponentUtil.getPlainUIColor(UIColorToken.Syntax_Key, UIColorState.Normal)
+    readonly property color _stringColor:  UTComponentUtil.getPlainUIColor(UIColorToken.Syntax_String, UIColorState.Normal)
+    readonly property color _numberColor:  UTComponentUtil.getPlainUIColor(UIColorToken.Syntax_Number, UIColorState.Normal)
+    readonly property color _boolColor:    UTComponentUtil.getPlainUIColor(UIColorToken.Syntax_Literal, UIColorState.Normal)
+    readonly property color _nullColor:    UTComponentUtil.getPlainUIColor(UIColorToken.Syntax_Literal, UIColorState.Normal)
+    readonly property color _bracketColor: UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
     readonly property color _punctColor:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Text, UIColorState.Normal)
-    readonly property color _arrowColor:   _isDark ? "#C5C5C5" : "#424242"
-    readonly property color _collapsedHint: _isDark ? "#6A9955" : "#6A9955"
+    readonly property color _arrowColor:   UTComponentUtil.getPlainUIColor(UIColorToken.Content_Secondary_Text, UIColorState.Normal)
+    readonly property color _collapsedHint: UTComponentUtil.getPlainUIColor(UIColorToken.Syntax_Comment, UIColorState.Normal)
 
     Rectangle {
         anchors.fill: parent
         color: delegateRoot.current
-               ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_List_Background, UIColorState.Selected)
+               ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Selected)
                : (hoverArea.containsMouse
-                  ? UTComponentUtil.getPlainUIColor(UIColorToken.Content_List_Background, UIColorState.Hovered)
+                  ? UTComponentUtil.getPlainUIColor(UIColorToken.Listview_Item_Background, UIColorState.Hovered)
                   : "transparent")
     }
 
@@ -171,7 +167,6 @@ Item {
             text: " // " + delegateRoot.childCount + (delegateRoot.childCount === 1 ? " item" : " items")
             font: UTComponentUtil.getUIFont(UIFontToken.Monospace_Text)
             color: delegateRoot._collapsedHint
-            opacity: 0.8
             anchors.verticalCenter: parent.verticalCenter
         }
     }

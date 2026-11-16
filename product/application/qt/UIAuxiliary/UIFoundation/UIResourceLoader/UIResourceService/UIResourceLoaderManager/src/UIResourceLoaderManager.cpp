@@ -105,6 +105,20 @@ QColor UIResourceLoaderManager::getUIColor(UIColorToken::ColorToken colorEnum, U
     return QColor();
 }
 
+QColor UIResourceLoaderManager::getUIColorForTheme(UIColorToken::ColorToken colorEnum, UIColorState::ColorState state, bool darkTheme)
+{
+    if (auto resourceLoader = mImpl->getResourceLoader())
+    {
+        const auto token = UIResourceColorLoader::convertUIColorTokenToVMColorToken(colorEnum);
+        const auto colorState = UIResourceColorLoader::convertUIColorStateToVMColorState(state);
+        const auto theme = darkTheme ? commonHead::model::ColorThemeType::Dark : commonHead::model::ColorThemeType::Light;
+        const auto color = resourceLoader->getColor(token, colorState, theme);
+        return QColor(color.r, color.g, color.b, static_cast<int>(255 * color.a));
+    }
+    UIResourceLoaderManager_LOG_WARN("no resourceLoader");
+    return QColor();
+}
+
 QFont UIResourceLoaderManager::getUIFont(UIFontToken::FontToken fontToken)
 {
     if (auto resourceLoader = mImpl->getResourceLoader())

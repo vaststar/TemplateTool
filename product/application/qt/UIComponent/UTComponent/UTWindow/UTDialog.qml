@@ -19,7 +19,7 @@ import UIResourceLoader 1.0
 BaseDialog {
     id: dialog
 
-    property var backgroundColorEnum: UIColorToken.Main_Window_Background
+    property var backgroundColorEnum: UIColorToken.Dialog_Background
     property var borderColorEnum: UIColorToken.Window_Border
     color: UTComponentUtil.getPlainUIColor(dialog.backgroundColorEnum, UIColorState.Normal)
     borderColor: UTComponentUtil.getPlainUIColor(dialog.borderColorEnum, UIColorState.Normal)

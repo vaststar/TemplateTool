@@ -22,6 +22,7 @@ Item {
             Layout.fillWidth: true; spacing: 8
 
             UTButton {
+                appearance: controller.proxyRunning ? UTButton.Secondary : UTButton.Primary
                 text: controller.proxyRunning ? qsTr("■ Stop") : qsTr("▶ Start")
                 onClicked: controller.proxyRunning ? controller.stopProxy() : controller.startProxy()
             }
@@ -36,7 +37,7 @@ Item {
                 onEditingFinished: controller.proxyPort = parseInt(text)
             }
 
-            Rectangle { width: 10; height: 10; radius: 5; color: controller.addonConnected ? "#4CAF50" : "#9E9E9E" }
+            Rectangle { width: 10; height: 10; radius: 5; color: controller.addonConnected ? UTComponentUtil.getPlainUIColor(UIColorToken.Status_Success_Text, UIColorState.Normal) : UTComponentUtil.getPlainUIColor(UIColorToken.Status_Neutral_Text, UIColorState.Normal) }
             UTText {
                 text: controller.addonConnected ? qsTr("Connected") : qsTr("Disconnected")
                 fontEnum: UIFontToken.Caption_Text; colorEnum: UIColorToken.Content_Text
@@ -48,8 +49,8 @@ Item {
                 text: qsTr("%1 retained requests").arg(controller.requestCount)
                 fontEnum: UIFontToken.Body_Text; colorEnum: UIColorToken.Content_Text
             }
-            UTButton { text: qsTr("Clear"); onClicked: controller.clearRequests() }
-            UTButton { text: qsTr("Export Retained"); enabled: controller.requestCount > 0; onClicked: exportDialog.open() }
+            UTButton { appearance: UTButton.Secondary; text: qsTr("Clear"); onClicked: controller.clearRequests() }
+            UTButton { appearance: UTButton.Secondary; text: qsTr("Export Retained"); enabled: controller.requestCount > 0; onClicked: exportDialog.open() }
         }
 
         // Status message
@@ -70,18 +71,19 @@ Item {
                     : controller.addonConnected ? qsTr("Syncing rules...") : qsTr("Rules pending sync")
                 fontEnum: UIFontToken.Caption_Text
                 colorEnum: controller.rulesManager.configSyncState === "failed"
-                    ? UIColorToken.Content_Error_Text : UIColorToken.Content_Text
+                    ? UIColorToken.Status_Error_Text : UIColorToken.Content_Text
             }
             UTText {
                 Layout.fillWidth: true
                 visible: controller.rulesManager.configSyncError.length > 0
                 text: controller.rulesManager.configSyncError
                 fontEnum: UIFontToken.Caption_Text
-                colorEnum: UIColorToken.Content_Error_Text
+                colorEnum: UIColorToken.Status_Error_Text
                 wrapMode: Text.WordWrap
             }
             Item { Layout.fillWidth: true; visible: controller.rulesManager.configSyncError.length === 0 }
             UTButton {
+                appearance: UTButton.Secondary
                 text: qsTr("Retry Sync")
                 visible: controller.rulesManager.configSyncState === "failed"
                 enabled: controller.addonConnected

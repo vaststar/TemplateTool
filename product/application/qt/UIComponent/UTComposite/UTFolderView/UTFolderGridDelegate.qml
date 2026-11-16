@@ -70,7 +70,7 @@ Item {
                 Layout.fillWidth: true
                 text: Qt.formatDateTime(model.fileModified, "yyyy-MM-dd hh:mm")
                 fontEnum: UIFontToken.Caption_Text
-                color: root.isSelected ? root._textNormal : root._secondaryText
+                color: root.isSelected ? root._textSelected : root._secondaryText
                 horizontalAlignment: Text.AlignHCenter
             }
         }
