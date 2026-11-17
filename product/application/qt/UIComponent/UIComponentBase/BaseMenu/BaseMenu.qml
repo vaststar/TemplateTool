@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Templates as T
 
 Menu {
     id: control
@@ -12,6 +13,20 @@ Menu {
 
     padding: menuPadding
     overlap: 4
+
+    // Open at a caller-provided position and initialize keyboard navigation.
+    function popupAt(x, y, fromKeyboard) {
+        popup(x, y)
+        if (!fromKeyboard)
+            return
+        for (let i = 0; i < count; ++i) {
+            const item = itemAt(i)
+            if (item instanceof T.MenuItem && item.visible && item.enabled) {
+                currentIndex = i
+                return
+            }
+        }
+    }
 
     background: Rectangle {
         implicitWidth: 200

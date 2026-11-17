@@ -115,11 +115,11 @@ Item {
             if (contactId) controller.selectContact(contactId);
         }
 
-        // Right-click: resolve the hit node and open the context menu.
-        onContextRequested: function(idx, pos) {
+        // Resolve the target node and preserve the input source when opening the menu.
+        onContextRequested: function(idx, pos, fromKeyboard) {
             const id   = idx.valid ? (treeView.model.data(idx, Qt.UserRole + 1) || "") : "";
             const type = idx.valid ? treeView.model.data(idx, Qt.UserRole + 3) : -1;
-            contextMenu.openFor(id, type, pos);
+            contextMenu.openFor(id, type, pos, fromKeyboard);
         }
 
         // Drag-reparent: declare what we accept and how to validate.
@@ -190,11 +190,11 @@ Item {
         property string targetId: ""
         property int    targetType: -1   // -1 = blank/root, 0 = Person, 1 = Group
 
-        function openFor(id, type, pos) {
+        function openFor(id, type, pos, fromKeyboard) {
             targetId = id;
             targetType = type;
             model = root.controller.contextMenuModel(id, type);
-            popup(pos.x, pos.y);
+            popupAt(pos.x, pos.y, fromKeyboard);
         }
 
         onItemTriggered: action => root.controller.handleContextAction(action, targetId, targetType)

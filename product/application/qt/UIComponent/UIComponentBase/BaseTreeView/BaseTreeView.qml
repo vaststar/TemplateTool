@@ -17,8 +17,8 @@ FocusScope {
 
     // Emitted for a right-click or keyboard context-menu request. modelIndex is the
     // clicked/current row (invalid for empty space/no current row); pos is in this
-    // view's coordinate space, suitable for popup placement.
-    signal contextRequested(var modelIndex, point pos)
+    // view's coordinate space. fromKeyboard identifies keyboard-triggered requests.
+    signal contextRequested(var modelIndex, point pos, bool fromKeyboard)
 
     clip: true
     activeFocusOnTab: true
@@ -91,7 +91,7 @@ FocusScope {
             const pos = rowItem
                       ? rowItem.mapToItem(root, rowItem.width / 2, rowItem.height / 2)
                       : treeView.mapToItem(root, 0, 0)
-            root.contextRequested(idx, Qt.point(pos.x, pos.y))
+            root.contextRequested(idx, Qt.point(pos.x, pos.y), true)
         }
 
         function _emitActivated() {
@@ -107,7 +107,7 @@ FocusScope {
                           ? treeView.index(-1, -1)
                           : treeView.modelIndex(cell)
                 const mapped = treeView.contentItem.mapToItem(root, p.x, p.y)
-                root.contextRequested(idx, Qt.point(mapped.x, mapped.y))
+                root.contextRequested(idx, Qt.point(mapped.x, mapped.y), false)
             }
         }
     }
