@@ -10,7 +10,7 @@ ItemDelegate {
     visible: isVisible
     enabled: isEnabled
     hoverEnabled: true
-    activeFocusOnTab: true
+    activeFocusOnTab: false
     leftPadding: 9
     rightPadding: 8
     topPadding: 0
@@ -30,6 +30,9 @@ ItemDelegate {
     property bool isSelected: false
     property bool showText: false
     property int animationDuration: 200
+
+    Keys.onReturnPressed: navItem.clicked()
+    Keys.onEnterPressed: navItem.clicked()
 
     background: Rectangle {
         radius: 8

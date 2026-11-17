@@ -5,9 +5,51 @@ import UIView 1.0
 import UTComponent 1.0
 import UIResourceLoader 1.0
 
-Item {
+FocusScope {
     id: root
+    activeFocusOnTab: true
     property MainWindowSideBarController controller: MainWindowSideBarController{}
+
+    // One Tab stop for both lists; arrow keys move focus without navigating.
+    function focusableNavItems() {
+        const items = []
+        for (const list of [topNavList, bottomNavList]) {
+            for (let i = 0; i < list.count; ++i) {
+                const item = list.itemAtIndex(i)
+                if (item && item.visible && item.enabled)
+                    items.push(item)
+            }
+        }
+        return items
+    }
+
+    function focusSelectedItem() {
+        const items = focusableNavItems()
+        const item = items.find(candidate => candidate.isSelected) || items[0]
+        if (item)
+            item.forceActiveFocus(Qt.TabFocusReason)
+    }
+
+    function moveNavFocus(step) {
+        const items = focusableNavItems()
+        const current = items.findIndex(item => item.activeFocus)
+        const next = current < 0 ? (step > 0 ? 0 : items.length - 1) : current + step
+        if (next >= 0 && next < items.length)
+            items[next].forceActiveFocus(Qt.TabFocusReason)
+    }
+
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            return
+        // Restore selection on Tab entry, without overriding mouse or popup focus.
+        const target = root.Window.activeFocusItem
+        if (target === root || (target && (target.focusReason === Qt.TabFocusReason
+                                         || target.focusReason === Qt.BacktabFocusReason)))
+            focusSelectedItem()
+    }
+
+    Keys.onUpPressed: moveNavFocus(-1)
+    Keys.onDownPressed: moveNavFocus(1)
 
     // Sidebar expand/collapse state
     property bool expanded: false
@@ -112,6 +154,8 @@ Item {
         // Top navigation items
         ListView {
             id: topNavList
+            activeFocusOnTab: false
+            keyNavigationEnabled: false
             Layout.fillWidth: true
             Layout.preferredHeight: contentHeight
             model: controller.topNavItems
@@ -134,6 +178,8 @@ Item {
         // Bottom navigation items
         ListView {
             id: bottomNavList
+            activeFocusOnTab: false
+            keyNavigationEnabled: false
             Layout.fillWidth: true
             Layout.preferredHeight: contentHeight
             model: controller.bottomNavItems
