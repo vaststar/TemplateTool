@@ -25,7 +25,7 @@ Item {
     }
 
     Shortcut {
-        sequence: StandardKey.Find
+        sequences: [StandardKey.Find]
         enabled: root.visible && searchField.enabled
         onActivated: {
             searchField.forceActiveFocus();

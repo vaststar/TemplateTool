@@ -75,15 +75,13 @@ FocusScope {
         Keys.onEnterPressed:  function(e) { e.accepted = true; _emitActivated(); }
         Keys.onSpacePressed:  function(e) { e.accepted = true; _emitActivated(); }
 
-        Keys.onPressed: function(event) {
-            const modifiers = event.modifiers
-                    & (Qt.ShiftModifier | Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)
-            if (event.key !== Qt.Key_Menu
-                    && !(event.key === Qt.Key_F10 && modifiers === Qt.ShiftModifier))
-                return
-            event.accepted = true
-            if (!event.isAutoRepeat)
-                _requestContextMenu()
+        // Register both keyboard context-menu triggers for shortcut dispatch.
+        Shortcut {
+            sequences: ["Shift+F10", "Menu"]
+            context: Qt.WindowShortcut
+            enabled: treeView.activeFocus
+            autoRepeat: false
+            onActivated: treeView._requestContextMenu()
         }
 
         function _requestContextMenu() {
