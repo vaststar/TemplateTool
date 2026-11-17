@@ -220,27 +220,27 @@ Close this terminal to cancel.</source>
 <context>
     <name>HomePage</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="48"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="36"/>
         <source>Show Test Message</source>
         <translation>显示测试消息</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="57"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="45"/>
         <source>Open Camera</source>
         <translation>打开相机</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="66"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="54"/>
         <source>Open Camera Monitor</source>
         <translation>打开摄像头监控</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="81"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="69"/>
         <source>Selected time: </source>
         <translation>已选时间: </translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="96"/>
+        <location filename="../../UIPresentation/UIView/Pages/HomePage/qml/HomePage.qml" line="84"/>
         <source>Selected date: </source>
         <translation>已选日期: </translation>
     </message>

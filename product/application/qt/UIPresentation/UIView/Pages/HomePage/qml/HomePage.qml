@@ -7,18 +7,6 @@ Item {
     id: homePage
     property HomePageController controller: HomePageController {}
 
-    onVisibleChanged: {
-        if (visible) {
-            linkLabel.forceActiveFocus()
-        }
-    }
-
-    Component.onCompleted: {
-        if (visible) {
-            Qt.callLater(function() { linkLabel.forceActiveFocus() })
-        }
-    }
-
     Column {
         anchors.centerIn: parent
         spacing: 16
