@@ -8,4 +8,6 @@ UIViewAppendBuildInputs(
     PRIVATE_INCLUDE_DIRS
         include
         include/MainWindowSystemTray
+    PRIVATE_DEPENDENCIES
+        TrayViewModelApi
 )

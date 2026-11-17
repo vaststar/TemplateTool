@@ -315,14 +315,6 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
-    <name>MainWindowSystemTray</name>
-    <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/qml/MainWindowSystemTray.qml" line="23"/>
-        <source>Quit</source>
-        <translation>Quit</translation>
-    </message>
-</context>
-<context>
     <name>MainWindowTitleBar</name>
     <message>
         <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/qml/MainWindowTitleBar.qml" line="97"/>
@@ -1624,12 +1616,22 @@ Double-click a rule to view details.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/src/MainWindowSystemTrayController.cpp" line="21"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="77"/>
+        <source>Show Main Window</source>
+        <translation>Show Main Window</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="76"/>
+        <source>Quit</source>
+        <translation>Quit</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/src/MainWindowSystemTrayController.cpp" line="30"/>
         <source>my test window title bar</source>
         <translation>my test window title bar</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="69"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="70"/>
         <source>my test window aa</source>
         <translation>my test window aa</translation>
     </message>
@@ -1898,12 +1900,12 @@ Double-click a rule to view details.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="87"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="89"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} of {{1}} completed</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="88"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="90"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>test param {{0}}, only 1 param</translation>
     </message>

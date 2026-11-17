@@ -24,6 +24,7 @@ set(MODULE_DEPENDENCIES_PRIVATE
     UpgradeViewModelImpl
     MainWindowViewModelImpl
     SideBarViewModelImpl
+    TrayViewModelImpl
     SettingsViewModelImpl
     StabilityViewModelImpl
     Base64ToolViewModelImpl

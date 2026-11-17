@@ -30,6 +30,7 @@ public:
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> createCameraDirectoryViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const override;
+    [[nodiscard]] std::shared_ptr<commonHead::viewModels::ITrayViewModel> createTrayViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const override;
     [[nodiscard]] std::shared_ptr<commonHead::viewModels::IBase64ToolViewModel> createBase64ToolViewModelInstance() const override;

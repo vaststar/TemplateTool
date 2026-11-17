@@ -318,14 +318,6 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
-    <name>MainWindowSystemTray</name>
-    <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/qml/MainWindowSystemTray.qml" line="23"/>
-        <source>Quit</source>
-        <translation>結束</translation>
-    </message>
-</context>
-<context>
     <name>MainWindowTitleBar</name>
     <message>
         <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowTitleBar/qml/MainWindowTitleBar.qml" line="97"/>
@@ -1627,12 +1619,22 @@ Double-click a rule to view details.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/src/MainWindowSystemTrayController.cpp" line="21"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="77"/>
+        <source>Show Main Window</source>
+        <translation>顯示主視窗</translation>
+    </message>
+    <message>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="76"/>
+        <source>Quit</source>
+        <translation>結束</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindowSystemTray/src/MainWindowSystemTrayController.cpp" line="30"/>
         <source>my test window title bar</source>
         <translation>我的測試視窗標題列</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="69"/>
+        <location filename="../../UIPresentation/UIView/Shell/MainWindowSuite/MainWindow/src/MainWindowController.cpp" line="70"/>
         <source>my test window aa</source>
         <translation>我的測試視窗 aa</translation>
     </message>
@@ -1901,12 +1903,12 @@ Double-click a rule to view details.</source>
         <translation>無法解除安裝迷你應用程式。</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="87"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="89"/>
         <source>{{0}} of {{1}} completed</source>
         <translation>{{0}} / {{1}} 已完成</translation>
     </message>
     <message>
-        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="88"/>
+        <location filename="../../../../../build/CODEGEN/UIResourceString/ResourceStringMap.cpp" line="90"/>
         <source>test param {{0}}, only 1 param</source>
         <translation>測試參數 {{0}}，僅 1 個參數</translation>
     </message>

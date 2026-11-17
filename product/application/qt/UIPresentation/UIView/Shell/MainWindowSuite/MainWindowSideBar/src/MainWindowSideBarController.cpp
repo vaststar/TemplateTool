@@ -8,6 +8,7 @@
 #include <UIViewModelSignalBridge/emitters/SideBarViewModelEmitter.h>
 #include "UIEvents/UIUpgradeEvent.h"
 #include "UIEvents/UIAboutEvent.h"
+#include "UIEvents/UISettingsEvent.h"
 #include "LoggerDefine.h"
 
 // ==================== MainWindowSideBarController ====================
@@ -51,6 +52,27 @@ void MainWindowSideBarController::init()
 
     m_sideBarViewModel->registerCallback(m_viewModelEmitter);
     m_sideBarViewModel->initViewModel();
+
+    listenUIEvents<UISettingsEvent>();
+}
+
+bool MainWindowSideBarController::event(QEvent* event)
+{
+    if (event->type() == UISettingsEvent::eventType())
+    {
+        switch (static_cast<UISettingsEvent*>(event)->mAction)
+        {
+        case UISettingsEvent::Action::ShowSettings:
+            UIVIEW_LOG_DEBUG("UISettingsEvent::ShowSettings");
+            navigateToSettings();
+            break;
+        default:
+            UIVIEW_LOG_DEBUG("UISettingsEvent::UnknownAction");
+            break;
+        }
+        return true;
+    }
+    return UIViewController::event(event);
 }
 
 NavItemModel* MainWindowSideBarController::topNavItems() const
@@ -71,6 +93,11 @@ int MainWindowSideBarController::currentPageId() const
 void MainWindowSideBarController::navigateTo(int pageId)
 {
     navigateToInternal(pageId, /*isUserAction=*/true);
+}
+
+void MainWindowSideBarController::navigateToSettings()
+{
+    navigateTo(static_cast<int>(commonHead::viewModels::model::PageId::Settings));
 }
 
 void MainWindowSideBarController::navigateToInternal(int pageId, bool isUserAction)

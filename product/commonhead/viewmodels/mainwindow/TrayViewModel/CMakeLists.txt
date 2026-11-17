@@ -1,0 +1,2 @@
+add_subdirectory(TrayViewModelApi)
+add_subdirectory(TrayViewModelImpl)

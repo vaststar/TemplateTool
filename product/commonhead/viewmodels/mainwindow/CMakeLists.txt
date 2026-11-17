@@ -1,4 +1,5 @@
 add_subdirectory(MainWindowViewModel)
 add_subdirectory(SideBarViewModel)
+add_subdirectory(TrayViewModel)
 add_subdirectory(SettingsViewModel)
 add_subdirectory(StabilityViewModel)

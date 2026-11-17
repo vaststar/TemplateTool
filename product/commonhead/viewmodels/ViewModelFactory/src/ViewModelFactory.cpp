@@ -10,6 +10,7 @@
 #include <commonhead/viewmodels/MediaCameraViewModel/MediaCameraViewModelCreator.h>
 #include <commonhead/viewmodels/CameraDirectoryViewModel/CameraDirectoryViewModelCreator.h>
 #include <commonhead/viewmodels/SideBarViewModel/SideBarViewModelCreator.h>
+#include <commonhead/viewmodels/TrayViewModel/TrayViewModelCreator.h>
 #include <commonhead/viewmodels/SettingsViewModel/SettingsViewModelCreator.h>
 #include <commonhead/viewmodels/StabilityViewModel/StabilityViewModelCreator.h>
 #include <commonhead/viewmodels/ToolsViewModel/ToolsViewModelCreator.h>
@@ -84,6 +85,11 @@ std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> ViewModelFact
 std::shared_ptr<commonHead::viewModels::ISideBarViewModel> ViewModelFactory::createSideBarViewModelInstance() const
 {
     return impl::createSideBarViewModel(mCommonHeadFramework);
+}
+
+std::shared_ptr<commonHead::viewModels::ITrayViewModel> ViewModelFactory::createTrayViewModelInstance() const
+{
+    return impl::createTrayViewModel(mCommonHeadFramework);
 }
 
 std::shared_ptr<commonHead::viewModels::ISettingsViewModel> ViewModelFactory::createSettingsViewModelInstance() const

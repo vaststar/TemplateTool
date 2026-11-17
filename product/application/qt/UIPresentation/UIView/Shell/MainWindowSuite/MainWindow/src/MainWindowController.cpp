@@ -27,6 +27,7 @@
 #include "UIEvents/UIAboutEvent.h"
 #include "UIEvents/UIMainWindowEvent.h"
 #include "UIEvents/UIScreenChangedEvent.h"
+#include "UIEvents/UISettingsEvent.h"
 
 namespace {
 // QML resource paths used by this controller.
@@ -49,7 +50,7 @@ MainWindowController::~MainWindowController()
 void MainWindowController::init()
 {
     // Listen for events from EventBus
-    listenUIEvents<UIMainWindowEvent, UIAboutEvent, UIScreenChangedEvent>();
+    listenUIEvents<UIMainWindowEvent, UIAboutEvent, UIScreenChangedEvent, UISettingsEvent>();
 
     mMainViewModel = getViewModelFactory()->createMainWindowViewModelInstance();
     mMainViewModelEmitter = std::make_shared<UIViewModelSignalBridge::MainWindowViewModelEmitter>();
@@ -254,6 +255,20 @@ QRect MainWindowController::fitToScreen(int x, int y, int width, int height) con
 
 bool MainWindowController::event(QEvent* event)
 {
+    if (event->type() == UISettingsEvent::eventType())
+    {
+        switch (static_cast<UISettingsEvent*>(event)->mAction)
+        {
+        case UISettingsEvent::Action::ShowSettings:
+            UIVIEW_LOG_DEBUG("UISettingsEvent::ShowSettings");
+            emit activateWindow();
+            break;
+        default:
+            UIVIEW_LOG_DEBUG("UISettingsEvent::UnknownAction");
+            break;
+        }
+        return true;
+    }
     if (event->type() == UIAboutEvent::eventType())
     {
         switch (static_cast<UIAboutEvent*>(event)->mAction)

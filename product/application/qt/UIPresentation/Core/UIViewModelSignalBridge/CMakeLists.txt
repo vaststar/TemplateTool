@@ -39,6 +39,7 @@ set(MODULE_HEADER_FILES
     include/UIViewModelSignalBridge/emitters/ScreenshotViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/SettingsViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/SideBarViewModelEmitter.h
+    include/UIViewModelSignalBridge/emitters/TrayViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/StabilityViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/ToolsViewModelEmitter.h
     include/UIViewModelSignalBridge/emitters/UpgradeViewModelEmitter.h
@@ -63,6 +64,7 @@ set(MODULE_DEPENDENCIES_PUBLIC
     ScreenshotViewModelApi
     SettingsViewModelApi
     SideBarViewModelApi
+    TrayViewModelApi
     StabilityViewModelApi
     ToolsViewModelApi
     UpgradeViewModelApi

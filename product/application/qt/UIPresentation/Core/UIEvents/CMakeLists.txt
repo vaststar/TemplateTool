@@ -16,6 +16,7 @@ set(MODULE_HEADER_FILES
     include/UIEvents/UIAboutEvent.h
     include/UIEvents/UIMainWindowEvent.h
     include/UIEvents/UIScreenChangedEvent.h
+    include/UIEvents/UISettingsEvent.h
     include/UIEvents/UIUpgradeEvent.h
 )
 
@@ -23,6 +24,7 @@ set(MODULE_SOURCE_PRIVATE
     src/UIAboutEvent.cpp
     src/UIMainWindowEvent.cpp
     src/UIScreenChangedEvent.cpp
+    src/UISettingsEvent.cpp
     src/UIUpgradeEvent.cpp
 )
 

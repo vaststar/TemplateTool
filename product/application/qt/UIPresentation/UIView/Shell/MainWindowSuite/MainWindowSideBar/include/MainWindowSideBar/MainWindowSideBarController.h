@@ -37,6 +37,7 @@ public:
     int currentPageId() const;
 
     Q_INVOKABLE void navigateTo(int pageId);
+    Q_INVOKABLE void navigateToSettings();
     Q_INVOKABLE void handleSubMenuAction(int actionId);
 
 signals:
@@ -47,6 +48,7 @@ signals:
 protected:
     void init() override;
     void onLanguageChanged() override;
+    bool event(QEvent* event) override;
 
 private:
     void onSideBarReady();

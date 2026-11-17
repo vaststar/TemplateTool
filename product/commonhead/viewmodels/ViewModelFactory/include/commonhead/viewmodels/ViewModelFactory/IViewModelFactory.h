@@ -22,6 +22,7 @@ namespace commonHead::viewModels{
     class IInvocationViewModel;
     class ISettingsViewModel;
     class ISideBarViewModel;
+    class ITrayViewModel;
     class IStabilityViewModel;
     class IToolsViewModel;
     class IBase64ToolViewModel;
@@ -57,6 +58,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ICameraDirectoryViewModel> createCameraDirectoryViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISettingsViewModel> createSettingsViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ISideBarViewModel> createSideBarViewModelInstance() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::ITrayViewModel> createTrayViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IStabilityViewModel> createStabilityViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IToolsViewModel> createToolsViewModelInstance() const = 0;
     [[nodiscard]] virtual std::shared_ptr<commonHead::viewModels::IBase64ToolViewModel> createBase64ToolViewModelInstance() const = 0;

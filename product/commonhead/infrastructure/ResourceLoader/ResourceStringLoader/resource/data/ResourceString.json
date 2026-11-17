@@ -70,7 +70,9 @@
     { "token": "MiniAppUninstallFailedTitle", "value": "Uninstall failed", "conditions": [] },
     { "token": "MiniAppUninstallErrorNotInstalled", "value": "This mini app is no longer installed.", "conditions": [] },
     { "token": "MiniAppUninstallErrorRemoveFailed", "value": "Could not remove the mini app files. Check permissions and try again.", "conditions": [] },
-    { "token": "MiniAppUninstallErrorUnknown", "value": "Could not uninstall the mini app.", "conditions": [] }
+    { "token": "MiniAppUninstallErrorUnknown", "value": "Could not uninstall the mini app.", "conditions": [] },
+    { "token": "MenuQuit", "value": "Quit", "conditions": [] },
+    { "token": "MenuShowMainWindow", "value": "Show Main Window", "conditions": [] }
   ],
   "LocalizedStringWithParam": [
     {
