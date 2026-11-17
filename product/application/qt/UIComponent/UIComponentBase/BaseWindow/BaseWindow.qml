@@ -5,7 +5,7 @@ ApplicationWindow {
     id: root
 
     property color borderColor: palette.mid
-    property real borderWidth: 1
+    property real borderWidth: 0
 
     visible: true
 

@@ -15,8 +15,9 @@ FocusScope {
     property var dropValidate: function(_mimeType, _data, _targetIndex) { return false }
     signal dropAccepted(string mimeType, string data, var targetIndex)
 
-    // Emitted on a right-click. modelIndex is the hit row (invalid when the click lands on
-    // empty space); pos is in this view's coordinate space, suitable for popup placement.
+    // Emitted for a right-click or keyboard context-menu request. modelIndex is the
+    // clicked/current row (invalid for empty space/no current row); pos is in this
+    // view's coordinate space, suitable for popup placement.
     signal contextRequested(var modelIndex, point pos)
 
     clip: true
@@ -73,6 +74,27 @@ FocusScope {
         Keys.onReturnPressed: function(e) { e.accepted = true; _emitActivated(); }
         Keys.onEnterPressed:  function(e) { e.accepted = true; _emitActivated(); }
         Keys.onSpacePressed:  function(e) { e.accepted = true; _emitActivated(); }
+
+        Keys.onPressed: function(event) {
+            const modifiers = event.modifiers
+                    & (Qt.ShiftModifier | Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier)
+            if (event.key !== Qt.Key_Menu
+                    && !(event.key === Qt.Key_F10 && modifiers === Qt.ShiftModifier))
+                return
+            event.accepted = true
+            if (!event.isAutoRepeat)
+                _requestContextMenu()
+        }
+
+        function _requestContextMenu() {
+            const idx = currentRow >= 0 ? index(currentRow, 0) : index(-1, -1)
+            const rowItem = currentRow >= 0 ? itemAtCell(Qt.point(0, currentRow)) : null
+            // A virtualized row may have no delegate; keep its index and use a fallback position.
+            const pos = rowItem
+                      ? rowItem.mapToItem(root, rowItem.width / 2, rowItem.height / 2)
+                      : treeView.mapToItem(root, 0, 0)
+            root.contextRequested(idx, Qt.point(pos.x, pos.y))
+        }
 
         function _emitActivated() {
             if (currentRow >= 0) root.itemInvoked(index(currentRow, 0));

@@ -5,7 +5,7 @@ Window {
     id: dialog
 
     property color borderColor: palette.mid
-    property real borderWidth: 1
+    property real borderWidth: 0
     // Opt in when the dialog does not provide its own cancellation shortcut.
     property bool closeOnEscape: false
 
