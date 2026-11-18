@@ -10,6 +10,18 @@ FocusScope {
     activeFocusOnTab: true
     property MainWindowSideBarController controller: MainWindowSideBarController{}
 
+    property bool _activationFromKeyboard: false
+
+    function _activateNavItem(pageId, fromKeyboard) {
+        // The submenu callback is synchronous and reads this call's input source.
+        _activationFromKeyboard = fromKeyboard
+        try {
+            controller.navigateTo(pageId)
+        } finally {
+            _activationFromKeyboard = false
+        }
+    }
+
     // One Tab stop for both lists; arrow keys move focus without navigating.
     function focusableNavItems() {
         const items = []
@@ -168,7 +180,9 @@ FocusScope {
                 isSelected: pageId === controller.currentPageId
                 showText: root.expanded
                 animationDuration: root.animationDuration
-                onClicked: controller.navigateTo(pageId)
+                onActivated: function(fromKeyboard) {
+                    root._activateNavItem(pageId, fromKeyboard)
+                }
             }
         }
 
@@ -192,13 +206,16 @@ FocusScope {
                 isSelected: pageId === controller.currentPageId
                 showText: root.expanded
                 animationDuration: root.animationDuration
-                onClicked: controller.navigateTo(pageId)
+                onActivated: function(fromKeyboard) {
+                    root._activateNavItem(pageId, fromKeyboard)
+                }
             }
         }
     }
     // Submenu popup for nav items (e.g. Help)
     UTDynamicMenu {
         id: _navSubMenu
+        parent: root
         property int targetPageId: 0
         onItemTriggered: function(action) {
             controller.handleSubMenuAction(parseInt(action))
@@ -226,7 +243,9 @@ FocusScope {
             }
             if (delegateItem) {
                 var pos = delegateItem.mapToItem(root, delegateItem.width, 0)
-                _navSubMenu.popup(root, pos.x + 4, pos.y)
+                _navSubMenu.popupAt(pos.x + 4, pos.y, root._activationFromKeyboard)
+            } else if (root._activationFromKeyboard) {
+                _navSubMenu.popupAt(root.width + 4, 0, true)
             } else {
                 _navSubMenu.popup()
             }

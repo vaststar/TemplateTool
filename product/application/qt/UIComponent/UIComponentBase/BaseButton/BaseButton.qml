@@ -13,6 +13,17 @@ Button {
 
     flat: true
 
+    Keys.onReturnPressed: function(event) {
+        event.accepted = true
+        if (control.activeFocus && !event.isAutoRepeat)
+            control.click()
+    }
+    Keys.onEnterPressed: function(event) {
+        event.accepted = true
+        if (control.activeFocus && !event.isAutoRepeat)
+            control.click()
+    }
+
     contentItem: Text {
         text: control.text
         font: control.font

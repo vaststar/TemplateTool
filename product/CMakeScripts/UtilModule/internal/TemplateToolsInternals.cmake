@@ -159,11 +159,11 @@ function(_tt_ensure_jinja_runtime)
 
     message(STATUS
         "[generate_from_template] Registered Jinja runtime: ${runtime_target}")
+    message(STATUS
+        "[generate_from_template] Base Python: ${Python3_EXECUTABLE} (version ${Python3_VERSION})")
+    message(STATUS
+        "[generate_from_template] Venv Python: ${runtime_python}")
     if(TT_CMAKE_VERBOSE_CONFIG)
-        message(STATUS
-            "[generate_from_template]   System Python: ${Python3_EXECUTABLE}")
-        message(STATUS
-            "[generate_from_template]   Runtime Python: ${runtime_python}")
         message(STATUS
             "[generate_from_template]   Requirements  : ${ARG_REQUIREMENTS_FILE}")
     endif()

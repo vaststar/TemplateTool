@@ -15,6 +15,7 @@ UTDialog {
     height: contentColumn.implicitHeight + 48
     minimumWidth: 380
     minimumHeight: 300
+    closeOnEscape: true
 
     onClosing: {
         controller.dialogClosed()

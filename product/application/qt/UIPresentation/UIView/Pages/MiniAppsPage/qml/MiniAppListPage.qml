@@ -58,10 +58,31 @@ Item {
             cellHeight: 140
             model: miniAppsPage.controller.miniApps
 
+            // Restore the same app after the menu temporarily takes focus.
+            onCurrentIndexChanged: if (currentIndex >= 0) selectedIndex = currentIndex
+
             onItemInvoked: function(index) {
                 const app = miniAppsPage.controller.miniApps[index]
                 if (app)
                     miniAppsPage.controller.launchMiniApp(app.id)
+            }
+
+            Shortcut {
+                sequences: ["Shift+F10", "Menu"]
+                context: Qt.WindowShortcut
+                enabled: appGrid.gridView.activeFocus && appGrid.currentIndex >= 0
+                autoRepeat: false
+                onActivated: {
+                    const app = miniAppsPage.controller.miniApps[appGrid.currentIndex]
+                    if (!app)
+                        return
+                    miniAppsPage.contextAppId = app.id
+                    const item = appGrid.gridView.currentItem
+                    const pos = item
+                              ? item.mapToItem(miniAppsPage, item.width / 2, item.height / 2)
+                              : appGrid.gridView.mapToItem(miniAppsPage, 0, 0)
+                    contextMenu.popupAt(pos.x, pos.y, true)
+                }
             }
 
             delegate: Item {
@@ -137,9 +158,10 @@ Item {
         }
     }
 
-    // Per-app context menu (right-click).
+    // Per-app context menu (mouse or keyboard).
     UTMenu {
         id: contextMenu
+        parent: miniAppsPage
 
         UTMenuItem {
             text: qsTr("Launch")

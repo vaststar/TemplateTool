@@ -182,12 +182,13 @@ std::vector<model::DisplayInfoVM> ScreenshotViewModel::getDisplayList() const
 // Capture
 // ============================================================================
 
-void ScreenshotViewModel::onCaptureCompleted(ucf::utilities::imageprocess::ImageData image, int scaleFactor)
+bool ScreenshotViewModel::onCaptureCompleted(ucf::utilities::imageprocess::ImageData image, int scaleFactor)
 {
     if (!image.isValid()) {
+        discardCapture();
         fireNotification(&IScreenshotViewModelCallback::onError,
                          std::string("Screen capture failed"));
-        return;
+        return false;
     }
 
     std::string base64;
@@ -208,9 +209,10 @@ void ScreenshotViewModel::onCaptureCompleted(ucf::utilities::imageprocess::Image
 
     setState(model::ScreenshotState::Captured);
     fireNotification(&IScreenshotViewModelCallback::onScreenCaptured, base64, width, height);
+    return true;
 }
 
-void ScreenshotViewModel::captureFullScreen()
+bool ScreenshotViewModel::captureFullScreen()
 {
     if (!canCaptureScreen())
     {
@@ -218,7 +220,7 @@ void ScreenshotViewModel::captureFullScreen()
         discardCapture();
         fireNotification(&IScreenshotViewModelCallback::onError,
                          std::string("Screen capture permission is required."));
-        return;
+        return false;
     }
     auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureAllDisplays();
     int scale = captured.scaleFactor;
@@ -226,10 +228,10 @@ void ScreenshotViewModel::captureFullScreen()
     auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
         captured.pixels, captured.width, captured.height, captured.bytesPerRow);
 
-    onCaptureCompleted(std::move(rgbaImage), scale);
+    return onCaptureCompleted(std::move(rgbaImage), scale);
 }
 
-void ScreenshotViewModel::captureDisplay(int displayIndex)
+bool ScreenshotViewModel::captureDisplay(int displayIndex)
 {
     if (!canCaptureScreen())
     {
@@ -237,7 +239,7 @@ void ScreenshotViewModel::captureDisplay(int displayIndex)
         discardCapture();
         fireNotification(&IScreenshotViewModelCallback::onError,
                          std::string("Screen capture permission is required."));
-        return;
+        return false;
     }
     auto captured = ucf::utilities::screencapture::ScreenCaptureUtils::captureDisplay(displayIndex);
     int scale = captured.scaleFactor;
@@ -245,7 +247,7 @@ void ScreenshotViewModel::captureDisplay(int displayIndex)
     auto rgbaImage = ucf::utilities::imageprocess::ImageProcessUtils::bgraToRgba(
         captured.pixels, captured.width, captured.height, captured.bytesPerRow);
 
-    onCaptureCompleted(std::move(rgbaImage), scale);
+    return onCaptureCompleted(std::move(rgbaImage), scale);
 }
 
 // ============================================================================

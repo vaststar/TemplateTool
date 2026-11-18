@@ -192,12 +192,9 @@ BaseFolderView {
         if (!_selectItem(index) || !_hasContextActions) return
         _contextMenu.currentFilePath = selectedFilePath
         var item = view.itemAtIndex(index)
-        if (item) {
-            var pos = item.mapToItem(control, item.width, 0)
-            _contextMenu.popup(control, pos)
-        } else {
-            _contextMenu.popup()
-        }
+        var pos = item ? item.mapToItem(control, item.width, 0)
+                       : view.mapToItem(control, 0, 0)
+        _contextMenu.popupAt(pos.x, pos.y, true)
     }
 
     function _reconcileSelection() {
@@ -421,6 +418,7 @@ BaseFolderView {
     // ─── Context Menu ───
     UTMenu {
         id: _contextMenu
+        parent: control
         property string currentFilePath: ""
 
         UTMenuItem {

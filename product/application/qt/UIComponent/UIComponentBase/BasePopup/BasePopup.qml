@@ -10,6 +10,7 @@ Popup {
     property real borderWidth: 1
     property int borderRadius: 4
 
+    focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
     background: Rectangle {

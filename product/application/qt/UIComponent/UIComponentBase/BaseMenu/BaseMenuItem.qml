@@ -14,6 +14,8 @@ MenuItem {
     property color backgroundColor: "transparent"
     property real backgroundRadius: 4
 
+    // Qt requires focused items to keep this flag until focus moves away.
+    activeFocusOnTab: visible || activeFocus
     height: itemHeight
     leftPadding: itemPadding
     rightPadding: itemPadding

@@ -9,27 +9,27 @@
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="68"/>
+        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="69"/>
         <source>Version %1</source>
         <translation>版本 %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="100"/>
+        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="101"/>
         <source>Qt Version</source>
         <translation>Qt 版本</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="101"/>
+        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="102"/>
         <source>Company</source>
         <translation>公司</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="102"/>
+        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="103"/>
         <source>Copyright</source>
         <translation>版权</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="115"/>
+        <location filename="../../UIPresentation/UIView/Features/AboutPage/qml/AboutDialog.qml" line="116"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -356,17 +356,17 @@ Close this terminal to cancel.</source>
         <translation>尚未安装迷你应用。点击“添加迷你应用”进行安装。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="145"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="167"/>
         <source>Launch</source>
         <translation>启动</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="150"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="172"/>
         <source>Uninstall</source>
         <translation>卸载</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="158"/>
+        <location filename="../../UIPresentation/UIView/Pages/MiniAppsPage/qml/MiniAppListPage.qml" line="180"/>
         <source>Select Mini App Folder</source>
         <translation>选择迷你应用文件夹</translation>
     </message>
@@ -2830,22 +2830,22 @@ Press ESC to cancel</source>
         <translation>%1 个文件</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="427"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="425"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="436"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="434"/>
         <source>Copy to Clipboard</source>
         <translation>复制到剪贴板</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="445"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="443"/>
         <source>Show in Explorer</source>
         <translation>在文件夹中显示</translation>
     </message>
     <message>
-        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="472"/>
+        <location filename="../../UIComponent/UTComposite/UTFolderView/UTFolderView.qml" line="470"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>

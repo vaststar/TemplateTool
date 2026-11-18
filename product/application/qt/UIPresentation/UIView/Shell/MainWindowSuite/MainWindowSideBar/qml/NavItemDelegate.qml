@@ -6,6 +6,7 @@ import UIResourceLoader 1.0
 
 ItemDelegate {
     id: navItem
+    text: title
     height: isVisible ? 44 : 0
     visible: isVisible
     enabled: isEnabled
@@ -31,8 +32,23 @@ ItemDelegate {
     property bool showText: false
     property int animationDuration: 200
 
-    Keys.onReturnPressed: navItem.clicked()
-    Keys.onEnterPressed: navItem.clicked()
+    signal activated(bool fromKeyboard)
+    property bool _spaceActivation: false
+
+    Keys.onReturnPressed: navItem.activated(true)
+    Keys.onEnterPressed: navItem.activated(true)
+    Keys.onReleased: function(event) {
+        // Preserve the native Space release/click sequence.
+        if (event.key === Qt.Key_Space && navItem.pressed)
+            navItem._spaceActivation = true
+        event.accepted = false
+    }
+    onClicked: {
+        const fromKeyboard = _spaceActivation
+        _spaceActivation = false
+        activated(fromKeyboard)
+    }
+    onCanceled: _spaceActivation = false
 
     background: Rectangle {
         radius: 8

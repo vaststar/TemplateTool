@@ -23,8 +23,8 @@ public:
     bool canCaptureScreen() override;
 
     // === Capture ===
-    void captureFullScreen() override;
-    void captureDisplay(int displayIndex) override;
+    bool captureFullScreen() override;
+    bool captureDisplay(int displayIndex) override;
 
     // === Display / Window Enumeration ===
     std::vector<model::DisplayInfoVM> getDisplayList() const override;
@@ -63,7 +63,7 @@ protected:
 private:
     // Internal helpers
     void setState(model::ScreenshotState newState);
-    void onCaptureCompleted(ucf::utilities::imageprocess::ImageData image, int scaleFactor);
+    bool onCaptureCompleted(ucf::utilities::imageprocess::ImageData image, int scaleFactor);
     model::ScreenshotSaveResult saveCapturedImage(
         const std::optional<ucf::utilities::imageprocess::Rect>& logicalRegion,
         double scaleFactor,

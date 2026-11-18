@@ -119,15 +119,15 @@ UTDialog {
                     ToolTip.text: modelData.tooltip
                     ToolTip.visible: hovered && modelData.tooltip.length > 0
 
-                    Keys.onReturnPressed: if (enabled) controller.accept(index)
-                    Keys.onEnterPressed: if (enabled) controller.accept(index)
-
                     onClicked: controller.accept(index)
 
                     Component.onCompleted: {
-                        if (modelData.isDefault) {
+                        const buttons = controller.buttonsModel
+                        const defaultIndex = buttons.findIndex(button => button.enabled && button.isDefault)
+                        const initialIndex = defaultIndex >= 0 ? defaultIndex
+                                           : buttons.findIndex(button => button.enabled && button.isCancel)
+                        if (index === initialIndex)
                             forceActiveFocus()
-                        }
                     }
                 }
             }

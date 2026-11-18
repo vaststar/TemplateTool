@@ -14,17 +14,6 @@ BaseButton {
     focusPolicy: Qt.StrongFocus
     background: null
 
-    Keys.onReturnPressed: function(event) {
-        event.accepted = true
-        if (!event.isAutoRepeat)
-            control.click()
-    }
-    Keys.onEnterPressed: function(event) {
-        event.accepted = true
-        if (!event.isAutoRepeat)
-            control.click()
-    }
-
     contentItem: Image {
         fillMode: Image.PreserveAspectFit
         mipmap: true

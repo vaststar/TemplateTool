@@ -32,6 +32,7 @@ bool KeyboardFocusTracker::eventFilter(QObject* watched, QEvent* event)
     case QEvent::ShortcutOverride:
     case QEvent::KeyPress: {
         auto* ke = static_cast<QKeyEvent*>(event);
+        const auto modifiers = ke->modifiers() & ~Qt::KeypadModifier;
         switch (ke->key()) {
         case Qt::Key_Tab:
         case Qt::Key_Backtab:
@@ -40,6 +41,14 @@ bool KeyboardFocusTracker::eventFilter(QObject* watched, QEvent* event)
         case Qt::Key_Left:
         case Qt::Key_Right:
             setKeyboardNavigating(true);
+            break;
+        case Qt::Key_Menu:
+            if (modifiers == Qt::NoModifier)
+                setKeyboardNavigating(true);
+            break;
+        case Qt::Key_F10:
+            if (modifiers == Qt::ShiftModifier)
+                setKeyboardNavigating(true);
             break;
         default:
             break;

@@ -48,6 +48,7 @@ UTDialog {
             spacing: 8
 
             UTButton {
+                focus: true
                 text: "取消"
                 appearance: UTButton.Secondary
                 implicitWidth: 72

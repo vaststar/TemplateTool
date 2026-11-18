@@ -42,6 +42,11 @@ else()
     set(ADDON_EXE_NAME "${ADDON_RUNTIME_NAME}")
 endif()
 
+message(STATUS
+    "[NetworkProxyAgent] Base Python: ${Python3_EXECUTABLE} (version ${Python3_VERSION})")
+message(STATUS
+    "[NetworkProxyAgent] Venv Python: ${ADDON_VENV_PYTHON}")
+
 # Recreate the virtual environment when the selected Python interpreter or its
 # version changes. file(CONFIGURE) preserves the timestamp when the content is
 # unchanged, so a normal CMake reconfigure does not invalidate the environment.

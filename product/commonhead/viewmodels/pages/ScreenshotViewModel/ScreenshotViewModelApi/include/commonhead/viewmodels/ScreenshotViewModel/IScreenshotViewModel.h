@@ -66,8 +66,10 @@ public:
     [[nodiscard]] virtual bool canCaptureScreen() = 0;
 
     // === Capture ===
-    virtual void captureFullScreen() = 0;
-    virtual void captureDisplay(int displayIndex) = 0;
+    /// Synchronous capture. Returns true only when this call captures a valid image.
+    /// Failure clears the previous capture and reports onError.
+    [[nodiscard]] virtual bool captureFullScreen() = 0;
+    [[nodiscard]] virtual bool captureDisplay(int displayIndex) = 0;
 
     // === Display / Window Enumeration ===
     [[nodiscard]] virtual std::vector<model::DisplayInfoVM> getDisplayList() const = 0;

@@ -282,8 +282,9 @@ void ScreenshotController::captureFullScreen()
             return;
         }
 
-        m_viewModel->captureFullScreen();
-        m_viewModel->saveScreenshot();
+        if (m_viewModel->captureFullScreen()) {
+            m_viewModel->saveScreenshot();
+        }
 
         // Restore the main window
         sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
@@ -429,7 +430,10 @@ void ScreenshotController::grabScreenForOverlay()
 
         // captureFullScreen is synchronous — fires onScreenCaptured callback
         // on the same thread, so m_screenshotBase64/Width/Height are updated.
-        m_viewModel->captureFullScreen();
+        if (!m_viewModel->captureFullScreen()) {
+            sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
+            return;
+        }
 
         if (m_screenshotBase64.isEmpty()) {
             sendUIEvent<UIMainWindowEvent>(UIMainWindowEvent::Action::Show);
