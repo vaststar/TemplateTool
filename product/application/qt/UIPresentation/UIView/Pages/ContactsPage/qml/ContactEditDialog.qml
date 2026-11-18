@@ -22,16 +22,17 @@ UTDialog {
 
     readonly property bool isPerson: nodeType === 0
     readonly property bool formValid: nameField.text.trim() !== ""
-    readonly property var genderOptions: [
-        { text: "未指定", value: 0 },
-        { text: "男", value: 1 },
-        { text: "女", value: 2 },
-        { text: "其他", value: 3 }
-    ]
+    ListModel {
+        id: genderOptions
+        ListElement { text: qsTr("Unspecified"); value: 0 }
+        ListElement { text: qsTr("Male"); value: 1 }
+        ListElement { text: qsTr("Female"); value: 2 }
+        ListElement { text: qsTr("Other"); value: 3 }
+    }
 
     title: mode === "add"
-           ? (isPerson ? "新增联系人" : "新增分组")
-           : (isPerson ? "编辑联系人" : "重命名分组")
+           ? (isPerson ? qsTr("Add contact") : qsTr("Add group"))
+           : (isPerson ? qsTr("Edit contact") : qsTr("Rename group"))
     width: 440
     height: contentColumn.implicitHeight + 48
     minimumWidth: 400
@@ -79,8 +80,8 @@ UTDialog {
         emailField.text = person.email || ""
 
         const initialGender = Number(person.genderValue ?? 0)
-        for (let i = 0; i < genderOptions.length; ++i) {
-            if (genderOptions[i].value === initialGender) {
+        for (let i = 0; i < genderOptions.count; ++i) {
+            if (genderOptions.get(i).value === initialGender) {
                 genderField.currentIndex = i
                 break
             }
@@ -108,7 +109,7 @@ UTDialog {
             rowSpacing: 12
 
             UTText {
-                text: "显示名称"
+                text: qsTr("Display name")
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -116,12 +117,12 @@ UTDialog {
                 id: nameField
                 Layout.fillWidth: true
                 maximumLength: 128
-                placeholderText: "名称"
+                placeholderText: qsTr("Name")
                 onAccepted: dialog._confirm()
             }
 
             UTText {
-                text: "名"
+                text: qsTr("First name")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -135,7 +136,7 @@ UTDialog {
             }
 
             UTText {
-                text: "姓"
+                text: qsTr("Last name")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -149,7 +150,7 @@ UTDialog {
             }
 
             UTText {
-                text: "性别"
+                text: qsTr("Gender")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -158,14 +159,14 @@ UTDialog {
                 id: genderField
                 Layout.fillWidth: true
                 visible: dialog.isPerson
-                model: dialog.genderOptions
+                model: genderOptions
                 textRole: "text"
                 valueRole: "value"
                 currentIndex: 0
             }
 
             UTText {
-                text: "电话"
+                text: qsTr("Phone")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -180,7 +181,7 @@ UTDialog {
             }
 
             UTText {
-                text: "邮箱"
+                text: qsTr("Email")
                 visible: dialog.isPerson
                 Layout.alignment: Qt.AlignVCenter
             }
@@ -200,14 +201,14 @@ UTDialog {
             spacing: 8
 
             UTButton {
-                text: "取消"
+                text: qsTr("Cancel")
                 appearance: UTButton.Secondary
                 implicitWidth: 72
                 implicitHeight: 30
                 onClicked: dialog.close()
             }
             UTButton {
-                text: "确定"
+                text: qsTr("OK")
                 appearance: UTButton.Primary
                 implicitWidth: 72
                 implicitHeight: 30

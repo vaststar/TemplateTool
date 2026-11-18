@@ -199,7 +199,7 @@ QVariant ContactListItemModel::headerData(int section, Qt::Orientation orientati
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole && section == 0)
     {
-        return QStringLiteral("Contact");
+        return tr("Contact");
     }
     return {};
 }

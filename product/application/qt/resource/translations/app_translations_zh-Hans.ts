@@ -153,6 +153,33 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
+    <name>CameraDeleteDialog</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraDeleteDialog.qml" line="21"/>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraDeleteDialog.qml" line="59"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraDeleteDialog.qml" line="39"/>
+        <source>Delete this item? Its children will be moved to the root.</source>
+        <translation>确定删除该项？其子项将移动到根目录。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraDeleteDialog.qml" line="52"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+</context>
+<context>
+    <name>CameraDirectoryItemModel</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/src/CameraDirectoryItemModel.cpp" line="192"/>
+        <source>Camera</source>
+        <translation>摄像头</translation>
+    </message>
+</context>
+<context>
     <name>CameraDirectoryTreePanel</name>
     <message>
         <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraDirectoryTreePanel.qml" line="32"/>
@@ -166,6 +193,54 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
+    <name>CameraEditDialog</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="37"/>
+        <source>Add group</source>
+        <translation>新增分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="38"/>
+        <source>Add camera</source>
+        <translation>新增摄像头</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="39"/>
+        <source>Rename</source>
+        <translation>重命名</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="85"/>
+        <source>Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="100"/>
+        <source>Local</source>
+        <translation>本地</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="101"/>
+        <source>Network</source>
+        <translation>网络</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="119"/>
+        <source>rtsp:// or http:// URL</source>
+        <translation>rtsp:// 或 http:// 地址</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="129"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraEditDialog.qml" line="136"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+</context>
+<context>
     <name>CameraMonitorView</name>
     <message>
         <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraMonitorView.qml" line="14"/>
@@ -174,11 +249,157 @@ Close this terminal to cancel.</source>
     </message>
 </context>
 <context>
+    <name>CameraMonitorViewController</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/src/CameraMonitorViewController.cpp" line="168"/>
+        <source>Add group</source>
+        <translation>新增分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/src/CameraMonitorViewController.cpp" line="173"/>
+        <source>Add camera</source>
+        <translation>新增摄像头</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/src/CameraMonitorViewController.cpp" line="183"/>
+        <source>Rename</source>
+        <translation>重命名</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/src/CameraMonitorViewController.cpp" line="187"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+</context>
+<context>
     <name>CameraPreviewPanel</name>
     <message>
         <location filename="../../UIPresentation/UIView/Features/CameraMonitorView/qml/CameraPreviewPanel.qml" line="100"/>
         <source>Slot %1 — empty</source>
         <translation>槽位 %1 — 空</translation>
+    </message>
+</context>
+<context>
+    <name>ContactDeleteDialog</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDeleteDialog.qml" line="21"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDeleteDialog.qml" line="59"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDeleteDialog.qml" line="39"/>
+        <source>Delete this item? Its children will be moved to the root.</source>
+        <translation>确定删除该项？其子项将移动到根目录。</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDeleteDialog.qml" line="52"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+</context>
+<context>
+    <name>ContactDetailPanel</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactDetailPanel.qml" line="21"/>
+        <source>Select a contact to view details</source>
+        <translation>选择联系人查看详情</translation>
+    </message>
+</context>
+<context>
+    <name>ContactEditDialog</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="27"/>
+        <source>Unspecified</source>
+        <translation>未指定</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="28"/>
+        <source>Male</source>
+        <translation>男</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="29"/>
+        <source>Female</source>
+        <translation>女</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="30"/>
+        <source>Other</source>
+        <translation>其他</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="34"/>
+        <source>Add contact</source>
+        <translation>新增联系人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="34"/>
+        <source>Add group</source>
+        <translation>新增分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="35"/>
+        <source>Edit contact</source>
+        <translation>编辑联系人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="35"/>
+        <source>Rename group</source>
+        <translation>重命名分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="112"/>
+        <source>Display name</source>
+        <translation>显示名称</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="120"/>
+        <source>Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="125"/>
+        <source>First name</source>
+        <translation>名</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="139"/>
+        <source>Last name</source>
+        <translation>姓</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="153"/>
+        <source>Gender</source>
+        <translation>性别</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="169"/>
+        <source>Phone</source>
+        <translation>电话</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="184"/>
+        <source>Email</source>
+        <translation>邮箱</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="204"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactEditDialog.qml" line="211"/>
+        <source>OK</source>
+        <translation>确定</translation>
+    </message>
+</context>
+<context>
+    <name>ContactListItemModel</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactListItemModel.cpp" line="202"/>
+        <source>Contact</source>
+        <translation>联系人</translation>
     </message>
 </context>
 <context>
@@ -198,23 +419,179 @@ Close this terminal to cancel.</source>
         <source>No matching contacts found</source>
         <translation>没有找到匹配的联系人</translation>
     </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="237"/>
+        <source>Loading failed</source>
+        <translation>加载失败</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/ContactListPanel.qml" line="238"/>
+        <source>Loading…</source>
+        <translation>加载中…</translation>
+    </message>
 </context>
 <context>
     <name>ContactsPageController</name>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="405"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="227"/>
+        <source>Add contact</source>
+        <translation>新增联系人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="232"/>
+        <source>Add group</source>
+        <translation>新增分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="243"/>
+        <source>Rename group</source>
+        <translation>重命名分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="244"/>
+        <source>Edit contact</source>
+        <translation>编辑联系人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="249"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="410"/>
         <source>Save failed</source>
         <translation>保存失败</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="406"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="411"/>
         <source>Changes were applied to the current page, but could not be written to the local database.</source>
         <translation>修改已应用到当前页面，但未能写入本地数据库。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="407"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageController.cpp" line="412"/>
         <source>These changes may be lost after the app closes. Please try again later.</source>
         <translation>关闭应用后这些修改可能丢失，请稍后重新操作。</translation>
+    </message>
+</context>
+<context>
+    <name>ContactsPageUtils</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="30"/>
+        <source>Contact</source>
+        <translation>联系人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="34"/>
+        <source>Folder</source>
+        <translation>整理夹</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="35"/>
+        <source>Department</source>
+        <translation>部门</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="36"/>
+        <source>Project group</source>
+        <translation>项目组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="37"/>
+        <source>Team</source>
+        <translation>团队</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="38"/>
+        <source>Custom group</source>
+        <translation>自定义分组</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="40"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="52"/>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="64"/>
+        <source>Unknown</source>
+        <translation>未知</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="47"/>
+        <source>Active</source>
+        <translation>在用</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="48"/>
+        <source>Inactive</source>
+        <translation>停用</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="49"/>
+        <source>Deleted</source>
+        <translation>已删除</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="50"/>
+        <source>Archived</source>
+        <translation>已归档</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="59"/>
+        <source>Unspecified</source>
+        <translation>未指定</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="60"/>
+        <source>Male</source>
+        <translation>男</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="61"/>
+        <source>Female</source>
+        <translation>女</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/src/ContactsPageUtils.cpp" line="62"/>
+        <source>Other</source>
+        <translation>其他</translation>
+    </message>
+</context>
+<context>
+    <name>DepartmentDetailBody</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DepartmentDetailBody.qml" line="16"/>
+        <source>Department information</source>
+        <translation>部门信息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DepartmentDetailBody.qml" line="22"/>
+        <source>Manager</source>
+        <translation>负责人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DepartmentDetailBody.qml" line="25"/>
+        <source>%1 (%2)</source>
+        <translation>%1（%2）</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/DepartmentDetailBody.qml" line="30"/>
+        <source>Headcount</source>
+        <translation>人数</translation>
+    </message>
+</context>
+<context>
+    <name>GroupDetailBody</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/GroupDetailBody.qml" line="20"/>
+        <source>Basic information</source>
+        <translation>基本信息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/GroupDetailBody.qml" line="25"/>
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/GroupDetailBody.qml" line="26"/>
+        <source>Type</source>
+        <translation>类型</translation>
     </message>
 </context>
 <context>
@@ -1415,6 +1792,44 @@ Double-click a rule to view details.</source>
     </message>
 </context>
 <context>
+    <name>PersonDetailBody</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="16"/>
+        <source>Basic information</source>
+        <translation>基本信息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="21"/>
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="22"/>
+        <source>First name</source>
+        <translation>名</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="23"/>
+        <source>Last name</source>
+        <translation>姓</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="24"/>
+        <source>Gender</source>
+        <translation>性别</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="25"/>
+        <source>Phone</source>
+        <translation>电话</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/PersonDetailBody.qml" line="26"/>
+        <source>Email</source>
+        <translation>邮箱</translation>
+    </message>
+</context>
+<context>
     <name>ProxyRulesManager</name>
     <message>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/network/src/ProxyRulesManager.cpp" line="596"/>
@@ -2498,40 +2913,40 @@ Press ESC to cancel</source>
         <translation>无法保存截图，请重试。</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="536"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="540"/>
         <source>Screenshots folder not set</source>
         <translation>未设置截图文件夹</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="551"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="576"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="592"/>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="613"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="555"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="580"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="596"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="617"/>
         <source>File not found: %1</source>
         <translation>文件未找到: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="567"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="571"/>
         <source>Failed to load image: %1</source>
         <translation>加载图片失败: %1</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="605"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="609"/>
         <source>Delete Screenshot</source>
         <translation>删除截图</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="606"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="610"/>
         <source>Are you sure you want to delete &quot;%1&quot;?</source>
         <translation>确定要删除“%1”吗？</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="607"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="611"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="617"/>
+        <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/src/ScreenshotController.cpp" line="621"/>
         <source>Failed to delete file: %1</source>
         <translation>删除文件失败: %1</translation>
     </message>
@@ -2719,6 +3134,29 @@ Press ESC to cancel</source>
         <location filename="../../UIPresentation/UIView/Pages/ToolsPage/screenshot/qml/ScreenshotSettingsTab.qml" line="171"/>
         <source>Select Output Directory</source>
         <translation>选择输出目录</translation>
+    </message>
+</context>
+<context>
+    <name>TeamDetailBody</name>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/TeamDetailBody.qml" line="15"/>
+        <source>Team information</source>
+        <translation>团队信息</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/TeamDetailBody.qml" line="21"/>
+        <source>Team lead</source>
+        <translation>负责人</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/TeamDetailBody.qml" line="24"/>
+        <source>%1 (%2)</source>
+        <translation>%1（%2）</translation>
+    </message>
+    <message>
+        <location filename="../../UIPresentation/UIView/Pages/ContactsPage/qml/TeamDetailBody.qml" line="29"/>
+        <source>Mission</source>
+        <translation>目标</translation>
     </message>
 </context>
 <context>

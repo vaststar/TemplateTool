@@ -18,7 +18,7 @@ UTDialog {
     required property var controller
     required property string targetId
 
-    title: "删除"
+    title: qsTr("Delete")
     width: 360
     height: contentColumn.implicitHeight + 48
     minimumWidth: 320
@@ -36,7 +36,7 @@ UTDialog {
         spacing: 20
 
         UTText {
-            text: "确定删除该项？其子项将移动到根目录。"
+            text: qsTr("Delete this item? Its children will be moved to the root.")
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Content_Text
             Layout.fillWidth: true
@@ -49,14 +49,14 @@ UTDialog {
 
             UTButton {
                 focus: true
-                text: "取消"
+                text: qsTr("Cancel")
                 appearance: UTButton.Secondary
                 implicitWidth: 72
                 implicitHeight: 30
                 onClicked: dialog.close()
             }
             UTButton {
-                text: "删除"
+                text: qsTr("Delete")
                 appearance: UTButton.Destructive
                 implicitWidth: 72
                 implicitHeight: 30

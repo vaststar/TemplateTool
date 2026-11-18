@@ -17,13 +17,13 @@ ColumnLayout {
     spacing: 8
 
     UTText {
-        text: "基本信息"
+        text: qsTr("Basic information")
         fontEnum: UIFontToken.Body_Text_Medium
         colorEnum: UIColorToken.Content_Text
         Layout.bottomMargin: 4
     }
-    DetailFieldRow { label: "ID";   value: root.info ? (root.info.id || "") : "" }
-    DetailFieldRow { label: "类型"; value: root.info ? (root.info.kindLabel || "") : "" }
+    DetailFieldRow { label: qsTr("ID");   value: root.info ? (root.info.id || "") : "" }
+    DetailFieldRow { label: qsTr("Type"); value: root.info ? (root.info.kindLabel || "") : "" }
 
     // ---- Type-specific sub-bodies. Each is self-hiding via its own `visible:`. ----
     DepartmentDetailBody {

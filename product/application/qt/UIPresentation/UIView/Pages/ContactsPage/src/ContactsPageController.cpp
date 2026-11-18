@@ -77,6 +77,11 @@ void ContactsPageController::init()
     mContactListViewModel->initViewModel();
 }
 
+void ContactsPageController::onLanguageChanged()
+{
+    emit currentContactInfoChanged();
+}
+
 void ContactsPageController::buttonClicked()
 {
     auto win = getViewFactory()->createQmlWindow(
@@ -219,12 +224,12 @@ QVariantList ContactsPageController::contextMenuModel(const QString& contactId, 
     {
         if (canAddUnder(contactId, 0))
         {
-            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("新增联系人")},
+            items.append(QVariantMap{{QStringLiteral("text"), tr("Add contact")},
                                      {QStringLiteral("action"), QStringLiteral("add_person")}});
         }
         if (canAddUnder(contactId, 1))
         {
-            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("新增分组")},
+            items.append(QVariantMap{{QStringLiteral("text"), tr("Add group")},
                                      {QStringLiteral("action"), QStringLiteral("add_group")}});
         }
     }
@@ -235,13 +240,13 @@ QVariantList ContactsPageController::contextMenuModel(const QString& contactId, 
             items.append(QVariantMap{{QStringLiteral("separator"), true}});
         }
         const QString editLabel = isGroup
-            ? QStringLiteral("重命名分组")
-            : QStringLiteral("编辑联系人");
+            ? tr("Rename group")
+            : tr("Edit contact");
         items.append(QVariantMap{{QStringLiteral("text"), editLabel},
                                  {QStringLiteral("action"), QStringLiteral("edit")}});
         if (canRemove(contactId))
         {
-            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("删除")},
+            items.append(QVariantMap{{QStringLiteral("text"), tr("Delete")},
                                      {QStringLiteral("action"), QStringLiteral("delete")}});
         }
     }

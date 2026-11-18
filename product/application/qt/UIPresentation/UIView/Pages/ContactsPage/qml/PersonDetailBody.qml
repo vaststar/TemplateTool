@@ -13,17 +13,17 @@ ColumnLayout {
     spacing: 8
 
     UTText {
-        text: "基本信息"
+        text: qsTr("Basic information")
         fontEnum: UIFontToken.Body_Text_Medium
         colorEnum: UIColorToken.Content_Text
         Layout.bottomMargin: 4
     }
-    DetailFieldRow { label: "ID";   value: root.info ? root.info.id : "" }
-    DetailFieldRow { label: "名";   value: root.p.firstName }
-    DetailFieldRow { label: "姓";   value: root.p.lastName }
-    DetailFieldRow { label: "性别"; value: root.p.gender }
-    DetailFieldRow { label: "电话"; value: root.p.phone }
-    DetailFieldRow { label: "邮箱"; value: root.p.email }
+    DetailFieldRow { label: qsTr("ID");   value: root.info ? root.info.id : "" }
+    DetailFieldRow { label: qsTr("First name");   value: root.p.firstName }
+    DetailFieldRow { label: qsTr("Last name");   value: root.p.lastName }
+    DetailFieldRow { label: qsTr("Gender"); value: root.p.gender }
+    DetailFieldRow { label: qsTr("Phone"); value: root.p.phone }
+    DetailFieldRow { label: qsTr("Email"); value: root.p.email }
 
     Item { Layout.fillHeight: true }
 }

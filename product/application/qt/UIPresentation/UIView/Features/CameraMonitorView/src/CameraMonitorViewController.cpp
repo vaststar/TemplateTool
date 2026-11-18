@@ -165,12 +165,12 @@ QVariantList CameraMonitorViewController::contextMenuModel(const QString& nodeId
     {
         if (canAddUnder(nodeId, 0))
         {
-            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("新增分组")},
+            items.append(QVariantMap{{QStringLiteral("text"), tr("Add group")},
                                      {QStringLiteral("action"), QStringLiteral("add_group")}});
         }
         if (canAddUnder(nodeId, 1))
         {
-            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("新增摄像头")},
+            items.append(QVariantMap{{QStringLiteral("text"), tr("Add camera")},
                                      {QStringLiteral("action"), QStringLiteral("add_camera")}});
         }
     }
@@ -180,11 +180,11 @@ QVariantList CameraMonitorViewController::contextMenuModel(const QString& nodeId
         {
             items.append(QVariantMap{{QStringLiteral("separator"), true}});
         }
-        items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("重命名")},
+        items.append(QVariantMap{{QStringLiteral("text"), tr("Rename")},
                                  {QStringLiteral("action"), QStringLiteral("edit")}});
         if (canRemove(nodeId))
         {
-            items.append(QVariantMap{{QStringLiteral("text"), QStringLiteral("删除")},
+            items.append(QVariantMap{{QStringLiteral("text"), tr("Delete")},
                                      {QStringLiteral("action"), QStringLiteral("delete")}});
         }
     }

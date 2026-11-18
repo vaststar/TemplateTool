@@ -13,21 +13,21 @@ ColumnLayout {
     visible: !!root.dept
 
     UTText {
-        text: "部门信息"
+        text: qsTr("Department information")
         fontEnum: UIFontToken.Body_Text_Medium
         colorEnum: UIColorToken.Content_Text
         Layout.bottomMargin: 4
     }
     DetailFieldRow {
-        label: "负责人"
+        label: qsTr("Manager")
         value: root.dept
             ? (root.dept.managerName && root.dept.managerName.length > 0
-               ? root.dept.managerName + "（" + root.dept.managerId + "）"
+               ? qsTr("%1 (%2)").arg(root.dept.managerName).arg(root.dept.managerId)
                : root.dept.managerId)
             : ""
     }
     DetailFieldRow {
-        label: "人数"
+        label: qsTr("Headcount")
         value: root.dept ? String(root.dept.headcount) : ""
     }
 }

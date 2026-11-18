@@ -18,7 +18,7 @@ Item {
     UTText {
         anchors.centerIn: parent
         visible: !contactDetailPanel.hasInfo
-        text: "选择联系人查看详情"
+        text: qsTr("Select a contact to view details")
         fontEnum: UIFontToken.Body_Text
         colorEnum: UIColorToken.Sidebar_Item_Text
     }

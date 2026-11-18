@@ -189,7 +189,7 @@ QVariant CameraDirectoryItemModel::headerData(int section, Qt::Orientation orien
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole && section == 0)
     {
-        return QStringLiteral("Camera");
+        return tr("Camera");
     }
     return {};
 }

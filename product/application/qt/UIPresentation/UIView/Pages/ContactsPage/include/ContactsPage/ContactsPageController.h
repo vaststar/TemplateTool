@@ -73,6 +73,7 @@ public slots:
 
 protected:
     void init() override;
+    void onLanguageChanged() override;
 
 private:
     using ContactSaveFailure = commonHead::viewModels::model::ContactSaveFailure;

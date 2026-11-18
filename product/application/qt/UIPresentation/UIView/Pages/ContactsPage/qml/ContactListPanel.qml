@@ -234,8 +234,8 @@ Item {
             anchors.centerIn: parent
             text: {
                 if (!controller) return "";
-                if (controller.loadState === ContactsPageController.Error) return "加载失败";
-                return "加载中…";
+                if (controller.loadState === ContactsPageController.Error) return qsTr("Loading failed");
+                return qsTr("Loading…");
             }
             fontEnum: UIFontToken.Body_Text
             colorEnum: UIColorToken.Sidebar_Item_Text

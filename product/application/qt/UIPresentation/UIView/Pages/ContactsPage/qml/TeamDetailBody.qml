@@ -12,21 +12,21 @@ ColumnLayout {
     visible: !!root.team
 
     UTText {
-        text: "团队信息"
+        text: qsTr("Team information")
         fontEnum: UIFontToken.Body_Text_Medium
         colorEnum: UIColorToken.Content_Text
         Layout.bottomMargin: 4
     }
     DetailFieldRow {
-        label: "负责人"
+        label: qsTr("Team lead")
         value: root.team
             ? (root.team.teamLeadName && root.team.teamLeadName.length > 0
-               ? root.team.teamLeadName + "（" + root.team.teamLeadId + "）"
+               ? qsTr("%1 (%2)").arg(root.team.teamLeadName).arg(root.team.teamLeadId)
                : root.team.teamLeadId)
             : ""
     }
     DetailFieldRow {
-        label: "目标"
+        label: qsTr("Mission")
         value: root.team ? (root.team.mission || "") : ""
     }
 }

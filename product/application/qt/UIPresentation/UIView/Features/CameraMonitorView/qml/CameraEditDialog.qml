@@ -34,9 +34,9 @@ UTDialog {
                                           || urlField.text.trim() !== "")
 
     title: {
-        if (mode === "add_group") return "新增分组";
-        if (mode === "add_camera") return "新增摄像头";
-        return "重命名";
+        if (mode === "add_group") return qsTr("Add group");
+        if (mode === "add_camera") return qsTr("Add camera");
+        return qsTr("Rename");
     }
     width: 360
     height: contentColumn.implicitHeight + 48
@@ -82,7 +82,7 @@ UTDialog {
         UTTextField {
             id: nameField
             Layout.fillWidth: true
-            placeholderText: "名称"
+            placeholderText: qsTr("Name")
             onAccepted: dialog._confirm()
         }
 
@@ -95,7 +95,11 @@ UTDialog {
             UTComboBox {
                 id: sourceKindBox
                 Layout.preferredWidth: 110
-                model: ["本地", "网络"]
+                textRole: "text"
+                model: ListModel {
+                    ListElement { text: qsTr("Local") }
+                    ListElement { text: qsTr("Network") }
+                }
                 currentIndex: 0
             }
 
@@ -112,7 +116,7 @@ UTDialog {
                 id: urlField
                 Layout.fillWidth: true
                 visible: dialog.isAddCamera && sourceKindBox.currentIndex === 1
-                placeholderText: "rtsp:// 或 http:// 地址"
+                placeholderText: qsTr("rtsp:// or http:// URL")
                 onAccepted: dialog._confirm()
             }
         }
@@ -122,14 +126,14 @@ UTDialog {
             spacing: 8
 
             UTButton {
-                text: "取消"
+                text: qsTr("Cancel")
                 appearance: UTButton.Secondary
                 implicitWidth: 72
                 implicitHeight: 30
                 onClicked: dialog.close()
             }
             UTButton {
-                text: "确定"
+                text: qsTr("OK")
                 appearance: UTButton.Primary
                 implicitWidth: 72
                 implicitHeight: 30

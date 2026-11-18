@@ -1,5 +1,7 @@
 #include "ContactsPageUtils.h"
 
+#include <QCoreApplication>
+
 namespace ContactsPage::Utils {
 
 QString kindKey(commonHead::viewModels::model::ContactNodeType nodeType,
@@ -25,41 +27,41 @@ QString kindLabel(commonHead::viewModels::model::ContactNodeType nodeType,
 {
     if (nodeType == commonHead::viewModels::model::ContactNodeType::Person)
     {
-        return QStringLiteral("联系人");
+        return QCoreApplication::translate("ContactsPageUtils", "Contact");
     }
     switch (groupType)
     {
-        case commonHead::viewModels::model::GroupType::Folder:     return QStringLiteral("整理夹");
-        case commonHead::viewModels::model::GroupType::Department: return QStringLiteral("部门");
-        case commonHead::viewModels::model::GroupType::Project:    return QStringLiteral("项目组");
-        case commonHead::viewModels::model::GroupType::Team:       return QStringLiteral("团队");
-        case commonHead::viewModels::model::GroupType::Custom:     return QStringLiteral("自定义分组");
+        case commonHead::viewModels::model::GroupType::Folder:     return QCoreApplication::translate("ContactsPageUtils", "Folder");
+        case commonHead::viewModels::model::GroupType::Department: return QCoreApplication::translate("ContactsPageUtils", "Department");
+        case commonHead::viewModels::model::GroupType::Project:    return QCoreApplication::translate("ContactsPageUtils", "Project group");
+        case commonHead::viewModels::model::GroupType::Team:       return QCoreApplication::translate("ContactsPageUtils", "Team");
+        case commonHead::viewModels::model::GroupType::Custom:     return QCoreApplication::translate("ContactsPageUtils", "Custom group");
     }
-    return QStringLiteral("未知");
+    return QCoreApplication::translate("ContactsPageUtils", "Unknown");
 }
 
 QString statusLabel(commonHead::viewModels::model::ContactStatus status)
 {
     switch (status)
     {
-        case commonHead::viewModels::model::ContactStatus::Active:   return QStringLiteral("在用");
-        case commonHead::viewModels::model::ContactStatus::Inactive: return QStringLiteral("停用");
-        case commonHead::viewModels::model::ContactStatus::Deleted:  return QStringLiteral("已删除");
-        case commonHead::viewModels::model::ContactStatus::Archived: return QStringLiteral("已归档");
+        case commonHead::viewModels::model::ContactStatus::Active:   return QCoreApplication::translate("ContactsPageUtils", "Active");
+        case commonHead::viewModels::model::ContactStatus::Inactive: return QCoreApplication::translate("ContactsPageUtils", "Inactive");
+        case commonHead::viewModels::model::ContactStatus::Deleted:  return QCoreApplication::translate("ContactsPageUtils", "Deleted");
+        case commonHead::viewModels::model::ContactStatus::Archived: return QCoreApplication::translate("ContactsPageUtils", "Archived");
     }
-    return QStringLiteral("未知");
+    return QCoreApplication::translate("ContactsPageUtils", "Unknown");
 }
 
 QString genderLabel(commonHead::viewModels::model::Gender gender)
 {
     switch (gender)
     {
-        case commonHead::viewModels::model::Gender::Unspecified: return QStringLiteral("未指定");
-        case commonHead::viewModels::model::Gender::Male:        return QStringLiteral("男");
-        case commonHead::viewModels::model::Gender::Female:      return QStringLiteral("女");
-        case commonHead::viewModels::model::Gender::Other:       return QStringLiteral("其他");
+        case commonHead::viewModels::model::Gender::Unspecified: return QCoreApplication::translate("ContactsPageUtils", "Unspecified");
+        case commonHead::viewModels::model::Gender::Male:        return QCoreApplication::translate("ContactsPageUtils", "Male");
+        case commonHead::viewModels::model::Gender::Female:      return QCoreApplication::translate("ContactsPageUtils", "Female");
+        case commonHead::viewModels::model::Gender::Other:       return QCoreApplication::translate("ContactsPageUtils", "Other");
     }
-    return QStringLiteral("未知");
+    return QCoreApplication::translate("ContactsPageUtils", "Unknown");
 }
 
 namespace {
