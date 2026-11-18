@@ -65,8 +65,8 @@ FocusScope {
 
     // Sidebar expand/collapse state
     property bool expanded: false
-    readonly property int collapsedWidth: 50
-    readonly property int expandedWidth: 144
+    readonly property int collapsedWidth: 54
+    readonly property int expandedWidth: 148
     readonly property int animationDuration: 300
 
     implicitWidth: expanded ? expandedWidth : collapsedWidth
@@ -159,8 +159,8 @@ FocusScope {
         anchors.fill: parent
         anchors.topMargin: 8
         anchors.bottomMargin: 8
-        anchors.leftMargin: 4
-        anchors.rightMargin: 4
+        anchors.leftMargin: 6
+        anchors.rightMargin: 6
         spacing: 2
 
         // Top navigation items

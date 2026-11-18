@@ -36,6 +36,7 @@ Item {
             left: navigationBar.right
             right: parent.right
             margins: mainWindowContent.contentInset
+            leftMargin: 0
         }
         clip: true
         layer.enabled: true
